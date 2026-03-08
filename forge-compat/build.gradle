@@ -1,0 +1,89 @@
+plugins {
+    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+
+minecraft {
+    mappings channel: mapping_channel, version: mapping_version
+    copyIdeResources = true
+    runs {
+        configureEach {
+            workingDirectory project.file('run')
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'debug'
+            mods {
+                "${mod_id}" {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        client {
+            property 'forge.enabledGameTestNamespaces', mod_id
+        }
+        server {
+            property 'forge.enabledGameTestNamespaces', mod_id
+            args '--nogui'
+        }
+        gameTestServer {
+            property 'forge.enabledGameTestNamespaces', mod_id
+        }
+        data {
+            workingDirectory project.file('run-data')
+            args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+        }
+    }
+}
+
+tasks.withType(ProcessResources).configureEach {
+    from(project(':core').sourceSets.main.resources)
+
+    var replaceProperties = [
+            minecraft_version_range: minecraft_version_range,
+            loader_version_range   : forge_version_range,
+            mod_id                 : mod_id,
+            mod_name               : mod_name,
+            mod_license            : mod_license,
+            mod_version            : mod_version,
+            mod_credits            : mod_credits,
+            mod_authors            : mod_authors,
+            mod_description        : mod_description,
+            mod_issue_url          : mod_issue_url,
+            mod_display_url        : mod_display_url,
+            mod_logo_file          : mod_logo_file,
+            pack_description       : pack_description,
+            pack_format            : pack_format,
+
+            target_modloader       : forge_id,
+            target_version_range   : forge_version_range
+    ]
+
+    inputs.properties replaceProperties
+
+    filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
+        expand replaceProperties
+    }
+}
+
+dependencies {
+    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+
+    implementation project(":core")
+}
+
+tasks.named('jar', Jar).configure {
+    archiveBaseName.set(mod_id)
+    archiveVersion.set(mod_version)
+    archiveClassifier.set("${forge_id}-${minecraft_version}")
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from project(':core').sourceSets.main.output
+}
+
+tasks.matching { it.name == 'remapJar' || it.name == 'reobfJar' }.configureEach {
+    if (it.hasProperty("archiveClassifier")) {
+        it.archiveBaseName.set(mod_id)
+        it.archiveVersion.set(mod_version)
+        it.archiveClassifier.set("${forge_id}-${minecraft_version}")
+    }
+}

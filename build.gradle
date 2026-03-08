@@ -1,0 +1,21 @@
+plugins {
+    id 'eclipse'
+    id 'idea'
+    id 'maven-publish'
+}
+
+allprojects {
+    group = mod_group_id
+    version = mod_version
+
+    repositories {
+        mavenCentral()
+        maven {
+            name = 'MinecraftForge'
+            url = 'https://maven.minecraftforge.net/'
+        }
+        maven {
+            url "https://www.cursemaven.com"
+        }
+    }
+}

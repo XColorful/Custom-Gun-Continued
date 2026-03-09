@@ -12,7 +12,7 @@ import xiao.customgun.api.common.McSide;
 public class CustomGunNeoforge {
 
     public CustomGunNeoforge(IEventBus modEventBus) {
-        Dist dist = FMLLoader.getDist();
+        Dist dist = FMLLoader.getCurrent().getDist();
         McSide mcSide = dist.isClient() ? McSide.CLIENT : McSide.DEDICATED_SERVER;
 
         CustomGun.init(mcSide);

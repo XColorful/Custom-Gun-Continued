@@ -3,7 +3,7 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'maven-publish'
-    id 'net.neoforged.gradle.userdev' version '7.1.20'
+    id 'net.neoforged.gradle.userdev' version '7.1.21'
 }
 
 version = mod_version
@@ -13,7 +13,7 @@ repositories {
     mavenLocal()
 }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+java.toolchain.languageVersion = JavaLanguageVersion.of(25)
 
 runs {
     configureEach {
@@ -79,7 +79,7 @@ dependencies {
 tasks.named('jar', Jar).configure {
     archiveBaseName.set(mod_id)
     archiveVersion.set(mod_version)
-    archiveClassifier.set("${neoforge_id}-${minecraft_version}")
+    archiveClassifier.set("${neoforge_id}-${minecraft_support_version}")
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     from project(':core').sourceSets.main.output
 }

@@ -13,8 +13,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
-import xiao.customgun.client.util.WorldUtils;
 import xiao.customgun.core.network.message.event.ServerMessageGunHurt;
+import xiao.customgun.client.util.WorldUtils;
 
 @ApiStatus.Internal
 public class _ServerMessageGunHurt {

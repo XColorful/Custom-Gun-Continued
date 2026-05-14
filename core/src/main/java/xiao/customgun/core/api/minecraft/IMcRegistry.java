@@ -7,6 +7,7 @@
 
 package xiao.customgun.core.api.minecraft;
 
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -14,6 +15,7 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 public interface IMcRegistry {
@@ -34,4 +36,7 @@ public interface IMcRegistry {
     boolean isModLoaded(String modId);
 
     MinecraftServer getMinecraftServer();
+
+    @ApiStatus.AvailableSince("1.21.1")
+    @Nullable RegistryAccess getRegistryAccess();
 }

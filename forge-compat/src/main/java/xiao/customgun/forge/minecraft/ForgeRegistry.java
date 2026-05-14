@@ -7,6 +7,8 @@
 
 package xiao.customgun.forge.minecraft;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -19,11 +21,12 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.minecraft.IMcRegistry;
+import xiao.customgun.forge.CustomGunForge;
 
 public class ForgeRegistry implements IMcRegistry {
 
     @Override public ResourceLocation createResourceLocation(String rlString) {
-        return new ResourceLocation(rlString);
+        return ResourceLocation.parse(rlString);
     }
 
     @Override public @Nullable Block getBlock(ResourceLocation rl) {
@@ -65,5 +68,29 @@ public class ForgeRegistry implements IMcRegistry {
     @Override
     public MinecraftServer getMinecraftServer() {
         return ServerLifecycleHooks.getCurrentServer();
+    }
+
+    @Override
+    public @Nullable RegistryAccess getRegistryAccess() {
+        MinecraftServer server = getMinecraftServer();
+        if (server != null) {
+            return server.registryAccess();
+        } else if (CustomGunForge.sideExecutor.getLogicalSide().isClient()) {
+            return _ClientAccess.get();
+        } else {
+            return null;
+        }
+    }
+
+    private static class _ClientAccess {
+        private static RegistryAccess get() {
+            Minecraft mc = Minecraft.getInstance();
+            if (mc.level != null) {
+                return mc.level.registryAccess();
+            } else if (mc.player != null) {
+                return mc.player.registryAccess();
+            }
+            return null;
+        }
     }
 }

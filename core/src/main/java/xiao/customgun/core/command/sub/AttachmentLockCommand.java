@@ -18,7 +18,9 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 
-import static xiao.customgun.core.command.CommandArg.*;
+import static xiao.customgun.core.command.CommandArg.ATTACHMENT_LOCK;
+import static xiao.customgun.core.command.CommandArg.ENTITY;
+import static xiao.customgun.core.command.CommandArg.GUN_ATTACHMENT_LOCK;
 
 public class AttachmentLockCommand {
 

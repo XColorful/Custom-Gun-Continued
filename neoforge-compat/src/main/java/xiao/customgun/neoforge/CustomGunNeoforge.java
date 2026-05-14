@@ -16,8 +16,10 @@ package xiao.customgun.neoforge;
 
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLLoader;
+import org.jetbrains.annotations.ApiStatus;
 import xiao.customgun.CustomGun;
 import xiao.customgun.core.api.common.ISideExecutor;
 import xiao.customgun.core.api.common.McSide;
@@ -27,7 +29,6 @@ import xiao.customgun.core.api.init.registry.IRegistrarFactory;
 import xiao.customgun.core.api.minecraft.IMcRegistry;
 import xiao.customgun.core.api.network.INetworkAdapter;
 import xiao.customgun.core.api.network.INetworkHook;
-import xiao.customgun.core.init.registry.ModRecipe;
 import xiao.customgun.core.init.registry.ModSounds;
 import xiao.customgun.neoforge.common.NeoSideExecutor;
 import xiao.customgun.neoforge.config.NeoModConfigSpecBuilder;
@@ -51,7 +52,8 @@ public class CustomGunNeoforge {
     public static IEventRegister eventRegister;
     public static Supplier<IModConfigSpecBuilder> modConfigSpecBuilderSupplier;
 
-    public CustomGunNeoforge(IEventBus modEventBus) {
+    public CustomGunNeoforge(IEventBus modEventBus, ModContainer modContainer) {
+        CustomGunNeoforge.modContainer = modContainer;
         CustomGunNeoforge.sideExecutor = new NeoSideExecutor();
         CustomGunNeoforge.registrarFactory = new NeoRegistrarFactory();
         CustomGunNeoforge.mcRegistry = new NeoRegistry();
@@ -68,8 +70,6 @@ public class CustomGunNeoforge {
                 CustomGunNeoforge.eventRegister,
                 CustomGunNeoforge.modConfigSpecBuilderSupplier);
 
-        ModRecipe.RECIPE_SERIALIZERS.registerAll(modEventBus);
-        ModRecipe.RECIPE_TYPES.registerAll(modEventBus);
         ModSounds.SOUNDS.registerAll(modEventBus);
 
         if (mcSide == McSide.CLIENT) {
@@ -82,4 +82,7 @@ public class CustomGunNeoforge {
             CustomGunNeoforgeClient.init();
         }
     }
+
+    @ApiStatus.AvailableSince("neoforge1.21.1")
+    public static ModContainer modContainer;
 }

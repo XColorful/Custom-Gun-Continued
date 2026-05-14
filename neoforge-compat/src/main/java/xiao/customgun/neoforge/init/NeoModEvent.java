@@ -5,13 +5,13 @@
 package xiao.customgun.neoforge.init;
 
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import xiao.customgun.CustomGun;
 import xiao.customgun.core.init.ModEvent;
 
-@Mod.EventBusSubscriber(modid = CustomGun.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = CustomGun.MOD_ID)
 public class NeoModEvent {
 
     public static ModEvent MOD_EVENT = ModEvent.get();

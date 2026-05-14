@@ -6,18 +6,19 @@ package xiao.customgun.neoforge.network;
 
 import net.minecraft.network.Connection;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.handling.IPayloadHandler;
-import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import xiao.customgun.CustomGun;
 import xiao.customgun.core.api.network.INetworkAdapter;
 import xiao.customgun.core.api.network.MessageDirection;
@@ -29,9 +30,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-@Mod.EventBusSubscriber(modid = CustomGun.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = CustomGun.MOD_ID)
 public class NeoNetworkAdapter implements INetworkAdapter {
-    public static final NeoNetworkAdapter INSTANCE = new NeoNetworkAdapter();
+    public static NeoNetworkAdapter INSTANCE = new NeoNetworkAdapter();
 
     private record RegisteredPacket<T extends IMessage<T>>(
             Class<T> messageType,
@@ -44,6 +45,10 @@ public class NeoNetworkAdapter implements INetworkAdapter {
     private record NeoPayload<T extends IMessage<T>>(ResourceLocation id, T message) implements CustomPacketPayload {
 
         @Override
+        public Type<? extends CustomPacketPayload> type() {
+            return new Type<>(id);
+        }
+
         public void write(FriendlyByteBuf buffer) {
             this.message.encode(this.message, buffer);
         }
@@ -90,7 +95,7 @@ public class NeoNetworkAdapter implements INetworkAdapter {
         T castedMessage = (T) message;
 
         CustomPacketPayload payload = new NeoPayload<>(packetInfo.id(), castedMessage);
-        PacketDistributor.ALL.noArg().send(payload);
+        PacketDistributor.sendToAllPlayers(payload);
     }
 
     @Override
@@ -104,7 +109,7 @@ public class NeoNetworkAdapter implements INetworkAdapter {
         @SuppressWarnings("unchecked")
         T castedMessage = (T) message;
         CustomPacketPayload payload = new NeoPayload<>(packetInfo.id(), castedMessage);
-        PacketDistributor.PLAYER.with(player).send(payload);
+        PacketDistributor.sendToPlayer(player, payload);
     }
 
     @Override
@@ -127,8 +132,8 @@ public class NeoNetworkAdapter implements INetworkAdapter {
         @SuppressWarnings("unchecked")
         T castedMessage = (T) message;
         CustomPacketPayload payload = new NeoPayload<>(packetInfo.id(), castedMessage);
-        if (andSelf) PacketDistributor.TRACKING_ENTITY_AND_SELF.with(entity).send(payload);
-        else PacketDistributor.TRACKING_ENTITY.with(entity).send(payload);
+        if (andSelf) PacketDistributor.sendToPlayersTrackingEntityAndSelf(entity, payload);
+        else PacketDistributor.sendToPlayersTrackingEntity(entity, payload);
     }
 
     @Override
@@ -143,59 +148,74 @@ public class NeoNetworkAdapter implements INetworkAdapter {
         @SuppressWarnings("unchecked")
         T castedMessage = (T) message;
         CustomPacketPayload payload = new NeoPayload<>(packetInfo.id(), castedMessage);
-        PacketDistributor.SERVER.noArg().send(payload);
+        PacketDistributor.sendToServer(payload);
     }
 
     @SubscribeEvent
-    public static void register(RegisterPayloadHandlerEvent event) {
-        final IPayloadRegistrar registrar = event.registrar(INSTANCE.modId);
+    public static void register(RegisterPayloadHandlersEvent event) {
+        final PayloadRegistrar registrar = event.registrar(INSTANCE.modId);
 
         for (RegisteredPacket<?> rp : INSTANCE.registeredPackets) {
             INSTANCE.registerPacketInternal(registrar, rp);
         }
     }
 
-    private <T extends IMessage<T>> void registerPacketInternal(IPayloadRegistrar registrar, RegisteredPacket<T> rp) {
+    private <T extends IMessage<T>> void registerPacketInternal(PayloadRegistrar registrar, RegisteredPacket<T> rp) {
         ResourceLocation id = rp.id;
-        FriendlyByteBuf.Reader<NeoPayload<T>> decoder = (buffer) -> new NeoPayload<>(id, rp.decoder.apply(buffer));
+
+        StreamCodec<FriendlyByteBuf, NeoPayload<T>> codec = StreamCodec.of(
+                (buf, payload) -> payload.write(buf),
+                (buf) -> new NeoPayload<>(id, rp.decoder.apply(buf))
+        );
+
         IPayloadHandler<NeoPayload<T>> handler = (payload, context) -> {
             final T message = payload.message();
 
             Connection connection = null;
-            if (context.player().isPresent()) {
-                Player player = context.player().get();
+            {
+                Player player = context.player();
                 if (player instanceof ServerPlayer sp) {
-                    connection = sp.connection.connection;
+                    connection = sp.connection.getConnection();
                 } else if (FMLLoader.getDist().isClient()) {
                     connection = _LocalPlayer.getConnection(player);
                 }
             }
+
             IMessage.NetworkContext netContext = new IMessage.NetworkContext(
                     connection,
                     rp.direction,
-                    context.player().orElse(null),
+                    context.player(),
                     (replyMsg) -> {
                         this.registeredPackets.stream()
                                 .filter(r -> r.messageType().isInstance(replyMsg))
                                 .findFirst()
                                 .ifPresent(info -> {
-                                    CustomPacketPayload replyPayload = new NeoPayload<>(info.id(), (T) replyMsg);
-                                    context.replyHandler().send(replyPayload);
+                                    @SuppressWarnings("unchecked")
+                                    NeoPayload<T> replyPayload = new NeoPayload<>(info.id(), (T) replyMsg);
+                                    context.reply(replyPayload);
                                 });
                     },
                     rp.isHandshake ? () -> {} : null
             );
 
-            context.workHandler().execute(() -> {
+            context.enqueueWork(() -> {
                 message.handle(message, Runnable::run, netContext);
             });
         };
 
+        CustomPacketPayload.Type<NeoPayload<T>> payloadType = new CustomPacketPayload.Type<>(id);
         if (rp.isHandshake) {
-            // ↓貌似不会自动发message
-            registrar.configuration(id, decoder, handler::handle);
+            if (rp.direction == MessageDirection.SERVER_TO_CLIENT) {
+                registrar.configurationToClient(payloadType, codec, handler);
+            } else {
+                registrar.configurationToServer(payloadType, codec, handler);
+            }
         } else {
-            registrar.common(id, decoder, handler);
+            if (rp.direction == MessageDirection.SERVER_TO_CLIENT) {
+                registrar.playToClient(payloadType, codec, handler);
+            } else {
+                registrar.playToServer(payloadType, codec, handler);
+            }
         }
     }
 

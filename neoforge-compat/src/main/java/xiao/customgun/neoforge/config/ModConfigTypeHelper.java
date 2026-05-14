@@ -10,6 +10,7 @@ public class ModConfigTypeHelper {
             case COMMON -> ModConfigType.COMMON;
             case CLIENT -> ModConfigType.CLIENT;
             case SERVER -> ModConfigType.SERVER;
+            default -> ModConfigType.COMMON;
         };
     }
 

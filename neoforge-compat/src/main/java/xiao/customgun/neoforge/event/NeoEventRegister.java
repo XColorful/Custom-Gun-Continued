@@ -23,7 +23,7 @@ public class NeoEventRegister implements IEventRegister {
 
     @Override
     public boolean register(IEventHandler eventHandler, EventType eventType, EventPriority priority, boolean receiveCanceled) {
-        if (eventType.isClientSideOnly() && FMLLoader.getDist().isClient()) {
+        if (eventType.isClientSideOnly() && FMLLoader.getCurrent().getDist().isClient()) {
             return _NeoClientEventRegister.get().register(eventHandler, eventType, priority, receiveCanceled);
         }
 
@@ -41,7 +41,7 @@ public class NeoEventRegister implements IEventRegister {
 
     @Override
     public boolean unregister(IEventHandler eventHandler, EventType eventType, EventPriority priority, boolean receiveCanceled) {
-        if (eventType.isClientSideOnly() && FMLLoader.getDist().isClient()) {
+        if (eventType.isClientSideOnly() && FMLLoader.getCurrent().getDist().isClient()) {
             return _NeoClientEventRegister.get().unregister(eventHandler, eventType, priority, receiveCanceled);
         }
 

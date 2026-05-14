@@ -27,10 +27,10 @@ public class ForgeServerTickEvent extends ForgeEvent implements IServerTickEvent
 
     public ForgeServerTickEvent(Event event) {
         super(event);
-        if (event instanceof TickEvent.ServerTickEvent eventIn) {
+        if (event instanceof TickEvent.ServerTickEvent.Post eventIn) {
             this.serverTickEvent = eventIn;
         } else {
-            throw new RuntimeException("Expected ServerTickEvent but received: " + event.getClass().getName());
+            throw new RuntimeException("Expected ServerTickEvent.Post but received: " + event.getClass().getName());
         }
     }
     @Override public EventType getType() {

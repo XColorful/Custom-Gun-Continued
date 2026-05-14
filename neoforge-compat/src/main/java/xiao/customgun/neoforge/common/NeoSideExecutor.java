@@ -13,14 +13,14 @@ public class NeoSideExecutor implements ISideExecutor {
 
     @Override
     public void unsafeRunWhenOn(McSide dist, Supplier<Runnable> toRun) {
-        if (FMLEnvironment.dist == McSideHelper.convert(dist)) {
+        if (FMLEnvironment.getDist() == McSideHelper.convert(dist)) {
             toRun.get().run();
         }
     }
 
     @Override
     public void safeRunWhenOn(McSide dist, Supplier<ISideExecutor.SideRunnable> toRun) {
-        if (FMLEnvironment.dist == McSideHelper.convert(dist)) {
+        if (FMLEnvironment.getDist() == McSideHelper.convert(dist)) {
             toRun.get().run();
         }
     }

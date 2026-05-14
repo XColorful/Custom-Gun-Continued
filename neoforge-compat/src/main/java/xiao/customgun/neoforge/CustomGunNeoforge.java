@@ -62,7 +62,7 @@ public class CustomGunNeoforge {
         CustomGunNeoforge.networkHook = new NeoNetworkHook();
         CustomGunNeoforge.eventRegister = new NeoEventRegister();
         CustomGunNeoforge.modConfigSpecBuilderSupplier = NeoModConfigSpecBuilder::new;
-        Dist dist = FMLLoader.getDist();
+        Dist dist = FMLLoader.getCurrent().getDist();
         McSide mcSide = dist.isClient() ? McSide.CLIENT : McSide.DEDICATED_SERVER;
 
         CustomGun.init(mcSide, CustomGunNeoforge.sideExecutor,

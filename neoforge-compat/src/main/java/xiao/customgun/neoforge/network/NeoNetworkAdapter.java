@@ -15,6 +15,7 @@ import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.handling.IPayloadHandler;
@@ -148,7 +149,7 @@ public class NeoNetworkAdapter implements INetworkAdapter {
         @SuppressWarnings("unchecked")
         T castedMessage = (T) message;
         CustomPacketPayload payload = new NeoPayload<>(packetInfo.id(), castedMessage);
-        PacketDistributor.sendToServer(payload);
+        ClientPacketDistributor.sendToServer(payload);
     }
 
     @SubscribeEvent
@@ -176,7 +177,7 @@ public class NeoNetworkAdapter implements INetworkAdapter {
                 Player player = context.player();
                 if (player instanceof ServerPlayer sp) {
                     connection = sp.connection.getConnection();
-                } else if (FMLLoader.getDist().isClient()) {
+                } else if (FMLLoader.getCurrent().getDist().isClient()) {
                     connection = _LocalPlayer.getConnection(player);
                 }
             }

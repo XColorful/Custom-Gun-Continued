@@ -5,12 +5,13 @@
 package xiao.customgun.neoforge.init;
 
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import xiao.customgun.CustomGun;
 import xiao.customgun.core.init.CommandRegistry;
 
-@Mod.EventBusSubscriber
+@EventBusSubscriber(modid = CustomGun.MOD_ID)
 public class NeoCommandRegistry {
 
     private static final CommandRegistry COMMAND_REGISTRY = CommandRegistry.get();

@@ -1,11 +1,11 @@
 package xiao.customgun.neoforge.config;
 
-import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import xiao.customgun.core.api.config.IModConfigSpec;
 import xiao.customgun.core.api.config.IModConfigSpecBuilder;
 import xiao.customgun.core.api.config.ModConfigType;
+import xiao.customgun.neoforge.CustomGunNeoforge;
 
 public class NeoModConfigSpecBuilder implements IModConfigSpecBuilder {
     private final ModConfigSpec.Builder builder;
@@ -45,6 +45,6 @@ public class NeoModConfigSpecBuilder implements IModConfigSpecBuilder {
     public void buildAndRegister(ModConfigType type) {
         ModConfig.Type neoType = ModConfigTypeHelper.convert(type);
         ModConfigSpec spec = builder.build();
-        ModLoadingContext.get().registerConfig(neoType, spec);
+        CustomGunNeoforge.modContainer.registerConfig(neoType, spec);
     }
 }

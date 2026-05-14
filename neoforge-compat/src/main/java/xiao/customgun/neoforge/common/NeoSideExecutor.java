@@ -2,7 +2,6 @@ package xiao.customgun.neoforge.common;
 
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.util.thread.EffectiveSide;
-import net.neoforged.neoforge.common.util.LogicalSidedProvider;
 import xiao.customgun.core.api.common.ISideExecutor;
 import xiao.customgun.core.api.common.McLogicalSide;
 import xiao.customgun.core.api.common.McSide;
@@ -33,6 +32,6 @@ public class NeoSideExecutor implements ISideExecutor {
 
     @Override
     public Executor getMainThreadExecutor(McLogicalSide side) {
-        return LogicalSidedProvider.WORKQUEUE.get(McSideHelper.convert(side));
+        return null;
     }
 }

@@ -4,7 +4,7 @@ import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.neoforged.bus.api.Event;
-import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.client.api.event.IClientTickEvent;
 import xiao.customgun.core.api.event.EventType;
@@ -12,11 +12,11 @@ import xiao.customgun.neoforge.event.NeoEvent;
 
 public class NeoClientTickEvent extends NeoEvent implements IClientTickEvent {
 
-    protected TickEvent.ClientTickEvent clientTickEvent;
+    protected ClientTickEvent.Post clientTickEvent;
 
     public NeoClientTickEvent(Event event) {
         super(event);
-        if (event instanceof TickEvent.ClientTickEvent eventIn) {
+        if (event instanceof ClientTickEvent.Post eventIn) {
             this.clientTickEvent = eventIn;
         } else {
             throw new RuntimeException("Expected ClientTickEvent but received: " + event.getClass().getName());

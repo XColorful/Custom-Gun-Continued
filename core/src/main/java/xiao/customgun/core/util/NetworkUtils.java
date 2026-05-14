@@ -42,7 +42,7 @@ public class NetworkUtils {
     }
 
     public static void writeResourceLocationMap(FriendlyByteBuf buffer, Map<ResourceLocation, String> map) {
-        buffer.writeMap(map, FriendlyByteBuf::writeResourceLocation, FriendlyByteBuf::writeUtf);
+        buffer.writeMap(map, FriendlyByteBuf::writeResourceLocation, (buf, s) -> buf.writeUtf(s));
     }
     public static Map<ResourceLocation, String> readResourceLocationMap(FriendlyByteBuf buffer) {
         return buffer.readMap(NetworkUtils::readResourceLocation, NetworkUtils::readUtf);

@@ -42,15 +42,15 @@ public class ForgeNetworkAdapter implements INetworkAdapter {
 
     @Override
     public <T extends IMessage<T>> void registerMessage(int id, Class<T> clazz, Function<FriendlyByteBuf, T> decoder, MessageDirection direction) {
-        NetworkDirection forgeDirection = MessageDirectionHelper.convert(direction);
+        NetworkDirection<?> forgeDirection = MessageDirectionHelper.convert(direction);
 
-        this.CHANNEL.<T>messageBuilder(clazz, id, forgeDirection)
-                .encoder((messageInstance, buffer) -> messageInstance.encode(messageInstance, buffer))
-                .decoder(decoder)
+        this.CHANNEL.messageBuilder(clazz, id, forgeDirection)
+                .encoder((message, buffer) -> message.encode(message, buffer))
+                .decoder(decoder::apply) // 为啥这里要 apply 才过编译? 抽风了?
                 .consumerMainThread((messageInstance, context) -> {
                     IMessage.NetworkContext netContext = new IMessage.NetworkContext(
                             context.getConnection(),
-                            MessageDirectionHelper.convert(context.getDirection()),
+                            context.isClientSide() ? MessageDirection.SERVER_TO_CLIENT : MessageDirection.CLIENT_TO_SERVER,
                             context.getSender(),
                             (replyMsg) -> CHANNEL.reply(replyMsg, context),
                             null
@@ -63,36 +63,35 @@ public class ForgeNetworkAdapter implements INetworkAdapter {
     @Override
     public <T extends LoginIndexHolder & IMessage<T>> void registerHandshakeAcknowledge(int id, Class<T> clazz, Function<FriendlyByteBuf, T> decoder) {
         this.HANDSHAKE_CHANNEL.messageBuilder(clazz, id, NetworkDirection.LOGIN_TO_SERVER)
-//                .loginIndex(LoginIndexHolder::getLoginIndex, LoginIndexHolder::setLoginIndex) // 去掉后也能进单人游戏/多人游戏
-                .encoder((messageInstance, buffer) -> messageInstance.encode(messageInstance, buffer))
+                .encoder((message, buffer) -> message.encode(message, buffer))
                 .decoder(decoder)
-                .consumerNetworkThread((messageInstance, context) -> { // 去掉了HandshakeHandler.indexFirst，Context不再Supplier
+                .consumerNetworkThread((message, context) -> {
                     IMessage.NetworkContext netContext = new IMessage.NetworkContext(
                             context.getConnection(),
-                            MessageDirectionHelper.convert(context.getDirection()),
+                            context.isClientSide() ? MessageDirection.SERVER_TO_CLIENT : MessageDirection.CLIENT_TO_SERVER,
                             context.getSender(),
                             (replyMsg) -> HANDSHAKE_CHANNEL.reply(replyMsg, context),
                             () -> context.setPacketHandled(true)
                     );
-                    messageInstance.handle(messageInstance, context::enqueueWork, netContext);
+                    message.handle(message, context::enqueueWork, netContext);
                 })
                 .add();
     }
+
     @Override
     public <T extends LoginIndexHolder & IMessage<T>> void registerHandshakeMessage(int id, Class<T> clazz, Function<FriendlyByteBuf, T> decoder) {
         this.HANDSHAKE_CHANNEL.messageBuilder(clazz, id, NetworkDirection.LOGIN_TO_CLIENT)
-//                .loginIndex(LoginIndexHolder::getLoginIndex, LoginIndexHolder::setLoginIndex)
-                .encoder((messageInstance, buffer) -> messageInstance.encode(messageInstance, buffer))
+                .encoder((message, buffer) -> message.encode(message, buffer))
                 .decoder(decoder)
-                .consumerNetworkThread((messageInstance, context) -> {
+                .consumerNetworkThread((message, context) -> {
                     IMessage.NetworkContext netContext = new IMessage.NetworkContext(
                             context.getConnection(),
-                            MessageDirectionHelper.convert(context.getDirection()),
+                            context.isClientSide() ? MessageDirection.SERVER_TO_CLIENT : MessageDirection.CLIENT_TO_SERVER,
                             context.getSender(),
                             (replyMsg) -> HANDSHAKE_CHANNEL.send(replyMsg, context.getConnection()),
                             () -> context.setPacketHandled(true)
                     );
-                    messageInstance.handle(messageInstance, context::enqueueWork, netContext);
+                    message.handle(message, context::enqueueWork, netContext);
                 })
                 .add();
     }

@@ -28,10 +28,7 @@ import xiao.customgun.core.resource.data.RecipeDataManager;
 import xiao.customgun.core.resource.data.RecipeFilterDataManager;
 import xiao.customgun.core.util.SendUtils;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class AllDataManager implements IEventHandler {
     protected static final AllDataManager INSTANCE = new AllDataManager();

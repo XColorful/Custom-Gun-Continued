@@ -7,11 +7,11 @@
 
 package xiao.customgun.core.network.message.event;
 
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.item.ItemStack;
 import xiao.customgun.CustomGun;
 import xiao.customgun.client.network.message.event._ServerMessageGunDraw;
 import xiao.customgun.core.api.network.message.IMessage;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.item.ItemStack;
 import xiao.customgun.core.util.NetworkUtils;
 
 import java.util.function.Consumer;

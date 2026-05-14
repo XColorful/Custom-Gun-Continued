@@ -9,8 +9,8 @@ package xiao.customgun.core.network.message;
 
 import net.minecraft.network.FriendlyByteBuf;
 import xiao.customgun.CustomGun;
-import xiao.customgun.client.network.message._ServerMessageSyncBaseTimestamp;
 import xiao.customgun.core.api.network.message.IMessage;
+import xiao.customgun.client.network.message._ServerMessageSyncBaseTimestamp;
 
 import java.util.function.Consumer;
 

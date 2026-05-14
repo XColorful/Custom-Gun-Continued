@@ -15,7 +15,10 @@
 package xiao.customgun;
 
 import com.mojang.logging.LogUtils;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.server.MinecraftServer;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import xiao.customgun.core.api.common.ISideExecutor;
@@ -104,5 +107,15 @@ public class CustomGun {
     }
     public @NotNull static ICustomEventPoster getEventPoster() {
         return CustomGun.eventPoster;
+    }
+    @ApiStatus.AvailableSince("1.21.1")
+    public static @Nullable RegistryAccess getRegistryAccess() {
+        RegistryAccess registryAccess = getMcRegistry().getRegistryAccess();
+        if (registryAccess != null) {
+            return registryAccess;
+        } else {
+            CustomGun.LOGGER.warn("Failed to retrieve registry access, return RegistryAccess.EMPTY");
+            return RegistryAccess.EMPTY;
+        }
     }
 }

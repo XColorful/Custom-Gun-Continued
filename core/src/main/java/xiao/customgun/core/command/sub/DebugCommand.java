@@ -1,0 +1,135 @@
+/*
+ * Copyright (c) 2024-2026 MCModderAnchor (https://github.com/MCModderAnchor)
+ * SPDX-License-Identifier: GPL-3.0-only
+ *
+ * Source: https://github.com/MCModderAnchor/TACZ
+ */
+
+package xiao.customgun.core.command.sub;
+
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import com.mojang.brigadier.Command;
+import com.mojang.brigadier.arguments.BoolArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
+import xiao.customgun.CustomGun;
+import xiao.customgun.core.resource.AllDataManager;
+import xiao.customgun.core.resource.data.data.GunData;
+import xiao.customgun.core.resource.data.index.GunIndex;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import static xiao.customgun.core.command.CommandArg.DEBUG;
+import static xiao.customgun.core.command.CommandArg.ENABLE;
+
+public class DebugCommand {
+    public static boolean DEBUG_VALUE = false;
+
+
+    public static LiteralArgumentBuilder<CommandSourceStack> get() {
+        return Commands.literal(DEBUG)
+                .then(Commands.literal("testIO")
+                        .then(Commands.argument("lenient", BoolArgumentType.bool())
+                                .executes(DebugCommand::testIO)))
+                .then(Commands.literal("testGunData")
+                        .then(Commands.argument("rl", StringArgumentType.string())
+                                .executes(DebugCommand::testGunData)))
+                .then(Commands.argument(ENABLE, BoolArgumentType.bool())
+                        .executes(DebugCommand::setValue));
+    }
+
+    private static int setValue(CommandContext<CommandSourceStack> context) {
+        DEBUG_VALUE = BoolArgumentType.getBool(context, ENABLE);
+        if (context.getSource().getEntity() instanceof ServerPlayer serverPlayer) {
+            if (DEBUG_VALUE) {
+                serverPlayer.sendSystemMessage(Component.literal("TacZ Debug Mode is Turn On"));
+            } else {
+                serverPlayer.sendSystemMessage(Component.literal("TacZ Debug Mode is Turn Off"));
+            }
+        }
+        return Command.SINGLE_SUCCESS;
+    }
+
+    public static final String TEST_INPUT = "./test_input.json";
+    public static final String TEST_OUTPUT = "./test_output.json";
+    private static int testIO(CommandContext<CommandSourceStack> context) {
+        doTestIO(context.getSource(), BoolArgumentType.getBool(context, "lenient"));
+        return Command.SINGLE_SUCCESS;
+    }
+    private static void doTestIO(CommandSourceStack source, boolean lenient) {
+        Path inputPath = Paths.get(TEST_INPUT);
+        Path outputPath = Paths.get(TEST_OUTPUT);
+        if (!Files.exists(inputPath)) {
+            source.sendFailure(Component.literal("IO Test Failed: Input file not found at " + inputPath.toAbsolutePath()));
+            return;
+        }
+        try (BufferedReader reader = Files.newBufferedReader(inputPath, StandardCharsets.UTF_8);
+             BufferedWriter writer = Files.newBufferedWriter(outputPath, StandardCharsets.UTF_8)) {
+            JsonReader jsonReader = new JsonReader(reader);
+            jsonReader.setLenient(lenient);
+            JsonWriter jsonWriter = new JsonWriter(writer);
+            jsonWriter.setIndent("    ");
+            testAction(jsonReader, jsonWriter);
+            jsonWriter.flush();
+            source.sendSuccess(() -> Component.literal("IO Test Success! Saved to: " + TEST_OUTPUT), true);
+        } catch (Exception e) {
+            source.sendFailure(Component.literal("IO Exception: " + e.getMessage()));
+            e.printStackTrace();
+        }
+    }
+
+    private static void testAction(JsonReader reader, JsonWriter writer) throws IOException {
+        GunIndex pojo = GunIndex.fromJson(reader);
+        if (pojo != null) {
+            GunIndex.toJson(writer, pojo);
+        }
+    }
+    private static int testGunData(CommandContext<CommandSourceStack> context) {
+        doTestGunData(context.getSource(), StringArgumentType.getString(context, "rl"));
+        return Command.SINGLE_SUCCESS;
+    }
+    private static void doTestGunData(CommandSourceStack source, String rlString) {
+        var rl = CustomGun.getMcRegistry().createResourceLocation(rlString);
+        var allManager = AllDataManager.getCurrent();
+        if (allManager == null) {
+            source.sendFailure(Component.literal("AllDataManager is null"));
+            return;
+        }
+        var pojoManager = allManager.gunDataManager;
+        if (pojoManager == null) {
+            source.sendFailure(Component.literal("DataManager is null"));
+            return;
+        }
+        var pojo = pojoManager.getPojo(rl);
+        if (pojo == null) {
+            source.sendFailure(Component.literal("Failed to find data for: " + rlString));
+            return;
+        }
+        Path outputPath = Paths.get(TEST_OUTPUT);
+        try (BufferedWriter writer = Files.newBufferedWriter(outputPath, StandardCharsets.UTF_8)) {
+            JsonWriter jsonWriter = new JsonWriter(writer);
+            jsonWriter.setIndent("    ");
+            testDataAction(jsonWriter, pojo);
+            jsonWriter.flush();
+            source.sendSuccess(() -> Component.literal("Data Test Success! Saved to: " + TEST_OUTPUT), true);
+        } catch (Exception e) {
+            source.sendFailure(Component.literal("Exception: " + e.getMessage()));
+            e.printStackTrace();
+        }
+    }
+    private static void testDataAction(JsonWriter writer, GunData pojo) throws IOException {
+        GunData.toJson(writer, pojo);
+    }
+}

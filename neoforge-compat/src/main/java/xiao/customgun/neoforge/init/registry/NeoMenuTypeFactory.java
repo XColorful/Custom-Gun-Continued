@@ -5,20 +5,22 @@
  * Source: https://github.com/XColorful/BattleRoyale
  */
 
-package xiao.customgun.forge.init.registry;
+package xiao.customgun.neoforge.init.registry;
 
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
-import net.minecraftforge.common.extensions.IForgeMenuType;
+import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
+import net.neoforged.neoforge.network.IContainerFactory;
 import xiao.customgun.core.api.init.registry.IMenuTypeFactory;
 
 /**
- * IMenuTypeFactory 的 Forge 实现，使用 IForgeMenuType.create() 来实现网络传输的菜单创建。
+ * IMenuTypeFactory 的 NeoForge 实现，使用 MenuType 的构造函数来适配网络菜单创建。
  */
-public class ForgeMenuTypeFactory implements IMenuTypeFactory {
+public class NeoMenuTypeFactory implements IMenuTypeFactory {
 
     @Override
     public <T extends AbstractContainerMenu> MenuType<T> createBlockEntityMenu(IMenuTypeFactory.IMenuTypeCreationHandler<T> factory) {
-        return IForgeMenuType.create(factory::create);
+        IContainerFactory<T> neoForgeFactory = factory::create;
+        return IMenuTypeExtension.create(neoForgeFactory);
     }
 }

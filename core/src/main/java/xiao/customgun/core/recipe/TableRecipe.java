@@ -7,11 +7,11 @@
 
 package xiao.customgun.core.recipe;
 
-import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeInput;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
@@ -23,7 +23,7 @@ import xiao.customgun.core.resource.data.recipe.recipe._TableResultData;
 
 import java.util.List;
 
-public class TableRecipe implements Recipe<Inventory> {
+public class TableRecipe implements Recipe<RecipeInput> {
     public static final TableRecipe EMPTY = new TableRecipe(CustomGun.getMcRegistry().createResourceLocation(CustomGun.MOD_ID + ":null"),
             TableResult.fromPojo(new _TableResultData()),
             List.of());
@@ -56,12 +56,12 @@ public class TableRecipe implements Recipe<Inventory> {
 
     @Override
     @Deprecated
-    public boolean matches(@NotNull Inventory inventory, @NotNull Level level) {
+    public boolean matches(@NotNull RecipeInput input, @NotNull Level level) {
         return false;
     }
 
     @Override
-    public @NotNull ItemStack assemble(@NotNull Inventory inventory, @NotNull RegistryAccess registryAccess) {
+    public @NotNull ItemStack assemble(@NotNull RecipeInput input, @NotNull HolderLookup.Provider provider) {
         return ItemStack.EMPTY;
     }
 
@@ -71,7 +71,7 @@ public class TableRecipe implements Recipe<Inventory> {
     }
 
     @Override
-    public @NotNull ItemStack getResultItem(@NotNull RegistryAccess registryAccess) {
+    public @NotNull ItemStack getResultItem(@NotNull HolderLookup.Provider provider) {
         return this.tableResult.getResultItem().copy();
     }
 

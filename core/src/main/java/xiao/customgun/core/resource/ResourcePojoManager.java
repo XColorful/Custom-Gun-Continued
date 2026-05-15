@@ -101,7 +101,7 @@ public abstract class ResourcePojoManager<T extends ResourcePojo<T>>
         Map<ResourceLocation, T> map = new HashMap<>();
         try {
             this.fileToIdConverter.listMatchingResources(resourceManager).forEach((location, resource) -> {
-                ResourceLocation pojoLocation = fileToIdConverter.fileToId(location);
+                var pojoLocation = fileToIdConverter.fileToId(location);
 
                 try (Reader reader = resource.openAsReader();
                      JsonReader jsonReader = new JsonReader(reader)) {

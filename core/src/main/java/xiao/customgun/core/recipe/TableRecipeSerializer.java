@@ -30,8 +30,15 @@ import java.util.List;
 import java.util.stream.Stream;
 
 public class TableRecipeSerializer implements RecipeSerializer<TableRecipe> {
+    // 1.21.1+
+    public static final TableRecipeSerializer _INSTANCE = new TableRecipeSerializer();
+    public static final ResourceLocation _dummyLocation = CustomGun.getMcRegistry().createResourceLocation(String.format("%s:%s", CustomGun.MOD_ID, "dynamic_recipe"));
 
     public @NotNull TableRecipe fromJson(@NotNull ResourceLocation recipeLocation, @NotNull JsonObject jsonObject) {
+        return _fromJson(recipeLocation, jsonObject);
+    }
+    // 1.20.2+
+    public static @NotNull TableRecipe _fromJson(@NotNull ResourceLocation recipeLocation, @NotNull JsonObject jsonObject) {
         try (JsonReader reader = JsonUtils.getAsReader(jsonObject)) {
             RecipeData pojo = RecipeData.fromJson(reader);
             if (pojo != null) {

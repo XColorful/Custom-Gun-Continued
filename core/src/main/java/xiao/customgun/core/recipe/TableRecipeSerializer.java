@@ -77,7 +77,6 @@ public class TableRecipeSerializer implements RecipeSerializer<TableRecipe> {
         NetworkUtils.writeResourceLocation(buffer, tableResult.getTabLocation());
     }
 
-    public static final TableRecipeSerializer INSTANCE = new TableRecipeSerializer();
     private static final MapCodec<TableRecipe> TABLE_RECIPE_MAP_CODEC = new MapCodec<>() {
         @Override
         public <T> Stream<T> keys(DynamicOps<T> ops) {
@@ -89,8 +88,8 @@ public class TableRecipeSerializer implements RecipeSerializer<TableRecipe> {
                 T map = ops.createMap(input.entries());
                 Dynamic<T> dynamic = new Dynamic<>(ops, map);
                 JsonObject jsonObject = dynamic.convert(JsonOps.INSTANCE).getValue().getAsJsonObject();
-                return DataResult.success(staticFromJson(
-                        CustomGun.getMcRegistry().createResourceLocation(CustomGun.MOD_ID + ":dynamic_recipe"),
+                return DataResult.success(_fromJson(
+                        _dummyLocation,
                         jsonObject));
             } catch (Exception e) {
                 return DataResult.error(() -> "Failed to decode TableRecipe: " + e.getMessage());
@@ -102,8 +101,8 @@ public class TableRecipeSerializer implements RecipeSerializer<TableRecipe> {
         }
     };
     private static final StreamCodec<RegistryFriendlyByteBuf, TableRecipe> TABLE_RECIPE_STREAM_CODEC = StreamCodec.of(
-            (buf, recipe) -> INSTANCE.toNetwork(buf, recipe),
-            buf -> INSTANCE.fromNetwork(buf)
+            (buf, recipe) -> _INSTANCE.toNetwork(buf, recipe),
+            buf -> _INSTANCE.fromNetwork(buf)
     );
     @Override
     public @NotNull MapCodec<TableRecipe> codec() {
@@ -112,14 +111,5 @@ public class TableRecipeSerializer implements RecipeSerializer<TableRecipe> {
     @Override
     public @NotNull StreamCodec<RegistryFriendlyByteBuf, TableRecipe> streamCodec() {
         return TABLE_RECIPE_STREAM_CODEC;
-    }
-    private static TableRecipe staticFromJson(Identifier id, JsonObject json) {
-        try (JsonReader reader = JsonUtils.getAsReader(json)) {
-            RecipeData pojo = RecipeData.fromJson(reader);
-            if (pojo != null) return TableRecipe.fromPojo(id, pojo);
-        } catch (IOException e) {
-            CustomGun.LOGGER.error("TableRecipeSerializer: Parse failed for {}", id);
-        }
-        return TableRecipe.EMPTY;
     }
 }

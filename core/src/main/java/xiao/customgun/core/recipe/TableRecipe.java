@@ -75,7 +75,6 @@ public class TableRecipe implements Recipe<Inventory> {
         return this.tableResult.getResultItem().copy();
     }
 
-    @Override
     public @NotNull ResourceLocation getId() {
         return this.recipeLocation;
     }

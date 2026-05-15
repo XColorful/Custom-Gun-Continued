@@ -57,7 +57,7 @@ public class TableRecipeSerializer implements RecipeSerializer<TableRecipe> {
 
     @Override
     public void toNetwork(@NotNull FriendlyByteBuf buffer, @NotNull TableRecipe tableRecipe) {
-        buffer.writeInt(tableRecipe.getIngredients().size());
+        buffer.writeInt(tableRecipe.getRecipeIngredients().size());
         for (TableIngredient tableIngredient : tableRecipe.getRecipeIngredients()) {
             NetworkUtils.writeIngredient(buffer, tableIngredient.ingredient());
             buffer.writeInt(tableIngredient.count());

@@ -17,6 +17,6 @@ public class WorldUtils {
     }
 
     public static ChunkPos chunkPos(BlockPos blockPos) {
-        return new ChunkPos(blockPos);
+        return ChunkPos.containing(blockPos);
     }
 }

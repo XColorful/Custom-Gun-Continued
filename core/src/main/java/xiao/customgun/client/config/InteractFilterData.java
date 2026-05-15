@@ -75,8 +75,8 @@ public class InteractFilterData {
         Boolean allowed = ENTITY_FILTER.get(CustomGun.getMcRegistry().getEntityTypeRl(type));
         if (allowed != null) return allowed;
         // TagKey 过滤
-        if (type.is(InteractKeyType.ENTITY.getBlacklist())) return false;
-        if (type.is(InteractKeyType.ENTITY.getWhitelist())) return true;
+        if (entity.is(InteractKeyType.ENTITY.getBlacklist())) return false;
+        if (entity.is(InteractKeyType.ENTITY.getWhitelist())) return true;
         // 默认结果
         return DEFAULT_RESULT;
     }

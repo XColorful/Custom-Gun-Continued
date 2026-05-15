@@ -29,6 +29,7 @@ import xiao.customgun.core.api.init.registry.IRegistrarFactory;
 import xiao.customgun.core.api.minecraft.IMcRegistry;
 import xiao.customgun.core.api.network.INetworkAdapter;
 import xiao.customgun.core.api.network.INetworkHook;
+import xiao.customgun.core.init.registry.ModRecipe;
 import xiao.customgun.core.init.registry.ModSounds;
 import xiao.customgun.neoforge.common.NeoSideExecutor;
 import xiao.customgun.neoforge.config.NeoModConfigSpecBuilder;
@@ -70,6 +71,8 @@ public class CustomGunNeoforge {
                 CustomGunNeoforge.eventRegister,
                 CustomGunNeoforge.modConfigSpecBuilderSupplier);
 
+        ModRecipe.RECIPE_SERIALIZERS.registerAll(modEventBus);
+        ModRecipe.RECIPE_TYPES.registerAll(modEventBus);
         ModSounds.SOUNDS.registerAll(modEventBus);
 
         if (mcSide == McSide.CLIENT) {

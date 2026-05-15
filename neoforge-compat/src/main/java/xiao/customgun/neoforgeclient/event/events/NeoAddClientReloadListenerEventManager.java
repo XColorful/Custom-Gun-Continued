@@ -2,11 +2,11 @@ package xiao.customgun.neoforgeclient.event.events;
 
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import xiao.customgun.core.api.event.EventPriority;
 import xiao.customgun.core.api.event.EventType;
 import xiao.customgun.core.api.event.IEventHandler;
+import xiao.customgun.neoforge.CustomGunNeoforge;
 import xiao.customgun.neoforge.event.NeoEvent;
 import xiao.customgun.neoforge.event.events.AbstractNeoEventCommon;
 import xiao.customgun.neoforgeclient.event.NeoAddClientReloadListenerEvent;
@@ -38,12 +38,12 @@ public class NeoAddClientReloadListenerEventManager {
 
         @Override
         protected void registerToNeo() {
-            FMLJavaModLoadingContext.get().getModEventBus().register(this);
+            CustomGunNeoforge.modContainer.getEventBus().register(this);
         }
 
         @Override
         protected void unregisterToNeo() {
-            FMLJavaModLoadingContext.get().getModEventBus().unregister(this);
+            CustomGunNeoforge.modContainer.getEventBus().unregister(this);
         }
 
         @Override

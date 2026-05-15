@@ -37,7 +37,7 @@ public class _TableResultData extends ResourcePojo<_TableResultData> {
             while (reader.hasNext()) {
                 String key = reader.nextName();
                 switch (key) {
-                    case _TableResultDataTag.RECIPE_RESULT_TYPE -> pojo.recipeResultType = RecipeResultType.fromString(reader.nextString());
+                    case _TableResultDataTag.RECIPE_RESULT_TYPE -> pojo.recipeResultType = JsonUtils.readFromString(reader, RecipeResultType::fromString);
                     case _TableResultDataTag.RECIPE_RESULT_LOCATION -> pojo.recipeResultLocation = JsonUtils.readResourceLocation(reader);
                     default -> reader.skipValue();
                 }
@@ -53,17 +53,15 @@ public class _TableResultData extends ResourcePojo<_TableResultData> {
     @Override
     public void toJson(JsonWriter writer) throws IOException {
         writer.beginObject(); {
-            if (this.recipeResultType != null) {
-                writer.name(_TableResultDataTag.RECIPE_RESULT_TYPE).value(this.recipeResultType.toString());
-            }
-            JsonUtils.writeResourceLocation(writer, _TableResultDataTag.RECIPE_RESULT_LOCATION, this.recipeResultLocation);
+            JsonUtils.writeToString(writer, _TableResultDataTag.RECIPE_RESULT_TYPE, recipeResultType);
+            JsonUtils.writeResourceLocation(writer, _TableResultDataTag.RECIPE_RESULT_LOCATION, recipeResultLocation);
         }
         writer.endObject();
     }
 
     @Override
     protected void validatePojo() {
-        this.setValid(this.recipeResultType != null && this.recipeResultLocation != null);
+        this.setValid(true);
     }
 
     // --------Getter & Setter--------

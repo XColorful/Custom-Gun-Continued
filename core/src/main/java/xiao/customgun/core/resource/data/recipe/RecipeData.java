@@ -44,7 +44,7 @@ public class RecipeData extends ResourcePojo<RecipeData> {
             while (reader.hasNext()) {
                 String key = reader.nextName();
                 switch (key) {
-                    case RecipeDataTag.RECIPE_REGISTRY_TYPE -> pojo.recipeRegistryType = reader.nextString();
+                    case RecipeDataTag.RECIPE_REGISTRY_TYPE -> pojo.recipeRegistryType = JsonUtils.readString(reader);
                     case RecipeDataTag.TABLE_INGREDIENTS -> pojo.tableIngredients = JsonUtils.readList(reader, _TableIngredientData::fromJson);
                     case RecipeDataTag.TABLE_RESULT -> pojo.tableResult = JsonUtils.read(reader, _TableResultData::fromJson);
                     default -> reader.skipValue();
@@ -62,9 +62,9 @@ public class RecipeData extends ResourcePojo<RecipeData> {
     @Override
     public void toJson(JsonWriter writer) throws IOException {
         writer.beginObject(); {
-            writer.name(RecipeDataTag.RECIPE_REGISTRY_TYPE).value(this.recipeRegistryType);
-            JsonUtils.writeList(writer, RecipeDataTag.TABLE_INGREDIENTS, this.tableIngredients, _TableIngredientData::toJson);
-            JsonUtils.write(writer, RecipeDataTag.TABLE_RESULT, this.tableResult, _TableResultData::toJson);
+            JsonUtils.writeToString(writer, RecipeDataTag.RECIPE_REGISTRY_TYPE, recipeRegistryType);
+            JsonUtils.writeList(writer, RecipeDataTag.TABLE_INGREDIENTS, tableIngredients, _TableIngredientData::toJson);
+            JsonUtils.write(writer, RecipeDataTag.TABLE_RESULT, tableResult, _TableResultData::toJson);
         }
         writer.endObject();
     }

@@ -17,8 +17,8 @@ import java.io.IOException;
 
 public class _DistanceDamageData extends ResourcePojo<_DistanceDamageData> {
 
-    private float distance;
-    private float damage;
+    private float distance = 0;
+    private float damage = 0;
 
     private static final _DistanceDamageData PARSER = new _DistanceDamageData();
     public static _DistanceDamageData fromJson(JsonReader reader) throws IOException {

@@ -179,6 +179,44 @@ public class JsonUtils {
         writer.endArray();
     }
 
+    public static <T> ArrayList<T> readFromStringList(JsonReader reader, FromStringFunction<T> function) throws IOException {
+        if (reader.peek() == JsonToken.NULL) {
+            reader.nextNull();
+            return new ArrayList<>();
+        }
+        ArrayList<T> list = new ArrayList<>();
+        if (reader.peek() == JsonToken.BEGIN_ARRAY) {
+            reader.beginArray();
+            while (reader.hasNext()) {
+                if (reader.peek() == JsonToken.STRING) {
+                    T item = function.apply(reader.nextString());
+                    if (item != null) {
+                        list.add(item);
+                    }
+                } else {
+                    reader.skipValue();
+                }
+            }
+            reader.endArray();
+        } else {
+            reader.skipValue();
+        }
+        return list;
+    }
+    public static <T> void writeToStringList(JsonWriter writer, String key, List<T> value) throws IOException {
+        if (value == null) {
+            return;
+        }
+        writer.name(key).beginArray(); {
+            for (T t : value) {
+                if (t != null) {
+                    writer.value(t.toString());
+                }
+            }
+        }
+        writer.endArray();
+    }
+
     public static <T> ArrayList<T> readList(JsonReader reader, ReadFunction<T> function) throws IOException {
         if (reader.peek() == JsonToken.NULL) {
             reader.nextNull();

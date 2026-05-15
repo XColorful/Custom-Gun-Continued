@@ -30,7 +30,7 @@ public class _DefaultMeleeData extends ResourcePojo<_DefaultMeleeData> {
     private float knockbackStrength = 0.2F;
 
     // 显示
-    private String animationType = "melee_push";
+    private String animationType;
 
     private static final _DefaultMeleeData PARSER = new _DefaultMeleeData();
     public static _DefaultMeleeData fromJson(JsonReader reader) throws IOException {

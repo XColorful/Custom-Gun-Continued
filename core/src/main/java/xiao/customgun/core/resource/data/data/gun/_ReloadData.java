@@ -20,7 +20,7 @@ import java.io.IOException;
 
 public class _ReloadData extends ResourcePojo<_ReloadData> {
 
-    private AmmoFeedType ammoFeedType = AmmoFeedType.MAGAZINE;
+    private AmmoFeedType ammoFeedType;
     private boolean infiniteAmmo = false;
     private _ReloadFeedData reloadFeed;
     private _ReloadCooldownData reloadCooldown;
@@ -36,7 +36,7 @@ public class _ReloadData extends ResourcePojo<_ReloadData> {
             while (reader.hasNext()) {
                 String key = reader.nextName();
                 switch (key) {
-                    case _ReloadDataTag.AMMO_FEED_TYPE -> pojo.ammoFeedType = AmmoFeedType.fromString(JsonUtils.readString(reader));
+                    case _ReloadDataTag.AMMO_FEED_TYPE -> pojo.ammoFeedType = JsonUtils.readFromString(reader, AmmoFeedType::fromString);
                     case _ReloadDataTag.INFINITE_AMMO -> pojo.infiniteAmmo = JsonUtils.readBoolean(reader);
                     case _ReloadDataTag.RELOAD_FEED -> pojo.reloadFeed = JsonUtils.read(reader, _ReloadFeedData::fromJson);
                     case _ReloadDataTag.RELOAD_COOLDOWN -> pojo.reloadCooldown = JsonUtils.read(reader, _ReloadCooldownData::fromJson);
@@ -54,7 +54,7 @@ public class _ReloadData extends ResourcePojo<_ReloadData> {
     @Override
     public void toJson(JsonWriter writer) throws IOException {
         writer.beginObject(); {
-            JsonUtils.writeString(writer, _ReloadDataTag.AMMO_FEED_TYPE, this.ammoFeedType.toString());
+            JsonUtils.writeToString(writer, _ReloadDataTag.AMMO_FEED_TYPE, this.ammoFeedType);
             JsonUtils.writeBoolean(writer, _ReloadDataTag.INFINITE_AMMO, this.infiniteAmmo);
             JsonUtils.write(writer, _ReloadDataTag.RELOAD_FEED, this.reloadFeed, _ReloadFeedData::toJson);
             JsonUtils.write(writer, _ReloadDataTag.RELOAD_COOLDOWN, this.reloadCooldown, _ReloadCooldownData::toJson);

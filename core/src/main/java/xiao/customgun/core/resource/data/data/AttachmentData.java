@@ -9,9 +9,9 @@ package xiao.customgun.core.resource.data.data;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import xiao.customgun.core.api.item.attachment.MagazineCategory;
 import xiao.customgun.core.api.resource.data.data.AttachmentDataTag;
 import xiao.customgun.core.resource.ResourcePojo;
-import xiao.customgun.core.resource.data.data.attachment._MagazineCategoryData;
 import xiao.customgun.core.util.JsonUtils;
 
 import java.io.IOException;
@@ -19,7 +19,7 @@ import java.io.IOException;
 public class AttachmentData extends ResourcePojo<AttachmentData> {
 
     private float weight = 0.0F;
-    private _MagazineCategoryData magazineCategory;
+    private MagazineCategory magazineCategory;
 
     private static final AttachmentData PARSER = new AttachmentData();
     public static AttachmentData fromJson(JsonReader reader) throws IOException {
@@ -33,7 +33,7 @@ public class AttachmentData extends ResourcePojo<AttachmentData> {
                 String key = reader.nextName();
                 switch (key) {
                     case AttachmentDataTag.WEIGHT -> pojo.weight = JsonUtils.readFloat(reader);
-                    case AttachmentDataTag.MAGAZINE_CATEGORY -> pojo.magazineCategory = JsonUtils.read(reader, _MagazineCategoryData::fromJson);
+                    case AttachmentDataTag.MAGAZINE_CATEGORY -> pojo.magazineCategory = JsonUtils.readFromString(reader, MagazineCategory::fromString);
                     default -> reader.skipValue();
                 }
             }
@@ -49,7 +49,7 @@ public class AttachmentData extends ResourcePojo<AttachmentData> {
     public void toJson(JsonWriter writer) throws IOException {
         writer.beginObject(); {
             JsonUtils.writeFloat(writer, AttachmentDataTag.WEIGHT, this.weight);
-            JsonUtils.write(writer, AttachmentDataTag.MAGAZINE_CATEGORY, this.magazineCategory, _MagazineCategoryData::toJson);
+            JsonUtils.writeToString(writer, AttachmentDataTag.MAGAZINE_CATEGORY, this.magazineCategory);
         }
         writer.endObject();
     }
@@ -64,14 +64,14 @@ public class AttachmentData extends ResourcePojo<AttachmentData> {
     public float getWeight() {
         return weight;
     }
-    public _MagazineCategoryData getMagazineCategory() {
+    public MagazineCategory getMagazineCategory() {
         return magazineCategory;
     }
 
     public void setWeight(float weight) {
         this.weight = weight;
     }
-    public void setMagazineCategory(_MagazineCategoryData magazineCategory) {
+    public void setMagazineCategory(MagazineCategory magazineCategory) {
         this.magazineCategory = magazineCategory;
     }
 }

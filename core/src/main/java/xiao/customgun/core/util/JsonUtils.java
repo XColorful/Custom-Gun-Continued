@@ -273,7 +273,7 @@ public class JsonUtils {
         if (reader.peek() == JsonToken.BEGIN_OBJECT) {
             reader.beginObject();
             while (reader.hasNext()) {
-                ResourceLocation key = mcRegistry.createResourceLocation(reader.nextName());
+                var key = mcRegistry.createResourceLocation(reader.nextName());
                 T value = function.apply(reader);
                 if (key != null && value != null) {
                     map.put(key, value);

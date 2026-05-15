@@ -32,6 +32,7 @@ public class GunDataTag {
     public static final String SCRIPT_PARAM = "script_param"; // 状态机参数
 
     // 开火模式
+    public static final String DEFAULT_FIRE_MODE_TYPE = "defaultFireModeType";
     public static final String FIRE_MODE_TYPE = "fire_mode"; // 开火模式
     public static final String FIRE_MODE_DATA = "fire_mode_adjust"; // 开火模式数据
     public static final String BURST_DATA = "burst_data"; // 开火模式(2/3连发)模式数据

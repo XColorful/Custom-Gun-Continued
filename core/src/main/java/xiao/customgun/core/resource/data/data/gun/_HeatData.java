@@ -9,11 +9,28 @@ package xiao.customgun.core.resource.data.data.gun;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import xiao.customgun.core.api.resource.data.data.gun._HeatDataTag;
 import xiao.customgun.core.resource.ResourcePojo;
+import xiao.customgun.core.util.JsonUtils;
 
 import java.io.IOException;
 
 public class _HeatData extends ResourcePojo<_HeatData> {
+
+    // 过热属性
+    private float maxHeat = 100F;
+    private float heatPerShot = 3.0F;
+
+    // 枪械属性
+    private float minRpmByHeat = 1.0F;
+    private float maxRpmByHeat = 1.0F;
+    private float minInaccuracyByHeat = 1.0F;
+    private float maxInaccuracyByHeat = 1.0F;
+
+    // 冷却属性
+    private long overheatLocktimeMs = 3000L;
+    private long coolingDelayMs = 1000L;
+    private float coolingSpeedMultiplier = 1.0F;
 
     private static final _HeatData PARSER = new _HeatData();
     public static _HeatData fromJson(JsonReader reader) throws IOException {
@@ -24,7 +41,21 @@ public class _HeatData extends ResourcePojo<_HeatData> {
         _HeatData pojo = new _HeatData();
         reader.beginObject(); {
             while (reader.hasNext()) {
-                reader.skipValue();
+                String key = reader.nextName();
+                switch (key) {
+                    case _HeatDataTag.MAX_HEAT -> pojo.maxHeat = JsonUtils.readFloat(reader);
+                    case _HeatDataTag.HEAT_PER_SHOT -> pojo.heatPerShot = JsonUtils.readFloat(reader);
+
+                    case _HeatDataTag.MIN_RPM_BY_HEAT -> pojo.minRpmByHeat = JsonUtils.readFloat(reader);
+                    case _HeatDataTag.MAX_RPM_BY_HEAT -> pojo.maxRpmByHeat = JsonUtils.readFloat(reader);
+                    case _HeatDataTag.MIN_INACCURACY_BY_HEAT -> pojo.minInaccuracyByHeat = JsonUtils.readFloat(reader);
+                    case _HeatDataTag.MAX_INACCURACY_BY_HEAT -> pojo.maxInaccuracyByHeat = JsonUtils.readFloat(reader);
+
+                    case _HeatDataTag.OVERHEAT_LOCKTIME_MS -> pojo.overheatLocktimeMs = JsonUtils.readLong(reader);
+                    case _HeatDataTag.COOLING_DELAY_MS -> pojo.coolingDelayMs = JsonUtils.readLong(reader);
+                    case _HeatDataTag.COOLING_SPEED_MULTIPLIER -> pojo.coolingSpeedMultiplier = JsonUtils.readFloat(reader);
+                    default -> reader.skipValue();
+                }
             }
         }
         reader.endObject();
@@ -37,6 +68,17 @@ public class _HeatData extends ResourcePojo<_HeatData> {
     @Override
     public void toJson(JsonWriter writer) throws IOException {
         writer.beginObject(); {
+            JsonUtils.writeFloat(writer, _HeatDataTag.MAX_HEAT, maxHeat);
+            JsonUtils.writeFloat(writer, _HeatDataTag.HEAT_PER_SHOT, heatPerShot);
+
+            JsonUtils.writeFloat(writer, _HeatDataTag.MIN_RPM_BY_HEAT, minRpmByHeat);
+            JsonUtils.writeFloat(writer, _HeatDataTag.MAX_RPM_BY_HEAT, maxRpmByHeat);
+            JsonUtils.writeFloat(writer, _HeatDataTag.MIN_INACCURACY_BY_HEAT, minInaccuracyByHeat);
+            JsonUtils.writeFloat(writer, _HeatDataTag.MAX_INACCURACY_BY_HEAT, maxInaccuracyByHeat);
+
+            JsonUtils.writeLong(writer, _HeatDataTag.OVERHEAT_LOCKTIME_MS, overheatLocktimeMs);
+            JsonUtils.writeLong(writer, _HeatDataTag.COOLING_DELAY_MS, coolingDelayMs);
+            JsonUtils.writeFloat(writer, _HeatDataTag.COOLING_SPEED_MULTIPLIER, coolingSpeedMultiplier);
         }
         writer.endObject();
     }
@@ -44,5 +86,63 @@ public class _HeatData extends ResourcePojo<_HeatData> {
     @Override
     protected void validatePojo() {
         this.setValid(true);
+    }
+
+    // -------- Getter & Setter --------
+
+    public float getMaxHeat() {
+        return maxHeat;
+    }
+    public float getHeatPerShot() {
+        return heatPerShot;
+    }
+    public float getMinRpmByHeat() {
+        return minRpmByHeat;
+    }
+    public float getMaxRpmByHeat() {
+        return maxRpmByHeat;
+    }
+    public float getMinInaccuracyByHeat() {
+        return minInaccuracyByHeat;
+    }
+    public float getMaxInaccuracyByHeat() {
+        return maxInaccuracyByHeat;
+    }
+    public long getOverheatLocktimeMs() {
+        return overheatLocktimeMs;
+    }
+    public long getCoolingDelayMs() {
+        return coolingDelayMs;
+    }
+    public float getCoolingSpeedMultiplier() {
+        return coolingSpeedMultiplier;
+    }
+
+    public void setMaxHeat(float maxHeat) {
+        this.maxHeat = maxHeat;
+    }
+    public void setHeatPerShot(float heatPerShot) {
+        this.heatPerShot = heatPerShot;
+    }
+    public void setMinRpmByHeat(float minRpmByHeat) {
+        this.minRpmByHeat = minRpmByHeat;
+    }
+    public void setMaxRpmByHeat(float maxRpmByHeat) {
+        this.maxRpmByHeat = maxRpmByHeat;
+    }
+    public void setMinInaccuracyByHeat(float minInaccuracyByHeat) {
+        this.minInaccuracyByHeat = minInaccuracyByHeat;
+    }
+    public void setMaxInaccuracyByHeat(float maxInaccuracyByHeat) {
+        this.maxInaccuracyByHeat = maxInaccuracyByHeat;
+    }
+    public void setOverheatLocktimeMs(long overheatLocktimeMs) {
+        this.overheatLocktimeMs = overheatLocktimeMs;
+    }
+    public void setCoolingDelayMs(long coolingDelayMs) {
+        this.coolingDelayMs = coolingDelayMs;
+    }
+    public void setCoolingSpeedMultiplier(float coolingSpeedMultiplier) {
+        this.coolingSpeedMultiplier = coolingSpeedMultiplier;
     }
 }

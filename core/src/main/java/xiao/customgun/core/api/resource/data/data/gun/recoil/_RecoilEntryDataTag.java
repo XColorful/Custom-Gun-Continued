@@ -9,5 +9,8 @@ package xiao.customgun.core.api.resource.data.data.gun.recoil;
 
 public class _RecoilEntryDataTag {
 
+    public static final String TIME = "time";
+    public static final String RANGE = "value";
+
     private _RecoilEntryDataTag() {}
 }

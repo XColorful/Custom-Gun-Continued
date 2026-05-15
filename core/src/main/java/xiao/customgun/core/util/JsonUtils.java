@@ -61,6 +61,16 @@ public class JsonUtils {
     public static void writeFloat(JsonWriter writer, String key, float value) throws IOException {
         writer.name(key).value(value);
     }
+    public static long readLong(JsonReader reader) throws IOException {
+        JsonToken peek = reader.peek();
+        if (peek == JsonToken.NUMBER) return reader.nextLong();
+        if (peek == JsonToken.NULL) reader.nextNull();
+        else reader.skipValue();
+        return 0L;
+    }
+    public static void writeLong(JsonWriter writer, String key, long value) throws IOException {
+        writer.name(key).value(value);
+    }
     public static String readString(JsonReader reader) throws IOException {
         JsonToken peek = reader.peek();
         if (peek == JsonToken.STRING) return reader.nextString();
@@ -116,6 +126,20 @@ public class JsonUtils {
 
     public static void writeResourceLocation(JsonWriter writer, String key, ResourceLocation value) throws IOException {
         if (value != null) writer.name(key).value(value.toString());
+    }
+
+    @FunctionalInterface
+    public interface FromStringFunction<T> {
+        T apply(String name);
+    }
+    public static <T> T readFromString(JsonReader reader, FromStringFunction<T> function) throws IOException {
+        String valueStr = readString(reader);
+        return valueStr != null ? function.apply(valueStr) : null;
+    }
+    public static <T> void writeToString(JsonWriter writer, String key, T value) throws IOException {
+        if (value != null) {
+            writer.name(key).value(value.toString());
+        }
     }
 
     // --------结构<类型>--------
@@ -191,6 +215,22 @@ public class JsonUtils {
         if (value == null) return;
         writer.name(key).beginArray(); {
             for (int i : value) writer.value(i);
+        }
+        writer.endArray();
+    }
+
+    public static float[] readFloatArray(JsonReader reader) throws IOException {
+        List<Float> list = readList(reader, JsonUtils::readFloat);
+        float[] array = new float[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            array[i] = list.get(i);
+        }
+        return array;
+    }
+    public static void writeFloatArray(JsonWriter writer, String key, float[] value) throws IOException {
+        if (value == null) return;
+        writer.name(key).beginArray(); {
+            for (float f : value) writer.value(f);
         }
         writer.endArray();
     }
@@ -292,6 +332,56 @@ public class JsonUtils {
                 if (entry.getKey() != null && entry.getValue() != null) {
                     writer.name(entry.getKey().toString());
                     action.accept(writer, entry.getValue());
+                }
+            }
+        }
+        writer.endObject();
+    }
+
+    @FunctionalInterface
+    public interface KeyFunction<K> {
+        K apply(String name);
+    }
+    @FunctionalInterface
+    public interface KeyWriterAction<K> {
+        String apply(K key);
+    }
+    public static <K, V> HashMap<K, V> readObject2ObjectMap(JsonReader reader, KeyFunction<K> keyFunction, ReadFunction<V> valueFunction) throws IOException {
+        if (reader.peek() == JsonToken.NULL) {
+            reader.nextNull();
+            return new HashMap<>();
+        }
+        HashMap<K, V> map = new HashMap<>();
+        if (reader.peek() == JsonToken.BEGIN_OBJECT) {
+            reader.beginObject();
+            while (reader.hasNext()) {
+                String keyName = reader.nextName();
+                K key = keyFunction.apply(keyName);
+                if (key != null) {
+                    V value = valueFunction.apply(reader);
+                    if (value != null) {
+                        map.put(key, value);
+                    }
+                } else {
+                    valueFunction.apply(reader);
+                }
+            }
+            reader.endObject();
+        } else {
+            reader.skipValue();
+        }
+        return map;
+    }
+    public static <K, V> void writeObject2ObjectMap(JsonWriter writer, String key, Map<K, V> map, KeyWriterAction<K> keyAction, WriteAction<V> valueAction) throws IOException {
+        if (map == null) return;
+        writer.name(key).beginObject(); {
+            for (Map.Entry<K, V> entry : map.entrySet()) {
+                if (entry.getKey() != null && entry.getValue() != null) {
+                    String keyName = keyAction.apply(entry.getKey());
+                    if (keyName != null) {
+                        writer.name(keyName);
+                        valueAction.accept(writer, entry.getValue());
+                    }
                 }
             }
         }

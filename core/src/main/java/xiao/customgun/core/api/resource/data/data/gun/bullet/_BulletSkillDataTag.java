@@ -7,9 +7,11 @@
 
 package xiao.customgun.core.api.resource.data.data.gun.bullet;
 
-public class _ExtraBulletDataTag {
+public class _BulletSkillDataTag {
 
     public static final String ARMOR_IGNORE_PERCENT = "armor_ignore";
     public static final String HEADSHOT_MULTIPLIER = "head_shot_multiplier";
     public static final String DAMAGE_CALCULATION = "damage_adjust";
+
+    private _BulletSkillDataTag() {}
 }

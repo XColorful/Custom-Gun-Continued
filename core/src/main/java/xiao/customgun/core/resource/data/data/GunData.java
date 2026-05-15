@@ -10,6 +10,8 @@ package xiao.customgun.core.resource.data.data;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import net.minecraft.resources.ResourceLocation;
+import xiao.customgun.core.api.item.attachment.AttachmentCategory;
+import xiao.customgun.core.api.item.gun.FireModeType;
 import xiao.customgun.core.api.resource.data.data.GunDataTag;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.resource.data.data.gun.*;
@@ -45,7 +47,7 @@ public class GunData extends ResourcePojo<GunData> {
     private Map<String, Object> scriptParam;
 
     // 开火模式
-    private _FireModeTypeData defaultFireModeType;
+    private FireModeType defaultFireModeType;
     private List<_FireModeTypeData> fireModeTypes;
     private _FireModeData fireModeData;
     private _BurstData burstData;
@@ -53,14 +55,14 @@ public class GunData extends ResourcePojo<GunData> {
     // 扩展属性
     private _MeleeData meleeData;
     private _HeatData heatData;
-    private _ChargingData chargingData;
+    private Map<FireModeType, _ChargingData> chargingData;
 
     // 配件
     private List<_AttachmentTypeData> allowAttachmentTypes;
     private Map<ResourceLocation, AttachmentData> exclusiveAttachments;
     private int defaultMagSize = 30;
     private int[] extendedMagAmmoSize;
-    private _BuiltinAttachmentData builtinAttachments;
+    private Map<AttachmentCategory, ResourceLocation> builtinAttachments;
 
     // 举枪动作
     private boolean enableCrawl = true;
@@ -105,19 +107,20 @@ public class GunData extends ResourcePojo<GunData> {
                     case GunDataTag.SCRIPT_TYPE -> pojo.scriptType = JsonUtils.readResourceLocation(reader);
                     case GunDataTag.SCRIPT_PARAM -> pojo.scriptParam = JsonUtils.readString2ObjectMap(reader, JsonUtils::readObject);
 
+                    case GunDataTag.DEFAULT_FIRE_MODE_TYPE -> pojo.defaultFireModeType = JsonUtils.readFromString(reader, FireModeType::fromString);
                     case GunDataTag.FIRE_MODE_TYPE -> pojo.fireModeTypes = JsonUtils.readList(reader, _FireModeTypeData::fromJson);
                     case GunDataTag.FIRE_MODE_DATA -> pojo.fireModeData = JsonUtils.read(reader, _FireModeData::fromJson);
                     case GunDataTag.BURST_DATA -> pojo.burstData = JsonUtils.read(reader, _BurstData::fromJson);
 
                     case GunDataTag.MELEE_DATA -> pojo.meleeData = JsonUtils.read(reader, _MeleeData::fromJson);
                     case GunDataTag.HEAT_DATA -> pojo.heatData = JsonUtils.read(reader, _HeatData::fromJson);
-                    case GunDataTag.CHARGING_DATA -> pojo.chargingData = JsonUtils.read(reader, _ChargingData::fromJson);
+                    case GunDataTag.CHARGING_DATA -> pojo.chargingData = JsonUtils.readObject2ObjectMap(reader, FireModeType::fromString, _ChargingData::fromJson);
 
                     case GunDataTag.ALLOW_ATTACHMENT_TYPES -> pojo.allowAttachmentTypes = JsonUtils.readList(reader, _AttachmentTypeData::fromJson);
                     case GunDataTag.EXCLUSIVE_ATTACHMENTS -> pojo.exclusiveAttachments = JsonUtils.readRl2ObjectMap(reader, AttachmentData::fromJson);
                     case GunDataTag.DEFAULT_MAG_SIZE -> pojo.defaultMagSize = JsonUtils.readInt(reader);
                     case GunDataTag.EXTENDED_MAG_AMMO_SIZE -> pojo.extendedMagAmmoSize = JsonUtils.readIntArray(reader);
-                    case GunDataTag.BUILTIN_ATTACHMENTS -> pojo.builtinAttachments = JsonUtils.read(reader, _BuiltinAttachmentData::fromJson);
+                    case GunDataTag.BUILTIN_ATTACHMENTS -> pojo.builtinAttachments = JsonUtils.readObject2ObjectMap(reader, AttachmentCategory::fromString, JsonUtils::readResourceLocation);
 
                     case GunDataTag.ENABLE_CRAWL -> pojo.enableCrawl = JsonUtils.readBoolean(reader);
                     case GunDataTag.ENABLE_SLIDE -> pojo.enableSlide = JsonUtils.readBoolean(reader);
@@ -162,19 +165,20 @@ public class GunData extends ResourcePojo<GunData> {
             JsonUtils.writeResourceLocation(writer, GunDataTag.SCRIPT_TYPE, scriptType);
             JsonUtils.writeString2ObjectMap(writer, GunDataTag.SCRIPT_PARAM, scriptParam, JsonUtils::writeObject);
 
+            JsonUtils.writeToString(writer, GunDataTag.DEFAULT_FIRE_MODE_TYPE, defaultFireModeType);
             JsonUtils.writeList(writer, GunDataTag.FIRE_MODE_TYPE, fireModeTypes, _FireModeTypeData::toJson);
             JsonUtils.write(writer, GunDataTag.FIRE_MODE_DATA, fireModeData, _FireModeData::toJson);
             JsonUtils.write(writer, GunDataTag.BURST_DATA, burstData, _BurstData::toJson);
 
             JsonUtils.write(writer, GunDataTag.MELEE_DATA, meleeData, _MeleeData::toJson);
             JsonUtils.write(writer, GunDataTag.HEAT_DATA, heatData, _HeatData::toJson);
-            JsonUtils.write(writer, GunDataTag.CHARGING_DATA, chargingData, _ChargingData::toJson);
+            JsonUtils.writeObject2ObjectMap(writer, GunDataTag.CHARGING_DATA, chargingData, FireModeType::toString, _ChargingData::toJson);
 
             JsonUtils.writeList(writer, GunDataTag.ALLOW_ATTACHMENT_TYPES, allowAttachmentTypes, _AttachmentTypeData::toJson);
             JsonUtils.writeRl2ObjectMap(writer, GunDataTag.EXCLUSIVE_ATTACHMENTS, exclusiveAttachments, AttachmentData::toJson);
             JsonUtils.writeInt(writer, GunDataTag.DEFAULT_MAG_SIZE, defaultMagSize);
             JsonUtils.writeIntArray(writer, GunDataTag.EXTENDED_MAG_AMMO_SIZE, extendedMagAmmoSize);
-            JsonUtils.write(writer, GunDataTag.BUILTIN_ATTACHMENTS, builtinAttachments, _BuiltinAttachmentData::toJson);
+            JsonUtils.writeObject2ObjectMap(writer, GunDataTag.BUILTIN_ATTACHMENTS, this.builtinAttachments, AttachmentCategory::toString, (w, rl) -> w.value(rl.toString()));
 
             JsonUtils.writeBoolean(writer, GunDataTag.ENABLE_CRAWL, enableCrawl);
             JsonUtils.writeBoolean(writer, GunDataTag.ENABLE_SLIDE, enableSlide);
@@ -238,7 +242,7 @@ public class GunData extends ResourcePojo<GunData> {
     public Map<String, Object> getScriptParam() {
         return scriptParam;
     }
-    public _FireModeTypeData getDefaultFireModeType() {
+    public FireModeType getDefaultFireModeType() {
         return defaultFireModeType;
     }
     public List<_FireModeTypeData> getFireModeTypes() {
@@ -256,7 +260,7 @@ public class GunData extends ResourcePojo<GunData> {
     public _HeatData getHeatData() {
         return heatData;
     }
-    public _ChargingData getChargingData() {
+    public Map<FireModeType, _ChargingData> getChargingData() {
         return chargingData;
     }
     public List<_AttachmentTypeData> getAllowAttachmentTypes() {
@@ -271,7 +275,7 @@ public class GunData extends ResourcePojo<GunData> {
     public int[] getExtendedMagAmmoSize() {
         return extendedMagAmmoSize;
     }
-    public _BuiltinAttachmentData getBuiltinAttachments() {
+    public Map<AttachmentCategory, ResourceLocation> getBuiltinAttachments() {
         return builtinAttachments;
     }
     public boolean getEnableCrawl() {
@@ -341,7 +345,7 @@ public class GunData extends ResourcePojo<GunData> {
     public void setScriptParam(Map<String, Object> scriptParam) {
         this.scriptParam = scriptParam;
     }
-    public void setDefaultFireModeType(_FireModeTypeData defaultFireModeType) {
+    public void setDefaultFireModeType(FireModeType defaultFireModeType) {
         this.defaultFireModeType = defaultFireModeType;
     }
     public void setFireModeTypes(List<_FireModeTypeData> fireModeTypes) {
@@ -359,7 +363,7 @@ public class GunData extends ResourcePojo<GunData> {
     public void setHeatData(_HeatData heatData) {
         this.heatData = heatData;
     }
-    public void setChargingData(_ChargingData chargingData) {
+    public void setChargingData(Map<FireModeType, _ChargingData> chargingData) {
         this.chargingData = chargingData;
     }
     public void setAllowAttachmentTypes(List<_AttachmentTypeData> allowAttachmentTypes) {
@@ -374,7 +378,7 @@ public class GunData extends ResourcePojo<GunData> {
     public void setExtendedMagAmmoSize(int[] extendedMagAmmoSize) {
         this.extendedMagAmmoSize = extendedMagAmmoSize;
     }
-    public void setBuiltinAttachments(_BuiltinAttachmentData builtinAttachments) {
+    public void setBuiltinAttachments(Map<AttachmentCategory, ResourceLocation> builtinAttachments) {
         this.builtinAttachments = builtinAttachments;
     }
     public void setEnableCrawl(boolean enableCrawl) {

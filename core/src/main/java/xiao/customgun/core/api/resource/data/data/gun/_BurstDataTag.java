@@ -8,7 +8,7 @@
 package xiao.customgun.core.api.resource.data.data.gun;
 
 import xiao.customgun.core.api.resource.data.data.GunDataTag;
-import xiao.customgun.core.api.resource.data.data.gun.bullet._ExtraBulletDataTag;
+import xiao.customgun.core.api.resource.data.data.gun.bullet._BulletSkillDataTag;
 
 public class _BurstDataTag {
 
@@ -27,10 +27,10 @@ public class _BurstDataTag {
     public static final String KNOCKBACK_STRENGTH = _BulletDataTag.KNOCKBACK_STRENGTH;
 
     /**
-     * {@link _ExtraBulletDataTag}
+     * {@link _BulletSkillDataTag}
      */
-    public static final String ARMOR_IGNORE_PERCENT = _ExtraBulletDataTag.ARMOR_IGNORE_PERCENT;
-    public static final String HEADSHOT_MULTIPLIER = _ExtraBulletDataTag.HEADSHOT_MULTIPLIER;
+    public static final String ARMOR_IGNORE_PERCENT = _BulletSkillDataTag.ARMOR_IGNORE_PERCENT;
+    public static final String HEADSHOT_MULTIPLIER = _BulletSkillDataTag.HEADSHOT_MULTIPLIER;
 
     /**
      * {@link _InaccuracyDataTag}

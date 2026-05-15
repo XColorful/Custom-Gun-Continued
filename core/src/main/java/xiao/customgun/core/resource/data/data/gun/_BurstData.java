@@ -13,7 +13,7 @@ import xiao.customgun.core.api.resource.data.data.GunDataTag;
 import xiao.customgun.core.api.resource.data.data.gun._BulletDataTag;
 import xiao.customgun.core.api.resource.data.data.gun._BurstDataTag;
 import xiao.customgun.core.api.resource.data.data.gun._InaccuracyDataTag;
-import xiao.customgun.core.api.resource.data.data.gun.bullet._ExtraBulletDataTag;
+import xiao.customgun.core.api.resource.data.data.gun.bullet._BulletSkillDataTag;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.util.JsonUtils;
 
@@ -34,7 +34,7 @@ public class _BurstData extends ResourcePojo<_BurstData> {
     private float knockbackStrength = 0.0F;
 
     /**
-     * {@link _ExtraBulletDataTag}
+     * {@link _BulletSkillDataTag}
      */
     private float armorIgnorePercent = 0.0F;
     private float headshotMultiplier = 0.0F;

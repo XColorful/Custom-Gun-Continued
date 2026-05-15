@@ -8,21 +8,21 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.neoforged.bus.api.Event;
-import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.event.EventType;
 import xiao.customgun.core.api.event.IAddServerReloadListenerEvent;
 
 public class NeoAddServerReloadListenerEvent extends NeoEvent implements IAddServerReloadListenerEvent {
 
-    protected AddReloadListenerEvent addReloadListenerEvent;
+    protected AddServerReloadListenersEvent addServerReloadListenersEvent;
 
     public NeoAddServerReloadListenerEvent(Event event) {
         super(event);
-        if (event instanceof AddReloadListenerEvent eventIn) {
-            this.addReloadListenerEvent = eventIn;
+        if (event instanceof AddServerReloadListenersEvent eventIn) {
+            this.addServerReloadListenersEvent = eventIn;
         } else {
-            throw new RuntimeException("Expected AddReloadListenerEvent but received: " + event.getClass().getName());
+            throw new RuntimeException("Expected AddServerReloadListenersEvent but received: " + event.getClass().getName());
         }
     }
     @Override public EventType getType() {
@@ -31,17 +31,17 @@ public class NeoAddServerReloadListenerEvent extends NeoEvent implements IAddSer
 
     @Override
     public void addListener(ResourceLocation registryKey, PreparableReloadListener listener) {
-        this.addReloadListenerEvent.addListener(listener);
+        this.addServerReloadListenersEvent.addListener(registryKey, listener);
     }
 
     @Override
     public ReloadableServerResources getServerResources() {
-        return this.addReloadListenerEvent.getServerResources();
+        return this.addServerReloadListenersEvent.getServerResources();
     }
 
     @Override
     public RegistryAccess getRegistryAccess() {
-        return this.addReloadListenerEvent.getRegistryAccess();
+        return this.addServerReloadListenersEvent.getRegistryAccess();
     }
 
     @Override

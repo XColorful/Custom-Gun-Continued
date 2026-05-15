@@ -116,7 +116,7 @@ public class AllDataManager implements IEventHandler {
         );
         event.addListener(
                 CustomGun.getMcRegistry().createResourceLocation(CustomGun.MOD_ID + ":common_data_post_handler"),
-                (barrier, resourceManager, preparationProfiler, reloadProfiler, backgroundExecutor, gameExecutor) -> {
+                (barrier, resourceManager, backgroundExecutor, gameExecutor) -> {
                     return barrier
                             .wait(Void.TYPE)
                             .thenRunAsync(() -> {// TODO
@@ -148,10 +148,14 @@ public class AllDataManager implements IEventHandler {
 
         var _this = getCurrent();
         if (_this != null && _this.recipeManager != null) {
-            var tableRecipeHolders = _this.recipeManager.getAllRecipesFor(ModRecipe.TACZ_TABLE_RECIPE_CRAFTING.get());
+            var targetType = ModRecipe.TACZ_TABLE_RECIPE_CRAFTING.get();
+            var tableRecipeHolders = _this.recipeManager.getRecipes().stream()
+                    .filter(holder -> holder.value().getType() == targetType)
+                    .toList();
             for (var holder : tableRecipeHolders) {
-                TableRecipe tableRecipe = holder.value();
-                tableRecipe.init();
+                if (holder.value() instanceof TableRecipe tableRecipe) {
+                    tableRecipe.init();
+                }
             }
         }
     }

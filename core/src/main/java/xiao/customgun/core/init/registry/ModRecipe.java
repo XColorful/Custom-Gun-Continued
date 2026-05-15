@@ -21,7 +21,7 @@ public class ModRecipe {
     public static final IRegistrar<RecipeType<?>> RECIPE_TYPES = CustomGun.getRegistrarFactory().createRecipes(CustomGun.MOD_ID);
 
     // 类加载顺序会保证在 ↑调用 前执行
-    public static final IRegistryObject<RecipeSerializer<?>> TACZ_TABLE_RECIPE_SERIALIZER = RECIPE_SERIALIZERS.register(CustomRecipeType.TACZ_TABLE_RECIPE.getTagName(),
+    public static final IRegistryObject<RecipeSerializer<? extends TableRecipe>> TACZ_TABLE_RECIPE_SERIALIZER = RECIPE_SERIALIZERS.register(CustomRecipeType.TACZ_TABLE_RECIPE.getTagName(),
             TableRecipeSerializer::new);
     public static final IRegistryObject<RecipeType<TableRecipe>> TACZ_TABLE_RECIPE_CRAFTING = RECIPE_TYPES.register(CustomRecipeType.TACZ_TABLE_RECIPE.getTagName(), () ->
             new RecipeType<>() {

@@ -36,12 +36,12 @@ public class NeoTagsUpdatedEvent extends NeoEvent implements ITagsUpdatedEvent {
 
     @Override
     public HolderLookup.Provider getLookupProvider() {
-        return tagsUpdatedEvent.getRegistryAccess();
+        return tagsUpdatedEvent.getLookupProvider();
     }
 
     @Override
     public @Nullable RegistryAccess getRegistryAccess() {
-        return tagsUpdatedEvent.getRegistryAccess();
+        return null;
     }
 
     @Override

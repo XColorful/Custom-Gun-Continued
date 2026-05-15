@@ -10,10 +10,7 @@ package xiao.customgun.core.recipe;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.world.item.crafting.RecipeInput;
-import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import xiao.customgun.CustomGun;
@@ -65,12 +62,10 @@ public class TableRecipe implements Recipe<RecipeInput> {
         return ItemStack.EMPTY;
     }
 
-    @Override
     public boolean canCraftInDimensions(int pWidth, int pHeight) {
         return true;
     }
 
-    @Override
     public @NotNull ItemStack getResultItem(@NotNull HolderLookup.Provider provider) {
         return this.tableResult.getResultItem().copy();
     }
@@ -80,13 +75,23 @@ public class TableRecipe implements Recipe<RecipeInput> {
     }
 
     @Override
-    public @NotNull RecipeSerializer<?> getSerializer() {
+    public @NotNull RecipeSerializer<? extends TableRecipe> getSerializer() {
         return ModRecipe.TACZ_TABLE_RECIPE_SERIALIZER.get();
     }
 
     @Override
-    public @NotNull RecipeType<?> getType() {
+    public @NotNull RecipeType<? extends TableRecipe> getType() {
         return ModRecipe.TACZ_TABLE_RECIPE_CRAFTING.get();
+    }
+
+    @Override
+    public @NotNull RecipeBookCategory recipeBookCategory() {
+        return RecipeBookCategories.CRAFTING_MISC;
+    }
+
+    @Override
+    public @NotNull PlacementInfo placementInfo() {
+        return PlacementInfo.NOT_PLACEABLE;
     }
 
     public ItemStack getResultItem() {

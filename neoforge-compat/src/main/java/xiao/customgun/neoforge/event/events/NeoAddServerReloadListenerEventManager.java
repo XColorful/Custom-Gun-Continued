@@ -3,7 +3,7 @@ package xiao.customgun.neoforge.event.events;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import xiao.customgun.core.api.event.EventPriority;
 import xiao.customgun.core.api.event.EventType;
 import xiao.customgun.core.api.event.IEventHandler;
@@ -50,7 +50,7 @@ public class NeoAddServerReloadListenerEventManager {
             return new NeoAddServerReloadListenerEvent(event);
         }
 
-        protected void handle(AddReloadListenerEvent event) {
+        protected void handle(AddServerReloadListenersEvent event) {
             super.onEvent(event);
         }
     }
@@ -58,30 +58,30 @@ public class NeoAddServerReloadListenerEventManager {
     public static class NeoAddServerReloadListenerProxyHighest extends NeoAddServerReloadListenerProxy {
         static final NeoAddServerReloadListenerProxyHighest INSTANCE = new NeoAddServerReloadListenerProxyHighest();
         @SubscribeEvent(priority = net.neoforged.bus.api.EventPriority.HIGHEST, receiveCanceled = true)
-        public void onEvent(AddReloadListenerEvent e) { handle(e); }
+        public void onEvent(AddServerReloadListenersEvent e) { handle(e); }
     }
 
     public static class NeoAddServerReloadListenerProxyHigh extends NeoAddServerReloadListenerProxy {
         static final NeoAddServerReloadListenerProxyHigh INSTANCE = new NeoAddServerReloadListenerProxyHigh();
         @SubscribeEvent(priority = net.neoforged.bus.api.EventPriority.HIGH, receiveCanceled = true)
-        public void onEvent(AddReloadListenerEvent e) { handle(e); }
+        public void onEvent(AddServerReloadListenersEvent e) { handle(e); }
     }
 
     public static class NeoAddServerReloadListenerProxyNormal extends NeoAddServerReloadListenerProxy {
         static final NeoAddServerReloadListenerProxyNormal INSTANCE = new NeoAddServerReloadListenerProxyNormal();
         @SubscribeEvent(priority = net.neoforged.bus.api.EventPriority.NORMAL, receiveCanceled = true)
-        public void onEvent(AddReloadListenerEvent e) { handle(e); }
+        public void onEvent(AddServerReloadListenersEvent e) { handle(e); }
     }
 
     public static class NeoAddServerReloadListenerProxyLow extends NeoAddServerReloadListenerProxy {
         static final NeoAddServerReloadListenerProxyLow INSTANCE = new NeoAddServerReloadListenerProxyLow();
         @SubscribeEvent(priority = net.neoforged.bus.api.EventPriority.LOW, receiveCanceled = true)
-        public void onEvent(AddReloadListenerEvent e) { handle(e); }
+        public void onEvent(AddServerReloadListenersEvent e) { handle(e); }
     }
 
     public static class NeoAddServerReloadListenerProxyLowest extends NeoAddServerReloadListenerProxy {
         static final NeoAddServerReloadListenerProxyLowest INSTANCE = new NeoAddServerReloadListenerProxyLowest();
         @SubscribeEvent(priority = net.neoforged.bus.api.EventPriority.LOWEST, receiveCanceled = true)
-        public void onEvent(AddReloadListenerEvent e) { handle(e); }
+        public void onEvent(AddServerReloadListenersEvent e) { handle(e); }
     }
 }

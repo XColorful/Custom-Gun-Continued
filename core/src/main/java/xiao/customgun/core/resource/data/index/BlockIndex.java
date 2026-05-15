@@ -9,7 +9,7 @@ package xiao.customgun.core.resource.data.index;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import xiao.customgun.core.api.resource.data.index.BlockIndexTag;
 import xiao.customgun.core.util.JsonUtils;
 
@@ -17,7 +17,7 @@ import java.io.IOException;
 
 public final class BlockIndex extends _DataIndex<BlockIndex> {
 
-    private ResourceLocation blockType;
+    private Identifier blockType;
     private int maxStackSize = 1;
 
     private static final BlockIndex PARSER = new BlockIndex();
@@ -73,14 +73,14 @@ public final class BlockIndex extends _DataIndex<BlockIndex> {
 
     // --------Getter & Setter--------
 
-    public ResourceLocation getBlockType() {
+    public Identifier getBlockType() {
         return blockType;
     }
     public int getMaxStackSize() {
         return maxStackSize;
     }
 
-    public void setBlockType(ResourceLocation blockType) {
+    public void setBlockType(Identifier blockType) {
         this.blockType = blockType;
     }
     public void setMaxStackSize(int maxStackSize) {

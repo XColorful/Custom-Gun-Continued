@@ -3,7 +3,7 @@ package xiao.customgun.neoforgeclient.event;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
@@ -29,7 +29,7 @@ public class NeoAddClientReloadListenerEvent extends NeoEvent implements IAddCli
     }
 
     @Override
-    public void addListener(ResourceLocation registryKey, PreparableReloadListener listener) {
+    public void addListener(Identifier registryKey, PreparableReloadListener listener) {
         this.addClientReloadListenersEvent.addListener(registryKey, listener);
     }
 

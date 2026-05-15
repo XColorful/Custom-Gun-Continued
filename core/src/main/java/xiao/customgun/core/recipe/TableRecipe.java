@@ -8,7 +8,7 @@
 package xiao.customgun.core.recipe;
 
 import net.minecraft.core.HolderLookup;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
@@ -25,17 +25,17 @@ public class TableRecipe implements Recipe<RecipeInput> {
             TableResult.fromPojo(new _TableResultData()),
             List.of());
 
-    private final ResourceLocation recipeLocation;
+    private final Identifier recipeLocation;
     private final TableResult tableResult;
     private final List<TableIngredient> recipeIngredients;
 
-    public TableRecipe(ResourceLocation recipeLocation,
+    public TableRecipe(Identifier recipeLocation,
                        TableResult tableResult, List<TableIngredient> recipeIngredients) {
         this.recipeLocation = recipeLocation;
         this.tableResult = tableResult;
         this.recipeIngredients = recipeIngredients;
     }
-    public static TableRecipe fromPojo(ResourceLocation recipeLocation,
+    public static TableRecipe fromPojo(Identifier recipeLocation,
                                        RecipeData pojo) {
         return new TableRecipe(recipeLocation, TableResult.fromPojo(pojo.getTableResult()), TableIngredient.fromPojo(pojo.getTableIngredients()));
     }
@@ -70,7 +70,7 @@ public class TableRecipe implements Recipe<RecipeInput> {
         return this.tableResult.getResultItem().copy();
     }
 
-    public @NotNull ResourceLocation getId() {
+    public @NotNull Identifier getId() {
         return this.recipeLocation;
     }
 
@@ -97,7 +97,7 @@ public class TableRecipe implements Recipe<RecipeInput> {
     public ItemStack getResultItem() {
         return this.tableResult.getResultItem();
     }
-    public ResourceLocation getTabLocation() {
+    public Identifier getTabLocation() {
         return this.tableResult.getTabLocation();
     }
 }

@@ -7,7 +7,7 @@
 
 package xiao.customgun.core.resource.data;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.ApiStatus;
 import xiao.customgun.core.api.resource.FileExtensionType;
 import xiao.customgun.core.api.resource.INetworkCacheReloadListener;
@@ -43,7 +43,7 @@ public abstract class IndexManager<T extends ResourcePojo<T>> extends ResourcePo
         @Override public SyncDataType getSyncDataType() {
             return SyncDataType.GUN_INDEX;
         }
-        @Override public Map<ResourceLocation, String> getNetworkCache() {
+        @Override public Map<Identifier, String> getNetworkCache() {
             return Map.of();
         }
     }
@@ -58,7 +58,7 @@ public abstract class IndexManager<T extends ResourcePojo<T>> extends ResourcePo
         @Override public SyncDataType getSyncDataType() {
             return SyncDataType.ATTACHMENT_INDEX;
         }
-        @Override public Map<ResourceLocation, String> getNetworkCache() {
+        @Override public Map<Identifier, String> getNetworkCache() {
             return Map.of();
         }
     }
@@ -73,7 +73,7 @@ public abstract class IndexManager<T extends ResourcePojo<T>> extends ResourcePo
         @Override public SyncDataType getSyncDataType() {
             return SyncDataType.AMMO_INDEX;
         }
-        @Override public Map<ResourceLocation, String> getNetworkCache() {
+        @Override public Map<Identifier, String> getNetworkCache() {
             return Map.of();
         }
     }
@@ -88,7 +88,7 @@ public abstract class IndexManager<T extends ResourcePojo<T>> extends ResourcePo
         @Override public SyncDataType getSyncDataType() {
             return SyncDataType.BLOCK_INDEX;
         }
-        @Override public Map<ResourceLocation, String> getNetworkCache() {
+        @Override public Map<Identifier, String> getNetworkCache() {
             return Map.of();
         }
     }

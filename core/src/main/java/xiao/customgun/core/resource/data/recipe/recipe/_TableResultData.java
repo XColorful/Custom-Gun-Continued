@@ -9,7 +9,7 @@ package xiao.customgun.core.resource.data.recipe.recipe;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import xiao.customgun.core.api.recipe.RecipeResultType;
 import xiao.customgun.core.api.resource.data.recipe.recipe._TableResultDataTag;
 import xiao.customgun.core.resource.ResourcePojo;
@@ -24,7 +24,7 @@ public class _TableResultData extends ResourcePojo<_TableResultData> {
     /**
      * 同 {@link _DataIndex#getDataLocation()}
      */
-    private ResourceLocation recipeResultLocation;
+    private Identifier recipeResultLocation;
 
     private static final _TableResultData PARSER = new _TableResultData();
     public static _TableResultData fromJson(JsonReader reader) throws IOException {
@@ -71,14 +71,14 @@ public class _TableResultData extends ResourcePojo<_TableResultData> {
     public RecipeResultType getRecipeResultType() {
         return recipeResultType;
     }
-    public ResourceLocation getRecipeResultLocation() {
+    public Identifier getRecipeResultLocation() {
         return recipeResultLocation;
     }
 
     public void setRecipeResultType(RecipeResultType recipeResultType) {
         this.recipeResultType = recipeResultType;
     }
-    public void setRecipeResultLocation(ResourceLocation recipeResultLocation) {
+    public void setRecipeResultLocation(Identifier recipeResultLocation) {
         this.recipeResultLocation = recipeResultLocation;
     }
 }

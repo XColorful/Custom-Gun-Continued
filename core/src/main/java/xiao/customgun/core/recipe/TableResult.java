@@ -7,7 +7,7 @@
 
 package xiao.customgun.core.recipe;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -18,17 +18,17 @@ public class TableResult {
     private _TableResultData pojo;
 
     private ItemStack resultItem = ItemStack.EMPTY;
-    private ResourceLocation tabLocation;
+    private Identifier tabLocation;
 
     private @Nullable _TableResultRaw raw;
 
-    public TableResult(ItemStack resultItem, @Nullable ResourceLocation tabLocation) {
+    public TableResult(ItemStack resultItem, @Nullable Identifier tabLocation) {
         this(null, resultItem, tabLocation, null);
     }
     public TableResult(@NotNull _TableResultRaw raw) {
         this(null, null, null, raw);
     }
-    public TableResult(_TableResultData pojo, ItemStack resultItem, @Nullable ResourceLocation tabLocation, @Nullable _TableResultRaw raw) {
+    public TableResult(_TableResultData pojo, ItemStack resultItem, @Nullable Identifier tabLocation, @Nullable _TableResultRaw raw) {
         this.pojo = pojo;
         this.resultItem = resultItem;
         this.tabLocation = tabLocation; // TODO 换成注册的Tab
@@ -52,7 +52,7 @@ public class TableResult {
     public ItemStack getResultItem() {
         return this.resultItem;
     }
-    public ResourceLocation getTabLocation() {
+    public Identifier getTabLocation() {
         return this.tabLocation;
     }
 }

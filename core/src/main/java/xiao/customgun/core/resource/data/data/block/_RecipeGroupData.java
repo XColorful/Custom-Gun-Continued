@@ -9,7 +9,7 @@ package xiao.customgun.core.resource.data.data.block;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import xiao.customgun.core.api.resource.data.data.block._RecipeGroupDataTag;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.util.JsonUtils;
@@ -18,7 +18,7 @@ import java.io.IOException;
 
 public class _RecipeGroupData extends ResourcePojo<_RecipeGroupData> {
 
-    private ResourceLocation groupCategory;
+    private Identifier groupCategory;
     private String nameLang;
 
     private static final _RecipeGroupData PARSER = new _RecipeGroupData();
@@ -62,14 +62,14 @@ public class _RecipeGroupData extends ResourcePojo<_RecipeGroupData> {
 
     // --------Getter & Setter--------
 
-    public ResourceLocation getGroupCategory() {
+    public Identifier getGroupCategory() {
         return groupCategory;
     }
     public String getNameLang() {
         return nameLang;
     }
 
-    public void setGroupCategory(ResourceLocation groupCategory) {
+    public void setGroupCategory(Identifier groupCategory) {
         this.groupCategory = groupCategory;
     }
     public void setNameLang(String nameLang) {

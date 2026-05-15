@@ -9,7 +9,7 @@ package xiao.customgun.core.resource.data.recipe.recipe.ingredient;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import xiao.customgun.core.api.resource.data.recipe.recipe.ingredient._IngredientFilterDataTag;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.util.JsonUtils;
@@ -18,8 +18,8 @@ import java.io.IOException;
 
 public class _IngredientFilterData extends ResourcePojo<_IngredientFilterData> {
 
-    private ResourceLocation itemFilterLocation;
-    private ResourceLocation tagFilterLocation;
+    private Identifier itemFilterLocation;
+    private Identifier tagFilterLocation;
 
     private static final _IngredientFilterData PARSER = new _IngredientFilterData();
     public static _IngredientFilterData fromJson(JsonReader reader) throws IOException {
@@ -61,17 +61,17 @@ public class _IngredientFilterData extends ResourcePojo<_IngredientFilterData> {
 
     // --------Getter & Setter--------
 
-    public ResourceLocation getItemFilterLocation() {
+    public Identifier getItemFilterLocation() {
         return itemFilterLocation;
     }
-    public ResourceLocation getTagFilterLocation() {
+    public Identifier getTagFilterLocation() {
         return tagFilterLocation;
     }
 
-    public void setItemFilterLocation(ResourceLocation itemFilterLocation) {
+    public void setItemFilterLocation(Identifier itemFilterLocation) {
         this.itemFilterLocation = itemFilterLocation;
     }
-    public void setTagFilterLocation(ResourceLocation tagFilterLocation) {
+    public void setTagFilterLocation(Identifier tagFilterLocation) {
         this.tagFilterLocation = tagFilterLocation;
     }
 }

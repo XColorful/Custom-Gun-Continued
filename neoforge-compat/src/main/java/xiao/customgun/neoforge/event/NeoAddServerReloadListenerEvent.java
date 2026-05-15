@@ -4,7 +4,7 @@ import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.neoforged.bus.api.Event;
@@ -30,7 +30,7 @@ public class NeoAddServerReloadListenerEvent extends NeoEvent implements IAddSer
     }
 
     @Override
-    public void addListener(ResourceLocation registryKey, PreparableReloadListener listener) {
+    public void addListener(Identifier registryKey, PreparableReloadListener listener) {
         this.addServerReloadListenersEvent.addListener(registryKey, listener);
     }
 

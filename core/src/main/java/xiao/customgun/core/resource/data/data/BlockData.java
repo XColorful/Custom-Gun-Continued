@@ -9,7 +9,7 @@ package xiao.customgun.core.resource.data.data;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import xiao.customgun.core.api.resource.data.data.BlockDataTag;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.resource.data.data.block._RecipeGroupData;
@@ -20,7 +20,7 @@ import java.util.List;
 
 public class BlockData extends ResourcePojo<BlockData> {
 
-    private ResourceLocation recipeFilterLocation;
+    private Identifier recipeFilterLocation;
     private List<_RecipeGroupData> recipeGroupList;
 
     private static final BlockData PARSER = new BlockData();
@@ -63,14 +63,14 @@ public class BlockData extends ResourcePojo<BlockData> {
 
     // --------Getter & Setter--------
 
-    public ResourceLocation getRecipeFilterLocation() {
+    public Identifier getRecipeFilterLocation() {
         return recipeFilterLocation;
     }
     public List<_RecipeGroupData> getRecipeGroupList() {
         return recipeGroupList;
     }
 
-    public void setRecipeFilterLocation(ResourceLocation recipeFilterLocation) {
+    public void setRecipeFilterLocation(Identifier recipeFilterLocation) {
         this.recipeFilterLocation = recipeFilterLocation;
     }
     public void setRecipeGroupList(List<_RecipeGroupData> recipeGroupList) {

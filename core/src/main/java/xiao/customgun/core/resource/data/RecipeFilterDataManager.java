@@ -7,7 +7,7 @@
 
 package xiao.customgun.core.resource.data;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.ApiStatus;
 import xiao.customgun.core.api.resource.FileExtensionType;
 import xiao.customgun.core.api.resource.INetworkCacheReloadListener;
@@ -31,7 +31,7 @@ public class RecipeFilterDataManager extends ResourcePojoManager<RecipeFilterDat
     @Override public SyncDataType getSyncDataType() {
         return SyncDataType.RECIPE_FILTER;
     }
-    @Override public Map<ResourceLocation, String> getNetworkCache() {
+    @Override public Map<Identifier, String> getNetworkCache() {
         return Map.of();
     }
 }

@@ -9,10 +9,10 @@ package xiao.customgun.core.recipe;
 
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.*;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -27,6 +27,7 @@ import xiao.customgun.core.util.NetworkUtils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class TableRecipeSerializer implements RecipeSerializer<TableRecipe> {
 
@@ -42,7 +43,6 @@ public class TableRecipeSerializer implements RecipeSerializer<TableRecipe> {
         return TableRecipe.EMPTY;
     }
 
-    @Override
     public @Nullable TableRecipe fromNetwork(@NotNull FriendlyByteBuf buffer) {
         var recipeLocation = NetworkUtils.readResourceLocation(buffer);
         int size = buffer.readInt();
@@ -58,7 +58,6 @@ public class TableRecipeSerializer implements RecipeSerializer<TableRecipe> {
         return new TableRecipe(recipeLocation, tableResult, recipeIngredients);
     }
 
-    @Override
     public void toNetwork(@NotNull FriendlyByteBuf buffer, @NotNull TableRecipe tableRecipe) {
         NetworkUtils.writeResourceLocation(buffer, tableRecipe.getId());
         buffer.writeInt(tableRecipe.getRecipeIngredients().size());
@@ -71,21 +70,42 @@ public class TableRecipeSerializer implements RecipeSerializer<TableRecipe> {
         NetworkUtils.writeResourceLocation(buffer, tableResult.getTabLocation());
     }
 
-    @Override
-    public @NotNull Codec<TableRecipe> codec() {
-        return CODEC;
-    }
-    private static final Codec<TableRecipe> CODEC = Codec.PASSTHROUGH.flatXmap(dynamic -> {
-        try {
-            CustomGun.LOGGER.debug("TableRecipeSerializer: Loading dynamic recipe from {}", dynamic);
-            JsonObject jsonObject = dynamic.convert(JsonOps.INSTANCE).getValue().getAsJsonObject();
-            return DataResult.success(staticFromJson(
-                    CustomGun.getMcRegistry().createResourceLocation(CustomGun.MOD_ID + ":dynamic_recipe"),
-                    jsonObject));
-        } catch (Exception e) {
-            return DataResult.error(() -> "Failed to decode TableRecipe: " + e.getMessage());
+    public static final TableRecipeSerializer INSTANCE = new TableRecipeSerializer();
+    private static final MapCodec<TableRecipe> TABLE_RECIPE_MAP_CODEC = new MapCodec<>() {
+        @Override
+        public <T> Stream<T> keys(DynamicOps<T> ops) {
+            return Stream.empty();
         }
-    }, recipe -> DataResult.error(() -> "Encoding TableRecipe to JSON is not supported."));
+        @Override
+        public <T> DataResult<TableRecipe> decode(DynamicOps<T> ops, MapLike<T> input) {
+            try {
+                T map = ops.createMap(input.entries());
+                Dynamic<T> dynamic = new Dynamic<>(ops, map);
+                JsonObject jsonObject = dynamic.convert(JsonOps.INSTANCE).getValue().getAsJsonObject();
+                return DataResult.success(staticFromJson(
+                        CustomGun.getMcRegistry().createResourceLocation(CustomGun.MOD_ID + ":dynamic_recipe"),
+                        jsonObject));
+            } catch (Exception e) {
+                return DataResult.error(() -> "Failed to decode TableRecipe: " + e.getMessage());
+            }
+        }
+        @Override
+        public <T> RecordBuilder<T> encode(TableRecipe input, DynamicOps<T> ops, RecordBuilder<T> prefix) {
+            return prefix.withErrorsFrom(DataResult.error(() -> "Encoding TableRecipe to JSON is not supported."));
+        }
+    };
+    private static final StreamCodec<RegistryFriendlyByteBuf, TableRecipe> TABLE_RECIPE_STREAM_CODEC = StreamCodec.of(
+            (buf, recipe) -> INSTANCE.toNetwork(buf, recipe),
+            buf -> INSTANCE.fromNetwork(buf)
+    );
+    @Override
+    public @NotNull MapCodec<TableRecipe> codec() {
+        return TABLE_RECIPE_MAP_CODEC;
+    }
+    @Override
+    public @NotNull StreamCodec<RegistryFriendlyByteBuf, TableRecipe> streamCodec() {
+        return TABLE_RECIPE_STREAM_CODEC;
+    }
     private static TableRecipe staticFromJson(ResourceLocation id, JsonObject json) {
         try (JsonReader reader = JsonUtils.getAsReader(json)) {
             RecipeData pojo = RecipeData.fromJson(reader);

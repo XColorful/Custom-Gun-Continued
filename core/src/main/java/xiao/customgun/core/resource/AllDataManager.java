@@ -116,10 +116,9 @@ public class AllDataManager implements IEventHandler {
         );
         event.addListener(
                 CustomGun.getMcRegistry().createResourceLocation(CustomGun.MOD_ID + ":common_data_post_handler"),
-                (barrier, resourceManager, backgroundExecutor, gameExecutor) -> {
-                    return barrier
-                            .wait(Void.TYPE)
-                            .thenRunAsync(() -> {// TODO
+                (sharedState, backgroundExecutor, barrier, gameExecutor) -> {
+                    return barrier.wait("")
+                            .thenRunAsync(() -> { // TODO
                             }, gameExecutor);
                 }
         );

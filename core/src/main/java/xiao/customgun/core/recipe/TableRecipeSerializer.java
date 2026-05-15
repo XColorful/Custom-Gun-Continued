@@ -86,20 +86,11 @@ public class TableRecipeSerializer implements RecipeSerializer<TableRecipe> {
         try {
             CustomGun.LOGGER.debug("TableRecipeSerializer: Loading dynamic recipe from {}", dynamic);
             JsonObject jsonObject = dynamic.convert(JsonOps.INSTANCE).getValue().getAsJsonObject();
-            return DataResult.success(staticFromJson(
-                    CustomGun.getMcRegistry().createResourceLocation(CustomGun.MOD_ID + ":dynamic_recipe"),
+            return DataResult.success(_fromJson(
+                    _dummyLocation,
                     jsonObject));
         } catch (Exception e) {
             return DataResult.error(() -> "Failed to decode TableRecipe: " + e.getMessage());
         }
     }, recipe -> DataResult.error(() -> "Encoding TableRecipe to JSON is not supported."));
-    private static TableRecipe staticFromJson(ResourceLocation id, JsonObject json) {
-        try (JsonReader reader = JsonUtils.getAsReader(json)) {
-            RecipeData pojo = RecipeData.fromJson(reader);
-            if (pojo != null) return TableRecipe.fromPojo(id, pojo);
-        } catch (IOException e) {
-            CustomGun.LOGGER.error("TableRecipeSerializer: Parse failed for {}", id);
-        }
-        return TableRecipe.EMPTY;
-    }
 }

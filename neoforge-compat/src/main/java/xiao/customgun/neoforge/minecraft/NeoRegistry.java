@@ -11,7 +11,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.EntityType;
@@ -25,38 +25,38 @@ import xiao.customgun.neoforge.CustomGunNeoforge;
 
 public class NeoRegistry implements IMcRegistry {
 
-    @Override public ResourceLocation createResourceLocation(String rlString) {
-        return ResourceLocation.parse(rlString);
+    @Override public Identifier createResourceLocation(String rlString) {
+        return Identifier.parse(rlString);
     }
 
-    @Override public @Nullable Block getBlock(ResourceLocation rl) {
+    @Override public @Nullable Block getBlock(Identifier rl) {
         return BuiltInRegistries.BLOCK.getOptional(rl).orElse(null);
     }
-    @Override public @Nullable ResourceLocation getBlockRl(Block block) {
+    @Override public @Nullable Identifier getBlockRl(Block block) {
         return BuiltInRegistries.BLOCK.getKey(block);
     }
-    @Override public @Nullable ParticleType<?> getParticleType(ResourceLocation rl) {
+    @Override public @Nullable ParticleType<?> getParticleType(Identifier rl) {
         return BuiltInRegistries.PARTICLE_TYPE.getOptional(rl).orElse(null);
     }
-    @Override public @Nullable ResourceLocation getParticleTypeRl(ParticleType<?> particleType) {
+    @Override public @Nullable Identifier getParticleTypeRl(ParticleType<?> particleType) {
         return BuiltInRegistries.PARTICLE_TYPE.getKey(particleType);
     }
-    @Override public @Nullable MobEffect getMobEffect(ResourceLocation rl) {
+    @Override public @Nullable MobEffect getMobEffect(Identifier rl) {
         return BuiltInRegistries.MOB_EFFECT.getOptional(rl).orElse(null);
     }
-    @Override public @Nullable ResourceLocation getMobEffectRl(MobEffect mobEffect) {
+    @Override public @Nullable Identifier getMobEffectRl(MobEffect mobEffect) {
         return BuiltInRegistries.MOB_EFFECT.getKey(mobEffect);
     }
-    @Override public @Nullable Item getItem(ResourceLocation rl) {
+    @Override public @Nullable Item getItem(Identifier rl) {
         return BuiltInRegistries.ITEM.getOptional(rl).orElse(null);
     }
-    @Override public @Nullable ResourceLocation getItemRl(Item item) {
+    @Override public @Nullable Identifier getItemRl(Item item) {
         return BuiltInRegistries.ITEM.getKey(item);
     }
-    @Override public @Nullable EntityType<?> getEntityType(ResourceLocation rl) {
+    @Override public @Nullable EntityType<?> getEntityType(Identifier rl) {
         return BuiltInRegistries.ENTITY_TYPE.getOptional(rl).orElse(null);
     }
-    @Override public @Nullable ResourceLocation getEntityTypeRl(EntityType<?> entityType) {
+    @Override public @Nullable Identifier getEntityTypeRl(EntityType<?> entityType) {
         return BuiltInRegistries.ENTITY_TYPE.getKey(entityType);
     }
 

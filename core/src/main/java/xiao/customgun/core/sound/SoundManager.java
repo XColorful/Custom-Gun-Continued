@@ -8,7 +8,7 @@
 package xiao.customgun.core.sound;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import xiao.customgun.core.api.resource.assets.display.SoundTag;
@@ -104,7 +104,7 @@ public class SoundManager {
     public static final String INSTALL_SOUND = SoundTag.INSTALL_SOUND;
 
     public static void sendSoundToNearby(LivingEntity sourceEntity, int distance,
-                                         ResourceLocation gunId, ResourceLocation gunDisplayId,
+                                         Identifier gunId, Identifier gunDisplayId,
                                          String soundName, float volume, float pitch) {
         if (PlannedRefactor.ON_SEND_SOUND_MESSAGE) return;
         if (sourceEntity.level() instanceof ServerLevel serverLevel) {

@@ -7,7 +7,7 @@
 
 package xiao.customgun.client.config;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.block.Block;
@@ -25,9 +25,9 @@ import java.util.Map;
 public class InteractFilterData {
     private static boolean DEFAULT_RESULT = false;
     // 方块
-    private static final Map<ResourceLocation, Boolean> BLOCK_FILTER = new HashMap<>();
+    private static final Map<Identifier, Boolean> BLOCK_FILTER = new HashMap<>();
     // 实体
-    private static final Map<ResourceLocation, Boolean> ENTITY_FILTER = new HashMap<>();
+    private static final Map<Identifier, Boolean> ENTITY_FILTER = new HashMap<>();
 
     public static void reloadInteractFilter() {
         BLOCK_FILTER.clear();
@@ -47,7 +47,7 @@ public class InteractFilterData {
     }
 
     @ApiStatus.Internal
-    public static boolean addBlockFilter(ResourceLocation rl, @Nullable Boolean allowed) {
+    public static boolean addBlockFilter(Identifier rl, @Nullable Boolean allowed) {
         if (allowed == null) {
             return BLOCK_FILTER.remove(rl) != null;
         } else {

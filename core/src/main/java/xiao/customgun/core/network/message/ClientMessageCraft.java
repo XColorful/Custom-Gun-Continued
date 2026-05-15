@@ -8,7 +8,7 @@
 package xiao.customgun.core.network.message;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import xiao.customgun.CustomGun;
 import xiao.customgun.core.api.network.message.IMessage;
@@ -17,7 +17,7 @@ import xiao.customgun.core.util.NetworkUtils;
 import java.util.function.Consumer;
 
 public record ClientMessageCraft(
-        ResourceLocation recipeId, // 细节：Identifier 放同一行
+        Identifier recipeId, // 细节：Identifier 放同一行
         int menuId)
         implements IMessage<ClientMessageCraft> {
 

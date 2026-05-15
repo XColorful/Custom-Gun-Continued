@@ -9,7 +9,7 @@ package xiao.customgun.core.api.minecraft;
 
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.particles.ParticleType;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.EntityType;
@@ -20,18 +20,18 @@ import org.jetbrains.annotations.Nullable;
 
 public interface IMcRegistry {
 
-    ResourceLocation createResourceLocation(String rlString);
+    Identifier createResourceLocation(String rlString);
 
-    @Nullable Block getBlock(ResourceLocation rl);
-    @Nullable ResourceLocation getBlockRl(Block block);
-    @Nullable ParticleType<?> getParticleType(ResourceLocation rl);
-    @Nullable ResourceLocation getParticleTypeRl(ParticleType<?> particleType);
-    @Nullable MobEffect getMobEffect(ResourceLocation rl);
-    @Nullable ResourceLocation getMobEffectRl(MobEffect mobEffect);
-    @Nullable Item getItem(ResourceLocation rl);
-    @Nullable ResourceLocation getItemRl(Item item);
-    @Nullable EntityType<?> getEntityType(ResourceLocation rl);
-    @Nullable ResourceLocation getEntityTypeRl(EntityType<?> entityType);
+    @Nullable Block getBlock(Identifier rl);
+    @Nullable Identifier getBlockRl(Block block);
+    @Nullable ParticleType<?> getParticleType(Identifier rl);
+    @Nullable Identifier getParticleTypeRl(ParticleType<?> particleType);
+    @Nullable MobEffect getMobEffect(Identifier rl);
+    @Nullable Identifier getMobEffectRl(MobEffect mobEffect);
+    @Nullable Item getItem(Identifier rl);
+    @Nullable Identifier getItemRl(Item item);
+    @Nullable EntityType<?> getEntityType(Identifier rl);
+    @Nullable Identifier getEntityTypeRl(EntityType<?> entityType);
 
     boolean isModLoaded(String modId);
 

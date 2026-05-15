@@ -8,7 +8,7 @@
 package xiao.customgun.core.network.message;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import xiao.customgun.CustomGun;
 import xiao.customgun.core.api.common.McSide;
 import xiao.customgun.core.api.network.message.IMessage;
@@ -18,7 +18,7 @@ import xiao.customgun.core.util.NetworkUtils;
 import java.util.function.Consumer;
 
 public record ServerMessageSound(int entityId,
-                                 ResourceLocation gunId, ResourceLocation gunDisplayId, // 细节：Identifier 放同一行
+                                 Identifier gunId, Identifier gunDisplayId, // 细节：Identifier 放同一行
                                  String soundName, float volume, float pitch, int distance)
         implements IMessage<ServerMessageSound> {
 

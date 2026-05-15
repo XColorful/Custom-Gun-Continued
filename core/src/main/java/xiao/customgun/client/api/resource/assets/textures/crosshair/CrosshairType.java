@@ -7,7 +7,7 @@
 
 package xiao.customgun.client.api.resource.assets.textures.crosshair;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.CustomGun;
 import xiao.customgun.client.api.resource.assets.textures.CrosshairFolderType;
@@ -51,7 +51,7 @@ public enum CrosshairType implements ResourceTag {
 
     public final CrosshairFolderType folderType;
     public final String crosshairTag;
-    private final ResourceLocation fastDefaultRl;
+    private final Identifier fastDefaultRl;
     CrosshairType(CrosshairFolderType folderType, String crosshairTag) {
         this.folderType = folderType;
         this.crosshairTag = crosshairTag;
@@ -68,12 +68,12 @@ public enum CrosshairType implements ResourceTag {
      * 模组内置的事件监听器调用，无 Hash get 开销，线程安全
      * 扩展模组直接走别的获取/注入方式
      */
-    public ResourceLocation getLocationFast() {
+    public Identifier getLocationFast() {
         return this.fastDefaultRl;
     }
 
     // {名称}.png -> textures/crosshair/{normal}/{名称}.png
-    private static final Map<String, ResourceLocation> CACHE = new ConcurrentHashMap<>(); // 防止扩展模组不再渲染线程处理
+    private static final Map<String, Identifier> CACHE = new ConcurrentHashMap<>(); // 防止扩展模组不再渲染线程处理
 
     static {
         for (CrosshairType type : CrosshairType.values()) {
@@ -84,7 +84,7 @@ public enum CrosshairType implements ResourceTag {
     public static void addCrosshairType(CrosshairFolderType folderType, String crosshairTag) {
         addCrosshairType(folderType.getFolderName(), crosshairTag);
     }
-    public static ResourceLocation addCrosshairType(String folderType, String crosshair) {
+    public static Identifier addCrosshairType(String folderType, String crosshair) {
         var location = CustomGun.getMcRegistry().createResourceLocation(String.format(LOCATION_FORMAT,
                 CustomGun.MOD_ID,
                 folderType,
@@ -93,16 +93,16 @@ public enum CrosshairType implements ResourceTag {
         return location;
     }
 
-    public static @Nullable ResourceLocation getTextureLocation(CrosshairType crosshair) {
+    public static @Nullable Identifier getTextureLocation(CrosshairType crosshair) {
         return getTextureLocation(crosshair.getTagName());
     }
-    public static @Nullable ResourceLocation getTextureLocation(String crosshair) {
+    public static @Nullable Identifier getTextureLocation(String crosshair) {
         return CACHE.get(crosshair);
     }
-    public static ResourceLocation getOrAddTextureLocation(CrosshairType crosshair) {
+    public static Identifier getOrAddTextureLocation(CrosshairType crosshair) {
         return getOrAddTextureLocation(CrosshairFolderType.NORMAL.getFolderName(), crosshair.getTagName());
     }
-    public static ResourceLocation getOrAddTextureLocation(String folderType, String crosshair) {
+    public static Identifier getOrAddTextureLocation(String folderType, String crosshair) {
         var location = CACHE.get(crosshair);
         return location != null ? location : addCrosshairType(folderType, crosshair);
     }

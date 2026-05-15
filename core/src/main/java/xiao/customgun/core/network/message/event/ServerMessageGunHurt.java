@@ -8,7 +8,7 @@
 package xiao.customgun.core.network.message.event;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import xiao.customgun.CustomGun;
 import xiao.customgun.client.network.message.event._ServerMessageGunHurt;
 import xiao.customgun.core.api.network.message.IMessage;
@@ -17,7 +17,7 @@ import xiao.customgun.core.util.NetworkUtils;
 import java.util.function.Consumer;
 
 public record ServerMessageGunHurt(int bulletId, int hurtEntityId, int attackerId,
-                                   ResourceLocation gunId, ResourceLocation gunDisplayId, // 细节：Identifier 放同一行
+                                   Identifier gunId, Identifier gunDisplayId, // 细节：Identifier 放同一行
                                    float amount, boolean isHeadShot, float headshotMultiplier)
         implements IMessage<ServerMessageGunHurt> {
 

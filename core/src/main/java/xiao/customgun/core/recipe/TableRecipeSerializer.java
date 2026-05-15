@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class TableRecipeSerializer implements RecipeSerializer<TableRecipe> {
+public class TableRecipeSerializer {
 
     public @NotNull TableRecipe fromJson(@NotNull Identifier recipeLocation, @NotNull JsonObject jsonObject) {
         try (JsonReader reader = JsonUtils.getAsReader(jsonObject)) {
@@ -98,14 +98,7 @@ public class TableRecipeSerializer implements RecipeSerializer<TableRecipe> {
             (buf, recipe) -> INSTANCE.toNetwork(buf, recipe),
             buf -> INSTANCE.fromNetwork(buf)
     );
-    @Override
-    public @NotNull MapCodec<TableRecipe> codec() {
-        return TABLE_RECIPE_MAP_CODEC;
-    }
-    @Override
-    public @NotNull StreamCodec<RegistryFriendlyByteBuf, TableRecipe> streamCodec() {
-        return TABLE_RECIPE_STREAM_CODEC;
-    }
+    public static final RecipeSerializer<TableRecipe> REGISTRY_INSTANCE = new RecipeSerializer<>(TABLE_RECIPE_MAP_CODEC, TABLE_RECIPE_STREAM_CODEC);
     private static TableRecipe staticFromJson(Identifier id, JsonObject json) {
         try (JsonReader reader = JsonUtils.getAsReader(json)) {
             RecipeData pojo = RecipeData.fromJson(reader);

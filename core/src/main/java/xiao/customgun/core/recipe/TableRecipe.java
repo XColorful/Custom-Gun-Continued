@@ -29,8 +29,7 @@ public class TableRecipe implements Recipe<RecipeInput> {
     private final TableResult tableResult;
     private final List<TableIngredient> recipeIngredients;
 
-    public TableRecipe(Identifier recipeLocation,
-                       TableResult tableResult, List<TableIngredient> recipeIngredients) {
+    public TableRecipe(Identifier recipeLocation, TableResult tableResult, List<TableIngredient> recipeIngredients) {
         this.recipeLocation = recipeLocation;
         this.tableResult = tableResult;
         this.recipeIngredients = recipeIngredients;
@@ -58,7 +57,7 @@ public class TableRecipe implements Recipe<RecipeInput> {
     }
 
     @Override
-    public @NotNull ItemStack assemble(@NotNull RecipeInput input, @NotNull HolderLookup.Provider provider) {
+    public @NotNull ItemStack assemble(@NotNull RecipeInput input) {
         return ItemStack.EMPTY;
     }
 
@@ -99,5 +98,15 @@ public class TableRecipe implements Recipe<RecipeInput> {
     }
     public Identifier getTabLocation() {
         return this.tableResult.getTabLocation();
+    }
+
+    @Override
+    public boolean showNotification() {
+        return true;
+    }
+
+    @Override
+    public @NotNull String group() {
+        return "";
     }
 }

@@ -35,10 +35,10 @@ public class NetworkUtils {
     }
 
     public static void writeIngredient(FriendlyByteBuf buffer, Ingredient ingredient){
-        ingredient.toNetwork(buffer);
+        Ingredient.CONTENTS_STREAM_CODEC.encode(_wrap(buffer), ingredient);
     }
     public static Ingredient readIngredient(FriendlyByteBuf buffer){
-        return Ingredient.fromNetwork(buffer);
+        return Ingredient.CONTENTS_STREAM_CODEC.decode(_wrap(buffer));
     }
 
     public static void writeResourceLocationMap(FriendlyByteBuf buffer, Map<ResourceLocation, String> map) {

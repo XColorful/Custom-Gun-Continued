@@ -11,7 +11,7 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.MalformedJsonException;
 import net.minecraft.resources.FileToIdConverter;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -27,13 +27,13 @@ import java.util.Map;
  * 将资源包中的文件流式解析为 Pojo
  */
 public abstract class ResourcePojoManager<T extends ResourcePojo<T>>
-        extends SimplePreparableReloadListener<Map<ResourceLocation, T>> {
+        extends SimplePreparableReloadListener<Map<Identifier, T>> {
 
     private final String managerName;
-    private final ResourceLocation registryName;
+    private final Identifier registryName;
     private final FileToIdConverter fileToIdConverter;
     private final JsonUtils.FromJsonReader<T> fromJson;
-    protected Map<ResourceLocation, T> pojoMap;
+    protected Map<Identifier, T> pojoMap;
 
     /**
      * 是否允许带注释的非标准 Json
@@ -67,7 +67,7 @@ public abstract class ResourcePojoManager<T extends ResourcePojo<T>>
         this.logParseException = logParseException;
     }
 
-    public ResourceLocation getRegistryName() {
+    public Identifier getRegistryName() {
         return this.registryName;
     }
 
@@ -84,11 +84,11 @@ public abstract class ResourcePojoManager<T extends ResourcePojo<T>>
         this.logParseException = logParseException;
     }
 
-    public T getPojo(ResourceLocation pojoLocation) {
+    public T getPojo(Identifier pojoLocation) {
         return pojoMap.get(pojoLocation);
     }
 
-    public Map<ResourceLocation, T> getAllPojo() {
+    public Map<Identifier, T> getAllPojo() {
         return pojoMap;
     }
 
@@ -96,12 +96,12 @@ public abstract class ResourcePojoManager<T extends ResourcePojo<T>>
      * 多线程处理
      */
     @Override
-    protected @NotNull Map<ResourceLocation, T> prepare(@NotNull ResourceManager resourceManager, @NotNull ProfilerFiller profiler) {
+    protected @NotNull Map<Identifier, T> prepare(@NotNull ResourceManager resourceManager, @NotNull ProfilerFiller profiler) {
         profiler.push(() -> this.managerName);
-        Map<ResourceLocation, T> map = new HashMap<>();
+        Map<Identifier, T> map = new HashMap<>();
         try {
             this.fileToIdConverter.listMatchingResources(resourceManager).forEach((location, resource) -> {
-                ResourceLocation pojoLocation = fileToIdConverter.fileToId(location);
+                var pojoLocation = fileToIdConverter.fileToId(location);
 
                 try (Reader reader = resource.openAsReader();
                      JsonReader jsonReader = new JsonReader(reader)) {
@@ -138,7 +138,7 @@ public abstract class ResourcePojoManager<T extends ResourcePojo<T>>
      * 单线程处理 (线程安全)
      */
     @Override
-    protected void apply(@NotNull Map<ResourceLocation, T> pObject, @NotNull ResourceManager pResourceManager, @NotNull ProfilerFiller pProfiler) {
+    protected void apply(@NotNull Map<Identifier, T> pObject, @NotNull ResourceManager pResourceManager, @NotNull ProfilerFiller pProfiler) {
         if (this.validateAtApply) {
             var iterator = pObject.entrySet().iterator();
             while (iterator.hasNext()) {

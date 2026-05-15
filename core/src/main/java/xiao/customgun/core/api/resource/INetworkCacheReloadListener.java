@@ -7,7 +7,7 @@
 
 package xiao.customgun.core.api.resource;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import xiao.customgun.core.resource.SyncDataType;
 
@@ -17,5 +17,5 @@ public interface INetworkCacheReloadListener extends PreparableReloadListener {
 
     SyncDataType getSyncDataType();
 
-    Map<ResourceLocation, String> getNetworkCache();
+    Map<Identifier, String> getNetworkCache();
 }

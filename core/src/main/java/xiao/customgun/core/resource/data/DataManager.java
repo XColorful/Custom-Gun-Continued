@@ -7,7 +7,7 @@
 
 package xiao.customgun.core.resource.data;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.ApiStatus;
 import xiao.customgun.core.api.resource.FileExtensionType;
 import xiao.customgun.core.api.resource.INetworkCacheReloadListener;
@@ -42,7 +42,7 @@ public abstract class DataManager<T extends ResourcePojo<T>> extends ResourcePoj
         @Override public SyncDataType getSyncDataType() {
             return SyncDataType.GUN_DATA;
         }
-        @Override public Map<ResourceLocation, String> getNetworkCache() {
+        @Override public Map<Identifier, String> getNetworkCache() {
             return Map.of();
         }
     }
@@ -57,7 +57,7 @@ public abstract class DataManager<T extends ResourcePojo<T>> extends ResourcePoj
         @Override public SyncDataType getSyncDataType() {
             return SyncDataType.ATTACHMENT_DATA;
         }
-        @Override public Map<ResourceLocation, String> getNetworkCache() {
+        @Override public Map<Identifier, String> getNetworkCache() {
             return Map.of();
         }
     }
@@ -72,7 +72,7 @@ public abstract class DataManager<T extends ResourcePojo<T>> extends ResourcePoj
         @Override public SyncDataType getSyncDataType() {
             return SyncDataType.BLOCK_DATA;
         }
-        @Override public Map<ResourceLocation, String> getNetworkCache() {
+        @Override public Map<Identifier, String> getNetworkCache() {
             return Map.of();
         }
     }

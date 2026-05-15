@@ -1,6 +1,6 @@
 package xiao.customgun.core.resource.data.index;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import xiao.customgun.core.resource.ResourcePojo;
 
 public abstract class _DataIndex<T extends _DataIndex<T>> extends ResourcePojo<T> {
@@ -8,8 +8,8 @@ public abstract class _DataIndex<T extends _DataIndex<T>> extends ResourcePojo<T
     private String nameLang;
     private String tooltipLang;
 
-    private ResourceLocation dataLocation;
-    private ResourceLocation displayIndexLocation;
+    private Identifier dataLocation;
+    private Identifier displayIndexLocation;
 
     private int slotSort = 0;
 
@@ -21,10 +21,10 @@ public abstract class _DataIndex<T extends _DataIndex<T>> extends ResourcePojo<T
     public final String getTooltipLang() {
         return tooltipLang;
     }
-    public final ResourceLocation getDataLocation() {
+    public final Identifier getDataLocation() {
         return dataLocation;
     }
-    public final ResourceLocation getDisplayIndexLocation() {
+    public final Identifier getDisplayIndexLocation() {
         return displayIndexLocation;
     }
     public final int getSlotSort() {
@@ -37,10 +37,10 @@ public abstract class _DataIndex<T extends _DataIndex<T>> extends ResourcePojo<T
     public final void setTooltipLang(String tooltipLang) {
         this.tooltipLang = tooltipLang;
     }
-    public final void setDataLocation(ResourceLocation dataLocation) {
+    public final void setDataLocation(Identifier dataLocation) {
         this.dataLocation = dataLocation;
     }
-    public final void setDisplayIndexLocation(ResourceLocation displayIndexLocation) {
+    public final void setDisplayIndexLocation(Identifier displayIndexLocation) {
         this.displayIndexLocation = displayIndexLocation;
     }
     public final void setSlotSort(int slotSort) {

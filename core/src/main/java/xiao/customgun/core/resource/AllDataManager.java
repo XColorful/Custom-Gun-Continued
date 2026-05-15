@@ -8,7 +8,7 @@
 package xiao.customgun.core.resource;
 
 import com.google.common.collect.ImmutableMap;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
@@ -128,8 +128,8 @@ public class AllDataManager implements IEventHandler {
         return listener;
     }
 
-    public Map<SyncDataType, Map<ResourceLocation, String>> getNetworkCache() {
-        ImmutableMap.Builder<SyncDataType, Map<ResourceLocation, String>> builder = ImmutableMap.builder();
+    public Map<SyncDataType, Map<Identifier, String>> getNetworkCache() {
+        ImmutableMap.Builder<SyncDataType, Map<Identifier, String>> builder = ImmutableMap.builder();
         for (INetworkCacheReloadListener listener : this.networkCacheListeners) {
             builder.put(listener.getSyncDataType(), listener.getNetworkCache());
         }

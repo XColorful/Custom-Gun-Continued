@@ -9,7 +9,7 @@ import com.google.gson.internal.bind.JsonTreeReader;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.CustomGun;
 import xiao.customgun.core.api.minecraft.IMcRegistry;
@@ -109,12 +109,12 @@ public class JsonUtils {
 
     // --------扩展类型--------
 
-    public static ResourceLocation readResourceLocation(JsonReader reader) throws IOException {
+    public static Identifier readResourceLocation(JsonReader reader) throws IOException {
         String rl = readString(reader);
         return rl != null ? mcRegistry.createResourceLocation(rl) : null;
     }
 
-    public static void writeResourceLocation(JsonWriter writer, String key, ResourceLocation value) throws IOException {
+    public static void writeResourceLocation(JsonWriter writer, String key, Identifier value) throws IOException {
         if (value != null) writer.name(key).value(value.toString());
     }
 
@@ -264,16 +264,16 @@ public class JsonUtils {
         }
         writer.endObject();
     }
-    public static <T> HashMap<ResourceLocation, T> readRl2ObjectMap(JsonReader reader, ReadFunction<T> function) throws IOException {
+    public static <T> HashMap<Identifier, T> readRl2ObjectMap(JsonReader reader, ReadFunction<T> function) throws IOException {
         if (reader.peek() == JsonToken.NULL) {
             reader.nextNull();
             return new HashMap<>();
         }
-        HashMap<ResourceLocation, T> map = new HashMap<>();
+        HashMap<Identifier, T> map = new HashMap<>();
         if (reader.peek() == JsonToken.BEGIN_OBJECT) {
             reader.beginObject();
             while (reader.hasNext()) {
-                ResourceLocation key = mcRegistry.createResourceLocation(reader.nextName());
+                var key = mcRegistry.createResourceLocation(reader.nextName());
                 T value = function.apply(reader);
                 if (key != null && value != null) {
                     map.put(key, value);
@@ -285,10 +285,10 @@ public class JsonUtils {
         }
         return map;
     }
-    public static <T> void writeRl2ObjectMap(JsonWriter writer, String key, Map<ResourceLocation, T> map, WriteAction<T> action) throws IOException {
+    public static <T> void writeRl2ObjectMap(JsonWriter writer, String key, Map<Identifier, T> map, WriteAction<T> action) throws IOException {
         if (map == null) return;
         writer.name(key).beginObject(); {
-            for (Map.Entry<ResourceLocation, T> entry : map.entrySet()) {
+            for (Map.Entry<Identifier, T> entry : map.entrySet()) {
                 if (entry.getKey() != null && entry.getValue() != null) {
                     writer.name(entry.getKey().toString());
                     action.accept(writer, entry.getValue());

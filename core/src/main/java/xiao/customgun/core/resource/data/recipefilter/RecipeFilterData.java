@@ -9,7 +9,7 @@ package xiao.customgun.core.resource.data.recipefilter;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import xiao.customgun.core.api.resource.data.recipefilter.RecipeFilterDataTag;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.util.JsonUtils;
@@ -21,11 +21,11 @@ import java.util.regex.Pattern;
 public class RecipeFilterData extends ResourcePojo<RecipeFilterData> {
 
     private List<String> whitelistRaw;
-    private List<ResourceLocation> whitelistLiteral;
+    private List<Identifier> whitelistLiteral;
     private List<Pattern> whitelistPattern;
 
     private List<String> blacklistRaw;
-    private List<ResourceLocation> blacklistLiteral;
+    private List<Identifier> blacklistLiteral;
     private List<Pattern> blacklistPattern;
 
     private static final RecipeFilterData PARSER = new RecipeFilterData();
@@ -72,7 +72,7 @@ public class RecipeFilterData extends ResourcePojo<RecipeFilterData> {
     public List<String> getWhitelistRaw() {
         return whitelistRaw;
     }
-    public List<ResourceLocation> getWhitelistLiteral() {
+    public List<Identifier> getWhitelistLiteral() {
         return whitelistLiteral;
     }
     public List<Pattern> getWhitelistPattern() {
@@ -81,7 +81,7 @@ public class RecipeFilterData extends ResourcePojo<RecipeFilterData> {
     public List<String> getBlacklistRaw() {
         return blacklistRaw;
     }
-    public List<ResourceLocation> getBlacklistLiteral() {
+    public List<Identifier> getBlacklistLiteral() {
         return blacklistLiteral;
     }
     public List<Pattern> getBlacklistPattern() {
@@ -91,7 +91,7 @@ public class RecipeFilterData extends ResourcePojo<RecipeFilterData> {
     public void setWhitelistRaw(List<String> whitelistRaw) {
         this.whitelistRaw = whitelistRaw;
     }
-    public void setWhitelistLiteral(List<ResourceLocation> whitelistLiteral) {
+    public void setWhitelistLiteral(List<Identifier> whitelistLiteral) {
         this.whitelistLiteral = whitelistLiteral;
     }
     public void setWhitelistPattern(List<Pattern> whitelistPattern) {
@@ -100,7 +100,7 @@ public class RecipeFilterData extends ResourcePojo<RecipeFilterData> {
     public void setBlacklistRaw(List<String> blacklistRaw) {
         this.blacklistRaw = blacklistRaw;
     }
-    public void setBlacklistLiteral(List<ResourceLocation> blacklistLiteral) {
+    public void setBlacklistLiteral(List<Identifier> blacklistLiteral) {
         this.blacklistLiteral = blacklistLiteral;
     }
     public void setBlacklistPattern(List<Pattern> blacklistPattern) {

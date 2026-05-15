@@ -13,7 +13,7 @@ import com.mojang.serialization.*;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -31,7 +31,7 @@ import java.util.stream.Stream;
 
 public class TableRecipeSerializer implements RecipeSerializer<TableRecipe> {
 
-    public @NotNull TableRecipe fromJson(@NotNull ResourceLocation recipeLocation, @NotNull JsonObject jsonObject) {
+    public @NotNull TableRecipe fromJson(@NotNull Identifier recipeLocation, @NotNull JsonObject jsonObject) {
         try (JsonReader reader = JsonUtils.getAsReader(jsonObject)) {
             RecipeData pojo = RecipeData.fromJson(reader);
             if (pojo != null) {
@@ -106,7 +106,7 @@ public class TableRecipeSerializer implements RecipeSerializer<TableRecipe> {
     public @NotNull StreamCodec<RegistryFriendlyByteBuf, TableRecipe> streamCodec() {
         return TABLE_RECIPE_STREAM_CODEC;
     }
-    private static TableRecipe staticFromJson(ResourceLocation id, JsonObject json) {
+    private static TableRecipe staticFromJson(Identifier id, JsonObject json) {
         try (JsonReader reader = JsonUtils.getAsReader(json)) {
             RecipeData pojo = RecipeData.fromJson(reader);
             if (pojo != null) return TableRecipe.fromPojo(id, pojo);

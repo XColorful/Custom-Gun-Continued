@@ -12,7 +12,7 @@ import it.unimi.dsi.fastutil.ints.Int2ReferenceMap;
 import it.unimi.dsi.fastutil.ints.Int2ReferenceOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Reference2IntMap;
 import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
@@ -66,7 +66,7 @@ public class SyncedEntityData {
     public boolean updateMappings(ServerMessageSyncedEntityDataMapping message) {
         this.syncedIdToKey.clear();
 
-        List<Pair<ResourceLocation, ResourceLocation>> missingKeys = new ArrayList<>();
+        List<Pair<Identifier, Identifier>> missingKeys = new ArrayList<>();
         // TODO 待移植
         return missingKeys.isEmpty();
     }

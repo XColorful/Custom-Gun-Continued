@@ -9,7 +9,7 @@ package xiao.customgun.core.resource.data.data;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import xiao.customgun.core.api.resource.data.data.GunDataTag;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.resource.data.data.gun.*;
@@ -24,7 +24,7 @@ public class GunData extends ResourcePojo<GunData> {
 
     // 枪械属性
     private _BulletData bulletData;
-    private ResourceLocation ammoType;
+    private Identifier ammoType;
     private _BoltTypeData boltType;
 
     private int rpm = 300;
@@ -41,7 +41,7 @@ public class GunData extends ResourcePojo<GunData> {
     private _ReloadData reloadData;
 
     // 枪械脚本
-    private ResourceLocation scriptType;
+    private Identifier scriptType;
     private Map<String, Object> scriptParam;
 
     // 开火模式
@@ -57,7 +57,7 @@ public class GunData extends ResourcePojo<GunData> {
 
     // 配件
     private List<_AttachmentTypeData> allowAttachmentTypes;
-    private Map<ResourceLocation, AttachmentData> exclusiveAttachments;
+    private Map<Identifier, AttachmentData> exclusiveAttachments;
     private int defaultMagSize = 30;
     private int[] extendedMagAmmoSize;
     private _BuiltinAttachmentData builtinAttachments;
@@ -199,7 +199,7 @@ public class GunData extends ResourcePojo<GunData> {
     public _BulletData getBulletData() {
         return bulletData;
     }
-    public ResourceLocation getAmmoType() {
+    public Identifier getAmmoType() {
         return ammoType;
     }
     public _BoltTypeData getBoltType() {
@@ -232,7 +232,7 @@ public class GunData extends ResourcePojo<GunData> {
     public _ReloadData getReloadData() {
         return reloadData;
     }
-    public ResourceLocation getScriptType() {
+    public Identifier getScriptType() {
         return scriptType;
     }
     public Map<String, Object> getScriptParam() {
@@ -262,7 +262,7 @@ public class GunData extends ResourcePojo<GunData> {
     public List<_AttachmentTypeData> getAllowAttachmentTypes() {
         return allowAttachmentTypes;
     }
-    public Map<ResourceLocation, AttachmentData> getExclusiveAttachments() {
+    public Map<Identifier, AttachmentData> getExclusiveAttachments() {
         return exclusiveAttachments;
     }
     public int getDefaultMagSize() {
@@ -302,7 +302,7 @@ public class GunData extends ResourcePojo<GunData> {
     public void setBulletData(_BulletData bulletData) {
         this.bulletData = bulletData;
     }
-    public void setAmmoType(ResourceLocation ammoType) {
+    public void setAmmoType(Identifier ammoType) {
         this.ammoType = ammoType;
     }
     public void setBoltType(_BoltTypeData boltType) {
@@ -335,7 +335,7 @@ public class GunData extends ResourcePojo<GunData> {
     public void setReloadData(_ReloadData reloadData) {
         this.reloadData = reloadData;
     }
-    public void setScriptType(ResourceLocation scriptType) {
+    public void setScriptType(Identifier scriptType) {
         this.scriptType = scriptType;
     }
     public void setScriptParam(Map<String, Object> scriptParam) {
@@ -365,7 +365,7 @@ public class GunData extends ResourcePojo<GunData> {
     public void setAllowAttachmentTypes(List<_AttachmentTypeData> allowAttachmentTypes) {
         this.allowAttachmentTypes = allowAttachmentTypes;
     }
-    public void setExclusiveAttachments(Map<ResourceLocation, AttachmentData> exclusiveAttachments) {
+    public void setExclusiveAttachments(Map<Identifier, AttachmentData> exclusiveAttachments) {
         this.exclusiveAttachments = exclusiveAttachments;
     }
     public void setDefaultMagSize(int defaultMagSize) {

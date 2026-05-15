@@ -4,7 +4,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamDecoder;
 import net.minecraft.network.codec.StreamEncoder;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import xiao.customgun.CustomGun;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -20,11 +20,11 @@ public class NetworkUtils {
         return ItemStack.OPTIONAL_STREAM_CODEC.decode(_wrap(buffer));
     }
 
-    public static void writeResourceLocation(FriendlyByteBuf buffer, ResourceLocation location){
-        buffer.writeResourceLocation(location);
+    public static void writeResourceLocation(FriendlyByteBuf buffer, Identifier location){
+        buffer.writeIdentifier(location);
     }
-    public static ResourceLocation readResourceLocation(FriendlyByteBuf buffer){
-        return buffer.readResourceLocation();
+    public static Identifier readResourceLocation(FriendlyByteBuf buffer){
+        return buffer.readIdentifier();
     }
 
     public static void writeUtf(FriendlyByteBuf buffer, String string){
@@ -41,10 +41,10 @@ public class NetworkUtils {
         return Ingredient.fromNetwork(buffer);
     }
 
-    public static void writeResourceLocationMap(FriendlyByteBuf buffer, Map<ResourceLocation, String> map) {
-        buffer.writeMap(map, FriendlyByteBuf::writeResourceLocation, (buf, s) -> buf.writeUtf(s));
+    public static void writeResourceLocationMap(FriendlyByteBuf buffer, Map<Identifier, String> map) {
+        buffer.writeMap(map, FriendlyByteBuf::writeIdentifier, (buf, s) -> buf.writeUtf(s));
     }
-    public static Map<ResourceLocation, String> readResourceLocationMap(FriendlyByteBuf buffer) {
+    public static Map<Identifier, String> readResourceLocationMap(FriendlyByteBuf buffer) {
         return buffer.readMap(NetworkUtils::readResourceLocation, NetworkUtils::readUtf);
     }
 

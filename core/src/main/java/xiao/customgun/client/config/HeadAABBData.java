@@ -7,7 +7,7 @@
 
 package xiao.customgun.client.config;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
@@ -20,7 +20,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class HeadAABBData {
-    private static final Map<ResourceLocation, AABB> AABB_CHECK = new HashMap<>();
+    private static final Map<Identifier, AABB> AABB_CHECK = new HashMap<>();
     // 解析格式：minecraft:herobrine [-0.225, 1.35, -0.225, 0.225, 1.8, 0.225]
     // 生物ID + 碰撞箱
     private static final Pattern REG = Pattern.compile("^([a-z0-9_.-]+:[a-z0-9/._-]+)\s*?\\[([-+]?[0-9]*\\.?[0-9]+),\s*?([-+]?[0-9]*\\.?[0-9]+),\s*?([-+]?[0-9]*\\.?[0-9]+),\s*?([-+]?[0-9]*\\.?[0-9]+),\s*?([-+]?[0-9]*\\.?[0-9]+),\s*?([-+]?[0-9]*\\.?[0-9]+),*?\s*?]");
@@ -50,7 +50,7 @@ public class HeadAABBData {
         return null;
     }
 
-    public static @Nullable AABB getHeadAABB(ResourceLocation id) {
+    public static @Nullable AABB getHeadAABB(Identifier id) {
         return AABB_CHECK.get(id);
     }
 }

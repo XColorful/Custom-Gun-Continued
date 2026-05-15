@@ -9,7 +9,7 @@ package xiao.customgun.core.network.message;
 
 import net.minecraft.network.Connection;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import xiao.customgun.CustomGun;
 import xiao.customgun.core.api.network.message.IMessage;
 import xiao.customgun.core.resource.SyncDataType;
@@ -19,7 +19,7 @@ import xiao.customgun.core.util.NetworkUtils;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public record ServerMessageSyncGunPack(Map<SyncDataType, Map<ResourceLocation, String>> cache)
+public record ServerMessageSyncGunPack(Map<SyncDataType, Map<Identifier, String>> cache)
         implements IMessage<ServerMessageSyncGunPack> {
 
     @Override

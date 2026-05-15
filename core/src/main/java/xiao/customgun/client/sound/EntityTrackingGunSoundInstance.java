@@ -8,7 +8,7 @@
 package xiao.customgun.client.sound;
 
 import net.minecraft.client.resources.sounds.TickableSoundInstance;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
@@ -22,7 +22,7 @@ public class EntityTrackingGunSoundInstance extends GunSoundInstance implements 
     private boolean stopped;
 
     public EntityTrackingGunSoundInstance(SoundEvent soundEvent, SoundSource source, float volume, float pitch, Entity entity, int soundDistance,
-                                          @Nullable ResourceLocation registryName,
+                                          @Nullable Identifier registryName,
                                           boolean mono) {
         super(soundEvent, source, volume, pitch, entity, soundDistance, registryName, mono, false);
         this.entityRef = new WeakReference<>(entity);

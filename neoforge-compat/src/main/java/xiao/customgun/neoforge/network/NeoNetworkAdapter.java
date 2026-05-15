@@ -8,7 +8,7 @@ import net.minecraft.network.Connection;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -37,13 +37,13 @@ public class NeoNetworkAdapter implements INetworkAdapter {
 
     private record RegisteredPacket<T extends IMessage<T>>(
             Class<T> messageType,
-            ResourceLocation id,
+            Identifier id,
             Function<FriendlyByteBuf, T> decoder,
             MessageDirection direction,
             boolean isHandshake
     ) {}
 
-    private record NeoPayload<T extends IMessage<T>>(ResourceLocation id, T message) implements CustomPacketPayload {
+    private record NeoPayload<T extends IMessage<T>>(Identifier id, T message) implements CustomPacketPayload {
 
         @Override
         public Type<? extends CustomPacketPayload> type() {
@@ -64,21 +64,21 @@ public class NeoNetworkAdapter implements INetworkAdapter {
     @Override
     public <T extends IMessage<T>> void registerMessage(int id, Class<T> clazz, Function<FriendlyByteBuf, T> decoder, MessageDirection direction) {
         String path = clazz.getSimpleName().toLowerCase();
-        ResourceLocation packetId = CustomGunNeoforge.mcRegistry.createResourceLocation(String.format("%s:%s", modId, path));
+        Identifier packetId = CustomGunNeoforge.mcRegistry.createResourceLocation(String.format("%s:%s", modId, path));
         registeredPackets.add(new RegisteredPacket<>(clazz, packetId, decoder, direction, false));
     }
 
     @Override
     public <T extends LoginIndexHolder & IMessage<T>> void registerHandshakeAcknowledge(int id, Class<T> clazz, Function<FriendlyByteBuf, T> decoder) {
         String path = clazz.getSimpleName().toLowerCase();
-        ResourceLocation packetId = CustomGunNeoforge.mcRegistry.createResourceLocation(String.format("%s:%s", modId, path));
+        Identifier packetId = CustomGunNeoforge.mcRegistry.createResourceLocation(String.format("%s:%s", modId, path));
         registeredPackets.add(new RegisteredPacket<>(clazz, packetId, decoder, MessageDirection.CLIENT_TO_SERVER, true));
     }
 
     @Override
     public <T extends LoginIndexHolder & IMessage<T>> void registerHandshakeMessage(int id, Class<T> clazz, Function<FriendlyByteBuf, T> decoder) {
         String path = clazz.getSimpleName().toLowerCase();
-        ResourceLocation packetId = CustomGunNeoforge.mcRegistry.createResourceLocation(String.format("%s:%s", modId, path));
+        Identifier packetId = CustomGunNeoforge.mcRegistry.createResourceLocation(String.format("%s:%s", modId, path));
         registeredPackets.add(new RegisteredPacket<>(clazz, packetId, decoder, MessageDirection.SERVER_TO_CLIENT, true));
     }
 
@@ -162,7 +162,7 @@ public class NeoNetworkAdapter implements INetworkAdapter {
     }
 
     private <T extends IMessage<T>> void registerPacketInternal(PayloadRegistrar registrar, RegisteredPacket<T> rp) {
-        ResourceLocation id = rp.id;
+        Identifier id = rp.id;
 
         StreamCodec<FriendlyByteBuf, NeoPayload<T>> codec = StreamCodec.of(
                 (buf, payload) -> payload.write(buf),

@@ -9,7 +9,7 @@ package xiao.customgun.core.network.message.handshake;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
@@ -26,14 +26,14 @@ import java.util.function.Consumer;
 
 public class ServerMessageSyncedEntityDataMapping extends LoginIndexHolder implements IMessage<ServerMessageSyncedEntityDataMapping> {
     public static final Marker HANDSHAKE = MarkerFactory.getMarker("TACZ_HANDSHAKE");
-    public final Map<ResourceLocation, List<Pair<ResourceLocation, Integer>>> keyMap;
+    public final Map<Identifier, List<Pair<Identifier, Integer>>> keyMap;
 
     // ↓这会被隐式调用
     public ServerMessageSyncedEntityDataMapping() {
         this.keyMap = new HashMap<>();
     }
 
-    public ServerMessageSyncedEntityDataMapping(Map<ResourceLocation, List<Pair<ResourceLocation, Integer>>> keyMap) {
+    public ServerMessageSyncedEntityDataMapping(Map<Identifier, List<Pair<Identifier, Integer>>> keyMap) {
         this.keyMap = keyMap;
     }
 
@@ -51,7 +51,7 @@ public class ServerMessageSyncedEntityDataMapping extends LoginIndexHolder imple
 
     public static ServerMessageSyncedEntityDataMapping decode(FriendlyByteBuf buffer) {
         int size = buffer.readInt();
-        Map<ResourceLocation, List<Pair<ResourceLocation, Integer>>> keyMap = new HashMap<>();
+        Map<Identifier, List<Pair<Identifier, Integer>>> keyMap = new HashMap<>();
         for (int i = 0; i < size; i++) {
             var classId = NetworkUtils.readResourceLocation(buffer);
             var keyId = NetworkUtils.readResourceLocation(buffer);
@@ -83,7 +83,7 @@ public class ServerMessageSyncedEntityDataMapping extends LoginIndexHolder imple
         context.reply(new Acknowledge());
     }
 
-    public Map<ResourceLocation, List<Pair<ResourceLocation, Integer>>> getKeyMap() {
+    public Map<Identifier, List<Pair<Identifier, Integer>>> getKeyMap() {
         return this.keyMap;
     }
 }

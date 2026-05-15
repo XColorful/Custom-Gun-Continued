@@ -7,7 +7,7 @@
 
 package xiao.customgun.core.entity.sync.core;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import xiao.customgun.CustomGun;
@@ -16,7 +16,7 @@ import xiao.customgun.CustomGun;
  * Author: MrCrayfish.
  * Open source at <a href="https://github.com/MrCrayfish/Framework">Github</a> under LGPL License.
  */
-public record SyncedClassKey<E extends Entity>(Class<E> entityClass, ResourceLocation id) {
+public record SyncedClassKey<E extends Entity>(Class<E> entityClass, Identifier id) {
     public static final SyncedClassKey<LivingEntity> LIVING_ENTITY = new SyncedClassKey<>(LivingEntity.class, CustomGun.getMcRegistry().createResourceLocation("living_entity"));
 
     @Override

@@ -21,5 +21,5 @@ public class _ExplosionDataTag {
     public static final String ENABLE_KNOCKBACK = "enable_knockback"; public static final String ENABLE_KNOCKBACK_OLD1 = "knockback";
     public static final String ENABLE_WORLD_DESTRUCTION = "enable_world_destruction"; public static final String ENABLE_WORLD_DESTRUCTION_OLD1 = "destroy_block";
 
-    private _ExplosionDataTag() {}
+    protected  _ExplosionDataTag() {}
 }

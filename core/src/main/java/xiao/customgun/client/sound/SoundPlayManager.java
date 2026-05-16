@@ -143,13 +143,13 @@ public class SoundPlayManager implements IEventHandler {
     public static void playShootSound(LivingEntity entity, GunDisplayInstance gunDisplayIndex, GunData gunData) {
         if (PlannedRefactor.ON_MAGIC_CLIENT_SOUND_VOLUME) return;
         playClientSound(entity, gunDisplayIndex.getSounds(SoundType.SHOOT_SOUND), 0.8f, 0.9f + entity.getRandom().nextFloat() * 0.125f, // 随机音高应该抽到 GunDisplay 里?
-                (int) (GunConfig.DEFAULT_GUN_FIRE_SOUND_DISTANCE.get() * gunData.getFireSoundData().getNormal()), false,
+                (int) (GunConfig.DEFAULT_GUN_FIRE_SOUND_DISTANCE.get() * gunData.getFireSoundData().getNormalMultiplier()), false,
                 SoundConfig.HIGH_FREQUENCY_SOUND_CONCURRENCY_LIMIT.get(), false, WorldUtils.isLocalPlayer(entity));
     }
 
     public static void playSilenceSound(LivingEntity entity, GunDisplayInstance gunDisplayIndex, GunData gunData) {
         playClientSound(entity, gunDisplayIndex.getSounds(SoundType.SILENCE_SOUND), 0.6f, 0.9f + entity.getRandom().nextFloat() * 0.125f,
-                (int) (GunConfig.DEFAULT_GUN_SILENCE_SOUND_DISTANCE.get() * gunData.getFireSoundData().getSilenced()), false,
+                (int) (GunConfig.DEFAULT_GUN_SILENCE_SOUND_DISTANCE.get() * gunData.getFireSoundData().getSilencedMultiplier()), false,
                 SoundConfig.HIGH_FREQUENCY_SOUND_CONCURRENCY_LIMIT.get(), false, WorldUtils.isLocalPlayer(entity));
     }
 

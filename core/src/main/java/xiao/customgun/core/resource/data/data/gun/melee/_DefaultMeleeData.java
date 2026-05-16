@@ -44,14 +44,14 @@ public class _DefaultMeleeData extends ResourcePojo<_DefaultMeleeData> {
             while (reader.hasNext()) {
                 String key = reader.nextName();
                 switch (key) {
-                    case _DefaultMeleeDataTag.MELEE_DAMAGE -> pojo.meleeDamage = JsonUtils.readFloat(reader);
-                    case _DefaultMeleeDataTag.MELEE_DISTANCE -> pojo.meleeDistance = JsonUtils.readFloat(reader);
+                    case _DefaultMeleeDataTag.MELEE_DAMAGE, _DefaultMeleeDataTag.MELEE_DAMAGE_OLD1 -> pojo.meleeDamage = JsonUtils.readFloat(reader);
+                    case _DefaultMeleeDataTag.MELEE_DISTANCE, _DefaultMeleeDataTag.MELEE_DISTANCE_OLD1 -> pojo.meleeDistance = JsonUtils.readFloat(reader);
                     case _DefaultMeleeDataTag.RANGE_ANGLE -> pojo.rangeAngle = JsonUtils.readFloat(reader);
 
-                    case _DefaultMeleeDataTag.DAMAGE_DELAY_SECONDS -> pojo.damageDelaySeconds = JsonUtils.readFloat(reader);
-                    case _DefaultMeleeDataTag.BASE_COOLDOWN -> pojo.baseCooldown = JsonUtils.readFloat(reader);
+                    case _DefaultMeleeDataTag.DAMAGE_DELAY_SECONDS, _DefaultMeleeDataTag.DAMAGE_DELAY_SECONDS_OLD1 -> pojo.damageDelaySeconds = JsonUtils.readFloat(reader);
+                    case _DefaultMeleeDataTag.BASE_COOLDOWN, _DefaultMeleeDataTag.BASE_COOLDOWN_OLD1 -> pojo.baseCooldown = JsonUtils.readFloat(reader);
 
-                    case _DefaultMeleeDataTag.KNOCKBACK_STRENGTH -> pojo.knockbackStrength = JsonUtils.readFloat(reader);
+                    case _DefaultMeleeDataTag.KNOCKBACK_STRENGTH, _DefaultMeleeDataTag.KNOCKBACK_STRENGTH_OLD1 -> pojo.knockbackStrength = JsonUtils.readFloat(reader);
 
                     case _DefaultMeleeDataTag.ANIMATION_TYPE -> pojo.animationType = JsonUtils.readString(reader);
                     default -> reader.skipValue();

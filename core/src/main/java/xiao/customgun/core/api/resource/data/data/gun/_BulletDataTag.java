@@ -11,7 +11,7 @@ public class _BulletDataTag {
 
     // 显示数值
     public static final String DISPLAY_DAMAGE = "display_damage"; public static final String DISPLAY_DAMAGE_OLD1 = "damage";
-    public static final String BULLET_SKILL = "bullet_skill_data"; public static final String BULLET_SKILL_OLD1 = "extra_damage";
+    public static final String BULLET_SKILL = "bullet_skill"; public static final String BULLET_SKILL_OLD1 = "extra_damage";
 
     // 子弹飞行参数
     public static final String LIFETIME_SECONDS = "lifetime_seconds"; public static final String LIFETIME_SECONDS_OLD1 = "life";
@@ -28,7 +28,7 @@ public class _BulletDataTag {
     public static final String FIRE_ASPECT = "fire_aspect"; public static final String FIRE_ASPECT_OLD1 = "ignite";
     public static final String FIRE_ASPECT_SECONDS = "fire_aspect_seconds"; public static final String FIRE_ASPECT_SECONDS_OLD1 = "ignite_entity_time";
     public static final String KNOCKBACK_STRENGTH = "knockback_strength"; public static final String KNOCKBACK_STRENGTH_OLD1 = "knockback";
-    public static final String BULLET_EXPLOSION = "explosion_data"; public static final String BULLET_EXPLOSION_OLD1 = "explosion";
+    public static final String BULLET_EXPLOSION = "bullet_explosion"; public static final String BULLET_EXPLOSION_OLD1 = "explosion";
 
     private _BulletDataTag() {}
 }

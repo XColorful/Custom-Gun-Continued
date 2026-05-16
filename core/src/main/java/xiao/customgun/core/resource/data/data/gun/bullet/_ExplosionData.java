@@ -81,7 +81,7 @@ public class _ExplosionData extends ResourcePojo<_ExplosionData> {
 
     // --------Getter & Setter--------
 
-    public boolean isEnableExplode() {
+    public boolean getEnableExplode() {
         return enableExplode;
     }
     public float getExplodeDamage() {

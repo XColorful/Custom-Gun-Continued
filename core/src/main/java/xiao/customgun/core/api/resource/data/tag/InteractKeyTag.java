@@ -5,7 +5,7 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package xiao.customgun.core.api.resource.data.tags;
+package xiao.customgun.core.api.resource.data.tag;
 
 public class InteractKeyTag {
 

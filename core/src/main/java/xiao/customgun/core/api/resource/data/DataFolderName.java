@@ -18,7 +18,7 @@ public class DataFolderName {
     public static final String RECIPE = "recipes"; // 原版目录名
     public static final String SCRIPT = CustomGun.MOD_ID_SHORT + "_scripts"; public static final String SCRIPT_OLD1 = "script";
     public static final String LOOT_INJECTOR = "tacz_loot_injectors";
-    public static final String TACZ_TAGS = "tacz_tags";
+    public static final String MOD_TAG = CustomGun.MOD_ID_SHORT + "_tags"; public static final String MOD_TAGS_OLD1 = "tacz_tags";
 
     private DataFolderName() {}
 }

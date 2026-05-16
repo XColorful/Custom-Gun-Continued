@@ -158,6 +158,8 @@ public class DebugCommand {
                 testManager(path, allManager.attachmentIndexManager);
                 testManager(path, allManager.ammoIndexManager);
                 testManager(path, allManager.blockIndexManager);
+                testManager(path, allManager.attachmentTagManager);
+                testManager(path, allManager.gunAttachmentDataManager);
                 testManager(path, allManager.recipeFilterDataManager);
 
                 source.sendSuccess(() -> Component.literal("All data successfully exported to ./" + path), true);

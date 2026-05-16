@@ -27,7 +27,7 @@ public enum DataFolderType implements ResourceTag {
     @Deprecated RECIPE(DataFolderName.RECIPE),
     SCRIPT(DataFolderName.SCRIPT),
     @Deprecated LOOT_INJECTOR(DataFolderName.LOOT_INJECTOR),
-    TACZ_TAGS(DataFolderName.TACZ_TAGS);
+    MOD_TAG(DataFolderName.MOD_TAG);
 
     public final String folderName;
     DataFolderType(String folderName) {

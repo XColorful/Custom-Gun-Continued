@@ -254,6 +254,34 @@ public class JsonUtils {
         writer.endArray();
     }
 
+    public static <T> ClassUtils.ArraySet<T> readArraySet(JsonReader reader, ReadFunction<T> function) throws IOException {
+        if (reader.peek() == JsonToken.NULL) {
+            reader.nextNull();
+            return new ClassUtils.ArraySet<>();
+        }
+        ClassUtils.ArraySet<T> set = new ClassUtils.ArraySet<>();
+        if (reader.peek() == JsonToken.BEGIN_ARRAY) {
+            reader.beginArray();
+            while (reader.hasNext()) {
+                T item = function.apply(reader);
+                if (item != null) set.add(item);
+            }
+            reader.endArray();
+        } else {
+            reader.skipValue();
+        }
+        return set;
+    }
+    public static <T> void writeArraySet(JsonWriter writer, String key, ClassUtils.ArraySet<T> value, WriteAction<T> action) throws IOException {
+        if (value == null) return;
+        writer.name(key); writer.beginArray(); {
+            for (T t : value) {
+                if (t != null) action.accept(writer, t);
+            }
+        }
+        writer.endArray();
+    }
+
     public static int[] readIntArray(JsonReader reader) throws IOException {
         List<Integer> list = readList(reader, JsonUtils::readInt);
         return list.stream().mapToInt(i -> i).toArray();

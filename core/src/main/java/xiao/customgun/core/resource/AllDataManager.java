@@ -22,10 +22,7 @@ import xiao.customgun.core.api.resource.data.DataFolderType;
 import xiao.customgun.core.init.registry.ModRecipe;
 import xiao.customgun.core.network.message.ServerMessageSyncGunPack;
 import xiao.customgun.core.recipe.TableRecipe;
-import xiao.customgun.core.resource.data.DataManager;
-import xiao.customgun.core.resource.data.IndexManager;
-import xiao.customgun.core.resource.data.RecipeDataManager;
-import xiao.customgun.core.resource.data.RecipeFilterDataManager;
+import xiao.customgun.core.resource.data.*;
 import xiao.customgun.core.util.SendUtils;
 
 import java.util.ArrayList;
@@ -64,30 +61,35 @@ public class AllDataManager implements IEventHandler {
 
     public RecipeManager recipeManager;
 
-    // ./tacz/*.meta.json
+    // ./datapacks/{datapack}/*.meta.json
     public @Nullable GunpackMetaManager gunpackMetaManager;
 
     /**
-     * ./tacz/data/{namespace}/{@link DataFolderType#DATA}
+     * ./datapacks/{datapack}/data/{namespace}/{@link DataFolderType#DATA}
      */
     public @Nullable DataManager.GunDataManager gunDataManager;
     public @Nullable DataManager.AttachmentDataManager attachmentDataManager;
     public @Nullable DataManager.BlockDataManager blockDataManager;
     /**
-     * ./tacz/data/{namespace}/{@link DataFolderType#INDEX}
+     * ./datapacks/{datapack}/data/{namespace}/{@link DataFolderType#INDEX}
      */
     public @Nullable IndexManager.GunIndexManager gunIndexManager;
     public @Nullable IndexManager.AttachmentIndexManager attachmentIndexManager;
     public @Nullable IndexManager.AmmoIndexManager ammoIndexManager;
     public @Nullable IndexManager.BlockIndexManager blockIndexManager;
     /**
-     * ./tacz/data/{namespace}/{@link DataFolderType#RECIPE}
+     * ./datapacks/{datapack}/data/{namespace}/{@link DataFolderType#MOD_TAG}
+     */
+    public @Nullable ModTagManager.AttachmentTagDataManager attachmentTagManager;
+    public @Nullable ModTagManager.GunAttachmentDataManager gunAttachmentDataManager;
+    /**
+     * ./datapacks/{datapack}/data/{namespace}/{@link DataFolderType#RECIPE}
      * @deprecated 注册了原版recipe解析，所以不是独立注册的数据包目录
      * 注册相同目录会连同其他recipe重复读
      */
     public final @Nullable RecipeDataManager recipeDataManager = null;
     /**
-     * ./tacz/data/{namespace}/{@link DataFolderType#RECIPE_FILTER}
+     * ./datapacks/{datapack}/data/{namespace}/{@link DataFolderType#RECIPE_FILTER}
      */
     public RecipeFilterDataManager recipeFilterDataManager;
 
@@ -102,6 +104,8 @@ public class AllDataManager implements IEventHandler {
         this.gunDataManager = addToListener(this.reloadListeners, new DataManager.GunDataManager());
         this.attachmentDataManager = addToListener(this.reloadListeners, new DataManager.AttachmentDataManager());
         this.blockDataManager = addToListener(this.reloadListeners, new DataManager.BlockDataManager());
+        this.attachmentTagManager = addToListener(this.reloadListeners, new ModTagManager.AttachmentTagDataManager());
+        this.gunAttachmentDataManager = addToListener(this.reloadListeners, new ModTagManager.GunAttachmentDataManager());
 //        this.recipeDataManager = addToListener(this.reloadListeners, new RecipeDataManager());
         this.recipeFilterDataManager = addToListener(this.reloadListeners, new RecipeFilterDataManager());
         // index依赖data放在后面

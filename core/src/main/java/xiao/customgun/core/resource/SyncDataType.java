@@ -23,8 +23,8 @@ public enum SyncDataType {
      */
     RECIPES(DataFolderType.RECIPE),
     RECIPE_FILTER(DataFolderType.RECIPE_FILTER),
-    ATTACHMENT_TAGS(DataFolderType.TACZ_TAGS),
-    ALLOW_ATTACHMENT_TAGS(DataFolderType.TACZ_TAGS),
+    ATTACHMENT_TAG(DataFolderType.MOD_TAG),
+    GUN_ATTACHMENT(DataFolderType.MOD_TAG),
     BLOCK_DATA(DataFolderType.DATA),
     BLOCK_INDEX(DataFolderType.INDEX);
 

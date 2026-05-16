@@ -119,6 +119,7 @@ public abstract class ResourcePojoManager<T extends ResourcePojo<T>>
             for (FileToIdConverter fileToIdConverter : this.fileToIdConverters) {
                 fileToIdConverter.listMatchingResources(resourceManager).forEach((location, resource) -> {
                     var pojoLocation = fileToIdConverter.fileToId(location);
+                    if (!isPojoLocationValid(pojoLocation)) return;
 
                     try (Reader reader = resource.openAsReader();
                          JsonReader jsonReader = new JsonReader(reader)) {
@@ -150,6 +151,9 @@ public abstract class ResourcePojoManager<T extends ResourcePojo<T>>
             profiler.pop();
         }
         return map;
+    }
+    protected boolean isPojoLocationValid(ResourceLocation pojoLocation) {
+        return true;
     }
     protected void onPreparePojo(Map<ResourceLocation, T> map, ResourceLocation pojoLocation, T pojo) {
         map.put(pojoLocation, pojo);

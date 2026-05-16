@@ -28,7 +28,7 @@ import java.util.Map;
  */
 public abstract class DataManager<T extends ResourcePojo<T>> extends ResourcePojoManager<T> {
 
-    public DataManager(String subPrefix, String extension, JsonUtils.FromJsonReader<T> fromJson) {
+    public DataManager(String subPrefix, String extension, JsonUtils.ReadFunction<T> fromJson) {
         super(DataFolderType.DATA.getFolderName() + "/" + subPrefix, extension, fromJson);
     }
 

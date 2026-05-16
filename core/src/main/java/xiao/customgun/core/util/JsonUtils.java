@@ -29,6 +29,27 @@ public class JsonUtils {
      */
     public static final IMcRegistry mcRegistry = CustomGun.getMcRegistry();
 
+    // --------Functional Interfaces--------
+
+    @FunctionalInterface
+    public interface ReadFunction<T> {
+        T apply(JsonReader reader) throws IOException;
+    }
+    @FunctionalInterface
+    public interface WriteAction<T> {
+        void accept(JsonWriter writer, T value) throws IOException;
+    }
+
+    @FunctionalInterface
+    public interface FromStringFunction<T> {
+        T apply(String name);
+    }
+
+    @FunctionalInterface
+    public interface KeyWriterAction<K> {
+        String apply(K key);
+    }
+
     // --------JsonPrimitive--------
 
     public static boolean readBoolean(JsonReader reader) throws IOException {
@@ -101,14 +122,6 @@ public class JsonUtils {
 
     // --------代理 (用于POJO嵌套)--------
 
-    @FunctionalInterface
-    public interface ReadFunction<T> {
-        T apply(JsonReader reader) throws IOException;
-    }
-    @FunctionalInterface
-    public interface WriteAction<T> {
-        void accept(JsonWriter writer, T value) throws IOException;
-    }
     public static <T> T read(JsonReader reader, ReadFunction<T> function) throws IOException {
         return function.apply(reader);
     }
@@ -128,10 +141,6 @@ public class JsonUtils {
         if (value != null) writer.name(key).value(value.toString());
     }
 
-    @FunctionalInterface
-    public interface FromStringFunction<T> {
-        T apply(String name);
-    }
     public static <T> T readFromString(JsonReader reader, FromStringFunction<T> function) throws IOException {
         String valueStr = readString(reader);
         return valueStr != null ? function.apply(valueStr) : null;
@@ -376,15 +385,7 @@ public class JsonUtils {
         writer.endObject();
     }
 
-    @FunctionalInterface
-    public interface KeyFunction<K> {
-        K apply(String name);
-    }
-    @FunctionalInterface
-    public interface KeyWriterAction<K> {
-        String apply(K key);
-    }
-    public static <K, V> HashMap<K, V> readObject2ObjectMap(JsonReader reader, KeyFunction<K> keyFunction, ReadFunction<V> valueFunction) throws IOException {
+    public static <K, V> HashMap<K, V> readObject2ObjectMap(JsonReader reader, FromStringFunction<K> keyFunction, ReadFunction<V> valueFunction) throws IOException {
         if (reader.peek() == JsonToken.NULL) {
             reader.nextNull();
             return new HashMap<>();
@@ -433,12 +434,5 @@ public class JsonUtils {
     }
     public static JsonReader getAsReaderSafe(@Nullable JsonObject jsonObject) {
         return new JsonReader(new StringReader(jsonObject != null ? jsonObject.toString() : "{}"));
-    }
-
-    // --------PojoManager--------
-
-    @FunctionalInterface
-    public interface FromJsonReader<T> {
-        T apply(JsonReader reader) throws IOException;
     }
 }

@@ -32,7 +32,7 @@ public abstract class ResourcePojoManager<T extends ResourcePojo<T>>
     private final String managerName;
     private final ResourceLocation registryName;
     private final FileToIdConverter fileToIdConverter;
-    private final JsonUtils.FromJsonReader<T> fromJson;
+    private final JsonUtils.ReadFunction<T> fromJson;
     protected Map<ResourceLocation, T> pojoMap;
 
     /**
@@ -48,13 +48,13 @@ public abstract class ResourcePojoManager<T extends ResourcePojo<T>>
     private boolean validateAtApply;
     private boolean logParseException;
 
-    public ResourcePojoManager(String prefix, String extension, JsonUtils.FromJsonReader<T> fromJson) {
+    public ResourcePojoManager(String prefix, String extension, JsonUtils.ReadFunction<T> fromJson) {
         this(new FileToIdConverter(prefix, extension), fromJson);
     }
-    public ResourcePojoManager(FileToIdConverter fileToIdConverter, JsonUtils.FromJsonReader<T> fromJson) {
+    public ResourcePojoManager(FileToIdConverter fileToIdConverter, JsonUtils.ReadFunction<T> fromJson) {
         this(fileToIdConverter, fromJson, true, true, false, true);
     }
-    public ResourcePojoManager(FileToIdConverter fileToIdConverter, JsonUtils.FromJsonReader<T> fromJson,
+    public ResourcePojoManager(FileToIdConverter fileToIdConverter, JsonUtils.ReadFunction<T> fromJson,
                                boolean lenientPojo, boolean validateAtRead, boolean validateAtApply, boolean logParseException) {
         this.managerName = this.getClass().getSimpleName();
         this.registryName = CustomGun.getMcRegistry().createResourceLocation(String.format("%s:%s", CustomGun.MOD_ID, this.managerName.toLowerCase()));

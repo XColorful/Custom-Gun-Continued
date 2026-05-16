@@ -29,7 +29,7 @@ import java.util.Map;
  */
 public abstract class IndexManager<T extends ResourcePojo<T>> extends ResourcePojoManager<T> {
 
-    public IndexManager(String subPrefix, String extension, JsonUtils.FromJsonReader<T> fromJson) {
+    public IndexManager(String subPrefix, String extension, JsonUtils.ReadFunction<T> fromJson) {
         super(DataFolderType.INDEX.getFolderName() + "/" + subPrefix, extension, fromJson);
     }
 

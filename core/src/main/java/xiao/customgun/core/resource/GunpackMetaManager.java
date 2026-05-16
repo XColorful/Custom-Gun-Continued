@@ -7,6 +7,7 @@
 
 package xiao.customgun.core.resource;
 
+import net.minecraft.server.packs.PackType;
 import xiao.customgun.core.api.resource.FileExtensionType;
 import xiao.customgun.core.api.resource.data.DataFolderType;
 
@@ -20,7 +21,7 @@ public class GunpackMetaManager extends ResourcePojoManager<GunpackMeta> {
         return INSTANCE;
     }
     private GunpackMetaManager() {
-        super("",
+        super(PackType.SERVER_DATA, "",
                 FileExtensionType.GUNPACK_META.getExtensionNameWithDot(),
                 GunpackMeta::fromJson);
     }

@@ -16,6 +16,7 @@ import xiao.customgun.CustomGun;
 public class CommandArg {
 
     public static final String MOD_ID = CustomGun.MOD_ID;
+    public static final String MOD_ID_SHORT = CustomGun.MOD_ID_SHORT;
 
     public static final String ENTITY = "target";
     public static final String ENABLE = "enable";

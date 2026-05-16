@@ -8,9 +8,11 @@
 package xiao.customgun.core.resource.data;
 
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.PackType;
 import org.jetbrains.annotations.ApiStatus;
 import xiao.customgun.core.api.resource.FileExtensionType;
 import xiao.customgun.core.api.resource.INetworkCacheReloadListener;
+import xiao.customgun.core.api.resource.data.DataFolderName;
 import xiao.customgun.core.api.resource.data.DataFolderType;
 import xiao.customgun.core.api.resource.data.data.DataSubFolderType;
 import xiao.customgun.core.resource.ResourcePojo;
@@ -21,6 +23,7 @@ import xiao.customgun.core.resource.data.data.BlockData;
 import xiao.customgun.core.resource.data.data.GunData;
 import xiao.customgun.core.util.JsonUtils;
 
+import java.util.Arrays;
 import java.util.Map;
 
 /**
@@ -29,7 +32,8 @@ import java.util.Map;
 public abstract class DataManager<T extends ResourcePojo<T>> extends ResourcePojoManager<T> {
 
     public DataManager(String subPrefix, String extension, JsonUtils.ReadFunction<T> fromJson) {
-        super(DataFolderType.DATA.getFolderName() + "/" + subPrefix, extension, fromJson);
+        super(PackType.SERVER_DATA, Arrays.asList(DataFolderType.DATA.getFolderName() + "/" + subPrefix, DataFolderName.DATA_OLD1 + "/" + subPrefix),
+                extension, fromJson);
     }
 
     public static class GunDataManager extends DataManager<GunData> implements INetworkCacheReloadListener {

@@ -7,6 +7,7 @@
 
 package xiao.customgun.core.resource.data;
 
+import net.minecraft.server.packs.PackType;
 import org.jetbrains.annotations.ApiStatus;
 import xiao.customgun.core.api.resource.FileExtensionType;
 import xiao.customgun.core.api.resource.data.DataFolderType;
@@ -22,7 +23,7 @@ import xiao.customgun.core.resource.data.recipe.RecipeData;
 public class RecipeDataManager extends ResourcePojoManager<RecipeData> {
     @ApiStatus.Internal
     public RecipeDataManager() {
-        super(DataFolderType.RECIPE.getFolderName(),
+        super(PackType.SERVER_DATA, DataFolderType.RECIPE.getFolderName(),
                 FileExtensionType.JSON.getExtensionNameWithDot(),
                 RecipeData::fromJson);
     }

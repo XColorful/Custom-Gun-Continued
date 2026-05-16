@@ -33,7 +33,7 @@ public class AttachmentData extends ResourcePojo<AttachmentData> {
                 String key = reader.nextName();
                 switch (key) {
                     case AttachmentDataTag.WEIGHT -> pojo.weight = JsonUtils.readFloat(reader);
-                    case AttachmentDataTag.MAGAZINE_CATEGORY -> pojo.magazineCategory = JsonUtils.readFromString(reader, MagazineCategory::fromString);
+                    case AttachmentDataTag.MAGAZINE_CATEGORY -> pojo.magazineCategory = JsonUtils.readFromString(reader, MagazineCategory::fromString); case AttachmentDataTag.MAGAZINE_CATEGORY_OLD1 -> pojo.magazineCategory = MagazineCategory.fromIndex(JsonUtils.readInt(reader));
                     default -> reader.skipValue();
                 }
             }

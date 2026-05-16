@@ -34,9 +34,9 @@ public class _MeleeData extends ResourcePojo<_MeleeData> {
             while (reader.hasNext()) {
                 String key = reader.nextName();
                 switch (key) {
-                    case _MeleeDataTag.MELEE_DISTANCE -> pojo.meleeDistance = JsonUtils.readFloat(reader);
-                    case _MeleeDataTag.MELEE_COOLDOWN -> pojo.meleeCooldown = JsonUtils.readFloat(reader);
-                    case _MeleeDataTag.DEFAULT_MELEE_DATA -> pojo.defaultMeleeData = JsonUtils.read(reader, _DefaultMeleeData::fromJson);
+                    case _MeleeDataTag.MELEE_DISTANCE, _MeleeDataTag.MELEE_DISTANCE_OLD1 -> pojo.meleeDistance = JsonUtils.readFloat(reader);
+                    case _MeleeDataTag.MELEE_COOLDOWN, _MeleeDataTag.MELEE_COOLDOWN_OLD1 -> pojo.meleeCooldown = JsonUtils.readFloat(reader);
+                    case _MeleeDataTag.DEFAULT_MELEE_DATA, _MeleeDataTag.DEFAULT_MELEE_DATA_OLD1 -> pojo.defaultMeleeData = JsonUtils.read(reader, _DefaultMeleeData::fromJson);
                     default -> reader.skipValue();
                 }
             }

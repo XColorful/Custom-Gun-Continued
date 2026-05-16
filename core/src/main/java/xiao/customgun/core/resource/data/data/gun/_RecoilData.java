@@ -34,8 +34,8 @@ public class _RecoilData extends ResourcePojo<_RecoilData> {
             while (reader.hasNext()) {
                 String key = reader.nextName();
                 switch (key) {
-                    case _RecoilDataTag.PITCH_RECOIL -> pojo.pitchRecoils = JsonUtils.readList(reader, _RecoilEntryData::fromJson);
-                    case _RecoilDataTag.YAW_RECOIL -> pojo.yawRecoils = JsonUtils.readList(reader, _RecoilEntryData::fromJson);
+                    case _RecoilDataTag.PITCH_RECOIL, _RecoilDataTag.PITCH_RECOIL_OLD1 -> pojo.pitchRecoils = JsonUtils.readList(reader, _RecoilEntryData::fromJson);
+                    case _RecoilDataTag.YAW_RECOIL, _RecoilDataTag.YAW_RECOIL_OLD1 -> pojo.yawRecoils = JsonUtils.readList(reader, _RecoilEntryData::fromJson);
                     default -> reader.skipValue();
                 }
             }

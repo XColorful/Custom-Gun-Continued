@@ -32,8 +32,8 @@ public class _IngredientFilterData extends ResourcePojo<_IngredientFilterData> {
             while (reader.hasNext()) {
                 String key = reader.nextName();
                 switch (key) {
-                    case _IngredientFilterDataTag.ITEM_FILTER_LOCATION -> pojo.itemFilterLocation = JsonUtils.readResourceLocation(reader);
-                    case _IngredientFilterDataTag.TAG_FILTER_LOCATION -> pojo.tagFilterLocation = JsonUtils.readResourceLocation(reader);
+                    case _IngredientFilterDataTag.ITEM_FILTER_LOCATION, _IngredientFilterDataTag.ITEM_FILTER_LOCATION_OLD1 -> pojo.itemFilterLocation = JsonUtils.readResourceLocation(reader);
+                    case _IngredientFilterDataTag.TAG_FILTER_LOCATION, _IngredientFilterDataTag.TAG_FILTER_LOCATION_OLD1 -> pojo.tagFilterLocation = JsonUtils.readResourceLocation(reader);
                     default -> reader.skipValue();
                 }
             }

@@ -13,4 +13,6 @@ public class _FireSoundDataTag {
 
     public static final String NORMAL = FireSoundTypeTag.NORMAL;
     public static final String SILENCED = FireSoundTypeTag.SILENCED;
+
+    private _FireSoundDataTag() {}
 }

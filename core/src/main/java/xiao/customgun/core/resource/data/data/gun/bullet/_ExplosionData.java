@@ -40,14 +40,14 @@ public class _ExplosionData extends ResourcePojo<_ExplosionData> {
             while (reader.hasNext()) {
                 String key = reader.nextName();
                 switch (key) {
-                    case _ExplosionDataTag.ENABLE_EXPLODE -> pojo.enableExplode = JsonUtils.readBoolean(reader);
+                    case _ExplosionDataTag.ENABLE_EXPLODE, _ExplosionDataTag.ENABLE_EXPLODE_OLD1 -> pojo.enableExplode = JsonUtils.readBoolean(reader);
 
-                    case _ExplosionDataTag.EXPLODE_DAMAGE -> pojo.explodeDamage = JsonUtils.readFloat(reader);
-                    case _ExplosionDataTag.EXPLODE_SCALE -> pojo.explodeScale = JsonUtils.readFloat(reader);
-                    case _ExplosionDataTag.MAX_DELAY_SECONDS -> pojo.maxDelaySeconds = JsonUtils.readFloat(reader);
+                    case _ExplosionDataTag.EXPLODE_DAMAGE, _ExplosionDataTag.EXPLODE_DAMAGE_OLD1 -> pojo.explodeDamage = JsonUtils.readFloat(reader);
+                    case _ExplosionDataTag.EXPLODE_SCALE, _ExplosionDataTag.EXPLODE_SCALE_OLD1 -> pojo.explodeScale = JsonUtils.readFloat(reader);
+                    case _ExplosionDataTag.MAX_DELAY_SECONDS, _ExplosionDataTag.MAX_DELAY_SECONDS_OLD1 -> pojo.maxDelaySeconds = JsonUtils.readFloat(reader);
 
-                    case _ExplosionDataTag.ENABLE_KNOCKBACK -> pojo.enableKnockback = JsonUtils.readBoolean(reader);
-                    case _ExplosionDataTag.ENABLE_WORLD_DESTRUCTION -> pojo.enableWorldDestruction = JsonUtils.readBoolean(reader);
+                    case _ExplosionDataTag.ENABLE_KNOCKBACK, _ExplosionDataTag.ENABLE_KNOCKBACK_OLD1 -> pojo.enableKnockback = JsonUtils.readBoolean(reader);
+                    case _ExplosionDataTag.ENABLE_WORLD_DESTRUCTION, _ExplosionDataTag.ENABLE_WORLD_DESTRUCTION_OLD1 -> pojo.enableWorldDestruction = JsonUtils.readBoolean(reader);
                     default -> reader.skipValue();
                 }
             }

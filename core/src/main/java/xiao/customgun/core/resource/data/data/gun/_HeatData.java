@@ -22,9 +22,9 @@ public class _HeatData extends ResourcePojo<_HeatData> {
     private float heatPerShot = 3.0F;
 
     // 枪械属性
-    private float minRpmByHeat = 1.0F;
+    private float minRpmByHeat = 1.0F; // 最小热量时的RPM
     private float maxRpmByHeat = 1.0F;
-    private float minInaccuracyByHeat = 1.0F;
+    private float minInaccuracyByHeat = 1.0F; // 最小热量时的不准确度
     private float maxInaccuracyByHeat = 1.0F;
 
     // 冷却属性
@@ -43,17 +43,17 @@ public class _HeatData extends ResourcePojo<_HeatData> {
             while (reader.hasNext()) {
                 String key = reader.nextName();
                 switch (key) {
-                    case _HeatDataTag.MAX_HEAT -> pojo.maxHeat = JsonUtils.readFloat(reader);
-                    case _HeatDataTag.HEAT_PER_SHOT -> pojo.heatPerShot = JsonUtils.readFloat(reader);
+                    case _HeatDataTag.MAX_HEAT, _HeatDataTag.MAX_HEAT_OLD1 -> pojo.maxHeat = JsonUtils.readFloat(reader);
+                    case _HeatDataTag.HEAT_PER_SHOT, _HeatDataTag.HEAT_PER_SHOT_OLD1 -> pojo.heatPerShot = JsonUtils.readFloat(reader);
 
-                    case _HeatDataTag.MIN_RPM_BY_HEAT -> pojo.minRpmByHeat = JsonUtils.readFloat(reader);
-                    case _HeatDataTag.MAX_RPM_BY_HEAT -> pojo.maxRpmByHeat = JsonUtils.readFloat(reader);
-                    case _HeatDataTag.MIN_INACCURACY_BY_HEAT -> pojo.minInaccuracyByHeat = JsonUtils.readFloat(reader);
-                    case _HeatDataTag.MAX_INACCURACY_BY_HEAT -> pojo.maxInaccuracyByHeat = JsonUtils.readFloat(reader);
+                    case _HeatDataTag.MIN_RPM_BY_HEAT, _HeatDataTag.MIN_RPM_BY_HEAT_OLD1 -> pojo.minRpmByHeat = JsonUtils.readFloat(reader);
+                    case _HeatDataTag.MAX_RPM_BY_HEAT, _HeatDataTag.MAX_RPM_BY_HEAT_OLD1 -> pojo.maxRpmByHeat = JsonUtils.readFloat(reader);
+                    case _HeatDataTag.MIN_INACCURACY_BY_HEAT, _HeatDataTag.MIN_INACCURACY_BY_HEAT_OLD1 -> pojo.minInaccuracyByHeat = JsonUtils.readFloat(reader);
+                    case _HeatDataTag.MAX_INACCURACY_BY_HEAT, _HeatDataTag.MAX_INACCURACY_BY_HEAT_OLD1 -> pojo.maxInaccuracyByHeat = JsonUtils.readFloat(reader);
 
-                    case _HeatDataTag.OVERHEAT_LOCKTIME_MS -> pojo.overheatLocktimeMs = JsonUtils.readLong(reader);
-                    case _HeatDataTag.COOLING_DELAY_MS -> pojo.coolingDelayMs = JsonUtils.readLong(reader);
-                    case _HeatDataTag.COOLING_SPEED_MULTIPLIER -> pojo.coolingSpeedMultiplier = JsonUtils.readFloat(reader);
+                    case _HeatDataTag.OVERHEAT_LOCKTIME_MS, _HeatDataTag.OVERHEAT_LOCKTIME_MS_OLD1 -> pojo.overheatLocktimeMs = JsonUtils.readLong(reader);
+                    case _HeatDataTag.COOLING_DELAY_MS, _HeatDataTag.COOLING_DELAY_MS_OLD1 -> pojo.coolingDelayMs = JsonUtils.readLong(reader);
+                    case _HeatDataTag.COOLING_SPEED_MULTIPLIER, _HeatDataTag.COOLING_SPEED_MULTIPLIER_OLD1 -> pojo.coolingSpeedMultiplier = JsonUtils.readFloat(reader);
                     default -> reader.skipValue();
                 }
             }

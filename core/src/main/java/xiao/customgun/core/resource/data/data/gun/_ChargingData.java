@@ -39,14 +39,14 @@ public class _ChargingData extends ResourcePojo<_ChargingData> {
             while (reader.hasNext()) {
                 String key = reader.nextName();
                 switch (key) {
-                    case _ChargingDataTag.CHARGE_TYPE -> pojo.chargeType = JsonUtils.readFromString(reader, ChargeType::fromString);
+                    case _ChargingDataTag.CHARGE_TYPE, _ChargingDataTag.CHARGE_TYPE_OLD1 -> pojo.chargeType = JsonUtils.readFromString(reader, ChargeType::fromString);
                     case _ChargingDataTag.MAX_CHARGE -> pojo.maxCharge = JsonUtils.readFloat(reader);
                     case _ChargingDataTag.FIRE_THRESHOLD -> pojo.fireThreshold = JsonUtils.readFloat(reader);
-                    case _ChargingDataTag.RECOVER_BY_FIRE -> pojo.recoverByFire = JsonUtils.readFloat(reader);
+                    case _ChargingDataTag.RECOVER_BY_FIRE, _ChargingDataTag.RECOVER_BY_FIRE_OLD1 -> pojo.recoverByFire = JsonUtils.readFloat(reader);
 
-                    case _ChargingDataTag.CHARGE_PER_TICK -> pojo.chargePerTick = JsonUtils.readFloat(reader);
-                    case _ChargingDataTag.RECOVER_PER_TICK -> pojo.recoverPerTick = JsonUtils.readFloat(reader);
-                    case _ChargingDataTag.ENABLE_CHARGE_DURING_COOLDOWN -> pojo.enableChargeDuringCooldown = JsonUtils.readBoolean(reader);
+                    case _ChargingDataTag.CHARGE_PER_TICK, _ChargingDataTag.CHARGE_PER_TICK_OLD1 -> pojo.chargePerTick = JsonUtils.readFloat(reader);
+                    case _ChargingDataTag.RECOVER_PER_TICK, _ChargingDataTag.RECOVER_PER_TICK_OLD1 -> pojo.recoverPerTick = JsonUtils.readFloat(reader);
+                    case _ChargingDataTag.ENABLE_CHARGE_DURING_COOLDOWN, _ChargingDataTag.ENABLE_CHARGE_DURING_COOLDOWN_OLD1 -> pojo.enableChargeDuringCooldown = JsonUtils.readBoolean(reader);
                     default -> reader.skipValue();
                 }
             }

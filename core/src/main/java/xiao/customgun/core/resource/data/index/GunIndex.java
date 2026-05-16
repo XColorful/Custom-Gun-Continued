@@ -18,6 +18,10 @@ import java.io.IOException;
 public final class GunIndex extends _DataIndex<GunIndex> {
 
     private GunCategory gunCategory;
+
+    /**
+     * ItemStack类型
+     */
     private String itemType;
 
     private static final GunIndex PARSER = new GunIndex();
@@ -31,13 +35,13 @@ public final class GunIndex extends _DataIndex<GunIndex> {
             while (reader.hasNext()) {
                 String key = reader.nextName();
                 switch (key) {
-                    case GunIndexTag.NAME_LANG -> pojo.setNameLang(JsonUtils.readString(reader));
-                    case GunIndexTag.TOOLTIP_LANG -> pojo.setTooltipLang(JsonUtils.readString(reader));
-                    case GunIndexTag.DATA_LOCATION -> pojo.setDataLocation(JsonUtils.readResourceLocation(reader));
-                    case GunIndexTag.DISPLAY_INDEX_LOCATION -> pojo.setDisplayIndexLocation(JsonUtils.readResourceLocation(reader));
-                    case GunIndexTag.SLOT_SORT -> pojo.setSlotSort(JsonUtils.readInt(reader));
+                    case GunIndexTag.NAME_LANG, GunIndexTag.NAME_LANG_OLD1 -> pojo.setNameLang(JsonUtils.readString(reader));
+                    case GunIndexTag.TOOLTIP_LANG, GunIndexTag.TOOLTIP_LANG_OLD1 -> pojo.setTooltipLang(JsonUtils.readString(reader));
+                    case GunIndexTag.DATA_LOCATION, GunIndexTag.DATA_LOCATION_OLD1 -> pojo.setDataLocation(JsonUtils.readResourceLocation(reader));
+                    case GunIndexTag.DISPLAY_INDEX_LOCATION, GunIndexTag.DISPLAY_INDEX_LOCATION_OLD1 -> pojo.setDisplayIndexLocation(JsonUtils.readResourceLocation(reader));
+                    case GunIndexTag.SLOT_SORT, GunIndexTag.SLOT_SORT_OLD1 -> pojo.setSlotSort(JsonUtils.readInt(reader));
 
-                    case GunIndexTag.GUN_CATEGORY -> pojo.gunCategory = JsonUtils.readFromString(reader, GunCategory::fromString);
+                    case GunIndexTag.GUN_CATEGORY, GunIndexTag.GUN_CATEGORY_OLD1 -> pojo.gunCategory = JsonUtils.readFromString(reader, GunCategory::fromString);
                     case GunIndexTag.ITEM_TYPE -> pojo.itemType = JsonUtils.readString(reader);
                     default -> reader.skipValue();
                 }

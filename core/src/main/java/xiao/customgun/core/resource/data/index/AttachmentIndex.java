@@ -18,6 +18,10 @@ import java.io.IOException;
 public final class AttachmentIndex extends _DataIndex<AttachmentIndex> {
 
     private AttachmentCategory attachmentCategory;
+
+    /**
+     * 从创造模式物品栏和 JEI 中隐藏
+     */
     private boolean hideInGame = false;
 
     private static final AttachmentIndex PARSER = new AttachmentIndex();
@@ -31,14 +35,14 @@ public final class AttachmentIndex extends _DataIndex<AttachmentIndex> {
             while (reader.hasNext()) {
                 String key = reader.nextName();
                 switch (key) {
-                    case AttachmentIndexTag.NAME_LANG -> pojo.setNameLang(JsonUtils.readString(reader));
-                    case AttachmentIndexTag.TOOLTIP_LANG -> pojo.setTooltipLang(JsonUtils.readString(reader));
-                    case AttachmentIndexTag.DATA_LOCATION -> pojo.setDataLocation(JsonUtils.readResourceLocation(reader));
-                    case AttachmentIndexTag.DISPLAY_INDEX_LOCATION -> pojo.setDisplayIndexLocation(JsonUtils.readResourceLocation(reader));
-                    case AttachmentIndexTag.SLOT_SORT -> pojo.setSlotSort(JsonUtils.readInt(reader));
+                    case AttachmentIndexTag.NAME_LANG, AttachmentIndexTag.NAME_LANG_OLD1 -> pojo.setNameLang(JsonUtils.readString(reader));
+                    case AttachmentIndexTag.TOOLTIP_LANG, AttachmentIndexTag.TOOLTIP_LANG_OLD1 -> pojo.setTooltipLang(JsonUtils.readString(reader));
+                    case AttachmentIndexTag.DATA_LOCATION, AttachmentIndexTag.DATA_LOCATION_OLD1 -> pojo.setDataLocation(JsonUtils.readResourceLocation(reader));
+                    case AttachmentIndexTag.DISPLAY_INDEX_LOCATION, AttachmentIndexTag.DISPLAY_INDEX_LOCATION_OLD1 -> pojo.setDisplayIndexLocation(JsonUtils.readResourceLocation(reader));
+                    case AttachmentIndexTag.SLOT_SORT, AttachmentIndexTag.SLOT_SORT_OLD1 -> pojo.setSlotSort(JsonUtils.readInt(reader));
 
-                    case AttachmentIndexTag.ATTACHMENT_CATEGORY -> pojo.attachmentCategory = JsonUtils.readFromString(reader, AttachmentCategory::fromString);
-                    case AttachmentIndexTag.HIDE_IN_GAME -> pojo.hideInGame = JsonUtils.readBoolean(reader);
+                    case AttachmentIndexTag.ATTACHMENT_CATEGORY, AttachmentIndexTag.ATTACHMENT_CATEGORY_OLD1 -> pojo.attachmentCategory = JsonUtils.readFromString(reader, AttachmentCategory::fromString);
+                    case AttachmentIndexTag.HIDE_IN_GAME, AttachmentIndexTag.HIDE_IN_GAME_OLD1 -> pojo.hideInGame = JsonUtils.readBoolean(reader);
                     default -> reader.skipValue();
                 }
             }

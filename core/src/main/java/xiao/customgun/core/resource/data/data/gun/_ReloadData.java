@@ -36,10 +36,10 @@ public class _ReloadData extends ResourcePojo<_ReloadData> {
             while (reader.hasNext()) {
                 String key = reader.nextName();
                 switch (key) {
-                    case _ReloadDataTag.AMMO_FEED_TYPE -> pojo.ammoFeedType = JsonUtils.readFromString(reader, AmmoFeedType::fromString);
-                    case _ReloadDataTag.INFINITE_AMMO -> pojo.infiniteAmmo = JsonUtils.readBoolean(reader);
-                    case _ReloadDataTag.RELOAD_FEED -> pojo.reloadFeed = JsonUtils.read(reader, _ReloadFeedData::fromJson);
-                    case _ReloadDataTag.RELOAD_COOLDOWN -> pojo.reloadCooldown = JsonUtils.read(reader, _ReloadCooldownData::fromJson);
+                    case _ReloadDataTag.AMMO_FEED_TYPE, _ReloadDataTag.AMMO_FEED_TYPE_OLD1 -> pojo.ammoFeedType = JsonUtils.readFromString(reader, AmmoFeedType::fromString);
+                    case _ReloadDataTag.INFINITE_AMMO, _ReloadDataTag.INFINITE_AMMO_OLD1 -> pojo.infiniteAmmo = JsonUtils.readBoolean(reader);
+                    case _ReloadDataTag.RELOAD_FEED, _ReloadDataTag.RELOAD_FEED_OLD1 -> pojo.reloadFeed = JsonUtils.read(reader, _ReloadFeedData::fromJson);
+                    case _ReloadDataTag.RELOAD_COOLDOWN, _ReloadDataTag.RELOAD_COOLDOWN_OLD1 -> pojo.reloadCooldown = JsonUtils.read(reader, _ReloadCooldownData::fromJson);
                     default -> reader.skipValue();
                 }
             }

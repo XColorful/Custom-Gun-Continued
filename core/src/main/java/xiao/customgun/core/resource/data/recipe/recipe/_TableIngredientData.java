@@ -32,8 +32,8 @@ public class _TableIngredientData extends ResourcePojo<_TableIngredientData> {
             while (reader.hasNext()) {
                 String key = reader.nextName();
                 switch (key) {
-                    case _TableIngredientDataTag.INGREDIENT_FILTER_DATA -> pojo.ingredientFilter = JsonUtils.read(reader, _IngredientFilterData::fromJson);
-                    case _TableIngredientDataTag.INGREDIENT_COUNT -> pojo.ingredientCount = JsonUtils.readInt(reader);
+                    case _TableIngredientDataTag.INGREDIENT_FILTER_DATA, _TableIngredientDataTag.INGREDIENT_FILTER_DATA_OLD1 -> pojo.ingredientFilter = JsonUtils.read(reader, _IngredientFilterData::fromJson);
+                    case _TableIngredientDataTag.INGREDIENT_COUNT, _TableIngredientDataTag.INGREDIENT_COUNT_OLD1 -> pojo.ingredientCount = JsonUtils.readInt(reader);
                     default -> reader.skipValue();
                 }
             }

@@ -25,48 +25,48 @@ import java.util.Map;
 public class GunData extends ResourcePojo<GunData> {
 
     // 枪械属性
-    private _BulletData bulletData;
-    private ResourceLocation ammoType;
-    private BoltType boltType;
+    private _BulletData bulletData; // 子弹属性
+    private ResourceLocation ammoType; // 子弹类型
+    private BoltType boltType; // 拉栓类型
 
-    private int rpm = 300;
-    private _InaccuracyData inaccuracyData;
-    private _RecoilData recoilData;
-    private float crawlRecoilMultiplier = 0.5f;
+    private int rpm = 300; // 射速
+    private _InaccuracyData inaccuracyData; // 射击散布
+    private _RecoilData recoilData; // 后坐力
+    private float crawlRecoilMultiplier = 0.5f; // 蹲后坐力
 
-    private float weight = 0f;
-    private _MovementData movementData;
+    private float weight = 0f; // 基础移速影响
+    private _MovementData movementData; // 移速数据
 
-    private _FireSoundData fireSoundData;
-    private float hurtBobTweakMultiplier = 0.05f;
+    private _FireSoundData fireSoundData; // 开火声音范围
+    private float hurtBobTweakMultiplier = 0.05f; // 被命中者受击晃动
 
-    private _ReloadData reloadData;
+    private _ReloadData reloadData; // 装弹数据
 
     // 枪械脚本
-    private ResourceLocation scriptType;
-    private Map<String, Object> scriptParam;
+    private ResourceLocation scriptType; // 状态机脚本
+    private Map<String, Object> scriptParam; // 状态机参数
 
     // 开火模式
     private FireModeType defaultFireModeType;
-    private List<FireModeType> fireModeTypes;
-    private Map<FireModeType, _FireModeData> fireModeData;
-    private _BurstData burstData;
+    private List<FireModeType> fireModeTypes; // 开火模式
+    private Map<FireModeType, _FireModeAdjustData> fireModeAdjustData; // 开火模式数据
+    private _BurstData burstData; // 开火模式(2/3连发)模式数据
 
     // 扩展属性
-    private _MeleeData meleeData;
-    private _HeatData heatData;
-    private Map<FireModeType, _ChargingData> chargingData;
+    private _MeleeData meleeData; // 近战 (刺刀/枪托)
+    private _HeatData heatData; // 过热
+    private Map<FireModeType, _ChargingData> chargingData; // 蓄力/延迟扳机
 
     // 配件
-    private List<AttachmentCategory> allowAttachmentTypes;
-    private Map<ResourceLocation, AttachmentData> exclusiveAttachments;
-    private int defaultMagSize = 30;
-    private int[] extendedMagAmmoSize;
-    private Map<AttachmentCategory, ResourceLocation> builtinAttachments;
+    private List<AttachmentCategory> allowAttachmentTypes; // 配件槽
+    private Map<ResourceLocation, AttachmentData> exclusiveAttachments; // (疑似已损坏功能)
+    private int defaultMagSize = 30; // 默认弹匣大小
+    private int[] extendedMagAmmoSize; // 扩容弹匣大小
+    private Map<AttachmentCategory, ResourceLocation> builtinAttachments; // 默认配件外观
 
     // 举枪动作
     private boolean enableCrawl = true;
-    private boolean enableSlide = true;
+    private boolean enableSlide = true; // 枪挡在视野中间
 
     // 操作枪械的时长
     private float drawTime = 0.4f;
@@ -87,43 +87,43 @@ public class GunData extends ResourcePojo<GunData> {
             while (reader.hasNext()) {
                 String key = reader.nextName();
                 switch (key) {
-                    case GunDataTag.BULLET_DATA -> pojo.bulletData = JsonUtils.read(reader, _BulletData::fromJson);
-                    case GunDataTag.AMMO_TYPE -> pojo.ammoType = JsonUtils.readResourceLocation(reader);
-                    case GunDataTag.BOLT_TYPE -> pojo.boltType = JsonUtils.readFromString(reader, BoltType::fromString);
+                    case GunDataTag.BULLET_DATA, GunDataTag.BULLET_DATA_OLD1 -> pojo.bulletData = JsonUtils.read(reader, _BulletData::fromJson);
+                    case GunDataTag.AMMO_TYPE, GunDataTag.AMMO_TYPE_OLD1 -> pojo.ammoType = JsonUtils.readResourceLocation(reader);
+                    case GunDataTag.BOLT_TYPE, GunDataTag.BOLT_TYPE_OLD1 -> pojo.boltType = JsonUtils.readFromString(reader, BoltType::fromString);
 
                     case GunDataTag.RPM -> pojo.rpm = JsonUtils.readInt(reader);
-                    case GunDataTag.INACCURACY_DATA -> pojo.inaccuracyData = JsonUtils.read(reader, _InaccuracyData::fromJson);
-                    case GunDataTag.RECOIL_DATA -> pojo.recoilData = JsonUtils.read(reader, _RecoilData::fromJson);
+                    case GunDataTag.INACCURACY_DATA, GunDataTag.INACCURACY_DATA_OLD1 -> pojo.inaccuracyData = JsonUtils.read(reader, _InaccuracyData::fromJson);
+                    case GunDataTag.RECOIL_DATA, GunDataTag.RECOIL_DATA_OLD1 -> pojo.recoilData = JsonUtils.read(reader, _RecoilData::fromJson);
                     case GunDataTag.CRAWL_RECOIL_MULTIPLIER -> pojo.crawlRecoilMultiplier = JsonUtils.readFloat(reader);
 
                     case GunDataTag.WEIGHT -> pojo.weight = JsonUtils.readFloat(reader);
-                    case GunDataTag.MOVEMENT_DATA -> pojo.movementData = JsonUtils.read(reader, _MovementData::fromJson);
+                    case GunDataTag.MOVEMENT_DATA, GunDataTag.MOVEMENT_DATA_OLD1 -> pojo.movementData = JsonUtils.read(reader, _MovementData::fromJson);
 
-                    case GunDataTag.FIRE_SOUND_DATA -> pojo.fireSoundData = JsonUtils.read(reader, _FireSoundData::fromJson);
+                    case GunDataTag.FIRE_SOUND_DATA, GunDataTag.FIRE_SOUND_DATA_OLD1 -> pojo.fireSoundData = JsonUtils.read(reader, _FireSoundData::fromJson);
                     case GunDataTag.HURT_BOB_TWEAK_MULTIPLIER -> pojo.hurtBobTweakMultiplier = JsonUtils.readFloat(reader);
 
-                    case GunDataTag.RELOAD_DATA -> pojo.reloadData = JsonUtils.read(reader, _ReloadData::fromJson);
+                    case GunDataTag.RELOAD_DATA, GunDataTag.RELOAD_DATA_OLD1 -> pojo.reloadData = JsonUtils.read(reader, _ReloadData::fromJson);
 
-                    case GunDataTag.SCRIPT_TYPE -> pojo.scriptType = JsonUtils.readResourceLocation(reader);
+                    case GunDataTag.SCRIPT_TYPE, GunDataTag.SCRIPT_TYPE_OLD1 -> pojo.scriptType = JsonUtils.readResourceLocation(reader);
                     case GunDataTag.SCRIPT_PARAM -> pojo.scriptParam = JsonUtils.readString2ObjectMap(reader, JsonUtils::readObject);
 
-                    case GunDataTag.DEFAULT_FIRE_MODE_TYPE -> pojo.defaultFireModeType = JsonUtils.readFromString(reader, FireModeType::fromString);
-                    case GunDataTag.FIRE_MODE_TYPE -> pojo.fireModeTypes = JsonUtils.readFromStringList(reader, FireModeType::fromString);
-                    case GunDataTag.FIRE_MODE_DATA -> pojo.fireModeData = JsonUtils.readObject2ObjectMap(reader, FireModeType::fromString, _FireModeData::fromJson);
+                    case GunDataTag.DEFAULT_FIRE_MODE_TYPE, GunDataTag.DEFAULT_FIRE_MODE_TYPE_OLD1 -> pojo.defaultFireModeType = JsonUtils.readFromString(reader, FireModeType::fromString);
+                    case GunDataTag.FIRE_MODE_TYPE, GunDataTag.FIRE_MODE_TYPE_OLD1 -> pojo.fireModeTypes = JsonUtils.readFromStringList(reader, FireModeType::fromString);
+                    case GunDataTag.FIRE_MODE_ADJUST_DATA, GunDataTag.FIRE_MODE_ADJUST_DATA_OLD1 -> pojo.fireModeAdjustData = JsonUtils.readObject2ObjectMap(reader, FireModeType::fromString, _FireModeAdjustData::fromJson);
                     case GunDataTag.BURST_DATA -> pojo.burstData = JsonUtils.read(reader, _BurstData::fromJson);
 
-                    case GunDataTag.MELEE_DATA -> pojo.meleeData = JsonUtils.read(reader, _MeleeData::fromJson);
-                    case GunDataTag.HEAT_DATA -> pojo.heatData = JsonUtils.read(reader, _HeatData::fromJson);
-                    case GunDataTag.CHARGING_DATA -> pojo.chargingData = JsonUtils.readObject2ObjectMap(reader, FireModeType::fromString, _ChargingData::fromJson);
+                    case GunDataTag.MELEE_DATA, GunDataTag.MELEE_DATA_OLD1 -> pojo.meleeData = JsonUtils.read(reader, _MeleeData::fromJson);
+                    case GunDataTag.HEAT_DATA, GunDataTag.HEAT_DATA_OLD1 -> pojo.heatData = JsonUtils.read(reader, _HeatData::fromJson);
+                    case GunDataTag.CHARGING_DATA, GunDataTag.CHARGING_DATA_OLD1 -> pojo.chargingData = JsonUtils.readObject2ObjectMap(reader, FireModeType::fromString, _ChargingData::fromJson);
 
                     case GunDataTag.ALLOW_ATTACHMENT_TYPES -> pojo.allowAttachmentTypes = JsonUtils.readFromStringList(reader, AttachmentCategory::fromString);
                     case GunDataTag.EXCLUSIVE_ATTACHMENTS -> pojo.exclusiveAttachments = JsonUtils.readRl2ObjectMap(reader, AttachmentData::fromJson);
-                    case GunDataTag.DEFAULT_MAG_SIZE -> pojo.defaultMagSize = JsonUtils.readInt(reader);
-                    case GunDataTag.EXTENDED_MAG_AMMO_SIZE -> pojo.extendedMagAmmoSize = JsonUtils.readIntArray(reader);
+                    case GunDataTag.DEFAULT_MAG_SIZE, GunDataTag.DEFAULT_MAG_SIZE_OLD1 -> pojo.defaultMagSize = JsonUtils.readInt(reader);
+                    case GunDataTag.EXTENDED_MAG_AMMO_SIZE, GunDataTag.EXTENDED_MAG_AMMO_SIZE_OLD1 -> pojo.extendedMagAmmoSize = JsonUtils.readIntArray(reader);
                     case GunDataTag.BUILTIN_ATTACHMENTS -> pojo.builtinAttachments = JsonUtils.readObject2ObjectMap(reader, AttachmentCategory::fromString, JsonUtils::readResourceLocation);
 
-                    case GunDataTag.ENABLE_CRAWL -> pojo.enableCrawl = JsonUtils.readBoolean(reader);
-                    case GunDataTag.ENABLE_SLIDE -> pojo.enableSlide = JsonUtils.readBoolean(reader);
+                    case GunDataTag.ENABLE_CRAWL, GunDataTag.ENABLE_CRAWL_OLD1 -> pojo.enableCrawl = JsonUtils.readBoolean(reader);
+                    case GunDataTag.ENABLE_SLIDE, GunDataTag.ENABLE_SLIDE_OLD1 -> pojo.enableSlide = JsonUtils.readBoolean(reader);
 
                     case GunDataTag.DRAW_TIME -> pojo.drawTime = JsonUtils.readFloat(reader);
                     case GunDataTag.PUT_AWAY_TIME -> pojo.putAwayTime = JsonUtils.readFloat(reader);
@@ -167,7 +167,7 @@ public class GunData extends ResourcePojo<GunData> {
 
             JsonUtils.writeToString(writer, GunDataTag.DEFAULT_FIRE_MODE_TYPE, defaultFireModeType);
             JsonUtils.writeToStringList(writer, GunDataTag.FIRE_MODE_TYPE, fireModeTypes);
-            JsonUtils.writeObject2ObjectMap(writer, GunDataTag.FIRE_MODE_DATA, fireModeData, FireModeType::toString, _FireModeData::toJson);
+            JsonUtils.writeObject2ObjectMap(writer, GunDataTag.FIRE_MODE_ADJUST_DATA, fireModeAdjustData, FireModeType::toString, _FireModeAdjustData::toJson);
             JsonUtils.write(writer, GunDataTag.BURST_DATA, burstData, _BurstData::toJson);
 
             JsonUtils.write(writer, GunDataTag.MELEE_DATA, meleeData, _MeleeData::toJson);
@@ -248,8 +248,8 @@ public class GunData extends ResourcePojo<GunData> {
     public List<FireModeType> getFireModeTypes() {
         return fireModeTypes;
     }
-    public Map<FireModeType, _FireModeData> getFireModeData() {
-        return fireModeData;
+    public Map<FireModeType, _FireModeAdjustData> getFireModeAdjustData() {
+        return fireModeAdjustData;
     }
     public _BurstData getBurstData() {
         return burstData;
@@ -351,8 +351,8 @@ public class GunData extends ResourcePojo<GunData> {
     public void setFireModeTypes(List<FireModeType> fireModeTypes) {
         this.fireModeTypes = fireModeTypes;
     }
-    public void setFireModeData(Map<FireModeType, _FireModeData> fireModeData) {
-        this.fireModeData = fireModeData;
+    public void setFireModeAdjustData(Map<FireModeType, _FireModeAdjustData> fireModeAdjustData) {
+        this.fireModeAdjustData = fireModeAdjustData;
     }
     public void setBurstData(_BurstData burstData) {
         this.burstData = burstData;

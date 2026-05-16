@@ -45,8 +45,8 @@ public class RecipeData extends ResourcePojo<RecipeData> {
                 String key = reader.nextName();
                 switch (key) {
                     case RecipeDataTag.RECIPE_REGISTRY_TYPE -> pojo.recipeRegistryType = JsonUtils.readString(reader);
-                    case RecipeDataTag.TABLE_INGREDIENTS -> pojo.tableIngredients = JsonUtils.readList(reader, _TableIngredientData::fromJson);
-                    case RecipeDataTag.TABLE_RESULT -> pojo.tableResult = JsonUtils.read(reader, _TableResultData::fromJson);
+                    case RecipeDataTag.TABLE_INGREDIENTS, RecipeDataTag.TABLE_INGREDIENTS_OLD1 -> pojo.tableIngredients = JsonUtils.readList(reader, _TableIngredientData::fromJson);
+                    case RecipeDataTag.TABLE_RESULT, RecipeDataTag.TABLE_RESULT_OLD1 -> pojo.tableResult = JsonUtils.read(reader, _TableResultData::fromJson);
                     default -> reader.skipValue();
                 }
             }

@@ -10,7 +10,7 @@ package xiao.customgun.core.api.resource.data.data;
 public class AttachmentDataTag {
 
     public static final String WEIGHT = "weight";
-    public static final String MAGAZINE_CATEGORY = "extended_mag_level";
+    public static final String MAGAZINE_CATEGORY = "magazine_category"; public static final String MAGAZINE_CATEGORY_OLD1 = "extended_mag_level";
 
     private AttachmentDataTag() {}
 }

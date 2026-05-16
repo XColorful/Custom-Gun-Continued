@@ -11,4 +11,6 @@ public class _DistanceDamageDataTag {
 
     public static final String DISTANCE = "distance";
     public static final String DAMAGE = "damage";
+
+    private _DistanceDamageDataTag() {}
 }

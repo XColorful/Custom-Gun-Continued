@@ -20,7 +20,7 @@ public class _InaccuracyData extends ResourcePojo<_InaccuracyData> {
     private float stand = 5.0F;
     private float move = 5.75F;
     private float sneak = 3.5F;
-    private float lie = 2.5F;
+    private float prone = 2.5F;
     private float aim = 0.15F;
     private float levitate = 6.0F;
 
@@ -38,7 +38,7 @@ public class _InaccuracyData extends ResourcePojo<_InaccuracyData> {
                     case _InaccuracyDataTag.STAND -> pojo.stand = JsonUtils.readFloat(reader);
                     case _InaccuracyDataTag.MOVE -> pojo.move = JsonUtils.readFloat(reader);
                     case _InaccuracyDataTag.SNEAK -> pojo.sneak = JsonUtils.readFloat(reader);
-                    case _InaccuracyDataTag.LIE -> pojo.lie = JsonUtils.readFloat(reader);
+                    case _InaccuracyDataTag.PRONE, _InaccuracyDataTag.PRONE_OLD1 -> pojo.prone = JsonUtils.readFloat(reader);
                     case _InaccuracyDataTag.AIM -> pojo.aim = JsonUtils.readFloat(reader);
                     case _InaccuracyDataTag.LEVITATE -> pojo.levitate = JsonUtils.readFloat(reader);
                     default -> reader.skipValue();
@@ -58,7 +58,7 @@ public class _InaccuracyData extends ResourcePojo<_InaccuracyData> {
             JsonUtils.writeFloat(writer, _InaccuracyDataTag.STAND, this.stand);
             JsonUtils.writeFloat(writer, _InaccuracyDataTag.MOVE, this.move);
             JsonUtils.writeFloat(writer, _InaccuracyDataTag.SNEAK, this.sneak);
-            JsonUtils.writeFloat(writer, _InaccuracyDataTag.LIE, this.lie);
+            JsonUtils.writeFloat(writer, _InaccuracyDataTag.PRONE, this.prone);
             JsonUtils.writeFloat(writer, _InaccuracyDataTag.AIM, this.aim);
             JsonUtils.writeFloat(writer, _InaccuracyDataTag.LEVITATE, this.levitate);
         }
@@ -81,8 +81,8 @@ public class _InaccuracyData extends ResourcePojo<_InaccuracyData> {
     public float getSneak() {
         return sneak;
     }
-    public float getLie() {
-        return lie;
+    public float getProne() {
+        return prone;
     }
     public float getAim() {
         return aim;
@@ -100,8 +100,8 @@ public class _InaccuracyData extends ResourcePojo<_InaccuracyData> {
     public void setSneak(float sneak) {
         this.sneak = sneak;
     }
-    public void setLie(float lie) {
-        this.lie = lie;
+    public void setProne(float prone) {
+        this.prone = prone;
     }
     public void setAim(float aim) {
         this.aim = aim;

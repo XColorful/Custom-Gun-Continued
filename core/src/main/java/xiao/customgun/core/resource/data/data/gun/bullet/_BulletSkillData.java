@@ -34,9 +34,9 @@ public class _BulletSkillData extends ResourcePojo<_BulletSkillData> {
             while (reader.hasNext()) {
                 String key = reader.nextName();
                 switch (key) {
-                    case _BulletSkillDataTag.ARMOR_IGNORE_PERCENT -> pojo.armorIgnorePercent = JsonUtils.readFloat(reader);
-                    case _BulletSkillDataTag.HEADSHOT_MULTIPLIER -> pojo.headshotMultiplier = JsonUtils.readFloat(reader);
-                    case _BulletSkillDataTag.DAMAGE_CALCULATION -> pojo.damageCalculation = JsonUtils.readList(reader, _DistanceDamageData::fromJson);
+                    case _BulletSkillDataTag.ARMOR_IGNORE_PERCENT, _BulletSkillDataTag.ARMOR_IGNORE_PERCENT_OLD1 -> pojo.armorIgnorePercent = JsonUtils.readFloat(reader);
+                    case _BulletSkillDataTag.HEADSHOT_MULTIPLIER, _BulletSkillDataTag.HEADSHOT_MULTIPLIER_OLD1 -> pojo.headshotMultiplier = JsonUtils.readFloat(reader);
+                    case _BulletSkillDataTag.DAMAGE_CALCULATION, _BulletSkillDataTag.DAMAGE_CALCULATION_OLD1 -> pojo.damageCalculation = JsonUtils.readList(reader, _DistanceDamageData::fromJson);
                     default -> reader.skipValue();
                 }
             }

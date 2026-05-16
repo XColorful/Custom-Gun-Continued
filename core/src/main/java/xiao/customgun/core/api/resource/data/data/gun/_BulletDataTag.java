@@ -10,23 +10,25 @@ package xiao.customgun.core.api.resource.data.data.gun;
 public class _BulletDataTag {
 
     // 显示数值
-    public static final String DISPLAY_DAMAGE = "damage";
-    public static final String BULLET_SKILL = "extra_damage";
+    public static final String DISPLAY_DAMAGE = "display_damage"; public static final String DISPLAY_DAMAGE_OLD1 = "damage";
+    public static final String BULLET_SKILL = "bullet_skill_data"; public static final String BULLET_SKILL_OLD1 = "extra_damage";
 
     // 子弹飞行参数
-    public static final String LIFETIME_SECONDS = "life";
-    public static final String BULLET_SPEED = "speed";
+    public static final String LIFETIME_SECONDS = "lifetime_seconds"; public static final String LIFETIME_SECONDS_OLD1 = "life";
+    public static final String BULLET_SPEED = "bullet_speed"; public static final String BULLET_SPEED_OLD1 = "speed";
     public static final String GRAVITY = "gravity";
     public static final String FRICTION = "friction";
 
     // 射击效果
-    public static final String BULLET_SPILT_AMOUNT = "bullet_amount"; // 子弹分裂数 (霰弹枪)
-    public static final String PIERCE_AMOUNT = "pierce"; // 穿透数
-    public static final String TRACER_INTERVAL = "tracer_count_interval"; // 发射子弹为曳光弹的间隔
+    public static final String BULLET_SPILT_AMOUNT = "bullet_split_amount"; public static final String BULLET_SPILT_AMOUNT_OLD1 = "bullet_amount";
+    public static final String PIERCE_COUNT = "pierce_count"; public static final String PIERCE_COUNT_OLD1 = "pierce";
+    public static final String TRACER_INTERVAL = "tracer_interval"; public static final String TRACER_INTERVAL_OLD1 = "tracer_count_interval";
 
     // 命中效果
-    public static final String FIRE_ASPECT = "ignite"; // 火焰附加
-    public static final String FIRE_ASPECT_SECONDS = "ignite_entity_time";
-    public static final String KNOCKBACK_STRENGTH = "knockback";
-    public static final String BULLET_EXPLOSION = "explosion";
+    public static final String FIRE_ASPECT = "fire_aspect"; public static final String FIRE_ASPECT_OLD1 = "ignite";
+    public static final String FIRE_ASPECT_SECONDS = "fire_aspect_seconds"; public static final String FIRE_ASPECT_SECONDS_OLD1 = "ignite_entity_time";
+    public static final String KNOCKBACK_STRENGTH = "knockback_strength"; public static final String KNOCKBACK_STRENGTH_OLD1 = "knockback";
+    public static final String BULLET_EXPLOSION = "explosion_data"; public static final String BULLET_EXPLOSION_OLD1 = "explosion";
+
+    private _BulletDataTag() {}
 }

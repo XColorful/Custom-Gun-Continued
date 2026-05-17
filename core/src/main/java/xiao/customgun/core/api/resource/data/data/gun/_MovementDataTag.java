@@ -15,4 +15,6 @@ public class _MovementDataTag {
     public static final String BASE = "base";
     public static final String AIM = "aim";
     public static final String RELOAD = "reload";
+
+    private _MovementDataTag() {}
 }

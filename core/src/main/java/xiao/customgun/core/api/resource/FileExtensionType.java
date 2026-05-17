@@ -4,6 +4,8 @@ public enum FileExtensionType {
     // 标准格式
     JSON(FileExtensionName.JSON),
     OGG(FileExtensionName.SOUND_OGG),
+    BEDROCK_ANIMATION(FileExtensionName.BEDROCK_ANIMATION),
+    GLTF(FileExtensionName.GLTF),
     // 非标准格式
     GUNPACK_META(FileExtensionName.GUNPACK_META);
 

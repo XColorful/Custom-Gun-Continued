@@ -7,19 +7,11 @@
 
 package xiao.customgun.core.api.resource.data.index;
 
-import xiao.customgun.core.api.item.attachment.AttachmentCategory;
-
 public class AttachmentIndexTag extends _DataIndexTag {
 
-    /**
-     * 配件种类 {@link AttachmentCategory}
-     */
-    public static final String ATTACHMENT_CATEGORY = "type";
+    public static final String ATTACHMENT_CATEGORY = "attachment_category"; public static final String ATTACHMENT_CATEGORY_OLD1 = "type";
 
-    /**
-     * 从创造模式物品栏和 JEI 中隐藏
-     */
-    public static final String HIDE_IN_GAME = "hidden";
+    public static final String HIDE_IN_GAME = "hide_in_game"; public static final String HIDE_IN_GAME_OLD1 = "hidden";
 
     private AttachmentIndexTag() {}
 }

@@ -21,6 +21,9 @@ public class ModSounds {
             CustomGun.getRegistrarFactory().createSounds(CustomGun.MOD_ID);
 
     // 类加载顺序会保证在 ↑调用SOUNDS 前执行
+    /**
+     * TODO 等mixin做完之后给每个 {@link xiao.customgun.client.api.sound.gun.GunSoundType} 都做一个注册类型，用ResourceLocation path前缀检测来生成对应的声音事件
+     */
     public static final IRegistryObject<SoundEvent> GUN = SOUNDS.register("gun", () ->
             SoundEvent.createVariableRangeEvent(CustomGun.getMcRegistry().createResourceLocation(String.format("%s:%s", CustomGun.MOD_ID, "gun"))));
     public static final IRegistryObject<SoundEvent> TARGET_HIT = SOUNDS.register("target_block_hit", () ->

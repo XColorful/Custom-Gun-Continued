@@ -15,7 +15,7 @@
 package xiao.customgun.client;
 
 import xiao.customgun.CustomGun;
-import xiao.customgun.client.event.ClientEventHandlers;
+import xiao.customgun.client.event.custom.ClientEventHandlers;
 import xiao.customgun.client.init.ClientModConfig;
 
 public class CustomGunClient {

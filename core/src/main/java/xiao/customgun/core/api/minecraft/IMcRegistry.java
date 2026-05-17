@@ -20,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
 
 public interface IMcRegistry {
 
-    ResourceLocation createResourceLocation(String rlString);
+    @Nullable ResourceLocation createResourceLocation(String rlString);
 
     @Nullable Block getBlock(ResourceLocation rl);
     @Nullable ResourceLocation getBlockRl(Block block);

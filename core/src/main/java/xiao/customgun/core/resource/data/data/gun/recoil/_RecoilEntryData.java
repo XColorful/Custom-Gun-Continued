@@ -9,11 +9,16 @@ package xiao.customgun.core.resource.data.data.gun.recoil;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import xiao.customgun.core.api.resource.data.data.gun.recoil._RecoilEntryDataTag;
 import xiao.customgun.core.resource.ResourcePojo;
+import xiao.customgun.core.util.JsonUtils;
 
 import java.io.IOException;
 
-public class _RecoilEntryData extends ResourcePojo<_RecoilEntryData> {
+public final class _RecoilEntryData extends ResourcePojo<_RecoilEntryData> {
+
+    private float time = 0;
+    private float[] range;
 
     private static final _RecoilEntryData PARSER = new _RecoilEntryData();
     public static _RecoilEntryData fromJson(JsonReader reader) throws IOException {
@@ -24,7 +29,12 @@ public class _RecoilEntryData extends ResourcePojo<_RecoilEntryData> {
         _RecoilEntryData pojo = new _RecoilEntryData();
         reader.beginObject(); {
             while (reader.hasNext()) {
-                reader.skipValue();
+                String key = reader.nextName();
+                switch (key) {
+                    case _RecoilEntryDataTag.TIME -> pojo.time = JsonUtils.readFloat(reader);
+                    case _RecoilEntryDataTag.RANGE -> pojo.range = JsonUtils.readFloatArray(reader);
+                    default -> reader.skipValue();
+                }
             }
         }
         reader.endObject();
@@ -37,6 +47,8 @@ public class _RecoilEntryData extends ResourcePojo<_RecoilEntryData> {
     @Override
     public void toJson(JsonWriter writer) throws IOException {
         writer.beginObject(); {
+            JsonUtils.writeFloat(writer, _RecoilEntryDataTag.TIME, this.time);
+            JsonUtils.writeFloatArray(writer, _RecoilEntryDataTag.RANGE, this.range);
         }
         writer.endObject();
     }
@@ -44,5 +56,21 @@ public class _RecoilEntryData extends ResourcePojo<_RecoilEntryData> {
     @Override
     protected void validatePojo() {
         this.setValid(true);
+    }
+
+    // --------Getter & Setter--------
+
+    public float getTime() {
+        return time;
+    }
+    public float[] getRange() {
+        return range;
+    }
+
+    public void setTime(float time) {
+        this.time = time;
+    }
+    public void setRange(float[] range) {
+        this.range = range;
     }
 }

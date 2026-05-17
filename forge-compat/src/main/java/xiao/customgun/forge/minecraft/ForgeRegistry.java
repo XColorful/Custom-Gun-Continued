@@ -25,8 +25,8 @@ import xiao.customgun.forge.CustomGunForge;
 
 public class ForgeRegistry implements IMcRegistry {
 
-    @Override public ResourceLocation createResourceLocation(String rlString) {
-        return ResourceLocation.parse(rlString);
+    @Override public @Nullable ResourceLocation createResourceLocation(String rlString) {
+        return ResourceLocation.tryParse(rlString);
     }
 
     @Override public @Nullable Block getBlock(ResourceLocation rl) {

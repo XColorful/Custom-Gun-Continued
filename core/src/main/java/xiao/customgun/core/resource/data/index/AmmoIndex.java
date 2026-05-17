@@ -16,6 +16,9 @@ import java.io.IOException;
 
 public final class AmmoIndex extends _DataIndex<AmmoIndex> {
 
+    /**
+     * 物品堆叠数量
+     */
     private int maxStackSize = 1;
 
     private static final AmmoIndex PARSER = new AmmoIndex();
@@ -29,12 +32,12 @@ public final class AmmoIndex extends _DataIndex<AmmoIndex> {
             while (reader.hasNext()) {
                 String key = reader.nextName();
                 switch (key) {
-                    case AmmoIndexTag.NAME_LANG -> pojo.setNameLang(JsonUtils.readString(reader));
-                    case AmmoIndexTag.TOOLTIP_LANG -> pojo.setTooltipLang(JsonUtils.readString(reader));
-                    case AmmoIndexTag.DISPLAY_INDEX_LOCATION -> pojo.setDisplayIndexLocation(JsonUtils.readResourceLocation(reader));
-                    case AmmoIndexTag.SLOT_SORT -> pojo.setSlotSort(JsonUtils.readInt(reader));
+                    case AmmoIndexTag.NAME_LANG, AmmoIndexTag.NAME_LANG_OLD1 -> pojo.setNameLang(JsonUtils.readString(reader));
+                    case AmmoIndexTag.TOOLTIP_LANG, AmmoIndexTag.TOOLTIP_LANG_OLD1 -> pojo.setTooltipLang(JsonUtils.readString(reader));
+                    case AmmoIndexTag.DISPLAY_INDEX_LOCATION, AmmoIndexTag.DISPLAY_INDEX_LOCATION_OLD1 -> pojo.setDisplayIndexLocation(JsonUtils.readResourceLocation(reader));
+                    case AmmoIndexTag.SLOT_SORT, AmmoIndexTag.SLOT_SORT_OLD1 -> pojo.setSlotSort(JsonUtils.readInt(reader));
 
-                    case AmmoIndexTag.MAX_STACK_SIZE -> pojo.maxStackSize = JsonUtils.readInt(reader);
+                    case AmmoIndexTag.MAX_STACK_SIZE, AmmoIndexTag.MAX_STACK_SIZE_OLD1 -> pojo.maxStackSize = JsonUtils.readInt(reader);
                     default -> reader.skipValue();
                 }
             }

@@ -7,34 +7,14 @@
 
 package xiao.customgun.core.api.resource.data.data.gun;
 
-import xiao.customgun.core.api.resource.data.data.GunDataTag;
-import xiao.customgun.core.api.resource.data.data.gun.bullet._ExtraBulletDataTag;
-
 public class _BurstDataTag {
 
-    /**
-     * {@link GunDataTag}
-     */
-    public static final String RPM = GunDataTag.RPM;
+    public static final String BPM = "bpm";
+    public static final String BURST_AMOUNT = "burst_amount"; public static final String BURST_AMOUNT_OLD1 = "count";
 
-    /**
-     * {@link _BulletDataTag}
-     */
-    public static final String DAMAGE = _BulletDataTag.DISPLAY_DAMAGE;
-    // 子弹飞行参数
-    public static final String BULLET_SPEED = _BulletDataTag.BULLET_SPEED;
-    // 命中效果
-    public static final String KNOCKBACK_STRENGTH = _BulletDataTag.KNOCKBACK_STRENGTH;
+    // 时间属性
+    public static final String SHOOT_INTERVAL_SECONDS = "shoot_interval_seconds"; public static final String SHOOT_INTERVAL_SECONDS_OLD1 = "min_interval";
+    public static final String CONTINUOUS_SHOOT = "continuous_shoot";
 
-    /**
-     * {@link _ExtraBulletDataTag}
-     */
-    public static final String ARMOR_IGNORE_PERCENT = _ExtraBulletDataTag.ARMOR_IGNORE_PERCENT;
-    public static final String HEADSHOT_MULTIPLIER = _ExtraBulletDataTag.HEADSHOT_MULTIPLIER;
-
-    /**
-     * {@link _InaccuracyDataTag}
-     */
-    public static final String AIM_INACCURACY = "aim_inaccuracy";
-    public static final String OTHER_INACCURACY = "other_inaccuracy";
+    private _BurstDataTag() {}
 }

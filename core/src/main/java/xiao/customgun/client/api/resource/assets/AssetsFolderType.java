@@ -14,13 +14,30 @@ import xiao.customgun.core.api.resource.assets.AssetsFolderName;
  * "./tacz/{枪包}/assets/{namespace}/" 下的目录名
  */
 public enum AssetsFolderType implements ResourceTag {
+    GUNPACK_INFO(AssetsFolderName.GUNPACK_INFO),
     ANIMATIONS(AssetsFolderName.ANIMATIONS),
     DISPLAY(AssetsFolderName.DISPLAY),
-    GEO_MODELS(AssetsFolderName.GEO_MODELS),
+    MODEL(AssetsFolderName.MODEL),
+    /**
+     * 原版目录
+     */
     LANG(AssetsFolderName.LANG),
+    /**
+     * PlayerAnimator目录
+     */
     PLAYER_ANIMATOR(AssetsFolderName.PLAYER_ANIMATOR),
-    SCRIPTS(AssetsFolderName.SCRIPTS),
-    TACZ_SOUNDS(AssetsFolderName.TACZ_SOUNDS),
+    SCRIPT(AssetsFolderName.SCRIPT),
+    /**
+     * 原版目录
+     */
+    @Deprecated SOUNDS(AssetsFolderName.SOUNDS),
+    /**
+     * mixin将文件夹添加到原版扫描的目录
+     */
+    MOD_SOUNDS(AssetsFolderName.MOD_SOUNDS),
+    /**
+     * 原版目录
+     */
     TEXTURES(AssetsFolderName.TEXTURES);
 
     public final String folderName;

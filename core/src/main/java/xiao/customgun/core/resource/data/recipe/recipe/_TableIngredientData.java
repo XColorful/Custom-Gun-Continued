@@ -16,7 +16,7 @@ import xiao.customgun.core.util.JsonUtils;
 
 import java.io.IOException;
 
-public class _TableIngredientData extends ResourcePojo<_TableIngredientData> {
+public final class _TableIngredientData extends ResourcePojo<_TableIngredientData> {
 
     private _IngredientFilterData ingredientFilter;
     private int ingredientCount = 1;
@@ -32,8 +32,8 @@ public class _TableIngredientData extends ResourcePojo<_TableIngredientData> {
             while (reader.hasNext()) {
                 String key = reader.nextName();
                 switch (key) {
-                    case _TableIngredientDataTag.INGREDIENT_FILTER_DATA -> pojo.ingredientFilter = JsonUtils.read(reader, _IngredientFilterData::fromJson);
-                    case _TableIngredientDataTag.INGREDIENT_COUNT -> pojo.ingredientCount = JsonUtils.readInt(reader);
+                    case _TableIngredientDataTag.INGREDIENT_FILTER_DATA, _TableIngredientDataTag.INGREDIENT_FILTER_DATA_OLD1 -> pojo.ingredientFilter = JsonUtils.read(reader, _IngredientFilterData::fromJson);
+                    case _TableIngredientDataTag.INGREDIENT_COUNT, _TableIngredientDataTag.INGREDIENT_COUNT_OLD1 -> pojo.ingredientCount = JsonUtils.readInt(reader);
                     default -> reader.skipValue();
                 }
             }

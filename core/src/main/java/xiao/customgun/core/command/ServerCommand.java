@@ -19,11 +19,13 @@ import xiao.customgun.core.api.minecraft.CommandLevel;
 import xiao.customgun.core.command.sub.*;
 
 import static xiao.customgun.core.command.CommandArg.MOD_ID;
+import static xiao.customgun.core.command.CommandArg.MOD_ID_SHORT;
 
 public class ServerCommand {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(get(MOD_ID));
+        dispatcher.register(get(MOD_ID_SHORT));
     }
 
     public static LiteralArgumentBuilder<CommandSourceStack> get(String rootName) {

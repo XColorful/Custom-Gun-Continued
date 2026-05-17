@@ -7,18 +7,10 @@
 
 package xiao.customgun.core.api.resource.data.index;
 
-import xiao.customgun.core.api.item.gun.GunCategory;
-
 public class GunIndexTag extends _DataIndexTag {
 
-    /**
-     * 枪械种类 {@link GunCategory}
-     */
-    public static final String GUN_CATEGORY = "type";
+    public static final String GUN_CATEGORY = "gun_category"; public static final String GUN_CATEGORY_OLD1 = "type";
 
-    /**
-     * ItemStack类型
-     */
     public static final String ITEM_TYPE = "item_type";
 
     private GunIndexTag() {}

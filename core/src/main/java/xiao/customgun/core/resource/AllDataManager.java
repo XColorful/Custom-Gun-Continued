@@ -103,7 +103,7 @@ public class AllDataManager implements IEventHandler {
         this.networkCacheListeners = new ArrayList<>();
     }
 
-    public void reloadAndRegister(IAddServerReloadListenerEvent event) {
+    protected void reloadAndRegister(IAddServerReloadListenerEvent event) {
         this.reloadListeners.clear();
         // 注册时按顺序重载
         this.gunDataManager = addToListener(this.reloadListeners, new DataManager.GunDataManager());
@@ -127,7 +127,7 @@ public class AllDataManager implements IEventHandler {
                 .toList()
         );
         event.addListener(
-                CustomGun.getMcRegistry().createResourceLocation(CustomGun.MOD_ID + ":common_data_post_handler"),
+                CustomGun.getMcRegistry().createResourceLocation(CustomGun.MOD_ID + ":all_data_manager"),
                 (barrier, resourceManager, preparationProfiler, reloadProfiler, backgroundExecutor, gameExecutor) -> {
                     return barrier
                             .wait(Void.TYPE)

@@ -5,12 +5,13 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package xiao.customgun.client.api.resource.assets.textures.crosshair;
+package xiao.customgun.client.api.textures.crosshair;
 
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.CustomGun;
 import xiao.customgun.client.api.resource.assets.textures.CrosshairFolderType;
+import xiao.customgun.client.api.resource.assets.textures.TextureSubFolderType;
 import xiao.customgun.core.api.resource.ResourceTag;
 import xiao.customgun.core.api.resource.assets.textures.crosshair.CrosshairTag;
 
@@ -47,7 +48,8 @@ public enum CrosshairType implements ResourceTag {
     TRIDENT_1(CrosshairFolderType.NORMAL, CrosshairTag.TRIDENT_1),
     TRIDENT_2(CrosshairFolderType.NORMAL, CrosshairTag.TRIDENT_2);
 
-    public static final String LOCATION_FORMAT = "%s:textures/crosshair/%s/%s.png";
+    // {namespace}:textures/{crosshair}/{crosshair_type}/{filename}.png
+    public static final String LOCATION_FORMAT = "%s:textures/%s/%s/%s.png";
 
     public final CrosshairFolderType folderType;
     public final String crosshairTag;
@@ -57,6 +59,7 @@ public enum CrosshairType implements ResourceTag {
         this.crosshairTag = crosshairTag;
         this.fastDefaultRl = CustomGun.getMcRegistry().createResourceLocation(String.format(LOCATION_FORMAT,
                 CustomGun.MOD_ID,
+                TextureSubFolderType.CROSSHAIR.getFolderName(),
                 this.folderType.getFolderName(),
                 this.getTagName()));
     }
@@ -73,7 +76,7 @@ public enum CrosshairType implements ResourceTag {
     }
 
     // {名称}.png -> textures/crosshair/{normal}/{名称}.png
-    private static final Map<String, ResourceLocation> CACHE = new ConcurrentHashMap<>(); // 防止扩展模组不再渲染线程处理
+    private static final Map<String, ResourceLocation> CACHE = new ConcurrentHashMap<>(); // 防止扩展模组不在渲染线程处理
 
     static {
         for (CrosshairType type : CrosshairType.values()) {

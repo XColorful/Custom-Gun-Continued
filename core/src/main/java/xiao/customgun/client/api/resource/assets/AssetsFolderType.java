@@ -18,10 +18,16 @@ public enum AssetsFolderType implements ResourceTag {
     ANIMATIONS(AssetsFolderName.ANIMATIONS),
     DISPLAY(AssetsFolderName.DISPLAY),
     GEO_MODELS(AssetsFolderName.GEO_MODELS),
+    /**
+     * 原版目录
+     */
     LANG(AssetsFolderName.LANG),
     PLAYER_ANIMATOR(AssetsFolderName.PLAYER_ANIMATOR),
     SCRIPTS(AssetsFolderName.SCRIPTS),
-    TACZ_SOUNDS(AssetsFolderName.TACZ_SOUNDS),
+    MOD_SOUNDS(AssetsFolderName.MOD_SOUNDS),
+    /**
+     * 原版目录
+     */
     TEXTURES(AssetsFolderName.TEXTURES);
 
     public final String folderName;

@@ -5,9 +5,9 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package xiao.customgun.core.api.resource.assets.display;
+package xiao.customgun.core.api.sound.gun;
 
-public class SoundTag {
+public class GunSoundTypeTag {
     // 射击相关
     public static final String SHOOT_SOUND = "shoot";
     public static final String SHOOT_3P_SOUND = "shoot_3p";
@@ -39,5 +39,5 @@ public class SoundTag {
     public static final String UNINSTALL_SOUND = "uninstall";
     public static final String INSTALL_SOUND = "install";
 
-    private SoundTag() {}
+    private GunSoundTypeTag() {}
 }

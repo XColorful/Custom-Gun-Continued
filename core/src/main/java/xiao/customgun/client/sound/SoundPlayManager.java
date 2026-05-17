@@ -20,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
 import xiao.customgun.CustomGun;
 import xiao.customgun.client.api.event.IClientTickEvent;
 import xiao.customgun.client.api.resource.assets.AssetsFolderType;
-import xiao.customgun.client.api.resource.assets.display.SoundType;
+import xiao.customgun.client.api.sound.gun.GunSoundType;
 import xiao.customgun.client.config.SoundConfig;
 import xiao.customgun.client.resource.GunDisplayInstance;
 import xiao.customgun.client.util.WorldUtils;
@@ -57,8 +57,8 @@ public class SoundPlayManager implements IEventHandler {
         }
     }
 
-    public static final FileToIdConverter TACZ_SOUND_LISTER = new FileToIdConverter(
-            AssetsFolderType.TACZ_SOUNDS.getFolderName(),
+    public static final FileToIdConverter MOD_SOUND_LISTER = new FileToIdConverter(
+            AssetsFolderType.MOD_SOUNDS.getFolderName(),
             FileExtensionType.OGG.getExtensionNameWithDot());
 
     private record SoundKey(int entityId, ResourceLocation soundId) {}
@@ -121,7 +121,7 @@ public class SoundPlayManager implements IEventHandler {
             tmpSoundInstance.setStop();
         }
     }
-    public static void stopPlayGunSound(GunDisplayInstance gunDisplayIndex, SoundType animationName) {
+    public static void stopPlayGunSound(GunDisplayInstance gunDisplayIndex, GunSoundType animationName) {
         if (tmpSoundInstance != null) {
             if (tmpSoundInstance.getRegistryName() != null && tmpSoundInstance.getRegistryName().equals(gunDisplayIndex.getSounds(animationName))) {
                 tmpSoundInstance.setStop();
@@ -142,20 +142,20 @@ public class SoundPlayManager implements IEventHandler {
 
     public static void playShootSound(LivingEntity entity, GunDisplayInstance gunDisplayIndex, GunData gunData) {
         if (PlannedRefactor.ON_MAGIC_CLIENT_SOUND_VOLUME) return;
-        playClientSound(entity, gunDisplayIndex.getSounds(SoundType.SHOOT_SOUND), 0.8f, 0.9f + entity.getRandom().nextFloat() * 0.125f, // 随机音高应该抽到 GunDisplay 里?
+        playClientSound(entity, gunDisplayIndex.getSounds(GunSoundType.SHOOT_SOUND), 0.8f, 0.9f + entity.getRandom().nextFloat() * 0.125f, // 随机音高应该抽到 GunDisplay 里?
                 (int) (GunConfig.DEFAULT_GUN_FIRE_SOUND_DISTANCE.get() * gunData.getFireSoundData().getNormalMultiplier()), false,
                 SoundConfig.HIGH_FREQUENCY_SOUND_CONCURRENCY_LIMIT.get(), false, WorldUtils.isLocalPlayer(entity));
     }
 
     public static void playSilenceSound(LivingEntity entity, GunDisplayInstance gunDisplayIndex, GunData gunData) {
-        playClientSound(entity, gunDisplayIndex.getSounds(SoundType.SILENCE_SOUND), 0.6f, 0.9f + entity.getRandom().nextFloat() * 0.125f,
+        playClientSound(entity, gunDisplayIndex.getSounds(GunSoundType.SILENCE_SOUND), 0.6f, 0.9f + entity.getRandom().nextFloat() * 0.125f,
                 (int) (GunConfig.DEFAULT_GUN_SILENCE_SOUND_DISTANCE.get() * gunData.getFireSoundData().getSilencedMultiplier()), false,
                 SoundConfig.HIGH_FREQUENCY_SOUND_CONCURRENCY_LIMIT.get(), false, WorldUtils.isLocalPlayer(entity));
     }
 
     public static void playDryFireSound(LivingEntity entity, GunDisplayInstance gunDisplayIndex) {
         if (!DRY_SOUND_TRACK) return;
-        playClientSound(entity, gunDisplayIndex.getSounds(SoundType.DRY_FIRE_SOUND), 1.0f, 0.9f + entity.getRandom().nextFloat() * 0.125f,
+        playClientSound(entity, gunDisplayIndex.getSounds(GunSoundType.DRY_FIRE_SOUND), 1.0f, 0.9f + entity.getRandom().nextFloat() * 0.125f,
                 GunConfig.DEFAULT_GUN_OTHER_SOUND_DISTANCE.get());
         DRY_SOUND_TRACK = false;
     }
@@ -171,62 +171,62 @@ public class SoundPlayManager implements IEventHandler {
      */
     public static void playReloadSound(LivingEntity entity, GunDisplayInstance gunDisplayIndex, boolean noAmmo) {
         if (noAmmo) {
-            tmpSoundInstance = playClientSound(entity, gunDisplayIndex.getSounds(SoundType.RELOAD_EMPTY_SOUND), 1.0f, 1.0f,
+            tmpSoundInstance = playClientSound(entity, gunDisplayIndex.getSounds(GunSoundType.RELOAD_EMPTY_SOUND), 1.0f, 1.0f,
                     GunConfig.DEFAULT_GUN_OTHER_SOUND_DISTANCE.get());
         } else {
-            tmpSoundInstance = playClientSound(entity, gunDisplayIndex.getSounds(SoundType.RELOAD_TACTICAL_SOUND), 1.0f, 1.0f,
+            tmpSoundInstance = playClientSound(entity, gunDisplayIndex.getSounds(GunSoundType.RELOAD_TACTICAL_SOUND), 1.0f, 1.0f,
                     GunConfig.DEFAULT_GUN_OTHER_SOUND_DISTANCE.get());
         }
     }
     public static void playInspectSound(LivingEntity entity, GunDisplayInstance gunDisplayIndex, boolean noAmmo) {
         if (noAmmo) {
-            tmpSoundInstance = playClientSound(entity, gunDisplayIndex.getSounds(SoundType.INSPECT_EMPTY_SOUND), 1.0f, 1.0f,
+            tmpSoundInstance = playClientSound(entity, gunDisplayIndex.getSounds(GunSoundType.INSPECT_EMPTY_SOUND), 1.0f, 1.0f,
                     GunConfig.DEFAULT_GUN_OTHER_SOUND_DISTANCE.get());
         } else {
-            tmpSoundInstance = playClientSound(entity, gunDisplayIndex.getSounds(SoundType.INSPECT_SOUND), 1.0f, 1.0f,
+            tmpSoundInstance = playClientSound(entity, gunDisplayIndex.getSounds(GunSoundType.INSPECT_SOUND), 1.0f, 1.0f,
                     GunConfig.DEFAULT_GUN_OTHER_SOUND_DISTANCE.get());
         }
     }
     public static void playBoltSound(LivingEntity entity, GunDisplayInstance gunDisplayIndex) {
-        tmpSoundInstance = playClientSound(entity, gunDisplayIndex.getSounds(SoundType.BOLT_SOUND), 1.0f, 1.0f,
+        tmpSoundInstance = playClientSound(entity, gunDisplayIndex.getSounds(GunSoundType.BOLT_SOUND), 1.0f, 1.0f,
                 GunConfig.DEFAULT_GUN_OTHER_SOUND_DISTANCE.get());
     }
     public static void playDrawSound(LivingEntity entity, GunDisplayInstance gunDisplayIndex) {
-        tmpSoundInstance = playClientSound(entity, gunDisplayIndex.getSounds(SoundType.DRAW_SOUND), 1.0f, 1.0f,
+        tmpSoundInstance = playClientSound(entity, gunDisplayIndex.getSounds(GunSoundType.DRAW_SOUND), 1.0f, 1.0f,
                 GunConfig.DEFAULT_GUN_OTHER_SOUND_DISTANCE.get());
     }
     public static void playPutAwaySound(LivingEntity entity, GunDisplayInstance gunDisplayIndex) {
-        tmpSoundInstance = playClientSound(entity, gunDisplayIndex.getSounds(SoundType.PUT_AWAY_SOUND), 1.0f, 1.0f,
+        tmpSoundInstance = playClientSound(entity, gunDisplayIndex.getSounds(GunSoundType.PUT_AWAY_SOUND), 1.0f, 1.0f,
                 GunConfig.DEFAULT_GUN_OTHER_SOUND_DISTANCE.get());
     }
     public static void playFireSelectSound(LivingEntity entity, GunDisplayInstance gunDisplayIndex) {
-        playClientSound(entity, gunDisplayIndex.getSounds(SoundType.FIRE_SELECT), 1.0f, 1.0f,
+        playClientSound(entity, gunDisplayIndex.getSounds(GunSoundType.FIRE_SELECT), 1.0f, 1.0f,
                 GunConfig.DEFAULT_GUN_OTHER_SOUND_DISTANCE.get());
     }
     public static void playMeleeBayonetSound(LivingEntity entity, GunDisplayInstance gunDisplayIndex) {
-        playClientSound(entity, gunDisplayIndex.getSounds(SoundType.MELEE_BAYONET), 1.0f, 0.9f + entity.getRandom().nextFloat() * 0.125f,
+        playClientSound(entity, gunDisplayIndex.getSounds(GunSoundType.MELEE_BAYONET), 1.0f, 0.9f + entity.getRandom().nextFloat() * 0.125f,
                 GunConfig.DEFAULT_GUN_OTHER_SOUND_DISTANCE.get());
     }
     public static void playMeleePushSound(LivingEntity entity, GunDisplayInstance gunDisplayIndex) {
-        playClientSound(entity, gunDisplayIndex.getSounds(SoundType.MELEE_PUSH), 1.0f, 0.9f + entity.getRandom().nextFloat() * 0.125f,
+        playClientSound(entity, gunDisplayIndex.getSounds(GunSoundType.MELEE_PUSH), 1.0f, 0.9f + entity.getRandom().nextFloat() * 0.125f,
                 GunConfig.DEFAULT_GUN_OTHER_SOUND_DISTANCE.get());
     }
     public static void playMeleeStockSound(LivingEntity entity, GunDisplayInstance gunDisplayIndex) {
-        playClientSound(entity, gunDisplayIndex.getSounds(SoundType.MELEE_STOCK), 1.0f, 0.9f + entity.getRandom().nextFloat() * 0.125f,
+        playClientSound(entity, gunDisplayIndex.getSounds(GunSoundType.MELEE_STOCK), 1.0f, 0.9f + entity.getRandom().nextFloat() * 0.125f,
                 GunConfig.DEFAULT_GUN_OTHER_SOUND_DISTANCE.get());
     }
     public static void playHeadHitSound(LivingEntity entity, GunDisplayInstance gunDisplayIndex) {
         boolean relative = WorldUtils.isLocalPlayer(entity);
-        playClientSound(entity, gunDisplayIndex.getSounds(SoundType.HEAD_HIT_SOUND), 1.0f, 1.0f,
+        playClientSound(entity, gunDisplayIndex.getSounds(GunSoundType.HEAD_HIT_SOUND), 1.0f, 1.0f,
                 GunConfig.DEFAULT_GUN_OTHER_SOUND_DISTANCE.get(), false, SoundConfig.HIT_SOUND_CONCURRENCY_LIMIT.get(), !relative, relative);
     }
     public static void playFleshHitSound(LivingEntity entity, GunDisplayInstance gunDisplayIndex) {
         boolean relative = WorldUtils.isLocalPlayer(entity);
-        playClientSound(entity, gunDisplayIndex.getSounds(SoundType.FLESH_HIT_SOUND), 1.0f, 1.0f,
+        playClientSound(entity, gunDisplayIndex.getSounds(GunSoundType.FLESH_HIT_SOUND), 1.0f, 1.0f,
                 GunConfig.DEFAULT_GUN_OTHER_SOUND_DISTANCE.get(), false, SoundConfig.HIT_SOUND_CONCURRENCY_LIMIT.get(), !relative, relative);
     }
     public static void playKillSound(LivingEntity entity, GunDisplayInstance gunDisplayIndex) {
-        playClientSound(entity, gunDisplayIndex.getSounds(SoundType.KILL_SOUND), 1.0f, 1.0f,
+        playClientSound(entity, gunDisplayIndex.getSounds(GunSoundType.KILL_SOUND), 1.0f, 1.0f,
                 GunConfig.DEFAULT_GUN_OTHER_SOUND_DISTANCE.get());
     }
 
@@ -349,11 +349,11 @@ public class SoundPlayManager implements IEventHandler {
 
     private static boolean hasSoundResource(Minecraft minecraft, ResourceLocation soundId) {
         boolean exists = SOUND_RESOURCE_EXISTS_CACHE.computeIfAbsent(soundId, id -> {
-            ResourceLocation soundPath = TACZ_SOUND_LISTER.idToFile(id);
+            ResourceLocation soundPath = MOD_SOUND_LISTER.idToFile(id);
             return minecraft.getResourceManager().getResource(soundPath).isPresent();
         });
         if (!exists && MISSING_SOUND_WARNED.add(soundId)) {
-            ResourceLocation soundPath = TACZ_SOUND_LISTER.idToFile(soundId);
+            ResourceLocation soundPath = MOD_SOUND_LISTER.idToFile(soundId);
             CustomGun.LOGGER.warn("[TACZ Sound] Missing gun sound resource, skipped. sound={}, path={}", soundId, soundPath);
         }
         return exists;

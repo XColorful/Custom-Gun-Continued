@@ -8,7 +8,7 @@
 package xiao.customgun.client.config;
 
 import xiao.customgun.client.api.config.ClientModConfigTag;
-import xiao.customgun.client.api.resource.assets.textures.crosshair.CrosshairType;
+import xiao.customgun.client.api.textures.crosshair.CrosshairType;
 import xiao.customgun.core.api.config.IModConfigSpec;
 import xiao.customgun.core.api.config.IModConfigSpecBuilder;
 

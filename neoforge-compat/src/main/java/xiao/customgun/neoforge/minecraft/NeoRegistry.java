@@ -25,8 +25,8 @@ import xiao.customgun.neoforge.CustomGunNeoforge;
 
 public class NeoRegistry implements IMcRegistry {
 
-    @Override public Identifier createResourceLocation(String rlString) {
-        return Identifier.parse(rlString);
+    @Override public @Nullable Identifier createResourceLocation(String rlString) {
+        return Identifier.tryParse(rlString);
     }
 
     @Override public @Nullable Block getBlock(Identifier rl) {

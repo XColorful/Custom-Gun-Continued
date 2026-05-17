@@ -7,17 +7,13 @@
 
 package xiao.customgun.core.api.resource.data;
 
-import org.jetbrains.annotations.ApiStatus;
 import xiao.customgun.core.api.resource.ResourceTag;
 
 /**
  * "./tacz/{枪包}/data/{namespace}/" 下的目录名
  */
 public enum DataFolderType implements ResourceTag {
-    /**
-     * 在跟 "assets" 和 "data" 同级的目录，不属于原版类型
-     */
-    @ApiStatus.Internal @Deprecated GUNPACK_META(DataFolderName.GUNPACK_META),
+    GUNPACK_META(DataFolderName.GUNPACK_META),
     DATA(DataFolderName.DATA),
     INDEX(DataFolderName.INDEX),
     RECIPE_FILTER(DataFolderName.RECIPE_FILTER),
@@ -27,7 +23,7 @@ public enum DataFolderType implements ResourceTag {
     @Deprecated RECIPE(DataFolderName.RECIPE),
     SCRIPT(DataFolderName.SCRIPT),
     @Deprecated LOOT_INJECTOR(DataFolderName.LOOT_INJECTOR),
-    TACZ_TAGS(DataFolderName.TACZ_TAGS);
+    MOD_TAG(DataFolderName.MOD_TAG);
 
     public final String folderName;
     DataFolderType(String folderName) {

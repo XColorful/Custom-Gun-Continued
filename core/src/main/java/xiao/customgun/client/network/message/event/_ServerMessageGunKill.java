@@ -13,7 +13,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
-import xiao.customgun.client.util.WorldUtils;
+import xiao.customgun.client.util.ClientWorldUtils;
 import xiao.customgun.core.network.message.event.ServerMessageGunKill;
 
 @ApiStatus.Internal
@@ -24,9 +24,9 @@ public class _ServerMessageGunKill {
         if (level == null) {
             return;
         }
-        @Nullable Entity bullet = WorldUtils.getEntityById(level, message.bulletId());
-        @Nullable LivingEntity killedEntity = WorldUtils.getLivingEntityById(level, message.killEntityId());
-        @Nullable LivingEntity attacker = WorldUtils.getLivingEntityById(level, message.attackerId());
+        @Nullable Entity bullet = ClientWorldUtils.getEntityById(level, message.bulletId());
+        @Nullable LivingEntity killedEntity = ClientWorldUtils.getLivingEntityById(level, message.killEntityId());
+        @Nullable LivingEntity attacker = ClientWorldUtils.getLivingEntityById(level, message.attackerId());
         // TODO EntityKillByGunEvent
     }
 }

@@ -9,15 +9,9 @@ package xiao.customgun.core.api.resource.data.index;
 
 public class BlockIndexTag extends _DataIndexTag {
 
-    /**
-     * Block类型
-     */
-    public static final String BLOCK_TYPE = "id";
+    public static final String BLOCK_TYPE = "block_type"; public static final String BLOCK_TYPE_OLD1 = "id";
 
-    /**
-     * 物品堆叠数量
-     */
-    public static final String MAX_STACK_SIZE = "stack_size";
+    public static final String MAX_STACK_SIZE = "max_stack_size"; public static final String MAX_STACK_SIZE_OLD1 = "stack_size";
 
     private BlockIndexTag() {}
 }

@@ -23,6 +23,7 @@ import xiao.customgun.core.init.registry.ModRecipe;
 import xiao.customgun.core.network.message.ServerMessageSyncGunPack;
 import xiao.customgun.core.recipe.TableRecipe;
 import xiao.customgun.core.resource.data.*;
+import xiao.customgun.core.resource.network.SyncDataType;
 import xiao.customgun.core.util.SendUtils;
 
 import java.util.ArrayList;
@@ -92,6 +93,10 @@ public class AllDataManager implements IEventHandler {
      * ./datapacks/{datapack}/data/{namespace}/{@link DataFolderType#RECIPE_FILTER}
      */
     public RecipeFilterDataManager recipeFilterDataManager;
+    /**
+     * ./datapacks/{datapack}/data/{namespace}/{@link DataFolderType#SCRIPT}
+     */
+    public final ScriptManager scriptManager = new ScriptManager();
 
     private AllDataManager() {
         this.reloadListeners = new ArrayList<>();

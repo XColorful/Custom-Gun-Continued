@@ -5,11 +5,12 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package xiao.customgun.core.resource;
+package xiao.customgun.core.resource.data.meta;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import xiao.customgun.core.api.resource.GunpackMetaTag;
+import xiao.customgun.core.api.resource.data.meta.GunpackMetaTag;
+import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.util.JsonUtils;
 
 import java.io.IOException;

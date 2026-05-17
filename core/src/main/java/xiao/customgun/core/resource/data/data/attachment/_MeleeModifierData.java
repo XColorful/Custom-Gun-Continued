@@ -17,7 +17,7 @@ import xiao.customgun.core.util.JsonUtils;
 import java.io.IOException;
 import java.util.List;
 
-public class _MeleeModifierData extends ResourcePojo<_MeleeModifierData> {
+public final class _MeleeModifierData extends ResourcePojo<_MeleeModifierData> {
 
     // 近战属性
     private float meleeDamage = 0.0F;

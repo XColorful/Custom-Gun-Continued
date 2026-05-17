@@ -18,7 +18,7 @@ import xiao.customgun.core.util.JsonUtils;
 
 import java.io.IOException;
 
-public class _TableResultData extends ResourcePojo<_TableResultData> {
+public final class _TableResultData extends ResourcePojo<_TableResultData> {
 
     private RecipeResultType recipeResultType;
     /**

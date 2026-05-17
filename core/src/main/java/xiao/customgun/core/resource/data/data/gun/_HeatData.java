@@ -15,7 +15,7 @@ import xiao.customgun.core.util.JsonUtils;
 
 import java.io.IOException;
 
-public class _HeatData extends ResourcePojo<_HeatData> {
+public final class _HeatData extends ResourcePojo<_HeatData> {
 
     // 过热属性
     private float maxHeat = 100F;

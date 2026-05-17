@@ -5,8 +5,7 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package xiao.customgun.core.resource.network;
+package xiao.customgun.client.api.resource;
 
-public enum CommonNetworkCache {
-    INSTANCE;
+public class ClientResourceApi {
 }

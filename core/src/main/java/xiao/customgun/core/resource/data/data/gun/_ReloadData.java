@@ -18,7 +18,7 @@ import xiao.customgun.core.util.JsonUtils;
 
 import java.io.IOException;
 
-public class _ReloadData extends ResourcePojo<_ReloadData> {
+public final class _ReloadData extends ResourcePojo<_ReloadData> {
 
     private AmmoFeedType ammoFeedType;
     private boolean infiniteAmmo = false;

@@ -18,7 +18,7 @@ import java.io.IOException;
 /**
  * TODO 重命名该类，既有 speed 又有别的参数
  */
-public class _MovementData extends ResourcePojo<_MovementData> {
+public final class _MovementData extends ResourcePojo<_MovementData> {
 
     private float base = 0F;
     private float aim = 0F;

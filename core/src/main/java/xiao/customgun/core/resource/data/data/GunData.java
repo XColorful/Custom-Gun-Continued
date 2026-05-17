@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-public class GunData extends ResourcePojo<GunData> {
+public final class GunData extends ResourcePojo<GunData> {
 
     // 枪械属性
     private _BulletData bulletData; // 子弹属性

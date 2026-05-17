@@ -17,7 +17,7 @@ import xiao.customgun.core.util.JsonUtils;
 import java.io.IOException;
 import java.util.List;
 
-public class _BulletSkillData extends ResourcePojo<_BulletSkillData> {
+public final class _BulletSkillData extends ResourcePojo<_BulletSkillData> {
 
     private float armorIgnorePercent = 0.0F;
     private float headshotMultiplier = 1.0F;

@@ -17,7 +17,7 @@ import xiao.customgun.core.api.resource.data.DataFolderType;
 import xiao.customgun.core.api.resource.data.data.DataSubFolderType;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.resource.ResourcePojoManager;
-import xiao.customgun.core.resource.SyncDataType;
+import xiao.customgun.core.resource.network.SyncDataType;
 import xiao.customgun.core.resource.data.data.AttachmentData;
 import xiao.customgun.core.resource.data.data.BlockData;
 import xiao.customgun.core.resource.data.data.GunData;
@@ -36,7 +36,7 @@ public abstract class DataManager<T extends ResourcePojo<T>> extends ResourcePoj
                 extension, fromJson);
     }
 
-    public static class GunDataManager extends DataManager<GunData> implements INetworkCacheReloadListener {
+    public static final class GunDataManager extends DataManager<GunData> implements INetworkCacheReloadListener {
         @ApiStatus.Internal
         public GunDataManager() {
             super(DataSubFolderType.GUN.getFolderName(),
@@ -51,7 +51,7 @@ public abstract class DataManager<T extends ResourcePojo<T>> extends ResourcePoj
         }
     }
 
-    public static class AttachmentDataManager extends DataManager<AttachmentData> implements INetworkCacheReloadListener {
+    public static final class AttachmentDataManager extends DataManager<AttachmentData> implements INetworkCacheReloadListener {
         @ApiStatus.Internal
         public AttachmentDataManager() {
             super(DataSubFolderType.ATTACHMENT.getFolderName(),
@@ -66,7 +66,7 @@ public abstract class DataManager<T extends ResourcePojo<T>> extends ResourcePoj
         }
     }
 
-    public static class BlockDataManager extends DataManager<BlockData> implements INetworkCacheReloadListener {
+    public static final class BlockDataManager extends DataManager<BlockData> implements INetworkCacheReloadListener {
         @ApiStatus.Internal
         public BlockDataManager() {
             super(DataSubFolderType.BLOCK.getFolderName(),

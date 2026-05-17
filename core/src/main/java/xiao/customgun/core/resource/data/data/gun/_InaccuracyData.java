@@ -15,7 +15,7 @@ import xiao.customgun.core.util.JsonUtils;
 
 import java.io.IOException;
 
-public class _InaccuracyData extends ResourcePojo<_InaccuracyData> {
+public final class _InaccuracyData extends ResourcePojo<_InaccuracyData> {
 
     private float stand = 5.0F;
     private float move = 5.75F;

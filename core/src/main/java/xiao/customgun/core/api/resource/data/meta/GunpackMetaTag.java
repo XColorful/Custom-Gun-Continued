@@ -5,7 +5,7 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package xiao.customgun.core.api.resource;
+package xiao.customgun.core.api.resource.data.meta;
 
 public class GunpackMetaTag {
 

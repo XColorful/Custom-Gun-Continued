@@ -15,7 +15,7 @@ import xiao.customgun.core.util.JsonUtils;
 
 import java.io.IOException;
 
-public class _DistanceDamageData extends ResourcePojo<_DistanceDamageData> {
+public final class _DistanceDamageData extends ResourcePojo<_DistanceDamageData> {
 
     private float distance = 0;
     private float damage = 0;

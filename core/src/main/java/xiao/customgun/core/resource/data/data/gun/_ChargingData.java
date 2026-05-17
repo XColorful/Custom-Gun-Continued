@@ -16,7 +16,7 @@ import xiao.customgun.core.util.JsonUtils;
 
 import java.io.IOException;
 
-public class _ChargingData extends ResourcePojo<_ChargingData> {
+public final class _ChargingData extends ResourcePojo<_ChargingData> {
 
     private ChargeType chargeType;
     private float maxCharge = 1.0F;

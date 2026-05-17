@@ -16,7 +16,7 @@ import xiao.customgun.core.util.JsonUtils;
 
 import java.io.IOException;
 
-public class _IngredientFilterData extends ResourcePojo<_IngredientFilterData> {
+public final class _IngredientFilterData extends ResourcePojo<_IngredientFilterData> {
 
     private ResourceLocation itemFilterLocation;
     private ResourceLocation tagFilterLocation;

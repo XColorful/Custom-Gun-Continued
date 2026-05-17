@@ -21,7 +21,7 @@ import xiao.customgun.core.util.JsonUtils;
 import java.io.IOException;
 import java.util.List;
 
-public class RecipeData extends ResourcePojo<RecipeData> {
+public final class RecipeData extends ResourcePojo<RecipeData> {
 
     /**
      * 原版根据这个字段选择 {@link ModRecipe} 中注册的序列化方式, 注册id为 {@link CustomRecipeType}

@@ -18,7 +18,7 @@ import xiao.customgun.core.api.resource.data.modtag.ModTagSubFolderType;
 import xiao.customgun.core.api.resource.data.modtag.ModTagSubFolderTypeTag;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.resource.ResourcePojoManager;
-import xiao.customgun.core.resource.SyncDataType;
+import xiao.customgun.core.resource.network.SyncDataType;
 import xiao.customgun.core.resource.data.modtags.AttachmentTagData;
 import xiao.customgun.core.resource.data.modtags.GunAttachmentData;
 import xiao.customgun.core.util.JsonUtils;
@@ -47,7 +47,7 @@ public abstract class ModTagManager <T extends ResourcePojo<T>> extends Resource
         super(packType, prefixList, extension, fromJson);
     }
 
-    public static class AttachmentTagDataManager extends ModTagManager<AttachmentTagData> implements INetworkCacheReloadListener {
+    public static final class AttachmentTagDataManager extends ModTagManager<AttachmentTagData> implements INetworkCacheReloadListener {
         @ApiStatus.Internal
         public AttachmentTagDataManager() {
             super(Arrays.asList(ModTagSubFolderType.ATTACHMENT_TAG.getFolderName(), ModTagSubFolderTypeTag.ATTACHMENT_TAG_OLD1),
@@ -67,7 +67,7 @@ public abstract class ModTagManager <T extends ResourcePojo<T>> extends Resource
         }
     }
 
-    public static class GunAttachmentDataManager extends ModTagManager<GunAttachmentData> implements INetworkCacheReloadListener {
+    public static final class GunAttachmentDataManager extends ModTagManager<GunAttachmentData> implements INetworkCacheReloadListener {
         @ApiStatus.Internal
         public GunAttachmentDataManager() {
             super(Arrays.asList(ModTagSubFolderType.GUN_ATTACHMENT.getFolderName(), ModTagSubFolderTypeTag.GUN_ATTACHMENT_OLD1),

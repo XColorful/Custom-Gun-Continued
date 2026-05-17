@@ -16,7 +16,7 @@ import xiao.customgun.core.util.JsonUtils;
 
 import java.io.IOException;
 
-public class _TableIngredientData extends ResourcePojo<_TableIngredientData> {
+public final class _TableIngredientData extends ResourcePojo<_TableIngredientData> {
 
     private _IngredientFilterData ingredientFilter;
     private int ingredientCount = 1;

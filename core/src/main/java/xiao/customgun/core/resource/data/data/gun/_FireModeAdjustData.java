@@ -16,7 +16,7 @@ import xiao.customgun.core.util.JsonUtils;
 
 import java.io.IOException;
 
-public class _FireModeAdjustData extends ResourcePojo<_FireModeAdjustData> {
+public final class _FireModeAdjustData extends ResourcePojo<_FireModeAdjustData> {
 
     private int rpm = 0;
 

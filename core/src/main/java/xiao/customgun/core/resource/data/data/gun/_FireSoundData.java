@@ -16,7 +16,7 @@ import xiao.customgun.core.util.JsonUtils;
 
 import java.io.IOException;
 
-public class _FireSoundData extends ResourcePojo<_FireSoundData> {
+public final class _FireSoundData extends ResourcePojo<_FireSoundData> {
 
     /**
      * {@link FireSoundType}

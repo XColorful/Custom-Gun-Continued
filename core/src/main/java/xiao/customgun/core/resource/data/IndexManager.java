@@ -17,7 +17,7 @@ import xiao.customgun.core.api.resource.data.DataFolderType;
 import xiao.customgun.core.api.resource.data.index.IndexSubFolderType;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.resource.ResourcePojoManager;
-import xiao.customgun.core.resource.SyncDataType;
+import xiao.customgun.core.resource.network.SyncDataType;
 import xiao.customgun.core.resource.data.index.AmmoIndex;
 import xiao.customgun.core.resource.data.index.AttachmentIndex;
 import xiao.customgun.core.resource.data.index.BlockIndex;
@@ -37,7 +37,7 @@ public abstract class IndexManager<T extends ResourcePojo<T>> extends ResourcePo
                 extension, fromJson);
     }
 
-    public static class GunIndexManager extends IndexManager<GunIndex> implements INetworkCacheReloadListener {
+    public static final class GunIndexManager extends IndexManager<GunIndex> implements INetworkCacheReloadListener {
         @ApiStatus.Internal
         public GunIndexManager() {
             super(IndexSubFolderType.GUN.getFolderName(),
@@ -52,7 +52,7 @@ public abstract class IndexManager<T extends ResourcePojo<T>> extends ResourcePo
         }
     }
 
-    public static class AttachmentIndexManager extends IndexManager<AttachmentIndex> implements INetworkCacheReloadListener {
+    public static final class AttachmentIndexManager extends IndexManager<AttachmentIndex> implements INetworkCacheReloadListener {
         @ApiStatus.Internal
         public AttachmentIndexManager() {
             super(IndexSubFolderType.ATTACHMENT.getFolderName(),
@@ -67,7 +67,7 @@ public abstract class IndexManager<T extends ResourcePojo<T>> extends ResourcePo
         }
     }
 
-    public static class AmmoIndexManager extends IndexManager<AmmoIndex> implements INetworkCacheReloadListener {
+    public static final class AmmoIndexManager extends IndexManager<AmmoIndex> implements INetworkCacheReloadListener {
         @ApiStatus.Internal
         public AmmoIndexManager() {
             super(IndexSubFolderType.AMMO.getFolderName(),
@@ -82,7 +82,7 @@ public abstract class IndexManager<T extends ResourcePojo<T>> extends ResourcePo
         }
     }
 
-    public static class BlockIndexManager extends IndexManager<BlockIndex> implements INetworkCacheReloadListener {
+    public static final class BlockIndexManager extends IndexManager<BlockIndex> implements INetworkCacheReloadListener {
         @ApiStatus.Internal
         public BlockIndexManager() {
             super(IndexSubFolderType.BLOCK.getFolderName(),

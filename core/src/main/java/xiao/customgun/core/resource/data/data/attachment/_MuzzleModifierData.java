@@ -16,7 +16,7 @@ import xiao.customgun.core.util.JsonUtils;
 
 import java.io.IOException;
 
-public class _MuzzleModifierData extends ResourcePojo<_MuzzleModifierData> {
+public final class _MuzzleModifierData extends ResourcePojo<_MuzzleModifierData> {
 
     private FireSoundType fireSoundType;
 

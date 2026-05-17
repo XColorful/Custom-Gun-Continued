@@ -15,7 +15,7 @@ import xiao.customgun.core.util.JsonUtils;
 
 import java.io.IOException;
 
-public class _FireAspectModifierData extends ResourcePojo<_FireAspectModifierData> {
+public final class _FireAspectModifierData extends ResourcePojo<_FireAspectModifierData> {
 
     private boolean igniteEntity = false;
     private boolean igniteBlock = false;

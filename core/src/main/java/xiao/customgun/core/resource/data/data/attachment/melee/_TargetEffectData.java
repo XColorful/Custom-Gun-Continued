@@ -16,7 +16,7 @@ import xiao.customgun.core.util.JsonUtils;
 
 import java.io.IOException;
 
-public class _TargetEffectData extends ResourcePojo<_TargetEffectData> {
+public final class _TargetEffectData extends ResourcePojo<_TargetEffectData> {
 
     private ResourceLocation effectLocation;
     private int seconds = 0;

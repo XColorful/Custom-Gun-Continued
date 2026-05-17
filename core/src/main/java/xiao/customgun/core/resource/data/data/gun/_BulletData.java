@@ -17,7 +17,7 @@ import xiao.customgun.core.util.JsonUtils;
 
 import java.io.IOException;
 
-public class _BulletData extends ResourcePojo<_BulletData> {
+public final class _BulletData extends ResourcePojo<_BulletData> {
 
     // 显示数值
     private float displayDamage = 5f;

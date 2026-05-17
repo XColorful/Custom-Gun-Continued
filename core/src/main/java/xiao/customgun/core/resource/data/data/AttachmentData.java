@@ -18,7 +18,7 @@ import xiao.customgun.core.util.JsonUtils;
 
 import java.io.IOException;
 
-public class AttachmentData extends ResourcePojo<AttachmentData> {
+public final class AttachmentData extends ResourcePojo<AttachmentData> {
 
     // 瞄准速度
     private _SimpleModifierData adsModifier;

@@ -16,7 +16,7 @@ import xiao.customgun.core.util.JsonUtils;
 
 import java.io.IOException;
 
-public class _MeleeData extends ResourcePojo<_MeleeData> {
+public final class _MeleeData extends ResourcePojo<_MeleeData> {
 
     private float meleeDistance = 1.0F;
     private float meleeCooldown = 1.0F;

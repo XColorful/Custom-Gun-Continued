@@ -15,7 +15,7 @@ import xiao.customgun.core.util.JsonUtils;
 
 import java.io.IOException;
 
-public class _ExplosionData extends ResourcePojo<_ExplosionData> {
+public final class _ExplosionData extends ResourcePojo<_ExplosionData> {
 
     // 总开关
     private boolean enableExplode = false;

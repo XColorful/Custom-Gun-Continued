@@ -17,7 +17,7 @@ import java.io.IOException;
  * 枪械的可安装的配件数据
  * 指定单个配件或选中 {@link AttachmentTagData}
  */
-public class GunAttachmentData extends _SimpleTagData<GunAttachmentData> {
+public final class GunAttachmentData extends _SimpleTagData<GunAttachmentData> {
 
     private static final GunAttachmentData PARSER = new GunAttachmentData();
     public static GunAttachmentData fromJson(JsonReader reader) throws IOException {

@@ -14,7 +14,7 @@ import xiao.customgun.core.util.JsonUtils;
 
 import java.io.IOException;
 
-public class _SimpleModifierData extends __ModifierData<_SimpleModifierData> {
+public final class _SimpleModifierData extends __ModifierData<_SimpleModifierData> {
 
     private static final _SimpleModifierData PARSER = new _SimpleModifierData();
     public static _SimpleModifierData fromJson(JsonReader reader) throws IOException {

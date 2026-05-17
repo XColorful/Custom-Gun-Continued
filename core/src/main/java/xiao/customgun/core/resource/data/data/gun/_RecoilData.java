@@ -17,7 +17,7 @@ import xiao.customgun.core.util.JsonUtils;
 import java.io.IOException;
 import java.util.List;
 
-public class _RecoilData extends ResourcePojo<_RecoilData> {
+public final class _RecoilData extends ResourcePojo<_RecoilData> {
 
     private List<_RecoilEntryData> pitchRecoils;
     private List<_RecoilEntryData> yawRecoils;

@@ -15,7 +15,7 @@ import xiao.customgun.core.util.JsonUtils;
 
 import java.io.IOException;
 
-public class _BurstData extends ResourcePojo<_BurstData> {
+public final class _BurstData extends ResourcePojo<_BurstData> {
 
     private int bpm = 200;
     private int burstAmount = 3;

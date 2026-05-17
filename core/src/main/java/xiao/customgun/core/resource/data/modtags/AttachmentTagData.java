@@ -16,7 +16,7 @@ import java.io.IOException;
 /**
  * 存放配件ResourceLocation的Tag
  */
-public class AttachmentTagData extends _SimpleTagData<AttachmentTagData> {
+public final class AttachmentTagData extends _SimpleTagData<AttachmentTagData> {
 
     private static final AttachmentTagData PARSER = new AttachmentTagData();
     public static AttachmentTagData fromJson(JsonReader reader) throws IOException {

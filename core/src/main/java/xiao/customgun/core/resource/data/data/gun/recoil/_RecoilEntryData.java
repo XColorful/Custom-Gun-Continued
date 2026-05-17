@@ -15,7 +15,7 @@ import xiao.customgun.core.util.JsonUtils;
 
 import java.io.IOException;
 
-public class _RecoilEntryData extends ResourcePojo<_RecoilEntryData> {
+public final class _RecoilEntryData extends ResourcePojo<_RecoilEntryData> {
 
     private float time = 0;
     private float[] range;

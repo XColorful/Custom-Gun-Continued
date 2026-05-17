@@ -5,7 +5,7 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package xiao.customgun.core.resource;
+package xiao.customgun.core.resource.network;
 
 import xiao.customgun.core.api.resource.data.DataFolderType;
 

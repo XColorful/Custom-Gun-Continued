@@ -15,7 +15,7 @@ import xiao.customgun.core.api.resource.INetworkCacheReloadListener;
 import xiao.customgun.core.api.resource.data.DataFolderName;
 import xiao.customgun.core.api.resource.data.DataFolderType;
 import xiao.customgun.core.resource.ResourcePojoManager;
-import xiao.customgun.core.resource.SyncDataType;
+import xiao.customgun.core.resource.network.SyncDataType;
 import xiao.customgun.core.resource.data.recipefilter.RecipeFilterData;
 
 import java.util.Arrays;
@@ -24,7 +24,7 @@ import java.util.Map;
 /**
  * 目录名称{@link DataFolderType}
  */
-public class RecipeFilterDataManager extends ResourcePojoManager<RecipeFilterData> implements INetworkCacheReloadListener {
+public final class RecipeFilterDataManager extends ResourcePojoManager<RecipeFilterData> implements INetworkCacheReloadListener {
     @ApiStatus.Internal
     public RecipeFilterDataManager() {
         super(PackType.SERVER_DATA, Arrays.asList(DataFolderType.RECIPE_FILTER.getFolderName(), DataFolderName.RECIPE_FILTER_OLD1),

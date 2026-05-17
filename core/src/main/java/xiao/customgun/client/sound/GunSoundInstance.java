@@ -24,7 +24,7 @@ import xiao.customgun.core.developer.bug.Herobrine;
 import javax.annotation.Nullable;
 
 public class GunSoundInstance extends AbstractSoundInstance {
-    @Deprecated private static final FileToIdConverter TACZ_SOUND_LISTER = SoundPlayManager.TACZ_SOUND_LISTER;
+    @Deprecated private static final FileToIdConverter TACZ_SOUND_LISTER = SoundPlayManager.MOD_SOUND_LISTER;
 
     @Nullable
     private final ResourceLocation registryName;
@@ -76,7 +76,7 @@ public class GunSoundInstance extends AbstractSoundInstance {
     public WeighedSoundEvents resolve(SoundManager manager) {
         WeighedSoundEvents events = super.resolve(manager);
         if (events != null && this.registryName != null) {
-            this.redirectedSound = new TaczSound(this.registryName, SoundPlayManager.TACZ_SOUND_LISTER.idToFile(this.registryName), super.getSound());
+            this.redirectedSound = new TaczSound(this.registryName, SoundPlayManager.MOD_SOUND_LISTER.idToFile(this.registryName), super.getSound());
             this.sound = this.redirectedSound;
         } else {
             this.redirectedSound = null;

@@ -9,15 +9,19 @@ package xiao.customgun.core.resource.data.index;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import xiao.customgun.core.api.item.gun.GunCategory;
 import xiao.customgun.core.api.resource.data.index.GunIndexTag;
-import xiao.customgun.core.resource.data.index.gun._GunCategoryData;
 import xiao.customgun.core.util.JsonUtils;
 
 import java.io.IOException;
 
 public final class GunIndex extends _DataIndex<GunIndex> {
 
-    private _GunCategoryData gunCategory;
+    private GunCategory gunCategory;
+
+    /**
+     * ItemStack类型
+     */
     private String itemType;
 
     private static final GunIndex PARSER = new GunIndex();
@@ -31,13 +35,13 @@ public final class GunIndex extends _DataIndex<GunIndex> {
             while (reader.hasNext()) {
                 String key = reader.nextName();
                 switch (key) {
-                    case GunIndexTag.NAME_LANG -> pojo.setNameLang(JsonUtils.readString(reader));
-                    case GunIndexTag.TOOLTIP_LANG -> pojo.setTooltipLang(JsonUtils.readString(reader));
-                    case GunIndexTag.DATA_LOCATION -> pojo.setDataLocation(JsonUtils.readResourceLocation(reader));
-                    case GunIndexTag.DISPLAY_INDEX_LOCATION -> pojo.setDisplayIndexLocation(JsonUtils.readResourceLocation(reader));
-                    case GunIndexTag.SLOT_SORT -> pojo.setSlotSort(JsonUtils.readInt(reader));
+                    case GunIndexTag.NAME_LANG, GunIndexTag.NAME_LANG_OLD1 -> pojo.setNameLang(JsonUtils.readString(reader));
+                    case GunIndexTag.TOOLTIP_LANG, GunIndexTag.TOOLTIP_LANG_OLD1 -> pojo.setTooltipLang(JsonUtils.readString(reader));
+                    case GunIndexTag.DATA_LOCATION, GunIndexTag.DATA_LOCATION_OLD1 -> pojo.setDataLocation(JsonUtils.readResourceLocation(reader));
+                    case GunIndexTag.DISPLAY_INDEX_LOCATION, GunIndexTag.DISPLAY_INDEX_LOCATION_OLD1 -> pojo.setDisplayIndexLocation(JsonUtils.readResourceLocation(reader));
+                    case GunIndexTag.SLOT_SORT, GunIndexTag.SLOT_SORT_OLD1 -> pojo.setSlotSort(JsonUtils.readInt(reader));
 
-                    case GunIndexTag.GUN_CATEGORY -> pojo.gunCategory = JsonUtils.read(reader, _GunCategoryData::fromJson);
+                    case GunIndexTag.GUN_CATEGORY, GunIndexTag.GUN_CATEGORY_OLD1 -> pojo.gunCategory = JsonUtils.readFromString(reader, GunCategory::fromString);
                     case GunIndexTag.ITEM_TYPE -> pojo.itemType = JsonUtils.readString(reader);
                     default -> reader.skipValue();
                 }
@@ -59,7 +63,7 @@ public final class GunIndex extends _DataIndex<GunIndex> {
             JsonUtils.writeResourceLocation(writer, GunIndexTag.DISPLAY_INDEX_LOCATION, this.getDisplayIndexLocation());
             JsonUtils.writeInt(writer, GunIndexTag.SLOT_SORT, this.getSlotSort());
 
-            JsonUtils.write(writer, GunIndexTag.GUN_CATEGORY, this.gunCategory, _GunCategoryData::toJson);
+            JsonUtils.writeToString(writer, GunIndexTag.GUN_CATEGORY, this.gunCategory);
             JsonUtils.writeString(writer, GunIndexTag.ITEM_TYPE, this.itemType);
         }
         writer.endObject();
@@ -72,14 +76,14 @@ public final class GunIndex extends _DataIndex<GunIndex> {
 
     // --------Getter & Setter--------
 
-    public _GunCategoryData getGunCategory() {
+    public GunCategory getGunCategory() {
         return gunCategory;
     }
     public String getItemType() {
         return itemType;
     }
 
-    public void setGunCategory(_GunCategoryData gunCategory) {
+    public void setGunCategory(GunCategory gunCategory) {
         this.gunCategory = gunCategory;
     }
     public void setItemType(String itemType) {

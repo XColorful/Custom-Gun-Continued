@@ -8,15 +8,14 @@
 package xiao.customgun.client.resource.assets.display;
 
 import net.minecraft.resources.Identifier;
-import net.minecraft.resources.ResourceLocation;
 import xiao.customgun.core.resource.ResourcePojo;
 
 public abstract class _AssetsDisplay<T extends _AssetsDisplay<T>> extends ResourcePojo<T> {
 
     private Identifier modelLocation;
     private _TransformScale transformScale;
-    private ResourceLocation textureLocation;
-    private ResourceLocation slotTextureLocation;
+    private Identifier textureLocation;
+    private Identifier slotTextureLocation;
 
     @Override
     protected void validatePojo() {
@@ -25,29 +24,29 @@ public abstract class _AssetsDisplay<T extends _AssetsDisplay<T>> extends Resour
 
     // --------Getter & Setter--------
 
-    public final ResourceLocation getModelLocation() {
+    public final Identifier getModelLocation() {
         return modelLocation;
     }
     public final _TransformScale getTransformScale() {
         return transformScale;
     }
-    public final ResourceLocation getTextureLocation() {
+    public final Identifier getTextureLocation() {
         return textureLocation;
     }
-    public final ResourceLocation getSlotTextureLocation() {
+    public final Identifier getSlotTextureLocation() {
         return slotTextureLocation;
     }
 
-    public final void setModelLocation(ResourceLocation modelLocation) {
+    public final void setModelLocation(Identifier modelLocation) {
         this.modelLocation = modelLocation;
     }
     public final void setTransformScale(_TransformScale transformScale) {
         this.transformScale = transformScale;
     }
-    public final void setTextureLocation(ResourceLocation textureLocation) {
+    public final void setTextureLocation(Identifier textureLocation) {
         this.textureLocation = textureLocation;
     }
-    public final void setSlotTextureLocation(ResourceLocation slotTextureLocation) {
+    public final void setSlotTextureLocation(Identifier slotTextureLocation) {
         this.slotTextureLocation = slotTextureLocation;
     }
 }

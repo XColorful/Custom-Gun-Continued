@@ -18,7 +18,7 @@ import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.CustomGun;
@@ -191,7 +191,7 @@ public class DebugCommand {
     }
     private static void testManager(String indent, String basePath, @Nullable ResourcePojoManager<?> pojoManager) {
         if (pojoManager == null) return;
-        Map<ResourceLocation, ? extends ResourcePojo<?>> allPojo = pojoManager.getAllPojo();
+        Map<Identifier, ? extends ResourcePojo<?>> allPojo = pojoManager.getAllPojo();
         if (allPojo == null || allPojo.isEmpty()) return;
 
         String typeDir = pojoManager.getPackType().getDirectory();
@@ -199,7 +199,7 @@ public class DebugCommand {
         if (converters == null || converters.isEmpty()) return;
         var converter = converters.get(0);
 
-        for (Map.Entry<ResourceLocation, ? extends ResourcePojo<?>> entry : allPojo.entrySet()) {
+        for (Map.Entry<Identifier, ? extends ResourcePojo<?>> entry : allPojo.entrySet()) {
             var rl = entry.getKey();
             ResourcePojo<?> pojo = entry.getValue();
             if (pojo == null) continue;

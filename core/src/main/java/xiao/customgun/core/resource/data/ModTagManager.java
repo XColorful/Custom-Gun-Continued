@@ -7,7 +7,7 @@
 
 package xiao.customgun.core.resource.data;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackType;
 import org.jetbrains.annotations.ApiStatus;
 import xiao.customgun.core.api.resource.FileExtensionType;
@@ -57,12 +57,12 @@ public abstract class ModTagManager <T extends ResourcePojo<T>> extends Resource
         @Override public SyncDataType getSyncDataType() {
             return SyncDataType.ATTACHMENT_TAG;
         }
-        @Override public Map<ResourceLocation, String> getNetworkCache() {
+        @Override public Map<Identifier, String> getNetworkCache() {
             return Map.of();
         }
 
         @Override
-        protected boolean isPojoLocationValid(ResourceLocation pojoLocation) {
+        protected boolean isPojoLocationValid(Identifier pojoLocation) {
             return !pojoLocation.getPath().startsWith("allow_attachments/"); // 不已旧前缀开头
         }
     }
@@ -77,7 +77,7 @@ public abstract class ModTagManager <T extends ResourcePojo<T>> extends Resource
         @Override public SyncDataType getSyncDataType() {
             return SyncDataType.GUN_ATTACHMENT;
         }
-        @Override public Map<ResourceLocation, String> getNetworkCache() {
+        @Override public Map<Identifier, String> getNetworkCache() {
             return Map.of();
         }
     }

@@ -9,7 +9,7 @@ package xiao.customgun.core.resource.data.data.attachment.melee;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import xiao.customgun.core.api.resource.data.data.attachment.melee._TargetEffectDataTag;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.util.JsonUtils;
@@ -18,7 +18,7 @@ import java.io.IOException;
 
 public final class _TargetEffectData extends ResourcePojo<_TargetEffectData> {
 
-    private ResourceLocation effectLocation;
+    private Identifier effectLocation;
     private int seconds = 0;
     private int amplifier = 0;
     private boolean hideParticles = false;
@@ -67,7 +67,7 @@ public final class _TargetEffectData extends ResourcePojo<_TargetEffectData> {
 
     // --------Getter & Setter--------
 
-    public ResourceLocation getEffectLocation() {
+    public Identifier getEffectLocation() {
         return effectLocation;
     }
     public int getSeconds() {
@@ -80,7 +80,7 @@ public final class _TargetEffectData extends ResourcePojo<_TargetEffectData> {
         return hideParticles;
     }
 
-    public void setEffectLocation(ResourceLocation effectLocation) {
+    public void setEffectLocation(Identifier effectLocation) {
         this.effectLocation = effectLocation;
     }
     public void setSeconds(int seconds) {

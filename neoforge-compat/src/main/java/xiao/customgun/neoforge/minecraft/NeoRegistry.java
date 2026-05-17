@@ -22,7 +22,7 @@ import xiao.customgun.core.api.minecraft.IMcRegistry;
 
 public class NeoRegistry implements IMcRegistry {
 
-    @Override public ResourceLocation createResourceLocation(String rlString) {
+    @Override public @Nullable ResourceLocation createResourceLocation(String rlString) {
         return ResourceLocation.tryParse(rlString);
     }
 

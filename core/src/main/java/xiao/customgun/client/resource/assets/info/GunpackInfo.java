@@ -9,6 +9,7 @@ package xiao.customgun.client.resource.assets.info;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import net.minecraft.resources.ResourceLocation;
 import xiao.customgun.core.api.resource.assets.GunpackInfoTag;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.util.JsonUtils;
@@ -18,13 +19,13 @@ import java.util.List;
 
 public final class GunpackInfo extends ResourcePojo<GunpackInfo> {
 
-    private String version;
-    private String name;
-    private String description;
+    private String gunpackVersion;
+    private ResourceLocation nameLocation;
+    private ResourceLocation tooltipLocation;
     private String license;
     private List<String> authors;
     private String date;
-    private String url;
+    private String gunpackUrl;
 
     private static final GunpackInfo PARSER = new GunpackInfo();
     public static GunpackInfo fromJson(JsonReader reader) throws IOException {
@@ -37,13 +38,13 @@ public final class GunpackInfo extends ResourcePojo<GunpackInfo> {
             while (reader.hasNext()) {
                 String key = reader.nextName();
                 switch (key) {
-                    case GunpackInfoTag.VERSION -> pojo.version = JsonUtils.readString(reader);
-                    case GunpackInfoTag.NAME -> pojo.name = JsonUtils.readString(reader);
-                    case GunpackInfoTag.DESC -> pojo.description = JsonUtils.readString(reader);
+                    case GunpackInfoTag.GUNPACK_VERSION, GunpackInfoTag.GUNPACK_VERSION_OLD1 -> pojo.gunpackVersion = JsonUtils.readString(reader);
+                    case GunpackInfoTag.NAME_LOCATION, GunpackInfoTag.NAME_LOCATION_OLD1 -> pojo.nameLocation = JsonUtils.readResourceLocation(reader);
+                    case GunpackInfoTag.TOOLTIP_LOCATION, GunpackInfoTag.TOOLTIP_LOCATION_OLD1 -> pojo.tooltipLocation = JsonUtils.readResourceLocation(reader);
                     case GunpackInfoTag.LICENSE -> pojo.license = JsonUtils.readString(reader);
                     case GunpackInfoTag.AUTHORS -> pojo.authors = JsonUtils.readStringList(reader);
                     case GunpackInfoTag.DATE -> pojo.date = JsonUtils.readString(reader);
-                    case GunpackInfoTag.URL -> pojo.url = JsonUtils.readString(reader);
+                    case GunpackInfoTag.GUNPACK_URL, GunpackInfoTag.GUNPACK_URL_OLD1 -> pojo.gunpackUrl = JsonUtils.readString(reader);
                     default -> reader.skipValue();
                 }
             }
@@ -58,13 +59,13 @@ public final class GunpackInfo extends ResourcePojo<GunpackInfo> {
     @Override
     public void toJson(JsonWriter writer) throws IOException {
         writer.beginObject(); {
-            JsonUtils.writeString(writer, GunpackInfoTag.VERSION, this.version);
-            JsonUtils.writeString(writer, GunpackInfoTag.NAME, this.name);
-            JsonUtils.writeString(writer, GunpackInfoTag.DESC, this.description);
+            JsonUtils.writeString(writer, GunpackInfoTag.GUNPACK_VERSION, this.gunpackVersion);
+            JsonUtils.writeResourceLocation(writer, GunpackInfoTag.NAME_LOCATION, this.nameLocation);
+            JsonUtils.writeResourceLocation(writer, GunpackInfoTag.TOOLTIP_LOCATION, this.tooltipLocation);
             JsonUtils.writeString(writer, GunpackInfoTag.LICENSE, this.license);
             JsonUtils.writeStringList(writer, GunpackInfoTag.AUTHORS, this.authors);
             JsonUtils.writeString(writer, GunpackInfoTag.DATE, this.date);
-            JsonUtils.writeString(writer, GunpackInfoTag.URL, this.url);
+            JsonUtils.writeString(writer, GunpackInfoTag.GUNPACK_URL, this.gunpackUrl);
         }
         writer.endObject();
     }
@@ -76,14 +77,14 @@ public final class GunpackInfo extends ResourcePojo<GunpackInfo> {
 
     // --------Getter & Setter--------
 
-    public String getVersion() {
-        return version;
+    public String getGunpackVersion() {
+        return gunpackVersion;
     }
-    public String getName() {
-        return name;
+    public ResourceLocation getNameLocation() {
+        return nameLocation;
     }
-    public String getDescription() {
-        return description;
+    public ResourceLocation getTooltipLocation() {
+        return tooltipLocation;
     }
     public String getLicense() {
         return license;
@@ -94,18 +95,18 @@ public final class GunpackInfo extends ResourcePojo<GunpackInfo> {
     public String getDate() {
         return date;
     }
-    public String getUrl() {
-        return url;
+    public String getGunpackUrl() {
+        return gunpackUrl;
     }
 
-    public void setVersion(String version) {
-        this.version = version;
+    public void setGunpackVersion(String gunpackVersion) {
+        this.gunpackVersion = gunpackVersion;
     }
-    public void setName(String name) {
-        this.name = name;
+    public void setNameLocation(ResourceLocation nameLocation) {
+        this.nameLocation = nameLocation;
     }
-    public void setDescription(String description) {
-        this.description = description;
+    public void setTooltipLocation(ResourceLocation tooltipLocation) {
+        this.tooltipLocation = tooltipLocation;
     }
     public void setLicense(String license) {
         this.license = license;
@@ -116,7 +117,7 @@ public final class GunpackInfo extends ResourcePojo<GunpackInfo> {
     public void setDate(String date) {
         this.date = date;
     }
-    public void setUrl(String url) {
-        this.url = url;
+    public void setGunpackUrl(String gunpackUrl) {
+        this.gunpackUrl = gunpackUrl;
     }
 }

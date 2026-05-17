@@ -7,8 +7,11 @@
 
 package xiao.customgun.core.api.resource.assets;
 
+import xiao.customgun.CustomGun;
+
 public class AssetsFolderName {
 
+    public static final String GUNPACK_INFO = CustomGun.MOD_ID_SHORT + "_info"; @Deprecated public static final String GUNPACK_INFO_OLD1 = "";
     public static final String ANIMATIONS = "animations";
     public static final String DISPLAY = "display";
     public static final String GEO_MODELS = "geo_models";

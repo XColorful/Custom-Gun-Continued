@@ -21,6 +21,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.CustomGun;
+import xiao.customgun.client.resource.AllAssetsManager;
 import xiao.customgun.core.resource.AllDataManager;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.resource.ResourcePojoManager;
@@ -151,6 +152,7 @@ public class DebugCommand {
         if (allManager != null) {
             CommandSourceStack source = context.getSource();
             try {
+                testManager(path, allManager.gunpackMetaManager);
                 testManager(path, allManager.gunDataManager);
                 testManager(path, allManager.attachmentDataManager);
                 testManager(path, allManager.blockDataManager);
@@ -161,6 +163,10 @@ public class DebugCommand {
                 testManager(path, allManager.attachmentTagManager);
                 testManager(path, allManager.gunAttachmentDataManager);
                 testManager(path, allManager.recipeFilterDataManager);
+                if (CustomGun.getMcSide().isClientSide()) {
+                    AllAssetsManager allAssetsManager = AllAssetsManager.INSTANCE;
+                    testManager(path, allAssetsManager.gunpackInfoManager);
+                }
 
                 source.sendSuccess(() -> Component.literal("All data successfully exported to ./" + path), true);
             } catch (Exception e) {

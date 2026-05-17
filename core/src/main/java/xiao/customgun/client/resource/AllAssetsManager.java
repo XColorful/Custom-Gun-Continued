@@ -9,8 +9,11 @@ package xiao.customgun.client.resource;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
+import org.jetbrains.annotations.Nullable;
 import xiao.customgun.CustomGun;
 import xiao.customgun.client.api.event.IAddClientReloadListenerEvent;
+import xiao.customgun.client.api.resource.assets.AssetsFolderType;
+import xiao.customgun.client.resource.assets.GunpackInfoManager;
 import xiao.customgun.core.api.common.McSide;
 import xiao.customgun.core.api.event.EventType;
 import xiao.customgun.core.api.event.IEvent;
@@ -36,6 +39,11 @@ public class AllAssetsManager implements IEventHandler {
 
     private final List<ResourcePojoManager<?>> reloadListeners;
 
+    /**
+     * ./resourcepacks/{resourcepack}/assets/{namespace}/{@link AssetsFolderType#GUNPACK_INFO}
+     */
+    public @Nullable GunpackInfoManager gunpackInfoManager;
+
     private AllAssetsManager() {
         this.reloadListeners = new ArrayList<>();
     }
@@ -43,6 +51,7 @@ public class AllAssetsManager implements IEventHandler {
     protected void reloadAndRegister(IAddClientReloadListenerEvent event) {
         this.reloadListeners.clear();
         // 注册时按顺序重载
+        this.gunpackInfoManager = addToListener(this.reloadListeners, new GunpackInfoManager());
 
         this.reloadListeners.forEach((pojoManager) -> event.addListener(pojoManager.getRegistryName(), pojoManager));
         event.addListener(

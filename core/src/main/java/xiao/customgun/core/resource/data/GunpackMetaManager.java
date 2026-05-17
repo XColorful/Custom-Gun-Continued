@@ -8,6 +8,7 @@
 package xiao.customgun.core.resource.data;
 
 import net.minecraft.server.packs.PackType;
+import org.jetbrains.annotations.ApiStatus;
 import xiao.customgun.core.api.resource.FileExtensionType;
 import xiao.customgun.core.api.resource.data.DataFolderType;
 import xiao.customgun.core.resource.ResourcePojoManager;
@@ -18,12 +19,9 @@ import xiao.customgun.core.resource.data.meta.GunpackMeta;
  * 但保留了相应的 {@link DataFolderType} 以便以后修改标准
  */
 public final class GunpackMetaManager extends ResourcePojoManager<GunpackMeta> {
-    public static final GunpackMetaManager INSTANCE = new GunpackMetaManager();
-    public static GunpackMetaManager get() {
-        return INSTANCE;
-    }
-    private GunpackMetaManager() {
-        super(PackType.SERVER_DATA, "",
+    @ApiStatus.Internal
+    public GunpackMetaManager() {
+        super(PackType.SERVER_DATA, DataFolderType.GUNPACK_META.getFolderName(),
                 FileExtensionType.GUNPACK_META.getExtensionNameWithDot(),
                 GunpackMeta::fromJson);
     }

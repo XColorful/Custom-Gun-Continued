@@ -62,7 +62,9 @@ public class AllDataManager implements IEventHandler {
 
     public RecipeManager recipeManager;
 
-    // ./datapacks/{datapack}/*.meta.json
+    /**
+     * ./datapacks/{datapack}/data/{namespace}/{@link DataFolderType#GUNPACK_META}
+     */
     public @Nullable GunpackMetaManager gunpackMetaManager;
 
     /**
@@ -106,6 +108,7 @@ public class AllDataManager implements IEventHandler {
     protected void reloadAndRegister(IAddServerReloadListenerEvent event) {
         this.reloadListeners.clear();
         // 注册时按顺序重载
+        this.gunpackMetaManager = addToListener(this.reloadListeners, new GunpackMetaManager());
         this.gunDataManager = addToListener(this.reloadListeners, new DataManager.GunDataManager());
         this.attachmentDataManager = addToListener(this.reloadListeners, new DataManager.AttachmentDataManager());
         this.blockDataManager = addToListener(this.reloadListeners, new DataManager.BlockDataManager());

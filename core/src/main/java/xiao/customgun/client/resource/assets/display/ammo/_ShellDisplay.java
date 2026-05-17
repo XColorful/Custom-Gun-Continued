@@ -13,7 +13,7 @@ import xiao.customgun.core.resource.ResourcePojo;
 
 import java.io.IOException;
 
-public class _ShellDisplay extends ResourcePojo<_ShellDisplay> {
+public final class _ShellDisplay extends ResourcePojo<_ShellDisplay> {
 
     private static final _ShellDisplay PARSER = new _ShellDisplay();
     public static _ShellDisplay fromJson(JsonReader reader) throws IOException {

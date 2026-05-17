@@ -13,7 +13,7 @@ import xiao.customgun.core.resource.ResourcePojo;
 
 import java.io.IOException;
 
-public class _TransformScale extends ResourcePojo<_TransformScale> {
+public final class _TransformScale extends ResourcePojo<_TransformScale> {
 
     private static final _TransformScale PARSER = new _TransformScale();
     public static _TransformScale fromJson(JsonReader reader) throws IOException {

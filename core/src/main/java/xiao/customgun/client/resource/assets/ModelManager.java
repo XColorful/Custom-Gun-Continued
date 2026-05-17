@@ -36,7 +36,7 @@ public abstract class ModelManager<T extends ResourcePojo<T>> extends ResourcePo
     public static final class BedrockModelManager extends ModelManager<BedrockModel> {
         @ApiStatus.Internal
         public BedrockModelManager() {
-            super(FileExtensionType.BEDROCK_ANIMATION.getExtensionNameWithDot(),
+            super(FileExtensionType.JSON.getExtensionNameWithDot(),
                     BedrockModel::fromJson);
         }
     }

@@ -13,7 +13,7 @@ import xiao.customgun.core.resource.ResourcePojo;
 
 import java.io.IOException;
 
-public class _ModelNodeTextDisplay extends ResourcePojo<_ModelNodeTextDisplay> {
+public final class _ModelNodeTextDisplay extends ResourcePojo<_ModelNodeTextDisplay> {
 
     private static final _ModelNodeTextDisplay PARSER = new _ModelNodeTextDisplay();
     public static _ModelNodeTextDisplay fromJson(JsonReader reader) throws IOException {

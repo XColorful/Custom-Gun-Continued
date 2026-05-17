@@ -13,7 +13,7 @@ import xiao.customgun.core.resource.ResourcePojo;
 
 import java.io.IOException;
 
-public class _ShellEjectionParam extends ResourcePojo<_ShellEjectionParam> {
+public final class _ShellEjectionParam extends ResourcePojo<_ShellEjectionParam> {
 
     private static final _ShellEjectionParam PARSER = new _ShellEjectionParam();
     public static _ShellEjectionParam fromJson(JsonReader reader) throws IOException {

@@ -13,7 +13,7 @@ import xiao.customgun.core.resource.ResourcePojo;
 
 import java.io.IOException;
 
-public class _MuzzleFlashDisplay extends ResourcePojo<_MuzzleFlashDisplay> {
+public final class _MuzzleFlashDisplay extends ResourcePojo<_MuzzleFlashDisplay> {
 
     private static final _MuzzleFlashDisplay PARSER = new _MuzzleFlashDisplay();
     public static _MuzzleFlashDisplay fromJson(JsonReader reader) throws IOException {

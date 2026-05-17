@@ -320,6 +320,39 @@ public class JsonUtils {
         writer.endArray();
     }
 
+    public static float[] readFloatArrayFast(JsonReader reader, int length) throws IOException {
+        JsonToken peek = reader.peek();
+        if (peek == JsonToken.NULL) {
+            reader.nextNull();
+            return new float[0];
+        }
+        if (peek == JsonToken.BEGIN_ARRAY) {
+            reader.beginArray();
+            float[] array = new float[length];
+            int index = 0;
+            while (reader.hasNext()) {
+                if (index < length) {
+                    JsonToken token = reader.peek();
+                    if (token == JsonToken.NUMBER) {
+                        array[index++] = (float) reader.nextDouble();
+                    } else if (token == JsonToken.NULL) {
+                        reader.nextNull();
+                        array[index++] = 0.0f;
+                    } else {
+                        reader.skipValue();
+                    }
+                } else {
+                    reader.skipValue();
+                }
+            }
+            reader.endArray();
+            return array;
+        } else {
+            reader.skipValue();
+            return new float[0];
+        }
+    }
+
     // --------结构<类型,类型>--------
 
     public static HashMap<String, String> readString2StringMap(JsonReader reader) throws IOException {

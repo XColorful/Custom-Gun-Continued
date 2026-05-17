@@ -13,7 +13,7 @@ import xiao.customgun.core.resource.ResourcePojo;
 
 import java.io.IOException;
 
-public class _LaserDisplay extends ResourcePojo<_LaserDisplay> {
+public final class _LaserDisplay extends ResourcePojo<_LaserDisplay> {
 
     private static final _LaserDisplay PARSER = new _LaserDisplay();
     public static _LaserDisplay fromJson(JsonReader reader) throws IOException {

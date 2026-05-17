@@ -14,7 +14,7 @@ import xiao.customgun.core.util.JsonUtils;
 
 import java.io.IOException;
 
-public class _LodDisplay extends _AssetsDisplay<_LodDisplay> {
+public final class _LodDisplay extends _AssetsDisplay<_LodDisplay> {
 
     private static final _LodDisplay PARSER = new _LodDisplay();
     public static _LodDisplay fromJson(JsonReader reader) throws IOException {

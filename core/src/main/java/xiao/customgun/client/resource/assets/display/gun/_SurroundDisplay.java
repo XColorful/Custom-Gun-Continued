@@ -13,7 +13,7 @@ import xiao.customgun.core.resource.ResourcePojo;
 
 import java.io.IOException;
 
-public class _SurroundDisplay extends ResourcePojo<_SurroundDisplay> {
+public final class _SurroundDisplay extends ResourcePojo<_SurroundDisplay> {
 
     private static final _SurroundDisplay PARSER = new _SurroundDisplay();
     public static _SurroundDisplay fromJson(JsonReader reader) throws IOException {

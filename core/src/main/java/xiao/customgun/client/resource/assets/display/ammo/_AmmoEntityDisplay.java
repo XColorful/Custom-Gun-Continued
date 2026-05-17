@@ -13,7 +13,7 @@ import xiao.customgun.core.resource.ResourcePojo;
 
 import java.io.IOException;
 
-public class _AmmoEntityDisplay extends ResourcePojo<_AmmoEntityDisplay> {
+public final class _AmmoEntityDisplay extends ResourcePojo<_AmmoEntityDisplay> {
 
     private static final _AmmoEntityDisplay PARSER = new _AmmoEntityDisplay();
     public static _AmmoEntityDisplay fromJson(JsonReader reader) throws IOException {

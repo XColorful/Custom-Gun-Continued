@@ -13,7 +13,7 @@ import xiao.customgun.core.resource.ResourcePojo;
 
 import java.io.IOException;
 
-public class _ControllableData extends ResourcePojo<_ControllableData> {
+public final class _ControllableData extends ResourcePojo<_ControllableData> {
 
     private static final _ControllableData PARSER = new _ControllableData();
     public static _ControllableData fromJson(JsonReader reader) throws IOException {

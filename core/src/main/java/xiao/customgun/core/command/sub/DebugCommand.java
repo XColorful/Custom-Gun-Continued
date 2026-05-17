@@ -11,6 +11,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.BoolArgumentType;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -53,8 +54,9 @@ public class DebugCommand {
                         .then(Commands.argument("rl", StringArgumentType.string())
                                 .executes(DebugCommand::testGunData)))
                 .then(Commands.literal("testAllData")
-                        .then(Commands.argument("path", StringArgumentType.string())
-                                .executes(DebugCommand::testAllData)))
+                        .then(Commands.argument("indent", IntegerArgumentType.integer())
+                                .then(Commands.argument("path", StringArgumentType.string())
+                                        .executes(DebugCommand::testAllData))))
                 .then(Commands.argument(ENABLE, BoolArgumentType.bool())
                         .executes(DebugCommand::setValue));
     }
@@ -152,28 +154,29 @@ public class DebugCommand {
         if (allManager != null) {
             CommandSourceStack source = context.getSource();
             try {
-                testManager(path, allManager.gunpackMetaManager);
-                testManager(path, allManager.gunDataManager);
-                testManager(path, allManager.attachmentDataManager);
-                testManager(path, allManager.blockDataManager);
-                testManager(path, allManager.gunIndexManager);
-                testManager(path, allManager.attachmentIndexManager);
-                testManager(path, allManager.ammoIndexManager);
-                testManager(path, allManager.blockIndexManager);
-                testManager(path, allManager.attachmentTagManager);
-                testManager(path, allManager.gunAttachmentDataManager);
-                testManager(path, allManager.recipeFilterDataManager);
+                String indent = " ".repeat(Math.max(0, IntegerArgumentType.getInteger(context, "indent")));
+                testManager(indent, path, allManager.gunpackMetaManager);
+                testManager(indent, path, allManager.gunDataManager);
+                testManager(indent, path, allManager.attachmentDataManager);
+                testManager(indent, path, allManager.blockDataManager);
+                testManager(indent, path, allManager.gunIndexManager);
+                testManager(indent, path, allManager.attachmentIndexManager);
+                testManager(indent, path, allManager.ammoIndexManager);
+                testManager(indent, path, allManager.blockIndexManager);
+                testManager(indent, path, allManager.attachmentTagManager);
+                testManager(indent, path, allManager.gunAttachmentDataManager);
+                testManager(indent, path, allManager.recipeFilterDataManager);
                 if (CustomGun.getMcSide().isClientSide()) {
                     AllAssetsManager allAssetsManager = AllAssetsManager.INSTANCE;
-                    testManager(path, allAssetsManager.gunpackInfoManager);
-                    testManager(path, allAssetsManager.bedrockAnimationManager);
-                    testManager(path, allAssetsManager.gltfAnimationManager);
-                    testManager(path, allAssetsManager.gunDisplayManager);
-                    testManager(path, allAssetsManager.attachmentDisplayManager);
-                    testManager(path, allAssetsManager.ammoDisplayManager);
-                    testManager(path, allAssetsManager.blockDisplayManager);
-                    testManager(path, allAssetsManager.bedrockModelManager);
-                    testManager(path, allAssetsManager.playerAnimationManager);
+                    testManager(indent, path, allAssetsManager.gunpackInfoManager);
+                    testManager(indent, path, allAssetsManager.bedrockAnimationManager);
+                    testManager(indent, path, allAssetsManager.gltfAnimationManager);
+                    testManager(indent, path, allAssetsManager.gunDisplayManager);
+                    testManager(indent, path, allAssetsManager.attachmentDisplayManager);
+                    testManager(indent, path, allAssetsManager.ammoDisplayManager);
+                    testManager(indent, path, allAssetsManager.blockDisplayManager);
+                    testManager(indent, path, allAssetsManager.bedrockModelManager);
+                    testManager(indent, path, allAssetsManager.playerAnimationManager);
                 }
 
                 source.sendSuccess(() -> Component.literal("All data successfully exported to ./" + path), true);
@@ -185,7 +188,7 @@ public class DebugCommand {
         }
         return Command.SINGLE_SUCCESS;
     }
-    private static void testManager(String basePath, @Nullable ResourcePojoManager<?> pojoManager) {
+    private static void testManager(String indent, String basePath, @Nullable ResourcePojoManager<?> pojoManager) {
         if (pojoManager == null) return;
         Map<ResourceLocation, ? extends ResourcePojo<?>> allPojo = pojoManager.getAllPojo();
         if (allPojo == null || allPojo.isEmpty()) return;
@@ -210,7 +213,7 @@ public class DebugCommand {
                 }
                 try (BufferedWriter writer = Files.newBufferedWriter(outputFile, StandardCharsets.UTF_8)) {
                     JsonWriter jsonWriter = new JsonWriter(writer);
-                    jsonWriter.setIndent("    ");
+                    jsonWriter.setIndent(indent);
                     pojo.toJson(jsonWriter);
                     jsonWriter.flush();
                 }

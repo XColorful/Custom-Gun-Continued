@@ -17,7 +17,14 @@ import java.io.IOException;
 
 public final class BlockIndex extends _DataIndex<BlockIndex> {
 
+    /**
+     * Block类型
+     */
     private Identifier blockType;
+
+    /**
+     * 物品堆叠数量
+     */
     private int maxStackSize = 1;
 
     private static final BlockIndex PARSER = new BlockIndex();
@@ -31,14 +38,14 @@ public final class BlockIndex extends _DataIndex<BlockIndex> {
             while (reader.hasNext()) {
                 String key = reader.nextName();
                 switch (key) {
-                    case BlockIndexTag.NAME_LANG -> pojo.setNameLang(JsonUtils.readString(reader));
-                    case BlockIndexTag.TOOLTIP_LANG -> pojo.setTooltipLang(JsonUtils.readString(reader));
-                    case BlockIndexTag.DATA_LOCATION -> pojo.setDataLocation(JsonUtils.readResourceLocation(reader));
-                    case BlockIndexTag.DISPLAY_INDEX_LOCATION -> pojo.setDisplayIndexLocation(JsonUtils.readResourceLocation(reader));
-                    case BlockIndexTag.SLOT_SORT -> pojo.setSlotSort(JsonUtils.readInt(reader));
+                    case BlockIndexTag.NAME_LANG, BlockIndexTag.NAME_LANG_OLD1 -> pojo.setNameLang(JsonUtils.readString(reader));
+                    case BlockIndexTag.TOOLTIP_LANG, BlockIndexTag.TOOLTIP_LANG_OLD1 -> pojo.setTooltipLang(JsonUtils.readString(reader));
+                    case BlockIndexTag.DATA_LOCATION, BlockIndexTag.DATA_LOCATION_OLD1 -> pojo.setDataLocation(JsonUtils.readResourceLocation(reader));
+                    case BlockIndexTag.DISPLAY_INDEX_LOCATION, BlockIndexTag.DISPLAY_INDEX_LOCATION_OLD1 -> pojo.setDisplayIndexLocation(JsonUtils.readResourceLocation(reader));
+                    case BlockIndexTag.SLOT_SORT, BlockIndexTag.SLOT_SORT_OLD1 -> pojo.setSlotSort(JsonUtils.readInt(reader));
 
-                    case BlockIndexTag.BLOCK_TYPE -> pojo.blockType = JsonUtils.readResourceLocation(reader);
-                    case BlockIndexTag.MAX_STACK_SIZE -> pojo.maxStackSize = JsonUtils.readInt(reader);
+                    case BlockIndexTag.BLOCK_TYPE, BlockIndexTag.BLOCK_TYPE_OLD1 -> pojo.blockType = JsonUtils.readResourceLocation(reader);
+                    case BlockIndexTag.MAX_STACK_SIZE, BlockIndexTag.MAX_STACK_SIZE_OLD1 -> pojo.maxStackSize = JsonUtils.readInt(reader);
                     default -> reader.skipValue();
                 }
             }

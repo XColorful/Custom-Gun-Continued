@@ -18,7 +18,7 @@ import xiao.customgun.core.util.JsonUtils;
 import java.io.IOException;
 import java.util.List;
 
-public class BlockData extends ResourcePojo<BlockData> {
+public final class BlockData extends ResourcePojo<BlockData> {
 
     private ResourceLocation recipeFilterLocation;
     private List<_RecipeGroupData> recipeGroupList;

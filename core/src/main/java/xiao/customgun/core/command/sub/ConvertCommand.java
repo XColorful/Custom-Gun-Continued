@@ -12,9 +12,6 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import xiao.customgun.CustomGun;
-import xiao.customgun.core.api.common.McSide;
-import xiao.customgun.core.resource.PackConvertor;
 
 import static xiao.customgun.core.command.CommandArg.CONVERT;
 
@@ -26,7 +23,7 @@ public class ConvertCommand {
     }
 
     private static int convert(CommandContext<CommandSourceStack> context) {
-        CustomGun.getSideExecutor().unsafeRunWhenOn(McSide.CLIENT, () -> () -> PackConvertor.convert(context.getSource()));
+//        CustomGun.getSideExecutor().unsafeRunWhenOn(McSide.CLIENT, () -> () -> PackConvertor.convert(context.getSource()));
         return Command.SINGLE_SUCCESS;
     }
 }

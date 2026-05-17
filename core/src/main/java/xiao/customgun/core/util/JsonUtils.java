@@ -14,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import xiao.customgun.CustomGun;
 import xiao.customgun.core.api.minecraft.IMcRegistry;
 
+import java.awt.*;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -28,6 +29,27 @@ public class JsonUtils {
      * 其他模组不应该在模组主类初始化时调用 // TODO 集中处理需要缓存加速的类, 省得加if
      */
     public static final IMcRegistry mcRegistry = CustomGun.getMcRegistry();
+
+    // --------Functional Interfaces--------
+
+    @FunctionalInterface
+    public interface ReadFunction<T> {
+        T apply(JsonReader reader) throws IOException;
+    }
+    @FunctionalInterface
+    public interface WriteAction<T> {
+        void accept(JsonWriter writer, T value) throws IOException;
+    }
+
+    @FunctionalInterface
+    public interface FromStringFunction<T> {
+        T apply(String name);
+    }
+
+    @FunctionalInterface
+    public interface KeyWriterAction<K> {
+        String apply(K key);
+    }
 
     // --------JsonPrimitive--------
 
@@ -61,6 +83,16 @@ public class JsonUtils {
     public static void writeFloat(JsonWriter writer, String key, float value) throws IOException {
         writer.name(key).value(value);
     }
+    public static long readLong(JsonReader reader) throws IOException {
+        JsonToken peek = reader.peek();
+        if (peek == JsonToken.NUMBER) return reader.nextLong();
+        if (peek == JsonToken.NULL) reader.nextNull();
+        else reader.skipValue();
+        return 0L;
+    }
+    public static void writeLong(JsonWriter writer, String key, long value) throws IOException {
+        writer.name(key).value(value);
+    }
     public static String readString(JsonReader reader) throws IOException {
         JsonToken peek = reader.peek();
         if (peek == JsonToken.STRING) return reader.nextString();
@@ -91,14 +123,6 @@ public class JsonUtils {
 
     // --------代理 (用于POJO嵌套)--------
 
-    @FunctionalInterface
-    public interface ReadFunction<T> {
-        T apply(JsonReader reader) throws IOException;
-    }
-    @FunctionalInterface
-    public interface WriteAction<T> {
-        void accept(JsonWriter writer, T value) throws IOException;
-    }
     public static <T> T read(JsonReader reader, ReadFunction<T> function) throws IOException {
         return function.apply(reader);
     }
@@ -109,12 +133,31 @@ public class JsonUtils {
 
     // --------扩展类型--------
 
+    public static Color readColor(JsonReader reader) throws IOException {
+        String s = JsonUtils.readString(reader);
+        return s != null ? ColorUtils.fromRRGGBBtoColor(s) : null;
+    }
+    public static void writeColor(JsonWriter writer, String key, Color value) throws IOException {
+        if (value != null) writer.name(key).value(ColorUtils.fromColorTo_RRGGBB(value));
+    }
+
     public static ResourceLocation readResourceLocation(JsonReader reader) throws IOException {
         String rl = readString(reader);
         return rl != null ? mcRegistry.createResourceLocation(rl) : null;
     }
-
     public static void writeResourceLocation(JsonWriter writer, String key, ResourceLocation value) throws IOException {
+        if (value != null) writer.name(key).value(value.toString());
+    }
+    public static void writeResourceLocationValue(JsonWriter writer, ResourceLocation value) throws IOException {
+        if (value != null) writer.value(value.toString());
+        else writer.nullValue();
+    }
+
+    public static <T> T readFromString(JsonReader reader, FromStringFunction<T> function) throws IOException {
+        String valueStr = readString(reader);
+        return valueStr != null ? function.apply(valueStr) : null;
+    }
+    public static <T> void writeToString(JsonWriter writer, String key, T value) throws IOException {
         if (value != null) writer.name(key).value(value.toString());
     }
 
@@ -155,6 +198,44 @@ public class JsonUtils {
         writer.endArray();
     }
 
+    public static <T> ArrayList<T> readFromStringList(JsonReader reader, FromStringFunction<T> function) throws IOException {
+        if (reader.peek() == JsonToken.NULL) {
+            reader.nextNull();
+            return new ArrayList<>();
+        }
+        ArrayList<T> list = new ArrayList<>();
+        if (reader.peek() == JsonToken.BEGIN_ARRAY) {
+            reader.beginArray();
+            while (reader.hasNext()) {
+                if (reader.peek() == JsonToken.STRING) {
+                    T item = function.apply(reader.nextString());
+                    if (item != null) {
+                        list.add(item);
+                    }
+                } else {
+                    reader.skipValue();
+                }
+            }
+            reader.endArray();
+        } else {
+            reader.skipValue();
+        }
+        return list;
+    }
+    public static <T> void writeToStringList(JsonWriter writer, String key, List<T> value) throws IOException {
+        if (value == null) {
+            return;
+        }
+        writer.name(key).beginArray(); {
+            for (T t : value) {
+                if (t != null) {
+                    writer.value(t.toString());
+                }
+            }
+        }
+        writer.endArray();
+    }
+
     public static <T> ArrayList<T> readList(JsonReader reader, ReadFunction<T> function) throws IOException {
         if (reader.peek() == JsonToken.NULL) {
             reader.nextNull();
@@ -183,6 +264,34 @@ public class JsonUtils {
         writer.endArray();
     }
 
+    public static <T> ClassUtils.ArraySet<T> readArraySet(JsonReader reader, ReadFunction<T> function) throws IOException {
+        if (reader.peek() == JsonToken.NULL) {
+            reader.nextNull();
+            return new ClassUtils.ArraySet<>();
+        }
+        ClassUtils.ArraySet<T> set = new ClassUtils.ArraySet<>();
+        if (reader.peek() == JsonToken.BEGIN_ARRAY) {
+            reader.beginArray();
+            while (reader.hasNext()) {
+                T item = function.apply(reader);
+                if (item != null) set.add(item);
+            }
+            reader.endArray();
+        } else {
+            reader.skipValue();
+        }
+        return set;
+    }
+    public static <T> void writeArraySet(JsonWriter writer, String key, ClassUtils.ArraySet<T> value, WriteAction<T> action) throws IOException {
+        if (value == null) return;
+        writer.name(key); writer.beginArray(); {
+            for (T t : value) {
+                if (t != null) action.accept(writer, t);
+            }
+        }
+        writer.endArray();
+    }
+
     public static int[] readIntArray(JsonReader reader) throws IOException {
         List<Integer> list = readList(reader, JsonUtils::readInt);
         return list.stream().mapToInt(i -> i).toArray();
@@ -193,6 +302,55 @@ public class JsonUtils {
             for (int i : value) writer.value(i);
         }
         writer.endArray();
+    }
+
+    public static float[] readFloatArray(JsonReader reader) throws IOException {
+        List<Float> list = readList(reader, JsonUtils::readFloat);
+        float[] array = new float[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            array[i] = list.get(i);
+        }
+        return array;
+    }
+    public static void writeFloatArray(JsonWriter writer, String key, float[] value) throws IOException {
+        if (value == null) return;
+        writer.name(key).beginArray(); {
+            for (float f : value) writer.value(f);
+        }
+        writer.endArray();
+    }
+
+    public static float[] readFloatArrayFast(JsonReader reader, int length) throws IOException {
+        JsonToken peek = reader.peek();
+        if (peek == JsonToken.NULL) {
+            reader.nextNull();
+            return new float[0];
+        }
+        if (peek == JsonToken.BEGIN_ARRAY) {
+            reader.beginArray();
+            float[] array = new float[length];
+            int index = 0;
+            while (reader.hasNext()) {
+                if (index < length) {
+                    JsonToken token = reader.peek();
+                    if (token == JsonToken.NUMBER) {
+                        array[index++] = (float) reader.nextDouble();
+                    } else if (token == JsonToken.NULL) {
+                        reader.nextNull();
+                        array[index++] = 0.0f;
+                    } else {
+                        reader.skipValue();
+                    }
+                } else {
+                    reader.skipValue();
+                }
+            }
+            reader.endArray();
+            return array;
+        } else {
+            reader.skipValue();
+            return new float[0];
+        }
     }
 
     // --------结构<类型,类型>--------
@@ -298,6 +456,48 @@ public class JsonUtils {
         writer.endObject();
     }
 
+    public static <K, V> HashMap<K, V> readObject2ObjectMap(JsonReader reader, FromStringFunction<K> keyFunction, ReadFunction<V> valueFunction) throws IOException {
+        if (reader.peek() == JsonToken.NULL) {
+            reader.nextNull();
+            return new HashMap<>();
+        }
+        HashMap<K, V> map = new HashMap<>();
+        if (reader.peek() == JsonToken.BEGIN_OBJECT) {
+            reader.beginObject();
+            while (reader.hasNext()) {
+                String keyName = reader.nextName();
+                K key = keyFunction.apply(keyName);
+                if (key != null) {
+                    V value = valueFunction.apply(reader);
+                    if (value != null) {
+                        map.put(key, value);
+                    }
+                } else {
+                    valueFunction.apply(reader);
+                }
+            }
+            reader.endObject();
+        } else {
+            reader.skipValue();
+        }
+        return map;
+    }
+    public static <K, V> void writeObject2ObjectMap(JsonWriter writer, String key, Map<K, V> map, KeyWriterAction<K> keyAction, WriteAction<V> valueAction) throws IOException {
+        if (map == null) return;
+        writer.name(key).beginObject(); {
+            for (Map.Entry<K, V> entry : map.entrySet()) {
+                if (entry.getKey() != null && entry.getValue() != null) {
+                    String keyName = keyAction.apply(entry.getKey());
+                    if (keyName != null) {
+                        writer.name(keyName);
+                        valueAction.accept(writer, entry.getValue());
+                    }
+                }
+            }
+        }
+        writer.endObject();
+    }
+
     // --------JsonObject--------
 
     public static JsonReader getAsReader(JsonObject jsonObject) {
@@ -305,12 +505,5 @@ public class JsonUtils {
     }
     public static JsonReader getAsReaderSafe(@Nullable JsonObject jsonObject) {
         return new JsonReader(new StringReader(jsonObject != null ? jsonObject.toString() : "{}"));
-    }
-
-    // --------PojoManager--------
-
-    @FunctionalInterface
-    public interface FromJsonReader<T> {
-        T apply(JsonReader reader) throws IOException;
     }
 }

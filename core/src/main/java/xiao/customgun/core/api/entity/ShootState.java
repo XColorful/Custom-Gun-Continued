@@ -29,7 +29,7 @@ public enum ShootState implements ResourceTag.CategoryTag {
     /**
      * 趴姿 (游泳)
      */
-    LIE(ShootStateTag.LIE),
+    PRONE(ShootStateTag.PRONE, ShootStateTag.PRONE_OLD1),
     /**
      * 瞄准状态
      */
@@ -40,8 +40,13 @@ public enum ShootState implements ResourceTag.CategoryTag {
     LEVITATE(ShootStateTag.LEVITATE);
 
     public final String stateName;
+    private final String stateNameOld;
     ShootState(String name) {
+        this(name, null);
+    }
+    ShootState(String name, String nameOld) {
         this.stateName = name;
+        this.stateNameOld = nameOld;
     }
 
     @Override public String getTagName() {
@@ -56,6 +61,7 @@ public enum ShootState implements ResourceTag.CategoryTag {
     static {
         for (ShootState state : values()) {
             SHOOT_STATES.put(state.stateName, state);
+            if (state.stateNameOld != null) SHOOT_STATES.put(state.stateNameOld, state);
         }
     }
 

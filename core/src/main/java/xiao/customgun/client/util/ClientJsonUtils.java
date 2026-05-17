@@ -14,11 +14,10 @@ package xiao.customgun.client.util;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import com.google.gson.stream.JsonToken;
+import com.mojang.math.Transformation;
 import it.unimi.dsi.fastutil.doubles.Double2ObjectRBTreeMap;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
 import xiao.customgun.CustomGun;
 import xiao.customgun.client.resource.assets.animation.bedrock.animation.bone._KeyFrame;
-import xiao.customgun.core.util.JsonUtils;
 
 import java.io.IOException;
 import java.util.Map;
@@ -27,10 +26,10 @@ public class ClientJsonUtils {
 
     // --------扩展类型--------
 
-    public static ItemTransforms readItemTransforms(JsonReader reader) throws IOException {
+    public static Transformation readItemTransforms(JsonReader reader) throws IOException {
         return null;
     }
-    public static void writeItemTransforms(JsonWriter writer, String key, ItemTransforms itemTransforms) throws IOException {
+    public static void writeItemTransforms(JsonWriter writer, String key, Transformation itemTransforms) throws IOException {
     }
 
     /**

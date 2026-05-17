@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class RecipeFilterData extends ResourcePojo<RecipeFilterData> {
+public final class RecipeFilterData extends ResourcePojo<RecipeFilterData> {
 
     private List<String> whitelistRaw;
     private List<Identifier> whitelistLiteral;

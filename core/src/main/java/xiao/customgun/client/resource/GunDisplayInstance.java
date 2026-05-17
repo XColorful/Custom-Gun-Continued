@@ -10,7 +10,7 @@ package xiao.customgun.client.resource;
 import com.google.common.collect.Maps;
 import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
-import xiao.customgun.client.api.resource.assets.display.SoundType;
+import xiao.customgun.client.api.sound.gun.GunSoundType;
 import xiao.customgun.client.resource.assets.display.GunDisplay;
 
 import java.util.Map;
@@ -20,9 +20,9 @@ import java.util.Map;
  */
 public class GunDisplayInstance {
     private GunDisplay gunDisplay;
-    private Map<SoundType, Identifier> sounds = Maps.newHashMap();
+    private Map<GunSoundType, Identifier> sounds = Maps.newHashMap();
 
-    public @Nullable Identifier getSounds(SoundType soundType) {
+    public @Nullable Identifier getSounds(GunSoundType soundType) {
         return sounds.get(soundType);
     }
 }

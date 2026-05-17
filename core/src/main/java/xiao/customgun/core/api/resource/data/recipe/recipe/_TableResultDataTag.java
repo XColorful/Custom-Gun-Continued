@@ -7,13 +7,10 @@
 
 package xiao.customgun.core.api.resource.data.recipe.recipe;
 
-import xiao.customgun.core.api.resource.data.index._DataIndexTag;
-
 public class _TableResultDataTag {
 
-    public static final String RECIPE_RESULT_TYPE = "type";
-    /**
-     * 同 {@link _DataIndexTag#DATA_LOCATION}
-     */
-    public static final String RECIPE_RESULT_LOCATION = "id";
+    public static final String RECIPE_RESULT_TYPE = "recipe_result_type"; public static final String RECIPE_RESULT_TYPE_OLD1 = "type";
+    public static final String RECIPE_RESULT_LOCATION = "recipe_result_location"; public static final String RECIPE_RESULT_LOCATION_OLD1 = "id";
+
+    private _TableResultDataTag() {}
 }

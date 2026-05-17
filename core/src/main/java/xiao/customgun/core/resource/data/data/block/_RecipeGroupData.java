@@ -16,7 +16,7 @@ import xiao.customgun.core.util.JsonUtils;
 
 import java.io.IOException;
 
-public class _RecipeGroupData extends ResourcePojo<_RecipeGroupData> {
+public final class _RecipeGroupData extends ResourcePojo<_RecipeGroupData> {
 
     private Identifier groupCategory;
     private String nameLang;

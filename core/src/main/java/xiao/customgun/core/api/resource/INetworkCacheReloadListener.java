@@ -9,7 +9,7 @@ package xiao.customgun.core.api.resource;
 
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
-import xiao.customgun.core.resource.SyncDataType;
+import xiao.customgun.core.resource.network.SyncDataType;
 
 import java.util.Map;
 

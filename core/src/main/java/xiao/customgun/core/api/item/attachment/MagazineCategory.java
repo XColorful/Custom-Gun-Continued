@@ -42,6 +42,7 @@ public enum MagazineCategory implements ResourceTag.CategoryTag {
     static {
         for (MagazineCategory type : values()) {
             CATEGORIES.put(type.categoryName, type);
+            CATEGORIES.put(String.valueOf(type.index), type);
             INDEXES.put(type.index, type);
         }
     }

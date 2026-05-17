@@ -11,7 +11,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.world.entity.LivingEntity;
 import org.jetbrains.annotations.ApiStatus;
-import xiao.customgun.client.util.WorldUtils;
+import xiao.customgun.client.util.ClientWorldUtils;
 import xiao.customgun.core.network.message.event.ServerMessageGunFireSelect;
 
 @ApiStatus.Internal
@@ -22,7 +22,7 @@ public class _ServerMessageGunFireSelect {
         if (level == null) {
             return;
         }
-        LivingEntity shooter = WorldUtils.getLivingEntityById(level, message.shooterId());
+        LivingEntity shooter = ClientWorldUtils.getLivingEntityById(level, message.shooterId());
         if (shooter != null) {
             // TODO gunFireSelectEvent
         }

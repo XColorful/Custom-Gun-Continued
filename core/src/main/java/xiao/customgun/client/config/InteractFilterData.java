@@ -16,7 +16,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.CustomGun;
 import xiao.customgun.core.api.minecraft.IMcRegistry;
-import xiao.customgun.core.api.resource.data.tags.InteractKeyType;
+import xiao.customgun.core.api.resource.data.tag.InteractKeyType;
 import xiao.customgun.core.config.SyncConfig;
 
 import java.util.HashMap;

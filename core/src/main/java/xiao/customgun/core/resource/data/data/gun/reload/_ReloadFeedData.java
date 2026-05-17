@@ -15,7 +15,7 @@ import xiao.customgun.core.util.JsonUtils;
 
 import java.io.IOException;
 
-public class _ReloadFeedData extends ResourcePojo<_ReloadFeedData> {
+public final class _ReloadFeedData extends ResourcePojo<_ReloadFeedData> {
 
     private float empty = 2.5F;
     private float tactical = 2.0F;

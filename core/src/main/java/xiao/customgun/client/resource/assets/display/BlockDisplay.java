@@ -9,7 +9,7 @@ package xiao.customgun.client.resource.assets.display;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
+import com.mojang.math.Transformation;
 import xiao.customgun.client.util.ClientJsonUtils;
 import xiao.customgun.core.api.resource.assets.display.BlockDisplayTag;
 import xiao.customgun.core.util.JsonUtils;
@@ -18,7 +18,8 @@ import java.io.IOException;
 
 public final class BlockDisplay extends _AssetsDisplay<BlockDisplay> {
 
-    private ItemTransforms itemTransforms;
+    // TODO 处理 26.1.2 没有 ItemTransforms 的问题
+    private Transformation itemTransforms;
 
     private static final BlockDisplay PARSER = new BlockDisplay();
     public static BlockDisplay fromJson(JsonReader reader) throws IOException {
@@ -59,11 +60,11 @@ public final class BlockDisplay extends _AssetsDisplay<BlockDisplay> {
 
     // --------Getter & Setter--------
 
-    public ItemTransforms getItemTransforms() {
+    public Transformation getItemTransforms() {
         return itemTransforms;
     }
 
-    public void setItemTransforms(ItemTransforms itemTransforms) {
+    public void setItemTransforms(Transformation itemTransforms) {
         this.itemTransforms = itemTransforms;
     }
 }

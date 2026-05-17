@@ -11,7 +11,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import com.google.gson.stream.JsonToken;
 import it.unimi.dsi.fastutil.doubles.Double2ObjectRBTreeMap;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import xiao.customgun.core.api.resource.assets.animation.bedrock.animation._SoundEffectsTag;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.util.JsonUtils;
@@ -21,7 +21,7 @@ import java.util.Map;
 
 public final class _SoundEffects extends ResourcePojo<_SoundEffects> {
 
-    private final Double2ObjectRBTreeMap<ResourceLocation> keyframes = new Double2ObjectRBTreeMap<>();
+    private final Double2ObjectRBTreeMap<Identifier> keyframes = new Double2ObjectRBTreeMap<>();
 
     private static final _SoundEffects PARSER = new _SoundEffects();
     public static _SoundEffects fromJson(JsonReader reader) throws IOException {
@@ -47,7 +47,7 @@ public final class _SoundEffects extends ResourcePojo<_SoundEffects> {
                     double time = Double.parseDouble(timeStr);
 
                     // 剥离内部的 {"effect": "..."} 对象
-                    ResourceLocation loc = null;
+                    Identifier loc = null;
                     if (reader.peek() == JsonToken.BEGIN_OBJECT) {
                         reader.beginObject();
                         while (reader.hasNext()) {
@@ -89,7 +89,7 @@ public final class _SoundEffects extends ResourcePojo<_SoundEffects> {
             return;
         }
         writer.beginObject();
-        for (Map.Entry<Double, ResourceLocation> entry : this.keyframes.double2ObjectEntrySet()) {
+        for (Map.Entry<Double, Identifier> entry : this.keyframes.double2ObjectEntrySet()) {
             writer.name(String.valueOf(entry.getKey()));
             writer.beginObject(); {
                 writer.name(_SoundEffectsTag.EFFECT).value(entry.getValue().toString());
@@ -106,7 +106,7 @@ public final class _SoundEffects extends ResourcePojo<_SoundEffects> {
 
     // --------Getter & Setter--------
 
-    public Double2ObjectRBTreeMap<ResourceLocation> getKeyframes() {
+    public Double2ObjectRBTreeMap<Identifier> getKeyframes() {
         return this.keyframes;
     }
 }

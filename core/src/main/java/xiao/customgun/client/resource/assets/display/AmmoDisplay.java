@@ -9,7 +9,7 @@ package xiao.customgun.client.resource.assets.display;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import xiao.customgun.client.resource.assets.display.ammo._AmmoParticle;
 import xiao.customgun.core.api.resource.assets.display.AmmoDisplayTag;
 import xiao.customgun.core.util.JsonUtils;
@@ -20,8 +20,8 @@ import java.io.IOException;
 public final class AmmoDisplay extends _AssetsDisplay<AmmoDisplay> {
 
     // 模型
-    private ResourceLocation ammoEntityDisplayLocation;
-    private ResourceLocation shellDisplayLocation;
+    private Identifier ammoEntityDisplayLocation;
+    private Identifier shellDisplayLocation;
 
     // 显示
     private _AmmoParticle ammoParticle;
@@ -78,10 +78,10 @@ public final class AmmoDisplay extends _AssetsDisplay<AmmoDisplay> {
 
     // --------Getter & Setter--------
 
-    public ResourceLocation getAmmoEntityDisplayLocation() {
+    public Identifier getAmmoEntityDisplayLocation() {
         return ammoEntityDisplayLocation;
     }
-    public ResourceLocation getShellDisplayLocation() {
+    public Identifier getShellDisplayLocation() {
         return shellDisplayLocation;
     }
     public _AmmoParticle getAmmoParticle() {
@@ -91,10 +91,10 @@ public final class AmmoDisplay extends _AssetsDisplay<AmmoDisplay> {
         return tracerColor;
     }
 
-    public void setAmmoEntityDisplayLocation(ResourceLocation ammoEntityDisplayLocation) {
+    public void setAmmoEntityDisplayLocation(Identifier ammoEntityDisplayLocation) {
         this.ammoEntityDisplayLocation = ammoEntityDisplayLocation;
     }
-    public void setShellDisplayLocation(ResourceLocation shellDisplayLocation) {
+    public void setShellDisplayLocation(Identifier shellDisplayLocation) {
         this.shellDisplayLocation = shellDisplayLocation;
     }
     public void setAmmoParticle(_AmmoParticle ammoParticle) {

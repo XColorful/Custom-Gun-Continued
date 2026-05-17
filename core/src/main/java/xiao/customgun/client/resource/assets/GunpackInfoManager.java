@@ -7,7 +7,7 @@
 
 package xiao.customgun.client.resource.assets;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackType;
 import org.jetbrains.annotations.ApiStatus;
 import xiao.customgun.client.api.resource.assets.AssetsFolderType;
@@ -28,7 +28,7 @@ public final class GunpackInfoManager extends ResourcePojoManager<GunpackInfo> {
     }
 
     @Override
-    protected boolean isPojoLocationValid(ResourceLocation pojoLocation) {
+    protected boolean isPojoLocationValid(Identifier pojoLocation) {
         return pojoLocation.getPath().equals("gunpack_info"); // 单个namespace下唯一
     }
 }

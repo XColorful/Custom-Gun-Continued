@@ -9,7 +9,7 @@ package xiao.customgun.client.resource.assets.display;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import xiao.customgun.client.api.sound.attachment.AttachmentSoundType;
 import xiao.customgun.core.api.resource.assets.display.AttachmentDisplayTag;
 import xiao.customgun.core.util.JsonUtils;
@@ -33,7 +33,7 @@ public final class AttachmentDisplay extends _AssetsDisplay<AttachmentDisplay> {
     private boolean showMount;
     private Map<String, _ModelNodeTextDisplay> modelNodeTextDisplay;
     private _LaserDisplay laserDisplay;
-    private Map<AttachmentSoundType, ResourceLocation> attachmentSounds;
+    private Map<AttachmentSoundType, Identifier> attachmentSounds;
 
     private static final AttachmentDisplay PARSER = new AttachmentDisplay();
     public static AttachmentDisplay fromJson(JsonReader reader) throws IOException {
@@ -133,7 +133,7 @@ public final class AttachmentDisplay extends _AssetsDisplay<AttachmentDisplay> {
     public _LaserDisplay getLaserDisplay() {
         return laserDisplay;
     }
-    public Map<AttachmentSoundType, ResourceLocation> getAttachmentSounds() {
+    public Map<AttachmentSoundType, Identifier> getAttachmentSounds() {
         return attachmentSounds;
     }
 
@@ -170,7 +170,7 @@ public final class AttachmentDisplay extends _AssetsDisplay<AttachmentDisplay> {
     public void setLaserDisplay(_LaserDisplay laserDisplay) {
         this.laserDisplay = laserDisplay;
     }
-    public void setAttachmentSounds(Map<AttachmentSoundType, ResourceLocation> attachmentSounds) {
+    public void setAttachmentSounds(Map<AttachmentSoundType, Identifier> attachmentSounds) {
         this.attachmentSounds = attachmentSounds;
     }
 }

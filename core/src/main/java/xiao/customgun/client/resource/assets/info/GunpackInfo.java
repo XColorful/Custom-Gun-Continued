@@ -9,7 +9,7 @@ package xiao.customgun.client.resource.assets.info;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import xiao.customgun.core.api.resource.assets.info.GunpackInfoTag;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.util.JsonUtils;
@@ -20,8 +20,8 @@ import java.util.List;
 public final class GunpackInfo extends ResourcePojo<GunpackInfo> {
 
     private String gunpackVersion;
-    private ResourceLocation nameLocation;
-    private ResourceLocation tooltipLocation;
+    private Identifier nameLocation;
+    private Identifier tooltipLocation;
     private String license;
     private List<String> authors;
     private String date;
@@ -80,10 +80,10 @@ public final class GunpackInfo extends ResourcePojo<GunpackInfo> {
     public String getGunpackVersion() {
         return gunpackVersion;
     }
-    public ResourceLocation getNameLocation() {
+    public Identifier getNameLocation() {
         return nameLocation;
     }
-    public ResourceLocation getTooltipLocation() {
+    public Identifier getTooltipLocation() {
         return tooltipLocation;
     }
     public String getLicense() {
@@ -102,10 +102,10 @@ public final class GunpackInfo extends ResourcePojo<GunpackInfo> {
     public void setGunpackVersion(String gunpackVersion) {
         this.gunpackVersion = gunpackVersion;
     }
-    public void setNameLocation(ResourceLocation nameLocation) {
+    public void setNameLocation(Identifier nameLocation) {
         this.nameLocation = nameLocation;
     }
-    public void setTooltipLocation(ResourceLocation tooltipLocation) {
+    public void setTooltipLocation(Identifier tooltipLocation) {
         this.tooltipLocation = tooltipLocation;
     }
     public void setLicense(String license) {

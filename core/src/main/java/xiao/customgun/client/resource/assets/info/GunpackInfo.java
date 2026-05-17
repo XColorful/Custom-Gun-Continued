@@ -10,7 +10,7 @@ package xiao.customgun.client.resource.assets.info;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import net.minecraft.resources.ResourceLocation;
-import xiao.customgun.core.api.resource.assets.GunpackInfoTag;
+import xiao.customgun.core.api.resource.assets.info.GunpackInfoTag;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.util.JsonUtils;
 

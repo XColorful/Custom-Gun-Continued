@@ -13,11 +13,12 @@ import org.jetbrains.annotations.Nullable;
 import xiao.customgun.CustomGun;
 import xiao.customgun.client.api.event.IAddClientReloadListenerEvent;
 import xiao.customgun.client.api.resource.assets.AssetsFolderType;
-import xiao.customgun.client.resource.assets.GunpackInfoManager;
+import xiao.customgun.client.resource.assets.*;
 import xiao.customgun.core.api.common.McSide;
 import xiao.customgun.core.api.event.EventType;
 import xiao.customgun.core.api.event.IEvent;
 import xiao.customgun.core.api.event.IEventHandler;
+import xiao.customgun.core.compat.playeranimator.PlayerAnimator;
 import xiao.customgun.core.resource.AllDataManager;
 import xiao.customgun.core.resource.ResourcePojoManager;
 
@@ -43,6 +44,30 @@ public class AllAssetsManager implements IEventHandler {
      * ./resourcepacks/{resourcepack}/assets/{namespace}/{@link AssetsFolderType#GUNPACK_INFO}
      */
     public @Nullable GunpackInfoManager gunpackInfoManager;
+    /**
+     * ./resourcepacks/{resourcepack}/assets/{namespace}/{@link AssetsFolderType#ANIMATIONS}
+     */
+    public @Nullable AnimationManager.BedrockAnimationManager bedrockAnimationManager;
+    public @Nullable AnimationManager.GltfAnimationManager gltfAnimationManager;
+    /**
+     * ./resourcepacks/{resourcepack}/assets/{namespace}/{@link AssetsFolderType#DISPLAY}
+     */
+    public @Nullable DisplayManager.GunDisplayManager gunDisplayManager;
+    public @Nullable DisplayManager.AttachmentDisplayManager attachmentDisplayManager;
+    public @Nullable DisplayManager.AmmoDisplayManager ammoDisplayManager;
+    public @Nullable DisplayManager.BlockDisplayManager blockDisplayManager;
+    /**
+     * ./resourcepacks/{resourcepack}/assets/{namespace}/{@link AssetsFolderType#MODEL}
+     */
+    public @Nullable ModelManager.BedrockModelManager bedrockModelManager;
+    /**
+     * ./resourcepacks/{resourcepack}/assets/{namespace}/{@link AssetsFolderType#PLAYER_ANIMATOR}
+     */
+    public @Nullable AnimationManager.PlayerAnimationManager playerAnimationManager;
+    /**
+     * ./resourcepacks/{resourcepack}/assets/{namespace}/{@link AssetsFolderType#SCRIPT}
+     */
+    public @Nullable ScriptManager scriptManager;
 
     private AllAssetsManager() {
         this.reloadListeners = new ArrayList<>();
@@ -51,6 +76,15 @@ public class AllAssetsManager implements IEventHandler {
     protected void reloadAndRegister(IAddClientReloadListenerEvent event) {
         this.reloadListeners.clear();
         // 注册时按顺序重载
+        this.gunDisplayManager = addToListener(this.reloadListeners, new DisplayManager.GunDisplayManager());
+        this.attachmentDisplayManager = addToListener(this.reloadListeners, new DisplayManager.AttachmentDisplayManager());
+        this.ammoDisplayManager = addToListener(this.reloadListeners, new DisplayManager.AmmoDisplayManager());
+        this.blockDisplayManager = addToListener(this.reloadListeners, new DisplayManager.BlockDisplayManager());
+
+        this.bedrockModelManager = addToListener(this.reloadListeners, new ModelManager.BedrockModelManager());
+        this.bedrockAnimationManager = addToListener(this.reloadListeners, new AnimationManager.BedrockAnimationManager());
+        this.gltfAnimationManager = addToListener(this.reloadListeners, new AnimationManager.GltfAnimationManager());
+        this.scriptManager = new ScriptManager();
         this.gunpackInfoManager = addToListener(this.reloadListeners, new GunpackInfoManager());
 
         this.reloadListeners.forEach((pojoManager) -> event.addListener(pojoManager.getRegistryName(), pojoManager));
@@ -73,6 +107,10 @@ public class AllAssetsManager implements IEventHandler {
         // TODO PlayerAnimatorCompat.init()
         AllAssetsManager.INSTANCE.reloadAndRegister(event);
         // TODO PlayerAnimatorCompat
+        if (CustomGun.getMcRegistry().isModLoaded(PlayerAnimator.MOD_ID)) {
+            INSTANCE.playerAnimationManager = INSTANCE.addToListener(INSTANCE.reloadListeners, new AnimationManager.PlayerAnimationManager());
+            event.addListener(INSTANCE.playerAnimationManager.getRegistryName(), INSTANCE.playerAnimationManager);
+        }
     }
 
     /**

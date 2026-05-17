@@ -5,8 +5,9 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package xiao.customgun.core.resource.data;
+package xiao.customgun.core.api.resource.assets.display;
 
-// TODO
-public final class ScriptManager {
+public class AttachmentDisplayTag extends _AssetsDisplayTag {
+
+    private AttachmentDisplayTag() {}
 }

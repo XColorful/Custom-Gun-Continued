@@ -5,7 +5,7 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package xiao.customgun.core.resource.data;
+package xiao.customgun.client.resource.assets;
 
 // TODO
 public final class ScriptManager {

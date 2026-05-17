@@ -5,8 +5,9 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package xiao.customgun.core.resource.data;
+package xiao.customgun.core.compat.playeranimator;
 
-// TODO
-public final class ScriptManager {
+public class PlayerAnimator {
+
+    public static final String MOD_ID = "playeranimator";
 }

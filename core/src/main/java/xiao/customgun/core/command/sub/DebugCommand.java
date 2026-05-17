@@ -166,6 +166,14 @@ public class DebugCommand {
                 if (CustomGun.getMcSide().isClientSide()) {
                     AllAssetsManager allAssetsManager = AllAssetsManager.INSTANCE;
                     testManager(path, allAssetsManager.gunpackInfoManager);
+                    testManager(path, allAssetsManager.bedrockAnimationManager);
+                    testManager(path, allAssetsManager.gltfAnimationManager);
+                    testManager(path, allAssetsManager.gunDisplayManager);
+                    testManager(path, allAssetsManager.attachmentDisplayManager);
+                    testManager(path, allAssetsManager.ammoDisplayManager);
+                    testManager(path, allAssetsManager.blockDisplayManager);
+                    testManager(path, allAssetsManager.bedrockModelManager);
+                    testManager(path, allAssetsManager.playerAnimationManager);
                 }
 
                 source.sendSuccess(() -> Component.literal("All data successfully exported to ./" + path), true);

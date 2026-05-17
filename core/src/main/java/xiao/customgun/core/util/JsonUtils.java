@@ -136,7 +136,6 @@ public class JsonUtils {
         String rl = readString(reader);
         return rl != null ? mcRegistry.createResourceLocation(rl) : null;
     }
-
     public static void writeResourceLocation(JsonWriter writer, String key, ResourceLocation value) throws IOException {
         if (value != null) writer.name(key).value(value.toString());
     }

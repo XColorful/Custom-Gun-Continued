@@ -6,7 +6,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import org.jetbrains.annotations.Nullable;
 
-public class WorldUtils {
+public class ClientWorldUtils {
 
     public static @Nullable Entity getEntityById(ClientLevel clientLevel, int entityId) {
         return clientLevel.getEntity(entityId);

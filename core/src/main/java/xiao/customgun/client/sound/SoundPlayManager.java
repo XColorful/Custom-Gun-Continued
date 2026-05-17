@@ -23,7 +23,7 @@ import xiao.customgun.client.api.resource.assets.AssetsFolderType;
 import xiao.customgun.client.api.sound.gun.GunSoundType;
 import xiao.customgun.client.config.SoundConfig;
 import xiao.customgun.client.resource.GunDisplayInstance;
-import xiao.customgun.client.util.WorldUtils;
+import xiao.customgun.client.util.ClientWorldUtils;
 import xiao.customgun.core.api.event.EventType;
 import xiao.customgun.core.api.event.IEvent;
 import xiao.customgun.core.api.event.IEventHandler;
@@ -82,7 +82,7 @@ public class SoundPlayManager implements IEventHandler {
     public static @Nullable GunSoundInstance playClientSound(Entity entity,
                                                    @Nullable ResourceLocation name,
                                                    float volume, float pitch, int distance, boolean mono) {
-        boolean relative = WorldUtils.isLocalPlayer(entity);
+        boolean relative = ClientWorldUtils.isLocalPlayer(entity);
         return playClientSound(entity, name, volume, pitch, distance, mono, SoundConfig.DEFAULT_SOUND_CONCURRENCY_LIMIT.get(), !relative, relative);
     }
     private static @Nullable GunSoundInstance playClientSound(Entity entity,
@@ -113,7 +113,7 @@ public class SoundPlayManager implements IEventHandler {
     public static @Nullable GunSoundInstance playAnimationSound(Entity entity,
                                                       @Nullable ResourceLocation name,
                                                       float volume, float pitch, int distance) {
-        return playClientSound(entity, name, volume, pitch, distance, false, SoundConfig.HIGH_FREQUENCY_SOUND_CONCURRENCY_LIMIT.get(), false, WorldUtils.isLocalPlayer(entity));
+        return playClientSound(entity, name, volume, pitch, distance, false, SoundConfig.HIGH_FREQUENCY_SOUND_CONCURRENCY_LIMIT.get(), false, ClientWorldUtils.isLocalPlayer(entity));
     }
 
     public static void stopPlayGunSound() {
@@ -144,13 +144,13 @@ public class SoundPlayManager implements IEventHandler {
         if (PlannedRefactor.ON_MAGIC_CLIENT_SOUND_VOLUME) return;
         playClientSound(entity, gunDisplayIndex.getSounds(GunSoundType.SHOOT_SOUND), 0.8f, 0.9f + entity.getRandom().nextFloat() * 0.125f, // 随机音高应该抽到 GunDisplay 里?
                 (int) (GunConfig.DEFAULT_GUN_FIRE_SOUND_DISTANCE.get() * gunData.getFireSoundData().getNormalMultiplier()), false,
-                SoundConfig.HIGH_FREQUENCY_SOUND_CONCURRENCY_LIMIT.get(), false, WorldUtils.isLocalPlayer(entity));
+                SoundConfig.HIGH_FREQUENCY_SOUND_CONCURRENCY_LIMIT.get(), false, ClientWorldUtils.isLocalPlayer(entity));
     }
 
     public static void playSilenceSound(LivingEntity entity, GunDisplayInstance gunDisplayIndex, GunData gunData) {
         playClientSound(entity, gunDisplayIndex.getSounds(GunSoundType.SILENCE_SOUND), 0.6f, 0.9f + entity.getRandom().nextFloat() * 0.125f,
                 (int) (GunConfig.DEFAULT_GUN_SILENCE_SOUND_DISTANCE.get() * gunData.getFireSoundData().getSilencedMultiplier()), false,
-                SoundConfig.HIGH_FREQUENCY_SOUND_CONCURRENCY_LIMIT.get(), false, WorldUtils.isLocalPlayer(entity));
+                SoundConfig.HIGH_FREQUENCY_SOUND_CONCURRENCY_LIMIT.get(), false, ClientWorldUtils.isLocalPlayer(entity));
     }
 
     public static void playDryFireSound(LivingEntity entity, GunDisplayInstance gunDisplayIndex) {
@@ -216,12 +216,12 @@ public class SoundPlayManager implements IEventHandler {
                 GunConfig.DEFAULT_GUN_OTHER_SOUND_DISTANCE.get());
     }
     public static void playHeadHitSound(LivingEntity entity, GunDisplayInstance gunDisplayIndex) {
-        boolean relative = WorldUtils.isLocalPlayer(entity);
+        boolean relative = ClientWorldUtils.isLocalPlayer(entity);
         playClientSound(entity, gunDisplayIndex.getSounds(GunSoundType.HEAD_HIT_SOUND), 1.0f, 1.0f,
                 GunConfig.DEFAULT_GUN_OTHER_SOUND_DISTANCE.get(), false, SoundConfig.HIT_SOUND_CONCURRENCY_LIMIT.get(), !relative, relative);
     }
     public static void playFleshHitSound(LivingEntity entity, GunDisplayInstance gunDisplayIndex) {
-        boolean relative = WorldUtils.isLocalPlayer(entity);
+        boolean relative = ClientWorldUtils.isLocalPlayer(entity);
         playClientSound(entity, gunDisplayIndex.getSounds(GunSoundType.FLESH_HIT_SOUND), 1.0f, 1.0f,
                 GunConfig.DEFAULT_GUN_OTHER_SOUND_DISTANCE.get(), false, SoundConfig.HIT_SOUND_CONCURRENCY_LIMIT.get(), !relative, relative);
     }

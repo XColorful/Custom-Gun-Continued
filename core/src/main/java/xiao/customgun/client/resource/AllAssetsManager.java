@@ -18,7 +18,7 @@ import xiao.customgun.core.api.common.McSide;
 import xiao.customgun.core.api.event.EventType;
 import xiao.customgun.core.api.event.IEvent;
 import xiao.customgun.core.api.event.IEventHandler;
-import xiao.customgun.core.compat.playeranimator.PlayerAnimator;
+import xiao.customgun.client.compat.playeranimator.PlayerAnimator;
 import xiao.customgun.core.resource.AllDataManager;
 import xiao.customgun.core.resource.ResourcePojoManager;
 

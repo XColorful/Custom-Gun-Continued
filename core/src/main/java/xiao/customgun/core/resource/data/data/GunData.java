@@ -43,7 +43,7 @@ public final class GunData extends ResourcePojo<GunData> {
     private _ReloadData reloadData; // 装弹数据
 
     // 枪械脚本
-    private ResourceLocation scriptType; // 状态机脚本
+    private ResourceLocation scriptLocation; // 状态机脚本
     private Map<String, Object> scriptParam; // 状态机参数
 
     // 开火模式
@@ -104,7 +104,7 @@ public final class GunData extends ResourcePojo<GunData> {
 
                     case GunDataTag.RELOAD_DATA, GunDataTag.RELOAD_DATA_OLD1 -> pojo.reloadData = JsonUtils.read(reader, _ReloadData::fromJson);
 
-                    case GunDataTag.SCRIPT_TYPE, GunDataTag.SCRIPT_TYPE_OLD1 -> pojo.scriptType = JsonUtils.readResourceLocation(reader);
+                    case GunDataTag.SCRIPT_LOCATION, GunDataTag.SCRIPT_LOCATION_OLD1 -> pojo.scriptLocation = JsonUtils.readResourceLocation(reader);
                     case GunDataTag.SCRIPT_PARAM -> pojo.scriptParam = JsonUtils.readString2ObjectMap(reader, JsonUtils::readObject);
 
                     case GunDataTag.DEFAULT_FIRE_MODE_TYPE, GunDataTag.DEFAULT_FIRE_MODE_TYPE_OLD1 -> pojo.defaultFireModeType = JsonUtils.readFromString(reader, FireModeType::fromString);
@@ -162,7 +162,7 @@ public final class GunData extends ResourcePojo<GunData> {
 
             JsonUtils.write(writer, GunDataTag.RELOAD_DATA, reloadData, _ReloadData::toJson);
 
-            JsonUtils.writeResourceLocation(writer, GunDataTag.SCRIPT_TYPE, scriptType);
+            JsonUtils.writeResourceLocation(writer, GunDataTag.SCRIPT_LOCATION, scriptLocation);
             JsonUtils.writeString2ObjectMap(writer, GunDataTag.SCRIPT_PARAM, scriptParam, JsonUtils::writeObject);
 
             JsonUtils.writeToString(writer, GunDataTag.DEFAULT_FIRE_MODE_TYPE, defaultFireModeType);
@@ -178,7 +178,7 @@ public final class GunData extends ResourcePojo<GunData> {
             JsonUtils.writeRl2ObjectMap(writer, GunDataTag.EXCLUSIVE_ATTACHMENTS, exclusiveAttachments, AttachmentData::toJson);
             JsonUtils.writeInt(writer, GunDataTag.DEFAULT_MAG_SIZE, defaultMagSize);
             JsonUtils.writeIntArray(writer, GunDataTag.EXTENDED_MAG_AMMO_SIZE, extendedMagAmmoSize);
-            JsonUtils.writeObject2ObjectMap(writer, GunDataTag.BUILTIN_ATTACHMENTS, builtinAttachments, AttachmentCategory::toString, (w, rl) -> w.value(rl.toString()));
+            JsonUtils.writeObject2ObjectMap(writer, GunDataTag.BUILTIN_ATTACHMENTS, builtinAttachments, AttachmentCategory::toString, JsonUtils::writeResourceLocationValue);
 
             JsonUtils.writeBoolean(writer, GunDataTag.ENABLE_CRAWL, enableCrawl);
             JsonUtils.writeBoolean(writer, GunDataTag.ENABLE_SLIDE, enableSlide);
@@ -236,8 +236,8 @@ public final class GunData extends ResourcePojo<GunData> {
     public _ReloadData getReloadData() {
         return reloadData;
     }
-    public ResourceLocation getScriptType() {
-        return scriptType;
+    public ResourceLocation getScriptLocation() {
+        return scriptLocation;
     }
     public Map<String, Object> getScriptParam() {
         return scriptParam;
@@ -339,8 +339,8 @@ public final class GunData extends ResourcePojo<GunData> {
     public void setReloadData(_ReloadData reloadData) {
         this.reloadData = reloadData;
     }
-    public void setScriptType(ResourceLocation scriptType) {
-        this.scriptType = scriptType;
+    public void setScriptLocation(ResourceLocation scriptLocation) {
+        this.scriptLocation = scriptLocation;
     }
     public void setScriptParam(Map<String, Object> scriptParam) {
         this.scriptParam = scriptParam;

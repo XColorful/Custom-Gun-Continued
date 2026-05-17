@@ -37,10 +37,7 @@ public enum GunSoundType implements ResourceTag.CategoryTag {
     // 反馈
     HEAD_HIT_SOUND(GunSoundTypeTag.HEAD_HIT_SOUND, false),
     FLESH_HIT_SOUND(GunSoundTypeTag.FLESH_HIT_SOUND, false),
-    KILL_SOUND(GunSoundTypeTag.KILL_SOUND, false),
-    // 配件
-    UNINSTALL_SOUND(GunSoundTypeTag.UNINSTALL_SOUND, false),
-    INSTALL_SOUND(GunSoundTypeTag.INSTALL_SOUND, false);
+    KILL_SOUND(GunSoundTypeTag.KILL_SOUND, false);
 
     public final String typeName;
     public final boolean preload;

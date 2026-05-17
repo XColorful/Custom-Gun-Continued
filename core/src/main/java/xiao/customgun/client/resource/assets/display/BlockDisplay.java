@@ -9,12 +9,16 @@ package xiao.customgun.client.resource.assets.display;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
+import xiao.customgun.client.util.ClientJsonUtils;
 import xiao.customgun.core.api.resource.assets.display.BlockDisplayTag;
 import xiao.customgun.core.util.JsonUtils;
 
 import java.io.IOException;
 
 public final class BlockDisplay extends _AssetsDisplay<BlockDisplay> {
+
+    private ItemTransforms itemTransforms;
 
     private static final BlockDisplay PARSER = new BlockDisplay();
     public static BlockDisplay fromJson(JsonReader reader) throws IOException {
@@ -29,6 +33,8 @@ public final class BlockDisplay extends _AssetsDisplay<BlockDisplay> {
                 switch (key) {
                     case BlockDisplayTag.MODEL_LOCATION, BlockDisplayTag.MODEL_LOCATION_OLD1 -> pojo.setModelLocation(JsonUtils.readResourceLocation(reader));
                     case BlockDisplayTag.TEXTURE_LOCATION, BlockDisplayTag.TEXTURE_LOCATION_OLD1 -> pojo.setTextureLocation(JsonUtils.readResourceLocation(reader));
+
+                    case BlockDisplayTag.ITEM_TRANSFORMS, BlockDisplayTag.ITEM_TRANSFORMS_OLD1 -> pojo.itemTransforms = ClientJsonUtils.readItemTransforms(reader);
                     default -> reader.skipValue();
                 }
             }
@@ -45,9 +51,19 @@ public final class BlockDisplay extends _AssetsDisplay<BlockDisplay> {
         writer.beginObject(); {
             JsonUtils.writeResourceLocation(writer, BlockDisplayTag.MODEL_LOCATION, this.getModelLocation());
             JsonUtils.writeResourceLocation(writer, BlockDisplayTag.TEXTURE_LOCATION, this.getTextureLocation());
+
+            ClientJsonUtils.writeItemTransforms(writer, BlockDisplayTag.ITEM_TRANSFORMS, this.itemTransforms);
         }
         writer.endObject();
     }
 
     // --------Getter & Setter--------
+
+    public ItemTransforms getItemTransforms() {
+        return itemTransforms;
+    }
+
+    public void setItemTransforms(ItemTransforms itemTransforms) {
+        this.itemTransforms = itemTransforms;
+    }
 }

@@ -35,9 +35,5 @@ public class GunSoundTypeTag {
     public static final String FLESH_HIT_SOUND = "flesh_hit";
     public static final String KILL_SOUND = "kill";
 
-    // 配件相关
-    public static final String UNINSTALL_SOUND = "uninstall";
-    public static final String INSTALL_SOUND = "install";
-
     private GunSoundTypeTag() {}
 }

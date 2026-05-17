@@ -14,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import xiao.customgun.CustomGun;
 import xiao.customgun.core.api.minecraft.IMcRegistry;
 
+import java.awt.*;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -132,6 +133,14 @@ public class JsonUtils {
 
     // --------扩展类型--------
 
+    public static Color readColor(JsonReader reader) throws IOException {
+        String s = JsonUtils.readString(reader);
+        return s != null ? ColorUtils.fromRRGGBBtoColor(s) : null;
+    }
+    public static void writeColor(JsonWriter writer, String key, Color value) throws IOException {
+        if (value != null) writer.name(key).value(ColorUtils.fromColorTo_RRGGBB(value));
+    }
+
     public static ResourceLocation readResourceLocation(JsonReader reader) throws IOException {
         String rl = readString(reader);
         return rl != null ? mcRegistry.createResourceLocation(rl) : null;
@@ -139,15 +148,17 @@ public class JsonUtils {
     public static void writeResourceLocation(JsonWriter writer, String key, ResourceLocation value) throws IOException {
         if (value != null) writer.name(key).value(value.toString());
     }
+    public static void writeResourceLocationValue(JsonWriter writer, ResourceLocation value) throws IOException {
+        if (value != null) writer.value(value.toString());
+        else writer.nullValue();
+    }
 
     public static <T> T readFromString(JsonReader reader, FromStringFunction<T> function) throws IOException {
         String valueStr = readString(reader);
         return valueStr != null ? function.apply(valueStr) : null;
     }
     public static <T> void writeToString(JsonWriter writer, String key, T value) throws IOException {
-        if (value != null) {
-            writer.name(key).value(value.toString());
-        }
+        if (value != null) writer.name(key).value(value.toString());
     }
 
     // --------结构<类型>--------

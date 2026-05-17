@@ -28,7 +28,7 @@ public class GunDataTag {
     public static final String RELOAD_DATA = "reload_data"; public static final String RELOAD_DATA_OLD1 = "reload";
 
     // 枪械脚本
-    public static final String SCRIPT_TYPE = "script_type"; public static final String SCRIPT_TYPE_OLD1 = "script";
+    public static final String SCRIPT_LOCATION = "script_location"; public static final String SCRIPT_LOCATION_OLD1 = "script";
     public static final String SCRIPT_PARAM = "script_param";
 
     // 开火模式

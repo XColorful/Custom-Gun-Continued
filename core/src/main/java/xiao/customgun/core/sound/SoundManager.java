@@ -11,6 +11,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
+import xiao.customgun.core.api.sound.attachment.AttachmentSoundTypeTag;
 import xiao.customgun.core.api.sound.gun.GunSoundTypeTag;
 import xiao.customgun.core.developer.PlannedRefactor;
 import xiao.customgun.core.network.message.ServerMessageSound;
@@ -97,11 +98,11 @@ public class SoundManager {
     /**
      * 卸载配件的声音，用于配件的
      */
-    public static final String UNINSTALL_SOUND = GunSoundTypeTag.UNINSTALL_SOUND;
+    public static final String UNINSTALL_SOUND = AttachmentSoundTypeTag.UNINSTALL_SOUND;
     /**
      * 装载配件的声音，用于配件的
      */
-    public static final String INSTALL_SOUND = GunSoundTypeTag.INSTALL_SOUND;
+    public static final String INSTALL_SOUND = AttachmentSoundTypeTag.INSTALL_SOUND;
 
     public static void sendSoundToNearby(LivingEntity sourceEntity, int distance,
                                          ResourceLocation gunId, ResourceLocation gunDisplayId,

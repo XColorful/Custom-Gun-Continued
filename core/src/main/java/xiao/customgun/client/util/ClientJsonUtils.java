@@ -18,6 +18,6 @@ public class ClientJsonUtils {
         return null;
     }
 
-    public static void writeItemTransforms(JsonWriter writer, ItemTransforms itemTransforms) throws IOException {
+    public static void writeItemTransforms(JsonWriter writer, String key, ItemTransforms itemTransforms) throws IOException {
     }
 }

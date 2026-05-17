@@ -5,9 +5,9 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package xiao.customgun.core.compat.playeranimator;
+package xiao.customgun.core.api.resource.assets.display.ammo;
 
-public class PlayerAnimator {
+public class _AmmoTransformTag {
 
-    public static final String MOD_ID = "playeranimator";
+    private _AmmoTransformTag() {}
 }

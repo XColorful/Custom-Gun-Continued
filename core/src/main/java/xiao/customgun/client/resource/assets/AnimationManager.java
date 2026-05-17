@@ -50,7 +50,7 @@ public abstract class AnimationManager<T extends ResourcePojo<T>> extends Resour
     public static final class GltfAnimationManager extends AnimationManager<GltfAnimation> {
         @ApiStatus.Internal
         public GltfAnimationManager() {
-            super(FileExtensionType.BEDROCK_ANIMATION.getExtensionNameWithDot(),
+            super(FileExtensionType.GLTF.getExtensionNameWithDot(),
                     GltfAnimation::fromJson);
         }
     }

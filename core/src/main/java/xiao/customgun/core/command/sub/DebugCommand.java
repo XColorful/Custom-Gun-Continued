@@ -181,7 +181,8 @@ public class DebugCommand {
 
                 source.sendSuccess(() -> Component.literal("All data successfully exported to ./" + path), true);
             } catch (Exception e) {
-                source.sendFailure(Component.literal("Export failed: " + e.getMessage()));
+                CustomGun.LOGGER.debug("Exception: ", e);
+                source.sendFailure(Component.literal("Export failed: " + e));
             }
         } else {
             context.getSource().sendFailure(Component.literal("AllDataManager is null."));

@@ -9,15 +9,18 @@ package xiao.customgun.client.resource.assets.animation;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import xiao.customgun.client.resource.assets.animation.bedrock._Animation;
 import xiao.customgun.core.api.resource.assets.animation.BedrockAnimationTag;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.util.JsonUtils;
 
 import java.io.IOException;
+import java.util.Map;
 
 public final class BedrockAnimation extends ResourcePojo<BedrockAnimation> {
 
-    private String version;
+    private String formatVersion;
+    private Map<String, _Animation> animations;
 
     private static final BedrockAnimation PARSER = new BedrockAnimation();
     public static BedrockAnimation fromJson(JsonReader reader) throws IOException {
@@ -30,7 +33,8 @@ public final class BedrockAnimation extends ResourcePojo<BedrockAnimation> {
             while (reader.hasNext()) {
                 String key = reader.nextName();
                 switch (key) {
-                    case BedrockAnimationTag.VERSION -> pojo.version = JsonUtils.readString(reader);
+                    case BedrockAnimationTag.FORMAT_VERSION -> pojo.formatVersion = JsonUtils.readString(reader);
+                    case BedrockAnimationTag.ANIMATIONS -> pojo.animations = JsonUtils.readString2ObjectMap(reader, _Animation::fromJson);
                     default -> reader.skipValue();
                 }
             }
@@ -45,7 +49,8 @@ public final class BedrockAnimation extends ResourcePojo<BedrockAnimation> {
     @Override
     public void toJson(JsonWriter writer) throws IOException {
         writer.beginObject(); {
-            JsonUtils.writeString(writer, BedrockAnimationTag.VERSION, this.version);
+            JsonUtils.writeString(writer, BedrockAnimationTag.FORMAT_VERSION, this.formatVersion);
+            JsonUtils.writeString2ObjectMap(writer, BedrockAnimationTag.ANIMATIONS, this.animations, _Animation::toJson);
         }
         writer.endObject();
     }
@@ -57,11 +62,17 @@ public final class BedrockAnimation extends ResourcePojo<BedrockAnimation> {
 
     // --------Getter & Setter--------
 
-    public String getVersion() {
-        return version;
+    public String getFormatVersion() {
+        return formatVersion;
+    }
+    public Map<String, _Animation> getAnimations() {
+        return animations;
     }
 
-    public void setVersion(String version) {
-        this.version = version;
+    public void setFormatVersion(String formatVersion) {
+        this.formatVersion = formatVersion;
+    }
+    public void setAnimations(Map<String, _Animation> animations) {
+        this.animations = animations;
     }
 }

@@ -23,6 +23,10 @@ public final class GltfAnimation extends ResourcePojo<GltfAnimation> {
     protected GltfAnimation fromJsonReader(JsonReader reader) throws IOException {
         GltfAnimation pojo = new GltfAnimation();
         reader.beginObject(); {
+            while (reader.hasNext()) {
+                reader.nextName();
+                reader.skipValue();
+            }
         }
         reader.endObject();
         return pojo;

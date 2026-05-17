@@ -8,19 +8,22 @@
 package xiao.customgun.core.resource.data;
 
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.PackType;
 import org.jetbrains.annotations.ApiStatus;
 import xiao.customgun.core.api.resource.FileExtensionType;
 import xiao.customgun.core.api.resource.INetworkCacheReloadListener;
+import xiao.customgun.core.api.resource.data.DataFolderName;
 import xiao.customgun.core.api.resource.data.DataFolderType;
 import xiao.customgun.core.api.resource.data.data.DataSubFolderType;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.resource.ResourcePojoManager;
-import xiao.customgun.core.resource.SyncDataType;
+import xiao.customgun.core.resource.network.SyncDataType;
 import xiao.customgun.core.resource.data.data.AttachmentData;
 import xiao.customgun.core.resource.data.data.BlockData;
 import xiao.customgun.core.resource.data.data.GunData;
 import xiao.customgun.core.util.JsonUtils;
 
+import java.util.Arrays;
 import java.util.Map;
 
 /**
@@ -28,11 +31,12 @@ import java.util.Map;
  */
 public abstract class DataManager<T extends ResourcePojo<T>> extends ResourcePojoManager<T> {
 
-    public DataManager(String subPrefix, String extension, JsonUtils.FromJsonReader<T> fromJson) {
-        super(DataFolderType.DATA.getFolderName() + "/" + subPrefix, extension, fromJson);
+    public DataManager(String subPrefix, String extension, JsonUtils.ReadFunction<T> fromJson) {
+        super(PackType.SERVER_DATA, Arrays.asList(DataFolderType.DATA.getFolderName() + "/" + subPrefix, DataFolderName.DATA_OLD1 + "/" + subPrefix),
+                extension, fromJson);
     }
 
-    public static class GunDataManager extends DataManager<GunData> implements INetworkCacheReloadListener {
+    public static final class GunDataManager extends DataManager<GunData> implements INetworkCacheReloadListener {
         @ApiStatus.Internal
         public GunDataManager() {
             super(DataSubFolderType.GUN.getFolderName(),
@@ -47,7 +51,7 @@ public abstract class DataManager<T extends ResourcePojo<T>> extends ResourcePoj
         }
     }
 
-    public static class AttachmentDataManager extends DataManager<AttachmentData> implements INetworkCacheReloadListener {
+    public static final class AttachmentDataManager extends DataManager<AttachmentData> implements INetworkCacheReloadListener {
         @ApiStatus.Internal
         public AttachmentDataManager() {
             super(DataSubFolderType.ATTACHMENT.getFolderName(),
@@ -62,7 +66,7 @@ public abstract class DataManager<T extends ResourcePojo<T>> extends ResourcePoj
         }
     }
 
-    public static class BlockDataManager extends DataManager<BlockData> implements INetworkCacheReloadListener {
+    public static final class BlockDataManager extends DataManager<BlockData> implements INetworkCacheReloadListener {
         @ApiStatus.Internal
         public BlockDataManager() {
             super(DataSubFolderType.BLOCK.getFolderName(),

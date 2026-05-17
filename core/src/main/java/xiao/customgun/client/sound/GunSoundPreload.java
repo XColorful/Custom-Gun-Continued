@@ -7,16 +7,16 @@
 
 package xiao.customgun.client.sound;
 
-import xiao.customgun.client.api.resource.assets.display.SoundType;
+import xiao.customgun.client.api.sound.gun.GunSoundType;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public final class GunSoundPreload {
-    public static final List<String> DEFAULT_PRELOAD_NAMES = Arrays.stream(SoundType.values())
+    public static final List<String> DEFAULT_PRELOAD_NAMES = Arrays.stream(GunSoundType.values())
             .filter(type -> type.preload)
-            .map(SoundType::getTagName)
+            .map(GunSoundType::getTagName)
             .collect(Collectors.toList());
 
     private GunSoundPreload() {

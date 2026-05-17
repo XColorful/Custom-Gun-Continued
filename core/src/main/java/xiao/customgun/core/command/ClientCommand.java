@@ -18,11 +18,13 @@ import net.minecraft.commands.Commands;
 import xiao.customgun.core.command.sub.ReloadCommand;
 
 import static xiao.customgun.core.command.CommandArg.MOD_ID;
+import static xiao.customgun.core.command.CommandArg.MOD_ID_SHORT;
 
 public class ClientCommand {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(get(MOD_ID));
+        dispatcher.register(get(MOD_ID_SHORT));
     }
 
     public static LiteralArgumentBuilder<CommandSourceStack> get(String rootName) {

@@ -11,15 +11,21 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.BoolArgumentType;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import org.jetbrains.annotations.Nullable;
 import xiao.customgun.CustomGun;
+import xiao.customgun.client.resource.AllAssetsManager;
 import xiao.customgun.core.resource.AllDataManager;
+import xiao.customgun.core.resource.ResourcePojo;
+import xiao.customgun.core.resource.ResourcePojoManager;
 import xiao.customgun.core.resource.data.data.GunData;
 import xiao.customgun.core.resource.data.index.GunIndex;
 
@@ -30,6 +36,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Map;
 
 import static xiao.customgun.core.command.CommandArg.DEBUG;
 import static xiao.customgun.core.command.CommandArg.ENABLE;
@@ -46,6 +53,10 @@ public class DebugCommand {
                 .then(Commands.literal("testGunData")
                         .then(Commands.argument("rl", StringArgumentType.string())
                                 .executes(DebugCommand::testGunData)))
+                .then(Commands.literal("testAllData")
+                        .then(Commands.argument("indent", IntegerArgumentType.integer())
+                                .then(Commands.argument("path", StringArgumentType.string())
+                                        .executes(DebugCommand::testAllData))))
                 .then(Commands.argument(ENABLE, BoolArgumentType.bool())
                         .executes(DebugCommand::setValue));
     }
@@ -131,5 +142,85 @@ public class DebugCommand {
     }
     private static void testDataAction(JsonWriter writer, GunData pojo) throws IOException {
         GunData.toJson(writer, pojo);
+    }
+
+    /**
+     * 写到 ./{path}/data/{namespace}/
+     * ./{path}/assets/{namespace}/
+     */
+    private static int testAllData(CommandContext<CommandSourceStack> context) {
+        String path = StringArgumentType.getString(context, "path");
+        AllDataManager allManager = AllDataManager.getCurrent();
+        if (allManager != null) {
+            CommandSourceStack source = context.getSource();
+            try {
+                String indent = " ".repeat(Math.max(0, IntegerArgumentType.getInteger(context, "indent")));
+                testManager(indent, path, allManager.gunpackMetaManager);
+                testManager(indent, path, allManager.gunDataManager);
+                testManager(indent, path, allManager.attachmentDataManager);
+                testManager(indent, path, allManager.blockDataManager);
+                testManager(indent, path, allManager.gunIndexManager);
+                testManager(indent, path, allManager.attachmentIndexManager);
+                testManager(indent, path, allManager.ammoIndexManager);
+                testManager(indent, path, allManager.blockIndexManager);
+                testManager(indent, path, allManager.attachmentTagManager);
+                testManager(indent, path, allManager.gunAttachmentDataManager);
+                testManager(indent, path, allManager.recipeFilterDataManager);
+                if (CustomGun.getMcSide().isClientSide()) {
+                    AllAssetsManager allAssetsManager = AllAssetsManager.INSTANCE;
+                    testManager(indent, path, allAssetsManager.gunpackInfoManager);
+                    testManager(indent, path, allAssetsManager.bedrockAnimationManager);
+                    testManager(indent, path, allAssetsManager.gltfAnimationManager);
+                    testManager(indent, path, allAssetsManager.gunDisplayManager);
+                    testManager(indent, path, allAssetsManager.attachmentDisplayManager);
+                    testManager(indent, path, allAssetsManager.ammoDisplayManager);
+                    testManager(indent, path, allAssetsManager.blockDisplayManager);
+                    testManager(indent, path, allAssetsManager.bedrockModelManager);
+                    testManager(indent, path, allAssetsManager.playerAnimationManager);
+                }
+
+                source.sendSuccess(() -> Component.literal("All data successfully exported to ./" + path), true);
+            } catch (Exception e) {
+                CustomGun.LOGGER.debug("Exception: ", e);
+                source.sendFailure(Component.literal("Export failed: " + e));
+            }
+        } else {
+            context.getSource().sendFailure(Component.literal("AllDataManager is null."));
+        }
+        return Command.SINGLE_SUCCESS;
+    }
+    private static void testManager(String indent, String basePath, @Nullable ResourcePojoManager<?> pojoManager) {
+        if (pojoManager == null) return;
+        Map<ResourceLocation, ? extends ResourcePojo<?>> allPojo = pojoManager.getAllPojo();
+        if (allPojo == null || allPojo.isEmpty()) return;
+
+        String typeDir = pojoManager.getPackType().getDirectory();
+        var converters = pojoManager.getFileToIdConverters();
+        if (converters == null || converters.isEmpty()) return;
+        var converter = converters.get(0);
+
+        for (Map.Entry<ResourceLocation, ? extends ResourcePojo<?>> entry : allPojo.entrySet()) {
+            var rl = entry.getKey();
+            ResourcePojo<?> pojo = entry.getValue();
+            if (pojo == null) continue;
+
+            var fileRl = converter.idToFile(rl);
+            Path outputFile = Paths.get(basePath, typeDir, fileRl.getNamespace(), fileRl.getPath());
+            Path outputDir = outputFile.getParent();
+
+            try {
+                if (outputDir != null) {
+                    Files.createDirectories(outputDir);
+                }
+                try (BufferedWriter writer = Files.newBufferedWriter(outputFile, StandardCharsets.UTF_8)) {
+                    JsonWriter jsonWriter = new JsonWriter(writer);
+                    jsonWriter.setIndent(indent);
+                    pojo.toJson(jsonWriter);
+                    jsonWriter.flush();
+                }
+            } catch (IOException e) {
+                CustomGun.LOGGER.error("Failed to export pojo [{}] to {}", rl, outputFile, e);
+            }
+        }
     }
 }

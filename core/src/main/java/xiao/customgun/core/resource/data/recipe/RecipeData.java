@@ -21,7 +21,7 @@ import xiao.customgun.core.util.JsonUtils;
 import java.io.IOException;
 import java.util.List;
 
-public class RecipeData extends ResourcePojo<RecipeData> {
+public final class RecipeData extends ResourcePojo<RecipeData> {
 
     /**
      * 原版根据这个字段选择 {@link ModRecipe} 中注册的序列化方式, 注册id为 {@link CustomRecipeType}
@@ -44,9 +44,9 @@ public class RecipeData extends ResourcePojo<RecipeData> {
             while (reader.hasNext()) {
                 String key = reader.nextName();
                 switch (key) {
-                    case RecipeDataTag.RECIPE_REGISTRY_TYPE -> pojo.recipeRegistryType = reader.nextString();
-                    case RecipeDataTag.TABLE_INGREDIENTS -> pojo.tableIngredients = JsonUtils.readList(reader, _TableIngredientData::fromJson);
-                    case RecipeDataTag.TABLE_RESULT -> pojo.tableResult = JsonUtils.read(reader, _TableResultData::fromJson);
+                    case RecipeDataTag.RECIPE_REGISTRY_TYPE -> pojo.recipeRegistryType = JsonUtils.readString(reader);
+                    case RecipeDataTag.TABLE_INGREDIENTS, RecipeDataTag.TABLE_INGREDIENTS_OLD1 -> pojo.tableIngredients = JsonUtils.readList(reader, _TableIngredientData::fromJson);
+                    case RecipeDataTag.TABLE_RESULT, RecipeDataTag.TABLE_RESULT_OLD1 -> pojo.tableResult = JsonUtils.read(reader, _TableResultData::fromJson);
                     default -> reader.skipValue();
                 }
             }
@@ -62,9 +62,9 @@ public class RecipeData extends ResourcePojo<RecipeData> {
     @Override
     public void toJson(JsonWriter writer) throws IOException {
         writer.beginObject(); {
-            writer.name(RecipeDataTag.RECIPE_REGISTRY_TYPE).value(this.recipeRegistryType);
-            JsonUtils.writeList(writer, RecipeDataTag.TABLE_INGREDIENTS, this.tableIngredients, _TableIngredientData::toJson);
-            JsonUtils.write(writer, RecipeDataTag.TABLE_RESULT, this.tableResult, _TableResultData::toJson);
+            JsonUtils.writeToString(writer, RecipeDataTag.RECIPE_REGISTRY_TYPE, recipeRegistryType);
+            JsonUtils.writeList(writer, RecipeDataTag.TABLE_INGREDIENTS, tableIngredients, _TableIngredientData::toJson);
+            JsonUtils.write(writer, RecipeDataTag.TABLE_RESULT, tableResult, _TableResultData::toJson);
         }
         writer.endObject();
     }

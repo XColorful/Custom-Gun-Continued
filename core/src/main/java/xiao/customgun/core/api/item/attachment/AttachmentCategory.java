@@ -8,6 +8,7 @@
 package xiao.customgun.core.api.item.attachment;
 
 import org.jetbrains.annotations.Nullable;
+import xiao.customgun.core.api.item.GunTag;
 import xiao.customgun.core.api.resource.ResourceTag;
 
 import java.util.HashMap;
@@ -46,13 +47,15 @@ public enum AttachmentCategory implements ResourceTag.CategoryTag {
      */
     NONE(AttachmentCategoryTag.NONE);
 
+    public final String tagName;
     public final String categoryName;
     AttachmentCategory(String name) {
+        this.tagName = GunTag.ATTACHMENT_PREFIX + name;
         this.categoryName = name;
     }
 
     @Override public String getTagName() {
-        return this.categoryName;
+        return this.tagName;
     }
     @Override public String getCategoryName() {
         return this.categoryName;

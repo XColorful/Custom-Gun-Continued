@@ -12,25 +12,52 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import xiao.customgun.CustomGun;
 import xiao.customgun.core.api.item.attachment.AttachmentCategory;
+import xiao.customgun.core.api.resource.ResourceTag;
+import xiao.customgun.core.resource.data.data.GunData;
 
-public interface IGunAttachmentDataGetter {
+public interface IGunAttachmentDataAccess {
 
     boolean isAttachmentEnabled(ItemStack gunItem, AttachmentCategory attachmentCategory);
+    boolean canInstallAttachment(ItemStack gunItem, ItemStack attachmentItem);
+
+    /**
+     * 返回配件物品，如无则返回 {@link ItemStack#EMPTY}
+     */
+    @NotNull ItemStack getAttachment(ItemStack gunItem, AttachmentCategory attachmentCategory);
+    /**
+     * 返回默认配件的物品，如无则返回 {@link ItemStack#EMPTY}
+     */
+    @NotNull ItemStack getBuiltinAttachment(ItemStack gunItem, AttachmentCategory attachmentCategory);
 
     @Nullable CompoundTag getAttachmentCustomDataTag(ItemStack gunItem, AttachmentCategory attachmentCategory);
 
     /**
-     * 获取枪械配件ID，如不存在则返回 {@link IGunAttachmentDataGetter#EMPTY_ATTACHMENT_LOCATION}
+     * 获取枪械配件ID，如不存在则返回 {@link ResourceTag#NULL_LOCATION}
      */
     @NotNull ResourceLocation getAttachmentLocation(ItemStack gunItem, AttachmentCategory attachmentCategory);
-    ResourceLocation EMPTY_ATTACHMENT_LOCATION = CustomGun.getMcRegistry().createResourceLocation(CustomGun.MOD_ID + ":null");
+    /**
+     * 获取 {@link GunData#getBuiltinAttachments()}，如不存在则返回 {@link ResourceTag#NULL_LOCATION}
+     */
+    @NotNull ResourceLocation getBuiltinAttachmentLocation(ItemStack gunItem, AttachmentCategory attachmentCategory);
+
+    /**
+     * 覆盖安装配件
+     * @return 是否安装成功
+     */
+    boolean installAttachment(ItemStack gunItem, ItemStack attachmentItem);
+    /**
+     * 移除配件，如需获取配件物品则需要先{@link IGunAttachmentDataAccess#getAttachment}
+     */
+    void removeAttachment(ItemStack gunItem, AttachmentCategory attachmentCategory);
 
     // --------Deprecated--------
 
     @Deprecated default boolean allowAttachmentType(ItemStack gunItem, AttachmentCategory attachmentCategory) {
         return isAttachmentEnabled(gunItem, attachmentCategory);
+    }
+    @Deprecated default boolean allowAttachment(ItemStack gunItem, ItemStack attachmentItem) {
+        return canInstallAttachment(gunItem, attachmentItem);
     }
 
     @Deprecated default @Nullable CompoundTag getAttachmentTag(ItemStack gunItem, AttachmentCategory attachmentCategory) {
@@ -41,6 +68,6 @@ public interface IGunAttachmentDataGetter {
         return getAttachmentLocation(gunItem, attachmentCategory);
     }
     @Deprecated default @NotNull ResourceLocation getBuiltInAttachmentId(ItemStack gunItem, AttachmentCategory attachmentCategory) {
-        return getAttachmentLocation(gunItem, attachmentCategory);
+        return getBuiltinAttachmentLocation(gunItem, attachmentCategory);
     }
 }

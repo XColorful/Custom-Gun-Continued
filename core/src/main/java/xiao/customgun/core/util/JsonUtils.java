@@ -26,7 +26,7 @@ public class JsonUtils {
 
     /**
      * 缓存字段，避免每次都重新拿
-     * 其他模组不应该在模组主类初始化时调用 // TODO 集中处理需要缓存加速的类, 省得加if
+     * 其他模组不应该在模组主类初始化时调用
      */
     public static final IMcRegistry mcRegistry = CustomGun.getMcRegistry();
 

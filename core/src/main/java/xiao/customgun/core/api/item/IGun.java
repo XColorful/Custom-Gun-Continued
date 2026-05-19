@@ -8,8 +8,7 @@
 package xiao.customgun.core.api.item;
 
 import xiao.customgun.core.api.item.gun.IGunGetter;
-import xiao.customgun.core.api.item.gun.IGunDataGetter;
-import xiao.customgun.core.api.item.gun.IGunDataSetter;
+import xiao.customgun.core.api.item.gun.IGunDataAccess;
 
-public interface IGun extends IGunDataGetter, IGunDataSetter, IGunGetter {
+public interface IGun extends IGunDataAccess, IGunGetter {
 }

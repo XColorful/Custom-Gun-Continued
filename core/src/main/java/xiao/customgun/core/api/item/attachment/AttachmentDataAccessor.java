@@ -8,15 +8,37 @@
 package xiao.customgun.core.api.item.attachment;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import xiao.customgun.core.api.resource.ResourceTag;
+import xiao.customgun.core.util.NBTUtils;
 
-public interface AttachmentDataAccessor extends IAttachmentDataGetter, IAttachmentDataSetter {
+public interface AttachmentDataAccessor extends IAttachmentDataAccess {
+
+    // --------IAttachmentDataAccess--------
 
     @Override
-    default int getScopeViewIndex(CompoundTag attachmentCustomDataTag) {
-        if (attachmentCustomDataTag == null) return 0;
-        // TODO
-        return 0;
+    default @NotNull ResourceLocation getAttachmentLocation(ItemStack attachmentItem) {
+        var customData = NBTUtils.getCustomData(attachmentItem);
+        if (customData == null) return ResourceTag.NULL_LOCATION;
+        @NotNull CompoundTag customDataTag = NBTUtils.getCustomDataTag(customData);
+        return this.getAttachmentLocation(customDataTag);
+    }
+    @Override
+    default void setAttachmentLocation(ItemStack attachmentItem, ResourceLocation location) {
+        var customData = NBTUtils.getCustomData(attachmentItem);
+        if (customData == null) return;
+        @NotNull CompoundTag customDataTag = NBTUtils.getCustomDataTag(customData);
+        this.setAttachmentLocation(customDataTag, location);
+        NBTUtils.setCustomDataTag(attachmentItem, customDataTag);
     }
 
-    AttachmentDataAccessor INSTANCE = new AttachmentDataAccessor() {};
+    @Override
+    default @NotNull AttachmentCategory getAttachmentCategory(ItemStack attachmentItem) {
+        var customData = NBTUtils.getCustomData(attachmentItem);
+        if (customData == null) return AttachmentCategory.NONE;
+        @NotNull CompoundTag customDataTag = NBTUtils.getCustomDataTag(customData);
+        return this.getAttachmentCategory(customDataTag);
+    }
 }

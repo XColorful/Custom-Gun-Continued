@@ -8,7 +8,7 @@
 package xiao.customgun.core.api.item.gun;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -31,16 +31,16 @@ public interface GunDataAccessor extends IGunDataAccess {
     // --------IGunDataAccess--------
 
     @Override
-    default @NotNull ResourceLocation getGunLocation(ItemStack gunItem) {
+    default @NotNull Identifier getGunLocation(ItemStack gunItem) {
         var gunLocation = NBTUtils.getResourceLocation(gunItem, GunProperty.GUN_LOCATION.getTagName());
         return gunLocation != null ? gunLocation : ResourceTag.NULL_LOCATION;
     }
     @Override
-    default void setGunLocation(ItemStack gunItem, ResourceLocation gunLocation) {
+    default void setGunLocation(ItemStack gunItem, Identifier gunLocation) {
         NBTUtils.setResourceLocation(gunItem, GunProperty.GUN_LOCATION.getTagName(), gunLocation);
     }
     @Override
-    default @Nullable ResourceLocation getGunDisplayLocation(ItemStack gunItem) {
+    default @Nullable Identifier getGunDisplayLocation(ItemStack gunItem) {
         var gunDisplayLocation = NBTUtils.getResourceLocation(gunItem, GunProperty.GUN_DISPLAY_LOCATION.getTagName());
         return gunDisplayLocation;
     }
@@ -309,12 +309,12 @@ public interface GunDataAccessor extends IGunDataAccess {
     }
 
     @Override
-    default @NotNull ResourceLocation getAttachmentLocation(ItemStack gunItem, AttachmentCategory attachmentCategory) {
+    default @NotNull Identifier getAttachmentLocation(ItemStack gunItem, AttachmentCategory attachmentCategory) {
         return AttachmentNBTAccessor.INSTANCE.getAttachmentLocation(this.getAttachmentCustomDataTag(gunItem, attachmentCategory));
     }
 
     @Override
-    default @NotNull ResourceLocation getBuiltinAttachmentLocation(ItemStack gunItem, AttachmentCategory attachmentCategory) {
+    default @NotNull Identifier getBuiltinAttachmentLocation(ItemStack gunItem, AttachmentCategory attachmentCategory) {
         @Nullable GunData gunData = this.getGunData(gunItem);
         if (gunData == null) return ResourceTag.NULL_LOCATION;
         var location = gunData.getBuiltinAttachments().get(attachmentCategory);

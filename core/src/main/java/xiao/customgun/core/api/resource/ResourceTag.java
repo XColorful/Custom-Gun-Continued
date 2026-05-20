@@ -1,6 +1,6 @@
 package xiao.customgun.core.api.resource;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import xiao.customgun.CustomGun;
 
 public interface ResourceTag {
@@ -14,7 +14,7 @@ public interface ResourceTag {
         String getRegistryName();
     }
 
-    ResourceLocation NULL_LOCATION = CustomGun.getMcRegistry().createResourceLocation(CustomGun.MOD_ID + ":null");
+    Identifier NULL_LOCATION = CustomGun.getMcRegistry().createResourceLocation(CustomGun.MOD_ID + ":null");
 
     @FunctionalInterface
     interface TriConsumer<A, B, C> {

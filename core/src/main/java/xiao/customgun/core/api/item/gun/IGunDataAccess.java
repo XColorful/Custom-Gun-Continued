@@ -7,7 +7,7 @@
 
 package xiao.customgun.core.api.item.gun;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -22,11 +22,11 @@ public interface IGunDataAccess extends IGunPojoGetter,
     /**
      * 获取枪械ID，如不存在则返回 {@link ResourceTag#NULL_LOCATION}
      */
-    @NotNull ResourceLocation getGunLocation(ItemStack gunItem);
-    void setGunLocation(ItemStack gunItem, ResourceLocation gunLocation);
+    @NotNull Identifier getGunLocation(ItemStack gunItem);
+    void setGunLocation(ItemStack gunItem, Identifier gunLocation);
     /**
      * 获取指定的GunDisplay，如无则返回 // TODO
      */
-    @Nullable ResourceLocation getGunDisplayLocation(ItemStack gunItem);
-    void setGunDisplayLocation(ItemStack gunItem, ResourceLocation gunDisplayLocation);
+    @Nullable Identifier getGunDisplayLocation(ItemStack gunItem);
+    void setGunDisplayLocation(ItemStack gunItem, Identifier gunDisplayLocation);
 }

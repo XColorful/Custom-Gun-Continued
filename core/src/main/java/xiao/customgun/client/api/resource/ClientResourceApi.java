@@ -8,7 +8,7 @@
 package xiao.customgun.client.api.resource;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.Level;
@@ -28,19 +28,19 @@ public class ClientResourceApi {
 
     // --------data instance--------
 
-    public static @Nullable GunIndexInstance getGunIndexInstance(ResourceLocation gunLocation) {
+    public static @Nullable GunIndexInstance getGunIndexInstance(Identifier gunLocation) {
         return AssetsInstanceManager.GUN_INDEX.get(gunLocation);
     }
 
-    public static @Nullable AttachmentIndexInstance getAttachmentIndexInstance(ResourceLocation attachmentLocation) {
+    public static @Nullable AttachmentIndexInstance getAttachmentIndexInstance(Identifier attachmentLocation) {
         return AssetsInstanceManager.ATTACHMENT_INDEX.get(attachmentLocation);
     }
 
-    public static @Nullable AmmoIndexInstance getAmmoIndexInstance(ResourceLocation ammoLocation) {
+    public static @Nullable AmmoIndexInstance getAmmoIndexInstance(Identifier ammoLocation) {
         return AssetsInstanceManager.AMMO_INDEX.get(ammoLocation);
     }
 
-    public static @Nullable BlockIndexInstance getBlockIndexInstance(ResourceLocation blockLocation) {
+    public static @Nullable BlockIndexInstance getBlockIndexInstance(Identifier blockLocation) {
         return AssetsInstanceManager.BLOCK_INDEX.get(blockLocation);
     }
 
@@ -65,10 +65,10 @@ public class ClientResourceApi {
         // 一般的Display
         return getGunDisplayInstance(gunIndex.getDisplayIndexLocation());
     }
-    public static @Nullable GunDisplayInstance getGunDisplayInstance(ResourceLocation displayLocation) {
+    public static @Nullable GunDisplayInstance getGunDisplayInstance(Identifier displayLocation) {
         return AssetsInstanceManager.GUN_DISPLAY.get(displayLocation);
     }
-    public static @Nullable GunDisplayInstance getGunDisplayInstance(ResourceLocation displayLocation, ResourceLocation fallbackLocation) {
+    public static @Nullable GunDisplayInstance getGunDisplayInstance(Identifier displayLocation, Identifier fallbackLocation) {
         GunDisplayInstance instance = getGunDisplayInstance(displayLocation);
         return instance != null ? instance : getGunDisplayInstance(fallbackLocation);
     }

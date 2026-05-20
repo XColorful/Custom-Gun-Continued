@@ -8,7 +8,7 @@
 package xiao.customgun.core.api.item.attachment;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 import xiao.customgun.core.api.item.AttachmentProperty;
 import xiao.customgun.core.api.resource.ResourceTag;
@@ -21,12 +21,12 @@ public interface AttachmentNBTAccessor extends IAttachmentNBTAccess {
     // --------IAttachmentNBTAccess--------
 
     @Override
-    default @NotNull ResourceLocation getAttachmentLocation(CompoundTag attachmentCustomDataTag) {
+    default @NotNull Identifier getAttachmentLocation(CompoundTag attachmentCustomDataTag) {
         var attachmentLocation = NBTUtils.getResourceLocation(attachmentCustomDataTag, AttachmentProperty.ATTACHMENT_LOCATION.getTagName());
         return attachmentLocation != null ? attachmentLocation : ResourceTag.NULL_LOCATION;
     }
     @Override
-    default void setAttachmentLocation(CompoundTag attachmentCustomDataTag, ResourceLocation attachmentLocation) {
+    default void setAttachmentLocation(CompoundTag attachmentCustomDataTag, Identifier attachmentLocation) {
         NBTUtils.setResourceLocation(attachmentCustomDataTag, AttachmentProperty.ATTACHMENT_LOCATION.getTagName(), attachmentLocation);
     }
     @Override

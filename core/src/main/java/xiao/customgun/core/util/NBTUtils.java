@@ -5,9 +5,11 @@
 
 package xiao.customgun.core.util;
 
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -25,29 +27,29 @@ public class NBTUtils {
     /**
      * 获取 DataComponents.CUSTOM_DATA
      */
-    public static @Nullable CompoundTag getCustomData(@Nullable ItemStack itemStack) {
+    public static @Nullable CustomData getCustomData(@Nullable ItemStack itemStack) {
         if (itemStack == null) return null;
-        else return itemStack.getTag(); // itemStack.getOrDefault(DataComponents.CUSTOM_DATA, null);
+        else return itemStack.getOrDefault(DataComponents.CUSTOM_DATA, null);
     }
-    public static @NotNull CompoundTag getOrCreateCustomData(@NotNull ItemStack itemStack) {
-        return itemStack.getOrCreateTag(); // itemStack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.of(new CompoundTag()));
+    public static @NotNull CustomData getOrCreateCustomData(@NotNull ItemStack itemStack) {
+        return itemStack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.of(new CompoundTag()));
     }
     /**
      * 写入 DataComponents.CUSTOM_DATA
      */
-    public static void setCustomData(@NotNull ItemStack itemStack, CompoundTag customData) {
-        itemStack.setTag(customData); // itemStack.set(DataComponents.CUSTOM_DATA, customData);
+    public static void setCustomData(@NotNull ItemStack itemStack, CustomData customData) {
+        itemStack.set(DataComponents.CUSTOM_DATA, customData);
     }
     /**
      * 将 CompoundTag 写入 DataComponents.CUSTOM_DATA
      */
     public static void setCustomDataTag(@NotNull ItemStack itemStack, @Nullable CompoundTag nbt) {
-        itemStack.setTag(nbt); // itemStack.set(DataComponents.CUSTOM_DATA, CustomData.of(nbt != null ? nbt : new CompoundTag()));
+        itemStack.set(DataComponents.CUSTOM_DATA, CustomData.of(nbt != null ? nbt : new CompoundTag()));
     }
 
     @ApiStatus.AvailableSince("1.21.1")
-    public static @NotNull CompoundTag getCustomDataTag(@NotNull CompoundTag customData) {
-        return customData; // customData.copyTag()
+    public static @NotNull CompoundTag getCustomDataTag(@NotNull CustomData customData) {
+        return customData.copyTag();
     }
 
     // --------ItemStack--------

@@ -8,6 +8,7 @@
 package xiao.customgun.core.api.resource;
 
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.CustomGun;
@@ -104,14 +105,21 @@ public class ResourceApi {
     public static @Nullable TableRecipe getTableRecipe(ResourceLocation recipeLocation) {
         @Nullable RecipeManager recipeManager = ResourceApi.getRecipeManager();
         if (recipeManager == null) return null;
-        return (TableRecipe) recipeManager.byKey(recipeLocation).filter(recipe -> recipe instanceof TableRecipe).orElse(null);
+        return recipeManager.byKey(recipeLocation)
+                .map(RecipeHolder::value)
+                .filter(TableRecipe.class::isInstance)
+                .map(TableRecipe.class::cast)
+                .orElse(null);
     }
     public static Map<ResourceLocation, TableRecipe> getAllTableRecipe() {
         @Nullable RecipeManager recipeManager = ResourceApi.getRecipeManager();
         if (recipeManager == null) return new HashMap<>();
         Map<ResourceLocation, TableRecipe> tableRecipes = new HashMap<>();
-        for (TableRecipe recipe : recipeManager.getAllRecipesFor(ModRecipe.TACZ_TABLE_RECIPE_CRAFTING.get())) {
-            tableRecipes.put(recipe.getRecipeLocation(), recipe);
+        var tableRecipeHolders = recipeManager.getAllRecipesFor(ModRecipe.TACZ_TABLE_RECIPE_CRAFTING.get());
+        for (var holder : tableRecipeHolders) {
+            TableRecipe tableRecipe = holder.value();
+            tableRecipe.setRecipeLocation(holder.id());
+            tableRecipes.put(tableRecipe.getRecipeLocation(), tableRecipe);
         }
         return tableRecipes;
     }

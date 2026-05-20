@@ -9,6 +9,7 @@ import com.google.gson.internal.bind.JsonTreeReader;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.CustomGun;
@@ -26,7 +27,7 @@ public class JsonUtils {
 
     /**
      * 缓存字段，避免每次都重新拿
-     * 其他模组不应该在模组主类初始化时调用 // TODO 集中处理需要缓存加速的类, 省得加if
+     * 其他模组不应该在模组主类初始化时调用
      */
     public static final IMcRegistry mcRegistry = CustomGun.getMcRegistry();
 
@@ -151,6 +152,14 @@ public class JsonUtils {
     public static void writeResourceLocationValue(JsonWriter writer, Identifier value) throws IOException {
         if (value != null) writer.value(value.toString());
         else writer.nullValue();
+    }
+
+    public static MutableComponent readTranslatable(JsonReader reader) throws IOException {
+        String s = JsonUtils.readString(reader);
+        return s != null ? ComponentUtils.fromTranslatableKey(s) : null;
+    }
+    public static void writeTranslatable(JsonWriter writer, String key, MutableComponent value) throws IOException {
+        if (value != null) writer.name(key).value(ComponentUtils.toTranslatableKey(value));
     }
 
     public static <T> T readFromString(JsonReader reader, FromStringFunction<T> function) throws IOException {

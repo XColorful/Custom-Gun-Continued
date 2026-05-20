@@ -7,9 +7,11 @@
 
 package xiao.customgun.core.api.minecraft;
 
+import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.EntityType;
@@ -21,6 +23,7 @@ import org.jetbrains.annotations.Nullable;
 public interface IMcRegistry {
 
     @Nullable Identifier createResourceLocation(String rlString);
+    <T> ResourceKey<T> createResourceKey(ResourceKey<? extends Registry<T>> registryName, Identifier rl);
 
     @Nullable Block getBlock(Identifier rl);
     @Nullable Identifier getBlockRl(Block block);

@@ -8,10 +8,12 @@
 package xiao.customgun.neoforge.minecraft;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.EntityType;
@@ -27,6 +29,9 @@ public class NeoRegistry implements IMcRegistry {
 
     @Override public @Nullable Identifier createResourceLocation(String rlString) {
         return Identifier.tryParse(rlString);
+    }
+    @Override public <T> ResourceKey<T> createResourceKey(ResourceKey<? extends Registry<T>> registryName, Identifier rl) {
+        return ResourceKey.create(registryName, rl);
     }
 
     @Override public @Nullable Block getBlock(Identifier rl) {

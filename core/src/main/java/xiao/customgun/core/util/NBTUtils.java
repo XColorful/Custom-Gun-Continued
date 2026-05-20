@@ -30,7 +30,7 @@ public class NBTUtils {
         else return itemStack.getTag(); // itemStack.getOrDefault(DataComponents.CUSTOM_DATA, null);
     }
     public static @NotNull CompoundTag getOrCreateCustomData(@NotNull ItemStack itemStack) {
-        return itemStack.getOrCreateTag(); // itemStack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.of(new CompoundTag));
+        return itemStack.getOrCreateTag(); // itemStack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.of(new CompoundTag()));
     }
     /**
      * 写入 DataComponents.CUSTOM_DATA
@@ -42,7 +42,7 @@ public class NBTUtils {
      * 将 CompoundTag 写入 DataComponents.CUSTOM_DATA
      */
     public static void setCustomDataTag(@NotNull ItemStack itemStack, @Nullable CompoundTag nbt) {
-        itemStack.setTag(nbt); // itemStack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+        itemStack.setTag(nbt); // itemStack.set(DataComponents.CUSTOM_DATA, CustomData.of(nbt != null ? nbt : new CompoundTag()));
     }
 
     @ApiStatus.AvailableSince("1.21.1")
@@ -73,7 +73,7 @@ public class NBTUtils {
         var customData = getOrCreateCustomData(itemStack);
         @NotNull CompoundTag customDataTag = getCustomDataTag(customData);
         setResourceLocation(customDataTag, key, value);
-        setCustomData(itemStack, customDataTag);
+        setCustomDataTag(itemStack, customDataTag);
     }
 
     public static float getFloat(@Nullable ItemStack itemStack, String key) {

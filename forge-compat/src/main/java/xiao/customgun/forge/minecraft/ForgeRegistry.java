@@ -9,7 +9,9 @@ package xiao.customgun.forge.minecraft;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleType;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.effect.MobEffect;
@@ -27,6 +29,9 @@ public class ForgeRegistry implements IMcRegistry {
 
     @Override public @Nullable ResourceLocation createResourceLocation(String rlString) {
         return ResourceLocation.tryParse(rlString);
+    }
+    @Override public <T> ResourceKey<T> createResourceKey(ResourceKey<? extends Registry<T>> registryName, ResourceLocation rl) {
+        return ResourceKey.create(registryName, rl);
     }
 
     @Override public @Nullable Block getBlock(ResourceLocation rl) {

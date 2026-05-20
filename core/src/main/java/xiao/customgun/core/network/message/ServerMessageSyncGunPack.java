@@ -37,9 +37,8 @@ public record ServerMessageSyncGunPack(Map<SyncDataType, Map<ResourceLocation, S
         if (CustomGun.getSideExecutor().getLogicalSide().isClient()) {
             Connection connection = context.connection();
             boolean remoteConnection = connection != null && !connection.isMemoryConnection();
-            handler.accept(() -> {
-                _ServerMessageSyncGunPack.doSync(message, remoteConnection);
-            });
+            // 客户端侧可以异步解析Pojo，把enqueue的handler传过去
+            _ServerMessageSyncGunPack.doSync(message, handler, remoteConnection);
         }
     }
 }

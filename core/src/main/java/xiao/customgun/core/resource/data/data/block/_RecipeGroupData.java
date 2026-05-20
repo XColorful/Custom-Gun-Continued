@@ -9,6 +9,7 @@ package xiao.customgun.core.resource.data.data.block;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import xiao.customgun.core.api.resource.data.data.block._RecipeGroupDataTag;
 import xiao.customgun.core.resource.ResourcePojo;
@@ -19,7 +20,7 @@ import java.io.IOException;
 public final class _RecipeGroupData extends ResourcePojo<_RecipeGroupData> {
 
     private ResourceLocation groupCategory;
-    private String nameLang;
+    private MutableComponent nameLang;
 
     private static final _RecipeGroupData PARSER = new _RecipeGroupData();
     public static _RecipeGroupData fromJson(JsonReader reader) throws IOException {
@@ -34,7 +35,7 @@ public final class _RecipeGroupData extends ResourcePojo<_RecipeGroupData> {
             String key = reader.nextName();
             switch (key) {
                 case _RecipeGroupDataTag.GROUP_CATEGORY -> pojo.groupCategory = JsonUtils.readResourceLocation(reader);
-                case _RecipeGroupDataTag.NAME_LANG -> pojo.nameLang = JsonUtils.readString(reader);
+                case _RecipeGroupDataTag.NAME_LANG -> pojo.nameLang = JsonUtils.readTranslatable(reader);
                 default -> reader.skipValue();
             }
         }
@@ -50,7 +51,7 @@ public final class _RecipeGroupData extends ResourcePojo<_RecipeGroupData> {
     public void toJson(JsonWriter writer) throws IOException {
         writer.beginObject(); {
             JsonUtils.writeResourceLocation(writer, _RecipeGroupDataTag.GROUP_CATEGORY, this.groupCategory);
-            JsonUtils.writeString(writer, _RecipeGroupDataTag.NAME_LANG, this.nameLang);
+            JsonUtils.writeTranslatable(writer, _RecipeGroupDataTag.NAME_LANG, this.nameLang);
         }
         writer.endObject();
     }
@@ -65,14 +66,14 @@ public final class _RecipeGroupData extends ResourcePojo<_RecipeGroupData> {
     public ResourceLocation getGroupCategory() {
         return groupCategory;
     }
-    public String getNameLang() {
+    public MutableComponent getNameLang() {
         return nameLang;
     }
 
     public void setGroupCategory(ResourceLocation groupCategory) {
         this.groupCategory = groupCategory;
     }
-    public void setNameLang(String nameLang) {
+    public void setNameLang(MutableComponent nameLang) {
         this.nameLang = nameLang;
     }
 }

@@ -15,6 +15,7 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import xiao.customgun.CustomGun;
 import xiao.customgun.core.init.registry.ModRecipe;
@@ -28,7 +29,7 @@ public class TableRecipe implements Recipe<Inventory> {
             TableResult.fromPojo(new _TableResultData()),
             List.of());
 
-    private final ResourceLocation recipeLocation;
+    private ResourceLocation recipeLocation;
     private final TableResult tableResult;
     private final List<TableIngredient> recipeIngredients;
 
@@ -42,11 +43,21 @@ public class TableRecipe implements Recipe<Inventory> {
                                        RecipeData pojo) {
         return new TableRecipe(recipeLocation, TableResult.fromPojo(pojo.getTableResult()), TableIngredient.fromPojo(pojo.getTableIngredients()));
     }
+    /**
+     * @since 1.20.2起 {@link TableRecipeSerializer} 就拿不到 recipeLocation 了
+     */
+    @ApiStatus.AvailableSince("1.20.2")
+    public void setRecipeLocation(ResourceLocation recipeLocation) {
+        this.recipeLocation = recipeLocation;
+    }
 
     public void init() {
         this.tableResult.init();
     }
 
+    public ResourceLocation getRecipeLocation() {
+        return this.recipeLocation;
+    }
     public TableResult getTableResult() {
         return this.tableResult;
     }

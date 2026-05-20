@@ -9,7 +9,9 @@ package xiao.customgun.core.resource.data.index;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import org.jetbrains.annotations.NotNull;
 import xiao.customgun.core.api.item.gun.GunCategory;
+import xiao.customgun.core.api.minecraft.item.ItemType;
 import xiao.customgun.core.api.resource.data.index.GunIndexTag;
 import xiao.customgun.core.util.JsonUtils;
 
@@ -22,7 +24,7 @@ public final class GunIndex extends _DataIndex<GunIndex> {
     /**
      * ItemStack类型
      */
-    private String itemType;
+    private ItemType itemType;
 
     private static final GunIndex PARSER = new GunIndex();
     public static GunIndex fromJson(JsonReader reader) throws IOException {
@@ -35,14 +37,14 @@ public final class GunIndex extends _DataIndex<GunIndex> {
             while (reader.hasNext()) {
                 String key = reader.nextName();
                 switch (key) {
-                    case GunIndexTag.NAME_LANG, GunIndexTag.NAME_LANG_OLD1 -> pojo.setNameLang(JsonUtils.readString(reader));
-                    case GunIndexTag.TOOLTIP_LANG, GunIndexTag.TOOLTIP_LANG_OLD1 -> pojo.setTooltipLang(JsonUtils.readString(reader));
+                    case GunIndexTag.NAME_LANG, GunIndexTag.NAME_LANG_OLD1 -> pojo.setNameLang(JsonUtils.readTranslatable(reader));
+                    case GunIndexTag.TOOLTIP_LANG, GunIndexTag.TOOLTIP_LANG_OLD1 -> pojo.setTooltipLang(JsonUtils.readTranslatable(reader));
                     case GunIndexTag.DATA_LOCATION, GunIndexTag.DATA_LOCATION_OLD1 -> pojo.setDataLocation(JsonUtils.readResourceLocation(reader));
                     case GunIndexTag.DISPLAY_INDEX_LOCATION, GunIndexTag.DISPLAY_INDEX_LOCATION_OLD1 -> pojo.setDisplayIndexLocation(JsonUtils.readResourceLocation(reader));
                     case GunIndexTag.SLOT_SORT, GunIndexTag.SLOT_SORT_OLD1 -> pojo.setSlotSort(JsonUtils.readInt(reader));
 
                     case GunIndexTag.GUN_CATEGORY, GunIndexTag.GUN_CATEGORY_OLD1 -> pojo.gunCategory = JsonUtils.readFromString(reader, GunCategory::fromString);
-                    case GunIndexTag.ITEM_TYPE -> pojo.itemType = JsonUtils.readString(reader);
+                    case GunIndexTag.ITEM_TYPE -> pojo.itemType = JsonUtils.readFromString(reader, ItemType::fromString);
                     default -> reader.skipValue();
                 }
             }
@@ -57,36 +59,44 @@ public final class GunIndex extends _DataIndex<GunIndex> {
     @Override
     public void toJson(JsonWriter writer) throws IOException {
         writer.beginObject(); {
-            JsonUtils.writeString(writer, GunIndexTag.NAME_LANG, this.getNameLang());
-            JsonUtils.writeString(writer, GunIndexTag.TOOLTIP_LANG, this.getTooltipLang());
+            JsonUtils.writeTranslatable(writer, GunIndexTag.NAME_LANG, this.getNameLang());
+            JsonUtils.writeTranslatable(writer, GunIndexTag.TOOLTIP_LANG, this.getTooltipLang());
             JsonUtils.writeResourceLocation(writer, GunIndexTag.DATA_LOCATION, this.getDataLocation());
             JsonUtils.writeResourceLocation(writer, GunIndexTag.DISPLAY_INDEX_LOCATION, this.getDisplayIndexLocation());
             JsonUtils.writeInt(writer, GunIndexTag.SLOT_SORT, this.getSlotSort());
 
             JsonUtils.writeToString(writer, GunIndexTag.GUN_CATEGORY, this.gunCategory);
-            JsonUtils.writeString(writer, GunIndexTag.ITEM_TYPE, this.itemType);
+            JsonUtils.writeToString(writer, GunIndexTag.ITEM_TYPE, this.itemType);
         }
         writer.endObject();
     }
 
     @Override
     protected void validatePojo() {
+        super.validatePojo();
+        if (!this.isValid()) return;
+
+        if (this.gunCategory == null) {
+            this.setValid(false);
+            return;
+        }
+        if (this.itemType == null) this.itemType = ItemType.GUN;
         this.setValid(true);
     }
 
     // --------Getter & Setter--------
 
-    public GunCategory getGunCategory() {
+    public @NotNull GunCategory getGunCategory() {
         return gunCategory;
     }
-    public String getItemType() {
+    @Deprecated public @NotNull ItemType getItemType() { // 暂时不知道干什么用，直接用GunCategory?
         return itemType;
     }
 
     public void setGunCategory(GunCategory gunCategory) {
         this.gunCategory = gunCategory;
     }
-    public void setItemType(String itemType) {
+    public void setItemType(ItemType itemType) {
         this.itemType = itemType;
     }
 }

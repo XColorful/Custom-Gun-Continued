@@ -22,7 +22,7 @@ import xiao.customgun.client.api.event.IClientTickEvent;
 import xiao.customgun.client.api.resource.assets.AssetsFolderType;
 import xiao.customgun.client.api.sound.gun.GunSoundType;
 import xiao.customgun.client.config.SoundConfig;
-import xiao.customgun.client.resource.GunDisplayInstance;
+import xiao.customgun.client.resource.instance.assets.GunDisplayInstance;
 import xiao.customgun.client.util.ClientWorldUtils;
 import xiao.customgun.core.api.event.EventType;
 import xiao.customgun.core.api.event.IEvent;

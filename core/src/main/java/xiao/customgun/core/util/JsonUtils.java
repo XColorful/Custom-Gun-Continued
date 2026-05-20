@@ -9,6 +9,7 @@ import com.google.gson.internal.bind.JsonTreeReader;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.CustomGun;
@@ -151,6 +152,14 @@ public class JsonUtils {
     public static void writeResourceLocationValue(JsonWriter writer, ResourceLocation value) throws IOException {
         if (value != null) writer.value(value.toString());
         else writer.nullValue();
+    }
+
+    public static MutableComponent readTranslatable(JsonReader reader) throws IOException {
+        String s = JsonUtils.readString(reader);
+        return s != null ? ComponentUtils.fromTranslatableKey(s) : null;
+    }
+    public static void writeTranslatable(JsonWriter writer, String key, MutableComponent value) throws IOException {
+        if (value != null) writer.name(key).value(ComponentUtils.toTranslatableKey(value));
     }
 
     public static <T> T readFromString(JsonReader reader, FromStringFunction<T> function) throws IOException {

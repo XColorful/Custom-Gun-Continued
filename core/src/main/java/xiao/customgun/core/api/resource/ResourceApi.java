@@ -16,10 +16,10 @@ import xiao.customgun.core.resource.data.index.GunIndex;
 
 public class ResourceApi {
 
-    public static @Nullable GunIndex getGunIndex(ResourceLocation indexLocation) {
+    public static @Nullable GunIndex getGunIndex(ResourceLocation gunLocation) {
         var dataManager = AllDataManager.getCurrent();
-        if (dataManager != null) return dataManager.gunIndexManager.getPojo(indexLocation);
-        else return SyncDataCache.INSTANCE.gunIndex.get(indexLocation);
+        if (dataManager != null) return dataManager.gunIndexManager.getPojo(gunLocation);
+        else return SyncDataCache.INSTANCE.gunIndex.get(gunLocation);
     }
     public static @Nullable GunData getGunData(ResourceLocation dataLocation) {
         var dataManager = AllDataManager.getCurrent();

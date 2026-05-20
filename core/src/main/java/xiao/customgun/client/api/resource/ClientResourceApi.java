@@ -7,8 +7,11 @@
 
 package xiao.customgun.client.api.resource;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeManager;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.client.resource.AssetsInstanceManager;
 import xiao.customgun.client.resource.instance.assets.GunDisplayInstance;
@@ -68,5 +71,12 @@ public class ClientResourceApi {
     public static @Nullable GunDisplayInstance getGunDisplayInstance(ResourceLocation displayLocation, ResourceLocation fallbackLocation) {
         GunDisplayInstance instance = getGunDisplayInstance(displayLocation);
         return instance != null ? instance : getGunDisplayInstance(fallbackLocation);
+    }
+
+    // --------recipe--------
+
+    public static RecipeManager getRecipeManager() {
+        Level level = Minecraft.getInstance().level;
+        return level != null ? getRecipeManager() : null;
     }
 }

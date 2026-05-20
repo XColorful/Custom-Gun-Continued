@@ -140,7 +140,7 @@ public class NBTUtils {
 
     public static @Nullable String getString(@Nullable CompoundTag nbt, String key) {
         if (nbt == null) return null;
-        else if (nbt.contains(key)) return nbt.getString(key);
+        else if (nbt.contains(key)) return nbt.getString(key).orElse(null);
         else return null;
     }
     public static void setString(@Nullable CompoundTag nbt, String key, @Nullable String value) {
@@ -162,7 +162,7 @@ public class NBTUtils {
 
     public static float getFloat(@Nullable CompoundTag nbt, String key) {
         if (nbt == null) return 0;
-        else if (nbt.contains(key)) return nbt.getFloat(key);
+        else if (nbt.contains(key)) return nbt.getFloat(key).orElse(0F);
         else return 0;
     }
     public static void setFloat(@Nullable CompoundTag nbt, String key, float value) {
@@ -172,7 +172,7 @@ public class NBTUtils {
 
     public static int getInt(@Nullable CompoundTag nbt, String key) {
         if (nbt == null) return 0;
-        else if (nbt.contains(key)) return nbt.getInt(key);
+        else if (nbt.contains(key)) return nbt.getInt(key).orElse(0);
         else return 0;
     }
     public static void setInt(@Nullable CompoundTag nbt, String key, int value) {
@@ -182,7 +182,7 @@ public class NBTUtils {
 
     public static boolean getBoolean(@Nullable CompoundTag nbt, String key) {
         if (nbt == null) return false;
-        else if (nbt.contains(key)) return nbt.getBoolean(key);
+        else if (nbt.contains(key)) return nbt.getBoolean(key).orElse(false);
         else return false;
     }
     public static void setBoolean(@Nullable CompoundTag nbt, String key, boolean value) {
@@ -192,7 +192,7 @@ public class NBTUtils {
 
     public static @Nullable CompoundTag getCompoundTag(@Nullable CompoundTag nbt, String key) {
         if (nbt == null) return null;
-        else if (nbt.contains(key)) return nbt.getCompound(key);
+        else if (nbt.contains(key)) return nbt.getCompound(key).orElse(null);
         else return null;
     }
     public static void setCompoundTag(@Nullable CompoundTag nbt, String key, @Nullable CompoundTag value) {

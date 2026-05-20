@@ -90,7 +90,7 @@ public class AllAssetsManager implements IEventHandler {
         this.reloadListeners.forEach((pojoManager) -> event.addListener(pojoManager.getRegistryName(), pojoManager));
         event.addListener(
                 CustomGun.getMcRegistry().createResourceLocation(CustomGun.MOD_ID + ":all_assets_manager"),
-                (barrier, resourceManager, backgroundExecutor, gameExecutor) -> {
+                (barrier, resourceManager, preparationProfiler, reloadProfiler, backgroundExecutor, gameExecutor) -> {
                     return barrier
                             .wait(Void.TYPE)
                             .thenRunAsync(() -> {// TODO

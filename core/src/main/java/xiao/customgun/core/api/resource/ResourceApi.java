@@ -7,7 +7,6 @@
 
 package xiao.customgun.core.api.resource;
 
-import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
@@ -15,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import xiao.customgun.CustomGun;
 import xiao.customgun.client.api.resource.ClientResourceApi;
 import xiao.customgun.client.resource.network.SyncDataCache;
+import xiao.customgun.core.init.registry.ModRecipe;
 import xiao.customgun.core.recipe.TableRecipe;
 import xiao.customgun.core.resource.AllDataManager;
 import xiao.customgun.core.resource.data.data.AttachmentData;
@@ -105,7 +105,7 @@ public class ResourceApi {
     public static @Nullable TableRecipe getTableRecipe(ResourceLocation recipeLocation) {
         @Nullable RecipeManager recipeManager = ResourceApi.getRecipeManager();
         if (recipeManager == null) return null;
-        return recipeManager.byKey(CustomGun.getMcRegistry().createResourceKey(Registries.RECIPE, recipeLocation))
+        return recipeManager.byKey(recipeLocation)
                 .map(RecipeHolder::value)
                 .filter(TableRecipe.class::isInstance)
                 .map(TableRecipe.class::cast)
@@ -115,13 +115,12 @@ public class ResourceApi {
         @Nullable RecipeManager recipeManager = ResourceApi.getRecipeManager();
         if (recipeManager == null) return new HashMap<>();
         Map<ResourceLocation, TableRecipe> tableRecipes = new HashMap<>();
-        recipeManager.getRecipes().stream()
-                .filter(holder -> holder.value() instanceof TableRecipe)
-                .forEach(holder -> {
-                    TableRecipe tableRecipe = (TableRecipe) holder.value();
-                    tableRecipe.setRecipeLocation(holder.id().location());
-                    tableRecipes.put(tableRecipe.getRecipeLocation(), tableRecipe);
-                });
+        var tableRecipeHolders = recipeManager.getAllRecipesFor(ModRecipe.TACZ_TABLE_RECIPE_CRAFTING.get());
+        for (var holder : tableRecipeHolders) {
+            TableRecipe tableRecipe = holder.value();
+            tableRecipe.setRecipeLocation(holder.id());
+            tableRecipes.put(tableRecipe.getRecipeLocation(), tableRecipe);
+        }
         return tableRecipes;
     }
 

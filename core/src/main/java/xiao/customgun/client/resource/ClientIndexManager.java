@@ -7,5 +7,9 @@
 
 package xiao.customgun.client.resource;
 
+/**
+ * 移步至{@link AssetsInstanceManager}
+ */
+@Deprecated(forRemoval = true)
 public class ClientIndexManager {
 }

@@ -7,41 +7,56 @@
 
 package xiao.customgun.core.resource.data.index;
 
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
+import org.jetbrains.annotations.NotNull;
 import xiao.customgun.core.resource.ResourcePojo;
+import xiao.customgun.core.util.ComponentUtils;
 
 public abstract class _DataIndex<T extends _DataIndex<T>> extends ResourcePojo<T> {
 
-    private String nameLang;
-    private String tooltipLang;
+    private MutableComponent nameLang;
+    private MutableComponent tooltipLang;
 
     private Identifier dataLocation;
     private Identifier displayIndexLocation;
 
     private int slotSort = 0;
 
+    @Override
+    protected void validatePojo() {
+        if (this.nameLang == null) this.nameLang = ComponentUtils.unknownTranslatableKey();
+        if (this.tooltipLang == null) this.tooltipLang = ComponentUtils.unknownTranslatableKey();
+        if (this.dataLocation == null || this.displayIndexLocation == null) {
+            this.setValid(false);
+            return;
+        }
+        if (this.slotSort < 0) this.slotSort = 0;
+        this.setValid(true);
+    }
+
     // --------Getter & Setter--------
 
-    public final String getNameLang() {
+    public final @NotNull MutableComponent getNameLang() {
         return nameLang;
     }
-    public final String getTooltipLang() {
+    public final @NotNull MutableComponent getTooltipLang() {
         return tooltipLang;
     }
-    public final Identifier getDataLocation() {
+    public final @NotNull Identifier getDataLocation() {
         return dataLocation;
     }
-    public final Identifier getDisplayIndexLocation() {
+    public final @NotNull Identifier getDisplayIndexLocation() {
         return displayIndexLocation;
     }
     public final int getSlotSort() {
         return slotSort;
     }
 
-    public final void setNameLang(String nameLang) {
+    public final void setNameLang(MutableComponent nameLang) {
         this.nameLang = nameLang;
     }
-    public final void setTooltipLang(String tooltipLang) {
+    public final void setTooltipLang(MutableComponent tooltipLang) {
         this.tooltipLang = tooltipLang;
     }
     public final void setDataLocation(Identifier dataLocation) {

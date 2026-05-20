@@ -8,7 +8,7 @@
 package xiao.customgun.core.api.resource;
 
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import org.jetbrains.annotations.Nullable;
@@ -32,17 +32,17 @@ public class ResourceApi {
 
     // --------data--------
 
-    public static @Nullable GunData getGunData(ResourceLocation dataLocation) {
+    public static @Nullable GunData getGunData(Identifier dataLocation) {
         var dataManager = AllDataManager.getCurrent();
         if (dataManager != null && dataManager.gunDataManager != null) return dataManager.gunDataManager.getPojo(dataLocation);
         else return SyncDataCache.INSTANCE.gunData.get(dataLocation);
     }
-    public static @Nullable AttachmentData getAttachmentData(ResourceLocation dataLocation) {
+    public static @Nullable AttachmentData getAttachmentData(Identifier dataLocation) {
         var dataManager = AllDataManager.getCurrent();
         if (dataManager != null && dataManager.attachmentDataManager != null) return dataManager.attachmentDataManager.getPojo(dataLocation);
         else return SyncDataCache.INSTANCE.attachmentData.get(dataLocation);
     }
-    public static @Nullable BlockData getBlockData(ResourceLocation dataLocation) {
+    public static @Nullable BlockData getBlockData(Identifier dataLocation) {
         var dataManager = AllDataManager.getCurrent();
         if (dataManager != null && dataManager.blockDataManager != null) return dataManager.blockDataManager.getPojo(dataLocation);
         else return SyncDataCache.INSTANCE.blockData.get(dataLocation);
@@ -50,42 +50,42 @@ public class ResourceApi {
 
     // --------index--------
 
-    public static @Nullable GunIndex getGunIndex(ResourceLocation gunLocation) {
+    public static @Nullable GunIndex getGunIndex(Identifier gunLocation) {
         var dataManager = AllDataManager.getCurrent();
         if (dataManager != null && dataManager.gunIndexManager != null) return dataManager.gunIndexManager.getPojo(gunLocation);
         else return SyncDataCache.INSTANCE.gunIndex.get(gunLocation);
     }
-    public static Set<Map.Entry<ResourceLocation, GunIndex>> getAllGunIndex() {
+    public static Set<Map.Entry<Identifier, GunIndex>> getAllGunIndex() {
         var dataManager = AllDataManager.getCurrent();
         if (dataManager != null && dataManager.gunIndexManager != null) return dataManager.gunIndexManager.getAllPojo().entrySet();
         else return SyncDataCache.INSTANCE.gunIndex.entrySet();
     }
-    public static @Nullable AttachmentIndex getAttachmentIndex(ResourceLocation attachmentLocation) {
+    public static @Nullable AttachmentIndex getAttachmentIndex(Identifier attachmentLocation) {
         var dataManager = AllDataManager.getCurrent();
         if (dataManager != null && dataManager.attachmentIndexManager != null) return dataManager.attachmentIndexManager.getPojo(attachmentLocation);
         else return SyncDataCache.INSTANCE.attachmentIndex.get(attachmentLocation);
     }
-    public static Set<Map.Entry<ResourceLocation, AttachmentIndex>> getAllAttachmentIndex() {
+    public static Set<Map.Entry<Identifier, AttachmentIndex>> getAllAttachmentIndex() {
         var dataManager = AllDataManager.getCurrent();
         if (dataManager != null && dataManager.attachmentIndexManager != null) return dataManager.attachmentIndexManager.getAllPojo().entrySet();
         else return SyncDataCache.INSTANCE.attachmentIndex.entrySet();
     }
-    public static @Nullable AmmoIndex getAmmoIndex(ResourceLocation ammoLocation) {
+    public static @Nullable AmmoIndex getAmmoIndex(Identifier ammoLocation) {
         var dataManager = AllDataManager.getCurrent();
         if (dataManager != null && dataManager.ammoIndexManager != null) return dataManager.ammoIndexManager.getPojo(ammoLocation);
         else return SyncDataCache.INSTANCE.ammoIndex.get(ammoLocation);
     }
-    public static Set<Map.Entry<ResourceLocation, AmmoIndex>> getAllAmmoIndex() {
+    public static Set<Map.Entry<Identifier, AmmoIndex>> getAllAmmoIndex() {
         var dataManager = AllDataManager.getCurrent();
         if (dataManager != null && dataManager.ammoIndexManager != null) return dataManager.ammoIndexManager.getAllPojo().entrySet();
         else return SyncDataCache.INSTANCE.ammoIndex.entrySet();
     }
-    public static @Nullable BlockIndex getBlockIndex(ResourceLocation blockLocation) {
+    public static @Nullable BlockIndex getBlockIndex(Identifier blockLocation) {
         var dataManager = AllDataManager.getCurrent();
         if (dataManager != null && dataManager.blockIndexManager != null) return dataManager.blockIndexManager.getPojo(blockLocation);
         else return SyncDataCache.INSTANCE.blockIndex.get(blockLocation);
     }
-    public static Set<Map.Entry<ResourceLocation, BlockIndex>> getAllBlockIndex() {
+    public static Set<Map.Entry<Identifier, BlockIndex>> getAllBlockIndex() {
         var dataManager = AllDataManager.getCurrent();
         if (dataManager != null && dataManager.blockIndexManager != null) return dataManager.blockIndexManager.getAllPojo().entrySet();
         else return SyncDataCache.INSTANCE.blockIndex.entrySet();
@@ -102,7 +102,7 @@ public class ResourceApi {
         }
     }
 
-    public static @Nullable TableRecipe getTableRecipe(ResourceLocation recipeLocation) {
+    public static @Nullable TableRecipe getTableRecipe(Identifier recipeLocation) {
         @Nullable RecipeManager recipeManager = ResourceApi.getRecipeManager();
         if (recipeManager == null) return null;
         return recipeManager.byKey(CustomGun.getMcRegistry().createResourceKey(Registries.RECIPE, recipeLocation))
@@ -111,15 +111,15 @@ public class ResourceApi {
                 .map(TableRecipe.class::cast)
                 .orElse(null);
     }
-    public static Map<ResourceLocation, TableRecipe> getAllTableRecipe() {
+    public static Map<Identifier, TableRecipe> getAllTableRecipe() {
         @Nullable RecipeManager recipeManager = ResourceApi.getRecipeManager();
         if (recipeManager == null) return new HashMap<>();
-        Map<ResourceLocation, TableRecipe> tableRecipes = new HashMap<>();
+        Map<Identifier, TableRecipe> tableRecipes = new HashMap<>();
         recipeManager.getRecipes().stream()
                 .filter(holder -> holder.value() instanceof TableRecipe)
                 .forEach(holder -> {
                     TableRecipe tableRecipe = (TableRecipe) holder.value();
-                    tableRecipe.setRecipeLocation(holder.id().location());
+                    tableRecipe.setRecipeLocation(holder.id().identifier());
                     tableRecipes.put(tableRecipe.getRecipeLocation(), tableRecipe);
                 });
         return tableRecipes;
@@ -127,7 +127,7 @@ public class ResourceApi {
 
     // --------recipe filter--------
 
-    public static @Nullable RecipeFilterData getRecipeFilterData(ResourceLocation filterLocation) {
+    public static @Nullable RecipeFilterData getRecipeFilterData(Identifier filterLocation) {
         var dataManager = AllDataManager.getCurrent();
         if (dataManager != null && dataManager.recipeFilterDataManager != null) return dataManager.recipeFilterDataManager.getPojo(filterLocation);
         else return SyncDataCache.INSTANCE.recipeFilterData.get(filterLocation);

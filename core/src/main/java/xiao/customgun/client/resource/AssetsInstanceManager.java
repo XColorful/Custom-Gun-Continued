@@ -7,7 +7,7 @@
 
 package xiao.customgun.client.resource;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import xiao.customgun.client.resource.instance.assets.GunDisplayInstance;
 import xiao.customgun.client.resource.instance.data.AmmoIndexInstance;
 import xiao.customgun.client.resource.instance.data.AttachmentIndexInstance;
@@ -25,13 +25,13 @@ import java.util.Map;
 public class AssetsInstanceManager {
 
     // data
-    public static final Map<ResourceLocation, GunIndexInstance> GUN_INDEX = new HashMap<>();
-    public static final Map<ResourceLocation, AttachmentIndexInstance> ATTACHMENT_INDEX = new HashMap<>();
-    public static final Map<ResourceLocation, AmmoIndexInstance> AMMO_INDEX = new HashMap<>();
-    public static final Map<ResourceLocation, BlockIndexInstance> BLOCK_INDEX = new HashMap<>();
+    public static final Map<Identifier, GunIndexInstance> GUN_INDEX = new HashMap<>();
+    public static final Map<Identifier, AttachmentIndexInstance> ATTACHMENT_INDEX = new HashMap<>();
+    public static final Map<Identifier, AmmoIndexInstance> AMMO_INDEX = new HashMap<>();
+    public static final Map<Identifier, BlockIndexInstance> BLOCK_INDEX = new HashMap<>();
 
     // assets
-    public static final Map<ResourceLocation, GunDisplayInstance> GUN_DISPLAY = new HashMap<>(); // displayLocation -> GunDisplay
+    public static final Map<Identifier, GunDisplayInstance> GUN_DISPLAY = new HashMap<>(); // displayLocation -> GunDisplay
 
     private AssetsInstanceManager() {}
 

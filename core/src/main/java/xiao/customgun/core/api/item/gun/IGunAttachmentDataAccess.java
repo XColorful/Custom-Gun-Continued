@@ -8,7 +8,7 @@
 package xiao.customgun.core.api.item.gun;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -35,11 +35,11 @@ public interface IGunAttachmentDataAccess {
     /**
      * 获取枪械配件ID，如不存在则返回 {@link ResourceTag#NULL_LOCATION}
      */
-    @NotNull ResourceLocation getAttachmentLocation(ItemStack gunItem, AttachmentCategory attachmentCategory);
+    @NotNull Identifier getAttachmentLocation(ItemStack gunItem, AttachmentCategory attachmentCategory);
     /**
      * 获取 {@link GunData#getBuiltinAttachments()}，如不存在则返回 {@link ResourceTag#NULL_LOCATION}
      */
-    @NotNull ResourceLocation getBuiltinAttachmentLocation(ItemStack gunItem, AttachmentCategory attachmentCategory);
+    @NotNull Identifier getBuiltinAttachmentLocation(ItemStack gunItem, AttachmentCategory attachmentCategory);
 
     /**
      * 覆盖安装配件
@@ -64,10 +64,10 @@ public interface IGunAttachmentDataAccess {
         return getAttachmentCustomDataTag(gunItem, attachmentCategory);
     }
 
-    @Deprecated default @NotNull ResourceLocation getAttachmentId(ItemStack gunItem, AttachmentCategory attachmentCategory) {
+    @Deprecated default @NotNull Identifier getAttachmentId(ItemStack gunItem, AttachmentCategory attachmentCategory) {
         return getAttachmentLocation(gunItem, attachmentCategory);
     }
-    @Deprecated default @NotNull ResourceLocation getBuiltInAttachmentId(ItemStack gunItem, AttachmentCategory attachmentCategory) {
+    @Deprecated default @NotNull Identifier getBuiltInAttachmentId(ItemStack gunItem, AttachmentCategory attachmentCategory) {
         return getBuiltinAttachmentLocation(gunItem, attachmentCategory);
     }
 }

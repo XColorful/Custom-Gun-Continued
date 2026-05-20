@@ -7,7 +7,7 @@ package xiao.customgun.core.util;
 
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
 import org.jetbrains.annotations.ApiStatus;
@@ -67,11 +67,11 @@ public class NBTUtils {
         setCustomDataTag(itemStack, customDataTag);
     }
 
-    public static @Nullable ResourceLocation getResourceLocation(@Nullable ItemStack itemStack, String key) {
+    public static @Nullable Identifier getResourceLocation(@Nullable ItemStack itemStack, String key) {
         @Nullable var customData = getCustomData(itemStack);
         return customData != null ? mcRegistry.createResourceLocation(getString(getCustomDataTag(customData), key)) : null;
     }
-    public static void setResourceLocation(@NotNull ItemStack itemStack, String key, @Nullable ResourceLocation value) {
+    public static void setResourceLocation(@NotNull ItemStack itemStack, String key, @Nullable Identifier value) {
         var customData = getOrCreateCustomData(itemStack);
         @NotNull CompoundTag customDataTag = getCustomDataTag(customData);
         setResourceLocation(customDataTag, key, value);
@@ -149,12 +149,12 @@ public class NBTUtils {
         else nbt.putString(key, value);
     }
 
-    public static @Nullable ResourceLocation getResourceLocation(@Nullable CompoundTag nbt, String key) {
+    public static @Nullable Identifier getResourceLocation(@Nullable CompoundTag nbt, String key) {
         if (nbt == null) return null;
         else if (nbt.contains(key)) return mcRegistry.createResourceLocation(getString(nbt, key));
         else return null;
     }
-    public static void setResourceLocation(@Nullable CompoundTag nbt, String key, @Nullable ResourceLocation value) {
+    public static void setResourceLocation(@Nullable CompoundTag nbt, String key, @Nullable Identifier value) {
         if (nbt == null) return;
         else if (value == null) removeKey(nbt, key);
         else nbt.putString(key, value.toString());

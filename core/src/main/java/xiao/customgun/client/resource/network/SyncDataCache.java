@@ -8,7 +8,7 @@
 package xiao.customgun.client.resource.network;
 
 import com.google.gson.stream.JsonReader;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import xiao.customgun.CustomGun;
@@ -38,25 +38,25 @@ public final class SyncDataCache {
     /**
      * ./datapacks/{datapack}/data/{namespace}/{@link DataFolderType#DATA}
      */
-    public @NotNull volatile Map<ResourceLocation, GunData> gunData = new HashMap<>();
-    public @NotNull volatile Map<ResourceLocation, AttachmentData> attachmentData = new HashMap<>();
-    public @NotNull volatile Map<ResourceLocation, BlockData> blockData = new HashMap<>();
+    public @NotNull volatile Map<Identifier, GunData> gunData = new HashMap<>();
+    public @NotNull volatile Map<Identifier, AttachmentData> attachmentData = new HashMap<>();
+    public @NotNull volatile Map<Identifier, BlockData> blockData = new HashMap<>();
     /**
      * ./datapacks/{datapack}/data/{namespace}/{@link DataFolderType#INDEX}
      */
-    public @NotNull volatile Map<ResourceLocation, GunIndex> gunIndex = new HashMap<>();
-    public @NotNull volatile Map<ResourceLocation, AttachmentIndex> attachmentIndex = new HashMap<>();
-    public @NotNull volatile Map<ResourceLocation, AmmoIndex> ammoIndex = new HashMap<>();
-    public @NotNull volatile Map<ResourceLocation, BlockIndex> blockIndex = new HashMap<>();
+    public @NotNull volatile Map<Identifier, GunIndex> gunIndex = new HashMap<>();
+    public @NotNull volatile Map<Identifier, AttachmentIndex> attachmentIndex = new HashMap<>();
+    public @NotNull volatile Map<Identifier, AmmoIndex> ammoIndex = new HashMap<>();
+    public @NotNull volatile Map<Identifier, BlockIndex> blockIndex = new HashMap<>();
     /**
      * ./datapacks/{datapack}/data/{namespace}/{@link DataFolderType#RECIPE_FILTER}
      */
-    public @NotNull volatile Map<ResourceLocation, RecipeFilterData> recipeFilterData = new HashMap<>();
+    public @NotNull volatile Map<Identifier, RecipeFilterData> recipeFilterData = new HashMap<>();
     /**
      * ./datapacks/{datapack}/data/{namespace}/{@link DataFolderType#MOD_TAG}
      */
-    public @NotNull volatile Map<ResourceLocation, AttachmentTagData> attachmentTagData = new HashMap<>();
-    public @NotNull volatile Map<ResourceLocation, GunAttachmentData> gunAttachmentData = new HashMap<>();
+    public @NotNull volatile Map<Identifier, AttachmentTagData> attachmentTagData = new HashMap<>();
+    public @NotNull volatile Map<Identifier, GunAttachmentData> gunAttachmentData = new HashMap<>();
 
     @ApiStatus.Internal
     public void clear() {
@@ -80,30 +80,30 @@ public final class SyncDataCache {
      */
     @SuppressWarnings("unchecked")
     @ApiStatus.Internal
-    public void setParseResult(Map<SyncDataType, Map<ResourceLocation, ? extends ResourcePojo<?>>> result) {
+    public void setParseResult(Map<SyncDataType, Map<Identifier, ? extends ResourcePojo<?>>> result) {
         if (result == null) return;
 
-        this.gunData = (Map<ResourceLocation, GunData>) result.getOrDefault(SyncDataType.GUN_DATA, new HashMap<>());
-        this.attachmentData = (Map<ResourceLocation, AttachmentData>) result.getOrDefault(SyncDataType.ATTACHMENT_DATA, new HashMap<>());
-        this.blockData = (Map<ResourceLocation, BlockData>) result.getOrDefault(SyncDataType.BLOCK_DATA, new HashMap<>());
+        this.gunData = (Map<Identifier, GunData>) result.getOrDefault(SyncDataType.GUN_DATA, new HashMap<>());
+        this.attachmentData = (Map<Identifier, AttachmentData>) result.getOrDefault(SyncDataType.ATTACHMENT_DATA, new HashMap<>());
+        this.blockData = (Map<Identifier, BlockData>) result.getOrDefault(SyncDataType.BLOCK_DATA, new HashMap<>());
 
-        this.gunIndex = (Map<ResourceLocation, GunIndex>) result.getOrDefault(SyncDataType.GUN_INDEX, new HashMap<>());
-        this.attachmentIndex = (Map<ResourceLocation, AttachmentIndex>) result.getOrDefault(SyncDataType.ATTACHMENT_INDEX, new HashMap<>());
-        this.ammoIndex = (Map<ResourceLocation, AmmoIndex>) result.getOrDefault(SyncDataType.AMMO_INDEX, new HashMap<>());
-        this.blockIndex = (Map<ResourceLocation, BlockIndex>) result.getOrDefault(SyncDataType.BLOCK_INDEX, new HashMap<>());
+        this.gunIndex = (Map<Identifier, GunIndex>) result.getOrDefault(SyncDataType.GUN_INDEX, new HashMap<>());
+        this.attachmentIndex = (Map<Identifier, AttachmentIndex>) result.getOrDefault(SyncDataType.ATTACHMENT_INDEX, new HashMap<>());
+        this.ammoIndex = (Map<Identifier, AmmoIndex>) result.getOrDefault(SyncDataType.AMMO_INDEX, new HashMap<>());
+        this.blockIndex = (Map<Identifier, BlockIndex>) result.getOrDefault(SyncDataType.BLOCK_INDEX, new HashMap<>());
 
-        this.recipeFilterData = (Map<ResourceLocation, RecipeFilterData>) result.getOrDefault(SyncDataType.RECIPE_FILTER, new HashMap<>());
+        this.recipeFilterData = (Map<Identifier, RecipeFilterData>) result.getOrDefault(SyncDataType.RECIPE_FILTER, new HashMap<>());
 
-        this.attachmentTagData = (Map<ResourceLocation, AttachmentTagData>) result.getOrDefault(SyncDataType.ATTACHMENT_TAG, new HashMap<>());
-        this.gunAttachmentData = (Map<ResourceLocation, GunAttachmentData>) result.getOrDefault(SyncDataType.GUN_ATTACHMENT, new HashMap<>());
+        this.attachmentTagData = (Map<Identifier, AttachmentTagData>) result.getOrDefault(SyncDataType.ATTACHMENT_TAG, new HashMap<>());
+        this.gunAttachmentData = (Map<Identifier, GunAttachmentData>) result.getOrDefault(SyncDataType.GUN_ATTACHMENT, new HashMap<>());
         // TODO AllowAttachmentTagMatcher.resetCache()
     }
     /**
      * 线程安全
      */
-    public Map<SyncDataType, Map<ResourceLocation, ? extends ResourcePojo<?>>> rebuildFromNetworkAsync(Map<SyncDataType, Map<ResourceLocation, String>> cache) {
-        Map<SyncDataType, Map<ResourceLocation, ? extends ResourcePojo<?>>> resultMap = new HashMap<>();
-        for (Map.Entry<SyncDataType, Map<ResourceLocation, String>> entry : cache.entrySet()) {
+    public Map<SyncDataType, Map<Identifier, ? extends ResourcePojo<?>>> rebuildFromNetworkAsync(Map<SyncDataType, Map<Identifier, String>> cache) {
+        Map<SyncDataType, Map<Identifier, ? extends ResourcePojo<?>>> resultMap = new HashMap<>();
+        for (Map.Entry<SyncDataType, Map<Identifier, String>> entry : cache.entrySet()) {
             switch (entry.getKey()) {
                 case GUN_DATA -> resultMap.put(SyncDataType.GUN_DATA, parseFromNetworkAsync(entry.getValue(), GunData::fromJson));
                 case ATTACHMENT_DATA -> resultMap.put(SyncDataType.ATTACHMENT_DATA, parseFromNetworkAsync(entry.getValue(), AttachmentData::fromJson));
@@ -122,10 +122,10 @@ public final class SyncDataCache {
         return resultMap;
     }
 
-    private <T extends ResourcePojo<T>> Map<ResourceLocation, T> parseFromNetworkAsync(Map<ResourceLocation, String> cache,
+    private <T extends ResourcePojo<T>> Map<Identifier, T> parseFromNetworkAsync(Map<Identifier, String> cache,
                                                                                        JsonUtils.ReadFunction<T> parser) {
-        Map<ResourceLocation, T> map = new HashMap<>();
-        for (Map.Entry<ResourceLocation, String> entry : cache.entrySet()) {
+        Map<Identifier, T> map = new HashMap<>();
+        for (Map.Entry<Identifier, String> entry : cache.entrySet()) {
             String jsonStr = entry.getValue();
             if (jsonStr == null || jsonStr.isEmpty()) {
                 continue;

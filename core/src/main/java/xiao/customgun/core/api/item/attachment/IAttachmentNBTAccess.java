@@ -8,7 +8,7 @@
 package xiao.customgun.core.api.item.attachment;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 import xiao.customgun.core.api.resource.ResourceTag;
 
@@ -20,8 +20,8 @@ public interface IAttachmentNBTAccess {
     /**
      * 获取配件ID，如不存在则返回 {@link ResourceTag#NULL_LOCATION}
      */
-    @NotNull ResourceLocation getAttachmentLocation(CompoundTag attachmentCustomDataTag);
-    void setAttachmentLocation(CompoundTag attachmentCustomDataTag, ResourceLocation location);
+    @NotNull Identifier getAttachmentLocation(CompoundTag attachmentCustomDataTag);
+    void setAttachmentLocation(CompoundTag attachmentCustomDataTag, Identifier location);
 
     /**
      * 获取配件类型，如无则返回 {@link AttachmentCategory#NONE}

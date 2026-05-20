@@ -19,11 +19,11 @@ public class ResourceApi {
     public static @Nullable GunIndex getGunIndex(ResourceLocation indexLocation) {
         var dataManager = AllDataManager.getCurrent();
         if (dataManager != null) return dataManager.gunIndexManager.getPojo(indexLocation);
-        else return SyncDataCache.INSTANCE.getGunIndex(indexLocation);
+        else return SyncDataCache.INSTANCE.gunIndex.get(indexLocation);
     }
     public static @Nullable GunData getGunData(ResourceLocation dataLocation) {
         var dataManager = AllDataManager.getCurrent();
         if (dataManager != null) return dataManager.gunDataManager.getPojo(dataLocation);
-        else return SyncDataCache.INSTANCE.getGunData(dataLocation);
+        else return SyncDataCache.INSTANCE.gunData.get(dataLocation);
     }
 }

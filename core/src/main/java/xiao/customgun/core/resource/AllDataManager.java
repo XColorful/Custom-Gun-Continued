@@ -33,13 +33,16 @@ import java.util.Map;
 
 public class AllDataManager implements IEventHandler {
     protected static final AllDataManager INSTANCE = new AllDataManager();
-    private static AllDataManager CURRENT;
+    private static volatile AllDataManager CURRENT;
     /**
      * 仅单人游戏/专用服务端可用
      */
     public static @Nullable AllDataManager getCurrent() {
         return CURRENT;
     }
+    /**
+     * 线程安全
+     */
     public static void clearInstance() {
         if (AllDataManager.CURRENT == null) return;
         AllDataManager.CURRENT = null;

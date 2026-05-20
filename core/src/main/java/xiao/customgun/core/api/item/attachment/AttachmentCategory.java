@@ -8,6 +8,7 @@
 package xiao.customgun.core.api.item.attachment;
 
 import org.jetbrains.annotations.Nullable;
+import xiao.customgun.core.api.item.GunProperty;
 import xiao.customgun.core.api.resource.ResourceTag;
 
 import java.util.HashMap;
@@ -20,39 +21,43 @@ public enum AttachmentCategory implements ResourceTag.CategoryTag {
     /**
      * 枪口组件
      */
-    MUZZLE(AttachmentCategoryTag.MUZZLE),
+    MUZZLE(AttachmentCategoryTag.MUZZLE, null),
     /**
      * 激光指示器
      */
-    LASER(AttachmentCategoryTag.LASER),
+    LASER(AttachmentCategoryTag.LASER, null),
     /**
      * 握把
      */
-    GRIP(AttachmentCategoryTag.GRIP),
+    GRIP(AttachmentCategoryTag.GRIP, null),
     /**
      * 扩容弹夹（匣）
      */
-    EXTENDED_MAG(AttachmentCategoryTag.EXTENDED_MAG),
+    MAGAZINE(AttachmentCategoryTag.MAGAZINE, AttachmentCategoryTag.MAGAZINE_OLD1),
     /**
      * 瞄具
      */
-    SCOPE(AttachmentCategoryTag.SCOPE),
+    SCOPE(AttachmentCategoryTag.SCOPE, null),
     /**
      * 枪托
      */
-    STOCK(AttachmentCategoryTag.STOCK),
+    STOCK(AttachmentCategoryTag.STOCK, null),
     /**
      * 用于兼容已有网络包解析
      */
-    NONE(AttachmentCategoryTag.NONE);
+    NONE(AttachmentCategoryTag.NONE, null);
 
+    public final String tagName;
     public final String categoryName;
-    AttachmentCategory(String name) {
+    public final String categoryNameOld;
+    AttachmentCategory(String name, String nameOld) {
+        this.tagName = GunProperty.ATTACHMENT_PREFIX.getTagName() + name;
         this.categoryName = name;
+        this.categoryNameOld = nameOld;
     }
 
     @Override public String getTagName() {
-        return this.categoryName;
+        return this.tagName;
     }
     @Override public String getCategoryName() {
         return this.categoryName;
@@ -63,6 +68,7 @@ public enum AttachmentCategory implements ResourceTag.CategoryTag {
     static {
         for (AttachmentCategory type : values()) {
             CATEGORIES.put(type.categoryName, type);
+            if (type.categoryNameOld != null) CATEGORIES.put(type.categoryNameOld, type);
         }
     }
 

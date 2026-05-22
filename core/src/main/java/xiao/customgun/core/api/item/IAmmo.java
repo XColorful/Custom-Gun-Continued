@@ -7,10 +7,8 @@
 
 package xiao.customgun.core.api.item;
 
-public class BlockPropertyTag {
+import xiao.customgun.core.api.item.ammo.IAmmoDataAccess;
+import xiao.customgun.core.api.item.ammo.IAmmoGetter;
 
-    // --------IBlockDataAccess--------
-    public static final String BLOCK_LOCATION = "block_rl";
-
-    private BlockPropertyTag() {}
+public interface IAmmo extends IAmmoDataAccess, IAmmoGetter {
 }

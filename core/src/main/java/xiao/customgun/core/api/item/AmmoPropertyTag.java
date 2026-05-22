@@ -7,10 +7,10 @@
 
 package xiao.customgun.core.api.item;
 
-public class BlockPropertyTag {
+public class AmmoPropertyTag {
 
-    // --------IBlockDataAccess--------
-    public static final String BLOCK_LOCATION = "block_rl";
+    // --------IAmmoDataAccess--------
+    public static final String AMMO_LOCATION = "ammo_rl";
 
-    private BlockPropertyTag() {}
+    private AmmoPropertyTag() {}
 }

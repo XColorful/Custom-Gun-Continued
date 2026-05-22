@@ -12,7 +12,7 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import xiao.customgun.core.api.resource.ResourceTag;
 
-public interface IBlockDataAccess {
+public interface IBlockDataAccess extends IBlockPojoGetter {
 
     /**
      * 获取配件ID，如不存在则返回 {@link ResourceTag#NULL_LOCATION}

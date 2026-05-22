@@ -10,6 +10,7 @@ package xiao.customgun.core.api.item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.item.block.IBlockDataAccess;
+import xiao.customgun.core.api.item.block._IBlockPropertyAccess;
 import xiao.customgun.core.api.resource.ResourceTag;
 
 import java.util.HashMap;
@@ -52,6 +53,9 @@ public enum BlockProperty implements ResourceTag {
         return this.propertyName;
     }
 
+    /**
+     * {@link _IBlockPropertyAccess}
+     */
     @SuppressWarnings("unchecked")
     public <T> T get(IBlockDataAccess access, ItemStack stack) {
         if (this.getter == null) {

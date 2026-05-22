@@ -9,7 +9,8 @@ package xiao.customgun.core.api.item;
 
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
-import xiao.customgun.core.api.item.ammo.IAmmoDataAccess; // 请根据你项目的实际包路径调整
+import xiao.customgun.core.api.item.ammo.IAmmoDataAccess;
+import xiao.customgun.core.api.item.ammo._IAmmoPropertyAccess;
 import xiao.customgun.core.api.resource.ResourceTag;
 
 import java.util.HashMap;
@@ -20,7 +21,21 @@ public enum AmmoProperty implements ResourceTag {
     // IAmmoDataAccess
     AMMO_LOCATION(AmmoPropertyTag.AMMO_LOCATION,
             IAmmoDataAccess::getAmmoLocation,
-            IAmmoDataAccess::setAmmoLocation);
+            IAmmoDataAccess::setAmmoLocation),
+    AMMO_COUNT(AmmoPropertyTag.AMMO_COUNT,
+            IAmmoDataAccess::getAmmoCount,
+            IAmmoDataAccess::setAmmoCount),
+    INFINITE_FEED(AmmoPropertyTag.INFINITE_FEED,
+            IAmmoDataAccess::hasInfiniteFeed,
+            IAmmoDataAccess::setInfiniteFeed),
+    ALMIGHTY_AMMO(AmmoPropertyTag.ALMIGHTY_AMMO,
+            IAmmoDataAccess::isAlmightyAmmo,
+            IAmmoDataAccess::setAlmightyAmmo),
+
+    // IAmmoExpAccess
+    AMMO_LEVEL(AmmoPropertyTag.AMMO_LEVEL,
+            IAmmoDataAccess::getAmmoLevel,
+            IAmmoDataAccess::setAmmoLevel);
 
     public final String propertyName;
     private final BiFunction<IAmmoDataAccess, ItemStack, ?> getter;
@@ -53,6 +68,9 @@ public enum AmmoProperty implements ResourceTag {
         return this.propertyName;
     }
 
+    /**
+     * {@link _IAmmoPropertyAccess}
+     */
     @SuppressWarnings("unchecked")
     public <T> T get(IAmmoDataAccess access, ItemStack stack) {
         if (this.getter == null) {

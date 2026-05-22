@@ -12,4 +12,5 @@ public class ItemTypeTag {
     public static final String GUN = "gun"; public static final String GUN_OLD1 = "modern_kinetic_gun";
     public static final String ATTACHMENT = "attachment";
     public static final String AMMO = "ammo";
+    public static final String AMMO_BOX= "ammo_box";
 }

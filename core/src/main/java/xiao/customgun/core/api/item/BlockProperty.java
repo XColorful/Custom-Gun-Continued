@@ -13,13 +13,12 @@ import xiao.customgun.core.api.resource.ResourceTag;
 import java.util.HashMap;
 import java.util.Map;
 
-public enum AttachmentProperty implements ResourceTag {
-    // IAttachmentDataAccess
-    ATTACHMENT_LOCATION(AttachmentPropertyTag.ATTACHMENT_LOCATION),
-    ATTACHMENT_CATEGORY(AttachmentPropertyTag.ATTACHMENT_CATEGORY);
+public enum BlockProperty implements ResourceTag {
+    // IBlockDataAccess
+    BLOCK_LOCATION(BlockPropertyTag.BLOCK_LOCATION);
 
     public final String propertyName;
-    AttachmentProperty(final String name) {
+    BlockProperty(String name) {
         this.propertyName = name;
     }
 
@@ -27,15 +26,15 @@ public enum AttachmentProperty implements ResourceTag {
         return this.propertyName;
     }
 
-    private static final Map<String, AttachmentProperty> PROPERTY_TYPE = new HashMap<>();
+    private static final Map<String, BlockProperty> PROPERTY_TYPE = new HashMap<>();
 
     static {
-        for (AttachmentProperty property : AttachmentProperty.values()) {
+        for (BlockProperty property : BlockProperty.values()) {
             PROPERTY_TYPE.put(property.propertyName, property);
         }
     }
 
-    public static @Nullable AttachmentProperty fromString(String name) {
+    public static @Nullable BlockProperty fromString(String name) {
         return name != null ? PROPERTY_TYPE.get(name) : null;
     }
 

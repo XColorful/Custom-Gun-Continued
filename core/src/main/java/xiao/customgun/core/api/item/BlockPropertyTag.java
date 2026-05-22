@@ -7,8 +7,10 @@
 
 package xiao.customgun.core.api.item;
 
-import xiao.customgun.core.api.item.attachment.IAttachmentDataAccess;
-import xiao.customgun.core.api.item.attachment.IAttachmentGetter;
+public class BlockPropertyTag {
 
-public interface IAttachment extends IAttachmentDataAccess, IAttachmentGetter {
+    // --------IBlockDataAccess--------
+    public static final String BLOCK_LOCATION = "block_rl";
+
+    private BlockPropertyTag() {}
 }

@@ -7,8 +7,7 @@
 
 package xiao.customgun.core.api.item;
 
-import xiao.customgun.core.api.item.attachment.IAttachmentDataAccess;
-import xiao.customgun.core.api.item.attachment.IAttachmentGetter;
+import xiao.customgun.core.api.item.block.IBlockDataAccess;
 
-public interface IAttachment extends IAttachmentDataAccess, IAttachmentGetter {
+public interface IBlock extends IBlockDataAccess {
 }

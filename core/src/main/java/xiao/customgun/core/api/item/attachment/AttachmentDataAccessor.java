@@ -26,11 +26,11 @@ public interface AttachmentDataAccessor extends IAttachmentDataAccess {
         return this.getAttachmentLocation(customDataTag);
     }
     @Override
-    default void setAttachmentLocation(ItemStack attachmentItem, ResourceLocation location) {
+    default void setAttachmentLocation(ItemStack attachmentItem, ResourceLocation attachmentLocation) {
         var customData = NBTUtils.getCustomData(attachmentItem);
         if (customData == null) return;
         @NotNull CompoundTag customDataTag = NBTUtils.getCustomDataTag(customData);
-        this.setAttachmentLocation(customDataTag, location);
+        this.setAttachmentLocation(customDataTag, attachmentLocation);
         NBTUtils.setCustomDataTag(attachmentItem, customDataTag);
     }
 
@@ -40,5 +40,51 @@ public interface AttachmentDataAccessor extends IAttachmentDataAccess {
         if (customData == null) return AttachmentCategory.NONE;
         @NotNull CompoundTag customDataTag = NBTUtils.getCustomDataTag(customData);
         return this.getAttachmentCategory(customDataTag);
+    }
+    @Override
+    default void setAttachmentCategory(ItemStack attachmentItem, AttachmentCategory attachmentCategory) {
+        var customData = NBTUtils.getCustomData(attachmentItem);
+        if (customData == null) return;
+        @NotNull CompoundTag customDataTag = NBTUtils.getCustomDataTag(customData);
+        this.setAttachmentCategory(customDataTag, attachmentCategory);
+    }
+
+    @Override
+    default int getScopeViewIndex(ItemStack attachmentItem) {
+        var customData = NBTUtils.getCustomData(attachmentItem);
+        if (customData == null) return 0;
+        @NotNull CompoundTag customDataTag = NBTUtils.getCustomDataTag(customData);
+        return this.getScopeViewIndex(customDataTag);
+    }
+    @Override
+    default void setScopeViewIndex(ItemStack attachmentItem, int scopeViewIndex) {
+        var customData = NBTUtils.getCustomData(attachmentItem);
+        if (customData == null) return;
+        @NotNull CompoundTag customDataTag = NBTUtils.getCustomDataTag(customData);
+        this.setScopeViewIndex(customDataTag, scopeViewIndex);
+        NBTUtils.setCustomDataTag(attachmentItem, customDataTag);
+    }
+
+    @Override
+    default boolean hasLaserColor(ItemStack attachmentItem) {
+        var customData = NBTUtils.getCustomData(attachmentItem);
+        if (customData == null) return false;
+        @NotNull CompoundTag customDataTag = NBTUtils.getCustomDataTag(customData);
+        return this.hasLaserColor(customDataTag);
+    }
+    @Override
+    default int getLaserColor(ItemStack attachmentItem) {
+        var customData = NBTUtils.getCustomData(attachmentItem);
+        if (customData == null) return 0;
+        @NotNull CompoundTag customDataTag = NBTUtils.getCustomDataTag(customData);
+        return this.getLaserColor(customDataTag);
+    }
+    @Override
+    default void setLaserColor(ItemStack attachmentItem, int laserColor) {
+        var customData = NBTUtils.getCustomData(attachmentItem);
+        if (customData == null) return;
+        @NotNull CompoundTag customDataTag = NBTUtils.getCustomDataTag(customData);
+        this.setLaserColor(customDataTag, laserColor);
+        NBTUtils.setCustomDataTag(attachmentItem, customDataTag);
     }
 }

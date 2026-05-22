@@ -18,5 +18,5 @@ public interface IBlockDataAccess {
      * 获取配件ID，如不存在则返回 {@link ResourceTag#NULL_LOCATION}
      */
     @NotNull ResourceLocation getBlockLocation(ItemStack blockItem);
-    void setBlockLocation(ItemStack blockItem, ResourceLocation location);
+    void setBlockLocation(ItemStack blockItem, ResourceLocation blockLocation);
 }

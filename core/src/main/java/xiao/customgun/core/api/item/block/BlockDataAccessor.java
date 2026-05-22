@@ -24,7 +24,7 @@ public interface BlockDataAccessor extends IBlockDataAccess {
         return blockLocation != null ? blockLocation : ResourceTag.NULL_LOCATION;
     }
     @Override
-    default void setBlockLocation(ItemStack blockItem, ResourceLocation location) {
-        NBTUtils.setResourceLocation(blockItem, BlockProperty.BLOCK_LOCATION.getTagName(), location);
+    default void setBlockLocation(ItemStack blockItem, ResourceLocation blockLocation) {
+        NBTUtils.setResourceLocation(blockItem, BlockProperty.BLOCK_LOCATION.getTagName(), blockLocation);
     }
 }

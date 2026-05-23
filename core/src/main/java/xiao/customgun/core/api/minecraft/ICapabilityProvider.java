@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.minecraft.capability.IInventoryCapability;
 import xiao.customgun.core.api.minecraft.capability.ISyncDataCapabilityProvider;
-import xiao.customgun.core.entity.sync.core.SyncDataHolder;
+import xiao.customgun.core.entity.sync.SyncDataHolder;
 
 public interface ICapabilityProvider {
 

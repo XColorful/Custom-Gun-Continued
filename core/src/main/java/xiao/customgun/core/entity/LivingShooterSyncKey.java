@@ -5,19 +5,19 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package xiao.customgun.core.entity.sync;
+package xiao.customgun.core.entity;
 
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import xiao.customgun.CustomGun;
 import xiao.customgun.core.api.entity.ReloadState;
 import xiao.customgun.core.api.minecraft.IMcRegistry;
-import xiao.customgun.core.entity.sync.core.Serializers;
-import xiao.customgun.core.entity.sync.core.SyncedClassKey;
-import xiao.customgun.core.entity.sync.core.SyncedDataKey;
-import xiao.customgun.core.entity.sync.core.SyncedEntityData;
+import xiao.customgun.core.entity.sync.Serializers;
+import xiao.customgun.core.entity.sync.SyncedClassKey;
+import xiao.customgun.core.entity.sync.SyncedDataKey;
+import xiao.customgun.core.entity.sync.SyncedEntityData;
 
-public class ModSyncedEntityData {
+public class LivingShooterSyncKey {
 
     /**
      * 缓存字段，避免每次都重新拿
@@ -37,7 +37,7 @@ public class ModSyncedEntityData {
             .syncMode(SyncedDataKey.SyncMode.ALL)
             .build();
 
-    public static final SyncedDataKey<LivingEntity, ReloadState> RELOAD_STATE_KEY = SyncedDataKey.builder(SyncedClassKey.LIVING_ENTITY, ModSerializers.RELOAD_STATE)
+    public static final SyncedDataKey<LivingEntity, ReloadState> RELOAD_STATE_KEY = SyncedDataKey.builder(SyncedClassKey.LIVING_ENTITY, Serializers.RELOAD_STATE)
             .id(mcRegistry.createResourceLocation(String.format("%s:%s", CustomGun.MOD_ID, "reload_state")))
             .defaultValueSupplier(ReloadState::new)
             .syncMode(SyncedDataKey.SyncMode.ALL)
@@ -80,18 +80,18 @@ public class ModSyncedEntityData {
             .build();
 
     public static void registerAll() {
-        registerEntityData(SHOOT_COOL_DOWN_KEY);
-        registerEntityData(MELEE_COOL_DOWN_KEY);
-        registerEntityData(RELOAD_STATE_KEY);
-        registerEntityData(AIMING_PROGRESS_KEY);
-        registerEntityData(DRAW_COOL_DOWN_KEY);
-        registerEntityData(IS_AIMING_KEY);
-        registerEntityData(SPRINT_TIME_KEY);
-        registerEntityData(IS_BOLTING_KEY);
-        registerEntityData(THROWABLE_USE_TICK);
+        registerSyncData(SHOOT_COOL_DOWN_KEY);
+        registerSyncData(MELEE_COOL_DOWN_KEY);
+        registerSyncData(RELOAD_STATE_KEY);
+        registerSyncData(AIMING_PROGRESS_KEY);
+        registerSyncData(DRAW_COOL_DOWN_KEY);
+        registerSyncData(IS_AIMING_KEY);
+        registerSyncData(SPRINT_TIME_KEY);
+        registerSyncData(IS_BOLTING_KEY);
+        registerSyncData(THROWABLE_USE_TICK);
     }
 
-    private static void registerEntityData(SyncedDataKey<? extends Entity, ?> dataKey) {
+    private static void registerSyncData(SyncedDataKey<? extends Entity, ?> dataKey) {
         SyncedEntityData.instance().registerDataKey(dataKey);
     }
 }

@@ -4,7 +4,7 @@
 
 package xiao.customgun.core.init;
 
-import xiao.customgun.core.entity.sync.ModSyncedEntityData;
+import xiao.customgun.core.entity.LivingShooterSyncKey;
 import xiao.customgun.core.network.NetworkHandler;
 
 public class CommonSetup {
@@ -19,7 +19,7 @@ public class CommonSetup {
 
     public void onCommonSetup() {
         NetworkHandler.get().registerMessages();
-        ModSyncedEntityData.registerAll();
+        LivingShooterSyncKey.registerAll();
     }
 
     private boolean LOAD_COMPLETE = false;

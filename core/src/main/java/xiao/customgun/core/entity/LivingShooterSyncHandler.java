@@ -5,16 +5,16 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package xiao.customgun.core.entity.sync;
+package xiao.customgun.core.entity;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import xiao.customgun.core.api.event.*;
-import xiao.customgun.core.entity.sync.core.DataEntry;
-import xiao.customgun.core.entity.sync.core.SyncDataHolder;
-import xiao.customgun.core.entity.sync.core.SyncedDataKey;
-import xiao.customgun.core.entity.sync.core.SyncedEntityData;
+import xiao.customgun.core.entity.sync.DataEntry;
+import xiao.customgun.core.entity.sync.SyncDataHolder;
+import xiao.customgun.core.entity.sync.SyncedDataKey;
+import xiao.customgun.core.entity.sync.SyncedEntityData;
 import xiao.customgun.core.network.message.ServerMessageUpdateEntityData;
 import xiao.customgun.core.util.SendUtils;
 
@@ -23,14 +23,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class SyncEntityDataHandler implements IEventHandler {
+public class LivingShooterSyncHandler implements IEventHandler {
     private static class SyncEntityDataHandlerHolder {
-        private static final SyncEntityDataHandler INSTANCE = new SyncEntityDataHandler();
+        private static final LivingShooterSyncHandler INSTANCE = new LivingShooterSyncHandler();
     }
-    public static SyncEntityDataHandler get() {
+    public static LivingShooterSyncHandler get() {
         return SyncEntityDataHandlerHolder.INSTANCE;
     }
-    protected SyncEntityDataHandler() {}
+    protected LivingShooterSyncHandler() {}
     @Override public String getEventHandlerName() {
         return this.getClass().getName();
     }

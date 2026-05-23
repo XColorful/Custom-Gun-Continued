@@ -19,7 +19,7 @@ import net.minecraftforge.common.util.LazyOptional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.minecraft.capability.ISyncDataCapabilityProvider;
-import xiao.customgun.core.entity.sync.core.*;
+import xiao.customgun.core.entity.sync.*;
 import xiao.customgun.forge.CustomGunForge;
 
 /**

@@ -18,6 +18,8 @@ public enum EventType {
     CLIENT_TICK_EVENT(true),
     // entity
     ENTITY_JOIN_LEVEL_EVENT(false),
+    // living entity
+    LIVING_KNOCKBACK_EVENT(false),
     // player
     PLAYER_CLONE_EVENT(false),
     PLAYER_START_TRACKING_EVENT(false),

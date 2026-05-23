@@ -29,6 +29,8 @@ public class ForgeEventRegister implements IEventRegister {
             case SERVER_TICK_EVENT -> ServerTickEventManager.register(eventHandler, priority, receiveCanceled);
             // entity
             case ENTITY_JOIN_LEVEL_EVENT -> EntityJoinLevelEventManager.register(eventHandler, priority, receiveCanceled);
+            // living entity
+            case LIVING_KNOCKBACK_EVENT -> LivingKnockbackEventManager.register(eventHandler, priority, receiveCanceled);
             // player
             case PLAYER_CLONE_EVENT -> PlayerCloneEventManager.register(eventHandler, priority, receiveCanceled);
             case PLAYER_START_TRACKING_EVENT -> PlayerStartTrackingEventManager.register(eventHandler, priority, receiveCanceled);
@@ -54,6 +56,8 @@ public class ForgeEventRegister implements IEventRegister {
             case SERVER_TICK_EVENT -> ServerTickEventManager.unregister(eventHandler, priority, receiveCanceled);
             // entity
             case ENTITY_JOIN_LEVEL_EVENT -> EntityJoinLevelEventManager.unregister(eventHandler, priority, receiveCanceled);
+            // living entity
+            case LIVING_KNOCKBACK_EVENT -> LivingKnockbackEventManager.unregister(eventHandler, priority, receiveCanceled);
             // player
             case PLAYER_CLONE_EVENT -> PlayerCloneEventManager.unregister(eventHandler, priority, receiveCanceled);
             case PLAYER_START_TRACKING_EVENT -> PlayerStartTrackingEventManager.unregister(eventHandler, priority, receiveCanceled);

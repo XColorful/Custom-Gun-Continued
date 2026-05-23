@@ -7,7 +7,7 @@
 
 package xiao.customgun.core.init;
 
-import xiao.customgun.core.entity.sync.core.SyncDataHolder;
+import xiao.customgun.core.entity.sync.SyncDataHolder;
 
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;

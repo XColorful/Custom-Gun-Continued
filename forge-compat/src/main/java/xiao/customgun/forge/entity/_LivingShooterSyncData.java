@@ -5,7 +5,7 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package xiao.customgun.forge.entity.sync;
+package xiao.customgun.forge.entity;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -14,7 +14,7 @@ import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import xiao.customgun.CustomGun;
-import xiao.customgun.core.entity.sync.core.SyncedEntityData;
+import xiao.customgun.core.entity.sync.SyncedEntityData;
 import xiao.customgun.forge.CustomGunForge;
 import xiao.customgun.forge.minecraft.capability.SyncDataCapabilityProvider;
 
@@ -23,7 +23,7 @@ import xiao.customgun.forge.minecraft.capability.SyncDataCapabilityProvider;
  * 作为处理这种情况的示范
  */
 @Mod.EventBusSubscriber(modid = CustomGun.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
-public class _SyncEntityDataHandler {
+public class _LivingShooterSyncData {
 
     public static final ResourceLocation capabilityRl = CustomGunForge.mcRegistry.createResourceLocation(String.format("%s:%s", CustomGun.MOD_ID, "sync_entity_data"));
     @SubscribeEvent

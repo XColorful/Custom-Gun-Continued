@@ -4,6 +4,7 @@
 
 package xiao.customgun.core.init;
 
+import xiao.customgun.core.entity.sync.ModSyncedEntityData;
 import xiao.customgun.core.network.NetworkHandler;
 
 public class CommonSetup {
@@ -18,5 +19,14 @@ public class CommonSetup {
 
     public void onCommonSetup() {
         NetworkHandler.get().registerMessages();
+        ModSyncedEntityData.init();
+    }
+
+    private boolean LOAD_COMPLETE = false;
+    public boolean isLoadComplete() {
+        return LOAD_COMPLETE;
+    }
+    public void onLoadComplete() {
+        LOAD_COMPLETE = true;
     }
 }

@@ -34,11 +34,30 @@ public interface AttachmentNBTAccessor extends IAttachmentNBTAccess {
         AttachmentCategory category = AttachmentCategory.fromString(NBTUtils.getString(attachmentCustomDataTag, AttachmentProperty.ATTACHMENT_CATEGORY.getTagName()));
         return category != null ? category : AttachmentCategory.NONE;
     }
+    @Override
+    default void setAttachmentCategory(CompoundTag attachmentCustomDataTag, AttachmentCategory attachmentCategory) {
+        NBTUtils.setString(attachmentCustomDataTag, AttachmentProperty.ATTACHMENT_CATEGORY.getTagName(), attachmentCategory.getTagName());
+    }
 
     @Override
     default int getScopeViewIndex(CompoundTag attachmentCustomDataTag) {
-        if (attachmentCustomDataTag == null) return 0;
-        // TODO
-        return 0;
+        return NBTUtils.getInt(attachmentCustomDataTag, AttachmentProperty.SCOPE_VIEW_INDEX.getTagName());
+    }
+    @Override
+    default void setScopeViewIndex(CompoundTag attachmentCustomDataTag, int scopeViewIndex) {
+        NBTUtils.setInt(attachmentCustomDataTag, AttachmentProperty.SCOPE_VIEW_INDEX.getTagName(), scopeViewIndex);
+    }
+
+    @Override
+    default boolean hasLaserColor(CompoundTag attachmentCustomDataTag) {
+        return NBTUtils.hasKey(attachmentCustomDataTag, AttachmentProperty.LASER_COLOR.getTagName());
+    }
+    @Override
+    default int getLaserColor(CompoundTag attachmentCustomDataTag) {
+        return NBTUtils.getInt(attachmentCustomDataTag, AttachmentProperty.LASER_COLOR.getTagName());
+    }
+    @Override
+    default void setLaserColor(CompoundTag attachmentCustomDataTag, int laserColor) {
+        NBTUtils.setInt(attachmentCustomDataTag, AttachmentProperty.LASER_COLOR.getTagName(), laserColor);
     }
 }

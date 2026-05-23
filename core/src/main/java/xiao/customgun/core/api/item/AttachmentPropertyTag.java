@@ -9,8 +9,12 @@ package xiao.customgun.core.api.item;
 
 public class AttachmentPropertyTag {
 
+    // --------IAttachmentDataAccess--------
     public static final String ATTACHMENT_LOCATION = "attachment_rl";
     public static final String ATTACHMENT_CATEGORY = "attachment_category";
+
+    public static final String SCOPE_VIEW_INDEX = "scope_view_index";
+    public static final String LASER_COLOR = "laser_color";
 
     private AttachmentPropertyTag() {}
 }

@@ -5,22 +5,22 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package xiao.customgun.client.resource.instance.data;
+package xiao.customgun.core.resource.instance.data;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import xiao.customgun.client.resource.instance.ClientPojoInstance;
-import xiao.customgun.core.resource.data.index.AttachmentIndex;
+import xiao.customgun.core.resource.data.index.GunIndex;
+import xiao.customgun.core.resource.instance.PojoInstance;
 
-public final class AttachmentIndexInstance extends ClientPojoInstance<AttachmentIndex> {
+public class GunIndexInstance extends PojoInstance<GunIndex> {
 
-    private AttachmentIndexInstance(@NotNull AttachmentIndex pojo) {
+    private GunIndexInstance(@NotNull GunIndex pojo) {
         super(pojo);
     }
 
-    public static @Nullable AttachmentIndexInstance fromPojo(AttachmentIndex pojo) {
+    public static @Nullable GunIndexInstance fromPojo(GunIndex pojo) {
         if (pojo == null) return null;
-        AttachmentIndexInstance instance = new AttachmentIndexInstance(pojo);
+        GunIndexInstance instance = new GunIndexInstance(pojo);
         if (!instance.isPojoValid()) return null;
         else return instance;
     }

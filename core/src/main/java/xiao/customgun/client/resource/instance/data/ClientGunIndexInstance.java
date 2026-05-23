@@ -10,21 +10,21 @@ package xiao.customgun.client.resource.instance.data;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.client.api.resource.ClientResourceApi;
-import xiao.customgun.client.resource.instance.ClientPojoInstance;
 import xiao.customgun.client.resource.instance.assets.GunDisplayInstance;
 import xiao.customgun.core.api.resource.ResourceApi;
 import xiao.customgun.core.resource.data.data.GunData;
 import xiao.customgun.core.resource.data.index.GunIndex;
+import xiao.customgun.core.resource.instance.PojoInstance;
 
-public final class GunIndexInstance extends ClientPojoInstance<GunIndex> {
+public final class ClientGunIndexInstance extends PojoInstance<GunIndex> {
 
-    private GunIndexInstance(@NotNull GunIndex pojo) {
+    private ClientGunIndexInstance(@NotNull GunIndex pojo) {
         super(pojo);
     }
 
-    public static @Nullable GunIndexInstance fromPojo(GunIndex pojo) {
+    public static @Nullable ClientGunIndexInstance fromPojo(GunIndex pojo) {
         if (pojo == null) return null;
-        GunIndexInstance instance = new GunIndexInstance(pojo);
+        ClientGunIndexInstance instance = new ClientGunIndexInstance(pojo);
         if (!instance.isPojoValid()) return null;
         else return instance;
     }

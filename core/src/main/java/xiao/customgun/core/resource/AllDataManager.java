@@ -88,7 +88,7 @@ public class AllDataManager implements IEventHandler {
      * @deprecated 注册了原版recipe解析，所以不是独立注册的数据包目录
      * 注册相同目录会连同其他recipe重复读
      */
-    public final @Nullable RecipeDataManager recipeDataManager = null;
+    @Deprecated public final @Nullable RecipeDataManager recipeDataManager = null;
     public RecipeManager recipeManager;
     /**
      * ./datapacks/{datapack}/data/{namespace}/{@link DataFolderType#RECIPE_FILTER}
@@ -156,6 +156,9 @@ public class AllDataManager implements IEventHandler {
         AllDataManager.INSTANCE.recipeManager = event.getServerResources().getRecipeManager();
     }
 
+    /**
+     * {@link ITagsUpdatedEvent} 会在 {@link #reloadAndRegister} PojoManager {@link ResourcePojoManager#apply} 全结束之后触发
+     */
     private static void onTagsUpdateEvent(ITagsUpdatedEvent event) {
         if (event.getUpdateCause() != ITagsUpdatedEvent.UpdateCause.SERVER_DATA_LOAD) return;
 
@@ -171,6 +174,9 @@ public class AllDataManager implements IEventHandler {
                 }
             }
         }
+
+        // 需要等ResourcePojoManager#apply全结束才执行
+        DataInstanceManager.reload();
     }
 
     private static void onDatapackSyncEvent(IDatapackSyncEvent event) {

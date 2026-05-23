@@ -26,7 +26,7 @@ public final class GunData extends ResourcePojo<GunData> {
 
     // 枪械属性
     private _BulletData bulletData; // 子弹属性
-    private Identifier ammoType; // 子弹类型
+    private Identifier ammoLocation; // 子弹类型
     private BoltType boltType; // 拉栓类型
 
     private int rpm = 300; // 射速
@@ -88,7 +88,7 @@ public final class GunData extends ResourcePojo<GunData> {
                 String key = reader.nextName();
                 switch (key) {
                     case GunDataTag.BULLET_DATA, GunDataTag.BULLET_DATA_OLD1 -> pojo.bulletData = JsonUtils.read(reader, _BulletData::fromJson);
-                    case GunDataTag.AMMO_TYPE, GunDataTag.AMMO_TYPE_OLD1 -> pojo.ammoType = JsonUtils.readResourceLocation(reader);
+                    case GunDataTag.AMMO_LOCATION, GunDataTag.AMMO_LOCATION_OLD1 -> pojo.ammoLocation = JsonUtils.readResourceLocation(reader);
                     case GunDataTag.BOLT_TYPE, GunDataTag.BOLT_TYPE_OLD1 -> pojo.boltType = JsonUtils.readFromString(reader, BoltType::fromString);
 
                     case GunDataTag.RPM -> pojo.rpm = JsonUtils.readInt(reader);
@@ -146,7 +146,7 @@ public final class GunData extends ResourcePojo<GunData> {
     public void toJson(JsonWriter writer) throws IOException {
         writer.beginObject(); {
             JsonUtils.write(writer, GunDataTag.BULLET_DATA, bulletData, _BulletData::toJson);
-            JsonUtils.writeResourceLocation(writer, GunDataTag.AMMO_TYPE, ammoType);
+            JsonUtils.writeResourceLocation(writer, GunDataTag.AMMO_LOCATION, ammoLocation);
             JsonUtils.writeToString(writer, GunDataTag.BOLT_TYPE, boltType);
 
             JsonUtils.writeInt(writer, GunDataTag.RPM, rpm);
@@ -203,8 +203,8 @@ public final class GunData extends ResourcePojo<GunData> {
     public _BulletData getBulletData() {
         return bulletData;
     }
-    public Identifier getAmmoType() {
-        return ammoType;
+    public Identifier getAmmoLocation() {
+        return ammoLocation;
     }
     public BoltType getBoltType() {
         return boltType;
@@ -306,8 +306,8 @@ public final class GunData extends ResourcePojo<GunData> {
     public void setBulletData(_BulletData bulletData) {
         this.bulletData = bulletData;
     }
-    public void setAmmoType(Identifier ammoType) {
-        this.ammoType = ammoType;
+    public void setAmmoLocation(Identifier ammoLocation) {
+        this.ammoLocation = ammoLocation;
     }
     public void setBoltType(BoltType boltType) {
         this.boltType = boltType;

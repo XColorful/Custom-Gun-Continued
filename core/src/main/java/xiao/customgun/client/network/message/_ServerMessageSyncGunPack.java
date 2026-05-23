@@ -50,7 +50,7 @@ public class _ServerMessageSyncGunPack {
             // 在主线程完成全套字段引用的替换
             SyncDataCache.INSTANCE.setParseResult(parsedResult);
 
-            // 通知客户端重新构建ClientIndex (主线程)
+            // 通知客户端重新构建PojoInstance (主线程)
             lastCompletedTicket = currentTicket;
             AssetsInstanceManager.reload();
         }, handler::accept);

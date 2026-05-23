@@ -29,4 +29,19 @@ public interface IGunDataAccess extends IGunPojoGetter,
      */
     @Nullable Identifier getGunDisplayLocation(ItemStack gunItem);
     void setGunDisplayLocation(ItemStack gunItem, Identifier gunDisplayLocation);
+
+    // --------Deprecated--------
+
+    @Deprecated default @NotNull ResourceLocation getGunId(ItemStack gunItem) {
+        return getGunLocation(gunItem);
+    }
+    @Deprecated default void setGunId(ItemStack gunItem, ResourceLocation gunLocation) {
+        setGunDisplayLocation(gunItem, gunLocation);
+    }
+    @Deprecated default @NotNull ResourceLocation getGunDisplayId(ItemStack gunItem) {
+        return getGunLocation(gunItem);
+    }
+    @Deprecated default void setGunDisplayId(ItemStack gunItem, ResourceLocation gunDisplayLocation) {
+        setGunDisplayLocation(gunItem, gunDisplayLocation);
+    }
 }

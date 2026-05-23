@@ -92,8 +92,7 @@ public class AllAssetsManager implements IEventHandler {
                 CustomGun.getMcRegistry().createResourceLocation(CustomGun.MOD_ID + ":all_assets_manager"),
                 (sharedState, backgroundExecutor, barrier, gameExecutor) -> {
                     return barrier.wait("")
-                            .thenRunAsync(() -> {// TODO
-                            }, gameExecutor);
+                            .thenRunAsync(AssetsInstanceManager::reload, gameExecutor);
                 }
         );
     }

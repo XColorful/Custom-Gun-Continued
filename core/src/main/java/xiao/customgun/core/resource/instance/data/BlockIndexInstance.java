@@ -5,14 +5,14 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package xiao.customgun.client.resource.instance.data;
+package xiao.customgun.core.resource.instance.data;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import xiao.customgun.client.resource.instance.ClientPojoInstance;
 import xiao.customgun.core.resource.data.index.BlockIndex;
+import xiao.customgun.core.resource.instance.PojoInstance;
 
-public final class BlockIndexInstance extends ClientPojoInstance<BlockIndex> {
+public class BlockIndexInstance extends PojoInstance<BlockIndex> {
 
     private BlockIndexInstance(@NotNull BlockIndex pojo) {
         super(pojo);

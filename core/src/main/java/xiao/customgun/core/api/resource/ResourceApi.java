@@ -17,6 +17,7 @@ import xiao.customgun.client.api.resource.ClientResourceApi;
 import xiao.customgun.client.resource.network.SyncDataCache;
 import xiao.customgun.core.recipe.TableRecipe;
 import xiao.customgun.core.resource.AllDataManager;
+import xiao.customgun.core.resource.DataInstanceManager;
 import xiao.customgun.core.resource.data.data.AttachmentData;
 import xiao.customgun.core.resource.data.data.BlockData;
 import xiao.customgun.core.resource.data.data.GunData;
@@ -25,6 +26,10 @@ import xiao.customgun.core.resource.data.index.AttachmentIndex;
 import xiao.customgun.core.resource.data.index.BlockIndex;
 import xiao.customgun.core.resource.data.index.GunIndex;
 import xiao.customgun.core.resource.data.recipefilter.RecipeFilterData;
+import xiao.customgun.core.resource.instance.data.AmmoIndexInstance;
+import xiao.customgun.core.resource.instance.data.AttachmentIndexInstance;
+import xiao.customgun.core.resource.instance.data.BlockIndexInstance;
+import xiao.customgun.core.resource.instance.data.GunIndexInstance;
 
 import java.util.*;
 
@@ -131,5 +136,20 @@ public class ResourceApi {
         var dataManager = AllDataManager.getCurrent();
         if (dataManager != null && dataManager.recipeFilterDataManager != null) return dataManager.recipeFilterDataManager.getPojo(filterLocation);
         else return SyncDataCache.INSTANCE.recipeFilterData.get(filterLocation);
+    }
+
+    // --------data instance--------
+
+    public static @Nullable GunIndexInstance getGunIndexInstance(ResourceLocation gunLocation) {
+        return DataInstanceManager.GUN_INDEX.get(gunLocation);
+    }
+    public static @Nullable AttachmentIndexInstance getAttachmentIndexInstance(ResourceLocation attachmentLocation) {
+        return DataInstanceManager.ATTACHMENT_INDEX.get(attachmentLocation);
+    }
+    public static @Nullable AmmoIndexInstance getAmmoIndexInstance(ResourceLocation ammoLocation) {
+        return DataInstanceManager.AMMO_INDEX.get(ammoLocation);
+    }
+    public static @Nullable BlockIndexInstance getBlockIndexInstance(ResourceLocation blockLocation) {
+        return DataInstanceManager.BLOCK_INDEX.get(blockLocation);
     }
 }

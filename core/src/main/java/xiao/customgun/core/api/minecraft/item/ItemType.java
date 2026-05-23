@@ -17,7 +17,8 @@ import java.util.Map;
 public enum ItemType implements ResourceTag.RegistryTag {
     GUN(ItemTypeTag.GUN, ItemTypeTag.GUN_OLD1),
     ATTACHMENT(ItemTypeTag.ATTACHMENT, null),
-    AMMO(ItemTypeTag.AMMO, null);
+    AMMO(ItemTypeTag.AMMO, null),
+    AMMO_BOX(ItemTypeTag.AMMO_BOX, null);
 
     public final String typeName;
     public final String typeNameOld;

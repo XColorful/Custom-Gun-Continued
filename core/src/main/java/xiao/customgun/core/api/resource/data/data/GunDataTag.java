@@ -11,7 +11,7 @@ public class GunDataTag {
 
     // 枪械属性
     public static final String BULLET_DATA = "bullet_data"; public static final String BULLET_DATA_OLD1 = "bullet";
-    public static final String AMMO_TYPE = "ammo_type"; public static final String AMMO_TYPE_OLD1 = "ammo";
+    public static final String AMMO_LOCATION = "ammo_location"; public static final String AMMO_LOCATION_OLD1 = "ammo";
     public static final String BOLT_TYPE = "bolt_type"; public static final String BOLT_TYPE_OLD1 = "bolt";
 
     public static final String RPM = "rpm";

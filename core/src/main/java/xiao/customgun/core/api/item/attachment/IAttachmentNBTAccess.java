@@ -10,6 +10,7 @@ package xiao.customgun.core.api.item.attachment;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
+import xiao.customgun.client.resource.assets.display.AttachmentDisplay;
 import xiao.customgun.core.api.resource.ResourceTag;
 
 /**
@@ -27,6 +28,27 @@ public interface IAttachmentNBTAccess {
      * 获取配件类型，如无则返回 {@link AttachmentCategory#NONE}
      */
     @NotNull AttachmentCategory getAttachmentCategory(CompoundTag attachmentCustomDataTag);
+    void setAttachmentCategory(CompoundTag attachmentCustomDataTag, AttachmentCategory attachmentCategory);
 
+    /**
+     * {@link AttachmentDisplay#getScopeViewIndex()}
+     */
     int getScopeViewIndex(CompoundTag attachmentCustomDataTag);
+    void setScopeViewIndex(CompoundTag attachmentCustomDataTag, int scopeViewIndex);
+
+    /**
+     * {@link AttachmentDisplay#getLaserDisplay()}
+     */
+    boolean hasLaserColor(CompoundTag attachmentCustomDataTag);
+    int getLaserColor(CompoundTag attachmentCustomDataTag);
+    void setLaserColor(CompoundTag attachmentCustomDataTag, int laserColor);
+
+    // --------Deprecated--------
+
+    @Deprecated static int getZoomNumberFromTag(CompoundTag attachmentCustomDataTag) {
+        return AttachmentNBTAccessor.INSTANCE.getScopeViewIndex(attachmentCustomDataTag);
+    }
+    @Deprecated static void setZoomNumberToTag(CompoundTag attachmentCustomDataTag, int zoomNumber) {
+        AttachmentNBTAccessor.INSTANCE.setScopeViewIndex(attachmentCustomDataTag, zoomNumber);
+    }
 }

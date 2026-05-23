@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.client.api.sound.gun.GunSoundType;
 import xiao.customgun.client.resource.assets.display.GunDisplay;
-import xiao.customgun.client.resource.instance.ClientPojoInstance;
+import xiao.customgun.core.resource.instance.PojoInstance;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,7 +20,7 @@ import java.util.Map;
 /**
  * 经过处理和校验的枪械显示数据
  */
-public final class GunDisplayInstance extends ClientPojoInstance<GunDisplay> {
+public final class GunDisplayInstance extends PojoInstance<GunDisplay> {
 
     private Map<GunSoundType, ResourceLocation> sounds = new HashMap<>();
 

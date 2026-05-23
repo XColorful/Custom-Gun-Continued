@@ -43,8 +43,8 @@ public enum GunProperty implements ResourceTag {
     LASER_COLOR(GunPropertyTag.LASER_COLOR,
             IGunDataAccess::getLaserColorInt,
             IGunDataAccess::setLaserColorInt),
-    // IGunAmmoDataAccess
 
+    // IGunAmmoDataAccess
     DUMMY_AMMO(GunPropertyTag.DUMMY_AMMO,
             IGunDataAccess::getDummyAmmoCount,
             IGunDataAccess::setDummyAmmoCount),

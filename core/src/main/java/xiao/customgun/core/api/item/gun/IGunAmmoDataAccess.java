@@ -14,10 +14,15 @@ import net.minecraft.world.item.ItemStack;
 public interface IGunAmmoDataAccess {
 
     /**
+     * 子弹类型是否匹配
+     */
+    boolean isMatchedAmmo(ItemStack gunItem, ItemStack ammoItem);
+    int consumableAmmoCount(ItemStack gunItem, ItemStack ammoItem);
+    /**
      * 为一次射击消耗一次子弹
      * @return 返回消耗的子弹数，为0则不消耗子弹
      */
-    int consumeAmmoOnce(ItemStack gunItem);
+    int consumeAmmoOnce(LivingEntity livingEntity, ItemStack gunItem);
 
     /**
      * 卸载所有弹药
@@ -42,7 +47,7 @@ public interface IGunAmmoDataAccess {
     /**
      * 检查背包是否有备弹，无关是否为直读模式
      */
-    boolean hasInventoryAmmo(ItemStack gunItem);
+    boolean hasInventoryAmmo(LivingEntity livingEntity, ItemStack gunItem);
     int getInventoryAmmoCount(LivingEntity livingEntity, ItemStack gunItem);
 
     /**

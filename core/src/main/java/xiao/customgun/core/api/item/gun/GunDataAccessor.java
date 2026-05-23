@@ -16,7 +16,9 @@ import org.jetbrains.annotations.Nullable;
 import xiao.customgun.CustomGun;
 import xiao.customgun.client.resource.assets.display.AttachmentDisplay;
 import xiao.customgun.core.api.item.GunProperty;
+import xiao.customgun.core.api.item.IAmmo;
 import xiao.customgun.core.api.item.IAttachment;
+import xiao.customgun.core.api.item.ammo.IAmmoGetter;
 import xiao.customgun.core.api.item.attachment.AttachmentCategory;
 import xiao.customgun.core.api.item.attachment.AttachmentNBTAccessor;
 import xiao.customgun.core.api.item.attachment.IAttachmentGetter;
@@ -137,7 +139,28 @@ public interface GunDataAccessor extends IGunDataAccess {
     // --------IGunAmmoDataAccess--------
 
     @Override
-    default int consumeAmmoOnce(ItemStack gunItem) {
+    default boolean isMatchedAmmo(ItemStack gunItem, ItemStack ammoItem) {
+        return this.consumableAmmoCount(gunItem, ammoItem) > 0;
+    }
+    @Override
+    default int consumableAmmoCount(ItemStack gunItem, ItemStack ammoItem) {
+        IAmmo iAmmo = IAmmoGetter.fromItemStack(ammoItem);
+        if (iAmmo == null) return 0;
+
+        @Nullable GunData gunData = this.getGunData(gunItem);
+        if (gunData == null) return 0;
+
+        var customData = NBTUtils.getCustomData(ammoItem);
+        if (customData == null) return 0;
+        @NotNull CompoundTag customDataTag = NBTUtils.getCustomDataTag(customData);
+        if (!iAmmo.getAmmoLocation(customDataTag).equals(gunData.getAmmoLocation())
+                && !iAmmo.isAlmightyAmmo(customDataTag)) {
+            return 0;
+        }
+        return iAmmo.getAmmoCount(ammoItem);
+    }
+    @Override
+    default int consumeAmmoOnce(LivingEntity livingEntity, ItemStack gunItem) {
         // TODO 事件钩子，虚拟子弹，背包直读，NBT弹匣子弹
         return consumeMagAmmo(gunItem);
     }
@@ -183,7 +206,7 @@ public interface GunDataAccessor extends IGunDataAccess {
         return gunData.getReloadData().getAmmoFeedType() == AmmoFeedType.INVENTORY;
     }
     @Override
-    default boolean hasInventoryAmmo(ItemStack gunItem) {
+    default boolean hasInventoryAmmo(LivingEntity livingEntity, ItemStack gunItem) {
         // TODO
         return false;
     }
@@ -195,7 +218,7 @@ public interface GunDataAccessor extends IGunDataAccess {
 
     @Override
     default int getMagAmmoCount(ItemStack gunItem) {
-        return NBTUtils.getInt(gunItem, GunProperty.MAG_AMMO.getTagName());
+        return Math.max(0, NBTUtils.getInt(gunItem, GunProperty.MAG_AMMO.getTagName()));
     }
     @Override
     default void setMagAmmoCount(ItemStack gunItem, int count) {
@@ -350,7 +373,7 @@ public interface GunDataAccessor extends IGunDataAccess {
 
     @Override
     default int getGunExp(ItemStack gunItem) {
-        return NBTUtils.getInt(gunItem, GunProperty.GUN_EXP.getTagName());
+        return Math.max(0, NBTUtils.getInt(gunItem, GunProperty.GUN_EXP.getTagName()));
     }
     @Override
     default void setGunExp(ItemStack gunItem, int exp) {

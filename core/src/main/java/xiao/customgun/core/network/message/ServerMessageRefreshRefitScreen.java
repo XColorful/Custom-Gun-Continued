@@ -32,7 +32,7 @@ public class ServerMessageRefreshRefitScreen implements IMessage<ServerMessageRe
     public void handle(ServerMessageRefreshRefitScreen message, Consumer<Runnable> handler, NetworkContext context) {
         if (CustomGun.getSideExecutor().getLogicalSide().isClient()) {
             handler.accept(() -> {
-                CustomGun.getSideExecutor().unsafeRunWhenOn(McSide.CLIENT, () -> () ->
+                CustomGun.getSideExecutor().executeOn(McSide.CLIENT, () -> () ->
                         _ServerMessageRefreshRefitScreen.updateScreen()
                 );
             });

@@ -13,16 +13,13 @@ import java.util.function.Supplier;
 public class ForgeSideExecutor implements ISideExecutor {
 
     @Override
-    public void unsafeRunWhenOn(McSide dist, Supplier<Runnable> toRun) {
+    public void executeOn(McSide dist, Supplier<Runnable> toRun) {
         DistExecutor.unsafeRunWhenOn(McSideHelper.convert(dist), toRun);
     }
 
     @Override
-    public void safeRunWhenOn(McSide dist, Supplier<SideRunnable> toRun) {
-        DistExecutor.safeRunWhenOn(McSideHelper.convert(dist), () -> {
-            SideRunnable coreRunnable = toRun.get();
-            return (DistExecutor.SafeRunnable) coreRunnable::run;
-        });
+    public void executeOnIsolated(McSide dist, Supplier<SideRunnable> toRun) {
+        DistExecutor.safeRunWhenOn(McSideHelper.convert(dist), () -> (DistExecutor.SafeRunnable) () -> toRun.get().run());
     }
 
     @Override

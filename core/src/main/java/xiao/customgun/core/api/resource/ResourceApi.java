@@ -140,16 +140,16 @@ public class ResourceApi {
 
     // --------data instance--------
 
-    public static @Nullable GunIndexInstance getGunIndexInstance(ResourceLocation gunLocation) {
+    public static @Nullable GunIndexInstance getGunIndexInstance(Identifier gunLocation) {
         return DataInstanceManager.GUN_INDEX.get(gunLocation);
     }
-    public static @Nullable AttachmentIndexInstance getAttachmentIndexInstance(ResourceLocation attachmentLocation) {
+    public static @Nullable AttachmentIndexInstance getAttachmentIndexInstance(Identifier attachmentLocation) {
         return DataInstanceManager.ATTACHMENT_INDEX.get(attachmentLocation);
     }
-    public static @Nullable AmmoIndexInstance getAmmoIndexInstance(ResourceLocation ammoLocation) {
+    public static @Nullable AmmoIndexInstance getAmmoIndexInstance(Identifier ammoLocation) {
         return DataInstanceManager.AMMO_INDEX.get(ammoLocation);
     }
-    public static @Nullable BlockIndexInstance getBlockIndexInstance(ResourceLocation blockLocation) {
+    public static @Nullable BlockIndexInstance getBlockIndexInstance(Identifier blockLocation) {
         return DataInstanceManager.BLOCK_INDEX.get(blockLocation);
     }
 }

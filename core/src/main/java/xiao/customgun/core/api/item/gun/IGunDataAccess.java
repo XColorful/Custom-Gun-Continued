@@ -32,16 +32,16 @@ public interface IGunDataAccess extends IGunPojoGetter,
 
     // --------Deprecated--------
 
-    @Deprecated default @NotNull ResourceLocation getGunId(ItemStack gunItem) {
+    @Deprecated default @NotNull Identifier getGunId(ItemStack gunItem) {
         return getGunLocation(gunItem);
     }
-    @Deprecated default void setGunId(ItemStack gunItem, ResourceLocation gunLocation) {
+    @Deprecated default void setGunId(ItemStack gunItem, Identifier gunLocation) {
         setGunDisplayLocation(gunItem, gunLocation);
     }
-    @Deprecated default @NotNull ResourceLocation getGunDisplayId(ItemStack gunItem) {
+    @Deprecated default @NotNull Identifier getGunDisplayId(ItemStack gunItem) {
         return getGunLocation(gunItem);
     }
-    @Deprecated default void setGunDisplayId(ItemStack gunItem, ResourceLocation gunDisplayLocation) {
+    @Deprecated default void setGunDisplayId(ItemStack gunItem, Identifier gunDisplayLocation) {
         setGunDisplayLocation(gunItem, gunDisplayLocation);
     }
 }

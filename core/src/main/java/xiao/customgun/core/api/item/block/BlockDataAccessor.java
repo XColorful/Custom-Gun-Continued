@@ -7,7 +7,7 @@
 
 package xiao.customgun.core.api.item.block;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -23,12 +23,12 @@ public interface BlockDataAccessor extends IBlockDataAccess {
     // --------IBlockDataAccess--------
 
     @Override
-    default @NotNull ResourceLocation getBlockLocation(ItemStack blockItem) {
+    default @NotNull Identifier getBlockLocation(ItemStack blockItem) {
         var blockLocation = NBTUtils.getResourceLocation(blockItem, BlockProperty.BLOCK_LOCATION.getTagName());
         return blockLocation != null ? blockLocation : ResourceTag.NULL_LOCATION;
     }
     @Override
-    default void setBlockLocation(ItemStack blockItem, ResourceLocation blockLocation) {
+    default void setBlockLocation(ItemStack blockItem, Identifier blockLocation) {
         NBTUtils.setResourceLocation(blockItem, BlockProperty.BLOCK_LOCATION.getTagName(), blockLocation);
     }
 

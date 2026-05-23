@@ -44,10 +44,10 @@ public interface IAttachmentDataAccess extends IAttachmentPojoGetter,
 
     // --------Deprecated--------
 
-    @Deprecated default ResourceLocation getAttachmentId(ItemStack attachmentItem) {
+    @Deprecated default Identifier getAttachmentId(ItemStack attachmentItem) {
         return getAttachmentLocation(attachmentItem);
     }
-    @Deprecated default void setAttachmentId(ItemStack attachmentItem, ResourceLocation attachmentId) {
+    @Deprecated default void setAttachmentId(ItemStack attachmentItem, Identifier attachmentId) {
         setAttachmentLocation(attachmentItem, attachmentId);
     }
 

@@ -7,7 +7,7 @@
 
 package xiao.customgun.core.api.item.ammo;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import xiao.customgun.core.api.item.IGun;
@@ -22,8 +22,8 @@ public interface IAmmoDataAccess extends IAmmoPojoGetter,
     /**
      * 获取子弹ID，如不存在则返回 {@link ResourceTag#NULL_LOCATION}
      */
-    @NotNull ResourceLocation getAmmoLocation(ItemStack ammoItem);
-    void setAmmoLocation(ItemStack ammoItem, ResourceLocation ammoLocation);
+    @NotNull Identifier getAmmoLocation(ItemStack ammoItem);
+    void setAmmoLocation(ItemStack ammoItem, Identifier ammoLocation);
 
     /**
      * 获取子弹数量
@@ -50,10 +50,10 @@ public interface IAmmoDataAccess extends IAmmoPojoGetter,
 
     // --------Deprecated--------
 
-    @Deprecated default @NotNull ResourceLocation getAmmoId(ItemStack ammoItem) {
+    @Deprecated default @NotNull Identifier getAmmoId(ItemStack ammoItem) {
         return getAmmoLocation(ammoItem);
     }
-    @Deprecated default void setAmmoId(ItemStack ammoItem, ResourceLocation ammoLocation) {
+    @Deprecated default void setAmmoId(ItemStack ammoItem, Identifier ammoLocation) {
         setAmmoLocation(ammoItem, ammoLocation);
     }
 

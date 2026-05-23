@@ -19,7 +19,7 @@ public class CommonSetup {
 
     public void onCommonSetup() {
         NetworkHandler.get().registerMessages();
-        ModSyncedEntityData.init();
+        ModSyncedEntityData.registerAll();
     }
 
     private boolean LOAD_COMPLETE = false;

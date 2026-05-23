@@ -13,6 +13,7 @@ package xiao.customgun.core.event.custom;
 
 import xiao.customgun.CustomGun;
 import xiao.customgun.core.api.event.*;
+import xiao.customgun.core.entity.sync.SyncEntityDataHandler;
 import xiao.customgun.core.resource.AllDataManager;
 
 public class CoreEventHandlers {
@@ -21,6 +22,10 @@ public class CoreEventHandlers {
         register(customEventRegister, AllDataManager._getInternal(), EventType.ADD_SERVER_RELOAD_LISTENER_EVENT, EventPriority.NORMAL, false);
         register(customEventRegister, AllDataManager._getInternal(), EventType.TAGS_UPDATED_EVENT, EventPriority.NORMAL, false);
         register(customEventRegister, AllDataManager._getInternal(), EventType.DATAPACK_SYNC_EVENT, EventPriority.NORMAL, false);
+        register(customEventRegister, SyncEntityDataHandler.get(), EventType.SERVER_TICK_EVENT, EventPriority.NORMAL, false);
+        register(customEventRegister, SyncEntityDataHandler.get(), EventType.ENTITY_JOIN_LEVEL_EVENT, EventPriority.NORMAL, false);
+        register(customEventRegister, SyncEntityDataHandler.get(), EventType.PLAYER_CLONE_EVENT, EventPriority.NORMAL, false);
+        register(customEventRegister, SyncEntityDataHandler.get(), EventType.PLAYER_START_TRACKING_EVENT, EventPriority.NORMAL, false);
     }
 
     public static void register(ICustomEventRegister customEventRegister, ICustomEventHandler eventHandler, CustomEventType customEventType, EventPriority priority, boolean receiveCanceled) {

@@ -27,7 +27,6 @@ import xiao.customgun.core.api.event.IEventRegister;
 import xiao.customgun.core.api.init.registry.IRegistrarFactory;
 import xiao.customgun.core.api.minecraft.ICapabilityProvider;
 import xiao.customgun.core.api.minecraft.IMcRegistry;
-import xiao.customgun.core.api.minecraft.capability.ISyncDataCapabilityProvider;
 import xiao.customgun.core.api.network.INetworkAdapter;
 import xiao.customgun.core.api.network.INetworkHook;
 import xiao.customgun.core.event.EventPoster;

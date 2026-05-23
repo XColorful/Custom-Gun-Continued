@@ -13,10 +13,7 @@ import xiao.customgun.core.api.event.EventPriority;
 import xiao.customgun.core.api.event.EventType;
 import xiao.customgun.core.api.event.IEventHandler;
 import xiao.customgun.core.api.event.IEventRegister;
-import xiao.customgun.forge.event.events.AddServerReloadListenerEventManager;
-import xiao.customgun.forge.event.events.DatapackSyncEventManager;
-import xiao.customgun.forge.event.events.ServerTickEventManager;
-import xiao.customgun.forge.event.events.TagsUpdatedEventManager;
+import xiao.customgun.forge.event.events.*;
 import xiao.customgun.forgeclient.CustomGunForgeClient;
 
 public class ForgeEventRegister implements IEventRegister {
@@ -28,7 +25,14 @@ public class ForgeEventRegister implements IEventRegister {
         }
 
         return switch (eventType) {
+            // tick
             case SERVER_TICK_EVENT -> ServerTickEventManager.register(eventHandler, priority, receiveCanceled);
+            // entity
+            case ENTITY_JOIN_LEVEL_EVENT -> EntityJoinLevelEventManager.register(eventHandler, priority, receiveCanceled);
+            // player
+            case PLAYER_CLONE_EVENT -> PlayerCloneEventManager.register(eventHandler, priority, receiveCanceled);
+            case PLAYER_START_TRACKING_EVENT -> PlayerStartTrackingEventManager.register(eventHandler, priority, receiveCanceled);
+            // resource
             case ADD_SERVER_RELOAD_LISTENER_EVENT -> AddServerReloadListenerEventManager.register(eventHandler, priority, receiveCanceled);
             case TAGS_UPDATED_EVENT -> TagsUpdatedEventManager.register(eventHandler, priority, receiveCanceled);
             case DATAPACK_SYNC_EVENT -> DatapackSyncEventManager.register(eventHandler, priority, receiveCanceled);
@@ -46,7 +50,14 @@ public class ForgeEventRegister implements IEventRegister {
         }
 
         return switch (eventType) {
+            // tick
             case SERVER_TICK_EVENT -> ServerTickEventManager.unregister(eventHandler, priority, receiveCanceled);
+            // entity
+            case ENTITY_JOIN_LEVEL_EVENT -> EntityJoinLevelEventManager.unregister(eventHandler, priority, receiveCanceled);
+            // player
+            case PLAYER_CLONE_EVENT -> PlayerCloneEventManager.unregister(eventHandler, priority, receiveCanceled);
+            case PLAYER_START_TRACKING_EVENT -> PlayerStartTrackingEventManager.unregister(eventHandler, priority, receiveCanceled);
+            // resource
             case ADD_SERVER_RELOAD_LISTENER_EVENT -> AddServerReloadListenerEventManager.unregister(eventHandler, priority, receiveCanceled);
             case TAGS_UPDATED_EVENT -> TagsUpdatedEventManager.unregister(eventHandler, priority, receiveCanceled);
             case DATAPACK_SYNC_EVENT -> DatapackSyncEventManager.unregister(eventHandler, priority, receiveCanceled);

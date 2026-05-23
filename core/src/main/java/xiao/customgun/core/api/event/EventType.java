@@ -16,6 +16,11 @@ public enum EventType {
     // tick
     SERVER_TICK_EVENT(false),
     CLIENT_TICK_EVENT(true),
+    // entity
+    ENTITY_JOIN_LEVEL_EVENT(false),
+    // player
+    PLAYER_CLONE_EVENT(false),
+    PLAYER_START_TRACKING_EVENT(false),
     // resource
     ADD_SERVER_RELOAD_LISTENER_EVENT(false),
     ADD_CLIENT_RELOAD_LISTENER_EVENT(true),

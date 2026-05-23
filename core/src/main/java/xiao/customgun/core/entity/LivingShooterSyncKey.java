@@ -73,12 +73,6 @@ public class LivingShooterSyncKey {
             .syncMode(SyncedDataKey.SyncMode.ALL)
             .build();
 
-    public static final SyncedDataKey<LivingEntity, Integer> THROWABLE_USE_TICK = SyncedDataKey.builder(SyncedClassKey.LIVING_ENTITY, Serializers.INTEGER)
-            .id(mcRegistry.createResourceLocation(String.format("%s:%s", CustomGun.MOD_ID, "throwable_using")))
-            .defaultValueSupplier(() -> -1)
-            .syncMode(SyncedDataKey.SyncMode.SELF_ONLY)
-            .build();
-
     public static void registerAll() {
         registerSyncData(SHOOT_COOL_DOWN_KEY);
         registerSyncData(MELEE_COOL_DOWN_KEY);
@@ -88,7 +82,6 @@ public class LivingShooterSyncKey {
         registerSyncData(IS_AIMING_KEY);
         registerSyncData(SPRINT_TIME_KEY);
         registerSyncData(IS_BOLTING_KEY);
-        registerSyncData(THROWABLE_USE_TICK);
     }
 
     private static void registerSyncData(SyncedDataKey<? extends Entity, ?> dataKey) {

@@ -8,7 +8,7 @@
 package xiao.customgun.core.api.item.ammo;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 import xiao.customgun.core.api.resource.ResourceTag;
 
@@ -17,8 +17,8 @@ public interface IAmmoNBTAccess {
     /**
      * 获取子弹ID，如不存在则返回 {@link ResourceTag#NULL_LOCATION}
      */
-    @NotNull ResourceLocation getAmmoLocation(CompoundTag ammoItemCustomDataTag);
-    void setAmmoLocation(CompoundTag ammoItemCustomDataTag, ResourceLocation ammoLocation);
+    @NotNull Identifier getAmmoLocation(CompoundTag ammoItemCustomDataTag);
+    void setAmmoLocation(CompoundTag ammoItemCustomDataTag, Identifier ammoLocation);
 
     /**
      * 是否供应无限子弹

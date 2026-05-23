@@ -8,7 +8,7 @@
 package xiao.customgun.core.api.item.ammo;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 import xiao.customgun.core.api.item.AmmoProperty;
 import xiao.customgun.core.api.resource.ResourceTag;
@@ -21,12 +21,12 @@ public interface AmmoNBTAccessor extends IAmmoNBTAccess {
     // --------IAmmoNBTAccess--------
 
     @Override
-    default @NotNull ResourceLocation getAmmoLocation(CompoundTag ammoItemCustomDataTag) {
+    default @NotNull Identifier getAmmoLocation(CompoundTag ammoItemCustomDataTag) {
         var ammoLocation = NBTUtils.getResourceLocation(ammoItemCustomDataTag, AmmoProperty.AMMO_LOCATION.getTagName());
         return ammoLocation != null ? ammoLocation : ResourceTag.NULL_LOCATION;
     }
     @Override
-    default void setAmmoLocation(CompoundTag ammoItemCustomDataTag, ResourceLocation ammoLocation) {
+    default void setAmmoLocation(CompoundTag ammoItemCustomDataTag, Identifier ammoLocation) {
         NBTUtils.setResourceLocation(ammoItemCustomDataTag, AmmoProperty.AMMO_LOCATION.getTagName(), ammoLocation);
     }
 

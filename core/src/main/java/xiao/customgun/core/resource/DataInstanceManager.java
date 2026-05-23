@@ -7,7 +7,7 @@
 
 package xiao.customgun.core.resource;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.CustomGun;
 import xiao.customgun.core.api.resource.ResourceApi;
@@ -30,10 +30,10 @@ import java.util.function.Function;
 public class DataInstanceManager {
 
     // data
-    public static final Map<ResourceLocation, GunIndexInstance> GUN_INDEX = new HashMap<>();
-    public static final Map<ResourceLocation, AttachmentIndexInstance> ATTACHMENT_INDEX = new HashMap<>();
-    public static final Map<ResourceLocation, AmmoIndexInstance> AMMO_INDEX = new HashMap<>();
-    public static final Map<ResourceLocation, BlockIndexInstance> BLOCK_INDEX = new HashMap<>();
+    public static final Map<Identifier, GunIndexInstance> GUN_INDEX = new HashMap<>();
+    public static final Map<Identifier, AttachmentIndexInstance> ATTACHMENT_INDEX = new HashMap<>();
+    public static final Map<Identifier, AmmoIndexInstance> AMMO_INDEX = new HashMap<>();
+    public static final Map<Identifier, BlockIndexInstance> BLOCK_INDEX = new HashMap<>();
 
     private DataInstanceManager() {}
 
@@ -58,12 +58,12 @@ public class DataInstanceManager {
         buildPojoInstance(ResourceApi.getAllBlockIndex(), BLOCK_INDEX, BlockIndexInstance::fromPojo, BlockIndexInstance.class);
     }
     public static <T extends ResourcePojo<T>, I extends PojoInstance<T>> void buildPojoInstance(
-            Set<Map.Entry<ResourceLocation, T>> entries,
-            Map<ResourceLocation, I> targetMap,
+            Set<Map.Entry<Identifier, T>> entries,
+            Map<Identifier, I> targetMap,
             Function<T, @Nullable I> instanceFactory,
             Class<I> instanceClass) {
 
-        for (Map.Entry<ResourceLocation, T> entry : entries) {
+        for (Map.Entry<Identifier, T> entry : entries) {
             var location = entry.getKey();
             T pojo = entry.getValue();
             I instance = instanceFactory.apply(pojo);

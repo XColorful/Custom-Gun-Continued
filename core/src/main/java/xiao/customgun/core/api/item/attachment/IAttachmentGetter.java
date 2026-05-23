@@ -17,4 +17,10 @@ public interface IAttachmentGetter {
         if (attachmentItem == null) return null;
         return attachmentItem.getItem() instanceof IAttachment iAttachment ? iAttachment : null;
     }
+
+    // --------Deprecated--------
+
+    @Deprecated static @Nullable IAttachment getIAttachmentOrNull(@Nullable ItemStack attachmentItem) {
+        return fromItemStack(attachmentItem);
+    }
 }

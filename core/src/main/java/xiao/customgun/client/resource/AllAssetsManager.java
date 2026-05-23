@@ -93,8 +93,7 @@ public class AllAssetsManager implements IEventHandler {
                 (barrier, resourceManager, preparationProfiler, reloadProfiler, backgroundExecutor, gameExecutor) -> {
                     return barrier
                             .wait(Void.TYPE)
-                            .thenRunAsync(() -> {// TODO
-                            }, gameExecutor);
+                            .thenRunAsync(AssetsInstanceManager::reload, gameExecutor);
                 }
         );
     }

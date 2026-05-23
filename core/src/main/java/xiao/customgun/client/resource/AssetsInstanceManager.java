@@ -7,15 +7,21 @@
 
 package xiao.customgun.client.resource;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
+import xiao.customgun.client.api.resource.ClientResourceApi;
 import xiao.customgun.client.resource.instance.assets.GunDisplayInstance;
-import xiao.customgun.client.resource.instance.data.AmmoIndexInstance;
-import xiao.customgun.client.resource.instance.data.AttachmentIndexInstance;
-import xiao.customgun.client.resource.instance.data.BlockIndexInstance;
-import xiao.customgun.client.resource.instance.data.GunIndexInstance;
+import xiao.customgun.client.resource.instance.data.ClientAmmoIndexInstance;
+import xiao.customgun.client.resource.instance.data.ClientAttachmentIndexInstance;
+import xiao.customgun.client.resource.instance.data.ClientBlockIndexInstance;
+import xiao.customgun.client.resource.instance.data.ClientGunIndexInstance;
+import xiao.customgun.core.api.resource.ResourceApi;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static xiao.customgun.core.resource.DataInstanceManager.buildPojoInstance;
 
 /**
  * 存放Pojo二次校验后的实例，直接丢弃索引无效的ResourceLocation
@@ -25,16 +31,19 @@ import java.util.Map;
 public class AssetsInstanceManager {
 
     // data
-    public static final Map<ResourceLocation, GunIndexInstance> GUN_INDEX = new HashMap<>();
-    public static final Map<ResourceLocation, AttachmentIndexInstance> ATTACHMENT_INDEX = new HashMap<>();
-    public static final Map<ResourceLocation, AmmoIndexInstance> AMMO_INDEX = new HashMap<>();
-    public static final Map<ResourceLocation, BlockIndexInstance> BLOCK_INDEX = new HashMap<>();
+    public static final Map<ResourceLocation, ClientGunIndexInstance> GUN_INDEX = new HashMap<>();
+    public static final Map<ResourceLocation, ClientAttachmentIndexInstance> ATTACHMENT_INDEX = new HashMap<>();
+    public static final Map<ResourceLocation, ClientAmmoIndexInstance> AMMO_INDEX = new HashMap<>();
+    public static final Map<ResourceLocation, ClientBlockIndexInstance> BLOCK_INDEX = new HashMap<>();
 
     // assets
     public static final Map<ResourceLocation, GunDisplayInstance> GUN_DISPLAY = new HashMap<>(); // displayLocation -> GunDisplay
 
     private AssetsInstanceManager() {}
 
+    /**
+     * 主线程操作(线程不安全)
+     */
     public static void clear() {
         GUN_INDEX.clear();
         ATTACHMENT_INDEX.clear();
@@ -42,8 +51,20 @@ public class AssetsInstanceManager {
         BLOCK_INDEX.clear();
         GUN_DISPLAY.clear();
     }
-
+    /**
+     * 主线程操作(线程不安全)
+     */
     public static void reload() {
         clear();
+
+        buildPojoInstance(ResourceApi.getAllGunIndex(), GUN_INDEX, ClientGunIndexInstance::fromPojo, ClientGunIndexInstance.class);
+        buildPojoInstance(ResourceApi.getAllAttachmentIndex(), ATTACHMENT_INDEX, ClientAttachmentIndexInstance::fromPojo, ClientAttachmentIndexInstance.class);
+        buildPojoInstance(ResourceApi.getAllAmmoIndex(), AMMO_INDEX, ClientAmmoIndexInstance::fromPojo, ClientAmmoIndexInstance.class);
+        buildPojoInstance(ResourceApi.getAllBlockIndex(), BLOCK_INDEX, ClientBlockIndexInstance::fromPojo, ClientBlockIndexInstance.class);
+
+        buildPojoInstance(ClientResourceApi.getAllGunDisplay(), GUN_DISPLAY, GunDisplayInstance::fromPojo, GunDisplayInstance.class);
+
+        LocalPlayer player = Minecraft.getInstance().player;
+        // TODO
     }
 }

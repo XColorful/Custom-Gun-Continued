@@ -12,6 +12,10 @@ minecraft {
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
     compileOnly fg.deobf("net.minecraftforge:forge:${minecraft_version}-${forge_version}")
+
+    // MixinExtras
+    compileOnly "${mixin_extras_common}:${mixin_extras_version}"
+    annotationProcessor "${mixin_extras_common}:${mixin_extras_version}"
 }
 
 jar {

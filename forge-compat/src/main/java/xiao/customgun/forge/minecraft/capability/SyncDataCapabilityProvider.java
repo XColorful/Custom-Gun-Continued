@@ -8,6 +8,7 @@
 package xiao.customgun.forge.minecraft.capability;
 
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -39,14 +40,14 @@ public class SyncDataCapabilityProvider implements ISyncDataCapabilityProvider, 
     }
 
     @Override
-    public ListTag serializeNBT() {
+    public ListTag serializeNBT(HolderLookup.Provider registryAccess) {
         ListTag list = new ListTag();
         this.holder.syncData.forEach((key, entry) -> {
             if (key.save()) {
                 CompoundTag keyTag = new CompoundTag();
                 keyTag.putString("ClassKey", key.classKey().id().toString());
                 keyTag.putString("DataKey", key.id().toString());
-                keyTag.put("Value", entry.writeValue());
+                keyTag.put("Value", entry.writeValue(registryAccess));
                 list.add(keyTag);
             }
         });
@@ -54,7 +55,7 @@ public class SyncDataCapabilityProvider implements ISyncDataCapabilityProvider, 
     }
 
     @Override
-    public void deserializeNBT(ListTag listTag) {
+    public void deserializeNBT(HolderLookup.Provider registryAccess, ListTag listTag) {
         this.holder.syncData.clear();
         listTag.forEach(entryTag -> {
             CompoundTag keyTag = (CompoundTag) entryTag;
@@ -70,7 +71,7 @@ public class SyncDataCapabilityProvider implements ISyncDataCapabilityProvider, 
                 return;
             }
             DataEntry<?, ?> entry = new DataEntry<>(syncedDataKey);
-            entry.readValue(value);
+            entry.readValue(registryAccess, value);
             this.holder.syncData.put(syncedDataKey, entry);
         });
     }

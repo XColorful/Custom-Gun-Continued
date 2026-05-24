@@ -24,6 +24,7 @@ import xiao.customgun.core.api.item.attachment.AttachmentNBTAccessor;
 import xiao.customgun.core.api.item.attachment.IAttachmentGetter;
 import xiao.customgun.core.api.resource.ResourceApi;
 import xiao.customgun.core.api.resource.ResourceTag;
+import xiao.customgun.core.developer.PlannedRefactor;
 import xiao.customgun.core.resource.data.data.GunData;
 import xiao.customgun.core.resource.data.index.GunIndex;
 import xiao.customgun.core.util.NBTUtils;
@@ -161,6 +162,7 @@ public interface GunDataAccessor extends IGunDataAccess {
     }
     @Override
     default int consumeAmmoOnce(LivingEntity livingEntity, ItemStack gunItem) {
+        if (PlannedRefactor.ON_CONSUME_AMMO) return 0;
         // TODO 事件钩子，虚拟子弹，背包直读，NBT弹匣子弹
         return consumeMagAmmo(gunItem);
     }

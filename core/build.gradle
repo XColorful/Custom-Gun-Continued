@@ -7,6 +7,10 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(25)
 
 dependencies {
     implementation "net.neoforged:neoforge:${neo_version}"
+
+    // MixinExtras
+    compileOnly "${mixin_extras_common}:${mixin_extras_version}"
+    annotationProcessor "${mixin_extras_common}:${mixin_extras_version}"
 }
 
 jar {

@@ -113,6 +113,8 @@ tasks.matching { it.name == 'remapJar' || it.name == 'reobfJar' }.configureEach 
 }
 // jarJar机制
 tasks.matching { it.name == 'jarJar' || it.name == 'reobfJarJar' }.configureEach {
+    project.build.dependsOn(it) // 1.21.1forge
+
     if (it.hasProperty("archiveClassifier")) {
         it.archiveBaseName.set(mod_id)
         it.archiveVersion.set(mod_version)

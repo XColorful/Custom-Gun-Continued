@@ -26,6 +26,7 @@ import xiao.customgun.core.api.common.McSide;
 import xiao.customgun.core.api.config.IModConfigSpecBuilder;
 import xiao.customgun.core.api.event.IEventRegister;
 import xiao.customgun.core.api.init.registry.IRegistrarFactory;
+import xiao.customgun.core.api.minecraft.ICapabilityProvider;
 import xiao.customgun.core.api.minecraft.IMcRegistry;
 import xiao.customgun.core.api.network.INetworkAdapter;
 import xiao.customgun.core.api.network.INetworkHook;
@@ -35,6 +36,7 @@ import xiao.customgun.neoforge.common.NeoSideExecutor;
 import xiao.customgun.neoforge.config.NeoModConfigSpecBuilder;
 import xiao.customgun.neoforge.event.NeoEventRegister;
 import xiao.customgun.neoforge.init.registry.NeoRegistrarFactory;
+import xiao.customgun.neoforge.minecraft.NeoCapabilityProvider;
 import xiao.customgun.neoforge.minecraft.NeoRegistry;
 import xiao.customgun.neoforge.network.NeoNetworkAdapter;
 import xiao.customgun.neoforge.network.NeoNetworkHook;
@@ -48,6 +50,7 @@ public class CustomGunNeoforge {
     public static ISideExecutor sideExecutor;
     public static IRegistrarFactory registrarFactory;
     public static IMcRegistry mcRegistry;
+    public static ICapabilityProvider capabilityProvider;
     public static INetworkAdapter networkAdapter;
     public static INetworkHook networkHook;
     public static IEventRegister eventRegister;
@@ -58,6 +61,7 @@ public class CustomGunNeoforge {
         CustomGunNeoforge.sideExecutor = new NeoSideExecutor();
         CustomGunNeoforge.registrarFactory = new NeoRegistrarFactory();
         CustomGunNeoforge.mcRegistry = new NeoRegistry();
+        CustomGunNeoforge.capabilityProvider = new NeoCapabilityProvider();
         CustomGunNeoforge.networkAdapter = NeoNetworkAdapter.INSTANCE;
         CustomGunNeoforge.networkHook = new NeoNetworkHook();
         CustomGunNeoforge.eventRegister = new NeoEventRegister();
@@ -66,7 +70,7 @@ public class CustomGunNeoforge {
         McSide mcSide = dist.isClient() ? McSide.CLIENT : McSide.DEDICATED_SERVER;
 
         CustomGun.init(mcSide, CustomGunNeoforge.sideExecutor,
-                CustomGunNeoforge.registrarFactory, CustomGunNeoforge.mcRegistry,
+                CustomGunNeoforge.registrarFactory, CustomGunNeoforge.mcRegistry, CustomGunNeoforge.capabilityProvider,
                 CustomGunNeoforge.networkAdapter, CustomGunNeoforge.networkHook,
                 CustomGunNeoforge.eventRegister,
                 CustomGunNeoforge.modConfigSpecBuilderSupplier);

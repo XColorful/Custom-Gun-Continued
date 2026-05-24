@@ -15,8 +15,8 @@ import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 import xiao.customgun.CustomGun;
 import xiao.customgun.core.api.network.message.IMessage;
-import xiao.customgun.core.entity.sync.core.SyncedDataKey;
-import xiao.customgun.core.entity.sync.core.SyncedEntityData;
+import xiao.customgun.core.entity.sync.SyncedDataKey;
+import xiao.customgun.core.entity.sync.SyncedEntityData;
 import xiao.customgun.core.network.LoginIndexHolder;
 import xiao.customgun.core.util.NetworkUtils;
 

@@ -37,7 +37,7 @@ public record ServerMessageLevelUp(ItemStack gun,
     public void handle(ServerMessageLevelUp message, Consumer<Runnable> handler, NetworkContext context) {
         if (CustomGun.getSideExecutor().getLogicalSide().isClient()) {
             handler.accept(() -> {
-                CustomGun.getSideExecutor().unsafeRunWhenOn(McSide.CLIENT, () -> () ->
+                CustomGun.getSideExecutor().executeOn(McSide.CLIENT, () -> () ->
                         _ServerMessageLevelUp.onLevelUp(message)
                 );
             });

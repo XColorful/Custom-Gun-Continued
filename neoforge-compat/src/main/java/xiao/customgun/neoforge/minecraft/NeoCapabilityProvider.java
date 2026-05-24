@@ -9,8 +9,8 @@ import xiao.customgun.core.api.minecraft.ICapabilityProvider;
 import xiao.customgun.core.api.minecraft.capability.IInventoryCapability;
 import xiao.customgun.core.api.minecraft.capability.ISyncDataCapabilityProvider;
 import xiao.customgun.core.entity.sync.SyncDataHolder;
+import xiao.customgun.neoforge.init.NeoCapabilityRegistry;
 import xiao.customgun.neoforge.minecraft.capability.NeoInventoryCapability;
-import xiao.customgun.neoforge.minecraft.capability.SyncDataCapabilityProvider;
 
 public class NeoCapabilityProvider implements ICapabilityProvider {
 
@@ -18,12 +18,14 @@ public class NeoCapabilityProvider implements ICapabilityProvider {
         return NeoInventoryCapability.fromLivingEntity(livingEntity, facing);
     }
 
+    @SuppressWarnings("all")
+    @Deprecated
     @Override
     public @NotNull ISyncDataCapabilityProvider createSyncDataCapabilityProvider() {
-        return new SyncDataCapabilityProvider();
+        return null;
     }
     @Override
     public @Nullable SyncDataHolder getSyncDataHolder(Entity entity, Direction facing) {
-        return entity.getCapability(SyncDataCapabilityProvider.CAPABILITY, facing).orElse(null);
+        return entity.getData(NeoCapabilityRegistry.SYNC_DATA_HOLDER);
     }
 }

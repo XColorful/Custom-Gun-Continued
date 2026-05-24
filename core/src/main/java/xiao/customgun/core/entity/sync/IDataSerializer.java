@@ -7,6 +7,7 @@
 
 package xiao.customgun.core.entity.sync;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
 
@@ -19,7 +20,7 @@ public interface IDataSerializer<T> {
 
     T read(FriendlyByteBuf buffer);
 
-    Tag write(T value);
+    Tag write(HolderLookup.Provider provider, T value);
 
-    T read(Tag nbt);
+    T read(HolderLookup.Provider provider, Tag nbt);
 }

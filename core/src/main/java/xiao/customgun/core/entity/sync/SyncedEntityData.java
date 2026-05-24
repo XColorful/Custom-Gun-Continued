@@ -167,7 +167,7 @@ public class SyncedEntityData {
          * have a synced data key. In order to prevent checking this every time we attach the
          * capability, a simple one time check can be performed then cache the result. */
         Class<? extends Entity> entityClass = entity.getClass();
-        return this.getClassNameCapabilityCache(entity.level().isClientSide).computeIfAbsent(entityClass.getName(), c -> {
+        return this.getClassNameCapabilityCache(entity.level().isClientSide()).computeIfAbsent(entityClass.getName(), c -> {
             Class<?> targetClass = entityClass;
             while(!targetClass.isAssignableFrom(Entity.class)) { // Should be good enough
                 if(this.classNameToClassKey.containsKey(targetClass.getName())) {

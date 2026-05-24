@@ -9,13 +9,13 @@ import java.util.function.Supplier;
  */
 public interface ISideExecutor {
 
-    void unsafeRunWhenOn(McSide dist, Supplier<Runnable> toRun);
-
-    void safeRunWhenOn(McSide dist, Supplier<SideRunnable> toRun);
+    void executeOn(McSide dist, Supplier<Runnable> toRun);
 
     /**
-     * 对标 Forge 的 SafeRunnable
+     * 调用方需手动类隔离，在开发环境下会触发 Forge 的类安全校验
      */
+    void executeOnIsolated(McSide dist, Supplier<SideRunnable> toRun);
+
     @FunctionalInterface
     interface SideRunnable extends Runnable, Serializable {}
 

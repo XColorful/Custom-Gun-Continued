@@ -31,7 +31,7 @@ public record ServerMessageCraft(int menuId)
     public void handle(ServerMessageCraft message, Consumer<Runnable> handler, NetworkContext context) {
         if (CustomGun.getSideExecutor().getLogicalSide().isClient()) {
             handler.accept(() -> {
-                CustomGun.getSideExecutor().unsafeRunWhenOn(McSide.CLIENT, () -> () ->
+                CustomGun.getSideExecutor().executeOn(McSide.CLIENT, () -> () ->
                         _ServerMessageCraft.updateScreen(message.menuId)
                 );
             });

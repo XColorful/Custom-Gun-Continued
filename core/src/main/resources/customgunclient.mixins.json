@@ -1,0 +1,12 @@
+{
+  "package": "xiao.customgun.client.mixin",
+  "minVersion": "0.8",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "customgun.refmap.json",
+  "client": [
+    "entity.LocalPlayerMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

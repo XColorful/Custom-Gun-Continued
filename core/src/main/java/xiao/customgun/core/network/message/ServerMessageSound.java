@@ -48,7 +48,7 @@ public record ServerMessageSound(int entityId,
     public void handle(ServerMessageSound message, Consumer<Runnable> handler, NetworkContext context) {
         if (CustomGun.getSideExecutor().getLogicalSide().isClient()) {
             handler.accept(() -> {
-                CustomGun.getSideExecutor().unsafeRunWhenOn(McSide.CLIENT, () -> () ->
+                CustomGun.getSideExecutor().executeOn(McSide.CLIENT, () -> () ->
                         _ServerMessageSound.playSound(message)
                 );
             });

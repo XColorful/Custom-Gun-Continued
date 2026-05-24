@@ -11,6 +11,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.*;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import xiao.customgun.CustomGun;
@@ -39,7 +40,7 @@ public class Serializers {
             return ByteTag.valueOf(value);
         }
         @Override public Boolean read(HolderLookup.Provider provider, Tag tag) {
-            return ((ByteTag) tag).getAsByte() != 0;
+            return ((ByteTag) tag).byteValue() != 0;
         }
     };
 
@@ -54,7 +55,7 @@ public class Serializers {
             return ByteTag.valueOf(value);
         }
         @Override public Byte read(HolderLookup.Provider provider, Tag tag) {
-            return ((ByteTag) tag).getAsByte();
+            return ((ByteTag) tag).byteValue();
         }
     };
 
@@ -69,7 +70,7 @@ public class Serializers {
             return ShortTag.valueOf(value);
         }
         @Override public Short read(HolderLookup.Provider provider, Tag tag) {
-            return ((ShortTag) tag).getAsShort();
+            return ((ShortTag) tag).shortValue();
         }
     };
 
@@ -84,7 +85,7 @@ public class Serializers {
             return IntTag.valueOf(value);
         }
         @Override public Integer read(HolderLookup.Provider provider, Tag tag) {
-            return ((IntTag) tag).getAsInt();
+            return ((IntTag) tag).intValue();
         }
     };
 
@@ -99,7 +100,7 @@ public class Serializers {
             return LongTag.valueOf(value);
         }
         @Override public Long read(HolderLookup.Provider provider, Tag tag) {
-            return ((LongTag) tag).getAsLong();
+            return ((LongTag) tag).longValue();
         }
     };
 
@@ -114,7 +115,7 @@ public class Serializers {
             return FloatTag.valueOf(value);
         }
         @Override public Float read(HolderLookup.Provider provider, Tag tag) {
-            return ((FloatTag) tag).getAsFloat();
+            return ((FloatTag) tag).floatValue();
         }
     };
 
@@ -129,7 +130,7 @@ public class Serializers {
             return DoubleTag.valueOf(value);
         }
         @Override public Double read(HolderLookup.Provider provider, Tag tag) {
-            return ((DoubleTag) tag).getAsDouble();
+            return ((DoubleTag) tag).doubleValue();
         }
     };
 
@@ -144,7 +145,7 @@ public class Serializers {
             return IntTag.valueOf(value);
         }
         @Override public Character read(HolderLookup.Provider provider, Tag tag) {
-            return (char) ((IntTag) tag).getAsInt();
+            return (char) ((IntTag) tag).intValue();
         }
     };
 
@@ -159,7 +160,7 @@ public class Serializers {
             return StringTag.valueOf(value);
         }
         @Override public String read(HolderLookup.Provider provider, Tag tag) {
-            return tag.getAsString();
+            return tag.asString().orElse("");
         }
     };
 
@@ -189,7 +190,7 @@ public class Serializers {
             return LongTag.valueOf(value.asLong());
         }
         @Override public BlockPos read(HolderLookup.Provider provider, Tag tag) {
-            return BlockPos.of(((LongTag) tag).getAsLong());
+            return BlockPos.of(((LongTag) tag).longValue());
         }
     };
 
@@ -208,7 +209,7 @@ public class Serializers {
         }
         @Override public UUID read(HolderLookup.Provider provider, Tag tag) {
             CompoundTag compound = (CompoundTag) tag;
-            return new UUID(compound.getLong("Most"), compound.getLong("Least"));
+            return new UUID(compound.getLongOr("Most", 0), compound.getLongOr("Least", 0));
         }
     };
 
@@ -220,10 +221,14 @@ public class Serializers {
             return NetworkUtils.readItem(buffer);
         }
         @Override public Tag write(HolderLookup.Provider provider, ItemStack value) {
-            return value.save(provider, new CompoundTag());
+            RegistryOps<Tag> ops = provider.createSerializationContext(NbtOps.INSTANCE);
+            return ItemStack.OPTIONAL_CODEC.encodeStart(ops, value)
+                    .getOrThrow(p -> new IllegalArgumentException("Failed to encode ItemStack: " + p));
         }
         @Override public ItemStack read(HolderLookup.Provider provider, Tag tag) {
-            return ItemStack.parseOptional(provider, (CompoundTag) tag);
+            RegistryOps<Tag> ops = provider.createSerializationContext(NbtOps.INSTANCE);
+            return ItemStack.OPTIONAL_CODEC.parse(ops, tag)
+                    .getOrThrow(p -> new IllegalArgumentException("Failed to parse ItemStack: " + p));
         }
     };
 
@@ -238,7 +243,7 @@ public class Serializers {
             return StringTag.valueOf(value.toString());
         }
         @Override public ResourceLocation read(HolderLookup.Provider provider, Tag tag) {
-            return CustomGun.getMcRegistry().createResourceLocation(tag.getAsString());
+            return CustomGun.getMcRegistry().createResourceLocation(tag.asString().orElse(""));
         }
     };
 
@@ -262,8 +267,8 @@ public class Serializers {
         @Override public ReloadState read(HolderLookup.Provider provider, Tag nbt) {
             CompoundTag compound = (CompoundTag) nbt;
             try {
-                ReloadState.StateType stateType = ReloadState.StateType.valueOf(compound.getString("StateType"));
-                long countDown = compound.getLong("CountDown");
+                ReloadState.StateType stateType = ReloadState.StateType.valueOf(compound.getString("StateType").orElse(""));
+                long countDown = compound.getLongOr("CountDown", 0);
                 ReloadState reloadState = new ReloadState();
                 reloadState.setStateType(stateType);
                 reloadState.setCountDown(countDown);

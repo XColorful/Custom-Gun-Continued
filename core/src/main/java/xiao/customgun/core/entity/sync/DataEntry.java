@@ -7,6 +7,7 @@
 
 package xiao.customgun.core.entity.sync;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Entity;
@@ -61,11 +62,11 @@ public class DataEntry<E extends Entity, T> {
         this.value = this.getKey().serializer().read(buffer);
     }
 
-    public Tag writeValue() {
-        return this.key.serializer().write(this.value);
+    public Tag writeValue(HolderLookup.Provider provider) {
+        return this.key.serializer().write(provider, this.value);
     }
 
-    public void readValue(Tag nbt) {
-        this.value = this.key.serializer().read(nbt);
+    public void readValue(HolderLookup.Provider provider, Tag nbt) {
+        this.value = this.key.serializer().read(provider, nbt);
     }
 }

@@ -5,8 +5,11 @@ plugins {
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
+mixin { // 绑定Mixin编译阶段的refmap
+    add sourceSets.main, "customgun.refmap.json"
+}
 // 合并core模块的资源与编译逻辑链到当前模块的主流水线
-sourceSets.main.output.dir(project(':core').sourceSets.main.java.classesDirectory, builtBy: project(':core').compileJava)
+sourceSets.main.java.srcDirs += project(':core').sourceSets.main.java.srcDirs // 会额外编译一次core
 
 minecraft {
     mappings channel: mapping_channel, version: mapping_version
@@ -76,10 +79,13 @@ dependencies {
     implementation project(":core")
 
     // MixinExtras (仅Forge需要打包)
+    implementation "${mixin_extras_common}:${mixin_extras_version}"
     implementation "${mixin_extras_forge}:${mixin_extras_version}"
     jarJar(implementation("${mixin_extras_forge}:${mixin_extras_version}")) {
         jarJar.ranged(it, "[${mixin_extras_version},)")
     }
+    annotationProcessor "${mixin_annotation}"
+    annotationProcessor "${mixin_extras_annotation}:${mixin_extras_version}"
 }
 
 tasks.named('jar', Jar).configure {

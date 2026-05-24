@@ -16,6 +16,7 @@ import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.api.item.attachment.AttachmentCategory;
 import xiao.customgun.core.api.item.gun.IGunGetter;
 import xiao.customgun.core.api.network.message.IMessage;
+import xiao.customgun.core.developer.PlannedRefactor;
 import xiao.customgun.core.util.SendUtils;
 
 import java.util.function.Consumer;
@@ -60,7 +61,7 @@ public record ClientMessageUnloadAttachment(int gunSlotIndex,
                     // 先尝试将配件添加到背包
                     if (!inventory.add(attachmentItem)) {
                         // 添加不了就尝试吐出物品实体
-                        if (!true) return; // TODO Config是否允许满背包时丢成物品实体
+                        if (PlannedRefactor.ON_DROP_ITEM_ENTITY_INSTEAD) return;
                         // 尝试吐出物品实体
                         boolean success = true;
                         if (!success) return;

@@ -11,7 +11,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.ApiStatus;
-import xiao.customgun.core.entity.sync.core.SyncedEntityData;
+import xiao.customgun.core.entity.sync.SyncedEntityData;
 import xiao.customgun.core.network.message.ServerMessageUpdateEntityData;
 
 @ApiStatus.Internal

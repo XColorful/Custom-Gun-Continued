@@ -12,7 +12,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.*;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.RegistryOps;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import xiao.customgun.CustomGun;
 import xiao.customgun.core.api.entity.ReloadState;
@@ -232,17 +232,17 @@ public class Serializers {
         }
     };
 
-    public static final IDataSerializer<ResourceLocation> RESOURCE_LOCATION = new IDataSerializer<>() {
-        @Override public void write(FriendlyByteBuf buffer, ResourceLocation value) {
+    public static final IDataSerializer<Identifier> RESOURCE_LOCATION = new IDataSerializer<>() {
+        @Override public void write(FriendlyByteBuf buffer, Identifier value) {
             NetworkUtils.writeResourceLocation(buffer, value);
         }
-        @Override public ResourceLocation read(FriendlyByteBuf buffer) {
+        @Override public Identifier read(FriendlyByteBuf buffer) {
             return NetworkUtils.readResourceLocation(buffer);
         }
-        @Override public Tag write(HolderLookup.Provider provider, ResourceLocation value) {
+        @Override public Tag write(HolderLookup.Provider provider, Identifier value) {
             return StringTag.valueOf(value.toString());
         }
-        @Override public ResourceLocation read(HolderLookup.Provider provider, Tag tag) {
+        @Override public Identifier read(HolderLookup.Provider provider, Tag tag) {
             return CustomGun.getMcRegistry().createResourceLocation(tag.asString().orElse(""));
         }
     };

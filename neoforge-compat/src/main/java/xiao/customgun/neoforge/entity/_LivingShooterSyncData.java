@@ -7,34 +7,10 @@
 
 package xiao.customgun.neoforge.entity;
 
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Entity;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.event.AttachCapabilitiesEvent;
-import xiao.customgun.CustomGun;
-import xiao.customgun.core.entity.sync.SyncedEntityData;
-import xiao.customgun.neoforge.CustomGunNeoforge;
-import xiao.customgun.neoforge.minecraft.capability.SyncDataCapabilityProvider;
-
 /**
  * 1.20.4+ NeoForge 不兼容
  * 作为处理这种情况的示范
  */
-@Mod.EventBusSubscriber(modid = CustomGun.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@Deprecated(since = "1.20.4")
 public class _LivingShooterSyncData {
-
-    public static final ResourceLocation capabilityRl = CustomGunNeoforge.mcRegistry.createResourceLocation(String.format("%s:%s", CustomGun.MOD_ID, "sync_entity_data"));
-    @SubscribeEvent
-    public static void onAttachCapabilities(AttachCapabilitiesEvent<Entity> event) {
-        if (SyncedEntityData.instance().hasSyncedDataKey(event.getObject())) {
-            SyncDataCapabilityProvider provider = new SyncDataCapabilityProvider();
-            event.addCapability(capabilityRl, provider);
-            // Don't add invalidate to server player since it's persistent
-            if (!(event.getObject() instanceof ServerPlayer)) {
-                event.addListener(provider::invalidate);
-            }
-        }
-    }
 }

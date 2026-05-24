@@ -78,6 +78,14 @@ tasks.named('jar', Jar).configure {
     archiveClassifier.set("${forge_id}-${minecraft_version}")
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     from project(':core').sourceSets.main.output
+
+    manifest {
+        attributes([
+                "Implementation-Title"    : mod_name,
+                "Implementation-Version"  : mod_version,
+                "MixinConfigs"            : mixin_config_file
+        ])
+    }
 }
 
 tasks.matching { it.name == 'remapJar' || it.name == 'reobfJar' }.configureEach {

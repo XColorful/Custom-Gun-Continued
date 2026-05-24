@@ -82,4 +82,12 @@ tasks.named('jar', Jar).configure {
     archiveClassifier.set("${neoforge_id}-${minecraft_support_version}")
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     from project(':core').sourceSets.main.output
+
+    manifest {
+        attributes([
+                "Implementation-Title"    : mod_name,
+                "Implementation-Version"  : mod_version,
+                "MixinConfigs"            : mixin_config_file
+        ])
+    }
 }

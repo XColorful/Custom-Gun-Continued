@@ -5,7 +5,7 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package xiao.customgun.core.api.entity;
+package xiao.customgun.core.api.entity.gun;
 
-public interface IGunOperator {
+public class GunPropertyCache {
 }

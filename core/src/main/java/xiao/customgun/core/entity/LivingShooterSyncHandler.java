@@ -80,12 +80,10 @@ public class LivingShooterSyncHandler implements IEventHandler {
 
     private void onPlayerClone(IPlayerCloneEvent event) {
         Player original = event.getOriginalPlayer();
-        original.reviveCaps();
         SyncDataHolder oldHolder = SyncedEntityData.instance().getSyncDataHolder(original);
         if (oldHolder == null) {
             return;
         }
-        original.invalidateCaps();
         Player player = event.getEntity();
         SyncDataHolder newHolder = SyncedEntityData.instance().getSyncDataHolder(player);
         if (newHolder == null) {

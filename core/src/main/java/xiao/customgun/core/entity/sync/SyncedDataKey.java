@@ -5,7 +5,7 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package xiao.customgun.core.entity.sync.core;
+package xiao.customgun.core.entity.sync;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -116,7 +116,7 @@ public record SyncedDataKey<E extends Entity, T>(Pair<ResourceLocation, Resource
         }
 
         /**
-         * Sets the id for the synced key. This is a required property.
+         * Sets the id for the synced key. This is a required shooterProperty.
          */
         public Builder<E, T> id(ResourceLocation id) {
             this.id = id;
@@ -124,7 +124,7 @@ public record SyncedDataKey<E extends Entity, T>(Pair<ResourceLocation, Resource
         }
 
         /**
-         * Sets the id for the synced key using a String. This is a required property.
+         * Sets the id for the synced key using a String. This is a required shooterProperty.
          */
         public Builder<E, T> id(String id) {
             this.id = CustomGun.getMcRegistry().createResourceLocation(id);
@@ -132,7 +132,7 @@ public record SyncedDataKey<E extends Entity, T>(Pair<ResourceLocation, Resource
         }
 
         /**
-         * Sets the id for the synced key using a String. This is a required property.
+         * Sets the id for the synced key using a String. This is a required shooterProperty.
          * <p>
          * Please use {@link #id(String)} instead.
          */
@@ -142,7 +142,7 @@ public record SyncedDataKey<E extends Entity, T>(Pair<ResourceLocation, Resource
         }
 
         /**
-         * Sets the default value supplier for the synced key. This is a required property.
+         * Sets the default value supplier for the synced key. This is a required shooterProperty.
          */
         public Builder<E, T> defaultValueSupplier(Supplier<T> defaultValueSupplier) {
             this.defaultValueSupplier = defaultValueSupplier;

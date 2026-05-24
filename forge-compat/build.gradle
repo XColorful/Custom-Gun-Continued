@@ -1,8 +1,15 @@
 plugins {
     id 'net.minecraftforge.gradle' version '[6.0.16,6.2)'
+    id 'org.spongepowered.mixin' version '0.7.38'
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+
+mixin { // 绑定Mixin编译阶段的refmap
+    add sourceSets.main, "customgun.refmap.json"
+}
+// 合并core模块的资源与编译逻辑链到当前模块的主流水线
+sourceSets.main.java.srcDirs += project(':core').sourceSets.main.java.srcDirs // 会额外编译一次core
 
 minecraft {
     mappings channel: mapping_channel, version: mapping_version
@@ -70,17 +77,42 @@ dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
     implementation project(":core")
+
+    // MixinExtras (仅Forge需要打包)
+    implementation "${mixin_extras_common}:${mixin_extras_version}"
+    implementation "${mixin_extras_forge}:${mixin_extras_version}"
+    jarJar(implementation("${mixin_extras_forge}:${mixin_extras_version}")) {
+        jarJar.ranged(it, "[${mixin_extras_version},)")
+    }
+    annotationProcessor "${mixin_annotation}"
+    annotationProcessor "${mixin_extras_annotation}:${mixin_extras_version}"
 }
 
 tasks.named('jar', Jar).configure {
     archiveBaseName.set(mod_id)
     archiveVersion.set(mod_version)
-    archiveClassifier.set("${forge_id}-${minecraft_version}")
+//    archiveClassifier.set("${forge_id}-${minecraft_version}") // jarJar机制的影响
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     from project(':core').sourceSets.main.output
+
+    manifest {
+        attributes([
+                "Implementation-Title"    : mod_name,
+                "Implementation-Version"  : mod_version,
+                "MixinConfigs"            : mixin_config_file
+        ])
+    }
 }
 
 tasks.matching { it.name == 'remapJar' || it.name == 'reobfJar' }.configureEach {
+    if (it.hasProperty("archiveClassifier")) {
+        it.archiveBaseName.set(mod_id)
+        it.archiveVersion.set(mod_version)
+        it.archiveClassifier.set("${forge_id}-${minecraft_version}")
+    }
+}
+// jarJar机制
+tasks.matching { it.name == 'jarJar' || it.name == 'reobfJarJar' }.configureEach {
     if (it.hasProperty("archiveClassifier")) {
         it.archiveBaseName.set(mod_id)
         it.archiveVersion.set(mod_version)

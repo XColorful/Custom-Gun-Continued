@@ -41,8 +41,8 @@ public class ReloadCommand {
         StopWatch watch = StopWatch.createStarted();
         {
             ISideExecutor sideExecutor = CustomGun.getSideExecutor();
-            sideExecutor.unsafeRunWhenOn(McSide.CLIENT, () -> ReloadCommand::reloadClient);
-            sideExecutor.safeRunWhenOn(McSide.DEDICATED_SERVER, () -> AllDataManager::reloadAllPack);
+            sideExecutor.executeOn(McSide.CLIENT, () -> ReloadCommand::reloadClient);
+            sideExecutor.executeOnIsolated(McSide.DEDICATED_SERVER, () -> AllDataManager::reloadAllPack);
         }
         watch.stop();
         double time = watch.getTime(TimeUnit.MICROSECONDS) / 1000.0;

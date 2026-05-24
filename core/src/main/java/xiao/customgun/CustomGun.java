@@ -28,6 +28,7 @@ import xiao.customgun.core.api.event.ICustomEventPoster;
 import xiao.customgun.core.api.event.ICustomEventRegister;
 import xiao.customgun.core.api.event.IEventRegister;
 import xiao.customgun.core.api.init.registry.IRegistrarFactory;
+import xiao.customgun.core.api.minecraft.ICapabilityProvider;
 import xiao.customgun.core.api.minecraft.IMcRegistry;
 import xiao.customgun.core.api.network.INetworkAdapter;
 import xiao.customgun.core.api.network.INetworkHook;
@@ -50,10 +51,11 @@ public class CustomGun {
     protected static ISideExecutor sideExecutor;
     private static IRegistrarFactory registrarFactory;
     private static IMcRegistry mcRegistry;
+    private static ICapabilityProvider capabilityProvider;
     private static Supplier<IModConfigSpecBuilder> modConfigSpecBuilderSupplier;
 
     public static void init(McSide mcSide, ISideExecutor sideExecutor,
-                            IRegistrarFactory factory, IMcRegistry mcRegistry,
+                            IRegistrarFactory factory, IMcRegistry mcRegistry, ICapabilityProvider capabilityProvider,
                             INetworkAdapter networkAdapter, INetworkHook networkHook,
                             IEventRegister eventRegister,
                             Supplier<IModConfigSpecBuilder> modConfigSpecBuilderSupplier) {
@@ -62,6 +64,7 @@ public class CustomGun {
         CustomGun.sideExecutor = sideExecutor;
         CustomGun.registrarFactory = factory;
         CustomGun.mcRegistry = mcRegistry;
+        CustomGun.capabilityProvider = capabilityProvider;
         CustomGun.modConfigSpecBuilderSupplier = modConfigSpecBuilderSupplier;
 
         // 最早的事件机制初始化
@@ -93,6 +96,12 @@ public class CustomGun {
             throw new IllegalStateException("Mc registry has not been initialized. Call init() first.");
         }
         return mcRegistry;
+    }
+    public static ICapabilityProvider getCapabilityProvider() {
+        if (capabilityProvider == null) {
+            throw new IllegalStateException("Capability provider has not been initialized. Call init() first.");
+        }
+        return capabilityProvider;
     }
     public static IModConfigSpecBuilder getModConfigSpecBuilder() {
         return modConfigSpecBuilderSupplier.get();

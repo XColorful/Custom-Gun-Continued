@@ -23,7 +23,7 @@ public class ConvertCommand {
     }
 
     private static int convert(CommandContext<CommandSourceStack> context) {
-//        CustomGun.getSideExecutor().unsafeRunWhenOn(McSide.CLIENT, () -> () -> PackConvertor.convert(context.getSource()));
+//        CustomGun.getSideExecutor().executeOn(McSide.CLIENT, () -> () -> PackConvertor.convert(context.getSource()));
         return Command.SINGLE_SUCCESS;
     }
 }

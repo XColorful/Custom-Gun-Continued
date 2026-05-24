@@ -7,6 +7,7 @@ package xiao.customgun.neoforge.init;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import xiao.customgun.CustomGun;
 import xiao.customgun.core.init.CommonSetup;
 
@@ -18,5 +19,10 @@ public class NeoCommonSetup {
     @SubscribeEvent
     public static void onCommonSetup(FMLCommonSetupEvent event) {
         event.enqueueWork(COMMON_SETUP::onCommonSetup);
+    }
+
+    @SubscribeEvent
+    public static void onLoadComplete(FMLLoadCompleteEvent event) {
+        COMMON_SETUP.onLoadComplete();
     }
 }

@@ -8,9 +8,10 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import xiao.customgun.CustomGun;
 import xiao.customgun.core.init.CommandRegistry;
 
-@Mod.EventBusSubscriber
+@Mod.EventBusSubscriber(modid = CustomGun.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class NeoCommandRegistry {
 
     private static final CommandRegistry COMMAND_REGISTRY = CommandRegistry.get();

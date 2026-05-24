@@ -20,9 +20,11 @@ import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.CustomGun;
 import xiao.customgun.client.resource.AllAssetsManager;
+import xiao.customgun.core.api.entity.ILivingShooter;
 import xiao.customgun.core.resource.AllDataManager;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.resource.ResourcePojoManager;
@@ -57,6 +59,9 @@ public class DebugCommand {
                         .then(Commands.argument("indent", IntegerArgumentType.integer())
                                 .then(Commands.argument("path", StringArgumentType.string())
                                         .executes(DebugCommand::testAllData))))
+                .then(Commands.literal("mixinTest")
+                        .then(Commands.literal("ILivingShooter")
+                                .executes(DebugCommand::testLivingShooterMixin)))
                 .then(Commands.argument(ENABLE, BoolArgumentType.bool())
                         .executes(DebugCommand::setValue));
     }
@@ -222,5 +227,16 @@ public class DebugCommand {
                 CustomGun.LOGGER.error("Failed to export pojo [{}] to {}", rl, outputFile, e);
             }
         }
+    }
+
+    private static int testLivingShooterMixin(CommandContext<CommandSourceStack> context) {
+        CommandSourceStack source = context.getSource();
+        Player player = source.getPlayer();
+        if (player instanceof ILivingShooter livingShooter) {
+            source.sendSuccess(() -> Component.literal(player.getName() + " is ILivingShooter"), false);
+        } else {
+            source.sendFailure(Component.literal(player.getName() + " is not a ILivingShooter!"));
+        }
+        return Command.SINGLE_SUCCESS;
     }
 }

@@ -13,6 +13,11 @@ credits="${mod_credits}"
 authors="${mod_authors}"
 description='''${mod_description}'''
 
+[[mixins]]
+config="customgun.mixins.json"
+[[mixins]]
+config="customgunclient.mixins.json"
+
 [[dependencies.${mod_id}]]
 modId="${target_modloader}"
 mandatory=true

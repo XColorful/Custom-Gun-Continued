@@ -83,11 +83,11 @@ tasks.named('jar', Jar).configure {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     from project(':core').sourceSets.main.output
 
-    manifest {
-        attributes([
-                "Implementation-Title"    : mod_name,
-                "Implementation-Version"  : mod_version,
-                "MixinConfigs"            : mixin_config_file
-        ])
-    }
+//    manifest {
+//        attributes([
+//                "Implementation-Title"    : mod_name,
+//                "Implementation-Version"  : mod_version,
+//                "MixinConfigs"            : mixin_config_file
+//        ])
+//    }
 }

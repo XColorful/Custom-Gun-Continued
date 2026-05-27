@@ -76,6 +76,26 @@ public final class AmmoDisplay extends _AssetsDisplay<AmmoDisplay> {
         writer.endObject();
     }
 
+    @Override
+    protected void validatePojo() {
+        super.validatePojo();
+        if (!this.isValid()) return;
+
+        boolean n1 = (this.ammoEntityDisplayLocation == null | this.shellDisplayLocation == null | this.ammoParticle == null | this.tracerColor == null);
+        if (n1) {
+            this.setValid(false);
+            return;
+        }
+        this.ammoParticle.validate();
+        boolean v1 = (this.ammoParticle.isValid());
+        if (!v1) {
+            this.setValid(false);
+            return;
+        }
+
+        this.setValid(true);
+    }
+
     // --------Getter & Setter--------
 
     public ResourceLocation getAmmoEntityDisplayLocation() {

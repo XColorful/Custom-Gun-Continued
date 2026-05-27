@@ -19,6 +19,18 @@ public abstract class _AssetsDisplay<T extends _AssetsDisplay<T>> extends Resour
 
     @Override
     protected void validatePojo() {
+        boolean n1 = (this.modelLocation == null | this.textureLocation == null | this.transformScale == null);
+        if (n1) {
+            this.setValid(false);
+            return;
+        }
+        this.transformScale.validate();
+        boolean v1 = (this.transformScale == null || this.transformScale.isValid());
+        if (!(v1)) {
+            this.setValid(false);
+            return;
+        }
+
         this.setValid(true);
     }
 

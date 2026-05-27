@@ -75,6 +75,12 @@ public final class _ChargingData extends ResourcePojo<_ChargingData> {
 
     @Override
     protected void validatePojo() {
+        boolean n1 = (this.chargeType == null);
+        if (n1) {
+            this.setValid(false);
+            return;
+        }
+
         this.setValid(true);
     }
 

@@ -98,6 +98,35 @@ public final class AttachmentDisplay extends _AssetsDisplay<AttachmentDisplay> {
         writer.endObject();
     }
 
+    @Override
+    protected void validatePojo() {
+        super.validatePojo();
+        if (!this.isValid()) return;
+
+        boolean n1 = (this.lodDisplay == null | this.adapterNodeName == null | this.scopeZoomScale == null | this.scopeViewIndex == null);
+        boolean n2 = (this.scopeViewFov == null | this.modelNodeTextDisplay == null | this.laserDisplay == null | this.attachmentSounds == null);
+        if (n1 | n2) {
+            this.setValid(false);
+            return;
+        }
+        this.lodDisplay.validate();
+        this.laserDisplay.validate();
+        boolean v1 = (this.lodDisplay.isValid() & this.laserDisplay.isValid());
+        if (!v1) {
+            this.setValid(false);
+            return;
+        }
+        for (_ModelNodeTextDisplay data : this.modelNodeTextDisplay.values()) {
+            data.validate();
+            if (!data.isValid()) {
+                this.setValid(false);
+                return;
+            }
+        }
+
+        this.setValid(true);
+    }
+
     // --------Getter & Setter--------
 
     public boolean getEnableSight() {

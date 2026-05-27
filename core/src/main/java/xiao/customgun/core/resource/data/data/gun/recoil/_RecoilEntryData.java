@@ -55,6 +55,12 @@ public final class _RecoilEntryData extends ResourcePojo<_RecoilEntryData> {
 
     @Override
     protected void validatePojo() {
+        boolean n1 = (this.range == null);
+        if (n1) {
+            this.setValid(false);
+            return;
+        }
+
         this.setValid(true);
     }
 

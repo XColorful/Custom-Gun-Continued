@@ -56,7 +56,23 @@ public final class _TableIngredientData extends ResourcePojo<_TableIngredientDat
 
     @Override
     protected void validatePojo() {
-        this.setValid(this.ingredientFilter != null && this.ingredientCount > 0);
+        boolean n1 = (this.ingredientFilter == null);
+        if (n1) {
+            this.setValid(false);
+            return;
+        }
+        this.ingredientFilter.validate();
+        boolean v1 = (this.ingredientFilter.isValid());
+        if (!(v1)) {
+            this.setValid(false);
+            return;
+        }
+
+        if (this.ingredientCount <= 0) {
+            this.setValid(false);
+            return;
+        }
+        this.setValid(true);
     }
 
     // --------Getter & Setter--------

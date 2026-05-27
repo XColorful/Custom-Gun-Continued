@@ -159,6 +159,45 @@ public final class GunDisplay extends _AssetsDisplay<GunDisplay> {
         writer.endObject();
     }
 
+    @Override
+    protected void validatePojo() {
+        super.validatePojo();
+        if (!this.isValid()) return;
+
+        boolean n1 = (this.lodDisplay == null | this.muzzleFlashDisplay == null | this.modelNodeTextDisplay == null | this.laserDisplay == null);
+        boolean n2 = (this.surroundDisplayByHotbar == null | this.surroundDisplayByOffhand == null | this.ammoDisplayOverride == null | this.shellEjectionParam == null);
+        boolean n3 = (this.gunSounds == null | this.controllableData == null);
+        if (n1 | n2 | n3) {
+            this.setValid(false);
+            return;
+        }
+        this.lodDisplay.validate();
+        this.muzzleFlashDisplay.validate();
+        this.modelNodeTextDisplay.validate();
+        this.laserDisplay.validate();
+        this.surroundDisplayByOffhand.validate();
+        this.ammoDisplayOverride.validate();
+        this.shellEjectionParam.validate();
+        this.controllableData.validate();
+        boolean v1 = (this.lodDisplay.isValid() & this.muzzleFlashDisplay.isValid() & this.modelNodeTextDisplay.isValid());
+        boolean v2 = (this.laserDisplay.isValid() & this.surroundDisplayByOffhand.isValid() & this.ammoDisplayOverride.isValid());
+        boolean v3 = (this.shellEjectionParam.isValid() & this.controllableData.isValid());
+        if (!(v1 & v2 & v3)) {
+            this.setValid(false);
+            return;
+        }
+
+        for (_SurroundDisplay data : this.surroundDisplayByHotbar.values()) {
+            data.validate();
+            if (!data.isValid()) {
+                this.setValid(false);
+                return;
+            }
+        }
+
+        this.setValid(true);
+    }
+
     // --------Getter & Setter--------
 
     public ResourceLocation getHudTextureLocation() {

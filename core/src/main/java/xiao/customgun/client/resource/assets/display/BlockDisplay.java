@@ -58,6 +58,20 @@ public final class BlockDisplay extends _AssetsDisplay<BlockDisplay> {
         writer.endObject();
     }
 
+    @Override
+    protected void validatePojo() {
+        super.validatePojo();
+        if (!this.isValid()) return;
+
+        boolean n1 = (this.itemTransforms == null);
+        if (n1) {
+            this.setValid(false);
+            return;
+        }
+
+        this.setValid(true);
+    }
+
     // --------Getter & Setter--------
 
     public Transformation getItemTransforms() {

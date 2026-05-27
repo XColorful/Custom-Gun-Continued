@@ -59,6 +59,28 @@ public final class _RecoilData extends ResourcePojo<_RecoilData> {
 
     @Override
     protected void validatePojo() {
+        boolean n1 = (this.pitchRecoils == null | this.yawRecoils == null);
+        if (n1) {
+            this.setValid(false);
+            return;
+        }
+
+        for (_RecoilEntryData data : this.pitchRecoils) {
+            data.validate();
+            if (!data.isValid()) {
+                this.setValid(false);
+                return;
+            }
+        }
+
+        for (_RecoilEntryData data : this.yawRecoils) {
+            data.validate();
+            if (!data.isValid()) {
+                this.setValid(false);
+                return;
+            }
+        }
+
         this.setValid(true);
     }
 

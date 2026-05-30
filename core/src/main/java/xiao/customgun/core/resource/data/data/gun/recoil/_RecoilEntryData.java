@@ -32,7 +32,7 @@ public final class _RecoilEntryData extends ResourcePojo<_RecoilEntryData> {
                 String key = reader.nextName();
                 switch (key) {
                     case _RecoilEntryDataTag.TIME -> pojo.time = JsonUtils.readFloat(reader);
-                    case _RecoilEntryDataTag.RANGE -> pojo.range = JsonUtils.readFloatArray(reader);
+                    case _RecoilEntryDataTag.RANGE -> pojo.range = JsonUtils.readFloatArrayFast(reader, 2);
                     default -> reader.skipValue();
                 }
             }

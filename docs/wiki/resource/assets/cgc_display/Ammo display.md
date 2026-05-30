@@ -1,6 +1,6 @@
 [English](#English)
 
-# 配方数据
+# 子弹显示
 > wiki 版本：`0.0.0`.0
 
 # English

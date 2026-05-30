@@ -1,3 +1,0 @@
-[English](#English)
-
-# English

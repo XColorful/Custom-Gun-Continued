@@ -1,6 +1,6 @@
 [English](#English)
 
-# 配方数据
+# glTF动画
 > wiki 版本：`0.0.0`.0
 
 # English

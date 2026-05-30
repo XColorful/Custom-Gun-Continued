@@ -1,6 +1,6 @@
 [English](#English)
 
-# 配方数据
+# 资源包翻译键
 > wiki 版本：`0.0.0`.0
 
 # English

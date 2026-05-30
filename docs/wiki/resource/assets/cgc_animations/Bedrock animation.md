@@ -1,6 +1,6 @@
 [English](#English)
 
-# 配方数据
+# 基岩版动画
 > wiki 版本：`0.0.0`.0
 
 # English

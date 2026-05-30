@@ -17,7 +17,7 @@ public class AssetsFolderName {
     public static final String MODEL = CustomGun.MOD_ID_SHORT + "_models"; public static final String MODEL_OLD1 = "geo_models";
     public static final String LANG = "lang";
     public static final String PLAYER_ANIMATOR = "player_animator";
-    public static final String SCRIPT = CustomGun.MOD_ID_SHORT + "scripts"; public static final String SCRIPT_OLD1 = "scripts";
+    public static final String SCRIPT = CustomGun.MOD_ID_SHORT + "_scripts"; public static final String SCRIPT_OLD1 = "scripts";
     public static final String SOUNDS = "sounds";
     public static final String MOD_SOUNDS = CustomGun.MOD_ID_SHORT + "_sounds"; public static final String MOD_SOUNDS_OLD1 = "tacz_sounds";
     public static final String TEXTURES = "textures";

@@ -39,7 +39,7 @@ public final class GunDisplay extends _AssetsDisplay<GunDisplay> {
     private float ironViewFov = 70f;
     private boolean enableCrosshair = false;
     private _MuzzleFlashDisplay muzzleFlashDisplay;
-    private _ModelNodeTextDisplay modelNodeTextDisplay;
+    private Map<String, _ModelNodeTextDisplay> modelNodeTextDisplay;
     private _LaserDisplay laserDisplay;
     private Map<String, _SurroundDisplay> surroundDisplayByHotbar;
     private _SurroundDisplay surroundDisplayByOffhand;
@@ -72,7 +72,7 @@ public final class GunDisplay extends _AssetsDisplay<GunDisplay> {
                 String key = reader.nextName();
                 switch (key) {
                     case GunDisplayTag.MODEL_LOCATION, GunDisplayTag.MODEL_LOCATION_OLD1 -> pojo.setModelLocation(JsonUtils.readResourceLocation(reader));
-                    case GunDisplayTag.TRANSFORM_SCALE, GunDisplayTag.TRANSFORM_SCALE_OLD1 -> pojo.setTransformScale(JsonUtils.read(reader, _TransformScale::fromJson));
+                    case GunDisplayTag.MODEL_TRANSFORM, GunDisplayTag.MODEL_TRANSFORM_OLD1 -> pojo.setModelTransform(JsonUtils.read(reader, _ModelTransform::fromJson));
                     case GunDisplayTag.TEXTURE_LOCATION, GunDisplayTag.TEXTURE_LOCATION_OLD1 -> pojo.setTextureLocation(JsonUtils.readResourceLocation(reader));
                     case GunDisplayTag.SLOT_TEXTURE_LOCATION, GunDisplayTag.SLOT_TEXTURE_LOCATION_OLD1 -> pojo.setSlotTextureLocation(JsonUtils.readResourceLocation(reader));
 
@@ -87,7 +87,7 @@ public final class GunDisplay extends _AssetsDisplay<GunDisplay> {
                     case GunDisplayTag.IRON_VIEW_FOV, GunDisplayTag.IRON_VIEW_FOV_OLD1 -> pojo.ironViewFov = JsonUtils.readFloat(reader);
                     case GunDisplayTag.ENABLE_CROSSHAIR, GunDisplayTag.ENABLE_CROSSHAIR_OLD1 -> pojo.enableCrosshair = JsonUtils.readBoolean(reader);
                     case GunDisplayTag.MUZZLE_FLASH_DISPLAY, GunDisplayTag.MUZZLE_FLASH_DISPLAY_OLD1 -> pojo.muzzleFlashDisplay = _MuzzleFlashDisplay.fromJson(reader);
-                    case GunDisplayTag.MODEL_NODE_TEXT_DISPLAY, GunDisplayTag.MODEL_NODE_TEXT_DISPLAY_OLD1 -> pojo.modelNodeTextDisplay = _ModelNodeTextDisplay.fromJson(reader);
+                    case GunDisplayTag.MODEL_NODE_TEXT_DISPLAY, GunDisplayTag.MODEL_NODE_TEXT_DISPLAY_OLD1 -> pojo.modelNodeTextDisplay = JsonUtils.readString2ObjectMap(reader, _ModelNodeTextDisplay::fromJson);
                     case GunDisplayTag.LASER_DISPLAY, GunDisplayTag.LASER_DISPLAY_OLD1 -> pojo.laserDisplay = _LaserDisplay.fromJson(reader);
                     case GunDisplayTag.SURROUND_DISPLAY_BY_HOTBAR, GunDisplayTag.SURROUND_DISPLAY_BY_HOTBAR_OLD1 -> pojo.surroundDisplayByHotbar = JsonUtils.readString2ObjectMap(reader, _SurroundDisplay::fromJson);
                     case GunDisplayTag.SURROUND_DISPLAY_BY_OFFHAND, GunDisplayTag.SURROUND_DISPLAY_BY_OFFHAND_OLD1 -> pojo.surroundDisplayByOffhand = _SurroundDisplay.fromJson(reader);
@@ -121,7 +121,7 @@ public final class GunDisplay extends _AssetsDisplay<GunDisplay> {
     public void toJson(JsonWriter writer) throws IOException {
         writer.beginObject(); {
             JsonUtils.writeResourceLocation(writer, GunDisplayTag.MODEL_LOCATION, this.getModelLocation());
-            JsonUtils.write(writer, GunDisplayTag.TRANSFORM_SCALE, this.getTransformScale(), _TransformScale::toJson);
+            JsonUtils.write(writer, GunDisplayTag.MODEL_TRANSFORM, this.getModelTransform(), _ModelTransform::toJson);
             JsonUtils.writeResourceLocation(writer, GunDisplayTag.TEXTURE_LOCATION, this.getTextureLocation());
             JsonUtils.writeResourceLocation(writer, GunDisplayTag.SLOT_TEXTURE_LOCATION, this.getSlotTextureLocation());
 
@@ -136,7 +136,7 @@ public final class GunDisplay extends _AssetsDisplay<GunDisplay> {
             JsonUtils.writeFloat(writer, GunDisplayTag.IRON_VIEW_FOV, this.ironViewFov);
             JsonUtils.writeBoolean(writer, GunDisplayTag.ENABLE_CROSSHAIR, this.enableCrosshair);
             JsonUtils.write(writer, GunDisplayTag.MUZZLE_FLASH_DISPLAY, this.muzzleFlashDisplay, _MuzzleFlashDisplay::toJson);
-            JsonUtils.write(writer, GunDisplayTag.MODEL_NODE_TEXT_DISPLAY, this.modelNodeTextDisplay, _ModelNodeTextDisplay::toJson);
+            JsonUtils.writeString2ObjectMap(writer, GunDisplayTag.MODEL_NODE_TEXT_DISPLAY, this.modelNodeTextDisplay, _ModelNodeTextDisplay::toJson);
             JsonUtils.write(writer, GunDisplayTag.LASER_DISPLAY, this.laserDisplay, _LaserDisplay::toJson);
             JsonUtils.writeString2ObjectMap(writer, GunDisplayTag.SURROUND_DISPLAY_BY_HOTBAR, this.surroundDisplayByHotbar, _SurroundDisplay::toJson);
             JsonUtils.write(writer, GunDisplayTag.SURROUND_DISPLAY_BY_OFFHAND, this.surroundDisplayByOffhand, _SurroundDisplay::toJson);
@@ -164,31 +164,37 @@ public final class GunDisplay extends _AssetsDisplay<GunDisplay> {
         super.validatePojo();
         if (!this.isValid()) return;
 
-        boolean n1 = (this.getTransformScale() == null | this.getSlotTextureLocation() == null | this.lodDisplay == null | this.muzzleFlashDisplay == null);
+        boolean n1 = (this.getModelTransform() == null | this.getSlotTextureLocation() == null | this.lodDisplay == null | this.muzzleFlashDisplay == null);
         boolean n2 = (this.modelNodeTextDisplay == null | this.laserDisplay == null | this.surroundDisplayByHotbar == null | this.surroundDisplayByOffhand == null);
         boolean n3 = (this.ammoDisplayOverride == null | this.shellEjectionParam == null | this.gunSounds == null | this.controllableData == null);
         if (n1 | n2 | n3) {
             this.setValid(false);
             return;
         }
-        this.getTransformScale().validate();
+        this.getModelTransform().validate();
         this.lodDisplay.validate();
         this.muzzleFlashDisplay.validate();
-        this.modelNodeTextDisplay.validate();
         this.laserDisplay.validate();
         this.surroundDisplayByOffhand.validate();
         this.ammoDisplayOverride.validate();
         this.shellEjectionParam.validate();
         this.controllableData.validate();
-        boolean v1 = (this.getTransformScale().isValid() & this.lodDisplay.isValid() & this.muzzleFlashDisplay.isValid());
-        boolean v2 = (this.modelNodeTextDisplay.isValid() & this.laserDisplay.isValid() & this.surroundDisplayByOffhand.isValid());
-        boolean v3 = (this.ammoDisplayOverride.isValid() & this.shellEjectionParam.isValid() & this.controllableData.isValid());
+        boolean v1 = (this.getModelTransform().isValid() & this.lodDisplay.isValid() & this.muzzleFlashDisplay.isValid());
+        boolean v2 = (this.laserDisplay.isValid() & this.surroundDisplayByOffhand.isValid() & this.ammoDisplayOverride.isValid());
+        boolean v3 = (this.shellEjectionParam.isValid() & this.controllableData.isValid());
         if (!(v1 & v2 & v3)) {
             this.setValid(false);
             return;
         }
 
         for (_SurroundDisplay data : this.surroundDisplayByHotbar.values()) {
+            data.validate();
+            if (!data.isValid()) {
+                this.setValid(false);
+                return;
+            }
+        }
+        for (_ModelNodeTextDisplay data : this.modelNodeTextDisplay.values()) {
             data.validate();
             if (!data.isValid()) {
                 this.setValid(false);
@@ -228,7 +234,7 @@ public final class GunDisplay extends _AssetsDisplay<GunDisplay> {
     public _MuzzleFlashDisplay getMuzzleFlashDisplay() {
         return muzzleFlashDisplay;
     }
-    public _ModelNodeTextDisplay getModelNodeTextDisplay() {
+    public Map<String, _ModelNodeTextDisplay> getModelNodeTextDisplay() {
         return modelNodeTextDisplay;
     }
     public _LaserDisplay getLaserDisplay() {
@@ -307,7 +313,7 @@ public final class GunDisplay extends _AssetsDisplay<GunDisplay> {
     public void setMuzzleFlashDisplay(_MuzzleFlashDisplay muzzleFlashDisplay) {
         this.muzzleFlashDisplay = muzzleFlashDisplay;
     }
-    public void setModelNodeTextDisplay(_ModelNodeTextDisplay modelNodeTextDisplay) {
+    public void setModelNodeTextDisplay(Map<String, _ModelNodeTextDisplay> modelNodeTextDisplay) {
         this.modelNodeTextDisplay = modelNodeTextDisplay;
     }
     public void setLaserDisplay(_LaserDisplay laserDisplay) {

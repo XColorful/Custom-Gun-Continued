@@ -13,7 +13,7 @@ import xiao.customgun.CustomGun;
 import xiao.customgun.client.api.resource.ClientResourceApi;
 import xiao.customgun.client.model.AmmoModelObject;
 import xiao.customgun.client.resource.assets.display.AmmoDisplay;
-import xiao.customgun.client.resource.assets.display._TransformScale;
+import xiao.customgun.client.resource.assets.display._ModelTransform;
 import xiao.customgun.client.resource.assets.display.ammo._AmmoEntityDisplay;
 import xiao.customgun.client.resource.assets.display.ammo._AmmoParticle;
 import xiao.customgun.client.resource.assets.display.ammo._ShellDisplay;
@@ -118,7 +118,7 @@ public final class ClientAmmoIndexInstance extends PojoInstance<AmmoIndex> {
     @Deprecated public Color getTracerColor() {
         return this.ammoDisplayCache.getTracerColor();
     }
-    @Deprecated public _TransformScale getAmmoTransform() {
-        return this.ammoDisplayCache.getTransformScale();
+    @Deprecated public _ModelTransform getAmmoTransform() {
+        return this.ammoDisplayCache.getModelTransform();
     }
 }

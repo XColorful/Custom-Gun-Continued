@@ -14,7 +14,7 @@ import xiao.customgun.core.resource.ResourcePojo;
 public abstract class _AssetsDisplay<T extends _AssetsDisplay<T>> extends ResourcePojo<T> {
 
     private ResourceLocation modelLocation;
-    private @Nullable _TransformScale transformScale;
+    private @Nullable _ModelTransform modelTransform;
     private ResourceLocation textureLocation;
     private @Nullable ResourceLocation slotTextureLocation;
 
@@ -34,8 +34,8 @@ public abstract class _AssetsDisplay<T extends _AssetsDisplay<T>> extends Resour
     public final ResourceLocation getModelLocation() {
         return modelLocation;
     }
-    public final @Nullable _TransformScale getTransformScale() {
-        return transformScale;
+    public final @Nullable _ModelTransform getModelTransform() {
+        return modelTransform;
     }
     public final ResourceLocation getTextureLocation() {
         return textureLocation;
@@ -47,8 +47,8 @@ public abstract class _AssetsDisplay<T extends _AssetsDisplay<T>> extends Resour
     public final void setModelLocation(ResourceLocation modelLocation) {
         this.modelLocation = modelLocation;
     }
-    public final void setTransformScale(_TransformScale transformScale) {
-        this.transformScale = transformScale;
+    public final void setModelTransform(_ModelTransform modelTransform) {
+        this.modelTransform = modelTransform;
     }
     public final void setTextureLocation(ResourceLocation textureLocation) {
         this.textureLocation = textureLocation;

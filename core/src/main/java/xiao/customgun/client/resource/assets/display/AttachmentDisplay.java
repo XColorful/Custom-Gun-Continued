@@ -25,13 +25,13 @@ public final class AttachmentDisplay extends _AssetsDisplay<AttachmentDisplay> {
     private String adapterNodeName;
 
     // 显示
-    private boolean enableSight;
-    private boolean enableScope;
+    private boolean enableSight = false;
+    private boolean enableScope = false;
     private float[] scopeZoomScale;
     private float[] scopeViewIndex;
     private float[] scopeViewFov;
-    private boolean showMuzzle;
-    private boolean showMount;
+    private boolean showMuzzle = false;
+    private boolean showMount = true;
     private Map<String, _ModelNodeTextDisplay> modelNodeTextDisplay;
     private _LaserDisplay laserDisplay;
     private Map<AttachmentSoundType, ResourceLocation> attachmentSounds;

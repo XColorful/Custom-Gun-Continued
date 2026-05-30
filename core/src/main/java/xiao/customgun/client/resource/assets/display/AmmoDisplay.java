@@ -41,10 +41,10 @@ public final class AmmoDisplay extends _AssetsDisplay<AmmoDisplay> {
                 String key = reader.nextName();
                 switch (key) {
                     case AmmoDisplayTag.MODEL_LOCATION, AmmoDisplayTag.MODEL_LOCATION_OLD1 -> pojo.setModelLocation(JsonUtils.readResourceLocation(reader));
+                    case AmmoDisplayTag.MODEL_TRANSFORM, AmmoDisplayTag.MODEL_TRANSFORM_OLD1 -> pojo.setModelTransform(_ModelTransform.fromJson(reader));
                     case AmmoDisplayTag.TEXTURE_LOCATION, AmmoDisplayTag.TEXTURE_LOCATION_OLD1 -> pojo.setTextureLocation(JsonUtils.readResourceLocation(reader));
-                    case AmmoDisplayTag.SLOT_TEXTURE_LOCATION, AmmoDisplayTag.SLOT_TEXTURE_LOCATION_OLD1 -> pojo.setTextureLocation(JsonUtils.readResourceLocation(reader));
+                    case AmmoDisplayTag.SLOT_TEXTURE_LOCATION, AmmoDisplayTag.SLOT_TEXTURE_LOCATION_OLD1 -> pojo.setSlotTextureLocation(JsonUtils.readResourceLocation(reader));
 
-                    case AmmoDisplayTag.TRANSFORM_SCALE, AmmoDisplayTag.TRANSFORM_SCALE_OLD1 -> pojo.setTransformScale(_TransformScale.fromJson(reader));
                     case AmmoDisplayTag.AMMO_ENTITY_DISPLAY, AmmoDisplayTag.AMMO_ENTITY_DISPLAY_OLD1 -> pojo.ammoEntityDisplay = JsonUtils.read(reader, _AmmoEntityDisplay::fromJson);
                     case AmmoDisplayTag.SHELL_DISPLAY, AmmoDisplayTag.SHELL_DISPLAY_OLD1 -> pojo.shellDisplay = JsonUtils.read(reader, _ShellDisplay::fromJson);
 
@@ -68,7 +68,7 @@ public final class AmmoDisplay extends _AssetsDisplay<AmmoDisplay> {
             JsonUtils.writeResourceLocation(writer, AmmoDisplayTag.TEXTURE_LOCATION, this.getTextureLocation());
             JsonUtils.writeResourceLocation(writer, AmmoDisplayTag.SLOT_TEXTURE_LOCATION, this.getSlotTextureLocation());
 
-            JsonUtils.write(writer, AmmoDisplayTag.TRANSFORM_SCALE, this.getTransformScale(), _TransformScale::toJson);
+            JsonUtils.write(writer, AmmoDisplayTag.MODEL_TRANSFORM, this.getModelTransform(), _ModelTransform::toJson);
             JsonUtils.write(writer, AmmoDisplayTag.AMMO_ENTITY_DISPLAY, this.ammoEntityDisplay, _AmmoEntityDisplay::toJson);
             JsonUtils.write(writer, AmmoDisplayTag.SHELL_DISPLAY, this.shellDisplay, _ShellDisplay::toJson);
 
@@ -83,16 +83,16 @@ public final class AmmoDisplay extends _AssetsDisplay<AmmoDisplay> {
         super.validatePojo();
         if (!this.isValid()) return;
 
-        boolean n1 = (this.getTransformScale() == null | this.getSlotTextureLocation() == null | this.ammoParticle == null | this.tracerColor == null);
+        boolean n1 = (this.getModelTransform() == null | this.getSlotTextureLocation() == null | this.ammoParticle == null | this.tracerColor == null);
         if (n1) {
             this.setValid(false);
             return;
         }
-        this.getTransformScale().validate();
+        this.getModelTransform().validate();
         if (this.ammoEntityDisplay != null) this.ammoEntityDisplay.validate();
         if (this.shellDisplay != null) this.shellDisplay.validate();
         this.ammoParticle.validate();
-        boolean v1 = (this.getTransformScale().isValid() & (this.ammoEntityDisplay == null || this.ammoEntityDisplay.isValid()) & this.ammoParticle.isValid());
+        boolean v1 = (this.getModelTransform().isValid() & (this.ammoEntityDisplay == null || this.ammoEntityDisplay.isValid()) & this.ammoParticle.isValid());
         boolean v2 = ((this.shellDisplay == null || this.shellDisplay.isValid()));
         if (!(v1 & v2)) {
             this.setValid(false);

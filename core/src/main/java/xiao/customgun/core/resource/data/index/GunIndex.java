@@ -9,7 +9,6 @@ package xiao.customgun.core.resource.data.index;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import org.jetbrains.annotations.NotNull;
 import xiao.customgun.core.api.item.gun.GunCategory;
 import xiao.customgun.core.api.minecraft.item.ItemType;
 import xiao.customgun.core.api.resource.data.index.GunIndexTag;
@@ -86,10 +85,10 @@ public final class GunIndex extends _DataIndex<GunIndex> {
 
     // --------Getter & Setter--------
 
-    public @NotNull GunCategory getGunCategory() {
+    public GunCategory getGunCategory() {
         return gunCategory;
     }
-    @Deprecated public @NotNull ItemType getItemType() { // 暂时不知道干什么用，直接用GunCategory?
+    @Deprecated public ItemType getItemType() { // 暂时不知道干什么用，直接用GunCategory?
         return itemType;
     }
 

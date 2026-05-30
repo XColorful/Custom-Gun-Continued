@@ -9,8 +9,10 @@ package xiao.customgun.client.resource.assets.display;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.Nullable;
+import xiao.customgun.client.resource.assets.display.ammo._AmmoEntityDisplay;
 import xiao.customgun.client.resource.assets.display.ammo._AmmoParticle;
+import xiao.customgun.client.resource.assets.display.ammo._ShellDisplay;
 import xiao.customgun.core.api.resource.assets.display.AmmoDisplayTag;
 import xiao.customgun.core.util.JsonUtils;
 
@@ -20,8 +22,8 @@ import java.io.IOException;
 public final class AmmoDisplay extends _AssetsDisplay<AmmoDisplay> {
 
     // 模型
-    private ResourceLocation ammoEntityDisplayLocation;
-    private ResourceLocation shellDisplayLocation;
+    private @Nullable _AmmoEntityDisplay ammoEntityDisplay;
+    private @Nullable _ShellDisplay shellDisplay;
 
     // 显示
     private _AmmoParticle ammoParticle;
@@ -43,8 +45,8 @@ public final class AmmoDisplay extends _AssetsDisplay<AmmoDisplay> {
                     case AmmoDisplayTag.SLOT_TEXTURE_LOCATION, AmmoDisplayTag.SLOT_TEXTURE_LOCATION_OLD1 -> pojo.setTextureLocation(JsonUtils.readResourceLocation(reader));
 
                     case AmmoDisplayTag.TRANSFORM_SCALE, AmmoDisplayTag.TRANSFORM_SCALE_OLD1 -> pojo.setTransformScale(_TransformScale.fromJson(reader));
-                    case AmmoDisplayTag.AMMO_ENTITY_DISPLAY_LOCATION, AmmoDisplayTag.AMMO_ENTITY_DISPLAY_LOCATION_OLD1 -> pojo.ammoEntityDisplayLocation = JsonUtils.readResourceLocation(reader);
-                    case AmmoDisplayTag.SHELL_DISPLAY_LOCATION, AmmoDisplayTag.SHELL_DISPLAY_LOCATION_OLD1 -> pojo.shellDisplayLocation = JsonUtils.readResourceLocation(reader);
+                    case AmmoDisplayTag.AMMO_ENTITY_DISPLAY, AmmoDisplayTag.AMMO_ENTITY_DISPLAY_OLD1 -> pojo.ammoEntityDisplay = JsonUtils.read(reader, _AmmoEntityDisplay::fromJson);
+                    case AmmoDisplayTag.SHELL_DISPLAY, AmmoDisplayTag.SHELL_DISPLAY_OLD1 -> pojo.shellDisplay = JsonUtils.read(reader, _ShellDisplay::fromJson);
 
                     case AmmoDisplayTag.AMMO_PARTICLE, AmmoDisplayTag.AMMO_PARTICLE_OLD1 -> pojo.ammoParticle = _AmmoParticle.fromJson(reader);
                     case AmmoDisplayTag.TRACER_COLOR -> pojo.tracerColor = JsonUtils.readColor(reader);
@@ -67,8 +69,8 @@ public final class AmmoDisplay extends _AssetsDisplay<AmmoDisplay> {
             JsonUtils.writeResourceLocation(writer, AmmoDisplayTag.SLOT_TEXTURE_LOCATION, this.getSlotTextureLocation());
 
             JsonUtils.write(writer, AmmoDisplayTag.TRANSFORM_SCALE, this.getTransformScale(), _TransformScale::toJson);
-            JsonUtils.writeResourceLocation(writer, AmmoDisplayTag.AMMO_ENTITY_DISPLAY_LOCATION, this.ammoEntityDisplayLocation);
-            JsonUtils.writeResourceLocation(writer, AmmoDisplayTag.SHELL_DISPLAY_LOCATION, this.shellDisplayLocation);
+            JsonUtils.write(writer, AmmoDisplayTag.AMMO_ENTITY_DISPLAY, this.ammoEntityDisplay, _AmmoEntityDisplay::toJson);
+            JsonUtils.write(writer, AmmoDisplayTag.SHELL_DISPLAY, this.shellDisplay, _ShellDisplay::toJson);
 
             JsonUtils.write(writer, AmmoDisplayTag.AMMO_PARTICLE, this.ammoParticle, _AmmoParticle::toJson);
             JsonUtils.writeColor(writer, AmmoDisplayTag.TRACER_COLOR, this.tracerColor);
@@ -81,14 +83,18 @@ public final class AmmoDisplay extends _AssetsDisplay<AmmoDisplay> {
         super.validatePojo();
         if (!this.isValid()) return;
 
-        boolean n1 = (this.ammoEntityDisplayLocation == null | this.shellDisplayLocation == null | this.ammoParticle == null | this.tracerColor == null);
+        boolean n1 = (this.getTransformScale() == null | this.getSlotTextureLocation() == null | this.ammoParticle == null | this.tracerColor == null);
         if (n1) {
             this.setValid(false);
             return;
         }
+        this.getTransformScale().validate();
+        if (this.ammoEntityDisplay != null) this.ammoEntityDisplay.validate();
+        if (this.shellDisplay != null) this.shellDisplay.validate();
         this.ammoParticle.validate();
-        boolean v1 = (this.ammoParticle.isValid());
-        if (!v1) {
+        boolean v1 = (this.getTransformScale().isValid() & this.ammoParticle.isValid() & (this.ammoEntityDisplay == null || this.ammoEntityDisplay.isValid()));
+        boolean v2 = ((this.shellDisplay == null || this.shellDisplay.isValid()));
+        if (!(v1 & v2)) {
             this.setValid(false);
             return;
         }
@@ -98,11 +104,11 @@ public final class AmmoDisplay extends _AssetsDisplay<AmmoDisplay> {
 
     // --------Getter & Setter--------
 
-    public ResourceLocation getAmmoEntityDisplayLocation() {
-        return ammoEntityDisplayLocation;
+    public @Nullable _AmmoEntityDisplay getAmmoEntityDisplay() {
+        return ammoEntityDisplay;
     }
-    public ResourceLocation getShellDisplayLocation() {
-        return shellDisplayLocation;
+    public @Nullable _ShellDisplay getShellDisplay() {
+        return shellDisplay;
     }
     public _AmmoParticle getAmmoParticle() {
         return ammoParticle;
@@ -111,11 +117,11 @@ public final class AmmoDisplay extends _AssetsDisplay<AmmoDisplay> {
         return tracerColor;
     }
 
-    public void setAmmoEntityDisplayLocation(ResourceLocation ammoEntityDisplayLocation) {
-        this.ammoEntityDisplayLocation = ammoEntityDisplayLocation;
+    public void setAmmoEntityDisplay(_AmmoEntityDisplay ammoEntityDisplay) {
+        this.ammoEntityDisplay = ammoEntityDisplay;
     }
-    public void setShellDisplayLocation(ResourceLocation shellDisplayLocation) {
-        this.shellDisplayLocation = shellDisplayLocation;
+    public void setShellDisplay(_ShellDisplay shellDisplay) {
+        this.shellDisplay = shellDisplay;
     }
     public void setAmmoParticle(_AmmoParticle ammoParticle) {
         this.ammoParticle = ammoParticle;

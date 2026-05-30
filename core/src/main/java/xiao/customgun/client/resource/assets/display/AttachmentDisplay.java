@@ -10,6 +10,7 @@ package xiao.customgun.client.resource.assets.display;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.Nullable;
 import xiao.customgun.client.api.sound.attachment.AttachmentSoundType;
 import xiao.customgun.core.api.resource.assets.display.AttachmentDisplayTag;
 import xiao.customgun.core.util.JsonUtils;
@@ -103,8 +104,8 @@ public final class AttachmentDisplay extends _AssetsDisplay<AttachmentDisplay> {
         super.validatePojo();
         if (!this.isValid()) return;
 
-        boolean n1 = (this.lodDisplay == null | this.adapterNodeName == null | this.scopeZoomScale == null | this.scopeViewIndex == null);
-        boolean n2 = (this.scopeViewFov == null | this.modelNodeTextDisplay == null | this.laserDisplay == null | this.attachmentSounds == null);
+        boolean n1 = (this.getSlotTextureLocation() == null | this.lodDisplay == null | this.adapterNodeName == null | this.scopeZoomScale == null);
+        boolean n2 = (this.scopeViewFov == null | this.modelNodeTextDisplay == null | this.laserDisplay == null | this.attachmentSounds == null | this.scopeViewIndex == null);
         if (n1 | n2) {
             this.setValid(false);
             return;
@@ -135,7 +136,7 @@ public final class AttachmentDisplay extends _AssetsDisplay<AttachmentDisplay> {
     public boolean getEnableScope() {
         return enableScope;
     }
-    public _LodDisplay getLodDisplay() {
+    public @Nullable _LodDisplay getLodDisplay() {
         return lodDisplay;
     }
     public String getAdapterNodeName() {

@@ -9,11 +9,13 @@ package xiao.customgun.client.resource.assets.display.ammo;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import xiao.customgun.core.resource.ResourcePojo;
+import xiao.customgun.client.resource.assets.display._AssetsDisplay;
+import xiao.customgun.core.api.resource.assets.display.ammo._ShellDisplayTag;
+import xiao.customgun.core.util.JsonUtils;
 
 import java.io.IOException;
 
-public final class _ShellDisplay extends ResourcePojo<_ShellDisplay> {
+public final class _ShellDisplay extends _AssetsDisplay<_ShellDisplay> {
 
     private static final _ShellDisplay PARSER = new _ShellDisplay();
     public static _ShellDisplay fromJson(JsonReader reader) throws IOException {
@@ -23,6 +25,14 @@ public final class _ShellDisplay extends ResourcePojo<_ShellDisplay> {
     protected _ShellDisplay fromJsonReader(JsonReader reader) throws IOException {
         _ShellDisplay pojo = new _ShellDisplay();
         reader.beginObject(); {
+            while (reader.hasNext()) {
+                String key = reader.nextName();
+                switch (key) {
+                    case _ShellDisplayTag.MODEL_LOCATION, _ShellDisplayTag.MODEL_LOCATION_OLD1 -> pojo.setModelLocation(JsonUtils.readResourceLocation(reader));
+                    case _ShellDisplayTag.TEXTURE_LOCATION, _ShellDisplayTag.TEXTURE_LOCATION_OLD1 -> pojo.setTextureLocation(JsonUtils.readResourceLocation(reader));
+                    default -> reader.skipValue();
+                }
+            }
         }
         reader.endObject();
         return pojo;
@@ -34,12 +44,17 @@ public final class _ShellDisplay extends ResourcePojo<_ShellDisplay> {
     @Override
     public void toJson(JsonWriter writer) throws IOException {
         writer.beginObject(); {
+            JsonUtils.writeResourceLocation(writer, _ShellDisplayTag.MODEL_LOCATION, this.getModelLocation());
+            JsonUtils.writeResourceLocation(writer, _ShellDisplayTag.TEXTURE_LOCATION, this.getTextureLocation());
         }
         writer.endObject();
     }
 
     @Override
     protected void validatePojo() {
+        super.validatePojo();
+        if (!this.isValid()) return;
+
         this.setValid(true);
     }
 

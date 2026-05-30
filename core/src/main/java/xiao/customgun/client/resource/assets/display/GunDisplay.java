@@ -164,13 +164,14 @@ public final class GunDisplay extends _AssetsDisplay<GunDisplay> {
         super.validatePojo();
         if (!this.isValid()) return;
 
-        boolean n1 = (this.lodDisplay == null | this.muzzleFlashDisplay == null | this.modelNodeTextDisplay == null | this.laserDisplay == null);
-        boolean n2 = (this.surroundDisplayByHotbar == null | this.surroundDisplayByOffhand == null | this.ammoDisplayOverride == null | this.shellEjectionParam == null);
-        boolean n3 = (this.gunSounds == null | this.controllableData == null);
+        boolean n1 = (this.getTransformScale() == null | this.getSlotTextureLocation() == null | this.lodDisplay == null | this.muzzleFlashDisplay == null);
+        boolean n2 = (this.modelNodeTextDisplay == null | this.laserDisplay == null | this.surroundDisplayByHotbar == null | this.surroundDisplayByOffhand == null);
+        boolean n3 = (this.ammoDisplayOverride == null | this.shellEjectionParam == null | this.gunSounds == null | this.controllableData == null);
         if (n1 | n2 | n3) {
             this.setValid(false);
             return;
         }
+        this.getTransformScale().validate();
         this.lodDisplay.validate();
         this.muzzleFlashDisplay.validate();
         this.modelNodeTextDisplay.validate();
@@ -179,9 +180,9 @@ public final class GunDisplay extends _AssetsDisplay<GunDisplay> {
         this.ammoDisplayOverride.validate();
         this.shellEjectionParam.validate();
         this.controllableData.validate();
-        boolean v1 = (this.lodDisplay.isValid() & this.muzzleFlashDisplay.isValid() & this.modelNodeTextDisplay.isValid());
-        boolean v2 = (this.laserDisplay.isValid() & this.surroundDisplayByOffhand.isValid() & this.ammoDisplayOverride.isValid());
-        boolean v3 = (this.shellEjectionParam.isValid() & this.controllableData.isValid());
+        boolean v1 = (this.getTransformScale().isValid() & this.lodDisplay.isValid() & this.muzzleFlashDisplay.isValid());
+        boolean v2 = (this.modelNodeTextDisplay.isValid() & this.laserDisplay.isValid() & this.surroundDisplayByOffhand.isValid());
+        boolean v3 = (this.ammoDisplayOverride.isValid() & this.shellEjectionParam.isValid() & this.controllableData.isValid());
         if (!(v1 & v2 & v3)) {
             this.setValid(false);
             return;

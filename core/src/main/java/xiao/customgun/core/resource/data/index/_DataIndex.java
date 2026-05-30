@@ -9,7 +9,6 @@ package xiao.customgun.core.resource.data.index;
 
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.NotNull;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.util.ComponentUtils;
 
@@ -37,16 +36,16 @@ public abstract class _DataIndex<T extends _DataIndex<T>> extends ResourcePojo<T
 
     // --------Getter & Setter--------
 
-    public final @NotNull MutableComponent getNameLang() {
+    public final MutableComponent getNameLang() {
         return nameLang;
     }
-    public final @NotNull MutableComponent getTooltipLang() {
+    public final MutableComponent getTooltipLang() {
         return tooltipLang;
     }
-    public final @NotNull ResourceLocation getDataLocation() {
+    public final ResourceLocation getDataLocation() {
         return dataLocation;
     }
-    public final @NotNull ResourceLocation getDisplayIndexLocation() {
+    public final ResourceLocation getDisplayIndexLocation() {
         return displayIndexLocation;
     }
     public final int getSlotSort() {

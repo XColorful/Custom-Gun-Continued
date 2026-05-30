@@ -8,25 +8,20 @@
 package xiao.customgun.client.resource.assets.display;
 
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.resource.ResourcePojo;
 
 public abstract class _AssetsDisplay<T extends _AssetsDisplay<T>> extends ResourcePojo<T> {
 
     private ResourceLocation modelLocation;
-    private _TransformScale transformScale;
+    private @Nullable _TransformScale transformScale;
     private ResourceLocation textureLocation;
-    private ResourceLocation slotTextureLocation;
+    private @Nullable ResourceLocation slotTextureLocation;
 
     @Override
     protected void validatePojo() {
-        boolean n1 = (this.modelLocation == null | this.textureLocation == null | this.transformScale == null);
+        boolean n1 = (this.modelLocation == null | this.textureLocation == null);
         if (n1) {
-            this.setValid(false);
-            return;
-        }
-        this.transformScale.validate();
-        boolean v1 = (this.transformScale == null || this.transformScale.isValid());
-        if (!(v1)) {
             this.setValid(false);
             return;
         }
@@ -39,13 +34,13 @@ public abstract class _AssetsDisplay<T extends _AssetsDisplay<T>> extends Resour
     public final ResourceLocation getModelLocation() {
         return modelLocation;
     }
-    public final _TransformScale getTransformScale() {
+    public final @Nullable _TransformScale getTransformScale() {
         return transformScale;
     }
     public final ResourceLocation getTextureLocation() {
         return textureLocation;
     }
-    public final ResourceLocation getSlotTextureLocation() {
+    public final @Nullable ResourceLocation getSlotTextureLocation() {
         return slotTextureLocation;
     }
 

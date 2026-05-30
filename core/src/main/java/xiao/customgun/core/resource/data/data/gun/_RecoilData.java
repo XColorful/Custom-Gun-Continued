@@ -72,7 +72,6 @@ public final class _RecoilData extends ResourcePojo<_RecoilData> {
                 return;
             }
         }
-
         for (_RecoilEntryData data : this.yawRecoils) {
             data.validate();
             if (!data.isValid()) {

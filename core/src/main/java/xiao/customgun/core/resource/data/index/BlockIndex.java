@@ -78,10 +78,12 @@ public final class BlockIndex extends _DataIndex<BlockIndex> {
         super.validatePojo();
         if (!this.isValid()) return;
 
-        if (this.blockLocation == null) {
+        boolean n1 = (this.blockLocation == null);
+        if (n1) {
             this.setValid(false);
             return;
         }
+
         this.setValid(true);
     }
 

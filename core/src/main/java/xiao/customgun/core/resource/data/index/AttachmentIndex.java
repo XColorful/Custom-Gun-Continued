@@ -75,10 +75,12 @@ public final class AttachmentIndex extends _DataIndex<AttachmentIndex> {
         super.validatePojo();
         if (!this.isValid()) return;
 
-        if (this.attachmentCategory == null) {
+        boolean n1 = (this.attachmentCategory == null);
+        if (n1) {
             this.setValid(false);
             return;
         }
+
         this.setValid(true);
     }
 

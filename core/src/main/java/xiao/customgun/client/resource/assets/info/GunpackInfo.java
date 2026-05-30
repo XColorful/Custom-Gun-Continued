@@ -72,8 +72,9 @@ public final class GunpackInfo extends ResourcePojo<GunpackInfo> {
 
     @Override
     protected void validatePojo() {
-        boolean n1 = (this.gunpackVersion == null | this.nameLocation == null | this.authors == null);
-        if (n1) {
+        boolean n1 = (this.gunpackVersion == null | this.nameLocation == null | this.tooltipLocation == null | this.license == null);
+        boolean n2 = (this.authors == null | this.date == null | this.gunpackUrl == null);
+        if (n1 | n2) {
             this.setValid(false);
             return;
         }

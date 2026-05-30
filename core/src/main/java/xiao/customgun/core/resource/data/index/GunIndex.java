@@ -75,10 +75,12 @@ public final class GunIndex extends _DataIndex<GunIndex> {
         super.validatePojo();
         if (!this.isValid()) return;
 
-        if (this.gunCategory == null) {
+        boolean n1 = (this.gunCategory == null);
+        if (n1) {
             this.setValid(false);
             return;
         }
+
         if (this.itemType == null) this.itemType = ItemType.GUN;
         this.setValid(true);
     }

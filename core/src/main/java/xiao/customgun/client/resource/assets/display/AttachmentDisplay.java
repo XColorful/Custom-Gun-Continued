@@ -117,6 +117,7 @@ public final class AttachmentDisplay extends _AssetsDisplay<AttachmentDisplay> {
             this.setValid(false);
             return;
         }
+
         for (_ModelNodeTextDisplay data : this.modelNodeTextDisplay.values()) {
             data.validate();
             if (!data.isValid()) {

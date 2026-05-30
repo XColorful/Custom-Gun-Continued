@@ -24,12 +24,14 @@ public abstract class _DataIndex<T extends _DataIndex<T>> extends ResourcePojo<T
 
     @Override
     protected void validatePojo() {
-        if (this.nameLang == null) this.nameLang = ComponentUtils.unknownTranslatableKey();
-        if (this.tooltipLang == null) this.tooltipLang = ComponentUtils.unknownTranslatableKey();
-        if (this.dataLocation == null || this.displayIndexLocation == null) {
+        boolean n1 = (this.dataLocation == null | this.displayIndexLocation == null);
+        if (n1) {
             this.setValid(false);
             return;
         }
+
+        if (this.nameLang == null) this.nameLang = ComponentUtils.unknownTranslatableKey();
+        if (this.tooltipLang == null) this.tooltipLang = ComponentUtils.unknownTranslatableKey();
         if (this.slotSort < 0) this.slotSort = 0;
         this.setValid(true);
     }

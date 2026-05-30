@@ -92,7 +92,7 @@ public final class AmmoDisplay extends _AssetsDisplay<AmmoDisplay> {
         if (this.ammoEntityDisplay != null) this.ammoEntityDisplay.validate();
         if (this.shellDisplay != null) this.shellDisplay.validate();
         this.ammoParticle.validate();
-        boolean v1 = (this.getTransformScale().isValid() & this.ammoParticle.isValid() & (this.ammoEntityDisplay == null || this.ammoEntityDisplay.isValid()));
+        boolean v1 = (this.getTransformScale().isValid() & (this.ammoEntityDisplay == null || this.ammoEntityDisplay.isValid()) & this.ammoParticle.isValid());
         boolean v2 = ((this.shellDisplay == null || this.shellDisplay.isValid()));
         if (!(v1 & v2)) {
             this.setValid(false);

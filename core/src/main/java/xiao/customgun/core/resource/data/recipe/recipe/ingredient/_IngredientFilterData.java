@@ -56,7 +56,7 @@ public final class _IngredientFilterData extends ResourcePojo<_IngredientFilterD
 
     @Override
     protected void validatePojo() {
-        boolean n1 = (this.itemFilterLocation == null & this.tagFilterLocation == null);
+        boolean n1 = (this.itemFilterLocation == null | this.tagFilterLocation == null);
         if (n1) {
             this.setValid(false);
             return;

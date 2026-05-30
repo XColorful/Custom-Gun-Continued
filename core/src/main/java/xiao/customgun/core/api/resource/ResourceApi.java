@@ -115,7 +115,7 @@ public class ResourceApi {
         @Nullable RecipeManager recipeManager = ResourceApi.getRecipeManager();
         if (recipeManager == null) return new HashMap<>();
         Map<ResourceLocation, TableRecipe> tableRecipes = new HashMap<>();
-        for (TableRecipe recipe : recipeManager.getAllRecipesFor(ModRecipe.TACZ_TABLE_RECIPE_CRAFTING.get())) {
+        for (TableRecipe recipe : recipeManager.getAllRecipesFor(ModRecipe.TABLE_RECIPE_CRAFTING.get())) {
             tableRecipes.put(recipe.getRecipeLocation(), recipe);
         }
         return tableRecipes;

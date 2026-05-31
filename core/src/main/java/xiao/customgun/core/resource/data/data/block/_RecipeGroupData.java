@@ -58,6 +58,12 @@ public final class _RecipeGroupData extends ResourcePojo<_RecipeGroupData> {
 
     @Override
     protected void validatePojo() {
+        boolean n1 = (this.groupCategory == null | this.nameLang == null);
+        if (n1) {
+            this.setValid(false);
+            return;
+        }
+
         this.setValid(true);
     }
 

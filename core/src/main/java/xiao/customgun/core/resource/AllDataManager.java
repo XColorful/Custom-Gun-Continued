@@ -164,7 +164,7 @@ public class AllDataManager implements IEventHandler {
 
         var _this = getCurrent();
         if (_this != null && _this.recipeManager != null) {
-            var targetType = ModRecipe.TACZ_TABLE_RECIPE_CRAFTING.get();
+            var targetType = ModRecipe.TABLE_RECIPE_CRAFTING.get();
             var tableRecipeHolders = _this.recipeManager.getRecipes().stream()
                     .filter(holder -> holder.value().getType() == targetType)
                     .toList();

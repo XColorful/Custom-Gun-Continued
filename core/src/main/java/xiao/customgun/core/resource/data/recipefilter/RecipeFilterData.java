@@ -63,6 +63,12 @@ public final class RecipeFilterData extends ResourcePojo<RecipeFilterData> {
 
     @Override
     protected void validatePojo() {
+        boolean n1 = (this.whitelistRaw == null | this.blacklistRaw == null);
+        if (n1) {
+            this.setValid(false);
+            return;
+        }
+
         // TODO: 在这里处理 String 到 ResourceLocation 或 Pattern 的转换逻辑
         this.setValid(true);
     }

@@ -5,9 +5,11 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package xiao.customgun.core.api.resource.assets.display.ammo;
+package xiao.customgun.core.api.resource.assets.display;
 
-public class _AmmoTransformTag {
+public class _ModelTransformTag {
 
-    private _AmmoTransformTag() {}
+    public static final String SCALE = "scale";
+
+    private _ModelTransformTag() {}
 }

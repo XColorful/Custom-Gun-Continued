@@ -7,6 +7,7 @@
 
 package xiao.customgun.core.resource.data.data.attachment;
 
+import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.resource.ResourcePojo;
 
 public abstract class __ModifierData<T extends __ModifierData<T>> extends ResourcePojo<T> {
@@ -14,6 +15,7 @@ public abstract class __ModifierData<T extends __ModifierData<T>> extends Resour
     private float sharedBaseAdd = 0;
     private float sharedPercentAdd = 0;
     private float uniqueMultiplier = 1;
+    private String scriptFunction;
 
     // --------Getter & Setter--------
 
@@ -26,6 +28,9 @@ public abstract class __ModifierData<T extends __ModifierData<T>> extends Resour
     public final float getUniqueMultiplier() {
         return uniqueMultiplier;
     }
+    public final @Nullable String getScriptFunction() {
+        return scriptFunction;
+    }
 
     public final void setSharedBaseAdd(float sharedBaseAdd) {
         this.sharedBaseAdd = sharedBaseAdd;
@@ -35,5 +40,8 @@ public abstract class __ModifierData<T extends __ModifierData<T>> extends Resour
     }
     public final void setUniqueMultiplier(float uniqueMultiplier) {
         this.uniqueMultiplier = uniqueMultiplier;
+    }
+    public final void setScriptFunction(String scriptFunction) {
+        this.scriptFunction = scriptFunction;
     }
 }

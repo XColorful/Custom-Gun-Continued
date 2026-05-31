@@ -86,6 +86,20 @@ dependencies {
     }
     annotationProcessor "${mixin_annotation}"
     annotationProcessor "${mixin_extras_annotation}:${mixin_extras_version}"
+
+    // LuaJ
+    minecraftLibrary(jarJar("${luaj_figuramc_core}")) {
+        exclude group: 'org.apache.commons', module: 'commons-lang3'
+        jarJar.ranged(it, "[${luaj_figuramc_version},)")
+    }
+    minecraftLibrary(jarJar("${luaj_figuramc_jse}")) {
+        exclude group: 'org.apache.commons', module: 'commons-lang3'
+        jarJar.ranged(it, "[${luaj_figuramc_version},)")
+    }
+    minecraftLibrary(jarJar("${luaj_bcel}")) {
+        exclude group: 'org.apache.commons', module: 'commons-lang3'
+        jarJar.ranged(it, "[${luaj_bcel_version},)")
+    }
 }
 
 tasks.named('jar', Jar).configure {

@@ -34,7 +34,7 @@ public class ModRecipe {
                     return CustomRecipeType.MOD_TABLE_RECIPE.getRegistryName();
                 }
             });
-    public static final IRegistryObject<RecipeType<TableRecipe>> TABLE_RECIPE_CRAFTING_OLD1 = RECIPE_TYPES.register(CustomRecipeType.MOD_TABLE_RECIPE.getTagNameOld(), () ->
+    public static final IRegistryObject<RecipeType<TableRecipe>> TABLE_RECIPE_CRAFTING_OLD1 = RECIPE_TYPES_OLD1.register(CustomRecipeType.MOD_TABLE_RECIPE.getTagNameOld(), () ->
             new RecipeType<>() {
                 @Override
                 public String toString() {

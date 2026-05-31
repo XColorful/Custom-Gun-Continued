@@ -9,11 +9,17 @@ package xiao.customgun.client.resource.assets.display.gun;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import xiao.customgun.core.api.resource.assets.display.gun._SurroundDisplayTag;
 import xiao.customgun.core.resource.ResourcePojo;
+import xiao.customgun.core.util.JsonUtils;
 
 import java.io.IOException;
 
 public final class _SurroundDisplay extends ResourcePojo<_SurroundDisplay> {
+
+    private float[] pos;
+    private float[] rotate;
+    private float[] scale;
 
     private static final _SurroundDisplay PARSER = new _SurroundDisplay();
     public static _SurroundDisplay fromJson(JsonReader reader) throws IOException {
@@ -24,8 +30,13 @@ public final class _SurroundDisplay extends ResourcePojo<_SurroundDisplay> {
         _SurroundDisplay pojo = new _SurroundDisplay();
         reader.beginObject(); {
             while (reader.hasNext()) {
-                reader.nextName();
-                reader.skipValue();
+                String key = reader.nextName();
+                switch (key) {
+                    case _SurroundDisplayTag.POS -> pojo.pos = JsonUtils.readFloatArrayFast(reader, 3);
+                    case _SurroundDisplayTag.ROTATE -> pojo.rotate = JsonUtils.readFloatArrayFast(reader, 3);
+                    case _SurroundDisplayTag.SCALE -> pojo.scale = JsonUtils.readFloatArrayFast(reader, 3);
+                    default -> reader.skipValue();
+                }
             }
         }
         reader.endObject();
@@ -38,14 +49,43 @@ public final class _SurroundDisplay extends ResourcePojo<_SurroundDisplay> {
     @Override
     public void toJson(JsonWriter writer) throws IOException {
         writer.beginObject(); {
+            JsonUtils.writeFloatArray(writer, _SurroundDisplayTag.POS, this.pos);
+            JsonUtils.writeFloatArray(writer, _SurroundDisplayTag.ROTATE, this.rotate);
+            JsonUtils.writeFloatArray(writer, _SurroundDisplayTag.SCALE, this.scale);
         }
         writer.endObject();
     }
 
     @Override
     protected void validatePojo() {
+        boolean n1 = (this.pos == null | this.rotate == null | this.scale == null);
+        if (n1) {
+            this.setValid(false);
+            return;
+        }
+
         this.setValid(true);
     }
 
     // --------Getter & Setter--------
+
+    public float[] getPos() {
+        return pos;
+    }
+    public float[] getRotate() {
+        return rotate;
+    }
+    public float[] getScale() {
+        return scale;
+    }
+
+    public void setPos(float[] pos) {
+        this.pos = pos;
+    }
+    public void setRotate(float[] rotate) {
+        this.rotate = rotate;
+    }
+    public void setScale(float[] scale) {
+        this.scale = scale;
+    }
 }

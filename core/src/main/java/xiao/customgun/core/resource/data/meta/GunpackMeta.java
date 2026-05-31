@@ -56,6 +56,12 @@ public final class GunpackMeta extends ResourcePojo<GunpackMeta> {
 
     @Override
     protected void validatePojo() {
+        boolean n1 = (this.namespace == null | this.dependencies == null);
+        if (n1) {
+            this.setValid(false);
+            return;
+        }
+
         this.setValid(true);
     }
 

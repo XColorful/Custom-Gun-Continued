@@ -71,6 +71,26 @@ public final class RecipeData extends ResourcePojo<RecipeData> {
 
     @Override
     protected void validatePojo() {
+        boolean n1 = (this.recipeRegistryType == null | this.tableIngredients == null | this.tableResult == null);
+        if (n1) {
+            this.setValid(false);
+            return;
+        }
+        this.tableResult.validate();
+        boolean v1 = (this.tableResult.isValid());
+        if (!(v1)) {
+            this.setValid(false);
+            return;
+        }
+
+        for (_TableIngredientData data : this.tableIngredients) {
+            data.validate();
+            if (!data.isValid()) {
+                this.setValid(false);
+                return;
+            }
+        }
+
         this.setValid(true);
     }
 

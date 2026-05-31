@@ -7,7 +7,9 @@
 
 package xiao.customgun.core.api.resource.assets.display.ammo;
 
-public class _ShellDisplayTag {
+import xiao.customgun.core.api.resource.assets.display._AssetsDisplayTag;
+
+public class _ShellDisplayTag extends _AssetsDisplayTag {
 
     private _ShellDisplayTag() {}
 }

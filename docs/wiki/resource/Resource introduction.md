@@ -1,6 +1,7 @@
 [English](#English)
 
 # 资源文件说明
+> wiki 版本：`0.0.0`.0
 
 ## 数据包
 
@@ -19,7 +20,7 @@
                 │  │      *.json
                 │  │
                 │  └─guns
-                │          *.json
+                │         *.json
                 │
                 ├─cgc_index
                 │  ├─ammo
@@ -32,7 +33,7 @@
                 │  │      *.json
                 │  │
                 │  └─guns
-                │          *.json
+                │         *.json
                 │
                 ├─cgc_meta
                 │      *.meta.json
@@ -48,7 +49,7 @@
                 │  │      *.json
                 │  │
                 │  └─gun_attachments
-                │          *.json
+                │         *.json
                 │
                 └─recipes
                         *.json
@@ -107,7 +108,7 @@
                 │  │      *.json
                 │  │
                 │  └─guns
-                │          *.json
+                │         *.json
                 │
                 ├─cgc_info
                 │      gunpack_info.json
@@ -128,7 +129,7 @@
                 │      *.animation.json
                 │
                 └─textures
-                        *.png
+                       *.png
 ```
 
 - assets
@@ -160,6 +161,7 @@
 		- [资源包材质](https://github.com/XColorful/Custom-Gun-Continued/wiki/Resourcepack-texture)
 
 # English
+> wiki 版本：`0.0.0`.0
 
 ## Datapack
 
@@ -178,7 +180,7 @@
                 │  │      *.json
                 │  │
                 │  └─guns
-                │          *.json
+                │         *.json
                 │
                 ├─cgc_index
                 │  ├─ammo
@@ -191,7 +193,7 @@
                 │  │      *.json
                 │  │
                 │  └─guns
-                │          *.json
+                │         *.json
                 │
                 ├─cgc_meta
                 │      *.meta.json
@@ -207,7 +209,7 @@
                 │  │      *.json
                 │  │
                 │  └─gun_attachments
-                │          *.json
+                │         *.json
                 │
                 └─recipes
                         *.json
@@ -266,7 +268,7 @@
                 │  │      *.json
                 │  │
                 │  └─guns
-                │          *.json
+                │         *.json
                 │
                 ├─cgc_info
                 │      gunpack_info.json
@@ -287,7 +289,7 @@
                 │      *.animation.json
                 │
                 └─textures
-                        *.png
+                       *.png
 ```
 
 - assets

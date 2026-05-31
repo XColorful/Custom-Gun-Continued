@@ -155,7 +155,7 @@ public final class GunDisplayInstance extends PojoInstance<GunDisplay> {
     public @Nullable _AmmoParticle getAmmoParticle() {
         return this.ammoParticleCache;
     }
-    public @Nullable ResourceLocation getGunSound(GunSoundType gunSoundType) {
+    public @Nullable Identifier getGunSound(GunSoundType gunSoundType) {
         return this.gunSoundsCache.get(gunSoundType);
     }
     public Object getScript() {
@@ -170,16 +170,16 @@ public final class GunDisplayInstance extends PojoInstance<GunDisplay> {
     @Deprecated public @Nullable _ModelTransform getTransform() {
         return this.getPojo().getModelTransform();
     }
-    @Deprecated public ResourceLocation getModelTexture() {
+    @Deprecated public Identifier getModelTexture() {
         return this.getPojo().getTextureLocation();
     }
-    @Deprecated public ResourceLocation getSlotTexture() {
+    @Deprecated public Identifier getSlotTexture() {
         return this.getPojo().getSlotTextureLocation();
     }
-    @Deprecated public ResourceLocation getHUDTexture() {
+    @Deprecated public Identifier getHUDTexture() {
         return this.getPojo().getHudTextureLocation();
     }
-    @Deprecated public ResourceLocation getHudEmptyTexture() {
+    @Deprecated public Identifier getHudEmptyTexture() {
         return this.getPojo().getHudEmptyTextureLocation();
     }
     @Deprecated public boolean enablesTransparency() {
@@ -221,16 +221,16 @@ public final class GunDisplayInstance extends PojoInstance<GunDisplay> {
     @Deprecated public String getThirdPersonAnimation() {
         return this.getPojo().getThirdPersonAnimationType().getCategoryName();
     }
-    @Deprecated public @Nullable ResourceLocation getPlayerAnimator3rd() {
+    @Deprecated public @Nullable Identifier getPlayerAnimator3rd() {
         return this.getPojo().getPlayerAnimatorLocation();
     }
     @Deprecated public boolean is3rdFixedHand() {
         return this.getPojo().getPlayerAnimatorFixedHand();
     }
-    @Deprecated public @Nullable ResourceLocation getSounds(GunSoundType gunSoundType) {
+    @Deprecated public @Nullable Identifier getSounds(GunSoundType gunSoundType) {
         return this.getGunSound(gunSoundType);
     }
-    @Deprecated public @Nullable List<ResourceLocation> getPreloadSounds() {
+    @Deprecated public @Nullable List<Identifier> getPreloadSounds() {
         return this.getPojo().getPreloadSoundLocation();
     }
     @Deprecated public @Nullable _ControllableData getControllableData() {

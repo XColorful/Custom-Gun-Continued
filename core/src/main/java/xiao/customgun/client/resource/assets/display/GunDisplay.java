@@ -278,7 +278,7 @@ public final class GunDisplay extends _AssetsDisplay<GunDisplay> {
     public Map<GunSoundType, Identifier> getGunSounds() {
         return gunSounds;
     }
-    public @Nullable List<ResourceLocation> getPreloadSoundLocation() {
+    public @Nullable List<Identifier> getPreloadSoundLocation() {
         return preloadSoundLocation;
     }
     public @Nullable _ControllableData getControllableData() {
@@ -357,7 +357,7 @@ public final class GunDisplay extends _AssetsDisplay<GunDisplay> {
     public void setGunSounds(Map<GunSoundType, Identifier> gunSounds) {
         this.gunSounds = gunSounds;
     }
-    public void setPreloadSoundLocation(List<ResourceLocation> preloadSoundLocation) {
+    public void setPreloadSoundLocation(List<Identifier> preloadSoundLocation) {
         this.preloadSoundLocation = preloadSoundLocation;
     }
     public void setControllableData(_ControllableData controllableData) {

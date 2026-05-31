@@ -79,7 +79,9 @@ public class CustomGunNeoforge {
         NeoCapabilityRegistry.onRegisterCapabilities(modEventBus);
 
         ModRecipe.RECIPE_SERIALIZERS.registerAll(modEventBus);
+        ModRecipe.RECIPE_SERIALIZERS_OLD1.registerAll(modEventBus);
         ModRecipe.RECIPE_TYPES.registerAll(modEventBus);
+        ModRecipe.RECIPE_TYPES_OLD1.registerAll(modEventBus);
         ModSounds.SOUNDS.registerAll(modEventBus);
 
         if (mcSide == McSide.CLIENT) {

@@ -65,6 +65,10 @@ public final class AmmoIndex extends _DataIndex<AmmoIndex> {
 
     @Override
     protected void validatePojo() {
+        super.validatePojo();
+        if (!this.isValid()) return;
+
+        if (this.maxStackSize < 1) this.maxStackSize = 1;
         this.setValid(true);
     }
 

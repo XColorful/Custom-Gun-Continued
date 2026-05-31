@@ -134,6 +134,27 @@ public final class AttachmentData extends ResourcePojo<AttachmentData> {
 
     @Override
     protected void validatePojo() {
+        boolean n1 = (this.adsModifier == null | this.armorIgnorePercentModifier == null | this.headshotMultiplierModifier == null | this.damageCalculationModifier == null);
+        boolean n2 = (this.bulletSpeedModifier == null | this.pierceCountModifier == null | this.fireAspectModifier == null | this.knockbackStrengthModifier == null);
+        boolean n3 = (this.bulletExplosionModifier == null | this.rpmModifier == null | this.recoilDataModifier == null | this.effectiveRangeModifier == null);
+        boolean n4 = (this.muzzleModifier == null | this.aimInaccuracyModifier == null | this.sneakInaccuracyModifier == null | this.proneInaccuracyModifier == null);
+        boolean n5 = (this.otherInaccuracyModifier == null | this.meleeModifier == null | this.magazineCategory == null);
+        if (n1 | n2 | n3 | n4 | n5) {
+            this.setValid(false);
+            return;
+        }
+        this.fireAspectModifier.validate();
+        this.bulletExplosionModifier.validate();
+        this.recoilDataModifier.validate();
+        this.muzzleModifier.validate();
+        this.meleeModifier.validate();
+        boolean v1 = (this.fireAspectModifier.isValid() & this.bulletExplosionModifier.isValid() & this.recoilDataModifier.isValid());
+        boolean v2 = (this.muzzleModifier.isValid() & this.meleeModifier.isValid());
+        if (!(v1 & v2)) {
+            this.setValid(false);
+            return;
+        }
+
         this.setValid(true);
     }
 

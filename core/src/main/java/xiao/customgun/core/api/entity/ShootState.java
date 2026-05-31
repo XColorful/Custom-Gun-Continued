@@ -9,6 +9,7 @@ package xiao.customgun.core.api.entity;
 
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.resource.ResourceTag;
+import xiao.customgun.core.resource.data.data.gun._InaccuracyData;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -72,5 +73,17 @@ public enum ShootState implements ResourceTag.CategoryTag {
     @Override
     public String toString() {
         return this.stateName;
+    }
+
+    public float getInaccuracy(_InaccuracyData pojo) {
+        return switch (this) {
+            case STAND -> pojo.getStand();
+            case MOVE -> pojo.getMove();
+            case SNEAK -> pojo.getSneak();
+            case PRONE -> pojo.getProne();
+            case AIM -> pojo.getAim();
+            case LEVITATE -> pojo.getLevitate();
+            // 如后续添加则强制编译不通过
+        };
     }
 }

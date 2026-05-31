@@ -87,12 +87,12 @@ public class TableRecipe implements Recipe<RecipeInput> {
 
     @Override
     public @NotNull RecipeSerializer<? extends TableRecipe> getSerializer() {
-        return ModRecipe.TACZ_TABLE_RECIPE_SERIALIZER.get();
+        return ModRecipe.TABLE_RECIPE_SERIALIZER.get();
     }
 
     @Override
     public @NotNull RecipeType<? extends TableRecipe> getType() {
-        return ModRecipe.TACZ_TABLE_RECIPE_CRAFTING.get();
+        return ModRecipe.TABLE_RECIPE_CRAFTING.get();
     }
 
     @Override

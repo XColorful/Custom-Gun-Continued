@@ -159,7 +159,7 @@ public class DebugCommand {
         if (allManager != null) {
             CommandSourceStack source = context.getSource();
             try {
-                String indent = " ".repeat(Math.max(0, IntegerArgumentType.getInteger(context, "indent")));
+                String indent = "\t".repeat(Math.max(0, IntegerArgumentType.getInteger(context, "indent")));
                 testManager(indent, path, allManager.gunpackMetaManager);
                 testManager(indent, path, allManager.gunDataManager);
                 testManager(indent, path, allManager.attachmentDataManager);

@@ -9,7 +9,6 @@ package xiao.customgun.core.resource.data.index;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import org.jetbrains.annotations.NotNull;
 import xiao.customgun.core.api.item.gun.GunCategory;
 import xiao.customgun.core.api.minecraft.item.ItemType;
 import xiao.customgun.core.api.resource.data.index.GunIndexTag;
@@ -76,20 +75,22 @@ public final class GunIndex extends _DataIndex<GunIndex> {
         super.validatePojo();
         if (!this.isValid()) return;
 
-        if (this.gunCategory == null) {
+        boolean n1 = (this.gunCategory == null);
+        if (n1) {
             this.setValid(false);
             return;
         }
+
         if (this.itemType == null) this.itemType = ItemType.GUN;
         this.setValid(true);
     }
 
     // --------Getter & Setter--------
 
-    public @NotNull GunCategory getGunCategory() {
+    public GunCategory getGunCategory() {
         return gunCategory;
     }
-    @Deprecated public @NotNull ItemType getItemType() { // 暂时不知道干什么用，直接用GunCategory?
+    @Deprecated public ItemType getItemType() { // 暂时不知道干什么用，直接用GunCategory?
         return itemType;
     }
 

@@ -11,6 +11,11 @@ dependencies {
     // MixinExtras
     compileOnly "${mixin_extras_common}:${mixin_extras_version}"
     annotationProcessor "${mixin_extras_common}:${mixin_extras_version}"
+
+    // LuaJ
+    compileOnly "${luaj_figuramc_core}"
+    compileOnly "${luaj_figuramc_jse}"
+    compileOnly "${luaj_bcel}"
 }
 
 jar {

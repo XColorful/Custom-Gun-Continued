@@ -16,4 +16,13 @@ plugins {
     id 'org.gradle.toolchains.foojay-resolver-convention' version '0.7.0'
 }
 
+sourceControl {
+    gitRepository(URI.create("https://github.com/FiguraMC/luaj.git")) {
+        producesModule("com.github.FiguraMC.luaj:luaj-jse-figura")
+    }
+    gitRepository(URI.create("https://github.com/FiguraMC/luaj.git")) {
+        producesModule("com.github.FiguraMC.luaj:luaj-core-figura")
+    }
+}
+
 include("core", "forge-compat")

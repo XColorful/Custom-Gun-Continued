@@ -28,7 +28,7 @@ public final class AttachmentDisplay extends _AssetsDisplay<AttachmentDisplay> {
     private boolean enableSight = false;
     private boolean enableScope = false;
     private float[] scopeZoomScale;
-    private float[] scopeViewIndex;
+    private int[] scopeViewIndex;
     private float[] scopeViewFov;
     private boolean showMuzzle = false;
     private boolean showMount = true;
@@ -57,7 +57,7 @@ public final class AttachmentDisplay extends _AssetsDisplay<AttachmentDisplay> {
                     case AttachmentDisplayTag.ENABLE_SIGHT -> pojo.enableSight = JsonUtils.readBoolean(reader);
                     case AttachmentDisplayTag.ENABLE_SCOPE -> pojo.enableScope = JsonUtils.readBoolean(reader);
                     case AttachmentDisplayTag.SCOPE_ZOOM_SCALE, AttachmentDisplayTag.SCOPE_ZOOM_SCALE_OLD1 -> pojo.scopeZoomScale = JsonUtils.readFloatArray(reader);
-                    case AttachmentDisplayTag.SCOPE_VIEW_INDEX, AttachmentDisplayTag.SCOPE_VIEW_INDEX_OLD1 -> pojo.scopeViewIndex = JsonUtils.readFloatArray(reader);
+                    case AttachmentDisplayTag.SCOPE_VIEW_INDEX, AttachmentDisplayTag.SCOPE_VIEW_INDEX_OLD1 -> pojo.scopeViewIndex = JsonUtils.readIntArray(reader);
                     case AttachmentDisplayTag.SCOPE_VIEW_FOV, AttachmentDisplayTag.SCOPE_VIEW_FOV_OLD2 -> pojo.scopeViewFov = JsonUtils.readFloatArray(reader); case AttachmentDisplayTag.SCOPE_VIEW_FOV_OLD1 -> pojo.scopeViewFov = new float[]{JsonUtils.readFloat(reader)};
                     case AttachmentDisplayTag.SHOW_MUZZLE -> pojo.showMuzzle = JsonUtils.readBoolean(reader);
                     case AttachmentDisplayTag.SHOW_MOUNT -> pojo.showMount = JsonUtils.readBoolean(reader);
@@ -88,7 +88,7 @@ public final class AttachmentDisplay extends _AssetsDisplay<AttachmentDisplay> {
             JsonUtils.writeBoolean(writer, AttachmentDisplayTag.ENABLE_SIGHT, this.enableSight);
             JsonUtils.writeBoolean(writer, AttachmentDisplayTag.ENABLE_SCOPE, this.enableScope);
             JsonUtils.writeFloatArray(writer, AttachmentDisplayTag.SCOPE_ZOOM_SCALE, this.scopeZoomScale);
-            JsonUtils.writeFloatArray(writer, AttachmentDisplayTag.SCOPE_VIEW_INDEX, this.scopeViewIndex);
+            JsonUtils.writeIntArray(writer, AttachmentDisplayTag.SCOPE_VIEW_INDEX, this.scopeViewIndex);
             JsonUtils.writeFloatArray(writer, AttachmentDisplayTag.SCOPE_VIEW_FOV, this.scopeViewFov);
             JsonUtils.writeBoolean(writer, AttachmentDisplayTag.SHOW_MUZZLE, this.showMuzzle);
             JsonUtils.writeBoolean(writer, AttachmentDisplayTag.SHOW_MOUNT, this.showMount);
@@ -146,7 +146,7 @@ public final class AttachmentDisplay extends _AssetsDisplay<AttachmentDisplay> {
     public float[] getScopeZoomScale() {
         return scopeZoomScale;
     }
-    public float[] getScopeViewIndex() {
+    public int[] getScopeViewIndex() {
         return scopeViewIndex;
     }
     public float[] getScopeViewFov() {
@@ -183,7 +183,7 @@ public final class AttachmentDisplay extends _AssetsDisplay<AttachmentDisplay> {
     public void setScopeZoomScale(float[] scopeZoomScale) {
         this.scopeZoomScale = scopeZoomScale;
     }
-    public void setScopeViewIndex(float[] scopeViewIndex) {
+    public void setScopeViewIndex(int[] scopeViewIndex) {
         this.scopeViewIndex = scopeViewIndex;
     }
     public void setScopeViewFov(float[] scopeViewFov) {

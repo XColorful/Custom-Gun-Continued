@@ -119,7 +119,7 @@ public final class ClientAttachmentIndexInstance extends PojoInstance<Attachment
         return false;
     }
     public static boolean checkScopeViewIndex(@NotNull AttachmentDisplay pojo) {
-        float[] scopeViewIndex = pojo.getScopeViewIndex();
+        int[] scopeViewIndex = pojo.getScopeViewIndex();
         for (int i = 0; i < scopeViewIndex.length; i++) {
             if (scopeViewIndex[i] < 1) return true;
         }

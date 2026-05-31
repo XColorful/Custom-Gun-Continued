@@ -9,7 +9,7 @@ package xiao.customgun.client.resource.assets.display.ammo;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import xiao.customgun.core.api.resource.assets.display.ammo._AmmoParticleTag;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.util.JsonUtils;
@@ -18,7 +18,7 @@ import java.io.IOException;
 
 public final class _AmmoParticle extends ResourcePojo<_AmmoParticle> {
 
-    private ResourceLocation particleLocation;
+    private Identifier particleLocation;
     private float[] delta;
     private float speed = 0f;
     private int count = 1;
@@ -76,7 +76,7 @@ public final class _AmmoParticle extends ResourcePojo<_AmmoParticle> {
 
     // --------Getter & Setter--------
 
-    public ResourceLocation getParticleLocation() {
+    public Identifier getParticleLocation() {
         return particleLocation;
     }
     public float[] getDelta() {
@@ -92,7 +92,7 @@ public final class _AmmoParticle extends ResourcePojo<_AmmoParticle> {
         return lifetimeTicks;
     }
 
-    public void setParticleLocation(ResourceLocation particleLocation) {
+    public void setParticleLocation(Identifier particleLocation) {
         this.particleLocation = particleLocation;
     }
     public void setDelta(float[] delta) {

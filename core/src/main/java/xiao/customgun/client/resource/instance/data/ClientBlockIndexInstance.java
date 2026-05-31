@@ -8,7 +8,7 @@
 package xiao.customgun.client.resource.instance.data;
 
 import com.mojang.math.Transformation;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.CustomGun;
@@ -82,7 +82,7 @@ public final class ClientBlockIndexInstance extends PojoInstance<BlockIndex> {
     @Deprecated public String getTooltipKey() {
         return ComponentUtils.toTranslatableKey(this.getPojo().getTooltipLang());
     }
-    @Deprecated public ResourceLocation getTexture() {
+    @Deprecated public Identifier getTexture() {
         return this.blockDisplayCache.getTextureLocation();
     }
     @Deprecated public Transformation getTransforms() {

@@ -86,11 +86,11 @@ public class ClientResourceApi {
 
     // --------model--------
 
-    public static @Nullable BedrockModel getBedrockModel(ResourceLocation bedrockModelLocation) {
+    public static @Nullable BedrockModel getBedrockModel(Identifier bedrockModelLocation) {
         var assetsManager = AllAssetsManager.INSTANCE.bedrockModelManager;
         return assetsManager != null ? assetsManager.getPojo(bedrockModelLocation) : null;
     }
-    public static Set<Map.Entry<ResourceLocation, BedrockModel>> getAllBedrockModel() {
+    public static Set<Map.Entry<Identifier, BedrockModel>> getAllBedrockModel() {
         var assetsManager = AllAssetsManager.INSTANCE.bedrockModelManager;
         return assetsManager != null ? assetsManager.getAllPojo().entrySet() : new HashSet<>();
     }

@@ -7,7 +7,7 @@
 
 package xiao.customgun.client.resource.instance.data;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.CustomGun;
@@ -175,7 +175,7 @@ public final class ClientAttachmentIndexInstance extends PojoInstance<Attachment
     @Deprecated public _LaserDisplay getLaserConfig() {
         return this.attachmentDisplayCache.getLaserDisplay();
     }
-    @Deprecated public Map<AttachmentSoundType, ResourceLocation> getSounds() {
+    @Deprecated public Map<AttachmentSoundType, Identifier> getSounds() {
         return this.attachmentDisplayCache.getAttachmentSounds();
     }
 }

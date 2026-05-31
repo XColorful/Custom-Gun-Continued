@@ -9,7 +9,7 @@ package xiao.customgun.client.resource.assets.display.gun;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import xiao.customgun.core.api.resource.assets.display.gun._MuzzleFlashDisplayTag;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.util.JsonUtils;
@@ -18,7 +18,7 @@ import java.io.IOException;
 
 public final class _MuzzleFlashDisplay extends ResourcePojo<_MuzzleFlashDisplay> {
 
-    private ResourceLocation textureLocation;
+    private Identifier textureLocation;
     private float textureScale = 1;
 
     private static final _MuzzleFlashDisplay PARSER = new _MuzzleFlashDisplay();
@@ -67,14 +67,14 @@ public final class _MuzzleFlashDisplay extends ResourcePojo<_MuzzleFlashDisplay>
 
     // --------Getter & Setter--------
 
-    public ResourceLocation getTextureLocation() {
+    public Identifier getTextureLocation() {
         return textureLocation;
     }
     public float getTextureScale() {
         return textureScale;
     }
 
-    public void setTextureLocation(ResourceLocation textureLocation) {
+    public void setTextureLocation(Identifier textureLocation) {
         this.textureLocation = textureLocation;
     }
     public void setTextureScale(float textureScale) {

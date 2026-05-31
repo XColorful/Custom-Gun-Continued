@@ -46,6 +46,12 @@ public final class GunAttachmentData extends _SimpleTagData<GunAttachmentData> {
 
     @Override
     protected void validatePojo() {
+        boolean n1 = (this.getTags() == null);
+        if (n1) {
+            this.setValid(false);
+            return;
+        }
+
         this.setValid(true);
     }
 }

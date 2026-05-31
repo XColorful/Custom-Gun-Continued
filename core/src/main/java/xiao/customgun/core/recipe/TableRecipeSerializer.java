@@ -106,4 +106,5 @@ public class TableRecipeSerializer {
     );
     // 26.1.x+
     public static final RecipeSerializer<TableRecipe> REGISTRY_INSTANCE = new RecipeSerializer<>(TABLE_RECIPE_MAP_CODEC, TABLE_RECIPE_STREAM_CODEC);
+    public static final RecipeSerializer<TableRecipe> REGISTRY_INSTANCE_OLD1 = new RecipeSerializer<>(TABLE_RECIPE_MAP_CODEC, TABLE_RECIPE_STREAM_CODEC);
 }

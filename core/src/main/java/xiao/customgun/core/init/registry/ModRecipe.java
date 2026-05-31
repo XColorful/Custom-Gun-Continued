@@ -26,7 +26,7 @@ public class ModRecipe {
     public static final IRegistryObject<RecipeSerializer<? extends TableRecipe>> TABLE_RECIPE_SERIALIZER = RECIPE_SERIALIZERS.register(CustomRecipeType.MOD_TABLE_RECIPE.getTagName(),
             () -> TableRecipeSerializer.REGISTRY_INSTANCE);
     public static final IRegistryObject<RecipeSerializer<? extends TableRecipe>> TABLE_RECIPE_SERIALIZER_OLD1 = RECIPE_SERIALIZERS_OLD1.register(CustomRecipeType.MOD_TABLE_RECIPE.getTagName(),
-            () -> TableRecipeSerializer.REGISTRY_INSTANCE);
+            () -> TableRecipeSerializer.REGISTRY_INSTANCE_OLD1);
     public static final IRegistryObject<RecipeType<TableRecipe>> TABLE_RECIPE_CRAFTING = RECIPE_TYPES.register(CustomRecipeType.MOD_TABLE_RECIPE.getTagName(), () ->
             new RecipeType<>() {
                 @Override

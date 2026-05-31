@@ -20,7 +20,7 @@ public final class BlockIndex extends _DataIndex<BlockIndex> {
     /**
      * Block类型
      */
-    private ResourceLocation blockType;
+    private ResourceLocation blockLocation;
 
     /**
      * 物品堆叠数量
@@ -44,7 +44,7 @@ public final class BlockIndex extends _DataIndex<BlockIndex> {
                     case BlockIndexTag.DISPLAY_INDEX_LOCATION, BlockIndexTag.DISPLAY_INDEX_LOCATION_OLD1 -> pojo.setDisplayIndexLocation(JsonUtils.readResourceLocation(reader));
                     case BlockIndexTag.SLOT_SORT, BlockIndexTag.SLOT_SORT_OLD1 -> pojo.setSlotSort(JsonUtils.readInt(reader));
 
-                    case BlockIndexTag.BLOCK_TYPE, BlockIndexTag.BLOCK_TYPE_OLD1 -> pojo.blockType = JsonUtils.readResourceLocation(reader);
+                    case BlockIndexTag.BLOCK_LOCATION, BlockIndexTag.BLOCK_LOCATION_OLD1 -> pojo.blockLocation = JsonUtils.readResourceLocation(reader);
                     case BlockIndexTag.MAX_STACK_SIZE, BlockIndexTag.MAX_STACK_SIZE_OLD1 -> pojo.maxStackSize = JsonUtils.readInt(reader);
                     default -> reader.skipValue();
                 }
@@ -67,7 +67,7 @@ public final class BlockIndex extends _DataIndex<BlockIndex> {
             JsonUtils.writeResourceLocation(writer, BlockIndexTag.DISPLAY_INDEX_LOCATION, this.getDisplayIndexLocation());
             JsonUtils.writeInt(writer, BlockIndexTag.SLOT_SORT, this.getSlotSort());
 
-            JsonUtils.writeResourceLocation(writer, BlockIndexTag.BLOCK_TYPE, this.blockType);
+            JsonUtils.writeResourceLocation(writer, BlockIndexTag.BLOCK_LOCATION, this.blockLocation);
             JsonUtils.writeInt(writer, BlockIndexTag.MAX_STACK_SIZE, this.maxStackSize);
         }
         writer.endObject();
@@ -75,20 +75,29 @@ public final class BlockIndex extends _DataIndex<BlockIndex> {
 
     @Override
     protected void validatePojo() {
+        super.validatePojo();
+        if (!this.isValid()) return;
+
+        boolean n1 = (this.blockLocation == null);
+        if (n1) {
+            this.setValid(false);
+            return;
+        }
+
         this.setValid(true);
     }
 
     // --------Getter & Setter--------
 
-    public ResourceLocation getBlockType() {
-        return blockType;
+    public ResourceLocation getBlockLocation() {
+        return blockLocation;
     }
     public int getMaxStackSize() {
         return maxStackSize;
     }
 
-    public void setBlockType(ResourceLocation blockType) {
-        this.blockType = blockType;
+    public void setBlockLocation(ResourceLocation blockLocation) {
+        this.blockLocation = blockLocation;
     }
     public void setMaxStackSize(int maxStackSize) {
         this.maxStackSize = maxStackSize;

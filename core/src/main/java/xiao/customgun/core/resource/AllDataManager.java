@@ -165,7 +165,7 @@ public class AllDataManager implements IEventHandler {
 
         var _this = getCurrent();
         if (_this != null && _this.recipeManager != null) {
-            var tableRecipeHolders = _this.recipeManager.getAllRecipesFor(ModRecipe.TACZ_TABLE_RECIPE_CRAFTING.get());
+            var tableRecipeHolders = _this.recipeManager.getAllRecipesFor(ModRecipe.TABLE_RECIPE_CRAFTING.get());
             for (var holder : tableRecipeHolders) {
                 TableRecipe tableRecipe = holder.value();
                 tableRecipe.init();

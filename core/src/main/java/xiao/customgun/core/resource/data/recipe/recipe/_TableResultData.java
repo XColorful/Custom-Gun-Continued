@@ -61,6 +61,12 @@ public final class _TableResultData extends ResourcePojo<_TableResultData> {
 
     @Override
     protected void validatePojo() {
+        boolean n1 = (this.recipeResultType == null | this.recipeResultLocation == null);
+        if (n1) {
+            this.setValid(false);
+            return;
+        }
+
         this.setValid(true);
     }
 

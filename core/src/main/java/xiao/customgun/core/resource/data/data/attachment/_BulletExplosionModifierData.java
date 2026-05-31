@@ -76,6 +76,20 @@ public final class _BulletExplosionModifierData extends ResourcePojo<_BulletExpl
 
     @Override
     protected void validatePojo() {
+        boolean n1 = (this.explodeDamageModifier == null | this.explodeScaleModifier == null | this.maxDelaySecondsModifier == null);
+        if (n1) {
+            this.setValid(false);
+            return;
+        }
+        this.explodeDamageModifier.validate();
+        this.explodeScaleModifier.validate();
+        this.maxDelaySecondsModifier.validate();
+        boolean v1 = (this.explodeDamageModifier.isValid() & this.explodeScaleModifier.isValid() & this.maxDelaySecondsModifier.isValid());
+        if (!(v1)) {
+            this.setValid(false);
+            return;
+        }
+
         this.setValid(true);
     }
 

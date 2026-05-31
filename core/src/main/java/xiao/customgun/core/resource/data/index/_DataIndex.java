@@ -9,7 +9,6 @@ package xiao.customgun.core.resource.data.index;
 
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.NotNull;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.util.ComponentUtils;
 
@@ -25,28 +24,30 @@ public abstract class _DataIndex<T extends _DataIndex<T>> extends ResourcePojo<T
 
     @Override
     protected void validatePojo() {
-        if (this.nameLang == null) this.nameLang = ComponentUtils.unknownTranslatableKey();
-        if (this.tooltipLang == null) this.tooltipLang = ComponentUtils.unknownTranslatableKey();
-        if (this.dataLocation == null || this.displayIndexLocation == null) {
+        boolean n1 = (this.dataLocation == null | this.displayIndexLocation == null);
+        if (n1) {
             this.setValid(false);
             return;
         }
+
+        if (this.nameLang == null) this.nameLang = ComponentUtils.unknownTranslatableKey();
+        if (this.tooltipLang == null) this.tooltipLang = ComponentUtils.unknownTranslatableKey();
         if (this.slotSort < 0) this.slotSort = 0;
         this.setValid(true);
     }
 
     // --------Getter & Setter--------
 
-    public final @NotNull MutableComponent getNameLang() {
+    public final MutableComponent getNameLang() {
         return nameLang;
     }
-    public final @NotNull MutableComponent getTooltipLang() {
+    public final MutableComponent getTooltipLang() {
         return tooltipLang;
     }
-    public final @NotNull ResourceLocation getDataLocation() {
+    public final ResourceLocation getDataLocation() {
         return dataLocation;
     }
-    public final @NotNull ResourceLocation getDisplayIndexLocation() {
+    public final ResourceLocation getDisplayIndexLocation() {
         return displayIndexLocation;
     }
     public final int getSlotSort() {

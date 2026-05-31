@@ -81,6 +81,20 @@ public final class _MeleeModifierData extends ResourcePojo<_MeleeModifierData> {
 
     @Override
     protected void validatePojo() {
+        boolean n1 = (this.targetEffect == null);
+        if (n1) {
+            this.setValid(false);
+            return;
+        }
+
+        for (_TargetEffectData data : this.targetEffect) {
+            data.validate();
+            if (!data.isValid()) {
+                this.setValid(false);
+                return;
+            }
+        }
+
         this.setValid(true);
     }
 

@@ -21,7 +21,7 @@ import java.util.Map;
 public final class AttachmentDisplay extends _AssetsDisplay<AttachmentDisplay> {
 
     // 模型
-    private _LodDisplay lodDisplay;
+    private @Nullable _LodDisplay lodDisplay;
     private String adapterNodeName;
 
     // 显示
@@ -104,15 +104,15 @@ public final class AttachmentDisplay extends _AssetsDisplay<AttachmentDisplay> {
         super.validatePojo();
         if (!this.isValid()) return;
 
-        boolean n1 = (this.getSlotTextureLocation() == null | this.lodDisplay == null | this.adapterNodeName == null | this.scopeZoomScale == null);
+        boolean n1 = (this.getSlotTextureLocation() == null | this.adapterNodeName == null | this.scopeZoomScale == null);
         boolean n2 = (this.scopeViewFov == null | this.modelNodeTextDisplay == null | this.laserDisplay == null | this.attachmentSounds == null | this.scopeViewIndex == null);
         if (n1 | n2) {
             this.setValid(false);
             return;
         }
-        this.lodDisplay.validate();
+        if (this.lodDisplay != null) this.lodDisplay.validate();
         this.laserDisplay.validate();
-        boolean v1 = (this.lodDisplay.isValid() & this.laserDisplay.isValid());
+        boolean v1 = ((this.lodDisplay == null || this.lodDisplay.isValid()) & this.laserDisplay.isValid());
         if (!v1) {
             this.setValid(false);
             return;

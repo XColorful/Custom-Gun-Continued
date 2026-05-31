@@ -10,6 +10,7 @@ package xiao.customgun.client.resource.assets.display;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.Nullable;
 import xiao.customgun.client.api.item.gun.DamageDisplayType;
 import xiao.customgun.client.api.item.gun.ThirdPersonAnimationType;
 import xiao.customgun.client.api.model.gun.GunModelType;
@@ -31,34 +32,34 @@ public final class GunDisplay extends _AssetsDisplay<GunDisplay> {
 
     // 模型
     private GunModelType gunModelType;
-    private _LodDisplay lodDisplay;
+    private @Nullable _LodDisplay lodDisplay;
     private boolean enableTransparency = false;
 
     // 显示
     private float ironZoomScale = 1.2f;
     private float ironViewFov = 70f;
     private boolean enableCrosshair = false;
-    private _MuzzleFlashDisplay muzzleFlashDisplay;
+    private @Nullable _MuzzleFlashDisplay muzzleFlashDisplay;
     private Map<String, _ModelNodeTextDisplay> modelNodeTextDisplay;
-    private _LaserDisplay laserDisplay;
-    private Map<String, _SurroundDisplay> surroundDisplayByHotbar;
+    private @Nullable _LaserDisplay laserDisplay;
+    private @Nullable Map<String, _SurroundDisplay> surroundDisplayByHotbar;
     private _SurroundDisplay surroundDisplayByOffhand;
     private DamageDisplayType damageDisplayType;
     private AmmoCountType ammoCountType;
-    private _AmmoDisplayOverride ammoDisplayOverride;
+    private @Nullable _AmmoDisplayOverride ammoDisplayOverride;
 
     // 动画
     private ResourceLocation gunAnimationLocation;
     private ResourceLocation scriptLocation;
     private Map<String, Object> scriptParam;
-    private _ShellEjectionParam shellEjectionParam;
+    private @Nullable _ShellEjectionParam shellEjectionParam;
     private ThirdPersonAnimationType thirdPersonAnimationType;
-    private ResourceLocation playerAnimatorLocation;
+    private @Nullable ResourceLocation playerAnimatorLocation;
     private boolean playerAnimatorFixedHand = false;
     private Map<GunSoundType, ResourceLocation> gunSounds;
-    private List<ResourceLocation> preloadSoundLocation;
+    private @Nullable List<ResourceLocation> preloadSoundLocation;
 
-    private _ControllableData controllableData;
+    private @Nullable _ControllableData controllableData;
 
     private static final GunDisplay PARSER = new GunDisplay();
     public static GunDisplay fromJson(JsonReader reader) throws IOException {
@@ -164,30 +165,28 @@ public final class GunDisplay extends _AssetsDisplay<GunDisplay> {
         super.validatePojo();
         if (!this.isValid()) return;
 
-        boolean n1 = (this.getModelTransform() == null | this.getSlotTextureLocation() == null | this.lodDisplay == null | this.muzzleFlashDisplay == null);
-        boolean n2 = (this.modelNodeTextDisplay == null | this.laserDisplay == null | this.surroundDisplayByHotbar == null | this.surroundDisplayByOffhand == null);
-        boolean n3 = (this.ammoDisplayOverride == null | this.shellEjectionParam == null | this.gunSounds == null | this.controllableData == null);
-        if (n1 | n2 | n3) {
+        boolean n1 = (this.getModelTransform() == null | this.getSlotTextureLocation() == null | this.modelNodeTextDisplay == null | this.surroundDisplayByOffhand == null | this.gunSounds == null);
+        if (n1) {
             this.setValid(false);
             return;
         }
         this.getModelTransform().validate();
-        this.lodDisplay.validate();
-        this.muzzleFlashDisplay.validate();
-        this.laserDisplay.validate();
+        if (this.lodDisplay != null) this.lodDisplay.validate();
+        if (this.muzzleFlashDisplay != null) this.muzzleFlashDisplay.validate();
+        if (this.laserDisplay != null) this.laserDisplay.validate();
         this.surroundDisplayByOffhand.validate();
-        this.ammoDisplayOverride.validate();
-        this.shellEjectionParam.validate();
-        this.controllableData.validate();
-        boolean v1 = (this.getModelTransform().isValid() & this.lodDisplay.isValid() & this.muzzleFlashDisplay.isValid());
-        boolean v2 = (this.laserDisplay.isValid() & this.surroundDisplayByOffhand.isValid() & this.ammoDisplayOverride.isValid());
-        boolean v3 = (this.shellEjectionParam.isValid() & this.controllableData.isValid());
+        if (this.ammoDisplayOverride != null) this.ammoDisplayOverride.validate();
+        if (this.shellEjectionParam != null) this.shellEjectionParam.validate();
+        if (this.controllableData != null) this.controllableData.validate();
+        boolean v1 = (this.getModelTransform().isValid() & (this.lodDisplay == null || this.lodDisplay.isValid()) & (this.muzzleFlashDisplay == null || this.muzzleFlashDisplay.isValid()));
+        boolean v2 = ((this.laserDisplay == null || this.laserDisplay.isValid()) & this.surroundDisplayByOffhand.isValid() & (this.ammoDisplayOverride == null || this.ammoDisplayOverride.isValid()));
+        boolean v3 = ((this.shellEjectionParam == null || this.shellEjectionParam.isValid()) & (this.controllableData == null || this.controllableData.isValid()));
         if (!(v1 & v2 & v3)) {
             this.setValid(false);
             return;
         }
 
-        for (_SurroundDisplay data : this.surroundDisplayByHotbar.values()) {
+        if (this.surroundDisplayByHotbar != null) for (_SurroundDisplay data : this.surroundDisplayByHotbar.values()) {
             data.validate();
             if (!data.isValid()) {
                 this.setValid(false);
@@ -216,7 +215,7 @@ public final class GunDisplay extends _AssetsDisplay<GunDisplay> {
     public GunModelType getGunModelType() {
         return gunModelType;
     }
-    public _LodDisplay getLodDisplay() {
+    public @Nullable _LodDisplay getLodDisplay() {
         return lodDisplay;
     }
     public boolean getEnableTransparency() {
@@ -231,16 +230,16 @@ public final class GunDisplay extends _AssetsDisplay<GunDisplay> {
     public boolean getEnableCrosshair() {
         return enableCrosshair;
     }
-    public _MuzzleFlashDisplay getMuzzleFlashDisplay() {
+    public @Nullable _MuzzleFlashDisplay getMuzzleFlashDisplay() {
         return muzzleFlashDisplay;
     }
     public Map<String, _ModelNodeTextDisplay> getModelNodeTextDisplay() {
         return modelNodeTextDisplay;
     }
-    public _LaserDisplay getLaserDisplay() {
+    public @Nullable _LaserDisplay getLaserDisplay() {
         return laserDisplay;
     }
-    public Map<String, _SurroundDisplay> getSurroundDisplayByHotbar() {
+    public @Nullable Map<String, _SurroundDisplay> getSurroundDisplayByHotbar() {
         return surroundDisplayByHotbar;
     }
     public _SurroundDisplay getSurroundDisplayByOffhand() {
@@ -252,7 +251,7 @@ public final class GunDisplay extends _AssetsDisplay<GunDisplay> {
     public AmmoCountType getAmmoCountType() {
         return ammoCountType;
     }
-    public _AmmoDisplayOverride getAmmoDisplayOverride() {
+    public @Nullable _AmmoDisplayOverride getAmmoDisplayOverride() {
         return ammoDisplayOverride;
     }
     public ResourceLocation getGunAnimationLocation() {
@@ -264,13 +263,13 @@ public final class GunDisplay extends _AssetsDisplay<GunDisplay> {
     public Map<String, Object> getScriptParam() {
         return scriptParam;
     }
-    public _ShellEjectionParam getShellEjectionParam() {
+    public @Nullable _ShellEjectionParam getShellEjectionParam() {
         return shellEjectionParam;
     }
     public ThirdPersonAnimationType getThirdPersonAnimationType() {
         return thirdPersonAnimationType;
     }
-    public ResourceLocation getPlayerAnimatorLocation() {
+    public @Nullable ResourceLocation getPlayerAnimatorLocation() {
         return playerAnimatorLocation;
     }
     public boolean getPlayerAnimatorFixedHand() {
@@ -279,10 +278,10 @@ public final class GunDisplay extends _AssetsDisplay<GunDisplay> {
     public Map<GunSoundType, ResourceLocation> getGunSounds() {
         return gunSounds;
     }
-    public List<ResourceLocation> getPreloadSoundLocation() {
+    public @Nullable List<ResourceLocation> getPreloadSoundLocation() {
         return preloadSoundLocation;
     }
-    public _ControllableData getControllableData() {
+    public @Nullable _ControllableData getControllableData() {
         return controllableData;
     }
 

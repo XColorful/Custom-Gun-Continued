@@ -62,6 +62,12 @@ public final class _TargetEffectData extends ResourcePojo<_TargetEffectData> {
 
     @Override
     protected void validatePojo() {
+        boolean n1 = (this.effectLocation == null);
+        if (n1) {
+            this.setValid(false);
+            return;
+        }
+
         this.setValid(true);
     }
 

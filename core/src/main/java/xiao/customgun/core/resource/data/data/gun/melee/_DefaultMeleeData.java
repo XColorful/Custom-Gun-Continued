@@ -85,6 +85,12 @@ public final class _DefaultMeleeData extends ResourcePojo<_DefaultMeleeData> {
 
     @Override
     protected void validatePojo() {
+        boolean n1 = (this.animationType == null);
+        if (n1) {
+            this.setValid(false);
+            return;
+        }
+
         this.setValid(true);
     }
 

@@ -72,6 +72,15 @@ public final class AttachmentIndex extends _DataIndex<AttachmentIndex> {
 
     @Override
     protected void validatePojo() {
+        super.validatePojo();
+        if (!this.isValid()) return;
+
+        boolean n1 = (this.attachmentCategory == null);
+        if (n1) {
+            this.setValid(false);
+            return;
+        }
+
         this.setValid(true);
     }
 

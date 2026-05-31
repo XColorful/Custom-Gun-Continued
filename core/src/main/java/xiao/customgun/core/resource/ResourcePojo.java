@@ -30,6 +30,11 @@ public abstract class ResourcePojo<T extends ResourcePojo<T>> {
 
     /**
      * 子类需满足 {@link ResourcePojo#isValid} 的要求
+     * <p>
+     * 优化规范：Null检查用{@code |}每4-5个分一组，压缩分支预测开销并吃满单核ALU宽度；
+     * 递归valid需连续调用以引导JIT内联，状态聚合用{@code &}每3-4个分一组以消除数据依赖
+     * </p>
+     * 预期是面对全数据合法的情况，否则短路{@code ||}可能更快
      */
     protected abstract void validatePojo();
 

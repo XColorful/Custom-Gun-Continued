@@ -58,6 +58,20 @@ public final class BlockData extends ResourcePojo<BlockData> {
 
     @Override
     protected void validatePojo() {
+        boolean n1 = (this.recipeFilterLocation == null | this.recipeGroupList == null);
+        if (n1) {
+            this.setValid(false);
+            return;
+        }
+
+        for (_RecipeGroupData data : this.recipeGroupList) {
+            data.validate();
+            if (!data.isValid()) {
+                this.setValid(false);
+                return;
+            }
+        }
+
         this.setValid(true);
     }
 

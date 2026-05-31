@@ -141,6 +141,13 @@ public class JsonUtils {
     public static void writeColor(JsonWriter writer, String key, Color value) throws IOException {
         if (value != null) writer.name(key).value(ColorUtils.fromColorTo_RRGGBB(value));
     }
+    public static int readColorInt(JsonReader reader) throws IOException {
+        String s = JsonUtils.readString(reader);
+        return s != null ? ColorUtils.fromRRGGBBtoInt(s) : 0xFFFFFF;
+    }
+    public static void writeColorInt(JsonWriter writer, String key, int value) throws IOException {
+        writer.name(key).value(ColorUtils.fromIntTo_RRGGBB(value));
+    }
 
     public static Identifier readResourceLocation(JsonReader reader) throws IOException {
         String rl = readString(reader);

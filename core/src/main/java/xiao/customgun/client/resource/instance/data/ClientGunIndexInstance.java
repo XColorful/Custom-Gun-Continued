@@ -9,14 +9,19 @@ package xiao.customgun.client.resource.instance.data;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import xiao.customgun.CustomGun;
 import xiao.customgun.client.api.resource.ClientResourceApi;
 import xiao.customgun.client.resource.instance.assets.GunDisplayInstance;
 import xiao.customgun.core.api.resource.ResourceApi;
 import xiao.customgun.core.resource.data.data.GunData;
 import xiao.customgun.core.resource.data.index.GunIndex;
 import xiao.customgun.core.resource.instance.PojoInstance;
+import xiao.customgun.core.util.ComponentUtils;
 
 public final class ClientGunIndexInstance extends PojoInstance<GunIndex> {
+
+    private @Nullable GunData gunDataCache;
+    private @Nullable GunDisplayInstance gunDisplayInstanceCache;
 
     private ClientGunIndexInstance(@NotNull GunIndex pojo) {
         super(pojo);
@@ -28,20 +33,47 @@ public final class ClientGunIndexInstance extends PojoInstance<GunIndex> {
         if (!instance.isPojoValid()) return null;
         else return instance;
     }
+
+    @Override public boolean resetCache() {
+        Object ignored = this.getGunData();
+        ignored = this.getGunDisplayInstance();
+        return true;
+    }
     @Override protected boolean isPojoValid() {
         var pojo = this.getPojo();
         if (!pojo.isValid()) return false;
+        if (!resetCache()) return false;
 
         return true;
     }
 
-    // --------便利接口--------
+    // --------Getter--------
 
     public @Nullable GunData getGunData() {
-        return ResourceApi.getGunData(this.getPojo().getDataLocation());
+        if (this.gunDataCache == null) {
+            GunData gunData = ResourceApi.getGunData(this.getPojo().getDataLocation());
+            if (gunData != null && gunData.isValid()) this.gunDataCache = gunData;
+        }
+        return this.gunDataCache;
     }
 
     public @Nullable GunDisplayInstance getGunDisplayInstance() {
-        return ClientResourceApi.getGunDisplayInstance(this.getPojo().getDisplayIndexLocation());
+        if (this.gunDisplayInstanceCache == null) this.gunDisplayInstanceCache = ClientResourceApi.getGunDisplayInstance(this.getPojo().getDisplayIndexLocation());
+        return this.gunDisplayInstanceCache;
+    }
+
+    // --------Deprecated--------
+
+    @Deprecated public String getName() {
+        return ComponentUtils.toTranslatableKey(this.getPojo().getNameLang());
+    }
+    @Deprecated public String getType() {
+        return this.getPojo().getGunCategory().toString();
+    }
+    @Deprecated public String getItemType() {
+        return this.getPojo().getItemType().toString();
+    }
+    @Deprecated public @Nullable GunDisplayInstance getDefaultDisplay() {
+        return this.getGunDisplayInstance();
     }
 }

@@ -195,6 +195,54 @@ public final class GunData extends ResourcePojo<GunData> {
 
     @Override
     protected void validatePojo() {
+        boolean n1 = (this.bulletData == null | this.ammoLocation == null | this.boltType == null | this.inaccuracyData == null);
+        boolean n2 = (this.recoilData == null | this.movementData == null | this.fireSoundData == null | this.reloadData == null);
+        boolean n3 = (this.scriptLocation == null | this.scriptParam == null | this.defaultFireModeType == null | this.fireModeTypes == null);
+        boolean n4 = (this.fireModeAdjustData == null | this.burstData == null | this.meleeData == null | this.heatData == null);
+        boolean n5 = (this.chargingData == null | this.allowAttachmentTypes == null | this.exclusiveAttachments == null | this.extendedMagAmmoSize == null | this.builtinAttachments == null);
+        if (n1 | n2 | n3 | n4 | n5) {
+            this.setValid(false);
+            return;
+        }
+        this.bulletData.validate();
+        this.inaccuracyData.validate();
+        this.recoilData.validate();
+        this.movementData.validate();
+        this.fireSoundData.validate();
+        this.reloadData.validate();
+        this.burstData.validate();
+        this.meleeData.validate();
+        this.heatData.validate();
+        boolean v1 = (this.bulletData.isValid() & this.inaccuracyData.isValid() & this.recoilData.isValid());
+        boolean v2 = (this.movementData.isValid() & this.fireSoundData.isValid() & this.reloadData.isValid());
+        boolean v3 = (this.burstData.isValid() & this.meleeData.isValid() & this.heatData.isValid());
+        if (!(v1 & v2 & v3)) {
+            this.setValid(false);
+            return;
+        }
+
+        for (_FireModeAdjustData data : this.fireModeAdjustData.values()) {
+            data.validate();
+            if (!data.isValid()) {
+                this.setValid(false);
+                return;
+            }
+        }
+        for (_ChargingData data : this.chargingData.values()) {
+            data.validate();
+            if (!data.isValid()) {
+                this.setValid(false);
+                return;
+            }
+        }
+        for (AttachmentData data : this.exclusiveAttachments.values()) {
+            data.validate();
+            if (!data.isValid()) {
+                this.setValid(false);
+                return;
+            }
+        }
+
         this.setValid(true);
     }
 

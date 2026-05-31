@@ -24,10 +24,24 @@ public class AmmoIndexInstance extends PojoInstance<AmmoIndex> {
         if (!instance.isPojoValid()) return null;
         else return instance;
     }
+
+    @Override public boolean resetCache() {
+        return true;
+    }
     @Override protected boolean isPojoValid() {
         var pojo = this.getPojo();
         if (!pojo.isValid()) return false;
+        if (!resetCache()) return false;
 
         return true;
+    }
+
+    // --------Deprecated--------
+
+    @Deprecated public int getSort() {
+        return this.getPojo().getSlotSort();
+    }
+    @Deprecated public int getStackSize() {
+        return this.getPojo().getMaxStackSize();
     }
 }

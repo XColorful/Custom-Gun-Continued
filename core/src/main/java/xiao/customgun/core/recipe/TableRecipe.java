@@ -92,12 +92,12 @@ public class TableRecipe implements Recipe<Inventory> {
 
     @Override
     public @NotNull RecipeSerializer<?> getSerializer() {
-        return ModRecipe.TACZ_TABLE_RECIPE_SERIALIZER.get();
+        return ModRecipe.TABLE_RECIPE_SERIALIZER.get();
     }
 
     @Override
     public @NotNull RecipeType<?> getType() {
-        return ModRecipe.TACZ_TABLE_RECIPE_CRAFTING.get();
+        return ModRecipe.TABLE_RECIPE_CRAFTING.get();
     }
 
     public ItemStack getResultItem() {

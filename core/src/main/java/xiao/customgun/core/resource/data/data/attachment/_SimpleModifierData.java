@@ -30,6 +30,7 @@ public final class _SimpleModifierData extends __ModifierData<_SimpleModifierDat
                     case __ModifierDataTag.SHARED_BASE_ADD, __ModifierDataTag.ADD_OLD1 -> pojo.setSharedBaseAdd(JsonUtils.readFloat(reader));
                     case __ModifierDataTag.SHARED_PERCENT_ADD, __ModifierDataTag.SHARED_PERCENT_ADD_OLD1 -> pojo.setSharedPercentAdd(JsonUtils.readFloat(reader));
                     case __ModifierDataTag.UNIQUE_MULTIPLIER, __ModifierDataTag.UNIQUE_MULTIPLIER_OLD1 -> pojo.setUniqueMultiplier(JsonUtils.readFloat(reader));
+                    case __ModifierDataTag.SCRIPT_FUNCTION, __ModifierDataTag.SCRIPT_FUNCTION_OLD1 -> pojo.setScriptFunction(JsonUtils.readString(reader));
                     default -> reader.skipValue();
                 }
             }
@@ -47,6 +48,7 @@ public final class _SimpleModifierData extends __ModifierData<_SimpleModifierDat
             JsonUtils.writeFloat(writer, __ModifierDataTag.SHARED_BASE_ADD, this.getSharedBaseAdd());
             JsonUtils.writeFloat(writer, __ModifierDataTag.SHARED_PERCENT_ADD, this.getSharedPercentAdd());
             JsonUtils.writeFloat(writer, __ModifierDataTag.UNIQUE_MULTIPLIER, this.getUniqueMultiplier());
+            JsonUtils.writeString(writer, __ModifierDataTag.SCRIPT_FUNCTION, this.getScriptFunction());
         }
         writer.endObject();
     }

@@ -41,6 +41,7 @@ import java.util.function.Supplier;
 public class CustomGun {
     public static final String MOD_ID = "customgun";
     public static final String MOD_ID_SHORT = "cgc";
+    public static final String MOD_ID_OLD1 = "tacz";
     public static final Logger LOGGER = LogUtils.getLogger();
 
     protected static boolean initialized;

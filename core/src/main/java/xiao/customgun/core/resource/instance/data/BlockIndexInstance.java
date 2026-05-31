@@ -7,12 +7,21 @@
 
 package xiao.customgun.core.resource.instance.data;
 
+import net.minecraft.world.item.BlockItem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import xiao.customgun.CustomGun;
+import xiao.customgun.core.api.resource.ResourceApi;
+import xiao.customgun.core.resource.data.data.BlockData;
 import xiao.customgun.core.resource.data.index.BlockIndex;
+import xiao.customgun.core.resource.data.recipefilter.RecipeFilterData;
 import xiao.customgun.core.resource.instance.PojoInstance;
 
 public class BlockIndexInstance extends PojoInstance<BlockIndex> {
+
+    private BlockItem blockItemCache;
+    private BlockData blockDataCache;
+    private RecipeFilterData recipeFilterDataCache;
 
     private BlockIndexInstance(@NotNull BlockIndex pojo) {
         super(pojo);
@@ -24,10 +33,54 @@ public class BlockIndexInstance extends PojoInstance<BlockIndex> {
         if (!instance.isPojoValid()) return null;
         else return instance;
     }
+
+    @Override public boolean resetCache() {
+        this.blockItemCache = CustomGun.getMcRegistry().getItem(this.getPojo().getBlockLocation()) instanceof BlockItem blockItem ? blockItem : null;
+        if (this.blockItemCache == null) {
+            CustomGun.LOGGER.debug("BlockIndexInstance: BlockItem {} not found", this.getPojo().getBlockLocation());
+            return false;
+        }
+
+        this.blockDataCache = ResourceApi.getBlockData(this.getPojo().getDataLocation());
+        if (this.blockDataCache == null) {
+            CustomGun.LOGGER.debug("BlockIndexInstance: BlockData {} not found", this.getPojo().getDataLocation());
+            return false;
+        } else if (!this.blockDataCache.isValid()) {
+            CustomGun.LOGGER.debug("BlockIndexInstance: BlockData {} not valid", this.getPojo().getDataLocation());
+            return false;
+        }
+
+        this.recipeFilterDataCache = ResourceApi.getRecipeFilterData(this.blockDataCache.getRecipeFilterLocation());
+        if (this.recipeFilterDataCache == null) {
+            CustomGun.LOGGER.debug("BlockIndexInstance: RecipeFilterData {} not found", this.blockDataCache.getRecipeFilterLocation());
+            return false;
+        } else if (!this.recipeFilterDataCache.isValid()) {
+            CustomGun.LOGGER.debug("BlockIndexInstance: RecipeFilterData {} not valid", this.blockDataCache.getRecipeFilterLocation());
+            return false;
+        }
+
+        return true;
+    }
     @Override protected boolean isPojoValid() {
         var pojo = this.getPojo();
         if (!pojo.isValid()) return false;
+        if (!resetCache()) return false;
+
+        // BlockIndex
+        if (this.getPojo().getSlotSort() > 65536) CustomGun.LOGGER.warn("BlockIndexInstance: BlockIndex slotSort {} > 65536", this.getPojo().getSlotSort());
 
         return true;
+    }
+
+    // --------Getter--------
+
+    public BlockItem getBlockItem() {
+        return this.blockItemCache;
+    }
+    public BlockData getBlockData() {
+        return this.blockDataCache;
+    }
+    public RecipeFilterData getRecipeFilterData() {
+        return this.recipeFilterDataCache;
     }
 }

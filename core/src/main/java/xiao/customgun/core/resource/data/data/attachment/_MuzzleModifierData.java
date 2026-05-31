@@ -53,6 +53,12 @@ public final class _MuzzleModifierData extends ResourcePojo<_MuzzleModifierData>
 
     @Override
     protected void validatePojo() {
+        boolean n1 = (this.fireSoundType == null);
+        if (n1) {
+            this.setValid(false);
+            return;
+        }
+
         this.setValid(true);
     }
 

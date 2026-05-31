@@ -64,6 +64,19 @@ public final class _ReloadData extends ResourcePojo<_ReloadData> {
 
     @Override
     protected void validatePojo() {
+        boolean n1 = (this.ammoFeedType == null | this.reloadFeed == null | this.reloadCooldown == null);
+        if (n1) {
+            this.setValid(false);
+            return;
+        }
+        this.reloadFeed.validate();
+        this.reloadCooldown.validate();
+        boolean v1 = (this.reloadFeed.isValid() & this.reloadCooldown.isValid());
+        if (!(v1)) {
+            this.setValid(false);
+            return;
+        }
+
         this.setValid(true);
     }
 

@@ -105,6 +105,19 @@ public final class _BulletData extends ResourcePojo<_BulletData> {
 
     @Override
     protected void validatePojo() {
+        boolean n1 = (this.bulletSkillData == null | this.explosionData == null);
+        if (n1) {
+            this.setValid(false);
+            return;
+        }
+        this.bulletSkillData.validate();
+        this.explosionData.validate();
+        boolean v1 = (this.bulletSkillData.isValid() & this.explosionData.isValid());
+        if (!(v1)) {
+            this.setValid(false);
+            return;
+        }
+
         this.setValid(true);
     }
 

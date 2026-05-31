@@ -60,6 +60,20 @@ public final class _BulletSkillData extends ResourcePojo<_BulletSkillData> {
 
     @Override
     protected void validatePojo() {
+        boolean n1 = (this.damageCalculation == null);
+        if (n1) {
+            this.setValid(false);
+            return;
+        }
+
+        for (_DistanceDamageData data : this.damageCalculation) {
+            data.validate();
+            if (!data.isValid()) {
+                this.setValid(false);
+                return;
+            }
+        }
+
         this.setValid(true);
     }
 

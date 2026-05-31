@@ -55,6 +55,19 @@ public final class _RecoilDataModifierData extends ResourcePojo<_RecoilDataModif
 
     @Override
     protected void validatePojo() {
+        boolean n1 = (this.pitchRecoilModifier == null | this.yawRecoilModifier == null);
+        if (n1) {
+            this.setValid(false);
+            return;
+        }
+        this.pitchRecoilModifier.validate();
+        this.yawRecoilModifier.validate();
+        boolean v1 = (this.pitchRecoilModifier.isValid() & this.yawRecoilModifier.isValid());
+        if (!(v1)) {
+            this.setValid(false);
+            return;
+        }
+
         this.setValid(true);
     }
 

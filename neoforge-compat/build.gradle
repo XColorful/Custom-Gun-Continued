@@ -74,12 +74,23 @@ dependencies {
     implementation "net.neoforged:neoforge:${neo_version}"
 
     implementation project(":core")
+
+    // LuaJ
+    jarJar("${luaj_figuramc_core}") {
+        jarJar.ranged(it, "[${luaj_figuramc_version},)")
+    }
+    jarJar("${luaj_figuramc_jse}") {
+        jarJar.ranged(it, "[${luaj_figuramc_version},)")
+    }
+    jarJar("${luaj_bcel}") {
+        jarJar.ranged(it, "[${luaj_bcel_version},)")
+    }
 }
 
 tasks.named('jar', Jar).configure {
     archiveBaseName.set(mod_id)
     archiveVersion.set(mod_version)
-    archiveClassifier.set("${neoforge_id}-${minecraft_support_version}")
+//    archiveClassifier.set("${neoforge_id}-${minecraft_support_version}") // jarJar机制的影响
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     from project(':core').sourceSets.main.output
 
@@ -90,4 +101,13 @@ tasks.named('jar', Jar).configure {
 //                "MixinConfigs"            : mixin_config_file
 //        ])
 //    }
+}
+
+// jarJar机制
+tasks.matching { it.name == 'jarJar' || it.name == 'reobfJarJar' }.configureEach {
+    if (it.hasProperty("archiveClassifier")) {
+        it.archiveBaseName.set(mod_id)
+        it.archiveVersion.set(mod_version)
+        it.archiveClassifier.set("${neoforge_id}-${minecraft_support_version}")
+    }
 }

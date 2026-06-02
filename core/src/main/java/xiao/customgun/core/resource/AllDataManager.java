@@ -141,6 +141,10 @@ public class AllDataManager implements IEventHandler {
                 }
         );
     }
+    private <T extends ResourceFileManager<?>> T _registerListener(IAddServerReloadListenerEvent event, T listener) {
+        event.addListener(listener.getRegistryName(), listener);
+        return listener;
+    }
     private <T extends ResourcePojoManager<?> & PreparableReloadListener> T addToListener(List<ResourcePojoManager<?>> reloadListeners, T listener) {
         reloadListeners.add(listener);
         return listener;

@@ -16,10 +16,12 @@ import xiao.customgun.client.api.resource.assets.AssetsFolderType;
 import xiao.customgun.client.resource.assets.*;
 import xiao.customgun.core.api.common.McSide;
 import xiao.customgun.core.api.event.EventType;
+import xiao.customgun.core.api.event.IAddServerReloadListenerEvent;
 import xiao.customgun.core.api.event.IEvent;
 import xiao.customgun.core.api.event.IEventHandler;
 import xiao.customgun.client.compat.playeranimator.PlayerAnimator;
 import xiao.customgun.core.resource.AllDataManager;
+import xiao.customgun.core.resource.ResourceFileManager;
 import xiao.customgun.core.resource.ResourcePojoManager;
 
 import java.util.ArrayList;
@@ -96,6 +98,10 @@ public class AllAssetsManager implements IEventHandler {
                             .thenRunAsync(AssetsInstanceManager::reload, gameExecutor);
                 }
         );
+    }
+    private <T extends ResourceFileManager<?>> T _registerListener(IAddServerReloadListenerEvent event, T listener) {
+        event.addListener(listener.getRegistryName(), listener);
+        return listener;
     }
     private <T extends ResourcePojoManager<?> & PreparableReloadListener> T addToListener(List<ResourcePojoManager<?>> reloadListeners, T listener) {
         reloadListeners.add(listener);

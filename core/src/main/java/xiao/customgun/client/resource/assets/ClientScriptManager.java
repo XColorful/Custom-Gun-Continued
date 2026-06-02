@@ -5,7 +5,7 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package xiao.customgun.core.resource.data;
+package xiao.customgun.client.resource.assets;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
@@ -24,19 +24,24 @@ import org.luaj.vm2.lib.TableLib;
 import org.luaj.vm2.lib.jse.JseBaseLib;
 import org.luaj.vm2.lib.jse.JseMathLib;
 import org.luaj.vm2.lib.jse.JseStringLib;
+import xiao.customgun.client.api.resource.assets.AssetsFolderType;
+import xiao.customgun.client.api.script.LuaAnimationLib;
+import xiao.customgun.client.api.script.LuaGunAnimationLib;
+import xiao.customgun.client.resource.assets.script.AssetsScript;
 import xiao.customgun.core.api.resource.FileExtensionType;
-import xiao.customgun.core.api.resource.data.DataFolderName;
-import xiao.customgun.core.api.resource.data.DataFolderType;
-import xiao.customgun.core.api.script.LuaGunLogicLib;
+import xiao.customgun.core.api.resource.assets.AssetsFolderName;
 import xiao.customgun.core.api.script.LuaLibrary;
 import xiao.customgun.core.resource.ResourceFileManager;
-import xiao.customgun.core.resource.data.script.DataScript;
+import xiao.customgun.core.resource.data.ScriptManager;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public final class ScriptManager extends ResourceFileManager<DataScript> {
+/**
+ * 同 {@link ScriptManager}
+ */
+public final class ClientScriptManager extends ResourceFileManager<AssetsScript> {
 
     /**
      * Lua 虚拟机全局上下文沙箱
@@ -46,25 +51,25 @@ public final class ScriptManager extends ResourceFileManager<DataScript> {
     /**
      * 内置的 Lua 常量库扩展列表
      */
-    private static final List<LuaLibrary> LIBRARIES = List.of(new LuaGunLogicLib());
+    private static final List<LuaLibrary> LIBRARIES = List.of(new LuaAnimationLib(), new LuaGunAnimationLib());
 
     @ApiStatus.Internal
-    public ScriptManager() {
-        super(PackType.SERVER_DATA, Arrays.asList(DataFolderType.SCRIPT.getFolderName(), DataFolderName.SCRIPT_OLD1),
+    public ClientScriptManager() {
+        super(PackType.CLIENT_RESOURCES, Arrays.asList(AssetsFolderType.SCRIPT.getFolderName(), AssetsFolderName.SCRIPT_OLD1),
                 FileExtensionType.LUA.getExtensionNameWithDot(),
-                DataScript::fromStream);
+                AssetsScript::fromStream);
         this.setValidateAtRead(false);
         this.setValidateAtApply(true);
     }
 
     @Override
-    protected @NotNull Map<ResourceLocation, DataScript> prepare(@NotNull ResourceManager resourceManager, @NotNull ProfilerFiller profiler) {
+    protected @NotNull Map<ResourceLocation, AssetsScript> prepare(@NotNull ResourceManager resourceManager, @NotNull ProfilerFiller profiler) {
         GLOBALS = secureStandardGlobals();
         return super.prepare(resourceManager, profiler);
     }
 
     @Override
-    protected void onPrepareFile(Map<ResourceLocation, DataScript> map, ResourceLocation fileLocation, DataScript file) {
+    protected void onPrepareFile(Map<ResourceLocation, AssetsScript> map, ResourceLocation fileLocation, AssetsScript file) {
         super.onPrepareFile(map, fileLocation, file);
 
         String moduleName = getModuleName(fileLocation);

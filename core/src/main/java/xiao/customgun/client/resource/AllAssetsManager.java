@@ -16,7 +16,6 @@ import xiao.customgun.client.api.resource.assets.AssetsFolderType;
 import xiao.customgun.client.resource.assets.*;
 import xiao.customgun.core.api.common.McSide;
 import xiao.customgun.core.api.event.EventType;
-import xiao.customgun.core.api.event.IAddServerReloadListenerEvent;
 import xiao.customgun.core.api.event.IEvent;
 import xiao.customgun.core.api.event.IEventHandler;
 import xiao.customgun.client.compat.playeranimator.PlayerAnimator;
@@ -69,7 +68,7 @@ public class AllAssetsManager implements IEventHandler {
     /**
      * ./resourcepacks/{resourcepack}/assets/{namespace}/{@link AssetsFolderType#SCRIPT}
      */
-    public @Nullable ScriptManager scriptManager;
+    public @Nullable ClientScriptManager clientScriptManager;
 
     private AllAssetsManager() {
         this.reloadListeners = new ArrayList<>();
@@ -86,7 +85,7 @@ public class AllAssetsManager implements IEventHandler {
         this.bedrockModelManager = addToListener(this.reloadListeners, new ModelManager.BedrockModelManager());
         this.bedrockAnimationManager = addToListener(this.reloadListeners, new AnimationManager.BedrockAnimationManager());
         this.gltfAnimationManager = addToListener(this.reloadListeners, new AnimationManager.GltfAnimationManager());
-        this.scriptManager = new ScriptManager();
+        this.clientScriptManager = _registerListener(event, new ClientScriptManager());
         this.gunpackInfoManager = addToListener(this.reloadListeners, new GunpackInfoManager());
 
         this.reloadListeners.forEach((pojoManager) -> event.addListener(pojoManager.getRegistryName(), pojoManager));
@@ -99,7 +98,7 @@ public class AllAssetsManager implements IEventHandler {
                 }
         );
     }
-    private <T extends ResourceFileManager<?>> T _registerListener(IAddServerReloadListenerEvent event, T listener) {
+    private <T extends ResourceFileManager<?>> T _registerListener(IAddClientReloadListenerEvent event, T listener) {
         event.addListener(listener.getRegistryName(), listener);
         return listener;
     }

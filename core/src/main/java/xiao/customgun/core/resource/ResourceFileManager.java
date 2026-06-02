@@ -160,6 +160,5 @@ public abstract class ResourceFileManager<T extends ResourceFile<T>>
     }
     protected void onApplyFileMap(Map<ResourceLocation, T> newFileMap) {
         this.fileMap = newFileMap;
-        CustomGun.LOGGER.debug("{}: Applying file map, size: {}", this.managerName, newFileMap.size());
     }
 }

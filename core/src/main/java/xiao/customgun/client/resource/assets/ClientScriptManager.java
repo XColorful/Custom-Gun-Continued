@@ -7,7 +7,7 @@
 
 package xiao.customgun.client.resource.assets;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -63,13 +63,13 @@ public final class ClientScriptManager extends ResourceFileManager<AssetsScript>
     }
 
     @Override
-    protected @NotNull Map<ResourceLocation, AssetsScript> prepare(@NotNull ResourceManager resourceManager, @NotNull ProfilerFiller profiler) {
+    protected @NotNull Map<Identifier, AssetsScript> prepare(@NotNull ResourceManager resourceManager, @NotNull ProfilerFiller profiler) {
         GLOBALS = secureStandardGlobals();
         return super.prepare(resourceManager, profiler);
     }
 
     @Override
-    protected void onPrepareFile(Map<ResourceLocation, AssetsScript> map, ResourceLocation fileLocation, AssetsScript file) {
+    protected void onPrepareFile(Map<Identifier, AssetsScript> map, Identifier fileLocation, AssetsScript file) {
         super.onPrepareFile(map, fileLocation, file);
 
         String moduleName = getModuleName(fileLocation);
@@ -91,7 +91,7 @@ public final class ClientScriptManager extends ResourceFileManager<AssetsScript>
         return GLOBALS;
     }
 
-    public static String getModuleName(ResourceLocation resourceLocation) {
+    public static String getModuleName(Identifier resourceLocation) {
         return resourceLocation.getNamespace() + "_" + resourceLocation.getPath();
     }
 

@@ -1,6 +1,6 @@
 package xiao.customgun.core.resource;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,7 +22,7 @@ public abstract class ResourceFile<T extends ResourceFile<T>> {
     /**
      * 流式反序列化
      */
-    protected abstract T fromInputStream(InputStream inputStream, ResourceLocation fileLocation) throws IOException;
+    protected abstract T fromInputStream(InputStream inputStream, Identifier fileLocation) throws IOException;
 
     /**
      * 流式序列化

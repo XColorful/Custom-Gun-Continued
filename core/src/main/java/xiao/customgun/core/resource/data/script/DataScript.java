@@ -7,7 +7,7 @@
 
 package xiao.customgun.core.resource.data.script;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import xiao.customgun.CustomGun;
@@ -32,12 +32,12 @@ public final class DataScript extends ResourceFile<DataScript> {
     private LuaTable resultTable;
 
     private static final DataScript PARSER = new DataScript();
-    public static DataScript fromStream(InputStream inputStream, ResourceLocation fileLocation) throws IOException {
+    public static DataScript fromStream(InputStream inputStream, Identifier fileLocation) throws IOException {
         return PARSER.fromInputStream(inputStream, fileLocation);
     }
 
     @Override
-    protected DataScript fromInputStream(InputStream inputStream, ResourceLocation fileLocation) throws IOException {
+    protected DataScript fromInputStream(InputStream inputStream, Identifier fileLocation) throws IOException {
         DataScript file = new DataScript();
         try (InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {
             var globals = ScriptManager.getGlobals();

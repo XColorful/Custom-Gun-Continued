@@ -7,7 +7,7 @@
 
 package xiao.customgun.client.resource.assets.script;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import xiao.customgun.CustomGun;
@@ -36,12 +36,12 @@ public final class AssetsScript extends ResourceFile<AssetsScript> {
     private LuaTable resultTable;
 
     private static final AssetsScript PARSER = new AssetsScript();
-    public static AssetsScript fromStream(InputStream inputStream, ResourceLocation fileLocation) throws IOException {
+    public static AssetsScript fromStream(InputStream inputStream, Identifier fileLocation) throws IOException {
         return PARSER.fromInputStream(inputStream, fileLocation);
     }
 
     @Override
-    protected AssetsScript fromInputStream(InputStream inputStream, ResourceLocation fileLocation) throws IOException {
+    protected AssetsScript fromInputStream(InputStream inputStream, Identifier fileLocation) throws IOException {
         AssetsScript file = new AssetsScript();
         try (InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {
             var globals = ClientScriptManager.getGlobals();

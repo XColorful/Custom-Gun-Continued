@@ -1,7 +1,7 @@
 package xiao.customgun.core.resource;
 
 import net.minecraft.resources.FileToIdConverter;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
@@ -21,14 +21,14 @@ import java.util.Map;
  * 跟 {@link ResourcePojoManager} 隔离维护，以利于去虚拟化优化
  */
 public abstract class ResourceFileManager<T extends ResourceFile<T>>
-        extends SimplePreparableReloadListener<Map<ResourceLocation, T>> {
+        extends SimplePreparableReloadListener<Map<Identifier, T>> {
 
     private final String managerName;
-    private final ResourceLocation registryName;
+    private final Identifier registryName;
     private final PackType packType;
     private final List<FileToIdConverter> fileToIdConverters;
     private final FileUtils.ReadFunction<T> fromStream;
-    protected Map<ResourceLocation, T> fileMap;
+    protected Map<Identifier, T> fileMap;
 
     private boolean validateAtRead;
     /**
@@ -63,7 +63,7 @@ public abstract class ResourceFileManager<T extends ResourceFile<T>>
         this.logParseException = logParseException;
     }
 
-    public ResourceLocation getRegistryName() {
+    public Identifier getRegistryName() {
         return this.registryName;
     }
     public PackType getPackType() {
@@ -83,11 +83,11 @@ public abstract class ResourceFileManager<T extends ResourceFile<T>>
         this.logParseException = logParseException;
     }
 
-    public T getFile(ResourceLocation fileLocation) {
+    public T getFile(Identifier fileLocation) {
         return fileMap.get(fileLocation);
     }
 
-    public Map<ResourceLocation, T> getAllFiles() {
+    public Map<Identifier, T> getAllFiles() {
         return fileMap;
     }
 
@@ -95,9 +95,9 @@ public abstract class ResourceFileManager<T extends ResourceFile<T>>
      * 多线程处理
      */
     @Override
-    protected @NotNull Map<ResourceLocation, T> prepare(@NotNull ResourceManager resourceManager, @NotNull ProfilerFiller profiler) {
+    protected @NotNull Map<Identifier, T> prepare(@NotNull ResourceManager resourceManager, @NotNull ProfilerFiller profiler) {
         profiler.push(() -> this.managerName);
-        Map<ResourceLocation, T> map = new HashMap<>();
+        Map<Identifier, T> map = new HashMap<>();
         try {
             for (FileToIdConverter fileToIdConverter : this.fileToIdConverters) {
                 fileToIdConverter.listMatchingResources(resourceManager).forEach((location, resource) -> {
@@ -133,10 +133,10 @@ public abstract class ResourceFileManager<T extends ResourceFile<T>>
         }
         return map;
     }
-    protected boolean isFileLocationValid(ResourceLocation fileLocation) {
+    protected boolean isFileLocationValid(Identifier fileLocation) {
         return true;
     }
-    protected void onPrepareFile(Map<ResourceLocation, T> map, ResourceLocation fileLocation, T file) {
+    protected void onPrepareFile(Map<Identifier, T> map, Identifier fileLocation, T file) {
         map.put(fileLocation, file);
     }
 
@@ -144,7 +144,7 @@ public abstract class ResourceFileManager<T extends ResourceFile<T>>
      * 单线程处理 (线程安全)
      */
     @Override
-    protected void apply(@NotNull Map<ResourceLocation, T> pObject, @NotNull ResourceManager pResourceManager, @NotNull ProfilerFiller pProfiler) {
+    protected void apply(@NotNull Map<Identifier, T> pObject, @NotNull ResourceManager pResourceManager, @NotNull ProfilerFiller pProfiler) {
         if (this.validateAtApply) {
             var iterator = pObject.entrySet().iterator();
             while (iterator.hasNext()) {
@@ -161,7 +161,7 @@ public abstract class ResourceFileManager<T extends ResourceFile<T>>
         }
         onApplyFileMap(pObject);
     }
-    protected void onApplyFileMap(Map<ResourceLocation, T> newFileMap) {
+    protected void onApplyFileMap(Map<Identifier, T> newFileMap) {
         this.fileMap = newFileMap;
     }
 }

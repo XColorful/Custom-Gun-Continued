@@ -98,11 +98,11 @@ public class ClientResourceApi {
 
     // --------script--------
 
-    public static @Nullable AssetsScript getAssetsScript(ResourceLocation scriptLocation) {
+    public static @Nullable AssetsScript getAssetsScript(Identifier scriptLocation) {
         var assetsManager = AllAssetsManager.INSTANCE.clientScriptManager;
         return assetsManager != null ? assetsManager.getFile(scriptLocation) : null;
     }
-    public static Set<Map.Entry<ResourceLocation, AssetsScript>> getAllAssetsScript() {
+    public static Set<Map.Entry<Identifier, AssetsScript>> getAllAssetsScript() {
         var assetsManager = AllAssetsManager.INSTANCE.clientScriptManager;
         return assetsManager != null ? assetsManager.getAllFiles().entrySet() : new HashSet<>();
     }

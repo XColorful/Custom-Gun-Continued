@@ -10,6 +10,7 @@ package xiao.customgun.core.resource.data.data.attachment.melee;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import net.minecraft.resources.ResourceLocation;
+import xiao.customgun.core.api.resource.ResourceTag;
 import xiao.customgun.core.api.resource.data.data.attachment.melee._TargetEffectDataTag;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.util.JsonUtils;
@@ -62,6 +63,8 @@ public final class _TargetEffectData extends ResourcePojo<_TargetEffectData> {
 
     @Override
     protected void validatePojo() {
+        if (ENABLE_BACK_COMPATIBILITY) this.applyBackCompatibility();
+
         boolean n1 = (this.effectLocation == null);
         if (n1) {
             this.setValid(false);
@@ -97,5 +100,13 @@ public final class _TargetEffectData extends ResourcePojo<_TargetEffectData> {
     }
     public void setHideParticles(boolean hideParticles) {
         this.hideParticles = hideParticles;
+    }
+
+    // --------Back compatibility--------
+
+    @Override
+    public _TargetEffectData applyBackCompatibility() {
+        this.effectLocation = this.effectLocation == null ? ResourceTag.NULL_LOCATION : this.effectLocation;
+        return this;
     }
 }

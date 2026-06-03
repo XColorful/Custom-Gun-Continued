@@ -81,4 +81,6 @@ public final class BlockDisplay extends _AssetsDisplay<BlockDisplay> {
     public void setItemTransforms(Transformation itemTransforms) {
         this.itemTransforms = itemTransforms;
     }
+
+    // --------Back compatibility--------
 }

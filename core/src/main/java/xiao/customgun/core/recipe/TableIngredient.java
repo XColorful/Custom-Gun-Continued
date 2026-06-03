@@ -30,6 +30,7 @@ public record TableIngredient(Ingredient ingredient, int count) {
     public static Ingredient fromPojo(_IngredientFilterData pojo) {
         var itemFilterLocation = pojo.getItemFilterLocation();
         var tagFilterLocation = pojo.getTagFilterLocation();
+        // TODO
         return Ingredient.of();
     }
 }

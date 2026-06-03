@@ -9,6 +9,8 @@ package xiao.customgun.core.resource.instance.data;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.luaj.vm2.LuaTable;
+import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 import xiao.customgun.CustomGun;
 import xiao.customgun.core.api.item.gun.FireModeType;
 import xiao.customgun.core.api.resource.ResourceApi;
@@ -17,16 +19,18 @@ import xiao.customgun.core.resource.data.data.gun._BulletData;
 import xiao.customgun.core.resource.data.data.gun._RecoilData;
 import xiao.customgun.core.resource.data.data.gun.recoil._RecoilEntryData;
 import xiao.customgun.core.resource.data.index.GunIndex;
+import xiao.customgun.core.resource.data.script.DataScript;
 import xiao.customgun.core.resource.instance.PojoInstance;
 
 import java.util.List;
+import java.util.Map;
 
 public class GunIndexInstance extends PojoInstance<GunIndex> {
 
     private GunData gunDataCache;
 
-    private Object script = null;
-    private Object scriptParams = null;
+    private @Nullable LuaTable script = null;
+    private @Nullable LuaTable scriptParamCache = null;
 
     private GunIndexInstance(@NotNull GunIndex pojo) {
         super(pojo);
@@ -49,7 +53,21 @@ public class GunIndexInstance extends PojoInstance<GunIndex> {
             return false;
         }
 
-        this.loadScriptParams();
+        var scriptLocation = this.gunDataCache.getScriptLocation();
+        if (scriptLocation != null) {
+            DataScript dataScript = ResourceApi.getDataScript(scriptLocation);
+            if (dataScript == null) CustomGun.LOGGER.debug("GunIndexInstance: DataScript {} not found", scriptLocation);
+            else if (!dataScript.isValid()) CustomGun.LOGGER.debug("GunIndexInstance: DataScript {} not valid", scriptLocation);
+            else this.script = dataScript.getResultTable();
+        }
+        Map<String, Object> scriptParams = this.gunDataCache.getScriptParam();
+        if (scriptParams != null) {
+            this.scriptParamCache = new LuaTable();
+            for (Map.Entry<String, Object> entry : scriptParams.entrySet()) {
+                this.scriptParamCache.set(entry.getKey(), CoerceJavaToLua.coerce(entry.getValue()));
+            }
+        }
+
         return true;
     }
     private static final int ERR_MAG_SIZE = 1;
@@ -124,21 +142,17 @@ public class GunIndexInstance extends PojoInstance<GunIndex> {
         }
         return false;
     }
-    private void loadScriptParams() {
-        // TODO
-        var params = this.gunDataCache.getScriptParam();
-    }
 
     // --------Getter--------
 
     public GunData getGunData() {
         return this.gunDataCache;
     }
-    public Object getScript() {
+    public @Nullable LuaTable getScript() {
         return this.script;
     }
-    public Object getScriptParams() {
-        return this.scriptParams;
+    public @Nullable LuaTable getScriptParams() {
+        return this.scriptParamCache;
     }
 
     // --------Deprecated--------

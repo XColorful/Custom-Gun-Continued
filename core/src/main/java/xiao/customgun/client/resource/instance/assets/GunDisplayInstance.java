@@ -11,6 +11,8 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.luaj.vm2.LuaTable;
+import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 import xiao.customgun.CustomGun;
 import xiao.customgun.client.api.item.gun.DamageDisplayType;
 import xiao.customgun.client.api.resource.ClientResourceApi;
@@ -24,6 +26,7 @@ import xiao.customgun.client.resource.assets.display._ModelTransform;
 import xiao.customgun.client.resource.assets.display.ammo._AmmoParticle;
 import xiao.customgun.client.resource.assets.display.gun.*;
 import xiao.customgun.client.resource.assets.model.BedrockModel;
+import xiao.customgun.client.resource.assets.script.AssetsScript;
 import xiao.customgun.core.api.item.gun.AmmoCountType;
 import xiao.customgun.core.resource.instance.PojoInstance;
 
@@ -44,8 +47,8 @@ public final class GunDisplayInstance extends PojoInstance<GunDisplay> {
     private @Nullable _AmmoParticle ammoParticleCache;
     private Map<GunSoundType, ResourceLocation> gunSoundsCache;
 
-    private Object script = null;
-    private Object scriptParams = null;
+    private @Nullable LuaTable script = null;
+    private @Nullable LuaTable scriptParamCache = null;
 
     private GunDisplayInstance(@NotNull GunDisplay pojo) {
         super(pojo);
@@ -96,7 +99,21 @@ public final class GunDisplayInstance extends PojoInstance<GunDisplay> {
         }
         this.gunSoundsCache = this.getPojo().getGunSounds();
 
-        this.loadScriptParams();
+        var scriptLocation = this.getPojo().getScriptLocation();
+        if (scriptLocation != null) {
+            AssetsScript assetsScript = ClientResourceApi.getAssetsScript(scriptLocation);
+            if (assetsScript == null) CustomGun.LOGGER.debug("GunDisplayInstance: AssetsScript {} not found", scriptLocation);
+            else if (!assetsScript.isValid()) CustomGun.LOGGER.debug("GunDisplayInstance: AssetsScript {} not valid", scriptLocation);
+            else this.script = assetsScript.getResultTable();
+        }
+        Map<String, Object> scriptParams = this.getPojo().getScriptParam();
+        if (scriptParams != null) {
+            this.scriptParamCache = new LuaTable();
+            for (Map.Entry<String, Object> entry : scriptParams.entrySet()) {
+                this.scriptParamCache.set(entry.getKey(), CoerceJavaToLua.coerce(entry.getValue()));
+            }
+        }
+
         return true;
     }
     private static final int ERR_TRANSFORM_SCALE = 1;
@@ -158,11 +175,11 @@ public final class GunDisplayInstance extends PojoInstance<GunDisplay> {
     public @Nullable ResourceLocation getGunSound(GunSoundType gunSoundType) {
         return this.gunSoundsCache.get(gunSoundType);
     }
-    public Object getScript() {
+    public @Nullable LuaTable getScript() {
         return this.script;
     }
-    public Object getScriptParams() {
-        return this.scriptParams;
+    public @Nullable LuaTable getScriptParams() {
+        return this.scriptParamCache;
     }
 
     // --------Deprecated--------

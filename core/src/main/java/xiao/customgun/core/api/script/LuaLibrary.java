@@ -5,8 +5,11 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package xiao.customgun.client.resource.assets;
+package xiao.customgun.core.api.script;
 
-// TODO
-public final class ScriptManager {
+import org.luaj.vm2.LuaValue;
+
+public interface LuaLibrary {
+
+    void install(LuaValue chunk);
 }

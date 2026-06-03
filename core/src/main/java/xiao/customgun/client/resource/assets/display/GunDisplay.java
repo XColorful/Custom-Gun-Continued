@@ -50,8 +50,8 @@ public final class GunDisplay extends _AssetsDisplay<GunDisplay> {
 
     // 动画
     private Identifier gunAnimationLocation;
-    private Identifier scriptLocation;
-    private Map<String, Object> scriptParam;
+    private @Nullable Identifier scriptLocation;
+    private @Nullable Map<String, Object> scriptParam;
     private @Nullable _ShellEjectionParam shellEjectionParam;
     private ThirdPersonAnimationType thirdPersonAnimationType;
     private @Nullable Identifier playerAnimatorLocation;
@@ -257,10 +257,10 @@ public final class GunDisplay extends _AssetsDisplay<GunDisplay> {
     public Identifier getGunAnimationLocation() {
         return gunAnimationLocation;
     }
-    public Identifier getScriptLocation() {
+    public @Nullable Identifier getScriptLocation() {
         return scriptLocation;
     }
-    public Map<String, Object> getScriptParam() {
+    public @Nullable Map<String, Object> getScriptParam() {
         return scriptParam;
     }
     public @Nullable _ShellEjectionParam getShellEjectionParam() {

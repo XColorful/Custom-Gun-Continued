@@ -97,7 +97,7 @@ public class AllDataManager implements IEventHandler {
     /**
      * ./datapacks/{datapack}/data/{namespace}/{@link DataFolderType#SCRIPT}
      */
-    public final ScriptManager scriptManager = new ScriptManager();
+    public ScriptManager scriptManager;
 
     private AllDataManager() {
         this.reloadListeners = new ArrayList<>();
@@ -115,6 +115,8 @@ public class AllDataManager implements IEventHandler {
         this.gunAttachmentDataManager = addToListener(this.reloadListeners, new ModTagManager.GunAttachmentDataManager());
 //        this.recipeDataManager = addToListener(this.reloadListeners, new RecipeDataManager());
         this.recipeFilterDataManager = addToListener(this.reloadListeners, new RecipeFilterDataManager());
+        this.scriptManager = _registerListener(event, new ScriptManager());
+
         // index依赖data放在后面
         this.ammoIndexManager = addToListener(this.reloadListeners, new IndexManager.AmmoIndexManager());
         this.gunIndexManager = addToListener(this.reloadListeners, new IndexManager.GunIndexManager());
@@ -136,6 +138,10 @@ public class AllDataManager implements IEventHandler {
                             }, gameExecutor);
                 }
         );
+    }
+    private <T extends ResourceFileManager<?>> T _registerListener(IAddServerReloadListenerEvent event, T listener) {
+        event.addListener(listener.getRegistryName(), listener);
+        return listener;
     }
     private <T extends ResourcePojoManager<?> & PreparableReloadListener> T addToListener(List<ResourcePojoManager<?>> reloadListeners, T listener) {
         reloadListeners.add(listener);

@@ -13,6 +13,9 @@ public interface ResourceTag {
     interface RegistryTag extends ResourceTag {
         String getRegistryName();
     }
+    interface ConstantTag extends ResourceTag {
+        String getConstantName();
+    }
 
     Identifier NULL_LOCATION = CustomGun.getMcRegistry().createResourceLocation(CustomGun.MOD_ID + ":null");
 

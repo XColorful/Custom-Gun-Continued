@@ -107,3 +107,10 @@ tasks.matching { it.name == 'jarJar' || it.name == 'reobfJarJar' }.configureEach
         it.archiveClassifier.set("${neoforge_id}-${minecraft_version}")
     }
 }
+
+
+// 仅用于forge和neoforge同时存在的branch (1.20.2 & 1.20.4)
+configurations.configureEach {
+    // 阻止任何地方把 Forge 作为传递依赖带进来
+    exclude group: 'net.minecraftforge', module: 'forge'
+}

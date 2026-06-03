@@ -57,4 +57,6 @@ public final class _SimpleModifierData extends __ModifierData<_SimpleModifierDat
     protected void validatePojo() {
         this.setValid(true);
     }
+
+    // --------Back compatibility--------
 }

@@ -48,4 +48,6 @@ public final class _ControllableData extends ResourcePojo<_ControllableData> {
     }
 
     // --------Getter & Setter--------
+
+    // --------Back compatibility--------
 }

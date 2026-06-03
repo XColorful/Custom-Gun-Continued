@@ -59,4 +59,12 @@ public final class _ShellDisplay extends _AssetsDisplay<_ShellDisplay> {
     }
 
     // --------Getter & Setter--------
+
+    // --------Back compatibility--------
+
+    @Override
+    public _ShellDisplay applyBackCompatibility() {
+        super.applyBackCompatibility();
+        return this;
+    }
 }

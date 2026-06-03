@@ -72,4 +72,6 @@ public final class _ModelTransform extends ResourcePojo<_ModelTransform> {
     public void setScale(_ModelTransformScale scale) {
         this.scale = scale;
     }
+
+    // --------Back compatibility--------
 }

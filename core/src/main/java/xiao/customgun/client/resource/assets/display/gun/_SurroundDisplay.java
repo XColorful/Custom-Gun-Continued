@@ -58,6 +58,8 @@ public final class _SurroundDisplay extends ResourcePojo<_SurroundDisplay> {
 
     @Override
     protected void validatePojo() {
+        if (ENABLE_BACK_COMPATIBILITY) this.applyBackCompatibility();
+
         boolean n1 = (this.pos == null | this.rotate == null | this.scale == null);
         if (n1) {
             this.setValid(false);
@@ -87,5 +89,15 @@ public final class _SurroundDisplay extends ResourcePojo<_SurroundDisplay> {
     }
     public void setScale(float[] scale) {
         this.scale = scale;
+    }
+
+    // --------Back compatibility--------
+
+    @Override
+    public _SurroundDisplay applyBackCompatibility() {
+        this.pos = this.pos == null ? new float[]{0f, 0f, 0f} : this.pos;
+        this.rotate = this.rotate == null ? new float[]{0f, 0f, 0f} : this.rotate;
+        this.scale = this.scale == null ? new float[]{1f, 1f, 1f} : this.scale;
+        return this;
     }
 }

@@ -140,4 +140,6 @@ public final class _FireModeAdjustData extends ResourcePojo<_FireModeAdjustData>
     public void setOtherInaccuracy(float otherInaccuracy) {
         this.otherInaccuracy = otherInaccuracy;
     }
+
+    // --------Back compatibility--------
 }

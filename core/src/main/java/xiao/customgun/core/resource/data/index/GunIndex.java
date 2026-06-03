@@ -100,4 +100,12 @@ public final class GunIndex extends _DataIndex<GunIndex> {
     public void setItemType(ItemType itemType) {
         this.itemType = itemType;
     }
+
+    // --------Back compatibility--------
+
+    @Override
+    public GunIndex applyBackCompatibility() {
+        super.applyBackCompatibility();
+        return this;
+    }
 }

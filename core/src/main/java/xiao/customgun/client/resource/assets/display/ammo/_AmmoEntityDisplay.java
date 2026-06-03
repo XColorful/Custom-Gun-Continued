@@ -59,4 +59,12 @@ public final class _AmmoEntityDisplay extends _AssetsDisplay<_AmmoEntityDisplay>
     }
 
     // --------Getter & Setter--------
+
+    // --------Back compatibility--------
+
+    @Override
+    public _AmmoEntityDisplay applyBackCompatibility() {
+        super.applyBackCompatibility();
+        return this;
+    }
 }

@@ -91,4 +91,6 @@ public final class _BurstData extends ResourcePojo<_BurstData> {
     public void setContinuousShoot(boolean continuousShoot) {
         this.continuousShoot = continuousShoot;
     }
+
+    // --------Back compatibility--------
 }

@@ -109,4 +109,6 @@ public final class _InaccuracyData extends ResourcePojo<_InaccuracyData> {
     public void setLevitate(float levitate) {
         this.levitate = levitate;
     }
+
+    // --------Back compatibility--------
 }

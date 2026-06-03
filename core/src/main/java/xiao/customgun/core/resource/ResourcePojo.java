@@ -2,9 +2,16 @@ package xiao.customgun.core.resource;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import xiao.customgun.core.developer.PlannedRefactor;
+import xiao.customgun.core.resource.instance.PojoInstance;
 
 import java.io.IOException;
 
+/**
+ * 只读 Pojo，允许多个目标共享
+ * <p>
+ * {@link PojoInstance}需要对允许修改的值单独复制一份cache
+ */
 public abstract class ResourcePojo<T extends ResourcePojo<T>> {
 
     private transient boolean validated = false;
@@ -53,5 +60,20 @@ public abstract class ResourcePojo<T extends ResourcePojo<T>> {
     }
     protected final void setValid(boolean valid) {
         this.valid = valid;
+    }
+
+    // --------Back compatibility--------
+
+    public static boolean ENABLE_BACK_COMPATIBILITY = PlannedRefactor.ENABLE_BACK_COMPATIBILITY;
+
+    /**
+     * 尝试填补非 @Nullable 字段，不包含完全的矫正
+     * <p>
+     * 全部new而不复用单例
+     * @return Pojo自身，方便使用 this.foo == null ? new Foo().applyBackCompatibility() : this.foo
+     */
+    @SuppressWarnings("unchecked")
+    public T applyBackCompatibility() {
+        return (T) this;
     }
 }

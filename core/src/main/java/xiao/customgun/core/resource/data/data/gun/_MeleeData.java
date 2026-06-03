@@ -61,6 +61,8 @@ public final class _MeleeData extends ResourcePojo<_MeleeData> {
 
     @Override
     protected void validatePojo() {
+        if (ENABLE_BACK_COMPATIBILITY) this.applyBackCompatibility();
+
         boolean n1 = (this.defaultMeleeData == null);
         if (n1) {
             this.setValid(false);
@@ -96,5 +98,13 @@ public final class _MeleeData extends ResourcePojo<_MeleeData> {
     }
     public void setDefaultMeleeData(_DefaultMeleeData defaultMeleeData) {
         this.defaultMeleeData = defaultMeleeData;
+    }
+
+    // --------Back compatibility--------
+
+    @Override
+    public _MeleeData applyBackCompatibility() {
+        this.defaultMeleeData = this.defaultMeleeData == null ? new _DefaultMeleeData().applyBackCompatibility() : this.defaultMeleeData.applyBackCompatibility();
+        return this;
     }
 }

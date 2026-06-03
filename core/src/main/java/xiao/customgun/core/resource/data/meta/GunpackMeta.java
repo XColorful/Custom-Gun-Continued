@@ -14,6 +14,7 @@ import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.util.JsonUtils;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 public final class GunpackMeta extends ResourcePojo<GunpackMeta> {
@@ -56,6 +57,8 @@ public final class GunpackMeta extends ResourcePojo<GunpackMeta> {
 
     @Override
     protected void validatePojo() {
+        if (ENABLE_BACK_COMPATIBILITY) this.applyBackCompatibility();
+
         boolean n1 = (this.namespace == null | this.dependencies == null);
         if (n1) {
             this.setValid(false);
@@ -79,5 +82,14 @@ public final class GunpackMeta extends ResourcePojo<GunpackMeta> {
     }
     public void setDependencies(Map<String, String> dependencies) {
         this.dependencies = dependencies;
+    }
+
+    // --------Back compatibility--------
+
+    @Override
+    public GunpackMeta applyBackCompatibility() {
+        this.namespace = this.namespace == null ? "" : this.namespace;
+        this.dependencies = this.dependencies == null ? new HashMap<>() : this.dependencies;
+        return this;
     }
 }

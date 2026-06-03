@@ -280,6 +280,28 @@ public final class AttachmentData extends ResourcePojo<AttachmentData> {
 
     @Override
     public AttachmentData applyBackCompatibility() {
+        if (this.adsModifier != null) this.adsModifier.applyBackCompatibility();
+
+        if (this.armorIgnorePercentModifier != null) this.armorIgnorePercentModifier.applyBackCompatibility();
+        if (this.headshotMultiplierModifier != null) this.headshotMultiplierModifier.applyBackCompatibility();
+        if (this.damageCalculationModifier != null) this.damageCalculationModifier.applyBackCompatibility();
+        if (this.bulletSpeedModifier != null) this.bulletSpeedModifier.applyBackCompatibility();
+        if (this.pierceCountModifier != null) this.pierceCountModifier.applyBackCompatibility();
+        if (this.fireAspectModifier != null) this.fireAspectModifier.applyBackCompatibility();
+        if (this.knockbackStrengthModifier != null) this.knockbackStrengthModifier.applyBackCompatibility();
+        if (this.bulletExplosionModifier != null) this.bulletExplosionModifier.applyBackCompatibility();
+
+        if (this.rpmModifier != null) this.rpmModifier.applyBackCompatibility();
+        if (this.recoilDataModifier != null) this.recoilDataModifier.applyBackCompatibility();
+        if (this.effectiveRangeModifier != null) this.effectiveRangeModifier.applyBackCompatibility();
+        if (this.muzzleModifier != null) this.muzzleModifier.applyBackCompatibility();
+
+        if (this.aimInaccuracyModifier != null) this.aimInaccuracyModifier.applyBackCompatibility();
+        if (this.sneakInaccuracyModifier != null) this.sneakInaccuracyModifier.applyBackCompatibility();
+        if (this.proneInaccuracyModifier != null) this.proneInaccuracyModifier.applyBackCompatibility();
+        if (this.otherInaccuracyModifier != null) this.otherInaccuracyModifier.applyBackCompatibility();
+
+        if (this.meleeModifier != null) this.meleeModifier.applyBackCompatibility();
         return this;
     }
 }

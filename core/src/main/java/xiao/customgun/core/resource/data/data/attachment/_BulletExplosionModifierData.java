@@ -9,6 +9,7 @@ package xiao.customgun.core.resource.data.data.attachment;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.resource.data.data.attachment._BulletExplosionModifierDataTag;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.util.JsonUtils;
@@ -21,9 +22,9 @@ public final class _BulletExplosionModifierData extends ResourcePojo<_BulletExpl
     private boolean enableExplode = false;
 
     // 爆炸属性
-    private _SimpleModifierData explodeDamageModifier;
-    private _SimpleModifierData explodeScaleModifier;
-    private _SimpleModifierData maxDelaySecondsModifier;
+    private @Nullable _SimpleModifierData explodeDamageModifier;
+    private @Nullable _SimpleModifierData explodeScaleModifier;
+    private @Nullable _SimpleModifierData maxDelaySecondsModifier;
 
     // 爆炸规则
     private boolean enableKnockback = false;
@@ -76,15 +77,10 @@ public final class _BulletExplosionModifierData extends ResourcePojo<_BulletExpl
 
     @Override
     protected void validatePojo() {
-        boolean n1 = (this.explodeDamageModifier == null | this.explodeScaleModifier == null | this.maxDelaySecondsModifier == null);
-        if (n1) {
-            this.setValid(false);
-            return;
-        }
-        this.explodeDamageModifier.validate();
-        this.explodeScaleModifier.validate();
-        this.maxDelaySecondsModifier.validate();
-        boolean v1 = (this.explodeDamageModifier.isValid() & this.explodeScaleModifier.isValid() & this.maxDelaySecondsModifier.isValid());
+        if (this.explodeDamageModifier != null) this.explodeDamageModifier.validate();
+        if (this.explodeScaleModifier != null) this.explodeScaleModifier.validate();
+        if (this.maxDelaySecondsModifier != null) this.maxDelaySecondsModifier.validate();
+        boolean v1 = ((this.explodeDamageModifier == null || this.explodeDamageModifier.isValid()) & (this.explodeScaleModifier == null || this.explodeScaleModifier.isValid()) & (this.maxDelaySecondsModifier == null || this.maxDelaySecondsModifier.isValid()));
         if (!(v1)) {
             this.setValid(false);
             return;
@@ -98,13 +94,13 @@ public final class _BulletExplosionModifierData extends ResourcePojo<_BulletExpl
     public boolean getEnableExplode() {
         return enableExplode;
     }
-    public _SimpleModifierData getExplodeDamageModifier() {
+    public @Nullable _SimpleModifierData getExplodeDamageModifier() {
         return explodeDamageModifier;
     }
-    public _SimpleModifierData getExplodeScaleModifier() {
+    public @Nullable _SimpleModifierData getExplodeScaleModifier() {
         return explodeScaleModifier;
     }
-    public _SimpleModifierData getMaxDelaySecondsModifier() {
+    public @Nullable _SimpleModifierData getMaxDelaySecondsModifier() {
         return maxDelaySecondsModifier;
     }
     public boolean getEnableKnockback() {
@@ -134,4 +130,12 @@ public final class _BulletExplosionModifierData extends ResourcePojo<_BulletExpl
     }
 
     // --------Back compatibility--------
+
+    @Override
+    public _BulletExplosionModifierData applyBackCompatibility() {
+        if (this.explodeDamageModifier != null) this.explodeDamageModifier.applyBackCompatibility();
+        if (this.explodeScaleModifier != null) this.explodeScaleModifier.applyBackCompatibility();
+        if (this.maxDelaySecondsModifier != null) this.maxDelaySecondsModifier.applyBackCompatibility();
+        return this;
+    }
 }

@@ -15,6 +15,7 @@ import xiao.customgun.core.resource.data.data.attachment.melee._TargetEffectData
 import xiao.customgun.core.util.JsonUtils;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public final class _MeleeModifierData extends ResourcePojo<_MeleeModifierData> {
@@ -87,7 +88,9 @@ public final class _MeleeModifierData extends ResourcePojo<_MeleeModifierData> {
             return;
         }
 
-        for (_TargetEffectData data : this.targetEffect) {
+        int size = this.targetEffect.size();
+        for (int i = 0; i < size; i++) {
+            var data = this.targetEffect.get(i);
             data.validate();
             if (!data.isValid()) {
                 this.setValid(false);
@@ -145,4 +148,14 @@ public final class _MeleeModifierData extends ResourcePojo<_MeleeModifierData> {
     }
 
     // --------Back compatibility--------
+
+    @Override
+    public _MeleeModifierData applyBackCompatibility() {
+        if (this.targetEffect == null) this.targetEffect = new ArrayList<>();
+        else {
+            int size = 0;
+            for (int i = 0; i < size; i++) this.targetEffect.get(i).applyBackCompatibility();
+        }
+        return this;
+    }
 }

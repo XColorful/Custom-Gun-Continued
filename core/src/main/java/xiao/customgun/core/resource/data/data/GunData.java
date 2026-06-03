@@ -10,6 +10,7 @@ package xiao.customgun.core.resource.data.data;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.item.attachment.AttachmentCategory;
 import xiao.customgun.core.api.item.gun.BoltType;
 import xiao.customgun.core.api.item.gun.FireModeType;
@@ -43,8 +44,8 @@ public final class GunData extends ResourcePojo<GunData> {
     private _ReloadData reloadData; // 装弹数据
 
     // 枪械脚本
-    private ResourceLocation scriptLocation; // 状态机脚本
-    private Map<String, Object> scriptParam; // 状态机参数
+    private @Nullable ResourceLocation scriptLocation; // 状态机脚本
+    private @Nullable Map<String, Object> scriptParam; // 状态机参数
 
     // 开火模式
     private FireModeType defaultFireModeType;
@@ -197,9 +198,9 @@ public final class GunData extends ResourcePojo<GunData> {
     protected void validatePojo() {
         boolean n1 = (this.bulletData == null | this.ammoLocation == null | this.boltType == null | this.inaccuracyData == null);
         boolean n2 = (this.recoilData == null | this.movementData == null | this.fireSoundData == null | this.reloadData == null);
-        boolean n3 = (this.scriptLocation == null | this.scriptParam == null | this.defaultFireModeType == null | this.fireModeTypes == null);
-        boolean n4 = (this.fireModeAdjustData == null | this.burstData == null | this.meleeData == null | this.heatData == null);
-        boolean n5 = (this.chargingData == null | this.allowAttachmentTypes == null | this.exclusiveAttachments == null | this.extendedMagAmmoSize == null | this.builtinAttachments == null);
+        boolean n3 = (this.defaultFireModeType == null | this.fireModeTypes == null | this.fireModeAdjustData == null | this.burstData == null);
+        boolean n4 = (this.meleeData == null | this.heatData == null | this.chargingData == null | this.allowAttachmentTypes == null);
+        boolean n5 = (this.exclusiveAttachments == null | this.extendedMagAmmoSize == null | this.builtinAttachments == null);
         if (n1 | n2 | n3 | n4 | n5) {
             this.setValid(false);
             return;
@@ -284,10 +285,10 @@ public final class GunData extends ResourcePojo<GunData> {
     public _ReloadData getReloadData() {
         return reloadData;
     }
-    public ResourceLocation getScriptLocation() {
+    public @Nullable ResourceLocation getScriptLocation() {
         return scriptLocation;
     }
-    public Map<String, Object> getScriptParam() {
+    public @Nullable Map<String, Object> getScriptParam() {
         return scriptParam;
     }
     public FireModeType getDefaultFireModeType() {

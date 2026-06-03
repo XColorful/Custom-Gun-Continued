@@ -1,15 +1,5 @@
-/*
- * Copyright (c) 2024-2026 MCModderAnchor (https://github.com/MCModderAnchor)
- * SPDX-License-Identifier: GPL-3.0-only
- *
- * Source: https://github.com/MCModderAnchor/TACZ
- */
-
 package xiao.customgun.core.resource;
 
-import com.google.gson.JsonSyntaxException;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.MalformedJsonException;
 import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
@@ -18,31 +8,28 @@ import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
 import org.jetbrains.annotations.NotNull;
 import xiao.customgun.CustomGun;
-import xiao.customgun.core.util.JsonUtils;
+import xiao.customgun.core.util.FileUtils;
 
-import java.io.Reader;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * 将资源包中的文件流式解析为 Pojo
+ * 将资源包中的文件流式解析为 ResourceFile
+ * <p>
+ * 跟 {@link ResourcePojoManager} 隔离维护，以利于去虚拟化优化
  */
-public abstract class ResourcePojoManager<T extends ResourcePojo<T>>
+public abstract class ResourceFileManager<T extends ResourceFile<T>>
         extends SimplePreparableReloadListener<Map<ResourceLocation, T>> {
 
     private final String managerName;
     private final ResourceLocation registryName;
     private final PackType packType;
     private final List<FileToIdConverter> fileToIdConverters;
-    private final JsonUtils.ReadFunction<T> fromJson;
-    protected Map<ResourceLocation, T> pojoMap;
+    private final FileUtils.ReadFunction<T> fromStream;
+    protected Map<ResourceLocation, T> fileMap;
 
-    /**
-     * 是否允许带注释的非标准 Json
-     * 兼容 TaCZ 把文档放枪包而不是 Wiki 的做法
-     */
-    private boolean lenientPojo;
     private boolean validateAtRead;
     /**
      * {@link #prepare}阶段是多线程并发的
@@ -51,27 +38,26 @@ public abstract class ResourcePojoManager<T extends ResourcePojo<T>>
     private boolean validateAtApply;
     private boolean logParseException;
 
-    public ResourcePojoManager(PackType packType, String prefix, String extension, JsonUtils.ReadFunction<T> fromJson) {
-        this(packType, List.of(new FileToIdConverter(prefix, extension)), fromJson);
+    public ResourceFileManager(PackType packType, String prefix, String extension, FileUtils.ReadFunction<T> fromStream) {
+        this(packType, List.of(new FileToIdConverter(prefix, extension)), fromStream);
     }
-    public ResourcePojoManager(PackType packType, List<String> prefixList, String extension, JsonUtils.ReadFunction<T> fromJson) {
+    public ResourceFileManager(PackType packType, List<String> prefixList, String extension, FileUtils.ReadFunction<T> fromStream) {
         this(packType, prefixList.stream()
                         .map(prefix -> new FileToIdConverter(prefix, extension))
                         .toList(),
-                fromJson);
+                fromStream);
     }
-    public ResourcePojoManager(PackType packType, List<FileToIdConverter> fileToIdConverter, JsonUtils.ReadFunction<T> fromJson) {
-        this(packType, fileToIdConverter, fromJson, true, true, false, true);
+    public ResourceFileManager(PackType packType, List<FileToIdConverter> fileToIdConverters, FileUtils.ReadFunction<T> fromStream) {
+        this(packType, fileToIdConverters, fromStream, true, false, true);
     }
-    public ResourcePojoManager(PackType packType, List<FileToIdConverter> fileToIdConverters, JsonUtils.ReadFunction<T> fromJson,
-                               boolean lenientPojo, boolean validateAtRead, boolean validateAtApply, boolean logParseException) {
+    public ResourceFileManager(PackType packType, List<FileToIdConverter> fileToIdConverters, FileUtils.ReadFunction<T> fromStream,
+                               boolean validateAtRead, boolean validateAtApply, boolean logParseException) {
         this.managerName = this.getClass().getSimpleName();
         this.registryName = CustomGun.getMcRegistry().createResourceLocation(String.format("%s:%s", CustomGun.MOD_ID, this.managerName.toLowerCase()));
         this.packType = packType;
         this.fileToIdConverters = fileToIdConverters;
-        this.fromJson = fromJson;
-        this.pojoMap = new HashMap<>();
-        this.lenientPojo = lenientPojo;
+        this.fromStream = fromStream;
+        this.fileMap = new HashMap<>();
         this.validateAtRead = validateAtRead;
         this.validateAtApply = validateAtApply;
         this.logParseException = logParseException;
@@ -87,9 +73,6 @@ public abstract class ResourcePojoManager<T extends ResourcePojo<T>>
         return this.fileToIdConverters;
     }
 
-    public final void setLenientPojo(boolean lenientPojo) {
-        this.lenientPojo = lenientPojo;
-    }
     public final void setValidateAtRead(boolean validateAtRead) {
         this.validateAtRead = validateAtRead;
     }
@@ -100,12 +83,12 @@ public abstract class ResourcePojoManager<T extends ResourcePojo<T>>
         this.logParseException = logParseException;
     }
 
-    public T getPojo(ResourceLocation pojoLocation) {
-        return pojoMap.get(pojoLocation);
+    public T getFile(ResourceLocation fileLocation) {
+        return fileMap.get(fileLocation);
     }
 
-    public Map<ResourceLocation, T> getAllPojo() {
-        return pojoMap;
+    public Map<ResourceLocation, T> getAllFiles() {
+        return fileMap;
     }
 
     /**
@@ -118,34 +101,29 @@ public abstract class ResourcePojoManager<T extends ResourcePojo<T>>
         try {
             for (FileToIdConverter fileToIdConverter : this.fileToIdConverters) {
                 fileToIdConverter.listMatchingResources(resourceManager).forEach((location, resource) -> {
-                    var pojoLocation = fileToIdConverter.fileToId(location);
-                    if (!isPojoLocationValid(pojoLocation)) return;
+                    var fileLocation = fileToIdConverter.fileToId(location);
+                    CustomGun.LOGGER.debug("Prepare rl: {}", fileLocation);
+                    if (!isFileLocationValid(fileLocation)) return;
 
-                    try (Reader reader = resource.openAsReader();
-                         JsonReader jsonReader = new JsonReader(reader)) {
+                    try (InputStream inputStream = resource.open()) {
 
-                        jsonReader.setLenient(this.lenientPojo);
-                        T pojo = fromJson.apply(jsonReader);
-                        if (pojo != null) {
+                        T file = fromStream.apply(inputStream, fileLocation);
+                        if (file != null) {
                             // 能并发，提前验证能省开销
                             if (this.validateAtRead) {
-                                pojo.validate();
-                                if (pojo.isValid()) {
-                                    onPreparePojo(map, pojoLocation, pojo);
+                                file.validate();
+                                if (file.isValid()) {
+                                    onPrepareFile(map, fileLocation, file);
                                 } else if (this.logParseException) {
-                                    CustomGun.LOGGER.warn("{}: Pojo validation failed at prepare stage, skipping: {}", this.managerName, pojoLocation);
+                                    CustomGun.LOGGER.warn("{}: File validation failed at prepare stage, skipping: {}", this.managerName, fileLocation);
                                 }
                             } else {
-                                onPreparePojo(map, pojoLocation, pojo);
+                                onPrepareFile(map, fileLocation, file);
                             }
-                        }
-                    } catch (JsonSyntaxException | MalformedJsonException e) { // JSON 语法错误
-                        if (this.logParseException) {
-                            CustomGun.LOGGER.error("{}: Malformed JSON file detected at: {}", this.managerName, pojoLocation, e);
                         }
                     } catch (Exception e) { // IO 异常或其他未知错误
                         if (this.logParseException) {
-                            CustomGun.LOGGER.error("{}: Failed to read pojo file at: {}", this.managerName, pojoLocation, e);
+                            CustomGun.LOGGER.error("{}: Failed to read file at: {}", this.managerName, fileLocation, e);
                         }
                     }
                 });
@@ -155,11 +133,11 @@ public abstract class ResourcePojoManager<T extends ResourcePojo<T>>
         }
         return map;
     }
-    protected boolean isPojoLocationValid(ResourceLocation pojoLocation) {
+    protected boolean isFileLocationValid(ResourceLocation fileLocation) {
         return true;
     }
-    protected void onPreparePojo(Map<ResourceLocation, T> map, ResourceLocation pojoLocation, T pojo) {
-        map.put(pojoLocation, pojo);
+    protected void onPrepareFile(Map<ResourceLocation, T> map, ResourceLocation fileLocation, T file) {
+        map.put(fileLocation, file);
     }
 
     /**
@@ -171,19 +149,19 @@ public abstract class ResourcePojoManager<T extends ResourcePojo<T>>
             var iterator = pObject.entrySet().iterator();
             while (iterator.hasNext()) {
                 var entry = iterator.next();
-                T pojo = entry.getValue();
-                pojo.validate();
-                if (!pojo.isValid()) {
+                T file = entry.getValue();
+                file.validate();
+                if (!file.isValid()) {
                     iterator.remove();
                     if (this.logParseException) {
-                        CustomGun.LOGGER.warn("{}: Pojo validation failed at apply stage, skipping: {}", this.managerName, entry.getKey());
+                        CustomGun.LOGGER.warn("{}: File validation failed at apply stage, skipping: {}", this.managerName, entry.getKey());
                     }
                 }
             }
         }
-        onApplyPojoMap(pObject);
+        onApplyFileMap(pObject);
     }
-    protected void onApplyPojoMap(Map<ResourceLocation, T> newPojoMap) {
-        this.pojoMap = newPojoMap;
+    protected void onApplyFileMap(Map<ResourceLocation, T> newFileMap) {
+        this.fileMap = newFileMap;
     }
 }

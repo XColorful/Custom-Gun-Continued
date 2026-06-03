@@ -6,6 +6,7 @@ public enum FileExtensionType {
     OGG(FileExtensionName.SOUND_OGG),
     BEDROCK_ANIMATION(FileExtensionName.BEDROCK_ANIMATION),
     GLTF(FileExtensionName.GLTF),
+    LUA(FileExtensionName.LUA),
     // 非标准格式
     GUNPACK_META(FileExtensionName.GUNPACK_META);
 

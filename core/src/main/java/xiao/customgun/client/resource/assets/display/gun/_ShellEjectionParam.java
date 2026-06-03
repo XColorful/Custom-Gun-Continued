@@ -64,6 +64,8 @@ public final class _ShellEjectionParam extends ResourcePojo<_ShellEjectionParam>
 
     @Override
     protected void validatePojo() {
+        if (ENABLE_BACK_COMPATIBILITY) this.applyBackCompatibility();
+
         boolean n1 = (this.baseVelocity == null | this.randomizeVelocity == null | this.acceleration == null | this.angularVelocity == null);
         if (n1) {
             this.setValid(false);
@@ -105,5 +107,16 @@ public final class _ShellEjectionParam extends ResourcePojo<_ShellEjectionParam>
     }
     public void setLifetimeSeconds(float lifetimeSeconds) {
         this.lifetimeSeconds = lifetimeSeconds;
+    }
+
+    // --------Back compatibility--------
+
+    @Override
+    public _ShellEjectionParam applyBackCompatibility() {
+        this.baseVelocity = this.baseVelocity == null ? new float[]{0f, 0f, 0f} : this.baseVelocity;
+        this.randomizeVelocity = this.randomizeVelocity == null ? new float[]{0f, 0f, 0f} : this.randomizeVelocity;
+        this.acceleration = this.acceleration == null ? new float[]{0f, 0f, 0f} : this.acceleration;
+        this.angularVelocity = this.angularVelocity == null ? new float[]{0f, 0f, 0f} : this.angularVelocity;
+        return this;
     }
 }

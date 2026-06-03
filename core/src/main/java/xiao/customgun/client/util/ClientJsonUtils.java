@@ -27,6 +27,8 @@ public class ClientJsonUtils {
     // --------扩展类型--------
 
     public static Transformation readItemTransforms(JsonReader reader) throws IOException {
+        // TODO
+        reader.skipValue();
         return null;
     }
     public static void writeItemTransforms(JsonWriter writer, String key, Transformation itemTransforms) throws IOException {

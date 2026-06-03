@@ -56,6 +56,8 @@ public final class _TableIngredientData extends ResourcePojo<_TableIngredientDat
 
     @Override
     protected void validatePojo() {
+        if (ENABLE_BACK_COMPATIBILITY) this.applyBackCompatibility();
+
         boolean n1 = (this.ingredientFilter == null);
         if (n1) {
             this.setValid(false);
@@ -89,5 +91,13 @@ public final class _TableIngredientData extends ResourcePojo<_TableIngredientDat
     }
     public void setIngredientCount(int ingredientCount) {
         this.ingredientCount = ingredientCount;
+    }
+
+    // --------Back compatibility--------
+
+    @Override
+    public _TableIngredientData applyBackCompatibility() {
+        this.ingredientFilter = this.ingredientFilter == null ? new _IngredientFilterData().applyBackCompatibility() : this.ingredientFilter.applyBackCompatibility();
+        return this;
     }
 }

@@ -10,6 +10,7 @@ package xiao.customgun.client.resource.assets.display.gun;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import net.minecraft.resources.ResourceLocation;
+import xiao.customgun.core.api.resource.ResourceTag;
 import xiao.customgun.core.api.resource.assets.display.gun._MuzzleFlashDisplayTag;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.util.JsonUtils;
@@ -56,6 +57,8 @@ public final class _MuzzleFlashDisplay extends ResourcePojo<_MuzzleFlashDisplay>
 
     @Override
     protected void validatePojo() {
+        if (ENABLE_BACK_COMPATIBILITY) this.applyBackCompatibility();
+
         boolean n1 = (this.textureLocation == null);
         if (n1) {
             this.setValid(false);
@@ -79,5 +82,13 @@ public final class _MuzzleFlashDisplay extends ResourcePojo<_MuzzleFlashDisplay>
     }
     public void setTextureScale(float textureScale) {
         this.textureScale = textureScale;
+    }
+
+    // --------Back compatibility--------
+
+    @Override
+    public _MuzzleFlashDisplay applyBackCompatibility() {
+        this.textureLocation = this.textureLocation == null ? ResourceTag.NULL_LOCATION : this.textureLocation;
+        return this;
     }
 }

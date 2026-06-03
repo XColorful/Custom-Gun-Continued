@@ -99,4 +99,12 @@ public final class AttachmentIndex extends _DataIndex<AttachmentIndex> {
     public void setHideInGame(boolean hideInGame) {
         this.hideInGame = hideInGame;
     }
+
+    // --------Back compatibility--------
+
+    @Override
+    public AttachmentIndex applyBackCompatibility() {
+        super.applyBackCompatibility();
+        return this;
+    }
 }

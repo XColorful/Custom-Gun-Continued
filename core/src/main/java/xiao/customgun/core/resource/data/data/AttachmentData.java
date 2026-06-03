@@ -9,6 +9,7 @@ package xiao.customgun.core.resource.data.data;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.item.attachment.MagazineCategory;
 import xiao.customgun.core.api.resource.data.data.AttachmentDataTag;
 import xiao.customgun.core.resource.ResourcePojo;
@@ -21,36 +22,36 @@ import java.io.IOException;
 public final class AttachmentData extends ResourcePojo<AttachmentData> {
 
     // 瞄准速度
-    private _SimpleModifierData adsModifier;
+    private @Nullable _SimpleModifierData adsModifier;
 
     // 子弹属性
-    private _SimpleModifierData armorIgnorePercentModifier;
-    private _SimpleModifierData headshotMultiplierModifier;
-    private _SimpleModifierData damageCalculationModifier;
-    private _SimpleModifierData bulletSpeedModifier;
-    private _SimpleModifierData pierceCountModifier;
-    private _FireAspectModifierData fireAspectModifier;
-    private _SimpleModifierData knockbackStrengthModifier;
-    private _BulletExplosionModifierData bulletExplosionModifier;
+    private @Nullable _SimpleModifierData armorIgnorePercentModifier;
+    private @Nullable _SimpleModifierData headshotMultiplierModifier;
+    private @Nullable _SimpleModifierData damageCalculationModifier;
+    private @Nullable _SimpleModifierData bulletSpeedModifier;
+    private @Nullable _SimpleModifierData pierceCountModifier;
+    private @Nullable _FireAspectModifierData fireAspectModifier;
+    private @Nullable _SimpleModifierData knockbackStrengthModifier;
+    private @Nullable _BulletExplosionModifierData bulletExplosionModifier;
 
     // 枪械属性
-    private _SimpleModifierData rpmModifier;
-    private _RecoilDataModifierData recoilDataModifier;
-    private _SimpleModifierData effectiveRangeModifier;
+    private @Nullable _SimpleModifierData rpmModifier;
+    private @Nullable _RecoilDataModifierData recoilDataModifier;
+    private @Nullable _SimpleModifierData effectiveRangeModifier;
     private float weight = 0.0F;
-    private _MuzzleModifierData muzzleModifier;
+    private @Nullable _MuzzleModifierData muzzleModifier;
     /**
      * 不准确度Modifier {@link _InaccuracyData}
      */
-    private _SimpleModifierData aimInaccuracyModifier;
-    private _SimpleModifierData sneakInaccuracyModifier;
-    private _SimpleModifierData proneInaccuracyModifier;
-    private _SimpleModifierData otherInaccuracyModifier;
+    private @Nullable _SimpleModifierData aimInaccuracyModifier;
+    private @Nullable _SimpleModifierData sneakInaccuracyModifier;
+    private @Nullable _SimpleModifierData proneInaccuracyModifier;
+    private @Nullable _SimpleModifierData otherInaccuracyModifier;
     // 近战
-    private _MeleeModifierData meleeModifier;
+    private @Nullable _MeleeModifierData meleeModifier;
 
     // 弹匣
-    private MagazineCategory magazineCategory;
+    private @Nullable MagazineCategory magazineCategory;
 
     private static final AttachmentData PARSER = new AttachmentData();
     public static AttachmentData fromJson(JsonReader reader) throws IOException {
@@ -134,22 +135,15 @@ public final class AttachmentData extends ResourcePojo<AttachmentData> {
 
     @Override
     protected void validatePojo() {
-        boolean n1 = (this.adsModifier == null | this.armorIgnorePercentModifier == null | this.headshotMultiplierModifier == null | this.damageCalculationModifier == null);
-        boolean n2 = (this.bulletSpeedModifier == null | this.pierceCountModifier == null | this.fireAspectModifier == null | this.knockbackStrengthModifier == null);
-        boolean n3 = (this.bulletExplosionModifier == null | this.rpmModifier == null | this.recoilDataModifier == null | this.effectiveRangeModifier == null);
-        boolean n4 = (this.muzzleModifier == null | this.aimInaccuracyModifier == null | this.sneakInaccuracyModifier == null | this.proneInaccuracyModifier == null);
-        boolean n5 = (this.otherInaccuracyModifier == null | this.meleeModifier == null | this.magazineCategory == null);
-        if (n1 | n2 | n3 | n4 | n5) {
-            this.setValid(false);
-            return;
-        }
-        this.fireAspectModifier.validate();
-        this.bulletExplosionModifier.validate();
-        this.recoilDataModifier.validate();
-        this.muzzleModifier.validate();
-        this.meleeModifier.validate();
-        boolean v1 = (this.fireAspectModifier.isValid() & this.bulletExplosionModifier.isValid() & this.recoilDataModifier.isValid());
-        boolean v2 = (this.muzzleModifier.isValid() & this.meleeModifier.isValid());
+        if (ENABLE_BACK_COMPATIBILITY) this.applyBackCompatibility();
+
+        if (this.fireAspectModifier != null) this.fireAspectModifier.validate();
+        if (this.bulletExplosionModifier != null) this.bulletExplosionModifier.validate();
+        if (this.recoilDataModifier != null) this.recoilDataModifier.validate();
+        if (this.muzzleModifier != null) this.muzzleModifier.validate();
+        if (this.meleeModifier != null) this.meleeModifier.validate();
+        boolean v1 = ((this.fireAspectModifier == null || this.fireAspectModifier.isValid()) & (this.bulletExplosionModifier == null || this.bulletExplosionModifier.isValid()) & (this.recoilDataModifier == null || this.recoilDataModifier.isValid()));
+        boolean v2 = ((this.muzzleModifier == null || this.muzzleModifier.isValid()) & (this.meleeModifier == null || this.meleeModifier.isValid()));
         if (!(v1 & v2)) {
             this.setValid(false);
             return;
@@ -160,64 +154,64 @@ public final class AttachmentData extends ResourcePojo<AttachmentData> {
 
     // --------Getter & Setter--------
 
-    public _SimpleModifierData getAdsModifier() {
+    public @Nullable _SimpleModifierData getAdsModifier() {
         return adsModifier;
     }
-    public _SimpleModifierData getArmorIgnorePercentModifier() {
+    public @Nullable _SimpleModifierData getArmorIgnorePercentModifier() {
         return armorIgnorePercentModifier;
     }
-    public _SimpleModifierData getHeadshotMultiplierModifier() {
+    public @Nullable _SimpleModifierData getHeadshotMultiplierModifier() {
         return headshotMultiplierModifier;
     }
-    public _SimpleModifierData getDamageCalculationModifier() {
+    public @Nullable _SimpleModifierData getDamageCalculationModifier() {
         return damageCalculationModifier;
     }
-    public _SimpleModifierData getBulletSpeedModifier() {
+    public @Nullable _SimpleModifierData getBulletSpeedModifier() {
         return bulletSpeedModifier;
     }
-    public _SimpleModifierData getPierceCountModifier() {
+    public @Nullable _SimpleModifierData getPierceCountModifier() {
         return pierceCountModifier;
     }
-    public _FireAspectModifierData getFireAspectModifier() {
+    public @Nullable _FireAspectModifierData getFireAspectModifier() {
         return fireAspectModifier;
     }
-    public _SimpleModifierData getKnockbackStrengthModifier() {
+    public @Nullable _SimpleModifierData getKnockbackStrengthModifier() {
         return knockbackStrengthModifier;
     }
-    public _BulletExplosionModifierData getBulletExplosionModifier() {
+    public @Nullable _BulletExplosionModifierData getBulletExplosionModifier() {
         return bulletExplosionModifier;
     }
-    public _SimpleModifierData getRpmModifier() {
+    public @Nullable _SimpleModifierData getRpmModifier() {
         return rpmModifier;
     }
-    public _RecoilDataModifierData getRecoilDataModifier() {
+    public @Nullable _RecoilDataModifierData getRecoilDataModifier() {
         return recoilDataModifier;
     }
-    public _SimpleModifierData getEffectiveRangeModifier() {
+    public @Nullable _SimpleModifierData getEffectiveRangeModifier() {
         return effectiveRangeModifier;
     }
     public float getWeight() {
         return weight;
     }
-    public _MuzzleModifierData getMuzzleModifier() {
+    public @Nullable _MuzzleModifierData getMuzzleModifier() {
         return muzzleModifier;
     }
-    public _SimpleModifierData getAimInaccuracyModifier() {
+    public @Nullable _SimpleModifierData getAimInaccuracyModifier() {
         return aimInaccuracyModifier;
     }
-    public _SimpleModifierData getSneakInaccuracyModifier() {
+    public @Nullable _SimpleModifierData getSneakInaccuracyModifier() {
         return sneakInaccuracyModifier;
     }
-    public _SimpleModifierData getProneInaccuracyModifier() {
+    public @Nullable _SimpleModifierData getProneInaccuracyModifier() {
         return proneInaccuracyModifier;
     }
-    public _SimpleModifierData getOtherInaccuracyModifier() {
+    public @Nullable _SimpleModifierData getOtherInaccuracyModifier() {
         return otherInaccuracyModifier;
     }
-    public _MeleeModifierData getMeleeModifier() {
+    public @Nullable _MeleeModifierData getMeleeModifier() {
         return meleeModifier;
     }
-    public MagazineCategory getMagazineCategory() {
+    public @Nullable MagazineCategory getMagazineCategory() {
         return magazineCategory;
     }
 
@@ -280,5 +274,12 @@ public final class AttachmentData extends ResourcePojo<AttachmentData> {
     }
     public void setMagazineCategory(MagazineCategory magazineCategory) {
         this.magazineCategory = magazineCategory;
+    }
+
+    // --------Back compatibility--------
+
+    @Override
+    public AttachmentData applyBackCompatibility() {
+        return this;
     }
 }

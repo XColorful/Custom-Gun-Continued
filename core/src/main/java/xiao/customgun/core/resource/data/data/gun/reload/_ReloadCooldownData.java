@@ -73,4 +73,6 @@ public final class _ReloadCooldownData extends ResourcePojo<_ReloadCooldownData>
     public void setTactical(float tactical) {
         this.tactical = tactical;
     }
+
+    // --------Back compatibility--------
 }

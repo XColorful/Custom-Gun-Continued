@@ -143,4 +143,6 @@ public final class _MeleeModifierData extends ResourcePojo<_MeleeModifierData> {
     public void setTargetEffect(List<_TargetEffectData> targetEffect) {
         this.targetEffect = targetEffect;
     }
+
+    // --------Back compatibility--------
 }

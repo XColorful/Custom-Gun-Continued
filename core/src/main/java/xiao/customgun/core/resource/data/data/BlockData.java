@@ -10,12 +10,14 @@ package xiao.customgun.core.resource.data.data;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import net.minecraft.resources.ResourceLocation;
+import xiao.customgun.core.api.resource.ResourceTag;
 import xiao.customgun.core.api.resource.data.data.BlockDataTag;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.resource.data.data.block._RecipeGroupData;
 import xiao.customgun.core.util.JsonUtils;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public final class BlockData extends ResourcePojo<BlockData> {
@@ -58,13 +60,17 @@ public final class BlockData extends ResourcePojo<BlockData> {
 
     @Override
     protected void validatePojo() {
+        if (ENABLE_BACK_COMPATIBILITY) this.applyBackCompatibility();
+
         boolean n1 = (this.recipeFilterLocation == null | this.recipeGroupList == null);
         if (n1) {
             this.setValid(false);
             return;
         }
 
-        for (_RecipeGroupData data : this.recipeGroupList) {
+        int size = this.recipeGroupList.size();
+        for (int i = 0; i < size; i++) {
+            var data = this.recipeGroupList.get(i);
             data.validate();
             if (!data.isValid()) {
                 this.setValid(false);
@@ -89,5 +95,18 @@ public final class BlockData extends ResourcePojo<BlockData> {
     }
     public void setRecipeGroupList(List<_RecipeGroupData> recipeGroupList) {
         this.recipeGroupList = recipeGroupList;
+    }
+
+    // --------Back compatibility--------
+
+    @Override
+    public BlockData applyBackCompatibility() {
+        this.recipeFilterLocation = this.recipeFilterLocation == null ? ResourceTag.NULL_LOCATION : this.recipeFilterLocation;
+        if (this.recipeGroupList == null) this.recipeGroupList = new ArrayList<>();
+        else {
+            int size = this.recipeGroupList.size();
+            for (int i = 0; i < size; i++) this.recipeGroupList.get(i).applyBackCompatibility();
+        }
+        return this;
     }
 }

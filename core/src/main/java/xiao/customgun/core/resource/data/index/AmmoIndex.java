@@ -81,4 +81,12 @@ public final class AmmoIndex extends _DataIndex<AmmoIndex> {
     public void setMaxStackSize(int maxStackSize) {
         this.maxStackSize = maxStackSize;
     }
+
+    // --------Back compatibility--------
+
+    @Override
+    public AmmoIndex applyBackCompatibility() {
+        super.applyBackCompatibility();
+        return this;
+    }
 }

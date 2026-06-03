@@ -16,4 +16,6 @@ public class PlannedRefactor {
     public static final boolean SPRINT_ON_AIMING = false;
     // 装弹时是否允许冲刺
     public static final boolean SPRINT_ON_RELOADING = false;
+    // 是否启用向后兼容 (之后移到Forge config里)
+    public static final boolean ENABLE_BACK_COMPATIBILITY = true;
 }

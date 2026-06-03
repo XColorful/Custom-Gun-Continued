@@ -86,4 +86,6 @@ public final class _RecoilDataModifierData extends ResourcePojo<_RecoilDataModif
     public void setYawRecoilModifier(_SimpleModifierData yawRecoilModifier) {
         this.yawRecoilModifier = yawRecoilModifier;
     }
+
+    // --------Back compatibility--------
 }

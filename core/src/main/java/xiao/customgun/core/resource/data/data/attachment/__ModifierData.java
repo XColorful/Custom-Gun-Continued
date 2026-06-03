@@ -15,7 +15,7 @@ public abstract class __ModifierData<T extends __ModifierData<T>> extends Resour
     private float sharedBaseAdd = 0;
     private float sharedPercentAdd = 0;
     private float uniqueMultiplier = 1;
-    private String scriptFunction;
+    private @Nullable String scriptFunction;
 
     // --------Getter & Setter--------
 

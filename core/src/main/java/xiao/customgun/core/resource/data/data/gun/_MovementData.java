@@ -87,4 +87,6 @@ public final class _MovementData extends ResourcePojo<_MovementData> {
     public void setReload(float reload) {
         this.reload = reload;
     }
+
+    // --------Back compatibility--------
 }

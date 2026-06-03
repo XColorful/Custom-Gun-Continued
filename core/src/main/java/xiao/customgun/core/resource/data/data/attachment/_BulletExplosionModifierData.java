@@ -132,4 +132,6 @@ public final class _BulletExplosionModifierData extends ResourcePojo<_BulletExpl
     public void setEnableWorldDestruction(boolean enableWorldDestruction) {
         this.enableWorldDestruction = enableWorldDestruction;
     }
+
+    // --------Back compatibility--------
 }

@@ -25,6 +25,7 @@ import xiao.customgun.core.resource.data.index.AttachmentIndex;
 import xiao.customgun.core.resource.data.index.BlockIndex;
 import xiao.customgun.core.resource.data.index.GunIndex;
 import xiao.customgun.core.resource.data.recipefilter.RecipeFilterData;
+import xiao.customgun.core.resource.data.script.DataScript;
 import xiao.customgun.core.resource.instance.data.AmmoIndexInstance;
 import xiao.customgun.core.resource.instance.data.AttachmentIndexInstance;
 import xiao.customgun.core.resource.instance.data.BlockIndexInstance;
@@ -127,6 +128,19 @@ public class ResourceApi {
         var dataManager = AllDataManager.getCurrent();
         if (dataManager != null && dataManager.recipeFilterDataManager != null) return dataManager.recipeFilterDataManager.getPojo(filterLocation);
         else return SyncDataCache.INSTANCE.recipeFilterData.get(filterLocation);
+    }
+
+    // --------script--------
+
+    public static @Nullable DataScript getDataScript(ResourceLocation scriptLocation) {
+        var dataManager = AllDataManager.getCurrent();
+        if (dataManager != null && dataManager.scriptManager != null) return dataManager.scriptManager.getFile(scriptLocation);
+        else return null;
+    }
+    public static Set<Map.Entry<ResourceLocation, DataScript>> getAllDataScript() {
+        var dataManager = AllDataManager.getCurrent();
+        if (dataManager != null && dataManager.scriptManager != null) return dataManager.scriptManager.getAllFiles().entrySet();
+        else return new HashSet<>();
     }
 
     // --------data instance--------

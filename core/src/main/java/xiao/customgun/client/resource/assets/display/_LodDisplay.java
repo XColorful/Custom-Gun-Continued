@@ -50,4 +50,12 @@ public final class _LodDisplay extends _AssetsDisplay<_LodDisplay> {
     }
 
     // --------Getter & Setter--------
+
+    // --------Back compatibility--------
+
+    @Override
+    public _LodDisplay applyBackCompatibility() {
+        super.applyBackCompatibility();
+        return this;
+    }
 }

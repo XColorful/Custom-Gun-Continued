@@ -118,4 +118,6 @@ public final class _ExplosionData extends ResourcePojo<_ExplosionData> {
     public void setEnableWorldDestruction(boolean enableWorldDestruction) {
         this.enableWorldDestruction = enableWorldDestruction;
     }
+
+    // --------Back compatibility--------
 }

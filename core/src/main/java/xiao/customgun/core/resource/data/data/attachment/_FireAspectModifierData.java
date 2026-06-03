@@ -73,4 +73,6 @@ public final class _FireAspectModifierData extends ResourcePojo<_FireAspectModif
     public void setIgniteBlock(boolean igniteBlock) {
         this.igniteBlock = igniteBlock;
     }
+
+    // --------Back compatibility--------
 }

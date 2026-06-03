@@ -9,6 +9,7 @@ package xiao.customgun.core.resource.data.data.attachment;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.resource.data.data.attachment._RecoilDataModifierDataTag;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.util.JsonUtils;
@@ -17,8 +18,8 @@ import java.io.IOException;
 
 public final class _RecoilDataModifierData extends ResourcePojo<_RecoilDataModifierData> {
 
-    private _SimpleModifierData pitchRecoilModifier;
-    private _SimpleModifierData yawRecoilModifier;
+    private @Nullable _SimpleModifierData pitchRecoilModifier;
+    private @Nullable _SimpleModifierData yawRecoilModifier;
 
     private static final _RecoilDataModifierData PARSER = new _RecoilDataModifierData();
     public static _RecoilDataModifierData fromJson(JsonReader reader) throws IOException {
@@ -55,14 +56,9 @@ public final class _RecoilDataModifierData extends ResourcePojo<_RecoilDataModif
 
     @Override
     protected void validatePojo() {
-        boolean n1 = (this.pitchRecoilModifier == null | this.yawRecoilModifier == null);
-        if (n1) {
-            this.setValid(false);
-            return;
-        }
-        this.pitchRecoilModifier.validate();
-        this.yawRecoilModifier.validate();
-        boolean v1 = (this.pitchRecoilModifier.isValid() & this.yawRecoilModifier.isValid());
+        if (this.pitchRecoilModifier != null) this.pitchRecoilModifier.validate();
+        if (this.yawRecoilModifier != null) this.yawRecoilModifier.validate();
+        boolean v1 = ((this.pitchRecoilModifier == null || this.pitchRecoilModifier.isValid()) & (this.yawRecoilModifier == null || this.yawRecoilModifier.isValid()));
         if (!(v1)) {
             this.setValid(false);
             return;
@@ -73,10 +69,10 @@ public final class _RecoilDataModifierData extends ResourcePojo<_RecoilDataModif
 
     // --------Getter & Setter--------
 
-    public _SimpleModifierData getPitchRecoilModifier() {
+    public @Nullable _SimpleModifierData getPitchRecoilModifier() {
         return pitchRecoilModifier;
     }
-    public _SimpleModifierData getYawRecoilModifier() {
+    public @Nullable _SimpleModifierData getYawRecoilModifier() {
         return yawRecoilModifier;
     }
 
@@ -85,5 +81,14 @@ public final class _RecoilDataModifierData extends ResourcePojo<_RecoilDataModif
     }
     public void setYawRecoilModifier(_SimpleModifierData yawRecoilModifier) {
         this.yawRecoilModifier = yawRecoilModifier;
+    }
+
+    // --------Back compatibility--------
+
+    @Override
+    public _RecoilDataModifierData applyBackCompatibility() {
+        if (this.pitchRecoilModifier != null) this.pitchRecoilModifier.applyBackCompatibility();
+        if (this.yawRecoilModifier != null) this.yawRecoilModifier.applyBackCompatibility();
+        return this;
     }
 }

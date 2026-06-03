@@ -14,12 +14,15 @@ import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.item.attachment.AttachmentCategory;
 import xiao.customgun.core.api.item.gun.BoltType;
 import xiao.customgun.core.api.item.gun.FireModeType;
+import xiao.customgun.core.api.resource.ResourceTag;
 import xiao.customgun.core.api.resource.data.data.GunDataTag;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.resource.data.data.gun.*;
 import xiao.customgun.core.util.JsonUtils;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -196,6 +199,8 @@ public final class GunData extends ResourcePojo<GunData> {
 
     @Override
     protected void validatePojo() {
+        if (ENABLE_BACK_COMPATIBILITY) this.applyBackCompatibility();
+
         boolean n1 = (this.bulletData == null | this.ammoLocation == null | this.boltType == null | this.inaccuracyData == null);
         boolean n2 = (this.recoilData == null | this.movementData == null | this.fireSoundData == null | this.reloadData == null);
         boolean n3 = (this.defaultFireModeType == null | this.fireModeTypes == null | this.fireModeAdjustData == null | this.burstData == null);
@@ -453,5 +458,36 @@ public final class GunData extends ResourcePojo<GunData> {
     }
     public void setBoltFeedTime(float boltFeedTime) {
         this.boltFeedTime = boltFeedTime;
+    }
+
+    // --------Back compatibility--------
+
+    @Override
+    public GunData applyBackCompatibility() {
+        this.bulletData = this.bulletData == null ? new _BulletData().applyBackCompatibility() : this.bulletData.applyBackCompatibility();
+        this.ammoLocation = this.ammoLocation == null ? ResourceTag.NULL_LOCATION : this.ammoLocation;
+        this.inaccuracyData = this.inaccuracyData == null ? new _InaccuracyData().applyBackCompatibility() : this.inaccuracyData.applyBackCompatibility();
+        this.recoilData = this.recoilData == null ? new _RecoilData().applyBackCompatibility() : this.recoilData.applyBackCompatibility();
+        this.movementData = this.movementData == null ? new _MovementData().applyBackCompatibility() : this.movementData.applyBackCompatibility();
+        this.fireSoundData = this.fireSoundData == null ? new _FireSoundData().applyBackCompatibility() : this.fireSoundData.applyBackCompatibility();
+        this.reloadData = this.reloadData == null ? new _ReloadData().applyBackCompatibility() : this.reloadData.applyBackCompatibility();
+
+        this.defaultFireModeType = this.defaultFireModeType == null ? FireModeType.DEFAULT : this.defaultFireModeType;
+        this.fireModeTypes = this.fireModeTypes == null ? new ArrayList<>() : this.fireModeTypes;
+        if (this.fireModeAdjustData == null) this.fireModeAdjustData = new HashMap<>();
+        else this.fireModeAdjustData.values().forEach(_FireModeAdjustData::applyBackCompatibility);
+        this.burstData = this.burstData == null ? new _BurstData().applyBackCompatibility() : this.burstData.applyBackCompatibility();
+
+        this.meleeData = this.meleeData == null ? new _MeleeData().applyBackCompatibility() : this.meleeData.applyBackCompatibility();
+        this.heatData = this.heatData == null ? new _HeatData().applyBackCompatibility() : this.heatData.applyBackCompatibility();
+        if (this.chargingData == null) this.chargingData = new HashMap<>();
+        else this.chargingData.values().forEach(_ChargingData::applyBackCompatibility);
+
+        this.allowAttachmentTypes = this.allowAttachmentTypes == null ? new ArrayList<>() : this.allowAttachmentTypes;
+        if (this.exclusiveAttachments == null) this.exclusiveAttachments = new HashMap<>();
+        else this.exclusiveAttachments.values().forEach(AttachmentData::applyBackCompatibility);
+        this.extendedMagAmmoSize = this.extendedMagAmmoSize == null ? new int[0] : this.extendedMagAmmoSize;
+        this.builtinAttachments = this.builtinAttachments == null ? new HashMap<>() : this.builtinAttachments;
+        return this;
     }
 }

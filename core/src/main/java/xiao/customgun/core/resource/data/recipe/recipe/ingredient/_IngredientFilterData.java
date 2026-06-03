@@ -10,6 +10,9 @@ package xiao.customgun.core.resource.data.recipe.recipe.ingredient;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import net.minecraft.resources.Identifier;
+import org.jetbrains.annotations.Nullable;
+import xiao.customgun.CustomGun;
+import xiao.customgun.core.api.resource.ResourceTag;
 import xiao.customgun.core.api.resource.data.recipe.recipe.ingredient._IngredientFilterDataTag;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.util.JsonUtils;
@@ -18,8 +21,8 @@ import java.io.IOException;
 
 public final class _IngredientFilterData extends ResourcePojo<_IngredientFilterData> {
 
-    private Identifier itemFilterLocation;
-    private Identifier tagFilterLocation;
+    private @Nullable Identifier itemFilterLocation;
+    private @Nullable Identifier tagFilterLocation;
 
     private static final _IngredientFilterData PARSER = new _IngredientFilterData();
     public static _IngredientFilterData fromJson(JsonReader reader) throws IOException {
@@ -56,8 +59,9 @@ public final class _IngredientFilterData extends ResourcePojo<_IngredientFilterD
 
     @Override
     protected void validatePojo() {
-        boolean n1 = (this.itemFilterLocation == null | this.tagFilterLocation == null);
-        if (n1) {
+        if (ENABLE_BACK_COMPATIBILITY) this.applyBackCompatibility();
+
+        if (this.itemFilterLocation == null && this.tagFilterLocation == null) {
             this.setValid(false);
             return;
         }
@@ -67,10 +71,10 @@ public final class _IngredientFilterData extends ResourcePojo<_IngredientFilterD
 
     // --------Getter & Setter--------
 
-    public Identifier getItemFilterLocation() {
+    public @Nullable Identifier getItemFilterLocation() {
         return itemFilterLocation;
     }
-    public Identifier getTagFilterLocation() {
+    public @Nullable Identifier getTagFilterLocation() {
         return tagFilterLocation;
     }
 
@@ -79,5 +83,15 @@ public final class _IngredientFilterData extends ResourcePojo<_IngredientFilterD
     }
     public void setTagFilterLocation(Identifier tagFilterLocation) {
         this.tagFilterLocation = tagFilterLocation;
+    }
+
+    // --------Back compatibility--------
+
+    @Override
+    public _IngredientFilterData applyBackCompatibility() {
+        if (this.tagFilterLocation == null) {
+            this.itemFilterLocation = this.itemFilterLocation == null ? ResourceTag.NULL_LOCATION : this.itemFilterLocation;
+        }
+        return this;
     }
 }

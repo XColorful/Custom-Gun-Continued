@@ -10,11 +10,13 @@ package xiao.customgun.client.resource.assets.info;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import net.minecraft.resources.Identifier;
+import xiao.customgun.core.api.resource.ResourceTag;
 import xiao.customgun.core.api.resource.assets.info.GunpackInfoTag;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.util.JsonUtils;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public final class GunpackInfo extends ResourcePojo<GunpackInfo> {
@@ -72,6 +74,8 @@ public final class GunpackInfo extends ResourcePojo<GunpackInfo> {
 
     @Override
     protected void validatePojo() {
+        if (ENABLE_BACK_COMPATIBILITY) this.applyBackCompatibility();
+
         boolean n1 = (this.gunpackVersion == null | this.nameLocation == null | this.tooltipLocation == null | this.license == null);
         boolean n2 = (this.authors == null | this.date == null | this.gunpackUrl == null);
         if (n1 | n2) {
@@ -127,4 +131,20 @@ public final class GunpackInfo extends ResourcePojo<GunpackInfo> {
     public void setGunpackUrl(String gunpackUrl) {
         this.gunpackUrl = gunpackUrl;
     }
+
+    // --------Back compatibility--------
+
+    @Override
+    public GunpackInfo applyBackCompatibility() {
+        this.gunpackVersion = this.gunpackVersion == null ? "" : this.gunpackVersion;
+        this.nameLocation = this.nameLocation == null ? ResourceTag.NULL_LOCATION : this.nameLocation;
+        this.tooltipLocation = this.tooltipLocation == null ? ResourceTag.NULL_LOCATION : this.tooltipLocation;
+        this.license = this.license == null ? "" : this.license;
+        this.authors = this.authors == null ? new ArrayList<>() : this.authors;
+        this.date = this.date == null ? "" : this.date;
+        this.gunpackUrl = this.gunpackUrl == null ? "" : this.gunpackUrl;
+        return this;
+    }
+
+    // --------Back compatibility--------
 }

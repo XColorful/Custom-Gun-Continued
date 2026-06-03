@@ -15,6 +15,7 @@ import xiao.customgun.core.resource.data.data.gun.bullet.damage._DistanceDamageD
 import xiao.customgun.core.util.JsonUtils;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public final class _BulletSkillData extends ResourcePojo<_BulletSkillData> {
@@ -60,13 +61,17 @@ public final class _BulletSkillData extends ResourcePojo<_BulletSkillData> {
 
     @Override
     protected void validatePojo() {
+        if (ENABLE_BACK_COMPATIBILITY) this.applyBackCompatibility();
+
         boolean n1 = (this.damageCalculation == null);
         if (n1) {
             this.setValid(false);
             return;
         }
 
-        for (_DistanceDamageData data : this.damageCalculation) {
+        int size = this.damageCalculation.size();
+        for (int i = 0; i < size; i++) {
+            var data = this.damageCalculation.get(i);
             data.validate();
             if (!data.isValid()) {
                 this.setValid(false);
@@ -97,5 +102,17 @@ public final class _BulletSkillData extends ResourcePojo<_BulletSkillData> {
     }
     public void setDamageCalculation(List<_DistanceDamageData> damageCalculation) {
         this.damageCalculation = damageCalculation;
+    }
+
+    // --------Back compatibility--------
+
+    @Override
+    public _BulletSkillData applyBackCompatibility() {
+        if (this.damageCalculation == null) this.damageCalculation = new ArrayList<>();
+        else {
+            int size = this.damageCalculation.size();
+            for (int i = 0; i < size; i++) this.damageCalculation.get(i).applyBackCompatibility();
+        }
+        return this;
     }
 }

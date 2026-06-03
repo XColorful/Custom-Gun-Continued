@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import xiao.customgun.client.resource.assets.display.ammo._AmmoEntityDisplay;
 import xiao.customgun.client.resource.assets.display.ammo._AmmoParticle;
 import xiao.customgun.client.resource.assets.display.ammo._ShellDisplay;
+import xiao.customgun.core.api.resource.ResourceTag;
 import xiao.customgun.core.api.resource.assets.display.AmmoDisplayTag;
 import xiao.customgun.core.util.JsonUtils;
 
@@ -80,6 +81,8 @@ public final class AmmoDisplay extends _AssetsDisplay<AmmoDisplay> {
 
     @Override
     protected void validatePojo() {
+        if (ENABLE_BACK_COMPATIBILITY) this.applyBackCompatibility();
+
         super.validatePojo();
         if (!this.isValid()) return;
 
@@ -128,5 +131,21 @@ public final class AmmoDisplay extends _AssetsDisplay<AmmoDisplay> {
     }
     public void setTracerColor(Color tracerColor) {
         this.tracerColor = tracerColor;
+    }
+
+    // --------Back compatibility--------
+
+    @Override
+    public AmmoDisplay applyBackCompatibility() {
+        super.applyBackCompatibility();
+        this.setModelTransform(this.getModelTransform() == null ? new _ModelTransform().applyBackCompatibility() : this.getModelTransform().applyBackCompatibility());
+        this.setSlotTextureLocation(this.getSlotTextureLocation() == null ? ResourceTag.NULL_LOCATION : this.getSlotTextureLocation());
+
+        if (this.ammoEntityDisplay != null) this.ammoEntityDisplay.applyBackCompatibility();
+        if (this.shellDisplay != null) this.shellDisplay.applyBackCompatibility();
+
+        this.ammoParticle = this.ammoParticle == null ? new _AmmoParticle().applyBackCompatibility() : this.ammoParticle.applyBackCompatibility();
+        this.tracerColor = this.tracerColor == null ? Color.WHITE : this.tracerColor;
+        return this;
     }
 }

@@ -58,6 +58,8 @@ public final class _AmmoDisplayOverride extends ResourcePojo<_AmmoDisplayOverrid
 
     @Override
     protected void validatePojo() {
+        if (ENABLE_BACK_COMPATIBILITY) this.applyBackCompatibility();
+
         boolean n1 = (this.ammoParticle == null | this.tracerColor == null);
         if (n1) {
             this.setValid(false);
@@ -87,5 +89,14 @@ public final class _AmmoDisplayOverride extends ResourcePojo<_AmmoDisplayOverrid
     }
     public void setTracerColor(Color tracerColor) {
         this.tracerColor = tracerColor;
+    }
+
+    // --------Back compatibility--------
+
+    @Override
+    public _AmmoDisplayOverride applyBackCompatibility() {
+        this.ammoParticle = this.ammoParticle == null ? new _AmmoParticle().applyBackCompatibility() : this.ammoParticle.applyBackCompatibility();
+        this.tracerColor = this.tracerColor == null ? Color.WHITE : this.tracerColor;
+        return this;
     }
 }

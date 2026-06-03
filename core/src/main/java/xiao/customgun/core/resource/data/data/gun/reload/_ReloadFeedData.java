@@ -73,4 +73,6 @@ public final class _ReloadFeedData extends ResourcePojo<_ReloadFeedData> {
     public void setTactical(float tactical) {
         this.tactical = tactical;
     }
+
+    // --------Back compatibility--------
 }

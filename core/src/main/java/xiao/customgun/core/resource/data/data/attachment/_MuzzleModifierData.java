@@ -71,4 +71,6 @@ public final class _MuzzleModifierData extends ResourcePojo<_MuzzleModifierData>
     public void setFireSoundType(FireSoundType fireSoundType) {
         this.fireSoundType = fireSoundType;
     }
+
+    // --------Back compatibility--------
 }

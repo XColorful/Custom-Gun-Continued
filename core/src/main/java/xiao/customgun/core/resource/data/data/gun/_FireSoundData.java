@@ -78,4 +78,6 @@ public final class _FireSoundData extends ResourcePojo<_FireSoundData> {
     public void setSilencedMultiplier(float silencedMultiplier) {
         this.silencedMultiplier = silencedMultiplier;
     }
+
+    // --------Back compatibility--------
 }

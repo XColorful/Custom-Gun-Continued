@@ -73,4 +73,6 @@ public final class _DistanceDamageData extends ResourcePojo<_DistanceDamageData>
     public void setDamage(float damage) {
         this.damage = damage;
     }
+
+    // --------Back compatibility--------
 }

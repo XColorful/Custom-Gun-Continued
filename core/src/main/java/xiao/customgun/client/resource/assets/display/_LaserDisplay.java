@@ -68,6 +68,8 @@ public final class _LaserDisplay extends ResourcePojo<_LaserDisplay> {
 
     @Override
     protected void validatePojo() {
+        if (ENABLE_BACK_COMPATIBILITY) this.applyBackCompatibility();
+
         boolean n1 = (this.defaultColor == null);
         if (n1) {
             this.setValid(false);
@@ -115,5 +117,13 @@ public final class _LaserDisplay extends ResourcePojo<_LaserDisplay> {
     }
     public void setThirdPersonLaserWidth(float thirdPersonLaserWidth) {
         this.thirdPersonLaserWidth = thirdPersonLaserWidth;
+    }
+
+    // --------Back compatibility--------
+
+    @Override
+    public _LaserDisplay applyBackCompatibility() {
+        this.defaultColor = this.defaultColor == null ? Color.WHITE : this.defaultColor;
+        return this;
     }
 }

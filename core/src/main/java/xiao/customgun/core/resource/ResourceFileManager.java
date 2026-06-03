@@ -110,12 +110,15 @@ public abstract class ResourceFileManager<T extends ResourceFile<T>>
                         T file = fromStream.apply(inputStream, fileLocation);
                         if (file != null) {
                             // 能并发，提前验证能省开销
-                            if (this.validateAtRead) file.validate();
-
-                            if (file.isValid()) {
+                            if (this.validateAtRead) {
+                                file.validate();
+                                if (file.isValid()) {
+                                    onPrepareFile(map, fileLocation, file);
+                                } else if (this.logParseException) {
+                                    CustomGun.LOGGER.warn("{}: File validation failed at prepare stage, skipping: {}", this.managerName, fileLocation);
+                                }
+                            } else {
                                 onPrepareFile(map, fileLocation, file);
-                            } else if (this.logParseException) {
-                                CustomGun.LOGGER.warn("{}: File validation failed at prepare stage, skipping: {}", this.managerName, fileLocation);
                             }
                         }
                     } catch (Exception e) { // IO 异常或其他未知错误

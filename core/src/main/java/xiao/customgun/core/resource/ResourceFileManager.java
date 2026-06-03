@@ -102,7 +102,6 @@ public abstract class ResourceFileManager<T extends ResourceFile<T>>
             for (FileToIdConverter fileToIdConverter : this.fileToIdConverters) {
                 fileToIdConverter.listMatchingResources(resourceManager).forEach((location, resource) -> {
                     var fileLocation = fileToIdConverter.fileToId(location);
-                    CustomGun.LOGGER.debug("Prepare rl: {}", fileLocation);
                     if (!isFileLocationValid(fileLocation)) return;
 
                     try (InputStream inputStream = resource.open()) {

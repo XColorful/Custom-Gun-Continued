@@ -85,6 +85,8 @@ public final class _DefaultMeleeData extends ResourcePojo<_DefaultMeleeData> {
 
     @Override
     protected void validatePojo() {
+        if (ENABLE_BACK_COMPATIBILITY) this.applyBackCompatibility();
+
         boolean n1 = (this.animationType == null);
         if (n1) {
             this.setValid(false);
@@ -138,5 +140,13 @@ public final class _DefaultMeleeData extends ResourcePojo<_DefaultMeleeData> {
     }
     public void setAnimationType(String animationType) {
         this.animationType = animationType;
+    }
+
+    // --------Back compatibility--------
+
+    @Override
+    public _DefaultMeleeData applyBackCompatibility() {
+        this.animationType = this.animationType == null ? "" : this.animationType;
+        return this;
     }
 }

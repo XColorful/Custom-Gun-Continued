@@ -23,4 +23,6 @@ public abstract class _SimpleTagData<T extends _SimpleTagData<T>> extends Resour
     public final void setTags(ClassUtils.ArraySet<String> tags) {
         this.tags = tags;
     }
+
+    // --------Back compatibility--------
 }

@@ -19,6 +19,7 @@ import xiao.customgun.core.resource.data.recipe.recipe._TableResultData;
 import xiao.customgun.core.util.JsonUtils;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public final class RecipeData extends ResourcePojo<RecipeData> {
@@ -71,6 +72,8 @@ public final class RecipeData extends ResourcePojo<RecipeData> {
 
     @Override
     protected void validatePojo() {
+        if (ENABLE_BACK_COMPATIBILITY) this.applyBackCompatibility();
+
         boolean n1 = (this.recipeRegistryType == null | this.tableIngredients == null | this.tableResult == null);
         if (n1) {
             this.setValid(false);
@@ -83,7 +86,9 @@ public final class RecipeData extends ResourcePojo<RecipeData> {
             return;
         }
 
-        for (_TableIngredientData data : this.tableIngredients) {
+        int size = this.tableIngredients.size();
+        for (int i = 0; i < size; i++) {
+            var data = this.tableIngredients.get(i);
             data.validate();
             if (!data.isValid()) {
                 this.setValid(false);
@@ -120,5 +125,19 @@ public final class RecipeData extends ResourcePojo<RecipeData> {
     }
     public void setTableResult(_TableResultData tableResult) {
         this.tableResult = tableResult;
+    }
+
+    // --------Back compatibility--------
+
+    @Override
+    public RecipeData applyBackCompatibility() {
+        this.recipeRegistryType = this.recipeRegistryType == null ? "" : this.recipeRegistryType;
+        if (this.tableIngredients == null) this.tableIngredients = new ArrayList<>();
+        else {
+            int size = this.tableIngredients.size();
+            for (int i = 0; i < size; i++) this.tableIngredients.get(i).applyBackCompatibility();
+        }
+        this.tableResult = this.tableResult == null ? new _TableResultData().applyBackCompatibility() : this.tableResult.applyBackCompatibility();
+        return this;
     }
 }

@@ -10,6 +10,7 @@ package xiao.customgun.core.resource.data.index;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import net.minecraft.resources.ResourceLocation;
+import xiao.customgun.core.api.resource.ResourceTag;
 import xiao.customgun.core.api.resource.data.index.BlockIndexTag;
 import xiao.customgun.core.util.JsonUtils;
 
@@ -101,5 +102,14 @@ public final class BlockIndex extends _DataIndex<BlockIndex> {
     }
     public void setMaxStackSize(int maxStackSize) {
         this.maxStackSize = maxStackSize;
+    }
+
+    // --------Back compatibility--------
+
+    @Override
+    public BlockIndex applyBackCompatibility() {
+        super.applyBackCompatibility();
+        this.blockLocation = this.blockLocation == null ? ResourceTag.NULL_LOCATION : this.blockLocation;
+        return this;
     }
 }

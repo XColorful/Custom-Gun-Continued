@@ -129,4 +129,6 @@ public final class _ChargingData extends ResourcePojo<_ChargingData> {
     public void setEnableChargeDuringCooldown(boolean enableChargeDuringCooldown) {
         this.enableChargeDuringCooldown = enableChargeDuringCooldown;
     }
+
+    // --------Back compatibility--------
 }

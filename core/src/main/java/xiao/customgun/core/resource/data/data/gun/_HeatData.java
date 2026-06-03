@@ -145,4 +145,6 @@ public final class _HeatData extends ResourcePojo<_HeatData> {
     public void setCoolingSpeedMultiplier(float coolingSpeedMultiplier) {
         this.coolingSpeedMultiplier = coolingSpeedMultiplier;
     }
+
+    // --------Back compatibility--------
 }

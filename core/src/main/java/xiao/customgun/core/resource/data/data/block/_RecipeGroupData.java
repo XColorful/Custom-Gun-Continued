@@ -11,8 +11,10 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
+import xiao.customgun.core.api.resource.ResourceTag;
 import xiao.customgun.core.api.resource.data.data.block._RecipeGroupDataTag;
 import xiao.customgun.core.resource.ResourcePojo;
+import xiao.customgun.core.util.ComponentUtils;
 import xiao.customgun.core.util.JsonUtils;
 
 import java.io.IOException;
@@ -58,6 +60,8 @@ public final class _RecipeGroupData extends ResourcePojo<_RecipeGroupData> {
 
     @Override
     protected void validatePojo() {
+        if (ENABLE_BACK_COMPATIBILITY) this.applyBackCompatibility();
+
         boolean n1 = (this.groupCategory == null | this.nameLang == null);
         if (n1) {
             this.setValid(false);
@@ -81,5 +85,14 @@ public final class _RecipeGroupData extends ResourcePojo<_RecipeGroupData> {
     }
     public void setNameLang(MutableComponent nameLang) {
         this.nameLang = nameLang;
+    }
+
+    // --------Back compatibility--------
+
+    @Override
+    public _RecipeGroupData applyBackCompatibility() {
+        this.groupCategory = this.groupCategory == null ? ResourceTag.NULL_LOCATION : this.groupCategory;
+        this.nameLang = this.nameLang == null ? ComponentUtils.unknownTranslatableKey() : this.nameLang;
+        return this;
     }
 }

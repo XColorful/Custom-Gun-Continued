@@ -15,18 +15,19 @@ import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.util.JsonUtils;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
 public final class RecipeFilterData extends ResourcePojo<RecipeFilterData> {
 
     private List<String> whitelistRaw;
-    private List<Identifier> whitelistLiteral;
-    private List<Pattern> whitelistPattern;
+    private List<Identifier> _whitelistLiteral;
+    private List<Pattern> _whitelistPattern;
 
     private List<String> blacklistRaw;
-    private List<Identifier> blacklistLiteral;
-    private List<Pattern> blacklistPattern;
+    private List<Identifier> _blacklistLiteral;
+    private List<Pattern> _blacklistPattern;
 
     private static final RecipeFilterData PARSER = new RecipeFilterData();
     public static RecipeFilterData fromJson(JsonReader reader) throws IOException {
@@ -63,6 +64,7 @@ public final class RecipeFilterData extends ResourcePojo<RecipeFilterData> {
 
     @Override
     protected void validatePojo() {
+        if (ENABLE_BACK_COMPATIBILITY) this.applyBackCompatibility();
         boolean n1 = (this.whitelistRaw == null | this.blacklistRaw == null);
         if (n1) {
             this.setValid(false);
@@ -79,37 +81,46 @@ public final class RecipeFilterData extends ResourcePojo<RecipeFilterData> {
         return whitelistRaw;
     }
     public List<Identifier> getWhitelistLiteral() {
-        return whitelistLiteral;
+        return _whitelistLiteral;
     }
     public List<Pattern> getWhitelistPattern() {
-        return whitelistPattern;
+        return _whitelistPattern;
     }
     public List<String> getBlacklistRaw() {
         return blacklistRaw;
     }
     public List<Identifier> getBlacklistLiteral() {
-        return blacklistLiteral;
+        return _blacklistLiteral;
     }
     public List<Pattern> getBlacklistPattern() {
-        return blacklistPattern;
+        return _blacklistPattern;
     }
 
     public void setWhitelistRaw(List<String> whitelistRaw) {
         this.whitelistRaw = whitelistRaw;
     }
     public void setWhitelistLiteral(List<Identifier> whitelistLiteral) {
-        this.whitelistLiteral = whitelistLiteral;
+        this._whitelistLiteral = whitelistLiteral;
     }
     public void setWhitelistPattern(List<Pattern> whitelistPattern) {
-        this.whitelistPattern = whitelistPattern;
+        this._whitelistPattern = whitelistPattern;
     }
     public void setBlacklistRaw(List<String> blacklistRaw) {
         this.blacklistRaw = blacklistRaw;
     }
     public void setBlacklistLiteral(List<Identifier> blacklistLiteral) {
-        this.blacklistLiteral = blacklistLiteral;
+        this._blacklistLiteral = blacklistLiteral;
     }
     public void setBlacklistPattern(List<Pattern> blacklistPattern) {
-        this.blacklistPattern = blacklistPattern;
+        this._blacklistPattern = blacklistPattern;
+    }
+
+    // --------Back compatibility--------
+
+    @Override
+    public RecipeFilterData applyBackCompatibility() {
+        this.whitelistRaw = this.whitelistRaw == null ? new ArrayList<>() : this.whitelistRaw;
+        this.blacklistRaw = this.blacklistRaw == null ? new ArrayList<>() : this.blacklistRaw;
+        return this;
     }
 }

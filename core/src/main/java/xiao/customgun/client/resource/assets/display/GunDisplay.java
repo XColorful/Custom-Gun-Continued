@@ -17,10 +17,12 @@ import xiao.customgun.client.api.model.gun.GunModelType;
 import xiao.customgun.client.api.sound.gun.GunSoundType;
 import xiao.customgun.client.resource.assets.display.gun.*;
 import xiao.customgun.core.api.item.gun.AmmoCountType;
+import xiao.customgun.core.api.resource.ResourceTag;
 import xiao.customgun.core.api.resource.assets.display.GunDisplayTag;
 import xiao.customgun.core.util.JsonUtils;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -162,6 +164,8 @@ public final class GunDisplay extends _AssetsDisplay<GunDisplay> {
 
     @Override
     protected void validatePojo() {
+        if (ENABLE_BACK_COMPATIBILITY) this.applyBackCompatibility();
+
         super.validatePojo();
         if (!this.isValid()) return;
 
@@ -362,5 +366,33 @@ public final class GunDisplay extends _AssetsDisplay<GunDisplay> {
     }
     public void setControllableData(_ControllableData controllableData) {
         this.controllableData = controllableData;
+    }
+
+    // --------Back compatibility--------
+
+    @Override
+    public GunDisplay applyBackCompatibility() {
+        super.applyBackCompatibility();
+        this.setModelTransform(this.getModelTransform() == null ? new _ModelTransform().applyBackCompatibility() : this.getModelTransform().applyBackCompatibility());
+        this.setSlotTextureLocation(this.getSlotTextureLocation() == null ? ResourceTag.NULL_LOCATION : this.getSlotTextureLocation());
+
+        this.hudTextureLocation = this.hudTextureLocation == null ? ResourceTag.NULL_LOCATION : this.hudTextureLocation;
+        this.hudEmptyTextureLocation = this.hudEmptyTextureLocation == null ? ResourceTag.NULL_LOCATION : this.hudEmptyTextureLocation;
+
+        if (this.lodDisplay != null) this.lodDisplay.applyBackCompatibility();
+        if (this.muzzleFlashDisplay != null) this.muzzleFlashDisplay.applyBackCompatibility();
+        if (this.laserDisplay != null) this.laserDisplay.applyBackCompatibility();
+        if (this.ammoDisplayOverride != null) this.ammoDisplayOverride.applyBackCompatibility();
+        if (this.shellEjectionParam != null) this.shellEjectionParam.applyBackCompatibility();
+        if (this.controllableData != null) this.controllableData.applyBackCompatibility();
+
+        this.surroundDisplayByOffhand = this.surroundDisplayByOffhand == null ? new _SurroundDisplay().applyBackCompatibility() : this.surroundDisplayByOffhand.applyBackCompatibility();
+
+        if (this.surroundDisplayByHotbar != null) this.surroundDisplayByHotbar.values().forEach(_SurroundDisplay::applyBackCompatibility);
+        if (this.modelNodeTextDisplay == null) this.modelNodeTextDisplay = new HashMap<>();
+        else this.modelNodeTextDisplay.values().forEach(_ModelNodeTextDisplay::applyBackCompatibility);
+
+        this.gunSounds = this.gunSounds == null ? new HashMap<>() : this.gunSounds;
+        return this;
     }
 }

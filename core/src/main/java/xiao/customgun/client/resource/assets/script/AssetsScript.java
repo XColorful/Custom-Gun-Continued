@@ -114,4 +114,6 @@ public final class AssetsScript extends ResourceFile<AssetsScript> {
             }
         }
     }
+
+    // --------Back compatibility--------
 }

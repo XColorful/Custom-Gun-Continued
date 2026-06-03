@@ -12,10 +12,12 @@ import com.google.gson.stream.JsonWriter;
 import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.client.api.sound.attachment.AttachmentSoundType;
+import xiao.customgun.core.api.resource.ResourceTag;
 import xiao.customgun.core.api.resource.assets.display.AttachmentDisplayTag;
 import xiao.customgun.core.util.JsonUtils;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 public final class AttachmentDisplay extends _AssetsDisplay<AttachmentDisplay> {
@@ -101,6 +103,8 @@ public final class AttachmentDisplay extends _AssetsDisplay<AttachmentDisplay> {
 
     @Override
     protected void validatePojo() {
+        if (ENABLE_BACK_COMPATIBILITY) this.applyBackCompatibility();
+
         super.validatePojo();
         if (!this.isValid()) return;
 
@@ -203,5 +207,27 @@ public final class AttachmentDisplay extends _AssetsDisplay<AttachmentDisplay> {
     }
     public void setAttachmentSounds(Map<AttachmentSoundType, Identifier> attachmentSounds) {
         this.attachmentSounds = attachmentSounds;
+    }
+
+    // --------Back compatibility--------
+
+    @Override
+    public AttachmentDisplay applyBackCompatibility() {
+        super.applyBackCompatibility();
+        this.setSlotTextureLocation(this.getSlotTextureLocation() == null ? ResourceTag.NULL_LOCATION : this.getSlotTextureLocation());
+
+        if (this.lodDisplay != null) this.lodDisplay.applyBackCompatibility();
+        this.adapterNodeName = this.adapterNodeName == null ? "" : this.adapterNodeName;
+
+        this.scopeZoomScale = this.scopeZoomScale == null ? new float[]{1f} : this.scopeZoomScale;
+        this.scopeViewIndex = this.scopeViewIndex == null ? new int[]{0} : this.scopeViewIndex;
+        this.scopeViewFov = this.scopeViewFov == null ? new float[]{70f} : this.scopeViewFov;
+
+        if (this.modelNodeTextDisplay == null) this.modelNodeTextDisplay = new HashMap<>();
+        else this.modelNodeTextDisplay.values().forEach(_ModelNodeTextDisplay::applyBackCompatibility);
+
+        this.laserDisplay = this.laserDisplay == null ? new _LaserDisplay().applyBackCompatibility() : this.laserDisplay.applyBackCompatibility();
+        this.attachmentSounds = this.attachmentSounds == null ? new HashMap<>() : this.attachmentSounds;
+        return this;
     }
 }

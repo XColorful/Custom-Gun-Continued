@@ -15,6 +15,7 @@ import xiao.customgun.core.resource.data.data.gun.recoil._RecoilEntryData;
 import xiao.customgun.core.util.JsonUtils;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public final class _RecoilData extends ResourcePojo<_RecoilData> {
@@ -59,20 +60,26 @@ public final class _RecoilData extends ResourcePojo<_RecoilData> {
 
     @Override
     protected void validatePojo() {
+        if (ENABLE_BACK_COMPATIBILITY) this.applyBackCompatibility();
+
         boolean n1 = (this.pitchRecoils == null | this.yawRecoils == null);
         if (n1) {
             this.setValid(false);
             return;
         }
 
-        for (_RecoilEntryData data : this.pitchRecoils) {
+        int size = this.pitchRecoils.size();
+        for (int i = 0; i < size; i++) {
+            var data = this.pitchRecoils.get(i);
             data.validate();
             if (!data.isValid()) {
                 this.setValid(false);
                 return;
             }
         }
-        for (_RecoilEntryData data : this.yawRecoils) {
+        size = this.yawRecoils.size();
+        for (int i = 0; i < size; i++) {
+            var data = this.yawRecoils.get(i);
             data.validate();
             if (!data.isValid()) {
                 this.setValid(false);
@@ -97,5 +104,22 @@ public final class _RecoilData extends ResourcePojo<_RecoilData> {
     }
     public void setYawRecoils(List<_RecoilEntryData> yawRecoils) {
         this.yawRecoils = yawRecoils;
+    }
+
+    // --------Back compatibility--------
+
+    @Override
+    public _RecoilData applyBackCompatibility() {
+        if (this.pitchRecoils == null) this.pitchRecoils = new ArrayList<>();
+        else {
+            int size = this.pitchRecoils.size();
+            for (int i = 0; i < size; i++) this.pitchRecoils.get(i).applyBackCompatibility();
+        }
+        if (this.yawRecoils == null) this.yawRecoils = new ArrayList<>();
+        else {
+            int size = this.yawRecoils.size();
+            for (int i = 0; i < size; i++) this.yawRecoils.get(i).applyBackCompatibility();
+        }
+        return this;
     }
 }

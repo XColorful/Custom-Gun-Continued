@@ -61,6 +61,8 @@ public final class _TableResultData extends ResourcePojo<_TableResultData> {
 
     @Override
     protected void validatePojo() {
+        if (ENABLE_BACK_COMPATIBILITY) this.applyBackCompatibility();
+
         boolean n1 = (this.recipeResultType == null | this.recipeResultLocation == null);
         if (n1) {
             this.setValid(false);
@@ -84,5 +86,13 @@ public final class _TableResultData extends ResourcePojo<_TableResultData> {
     }
     public void setRecipeResultLocation(Identifier recipeResultLocation) {
         this.recipeResultLocation = recipeResultLocation;
+    }
+
+    // --------Back compatibility--------
+
+    @Override
+    public _TableResultData applyBackCompatibility() {
+        this.recipeResultLocation = this.recipeResultLocation == null ? xiao.customgun.core.api.resource.ResourceTag.NULL_LOCATION : this.recipeResultLocation;
+        return this;
     }
 }

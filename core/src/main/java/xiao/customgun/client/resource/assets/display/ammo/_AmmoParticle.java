@@ -10,6 +10,7 @@ package xiao.customgun.client.resource.assets.display.ammo;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import net.minecraft.resources.Identifier;
+import xiao.customgun.core.api.resource.ResourceTag;
 import xiao.customgun.core.api.resource.assets.display.ammo._AmmoParticleTag;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.util.JsonUtils;
@@ -65,6 +66,8 @@ public final class _AmmoParticle extends ResourcePojo<_AmmoParticle> {
 
     @Override
     protected void validatePojo() {
+        if (ENABLE_BACK_COMPATIBILITY) this.applyBackCompatibility();
+
         boolean n1 = (this.particleLocation == null | this.delta == null);
         if (n1) {
             this.setValid(false);
@@ -106,5 +109,14 @@ public final class _AmmoParticle extends ResourcePojo<_AmmoParticle> {
     }
     public void setLifetimeTicks(int lifetimeTicks) {
         this.lifetimeTicks = lifetimeTicks;
+    }
+
+    // --------Back compatibility--------
+
+    @Override
+    public _AmmoParticle applyBackCompatibility() {
+        this.particleLocation = this.particleLocation == null ? ResourceTag.NULL_LOCATION : this.particleLocation;
+        this.delta = this.delta == null ? new float[]{0f, 0f, 0f} : this.delta;
+        return this;
     }
 }

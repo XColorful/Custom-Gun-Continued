@@ -9,6 +9,7 @@ package xiao.customgun.core.resource.data.index;
 
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import xiao.customgun.core.api.resource.ResourceTag;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.util.ComponentUtils;
 
@@ -24,6 +25,8 @@ public abstract class _DataIndex<T extends _DataIndex<T>> extends ResourcePojo<T
 
     @Override
     protected void validatePojo() {
+        if (ENABLE_BACK_COMPATIBILITY) this.applyBackCompatibility();
+
         boolean n1 = (this.dataLocation == null | this.displayIndexLocation == null);
         if (n1) {
             this.setValid(false);
@@ -68,5 +71,15 @@ public abstract class _DataIndex<T extends _DataIndex<T>> extends ResourcePojo<T
     }
     public final void setSlotSort(int slotSort) {
         this.slotSort = slotSort;
+    }
+
+    // --------Back compatibility--------
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public T applyBackCompatibility() {
+        this.dataLocation = this.dataLocation == null ? ResourceTag.NULL_LOCATION : this.dataLocation;
+        this.displayIndexLocation = this.displayIndexLocation == null ? ResourceTag.NULL_LOCATION : this.displayIndexLocation;
+        return (T) this;
     }
 }

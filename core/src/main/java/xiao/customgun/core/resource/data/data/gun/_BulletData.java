@@ -105,6 +105,8 @@ public final class _BulletData extends ResourcePojo<_BulletData> {
 
     @Override
     protected void validatePojo() {
+        if (ENABLE_BACK_COMPATIBILITY) this.applyBackCompatibility();
+
         boolean n1 = (this.bulletSkillData == null | this.explosionData == null);
         if (n1) {
             this.setValid(false);
@@ -201,5 +203,15 @@ public final class _BulletData extends ResourcePojo<_BulletData> {
     }
     public void setExplosionData(_ExplosionData explosionData) {
         this.explosionData = explosionData;
+    }
+
+    // --------Back compatibility--------
+
+    @Override
+    public _BulletData applyBackCompatibility() {
+        this.bulletSkillData = this.bulletSkillData == null ? new _BulletSkillData().applyBackCompatibility() : this.bulletSkillData.applyBackCompatibility();
+
+        this.explosionData = this.explosionData == null ? new _ExplosionData().applyBackCompatibility() : this.explosionData.applyBackCompatibility();
+        return this;
     }
 }

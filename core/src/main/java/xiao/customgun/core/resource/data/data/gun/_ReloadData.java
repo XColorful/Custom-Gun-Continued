@@ -64,6 +64,8 @@ public final class _ReloadData extends ResourcePojo<_ReloadData> {
 
     @Override
     protected void validatePojo() {
+        if (ENABLE_BACK_COMPATIBILITY) this.applyBackCompatibility();
+
         boolean n1 = (this.ammoFeedType == null | this.reloadFeed == null | this.reloadCooldown == null);
         if (n1) {
             this.setValid(false);
@@ -106,5 +108,15 @@ public final class _ReloadData extends ResourcePojo<_ReloadData> {
     }
     public void setReloadCooldown(_ReloadCooldownData reloadCooldown) {
         this.reloadCooldown = reloadCooldown;
+    }
+
+    // --------Back compatibility--------
+
+    @Override
+    public _ReloadData applyBackCompatibility() {
+        this.ammoFeedType = this.ammoFeedType == null ? AmmoFeedType.MAGAZINE : this.ammoFeedType;
+        this.reloadFeed = this.reloadFeed == null ? new _ReloadFeedData().applyBackCompatibility() : this.reloadFeed.applyBackCompatibility();
+        this.reloadCooldown = this.reloadCooldown == null ? new _ReloadCooldownData().applyBackCompatibility() : this.reloadCooldown.applyBackCompatibility();
+        return this;
     }
 }

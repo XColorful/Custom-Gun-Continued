@@ -79,4 +79,6 @@ public final class _RecoilEntryData extends ResourcePojo<_RecoilEntryData> {
     public void setRange(float[] range) {
         this.range = range;
     }
+
+    // --------Back compatibility--------
 }

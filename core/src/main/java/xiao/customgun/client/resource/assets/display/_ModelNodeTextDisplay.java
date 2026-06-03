@@ -12,6 +12,7 @@ import com.google.gson.stream.JsonWriter;
 import net.minecraft.network.chat.MutableComponent;
 import xiao.customgun.core.api.resource.assets.display._ModelNodeTextDisplayTag;
 import xiao.customgun.core.resource.ResourcePojo;
+import xiao.customgun.core.util.ComponentUtils;
 import xiao.customgun.core.util.JsonUtils;
 
 import java.io.IOException;
@@ -68,6 +69,8 @@ public final class _ModelNodeTextDisplay extends ResourcePojo<_ModelNodeTextDisp
 
     @Override
     protected void validatePojo() {
+        if (ENABLE_BACK_COMPATIBILITY) this.applyBackCompatibility();
+
         boolean n1 = (this.textLang == null);
         if (n1) {
             this.setValid(false);
@@ -115,5 +118,13 @@ public final class _ModelNodeTextDisplay extends ResourcePojo<_ModelNodeTextDisp
     }
     public void setXOffsetScale(float xOffsetScale) {
         this.xOffsetScale = xOffsetScale;
+    }
+
+    // --------Back compatibility--------
+
+    @Override
+    public _ModelNodeTextDisplay applyBackCompatibility() {
+        this.textLang = this.textLang == null ? ComponentUtils.unknownTranslatableKey() : this.textLang;
+        return this;
     }
 }

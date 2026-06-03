@@ -58,6 +58,8 @@ public class _ModelTransformScale extends ResourcePojo<_ModelTransformScale> {
 
     @Override
     protected void validatePojo() {
+        if (ENABLE_BACK_COMPATIBILITY) this.applyBackCompatibility();
+
         boolean n1 = (this.thirdPersonScale == null | this.groundScale == null | this.fixedScale == null);
         if (n1) {
             this.setValid(false);
@@ -87,5 +89,15 @@ public class _ModelTransformScale extends ResourcePojo<_ModelTransformScale> {
     }
     public void setFixedScale(float[] fixedScale) {
         this.fixedScale = fixedScale;
+    }
+
+    // --------Back compatibility--------
+
+    @Override
+    public _ModelTransformScale applyBackCompatibility() {
+        this.thirdPersonScale = this.thirdPersonScale == null ? new float[]{1f, 1f, 1f} : this.thirdPersonScale;
+        this.groundScale = this.groundScale == null ? new float[]{1f, 1f, 1f} : this.groundScale;
+        this.fixedScale = this.fixedScale == null ? new float[]{1f, 1f, 1f} : this.fixedScale;
+        return this;
     }
 }

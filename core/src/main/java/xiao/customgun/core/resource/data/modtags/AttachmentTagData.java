@@ -9,6 +9,7 @@ package xiao.customgun.core.resource.data.modtags;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import xiao.customgun.core.util.ClassUtils;
 import xiao.customgun.core.util.JsonUtils;
 
 import java.io.IOException;
@@ -47,6 +48,8 @@ public final class AttachmentTagData extends _SimpleTagData<AttachmentTagData> {
 
     @Override
     protected void validatePojo() {
+        if (ENABLE_BACK_COMPATIBILITY) this.applyBackCompatibility();
+
         boolean n1 = (this.getTags() == null);
         if (n1) {
             this.setValid(false);
@@ -54,5 +57,13 @@ public final class AttachmentTagData extends _SimpleTagData<AttachmentTagData> {
         }
 
         this.setValid(true);
+    }
+
+    // --------Back compatibility--------
+
+    @Override
+    public AttachmentTagData applyBackCompatibility() {
+        this.setTags(this.getTags() == null ? new ClassUtils.ArraySet<>() : this.getTags());
+        return this;
     }
 }

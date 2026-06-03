@@ -110,4 +110,6 @@ public final class DataScript extends ResourceFile<DataScript> {
             }
         }
     }
+
+    // --------Back compatibility--------
 }

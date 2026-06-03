@@ -7,7 +7,7 @@
 
 package xiao.customgun.core.resource.data;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -58,13 +58,13 @@ public final class ScriptManager extends ResourceFileManager<DataScript> {
     }
 
     @Override
-    protected @NotNull Map<ResourceLocation, DataScript> prepare(@NotNull ResourceManager resourceManager, @NotNull ProfilerFiller profiler) {
+    protected @NotNull Map<Identifier, DataScript> prepare(@NotNull ResourceManager resourceManager, @NotNull ProfilerFiller profiler) {
         GLOBALS = secureStandardGlobals();
         return super.prepare(resourceManager, profiler);
     }
 
     @Override
-    protected void onPrepareFile(Map<ResourceLocation, DataScript> map, ResourceLocation fileLocation, DataScript file) {
+    protected void onPrepareFile(Map<Identifier, DataScript> map, Identifier fileLocation, DataScript file) {
         super.onPrepareFile(map, fileLocation, file);
 
         String moduleName = getModuleName(fileLocation);
@@ -86,7 +86,7 @@ public final class ScriptManager extends ResourceFileManager<DataScript> {
         return GLOBALS;
     }
 
-    public static String getModuleName(ResourceLocation resourceLocation) {
+    public static String getModuleName(Identifier resourceLocation) {
         return resourceLocation.getNamespace() + "_" + resourceLocation.getPath();
     }
 

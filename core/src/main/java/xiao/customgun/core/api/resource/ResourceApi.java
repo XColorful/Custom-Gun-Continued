@@ -141,12 +141,12 @@ public class ResourceApi {
 
     // --------script--------
 
-    public static @Nullable DataScript getDataScript(ResourceLocation scriptLocation) {
+    public static @Nullable DataScript getDataScript(Identifier scriptLocation) {
         var dataManager = AllDataManager.getCurrent();
         if (dataManager != null && dataManager.scriptManager != null) return dataManager.scriptManager.getFile(scriptLocation);
         else return null;
     }
-    public static Set<Map.Entry<ResourceLocation, DataScript>> getAllDataScript() {
+    public static Set<Map.Entry<Identifier, DataScript>> getAllDataScript() {
         var dataManager = AllDataManager.getCurrent();
         if (dataManager != null && dataManager.scriptManager != null) return dataManager.scriptManager.getAllFiles().entrySet();
         else return new HashSet<>();

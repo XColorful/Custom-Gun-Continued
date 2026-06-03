@@ -1,6 +1,6 @@
 package xiao.customgun.core.util;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,7 +12,7 @@ public class FileUtils {
 
     @FunctionalInterface
     public interface ReadFunction<T> {
-        T apply(InputStream inputStream, ResourceLocation fileLocation) throws IOException;
+        T apply(InputStream inputStream, Identifier fileLocation) throws IOException;
     }
     @FunctionalInterface
     public interface WriteFunction<T> {

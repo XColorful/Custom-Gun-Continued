@@ -128,12 +128,15 @@ public abstract class ResourcePojoManager<T extends ResourcePojo<T>>
                         T pojo = fromJson.apply(jsonReader);
                         if (pojo != null) {
                             // 能并发，提前验证能省开销
-                            if (this.validateAtRead) pojo.validate();
-
-                            if (pojo.isValid()) {
+                            if (this.validateAtRead) {
+                                pojo.validate();
+                                if (pojo.isValid()) {
+                                    onPreparePojo(map, pojoLocation, pojo);
+                                } else if (this.logParseException) {
+                                    CustomGun.LOGGER.warn("{}: Pojo validation failed at prepare stage, skipping: {}", this.managerName, pojoLocation);
+                                }
+                            } else {
                                 onPreparePojo(map, pojoLocation, pojo);
-                            } else if (this.logParseException) {
-                                CustomGun.LOGGER.warn("{}: Pojo validation failed at prepare stage, skipping: {}", this.managerName, pojoLocation);
                             }
                         }
                     } catch (JsonSyntaxException | MalformedJsonException e) { // JSON 语法错误

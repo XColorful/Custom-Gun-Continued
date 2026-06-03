@@ -22,6 +22,7 @@ import xiao.customgun.client.resource.assets.display.AttachmentDisplay;
 import xiao.customgun.client.resource.assets.display.BlockDisplay;
 import xiao.customgun.client.resource.assets.display.GunDisplay;
 import xiao.customgun.client.resource.assets.model.BedrockModel;
+import xiao.customgun.client.resource.assets.script.AssetsScript;
 import xiao.customgun.client.resource.instance.assets.GunDisplayInstance;
 import xiao.customgun.client.resource.instance.data.ClientAmmoIndexInstance;
 import xiao.customgun.client.resource.instance.data.ClientAttachmentIndexInstance;
@@ -93,6 +94,17 @@ public class ClientResourceApi {
     public static Set<Map.Entry<Identifier, BedrockModel>> getAllBedrockModel() {
         var assetsManager = AllAssetsManager.INSTANCE.bedrockModelManager;
         return assetsManager != null ? assetsManager.getAllPojo().entrySet() : new HashSet<>();
+    }
+
+    // --------script--------
+
+    public static @Nullable AssetsScript getAssetsScript(ResourceLocation scriptLocation) {
+        var assetsManager = AllAssetsManager.INSTANCE.clientScriptManager;
+        return assetsManager != null ? assetsManager.getFile(scriptLocation) : null;
+    }
+    public static Set<Map.Entry<ResourceLocation, AssetsScript>> getAllAssetsScript() {
+        var assetsManager = AllAssetsManager.INSTANCE.clientScriptManager;
+        return assetsManager != null ? assetsManager.getAllFiles().entrySet() : new HashSet<>();
     }
 
     // --------data instance--------

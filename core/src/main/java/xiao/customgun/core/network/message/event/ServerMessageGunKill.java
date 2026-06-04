@@ -17,7 +17,7 @@ import xiao.customgun.core.util.NetworkUtils;
 import java.util.function.Consumer;
 
 public record ServerMessageGunKill(int bulletId, int killEntityId, int attackerId,
-                                   ResourceLocation gunId, ResourceLocation gunDisplayId, // 细节：Identifier 放同一行
+                                   ResourceLocation gunLocation, ResourceLocation gunDisplayLocation,// 细节：Identifier 放同一行
                                    float baseDamage, boolean isHeadShot, float headshotMultiplier)
         implements IMessage<ServerMessageGunKill> {
 
@@ -26,8 +26,8 @@ public record ServerMessageGunKill(int bulletId, int killEntityId, int attackerI
         buffer.writeInt(message.bulletId);
         buffer.writeInt(message.killEntityId);
         buffer.writeInt(message.attackerId);
-        NetworkUtils.writeResourceLocation(buffer, message.gunId);
-        NetworkUtils.writeResourceLocation(buffer, message.gunDisplayId);
+        NetworkUtils.writeResourceLocation(buffer, message.gunLocation);
+        NetworkUtils.writeResourceLocation(buffer, message.gunDisplayLocation);
         buffer.writeFloat(message.baseDamage);
         buffer.writeBoolean(message.isHeadShot);
         buffer.writeFloat(message.headshotMultiplier);

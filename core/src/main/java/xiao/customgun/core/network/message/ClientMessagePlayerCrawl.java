@@ -10,7 +10,9 @@ package xiao.customgun.core.network.message;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import xiao.customgun.CustomGun;
+import xiao.customgun.core.api.entity.shooter.ILivingShooterGetter;
 import xiao.customgun.core.api.network.message.IMessage;
+import xiao.customgun.core.config.SyncConfig;
 
 import java.util.function.Consumer;
 
@@ -30,11 +32,15 @@ public record ClientMessagePlayerCrawl(boolean isCrawl)
     public void handle(ClientMessagePlayerCrawl message, Consumer<Runnable> handler, NetworkContext context) {
         if (CustomGun.getSideExecutor().getLogicalSide().isServer()) {
             handler.accept(() -> {
-                if (!(context.sender() instanceof ServerPlayer entity)) {
+                if (!(context.sender() instanceof ServerPlayer player)) {
                     return;
                 }
-                // TODO SyncConfig
-                // TODO IGunOperator
+
+                if (!SyncConfig.ENABLE_CRAWL.get()) {
+                    return;
+                }
+
+                ILivingShooterGetter.cgc$fromLivingEntity(player).cgc$crawl(message.isCrawl);
             });
         }
     }

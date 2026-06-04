@@ -15,6 +15,7 @@ public class SoundConfig {
     public static IModConfigSpec<Integer> HIT_SOUND_CONCURRENCY_LIMIT;
     public static IModConfigSpec<Integer> DEFAULT_SOUND_CONCURRENCY_LIMIT;
     public static IModConfigSpec<Integer> HIGH_FREQUENCY_SOUND_CONCURRENCY_LIMIT;
+    public static IModConfigSpec<Boolean> FIRST_PERSON_ANIMATION_SOUND_TRACKING;
 
     public static void init(IModConfigSpecBuilder builder) {
         builder.startBuild(ClientModConfigTag.sound_path);
@@ -27,6 +28,9 @@ public class SoundConfig {
 
         builder.addComment(ClientModConfigTag.highFrequencySoundConcurrencyLimit_comment);
         HIGH_FREQUENCY_SOUND_CONCURRENCY_LIMIT = builder.addConfig(ClientModConfigTag.highFrequencySoundConcurrencyLimit_path, 4, 0, 128);
+
+        builder.addComment(ClientModConfigTag.firstPersonAnimationSoundTracking_comment);
+        FIRST_PERSON_ANIMATION_SOUND_TRACKING = builder.addConfig(ClientModConfigTag.firstPersonAnimationSoundTracking_path, false);
 
         builder.finishBuild();
     }

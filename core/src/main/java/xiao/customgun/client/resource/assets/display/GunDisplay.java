@@ -15,7 +15,6 @@ import xiao.customgun.client.api.item.gun.DamageDisplayType;
 import xiao.customgun.client.api.item.gun.ThirdPersonAnimationType;
 import xiao.customgun.client.api.model.gun.GunModelType;
 import xiao.customgun.client.api.sound.gun.GunSoundType;
-import xiao.customgun.client.resource.assets.display.gun.*;
 import xiao.customgun.core.api.item.gun.AmmoCountType;
 import xiao.customgun.core.api.resource.ResourceTag;
 import xiao.customgun.core.api.resource.assets.display.GunDisplayTag;

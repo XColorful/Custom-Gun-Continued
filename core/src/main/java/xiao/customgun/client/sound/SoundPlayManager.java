@@ -8,43 +8,43 @@
 package xiao.customgun.client.sound;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.CustomGun;
 import xiao.customgun.client.api.event.IClientTickEvent;
-import xiao.customgun.client.api.resource.assets.AssetsFolderType;
+import xiao.customgun.client.api.resource.ClientResourceApi;
+import xiao.customgun.client.api.sound.attachment.AttachmentSoundType;
 import xiao.customgun.client.api.sound.gun.GunSoundType;
 import xiao.customgun.client.config.SoundConfig;
 import xiao.customgun.client.resource.instance.assets.GunDisplayInstance;
+import xiao.customgun.client.resource.instance.data.ClientAttachmentIndexInstance;
 import xiao.customgun.client.util.ClientWorldUtils;
 import xiao.customgun.core.api.event.EventType;
 import xiao.customgun.core.api.event.IEvent;
 import xiao.customgun.core.api.event.IEventHandler;
 import xiao.customgun.core.api.item.IAttachment;
-import xiao.customgun.core.api.resource.FileExtensionType;
+import xiao.customgun.core.api.item.attachment.IAttachmentGetter;
 import xiao.customgun.core.config.GunConfig;
-import xiao.customgun.core.developer.PlannedRefactor;
+import xiao.customgun.core.developer.bug.Herobrine;
 import xiao.customgun.core.init.registry.ModSounds;
-import xiao.customgun.core.network.message.ServerMessageSound;
-import xiao.customgun.core.resource.data.data.GunData;
 
 import java.util.*;
 
-public class SoundPlayManager implements IEventHandler {
+public final class SoundPlayManager implements IEventHandler {
     private static class SoundPlayManagerHolder {
         private static final SoundPlayManager INSTANCE = new SoundPlayManager();
     }
     public static SoundPlayManager get() {
         return SoundPlayManagerHolder.INSTANCE;
     }
-    protected SoundPlayManager() {}
+    private SoundPlayManager() {}
     @Override public String getEventHandlerName() {
         return this.getClass().getName();
     }
@@ -57,190 +57,66 @@ public class SoundPlayManager implements IEventHandler {
         }
     }
 
-    public static final FileToIdConverter MOD_SOUND_LISTER = new FileToIdConverter(
-            AssetsFolderType.MOD_SOUNDS.getFolderName(),
-            FileExtensionType.OGG.getExtensionNameWithDot());
+    private final Map<_EntitySoundEntry, ArrayDeque<_TrackedSoundInstance>> TRACKED_SOUND_INSTANCE = new HashMap<>();
+    private final Map<ResourceLocation, ResourceLocation> SOUND_PATH_CACHE = new HashMap<>();
 
-    private record SoundKey(int entityId, ResourceLocation soundId) {}
-    private record TrackedGunSound(GunSoundInstance instance, UUID entityUuid) {}
-    private static final Map<SoundKey, ArrayDeque<TrackedGunSound>> TRACKED_GUN_SOUNDS = new HashMap<>();
-    private static final Map<ResourceLocation, Boolean> SOUND_RESOURCE_EXISTS_CACHE = new HashMap<>();
-    private static final Set<ResourceLocation> MISSING_SOUND_WARNED = new HashSet<>();
-
-    private static int soundCleanupTickCounter = 0;
+    private int soundCleanupTickCounter = 0;
 
     /**
      * 用于阻止连发时，反复播放 DryFire 音效
      */
-    private static boolean DRY_SOUND_TRACK = true;
+    private boolean ALLOW_DRY_FIRE = true;
 
     /**
      * 临时缓存，用于停止播放的
      */
-    private static GunSoundInstance tmpSoundInstance = null;
+    private ResourceSoundInstance currentSoundInstance = null;
 
-    public static @Nullable GunSoundInstance playClientSound(Entity entity,
-                                                   @Nullable ResourceLocation name,
-                                                   float volume, float pitch, int distance, boolean mono) {
-        boolean relative = ClientWorldUtils.isLocalPlayer(entity);
-        return playClientSound(entity, name, volume, pitch, distance, mono, SoundConfig.DEFAULT_SOUND_CONCURRENCY_LIMIT.get(), !relative, relative);
-    }
-    private static @Nullable GunSoundInstance playClientSound(Entity entity,
-                                                    @Nullable ResourceLocation name,
-                                                    float volume, float pitch, int distance, boolean mono, int concurrencyLimit, boolean trackEntity, boolean relative) {
+    public @Nullable ResourceSoundInstance playClientSound(@Nullable ResourceLocation soundLocation,
+                                                            float volume, float pitch,
+                                                            @NotNull Entity entity, boolean relative,
+                                                            float soundDistance,
+                                                            boolean trackEntity, int concurrencyLimit) {
+        var soundPath = this.getSoundPath(soundLocation);
+        if (soundPath == null) return null;
+
         Minecraft minecraft = Minecraft.getInstance();
-        if (name == null || !hasSoundResource(minecraft, name)) {
-            return null;
-        }
-        if (concurrencyLimit > 0) {
-            limitConcurrentGunSound(minecraft, entity.getId(), name, concurrencyLimit);
-        }
-        GunSoundInstance instance = trackEntity
-                ? new EntityTrackingGunSoundInstance(ModSounds.GUN.get(), SoundSource.PLAYERS, volume, pitch, entity, distance, name, mono)
-                : new GunSoundInstance(ModSounds.GUN.get(), SoundSource.PLAYERS, volume, pitch, entity, distance, name, mono, relative);
-        minecraft.getSoundManager().play(instance);
-        if (concurrencyLimit > 0) {
-            trackGunSound(entity.getId(), entity.getUUID(), name, instance);
-        }
-        return instance;
-    }
-    public static @Nullable GunSoundInstance playClientSound(Entity entity,
-                                                   @Nullable ResourceLocation name,
-                                                   float volume, float pitch, int distance) {
-        return playClientSound(entity, name, volume, pitch, distance, false);
+        if (concurrencyLimit > 0) this.limitConcurrentGunSound(minecraft, entity.getId(), soundLocation, concurrencyLimit);
+
+        ResourceSoundInstance soundInstance = trackEntity
+                ? new EntityTrackingSoundInstance(ModSounds.GUN.get(), SoundSource.PLAYERS, RandomSource.create(Herobrine.HIM), soundLocation, soundPath, volume, pitch, entity, false, soundDistance)
+                : new ResourceSoundInstance(ModSounds.GUN.get(), SoundSource.PLAYERS, RandomSource.create(Herobrine.HIM), soundLocation, soundPath, volume, pitch, entity, relative, soundDistance);
+        minecraft.getSoundManager().play(soundInstance);
+
+        if (concurrencyLimit > 0) trackGunSound(entity.getId(), entity.getUUID(), soundLocation, soundInstance);
+
+        return soundInstance;
     }
 
-    public static @Nullable GunSoundInstance playAnimationSound(Entity entity,
-                                                      @Nullable ResourceLocation name,
-                                                      float volume, float pitch, int distance) {
-        return playClientSound(entity, name, volume, pitch, distance, false, SoundConfig.HIGH_FREQUENCY_SOUND_CONCURRENCY_LIMIT.get(), false, ClientWorldUtils.isLocalPlayer(entity));
+    public void stopCurrentSound() {
+        if (currentSoundInstance != null) currentSoundInstance.setStop();
     }
-
-    public static void stopPlayGunSound() {
-        if (tmpSoundInstance != null) {
-            tmpSoundInstance.setStop();
-        }
-    }
-    public static void stopPlayGunSound(GunDisplayInstance gunDisplayIndex, GunSoundType animationName) {
-        if (tmpSoundInstance != null) {
-            if (tmpSoundInstance.getRegistryName() != null && tmpSoundInstance.getRegistryName().equals(gunDisplayIndex.getGunSound(animationName))) {
-                tmpSoundInstance.setStop();
-            }
+    public void stopCurrentSound(GunDisplayInstance gunDisplayIndex, GunSoundType animationName) {
+        if (currentSoundInstance == null) return;
+        var soundLocation = currentSoundInstance.getSoundLocation();
+        if (soundLocation != null && soundLocation.equals(gunDisplayIndex.getGunSound(animationName))) {
+            currentSoundInstance.setStop();
         }
     }
 
-    public static void playerRefitSound(ItemStack attachmentItem, LocalPlayer player, String soundName) {
-        // TODO IAttachment
-//        IAttachment iAttachment = IAttachment.getIAttachmentOrNull(attachmentItem);
-        IAttachment iAttachment = null;
-        if (iAttachment == null) {
-            return;
-        }
-//        var attachmentId = iAttachment.getAttachmentId(attachmentItem);
-        // TODO TimelessAPI
+    public void clearCacheOnReload() {
+        SOUND_PATH_CACHE.clear();
+        this.stopAndClearTrackedSounds();
     }
 
-    public static void playShootSound(LivingEntity entity, GunDisplayInstance gunDisplayIndex, GunData gunData) {
-        if (PlannedRefactor.ON_MAGIC_CLIENT_SOUND_VOLUME) return;
-        playClientSound(entity, gunDisplayIndex.getGunSound(GunSoundType.SHOOT_SOUND), 0.8f, 0.9f + entity.getRandom().nextFloat() * 0.125f, // 随机音高应该抽到 GunDisplay 里?
-                (int) (GunConfig.DEFAULT_GUN_FIRE_SOUND_DISTANCE.get() * gunData.getFireSoundData().getNormalMultiplier()), false,
-                SoundConfig.HIGH_FREQUENCY_SOUND_CONCURRENCY_LIMIT.get(), false, ClientWorldUtils.isLocalPlayer(entity));
+    public boolean isAllowDryFire() {
+        return ALLOW_DRY_FIRE;
+    }
+    public void resetDryFireSound() {
+        ALLOW_DRY_FIRE = true;
     }
 
-    public static void playSilenceSound(LivingEntity entity, GunDisplayInstance gunDisplayIndex, GunData gunData) {
-        playClientSound(entity, gunDisplayIndex.getGunSound(GunSoundType.SILENCE_SOUND), 0.6f, 0.9f + entity.getRandom().nextFloat() * 0.125f,
-                (int) (GunConfig.DEFAULT_GUN_SILENCE_SOUND_DISTANCE.get() * gunData.getFireSoundData().getSilencedMultiplier()), false,
-                SoundConfig.HIGH_FREQUENCY_SOUND_CONCURRENCY_LIMIT.get(), false, ClientWorldUtils.isLocalPlayer(entity));
-    }
-
-    public static void playDryFireSound(LivingEntity entity, GunDisplayInstance gunDisplayIndex) {
-        if (!DRY_SOUND_TRACK) return;
-        playClientSound(entity, gunDisplayIndex.getGunSound(GunSoundType.DRY_FIRE_SOUND), 1.0f, 0.9f + entity.getRandom().nextFloat() * 0.125f,
-                GunConfig.DEFAULT_GUN_OTHER_SOUND_DISTANCE.get());
-        DRY_SOUND_TRACK = false;
-    }
-    /**
-     * 只有松开鼠标时，才会重置
-     */
-    public static void resetDryFireSound() {
-        DRY_SOUND_TRACK = true;
-    }
-
-    /**
-     * TODO 抽个 switch case 出来?
-     */
-    public static void playReloadSound(LivingEntity entity, GunDisplayInstance gunDisplayIndex, boolean noAmmo) {
-        if (noAmmo) {
-            tmpSoundInstance = playClientSound(entity, gunDisplayIndex.getGunSound(GunSoundType.RELOAD_EMPTY_SOUND), 1.0f, 1.0f,
-                    GunConfig.DEFAULT_GUN_OTHER_SOUND_DISTANCE.get());
-        } else {
-            tmpSoundInstance = playClientSound(entity, gunDisplayIndex.getGunSound(GunSoundType.RELOAD_TACTICAL_SOUND), 1.0f, 1.0f,
-                    GunConfig.DEFAULT_GUN_OTHER_SOUND_DISTANCE.get());
-        }
-    }
-    public static void playInspectSound(LivingEntity entity, GunDisplayInstance gunDisplayIndex, boolean noAmmo) {
-        if (noAmmo) {
-            tmpSoundInstance = playClientSound(entity, gunDisplayIndex.getGunSound(GunSoundType.INSPECT_EMPTY_SOUND), 1.0f, 1.0f,
-                    GunConfig.DEFAULT_GUN_OTHER_SOUND_DISTANCE.get());
-        } else {
-            tmpSoundInstance = playClientSound(entity, gunDisplayIndex.getGunSound(GunSoundType.INSPECT_SOUND), 1.0f, 1.0f,
-                    GunConfig.DEFAULT_GUN_OTHER_SOUND_DISTANCE.get());
-        }
-    }
-    public static void playBoltSound(LivingEntity entity, GunDisplayInstance gunDisplayIndex) {
-        tmpSoundInstance = playClientSound(entity, gunDisplayIndex.getGunSound(GunSoundType.BOLT_SOUND), 1.0f, 1.0f,
-                GunConfig.DEFAULT_GUN_OTHER_SOUND_DISTANCE.get());
-    }
-    public static void playDrawSound(LivingEntity entity, GunDisplayInstance gunDisplayIndex) {
-        tmpSoundInstance = playClientSound(entity, gunDisplayIndex.getGunSound(GunSoundType.DRAW_SOUND), 1.0f, 1.0f,
-                GunConfig.DEFAULT_GUN_OTHER_SOUND_DISTANCE.get());
-    }
-    public static void playPutAwaySound(LivingEntity entity, GunDisplayInstance gunDisplayIndex) {
-        tmpSoundInstance = playClientSound(entity, gunDisplayIndex.getGunSound(GunSoundType.PUT_AWAY_SOUND), 1.0f, 1.0f,
-                GunConfig.DEFAULT_GUN_OTHER_SOUND_DISTANCE.get());
-    }
-    public static void playFireSelectSound(LivingEntity entity, GunDisplayInstance gunDisplayIndex) {
-        playClientSound(entity, gunDisplayIndex.getGunSound(GunSoundType.FIRE_SELECT), 1.0f, 1.0f,
-                GunConfig.DEFAULT_GUN_OTHER_SOUND_DISTANCE.get());
-    }
-    public static void playMeleeBayonetSound(LivingEntity entity, GunDisplayInstance gunDisplayIndex) {
-        playClientSound(entity, gunDisplayIndex.getGunSound(GunSoundType.MELEE_BAYONET), 1.0f, 0.9f + entity.getRandom().nextFloat() * 0.125f,
-                GunConfig.DEFAULT_GUN_OTHER_SOUND_DISTANCE.get());
-    }
-    public static void playMeleePushSound(LivingEntity entity, GunDisplayInstance gunDisplayIndex) {
-        playClientSound(entity, gunDisplayIndex.getGunSound(GunSoundType.MELEE_PUSH), 1.0f, 0.9f + entity.getRandom().nextFloat() * 0.125f,
-                GunConfig.DEFAULT_GUN_OTHER_SOUND_DISTANCE.get());
-    }
-    public static void playMeleeStockSound(LivingEntity entity, GunDisplayInstance gunDisplayIndex) {
-        playClientSound(entity, gunDisplayIndex.getGunSound(GunSoundType.MELEE_STOCK), 1.0f, 0.9f + entity.getRandom().nextFloat() * 0.125f,
-                GunConfig.DEFAULT_GUN_OTHER_SOUND_DISTANCE.get());
-    }
-    public static void playHeadHitSound(LivingEntity entity, GunDisplayInstance gunDisplayIndex) {
-        boolean relative = ClientWorldUtils.isLocalPlayer(entity);
-        playClientSound(entity, gunDisplayIndex.getGunSound(GunSoundType.HEAD_HIT_SOUND), 1.0f, 1.0f,
-                GunConfig.DEFAULT_GUN_OTHER_SOUND_DISTANCE.get(), false, SoundConfig.HIT_SOUND_CONCURRENCY_LIMIT.get(), !relative, relative);
-    }
-    public static void playFleshHitSound(LivingEntity entity, GunDisplayInstance gunDisplayIndex) {
-        boolean relative = ClientWorldUtils.isLocalPlayer(entity);
-        playClientSound(entity, gunDisplayIndex.getGunSound(GunSoundType.FLESH_HIT_SOUND), 1.0f, 1.0f,
-                GunConfig.DEFAULT_GUN_OTHER_SOUND_DISTANCE.get(), false, SoundConfig.HIT_SOUND_CONCURRENCY_LIMIT.get(), !relative, relative);
-    }
-    public static void playKillSound(LivingEntity entity, GunDisplayInstance gunDisplayIndex) {
-        playClientSound(entity, gunDisplayIndex.getGunSound(GunSoundType.KILL_SOUND), 1.0f, 1.0f,
-                GunConfig.DEFAULT_GUN_OTHER_SOUND_DISTANCE.get());
-    }
-
-    public static void playMessageSound(ServerMessageSound message) {
-        ClientLevel level = Minecraft.getInstance().level;
-        if (level == null || !(level.getEntity(message.entityId()) instanceof LivingEntity livingEntity)) {
-            return;
-        }
-        var gunId = message.gunId();
-        var gunDisplayId = message.gunDisplayId();
-        // TODO TimelessAPI
-    }
-
-    public static void onClientTick(IClientTickEvent event) {
+    public void onClientTick(IClientTickEvent event) {
         // IClientTickEvent 本身已经是只在 Phase.END 触发
 
         Minecraft minecraft = Minecraft.getInstance();
@@ -254,29 +130,24 @@ public class SoundPlayManager implements IEventHandler {
         }
     }
 
-    public static void clearSoundResourceCache() {
-        SOUND_RESOURCE_EXISTS_CACHE.clear();
-        MISSING_SOUND_WARNED.clear();
-    }
-
-    private static void limitConcurrentGunSound(Minecraft minecraft, int entityId, ResourceLocation soundId, int limit) {
-        SoundKey key = new SoundKey(entityId, soundId);
-        ArrayDeque<TrackedGunSound> sounds = TRACKED_GUN_SOUNDS.get(key);
+    private void limitConcurrentGunSound(Minecraft minecraft, int entityId, ResourceLocation soundId, int limit) {
+        _EntitySoundEntry key = new _EntitySoundEntry(entityId, soundId);
+        ArrayDeque<_TrackedSoundInstance> sounds = TRACKED_SOUND_INSTANCE.get(key);
         if (sounds == null) {
             return;
         }
         int activeForKey = 0;
-        Iterator<TrackedGunSound> iterator = sounds.iterator();
+        Iterator<_TrackedSoundInstance> iterator = sounds.iterator();
         while (iterator.hasNext()) {
-            TrackedGunSound tracked = iterator.next();
-            if (minecraft.getSoundManager().isActive(tracked.instance())) {
+            _TrackedSoundInstance tracked = iterator.next();
+            if (minecraft.getSoundManager().isActive(tracked.soundInstance())) {
                 activeForKey++;
             } else {
                 iterator.remove();
             }
         }
         if (sounds.isEmpty()) {
-            TRACKED_GUN_SOUNDS.remove(key);
+            TRACKED_SOUND_INSTANCE.remove(key);
         }
 
         int toStop = activeForKey - limit + 1;
@@ -287,41 +158,41 @@ public class SoundPlayManager implements IEventHandler {
         int stopped = 0;
         iterator = sounds.iterator();
         while (iterator.hasNext() && stopped < toStop) {
-            TrackedGunSound tracked = iterator.next();
-            if (minecraft.getSoundManager().isActive(tracked.instance())) {
-                tracked.instance().setStop();
+            _TrackedSoundInstance tracked = iterator.next();
+            if (minecraft.getSoundManager().isActive(tracked.soundInstance())) {
+                tracked.soundInstance().setStop();
                 iterator.remove();
                 stopped++;
             }
         }
         if (sounds.isEmpty()) {
-            TRACKED_GUN_SOUNDS.remove(key);
+            TRACKED_SOUND_INSTANCE.remove(key);
         }
     }
 
-    private static void trackGunSound(int entityId, UUID entityUuid, ResourceLocation soundId, GunSoundInstance instance) {
-        SoundKey key = new SoundKey(entityId, soundId);
-        TRACKED_GUN_SOUNDS.computeIfAbsent(key, ignored -> new ArrayDeque<>()).addLast(new TrackedGunSound(instance, entityUuid));
+    private void trackGunSound(int entityId, UUID entityUuid, ResourceLocation soundId, ResourceSoundInstance instance) {
+        _EntitySoundEntry key = new _EntitySoundEntry(entityId, soundId);
+        TRACKED_SOUND_INSTANCE.computeIfAbsent(key, ignored -> new ArrayDeque<>()).addLast(new _TrackedSoundInstance(instance, entityUuid));
     }
 
-    private static void cleanupInvalidEntitySounds(Minecraft minecraft) {
+    private void cleanupInvalidEntitySounds(Minecraft minecraft) {
         if (minecraft.level == null) {
-            stopAndClearTrackedSounds();
+            this.stopAndClearTrackedSounds();
             return;
         }
-        Iterator<Map.Entry<SoundKey, ArrayDeque<TrackedGunSound>>> entryIterator = TRACKED_GUN_SOUNDS.entrySet().iterator();
+        Iterator<Map.Entry<_EntitySoundEntry, ArrayDeque<_TrackedSoundInstance>>> entryIterator = TRACKED_SOUND_INSTANCE.entrySet().iterator();
         while (entryIterator.hasNext()) {
-            Map.Entry<SoundKey, ArrayDeque<TrackedGunSound>> entry = entryIterator.next();
-            Iterator<TrackedGunSound> soundIterator = entry.getValue().iterator();
+            Map.Entry<_EntitySoundEntry, ArrayDeque<_TrackedSoundInstance>> entry = entryIterator.next();
+            Iterator<_TrackedSoundInstance> soundIterator = entry.getValue().iterator();
             while (soundIterator.hasNext()) {
-                TrackedGunSound tracked = soundIterator.next();
-                if (!minecraft.getSoundManager().isActive(tracked.instance())) {
+                _TrackedSoundInstance tracked = soundIterator.next();
+                if (!minecraft.getSoundManager().isActive(tracked.soundInstance())) {
                     soundIterator.remove();
                     continue;
                 }
-                Entity owner = minecraft.level.getEntity(entry.getKey().entityId());
-                if (isInvalidSoundOwner(owner, tracked.entityUuid())) {
-                    tracked.instance().setStop();
+                Entity owner = ClientWorldUtils.getEntityById(minecraft.level, entry.getKey().entityId());
+                if (this.isInvalidSoundOwner(owner, tracked.entityUUID())) {
+                    tracked.soundInstance().setStop();
                     soundIterator.remove();
                 }
             }
@@ -331,31 +202,83 @@ public class SoundPlayManager implements IEventHandler {
         }
     }
 
-    private static void stopAndClearTrackedSounds() {
-        for (ArrayDeque<TrackedGunSound> sounds : TRACKED_GUN_SOUNDS.values()) {
-            for (TrackedGunSound tracked : sounds) {
-                tracked.instance().setStop();
+    private void stopAndClearTrackedSounds() {
+        for (ArrayDeque<_TrackedSoundInstance> sounds : TRACKED_SOUND_INSTANCE.values()) {
+            for (_TrackedSoundInstance tracked : sounds) {
+                tracked.soundInstance().setStop();
             }
         }
-        TRACKED_GUN_SOUNDS.clear();
+        TRACKED_SOUND_INSTANCE.clear();
     }
 
-    private static boolean isInvalidSoundOwner(@Nullable Entity entity, UUID entityUuid) {
+    private boolean isInvalidSoundOwner(@Nullable Entity entity, UUID entityUuid) {
         return entity == null
                 || !entity.getUUID().equals(entityUuid)
                 || entity.isRemoved()
                 || entity instanceof LivingEntity livingEntity && livingEntity.isDeadOrDying();
     }
 
-    private static boolean hasSoundResource(Minecraft minecraft, ResourceLocation soundId) {
-        boolean exists = SOUND_RESOURCE_EXISTS_CACHE.computeIfAbsent(soundId, id -> {
-            ResourceLocation soundPath = MOD_SOUND_LISTER.idToFile(id);
-            return minecraft.getResourceManager().getResource(soundPath).isPresent();
-        });
-        if (!exists && MISSING_SOUND_WARNED.add(soundId)) {
-            ResourceLocation soundPath = MOD_SOUND_LISTER.idToFile(soundId);
-            CustomGun.LOGGER.warn("[TACZ Sound] Missing gun sound resource, skipped. sound={}, path={}", soundId, soundPath);
-        }
-        return exists;
+    private ResourceLocation getSoundPath(ResourceLocation soundLocation) {
+        var pathLocation = SOUND_PATH_CACHE.get(soundLocation);
+        if (pathLocation != null) return pathLocation;
+        pathLocation = ResourceSoundInstance.getPathLocation(soundLocation);
+        if (pathLocation != null) SOUND_PATH_CACHE.put(soundLocation, pathLocation);
+        if (pathLocation == null) CustomGun.LOGGER.warn("Failed to get soundPath from soundLocation {}", soundLocation);
+        return pathLocation;
+    }
+
+    // --------便利方法--------
+
+    public @Nullable ResourceSoundInstance playAnimationSound(@Nullable ResourceLocation soundLocation,
+                                                              float volume, float pitch,
+                                                              @NotNull Entity entity,
+                                                              float soundDistance) {
+        boolean trackEntity = !ClientWorldUtils.isLocalPlayer(entity) || SoundConfig.FIRST_PERSON_ANIMATION_SOUND_TRACKING.get();
+        return this.playClientSound(soundLocation,
+                volume, pitch,
+                entity, !trackEntity,
+                soundDistance, trackEntity, SoundConfig.HIGH_FREQUENCY_SOUND_CONCURRENCY_LIMIT.get());
+    }
+
+    public void playerRefitSound(ItemStack attachmentItem, LivingEntity player, AttachmentSoundType soundType) {
+        IAttachment iAttachment = IAttachmentGetter.fromItemStack(attachmentItem);
+        if (iAttachment == null) return;
+        ClientAttachmentIndexInstance pojoInstance = ClientResourceApi.getClientAttachmentIndexInstance(iAttachment.getAttachmentLocation(attachmentItem));
+        if (pojoInstance == null) return;
+
+        var soundLocation = pojoInstance.getAttachmentDisplay().getAttachmentSounds().get(soundType);
+        if (soundLocation != null) this.playClientSound(soundLocation,
+                1.0f, 1.0f,
+                player, false,
+                GunConfig.DEFAULT_GUN_OTHER_SOUND_DISTANCE.get(), true, SoundConfig.HIGH_FREQUENCY_SOUND_CONCURRENCY_LIMIT.get());
+    }
+
+    public void playGunSound(@Nullable ResourceLocation soundLocation,
+                             float volume,
+                             @NotNull LivingEntity localPlayer,
+                             float soundDistance,
+                             boolean trackEntity) {
+        this.playClientSound(soundLocation,
+                volume, 0.9f + localPlayer.getRandom().nextFloat() * 0.125f,
+                localPlayer, false,
+                soundDistance,
+                trackEntity, SoundConfig.HIGH_FREQUENCY_SOUND_CONCURRENCY_LIMIT.get());
+    }
+    public void playGunSound(@Nullable ResourceLocation soundLocation,
+                             @NotNull LivingEntity localPlayer) {
+        this.playClientSound(soundLocation,
+                1.0f, 1.0f,
+                localPlayer, false,
+                GunConfig.DEFAULT_GUN_OTHER_SOUND_DISTANCE.get(),
+                true, SoundConfig.HIGH_FREQUENCY_SOUND_CONCURRENCY_LIMIT.get());
+    }
+
+    // --------Deprecated--------
+
+    // --------“大便类”--------
+
+    private record _EntitySoundEntry(int entityId, ResourceLocation soundLocation) {
+    }
+    private record _TrackedSoundInstance(ResourceSoundInstance soundInstance, UUID entityUUID) {
     }
 }

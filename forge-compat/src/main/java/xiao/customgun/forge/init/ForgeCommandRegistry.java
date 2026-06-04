@@ -4,7 +4,6 @@
 
 package xiao.customgun.forge.init;
 
-import net.minecraftforge.client.event.RegisterClientCommandsEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -19,10 +18,5 @@ public class ForgeCommandRegistry {
     @SubscribeEvent
     public static void onServerCommandsRegister(RegisterCommandsEvent event) {
         COMMAND_REGISTRY.registerServerCommands(event.getDispatcher());
-    }
-
-    @SubscribeEvent
-    public static void onClientCommandsRegister(RegisterClientCommandsEvent event) {
-        COMMAND_REGISTRY.registerClientCommands(event.getDispatcher());
     }
 }

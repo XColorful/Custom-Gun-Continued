@@ -8,9 +8,10 @@
 package xiao.customgun.client.network.message;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.ApiStatus;
+import xiao.customgun.client.util.ClientWorldUtils;
 import xiao.customgun.core.entity.sync.SyncedEntityData;
 import xiao.customgun.core.network.message.ServerMessageUpdateEntityData;
 
@@ -18,11 +19,11 @@ import xiao.customgun.core.network.message.ServerMessageUpdateEntityData;
 public class _ServerMessageUpdateEntityData {
 
     public static void onHandle(ServerMessageUpdateEntityData message) {
-        Level level = Minecraft.getInstance().level;
+        ClientLevel level = Minecraft.getInstance().level;
         if (level == null) {
             return;
         }
-        Entity entity = level.getEntity(message.entityId());
+        Entity entity = ClientWorldUtils.getEntityById(level, message.entityId());
         if (entity == null) {
             return;
         }

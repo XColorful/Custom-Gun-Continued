@@ -19,9 +19,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import xiao.customgun.core.api.entity.*;
 import xiao.customgun.core.api.entity.gun.GunPropertyCache;
+import xiao.customgun.core.entity.LivingShooterSyncKey;
 import xiao.customgun.core.entity.gun.GunPropertyManager;
 import xiao.customgun.core.entity.shooter.*;
-import xiao.customgun.core.entity.LivingShooterSyncKey;
 
 import java.util.function.Supplier;
 

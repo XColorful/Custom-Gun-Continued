@@ -8,8 +8,8 @@
 package xiao.customgun.client.resource.assets.animation.bedrock.animation.bone;
 
 import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
 import com.google.gson.stream.JsonToken;
+import com.google.gson.stream.JsonWriter;
 import xiao.customgun.client.util.ClientJsonUtils;
 import xiao.customgun.core.api.resource.assets.animation.bedrock.animation.bone._KeyFrameTag;
 import xiao.customgun.core.resource.ResourcePojo;

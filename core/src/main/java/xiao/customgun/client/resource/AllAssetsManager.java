@@ -14,7 +14,6 @@ import xiao.customgun.CustomGun;
 import xiao.customgun.client.api.event.IAddClientReloadListenerEvent;
 import xiao.customgun.client.api.resource.assets.AssetsFolderType;
 import xiao.customgun.client.compat.playeranimator.PlayerAnimator;
-import xiao.customgun.client.resource.assets.*;
 import xiao.customgun.core.api.common.McSide;
 import xiao.customgun.core.api.event.EventType;
 import xiao.customgun.core.api.event.IEvent;

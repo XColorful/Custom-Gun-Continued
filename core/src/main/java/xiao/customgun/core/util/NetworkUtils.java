@@ -6,8 +6,8 @@ import net.minecraft.network.codec.StreamDecoder;
 import net.minecraft.network.codec.StreamEncoder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import xiao.customgun.CustomGun;
 import net.minecraft.world.item.crafting.Ingredient;
+import xiao.customgun.CustomGun;
 
 import java.util.Map;
 

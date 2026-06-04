@@ -7,8 +7,8 @@
 
 package xiao.customgun.core.api.minecraft;
 
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.Registry;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;

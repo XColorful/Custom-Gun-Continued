@@ -16,7 +16,6 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import xiao.customgun.core.api.minecraft.CommandLevel;
-import xiao.customgun.core.command.sub.*;
 
 import static xiao.customgun.core.command.CommandArg.MOD_ID;
 import static xiao.customgun.core.command.CommandArg.MOD_ID_SHORT;

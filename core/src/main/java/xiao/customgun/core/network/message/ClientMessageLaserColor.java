@@ -13,8 +13,11 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import xiao.customgun.CustomGun;
+import xiao.customgun.core.api.item.IAttachment;
 import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.api.item.attachment.AttachmentCategory;
+import xiao.customgun.core.api.item.attachment.IAttachmentGetter;
+import xiao.customgun.core.api.item.gun.IGunGetter;
 import xiao.customgun.core.api.network.message.IMessage;
 import xiao.customgun.core.util.NetworkUtils;
 
@@ -31,14 +34,25 @@ public class ClientMessageLaserColor implements IMessage<ClientMessageLaserColor
     private ClientMessageLaserColor() {
     }
 
-    public ClientMessageLaserColor(@NotNull ItemStack gun, int gunSlotIndex) {
-        if (gun.getItem() instanceof IGun iGun) {
-            for (AttachmentCategory type : AttachmentCategory.values()) {
-                // TODO IGun
-                // TODO IAttachment
+    public ClientMessageLaserColor(@NotNull ItemStack gunItem, int gunSlotIndex) {
+        IGun iGun = IGunGetter.fromItemStack(gunItem);
+        if (iGun == null) return;
+
+        for (AttachmentCategory category : AttachmentCategory.values()) {
+            ItemStack attachment = iGun.getAttachment(gunItem, category);
+            IAttachment iAttachment = IAttachmentGetter.fromItemStack(attachment);
+            if (iAttachment == null) continue;
+
+            if (iAttachment.hasLaserColor(attachment)) {
+                this.colorMap.put(category, iAttachment.getLaserColor(attachment));
             }
-            this.gunSlotIndex = gunSlotIndex;
         }
+
+        if (iGun.hasLaserColor(gunItem)) {
+            this.gunColor = iGun.getLaserColorInt(gunItem);
+            this.applyGunColor = true;
+        }
+        this.gunSlotIndex = gunSlotIndex;
     }
 
     @Override
@@ -67,8 +81,22 @@ public class ClientMessageLaserColor implements IMessage<ClientMessageLaserColor
                 }
                 Inventory inventory = player.getInventory();
                 ItemStack gunItem = inventory.getItem(message.gunSlotIndex);
-                // TODO IGun
-                // TODO IAttachment
+                IGun iGun = IGunGetter.fromItemStack(gunItem);
+                if (iGun == null) return;
+
+                for (Map.Entry<AttachmentCategory, Integer> entry : message.colorMap.entrySet()) {
+                    AttachmentCategory category = entry.getKey();
+                    int colorInt = entry.getValue();
+                    ItemStack attachment = iGun.getAttachment(gunItem, category);
+                    IAttachment iAttachment = IAttachmentGetter.fromItemStack(attachment);
+                    if (iAttachment != null) {
+                        iAttachment.setLaserColor(attachment, colorInt);
+                    }
+                }
+
+                if (message.applyGunColor) {
+                    iGun.setLaserColorInt(gunItem, message.gunColor);
+                }
             });
         }
     }

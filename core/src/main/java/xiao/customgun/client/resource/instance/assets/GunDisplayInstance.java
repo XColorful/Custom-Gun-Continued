@@ -24,6 +24,7 @@ import xiao.customgun.client.resource.assets.display._LaserDisplay;
 import xiao.customgun.client.resource.assets.display._LodDisplay;
 import xiao.customgun.client.resource.assets.display._ModelTransform;
 import xiao.customgun.client.resource.assets.display.ammo._AmmoParticle;
+import xiao.customgun.client.resource.assets.display.gun.*;
 import xiao.customgun.client.resource.assets.model.BedrockModel;
 import xiao.customgun.client.resource.assets.script.AssetsScript;
 import xiao.customgun.core.api.item.gun.AmmoCountType;

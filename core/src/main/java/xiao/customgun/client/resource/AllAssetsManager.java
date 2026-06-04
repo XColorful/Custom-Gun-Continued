@@ -107,6 +107,8 @@ public class AllAssetsManager implements IEventHandler {
     }
 
     private static void onAddClientReloadListenerEvent(IAddClientReloadListenerEvent event) {
+        SoundManager.clearCacheOnReload();
+
         // TODO PlayerAnimatorCompat.init()
         AllAssetsManager.INSTANCE.reloadAndRegister(event);
         // TODO PlayerAnimatorCompat

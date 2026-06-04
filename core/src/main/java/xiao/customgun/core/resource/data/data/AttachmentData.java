@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.item.attachment.MagazineCategory;
 import xiao.customgun.core.api.resource.data.data.AttachmentDataTag;
 import xiao.customgun.core.resource.ResourcePojo;
+import xiao.customgun.core.resource.data.data.attachment.*;
 import xiao.customgun.core.resource.data.data.gun._InaccuracyData;
 import xiao.customgun.core.util.JsonUtils;
 

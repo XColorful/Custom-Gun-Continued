@@ -12,6 +12,7 @@
 package xiao.customgun.core.event.custom;
 
 import xiao.customgun.CustomGun;
+import xiao.customgun.core.api.event.*;
 import xiao.customgun.core.entity.LivingShooterSyncHandler;
 import xiao.customgun.core.entity.victim.BulletVictimKnockback;
 import xiao.customgun.core.resource.AllDataManager;

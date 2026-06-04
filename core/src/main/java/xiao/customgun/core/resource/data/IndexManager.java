@@ -17,11 +17,11 @@ import xiao.customgun.core.api.resource.data.DataFolderType;
 import xiao.customgun.core.api.resource.data.index.IndexSubFolderType;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.resource.ResourcePojoManager;
-import xiao.customgun.core.resource.network.SyncDataType;
 import xiao.customgun.core.resource.data.index.AmmoIndex;
 import xiao.customgun.core.resource.data.index.AttachmentIndex;
 import xiao.customgun.core.resource.data.index.BlockIndex;
 import xiao.customgun.core.resource.data.index.GunIndex;
+import xiao.customgun.core.resource.network.SyncDataType;
 import xiao.customgun.core.util.JsonUtils;
 
 import java.util.Arrays;

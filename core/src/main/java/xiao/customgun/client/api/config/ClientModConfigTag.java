@@ -73,8 +73,8 @@ public class ClientModConfigTag {
     public static final String disableMovementAttributeFov_path = "DisableMovementAttributeFov";
     public static final String disableMovementAttributeFov_comment = "Disable the fov effect from the movement speed attribute while holding a gun";
 
-    public static final String enableTaczIdInTooltip_path = "EnableTaczIdInTooltip";
-    public static final String enableTaczIdInTooltip_comment = "Enable the display of the TACZ ID in the tooltip when Advanced Tooltip is enabled";
+    public static final String enableGunLocationInTooltip_path = "EnableGunLocationInTooltip";
+    public static final String enableGunLocationInTooltip_comment = "Enable the display of the gunLocation in the tooltip when Advanced Tooltip is enabled";
 
     public static final String blockEntityTranslucent_path = "EnableBlockEntityTranslucent";
     public static final String blockEntityTranslucent_comment = "Enable translucent while render block entity or not. Enable this option will result in ADDITIONAL PERFORMANCE OVERHEAD.";

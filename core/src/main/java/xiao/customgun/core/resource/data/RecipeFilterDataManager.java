@@ -15,8 +15,8 @@ import xiao.customgun.core.api.resource.INetworkCacheReloadListener;
 import xiao.customgun.core.api.resource.data.DataFolderName;
 import xiao.customgun.core.api.resource.data.DataFolderType;
 import xiao.customgun.core.resource.ResourcePojoManager;
-import xiao.customgun.core.resource.network.SyncDataType;
 import xiao.customgun.core.resource.data.recipefilter.RecipeFilterData;
+import xiao.customgun.core.resource.network.SyncDataType;
 
 import java.util.Arrays;
 import java.util.Map;

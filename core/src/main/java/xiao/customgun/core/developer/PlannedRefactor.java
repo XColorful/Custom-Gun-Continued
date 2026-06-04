@@ -18,4 +18,8 @@ public class PlannedRefactor {
     public static final boolean SPRINT_ON_RELOADING = false;
     // 是否启用向后兼容 (之后移到Forge config里)
     public static final boolean ENABLE_BACK_COMPATIBILITY = true;
+    // 手动重载资源包
+    public static final boolean TODO_CLIENT_RELOAD = true;
+    // Screen解耦 (Manager管理/post事件)
+    public static final boolean ON_CREATE_SCREEN = false;
 }

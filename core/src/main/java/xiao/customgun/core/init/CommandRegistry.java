@@ -6,7 +6,6 @@ package xiao.customgun.core.init;
 
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.commands.CommandSourceStack;
-import xiao.customgun.core.command.ClientCommand;
 import xiao.customgun.core.command.ServerCommand;
 
 public class CommandRegistry {
@@ -19,9 +18,5 @@ public class CommandRegistry {
 
     public void registerServerCommands(CommandDispatcher<CommandSourceStack> dispatcher) {
         ServerCommand.register(dispatcher);
-    }
-
-    public void registerClientCommands(CommandDispatcher<CommandSourceStack> dispatcher) {
-        ClientCommand.register(dispatcher);
     }
 }

@@ -9,7 +9,7 @@ package xiao.customgun.client.sound;
 
 import net.minecraft.client.resources.sounds.Sound;
 import net.minecraft.resources.FileToIdConverter;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.valueproviders.SampledFloat;
 
 public class ResourceSound extends Sound {
@@ -19,19 +19,19 @@ public class ResourceSound extends Sound {
      * <p>
      * 实际路径已在构造函数传入，由 {@link FileToIdConverter#idToFile} 而来
      */
-    protected ResourceLocation pathLocation;
-    @Override public final ResourceLocation getPath() {
+    protected Identifier pathLocation;
+    @Override public final Identifier getPath() {
         return this.pathLocation;
     }
 
-    public ResourceSound(ResourceLocation soundLocation, ResourceLocation pathLocation,
+    public ResourceSound(Identifier soundLocation, Identifier pathLocation,
                          SampledFloat volume, SampledFloat pitch,
                          int weight, Sound.Type type,
                          boolean stream, boolean preload, int attenuationDistance) {
         super(soundLocation, volume, pitch, weight, type, stream, preload, attenuationDistance);
         this.pathLocation = pathLocation;
     }
-    public ResourceSound(ResourceLocation soundLocation, ResourceLocation pathLocation,
+    public ResourceSound(Identifier soundLocation, Identifier pathLocation,
                          Sound template) {
         this(soundLocation, pathLocation,
                 template.getVolume(), template.getPitch(),

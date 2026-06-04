@@ -13,7 +13,7 @@ import net.minecraft.client.resources.sounds.AbstractSoundInstance;
 import net.minecraft.client.resources.sounds.Sound;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.client.sounds.WeighedSoundEvents;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
@@ -37,11 +37,11 @@ public class ResourceSoundInstance extends AbstractSoundInstance {
     }
 
     // ResourceSound
-    private final @Nullable ResourceLocation soundLocation;
-    private @Nullable ResourceLocation soundPath;
+    private final @Nullable Identifier soundLocation;
+    private @Nullable Identifier soundPath;
 
     public ResourceSoundInstance(SoundEvent event, SoundSource source, RandomSource random,
-                                 @Nullable ResourceLocation soundLocation, @Nullable ResourceLocation soundPath,
+                                 @Nullable Identifier soundLocation, @Nullable Identifier soundPath,
                                  boolean canPlay, float volume, float pitch,
                                  double x, double y, double z, boolean relative,
                                  float soundDistance) {
@@ -59,7 +59,7 @@ public class ResourceSoundInstance extends AbstractSoundInstance {
         this.soundPath = soundPath;
     }
     public ResourceSoundInstance(SoundEvent event, SoundSource source, RandomSource random,
-                                 @Nullable ResourceLocation soundLocation, @Nullable ResourceLocation soundPath,
+                                 @Nullable Identifier soundLocation, @Nullable Identifier soundPath,
                                  float volume, float pitch,
                                  @NotNull Entity entity, boolean relative,
                                  float soundDistance) {
@@ -98,7 +98,7 @@ public class ResourceSoundInstance extends AbstractSoundInstance {
         this.stopped = true;
     }
 
-    public static @Nullable ResourceLocation getPathLocation(@Nullable ResourceLocation soundLocation) {
+    public static @Nullable Identifier getPathLocation(@Nullable Identifier soundLocation) {
         if (soundLocation == null) return null;
         ResourceManager manager = Minecraft.getInstance().getResourceManager();
         for (int i = 0; i < MOD_SOUNDS_LISTER.size(); i++) {
@@ -116,17 +116,17 @@ public class ResourceSoundInstance extends AbstractSoundInstance {
     public float getSoundDistance() {
         return this.soundDistance;
     }
-    public final @Nullable ResourceLocation getSoundLocation() {
+    public final @Nullable Identifier getSoundLocation() {
         return this.soundLocation;
     }
-    public final @Nullable ResourceLocation getSoundPath() {
+    public final @Nullable Identifier getSoundPath() {
         if (this.soundPath == null) this.soundPath = getPathLocation(this.soundLocation);
         return this.soundPath;
     }
 
     // --------Deprecated--------
 
-    @Deprecated public @Nullable ResourceLocation getRegistryName() {
+    @Deprecated public @Nullable Identifier getRegistryName() {
         return this.soundLocation;
     }
 }

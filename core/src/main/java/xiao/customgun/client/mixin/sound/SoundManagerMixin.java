@@ -7,7 +7,7 @@
 
 package xiao.customgun.client.mixin.sound;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import org.spongepowered.asm.mixin.Mixin;
@@ -26,11 +26,11 @@ import static xiao.customgun.client.resource.assets.SoundManager.MOD_SOUNDS_OLD1
 public class SoundManagerMixin {
 
     @Shadow
-    private Map<ResourceLocation, Resource> soundCache;
+    private Map<Identifier, Resource> soundCache;
 
     @Inject(method = "listResources", at = @At("TAIL"))
     private void cgc$onPrepareSounds(ResourceManager resourceManager, CallbackInfo ci) {
-        Map<ResourceLocation, Resource> merged = new HashMap<>(this.soundCache);
+        Map<Identifier, Resource> merged = new HashMap<>(this.soundCache);
         merged.putAll(MOD_SOUNDS.listMatchingResources(resourceManager));
         merged.putAll(MOD_SOUNDS_OLD1.listMatchingResources(resourceManager));
         this.soundCache = merged;

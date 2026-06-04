@@ -25,7 +25,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
 
 public class ServerMessageSyncedEntityDataMapping extends LoginIndexHolder implements IMessage<ServerMessageSyncedEntityDataMapping> {
-    public static final Marker HANDSHAKE = MarkerFactory.getMarker("TACZ_HANDSHAKE");
+    public static final Marker HANDSHAKE = MarkerFactory.getMarker(CustomGun.MOD_ID_SHORT + "_handshake");
     public final Map<Identifier, List<Pair<Identifier, Integer>>> keyMap;
 
     // ↓这会被隐式调用
@@ -68,7 +68,7 @@ public class ServerMessageSyncedEntityDataMapping extends LoginIndexHolder imple
         handler.accept(() -> {
             try {
                 if (!SyncedEntityData.instance().updateMappings(message)) {
-                    context.connection().disconnect(Component.literal("Connection closed - [TacZ] Received unknown synced data keys."));
+                    context.connection().disconnect(Component.literal("Connection closed - Received unknown synced data keys."));
                 }
             } finally {
                 block.countDown();

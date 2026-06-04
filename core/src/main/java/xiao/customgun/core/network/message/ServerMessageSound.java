@@ -18,15 +18,15 @@ import xiao.customgun.core.util.NetworkUtils;
 import java.util.function.Consumer;
 
 public record ServerMessageSound(int entityId,
-                                 Identifier gunId, Identifier gunDisplayId, // 细节：Identifier 放同一行
+                                 Identifier gunLocation, Identifier gunDisplayLocation,// 细节：Identifier 放同一行
                                  String soundName, float volume, float pitch, int distance)
         implements IMessage<ServerMessageSound> {
 
     @Override
     public void encode(ServerMessageSound message, FriendlyByteBuf buffer) {
         buffer.writeVarInt(message.entityId);
-        NetworkUtils.writeResourceLocation(buffer, message.gunId);
-        NetworkUtils.writeResourceLocation(buffer, message.gunDisplayId);
+        NetworkUtils.writeResourceLocation(buffer, message.gunLocation);
+        NetworkUtils.writeResourceLocation(buffer, message.gunDisplayLocation);
         NetworkUtils.writeUtf(buffer, message.soundName);
         buffer.writeFloat(message.volume);
         buffer.writeFloat(message.pitch);

@@ -28,8 +28,8 @@ public class _ServerMessageSound {
         LivingEntity livingEntity = ClientWorldUtils.getLivingEntityById(level, message.entityId());
         if (livingEntity == null) return;
 
-        var gunLocation = message.gunId();
-        var gunDisplayLocation = message.gunDisplayId();
+        var gunLocation = message.gunLocation();
+        var gunDisplayLocation = message.gunDisplayLocation();
         GunDisplayInstance gunDisplayInstance = ClientResourceApi.getGunDisplayInstance(gunDisplayLocation, gunLocation);
         if (gunDisplayInstance == null) return;
 

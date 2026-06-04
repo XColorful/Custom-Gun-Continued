@@ -17,10 +17,10 @@ import xiao.customgun.core.api.resource.data.DataFolderType;
 import xiao.customgun.core.api.resource.data.data.DataSubFolderType;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.resource.ResourcePojoManager;
-import xiao.customgun.core.resource.network.SyncDataType;
 import xiao.customgun.core.resource.data.data.AttachmentData;
 import xiao.customgun.core.resource.data.data.BlockData;
 import xiao.customgun.core.resource.data.data.GunData;
+import xiao.customgun.core.resource.network.SyncDataType;
 import xiao.customgun.core.util.JsonUtils;
 
 import java.util.Arrays;

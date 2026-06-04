@@ -5,7 +5,7 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package xiao.customgun.client.sound;
+package xiao.customgun.client.sound.gun;
 
 import xiao.customgun.client.api.sound.gun.GunSoundType;
 
@@ -13,6 +13,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * 何意味?
+ */
+@Deprecated(forRemoval = true)
 public final class GunSoundPreload {
     public static final List<String> DEFAULT_PRELOAD_NAMES = Arrays.stream(GunSoundType.values())
             .filter(type -> type.preload)

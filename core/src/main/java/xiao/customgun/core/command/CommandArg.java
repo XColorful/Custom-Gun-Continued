@@ -51,5 +51,4 @@ public class CommandArg {
 
     // ReloadCommand
     public static final String RELOAD = "reload";
-    public static final String RELOAD_CLIENT = "reload_client";
 }

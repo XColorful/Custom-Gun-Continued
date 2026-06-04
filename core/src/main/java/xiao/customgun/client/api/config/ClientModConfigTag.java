@@ -102,6 +102,9 @@ public class ClientModConfigTag {
     public static final String highFrequencySoundConcurrencyLimit_path = "HighFrequencySoundConcurrencyLimit";
     public static final String highFrequencySoundConcurrencyLimit_comment = "Max active high-frequency gun sounds, such as shooting and animation keyframe sounds, for the same entity and sound id. 0 disables this limit.";
 
+    public static final String firstPersonAnimationSoundTracking_path = "FirstPersonAnimationSoundTracking";
+    public static final String firstPersonAnimationSoundTracking_comment = "Use a non-relative entity-tracking world sound source for first-person animation keyframe sounds. This can improve compatibility with physical sound mods, but may introduce slight stereo drift while moving.";
+
     // ZoomConfig
     public static final String zoom_path = "Zoom";
 

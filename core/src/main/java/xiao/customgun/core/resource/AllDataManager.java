@@ -16,17 +16,19 @@ import net.minecraft.world.item.crafting.RecipeManager;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.CustomGun;
-import xiao.customgun.core.api.event.*;
+import xiao.customgun.core.api.event.ITagsUpdatedEvent;
 import xiao.customgun.core.api.resource.INetworkCacheReloadListener;
 import xiao.customgun.core.api.resource.data.DataFolderType;
 import xiao.customgun.core.init.registry.ModRecipe;
 import xiao.customgun.core.network.message.ServerMessageSyncGunPack;
 import xiao.customgun.core.recipe.TableRecipe;
-import xiao.customgun.core.resource.data.*;
 import xiao.customgun.core.resource.network.SyncDataType;
 import xiao.customgun.core.util.SendUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 public class AllDataManager implements IEventHandler {
     protected static final AllDataManager INSTANCE = new AllDataManager();

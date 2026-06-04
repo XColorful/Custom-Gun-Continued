@@ -17,7 +17,6 @@ import xiao.customgun.core.api.item.gun.FireModeType;
 import xiao.customgun.core.api.resource.ResourceTag;
 import xiao.customgun.core.api.resource.data.data.GunDataTag;
 import xiao.customgun.core.resource.ResourcePojo;
-import xiao.customgun.core.resource.data.data.gun.*;
 import xiao.customgun.core.util.JsonUtils;
 
 import java.io.IOException;

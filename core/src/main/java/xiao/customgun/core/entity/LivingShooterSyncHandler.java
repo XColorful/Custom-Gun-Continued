@@ -10,6 +10,7 @@ package xiao.customgun.core.entity;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import xiao.customgun.core.api.event.*;
 import xiao.customgun.core.entity.sync.DataEntry;
 import xiao.customgun.core.entity.sync.SyncDataHolder;
 import xiao.customgun.core.entity.sync.SyncedDataKey;

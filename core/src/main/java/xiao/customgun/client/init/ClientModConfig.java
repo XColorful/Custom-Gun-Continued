@@ -8,7 +8,6 @@
 package xiao.customgun.client.init;
 
 import xiao.customgun.CustomGun;
-import xiao.customgun.client.config.*;
 import xiao.customgun.core.api.config.IModConfigSpecBuilder;
 import xiao.customgun.core.api.config.ModConfigType;
 

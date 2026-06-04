@@ -17,13 +17,13 @@ import xiao.customgun.core.util.NetworkUtils;
 import java.util.function.Consumer;
 
 public record ClientMessageCraft(
-        ResourceLocation recipeId, // 细节：Identifier 放同一行
+        ResourceLocation recipeLocation, // 细节：Identifier 放同一行
         int menuId)
         implements IMessage<ClientMessageCraft> {
 
     @Override
     public void encode(ClientMessageCraft message, FriendlyByteBuf buffer) {
-        NetworkUtils.writeResourceLocation(buffer, message.recipeId);
+        NetworkUtils.writeResourceLocation(buffer, message.recipeLocation);
         buffer.writeVarInt(message.menuId);
     }
 
@@ -35,7 +35,7 @@ public record ClientMessageCraft(
     public void handle(ClientMessageCraft message, Consumer<Runnable> handler, NetworkContext context) {
         if (CustomGun.getSideExecutor().getLogicalSide().isServer()) {
             handler.accept(() -> {
-                if (!(context.sender() instanceof ServerPlayer entity)) {
+                if (!(context.sender() instanceof ServerPlayer player)) {
                     return;
                 }
                 // TODO GunSmithTableMenu

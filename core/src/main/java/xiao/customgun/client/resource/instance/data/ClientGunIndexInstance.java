@@ -9,7 +9,6 @@ package xiao.customgun.client.resource.instance.data;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import xiao.customgun.CustomGun;
 import xiao.customgun.client.api.resource.ClientResourceApi;
 import xiao.customgun.client.resource.instance.assets.GunDisplayInstance;
 import xiao.customgun.core.api.resource.ResourceApi;

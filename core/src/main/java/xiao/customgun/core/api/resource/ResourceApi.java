@@ -32,7 +32,10 @@ import xiao.customgun.core.resource.instance.data.AttachmentIndexInstance;
 import xiao.customgun.core.resource.instance.data.BlockIndexInstance;
 import xiao.customgun.core.resource.instance.data.GunIndexInstance;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class ResourceApi {
 

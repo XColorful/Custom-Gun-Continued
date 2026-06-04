@@ -11,7 +11,6 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
-import xiao.customgun.CustomGun;
 import xiao.customgun.core.api.resource.ResourceTag;
 import xiao.customgun.core.api.resource.data.recipe.recipe.ingredient._IngredientFilterDataTag;
 import xiao.customgun.core.resource.ResourcePojo;

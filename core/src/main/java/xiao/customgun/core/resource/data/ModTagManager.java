@@ -18,9 +18,9 @@ import xiao.customgun.core.api.resource.data.modtag.ModTagSubFolderType;
 import xiao.customgun.core.api.resource.data.modtag.ModTagSubFolderTypeTag;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.resource.ResourcePojoManager;
-import xiao.customgun.core.resource.network.SyncDataType;
 import xiao.customgun.core.resource.data.modtags.AttachmentTagData;
 import xiao.customgun.core.resource.data.modtags.GunAttachmentData;
+import xiao.customgun.core.resource.network.SyncDataType;
 import xiao.customgun.core.util.JsonUtils;
 
 import java.util.Arrays;

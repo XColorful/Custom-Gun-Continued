@@ -8,7 +8,6 @@
 package xiao.customgun.core.event;
 
 import xiao.customgun.CustomGun;
-import xiao.customgun.core.api.event.*;
 
 public class EventRegister implements ICustomEventRegister {
 

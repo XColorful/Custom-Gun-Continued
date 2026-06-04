@@ -9,7 +9,6 @@ package xiao.customgun.core.resource.data.index;
 
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
-import org.jetbrains.annotations.NotNull;
 import xiao.customgun.core.api.resource.ResourceTag;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.util.ComponentUtils;

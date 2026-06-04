@@ -15,7 +15,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import org.apache.commons.lang3.time.StopWatch;
 import xiao.customgun.CustomGun;
-import xiao.customgun.client.resource.AllAssetsManager;
+import xiao.customgun.client.command.sub._ReloadCommand;
 import xiao.customgun.core.api.common.ISideExecutor;
 import xiao.customgun.core.api.common.McSide;
 import xiao.customgun.core.resource.AllDataManager;
@@ -23,18 +23,12 @@ import xiao.customgun.core.resource.AllDataManager;
 import java.util.concurrent.TimeUnit;
 
 import static xiao.customgun.core.command.CommandArg.RELOAD;
-import static xiao.customgun.core.command.CommandArg.RELOAD_CLIENT;
 
 public class ReloadCommand {
 
     public static LiteralArgumentBuilder<CommandSourceStack> get() {
         return Commands.literal(RELOAD)
                 .executes(ReloadCommand::reloadAllPack);
-    }
-
-    public static LiteralArgumentBuilder<CommandSourceStack> getClient() {
-        return Commands.literal(RELOAD_CLIENT)
-                .executes(ReloadCommand::reloadClientPack);
     }
 
     private static int reloadAllPack(CommandContext<CommandSourceStack> context) {
@@ -49,12 +43,8 @@ public class ReloadCommand {
         context.getSource().sendSystemMessage(Component.translatable("commands.tacz.reload.success", time));
         return Command.SINGLE_SUCCESS;
     }
-    private static int reloadClientPack(CommandContext<CommandSourceStack> context) {
-        reloadClient();
-        return Command.SINGLE_SUCCESS;
-    }
 
     public static void reloadClient() {
-        AllAssetsManager.reloadAllPack();
+        _ReloadCommand.reloadClient();
     }
 }

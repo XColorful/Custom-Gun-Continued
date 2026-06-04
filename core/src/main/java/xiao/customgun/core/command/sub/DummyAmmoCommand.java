@@ -18,9 +18,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 
-import static xiao.customgun.core.command.CommandArg.AMOUNT;
-import static xiao.customgun.core.command.CommandArg.DUMMY;
-import static xiao.customgun.core.command.CommandArg.ENTITY;
+import static xiao.customgun.core.command.CommandArg.*;
 
 public class DummyAmmoCommand {
 

@@ -9,8 +9,8 @@ package xiao.customgun.core.network.message;
 
 import net.minecraft.network.FriendlyByteBuf;
 import xiao.customgun.CustomGun;
-import xiao.customgun.core.api.network.message.IMessage;
 import xiao.customgun.client.network.message._ServerMessageUpdateEntityData;
+import xiao.customgun.core.api.network.message.IMessage;
 import xiao.customgun.core.entity.sync.DataEntry;
 
 import java.util.ArrayList;

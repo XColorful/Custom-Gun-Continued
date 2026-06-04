@@ -17,13 +17,13 @@ import xiao.customgun.core.util.NetworkUtils;
 import java.util.function.Consumer;
 
 public record ClientMessageCraft(
-        ResourceLocation recipeId, // 细节：Identifier 放同一行
+        ResourceLocation recipeLocation, // 细节：Identifier 放同一行
         int menuId)
         implements IMessage<ClientMessageCraft> {
 
     @Override
     public void encode(ClientMessageCraft message, FriendlyByteBuf buffer) {
-        NetworkUtils.writeResourceLocation(buffer, message.recipeId);
+        NetworkUtils.writeResourceLocation(buffer, message.recipeLocation);
         buffer.writeVarInt(message.menuId);
     }
 

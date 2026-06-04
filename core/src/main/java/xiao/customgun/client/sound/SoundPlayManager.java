@@ -59,7 +59,7 @@ public final class SoundPlayManager implements IEventHandler {
     }
 
     private final Map<_EntitySoundEntry, ArrayDeque<_TrackedSoundInstance>> TRACKED_SOUND_INSTANCE = new HashMap<>();
-    private final Map<ResourceLocation, ResourceLocation> SOUND_PATH_CACHE = new HashMap<>();
+    private final Map<Identifier, Identifier> SOUND_PATH_CACHE = new HashMap<>();
 
     private int soundCleanupTickCounter = 0;
 
@@ -73,7 +73,7 @@ public final class SoundPlayManager implements IEventHandler {
      */
     private ResourceSoundInstance currentSoundInstance = null;
 
-    public @Nullable ResourceSoundInstance playClientSound(@Nullable ResourceLocation soundLocation,
+    public @Nullable ResourceSoundInstance playClientSound(@Nullable Identifier soundLocation,
                                                             float volume, float pitch,
                                                             @NotNull Entity entity, boolean relative,
                                                             float soundDistance,

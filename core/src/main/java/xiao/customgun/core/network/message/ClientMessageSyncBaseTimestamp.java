@@ -9,12 +9,17 @@ package xiao.customgun.core.network.message;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 import xiao.customgun.CustomGun;
+import xiao.customgun.core.api.entity.ShooterProperty;
+import xiao.customgun.core.api.entity.shooter.ILivingShooterGetter;
 import xiao.customgun.core.api.network.message.IMessage;
 
 import java.util.function.Consumer;
 
 public class ClientMessageSyncBaseTimestamp implements IMessage<ClientMessageSyncBaseTimestamp> {
+    public static final Marker MARKER = MarkerFactory.getMarker(CustomGun.MOD_ID_SHORT + "_sync_base_timestamp");
 
     public ClientMessageSyncBaseTimestamp() {
     }
@@ -32,12 +37,13 @@ public class ClientMessageSyncBaseTimestamp implements IMessage<ClientMessageSyn
         if (CustomGun.getSideExecutor().getLogicalSide().isServer()) {
             long timestamp = System.currentTimeMillis();
             handler.accept(() -> {
-                if (!(context.sender() instanceof ServerPlayer entity)) {
+                if (!(context.sender() instanceof ServerPlayer player)) {
                     return;
                 }
-                // TODO IGunOperator
-                // TODO ShooterDataHolder
-                // TODO Marker
+
+                ShooterProperty shooterProperty = ILivingShooterGetter.cgc$fromLivingEntity(player).cgc$getShooterProperty();
+                shooterProperty.baseTimestamp = timestamp;
+                CustomGun.LOGGER.debug(MARKER, "Update server base timestamp: {}", shooterProperty.baseTimestamp);
             });
         }
     }

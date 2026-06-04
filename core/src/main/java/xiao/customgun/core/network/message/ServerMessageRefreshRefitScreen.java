@@ -31,11 +31,8 @@ public class ServerMessageRefreshRefitScreen implements IMessage<ServerMessageRe
     @Override
     public void handle(ServerMessageRefreshRefitScreen message, Consumer<Runnable> handler, NetworkContext context) {
         if (CustomGun.getSideExecutor().getLogicalSide().isClient()) {
-            handler.accept(() -> {
-                CustomGun.getSideExecutor().executeOn(McSide.CLIENT, () -> () ->
-                        _ServerMessageRefreshRefitScreen.updateScreen()
-                );
-            });
+            handler.accept(() -> CustomGun.getSideExecutor().executeOn(McSide.CLIENT, () -> _ServerMessageRefreshRefitScreen::updateScreen
+            ));
         }
     }
 }

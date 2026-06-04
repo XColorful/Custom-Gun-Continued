@@ -8,8 +8,8 @@
 package xiao.customgun.client.resource.assets.animation.bedrock.animation;
 
 import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
 import com.google.gson.stream.JsonToken;
+import com.google.gson.stream.JsonWriter;
 import it.unimi.dsi.fastutil.doubles.Double2ObjectRBTreeMap;
 import net.minecraft.resources.ResourceLocation;
 import xiao.customgun.core.api.resource.assets.animation.bedrock.animation._SoundEffectsTag;

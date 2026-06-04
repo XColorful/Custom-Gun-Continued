@@ -15,6 +15,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import xiao.customgun.client.command.sub._DebugCommand;
 import xiao.customgun.client.command.sub._ReloadCommand;
 
 import static xiao.customgun.core.command.CommandArg.MOD_ID;
@@ -30,6 +31,8 @@ public class ClientCommand {
     public static LiteralArgumentBuilder<CommandSourceStack> get(String rootName) {
         LiteralArgumentBuilder<CommandSourceStack> root = Commands.literal(rootName);
         root.then(_ReloadCommand.getClient()
+        );
+        root.then(_DebugCommand.getClient()
         );
         return root;
     }

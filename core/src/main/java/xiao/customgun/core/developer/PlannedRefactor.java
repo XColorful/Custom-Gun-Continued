@@ -20,4 +20,6 @@ public class PlannedRefactor {
     public static final boolean ENABLE_BACK_COMPATIBILITY = true;
     // 手动重载资源包
     public static final boolean TODO_CLIENT_RELOAD = true;
+    // Screen解耦 (Manager管理/post事件)
+    public static final boolean ON_CREATE_SCREEN = false;
 }

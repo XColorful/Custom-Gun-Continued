@@ -35,7 +35,7 @@ public record ClientMessageCraft(
     public void handle(ClientMessageCraft message, Consumer<Runnable> handler, NetworkContext context) {
         if (CustomGun.getSideExecutor().getLogicalSide().isServer()) {
             handler.accept(() -> {
-                if (!(context.sender() instanceof ServerPlayer entity)) {
+                if (!(context.sender() instanceof ServerPlayer player)) {
                     return;
                 }
                 // TODO GunSmithTableMenu

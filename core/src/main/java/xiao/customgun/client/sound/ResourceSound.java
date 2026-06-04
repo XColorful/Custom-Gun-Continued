@@ -28,7 +28,7 @@ public class ResourceSound extends Sound {
                          SampledFloat volume, SampledFloat pitch,
                          int weight, Sound.Type type,
                          boolean stream, boolean preload, int attenuationDistance) {
-        super(soundLocation.toString(), volume, pitch, weight, type, stream, preload, attenuationDistance);
+        super(soundLocation, volume, pitch, weight, type, stream, preload, attenuationDistance);
         this.pathLocation = pathLocation;
     }
     public ResourceSound(ResourceLocation soundLocation, ResourceLocation pathLocation,

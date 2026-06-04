@@ -38,7 +38,7 @@ public class ClientMessagePlayerDrawGun implements IMessage<ClientMessagePlayerD
                 }
 
                 Inventory inventory = player.getInventory();
-                int selected = inventory.selected;
+                int selected = inventory.getSelectedSlot();
                 ILivingShooterGetter.cgc$fromLivingEntity(player).cgc$draw(() -> inventory.getItem(selected));
             });
         }

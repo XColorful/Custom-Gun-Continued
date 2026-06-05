@@ -12,14 +12,14 @@ import xiao.customgun.core.api.entity.ShootResult;
 
 import java.util.function.Supplier;
 
-public interface IGunOperator {
+public interface IGunOperator extends ICommonGunOperator {
 
     // --------行为动作--------
 
     /**
      * 应用趴下 (服务端)
      */
-    void cgc$crawl(boolean isCrawl);
+    @Override void cgc$crawl(boolean isCrawl);
 
     // --------枪械操作--------
 
@@ -31,12 +31,12 @@ public interface IGunOperator {
     /**
      * 切换开火模式 (服务端)
      */
-    void cgc$fireSelect();
+    @Override void cgc$fireSelect();
 
     /**
      * 应用瞄准 (服务端)
      */
-    void cgc$aim(boolean isAim);
+    @Override void cgc$aim(boolean isAim);
     /**
      * 倍镜缩放 (服务端)
      */
@@ -45,7 +45,7 @@ public interface IGunOperator {
     /**
      * 刺刀/近战 (服务端)
      */
-    void cgc$melee();
+    @Override void cgc$melee();
 
     /**
      * 从实体的位置，向指定的方向开枪
@@ -61,12 +61,12 @@ public interface IGunOperator {
     /**
      * 拉栓 (服务端)
      */
-    void cgc$bolt();
+    @Override void cgc$bolt();
 
     /**
      * 换弹 (服务端)
      */
-    void cgc$reload();
+    @Override void cgc$reload();
     /**
      * 取消换弹 (服务端)
      */

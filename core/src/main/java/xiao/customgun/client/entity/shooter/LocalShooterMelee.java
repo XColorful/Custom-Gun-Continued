@@ -9,11 +9,20 @@ package xiao.customgun.client.entity.shooter;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import xiao.customgun.client.api.entity.LocalShooterProperty;
 import xiao.customgun.client.api.sound.gun.GunSoundType;
 import xiao.customgun.client.resource.instance.assets.GunDisplayInstance;
 import xiao.customgun.client.sound.SoundPlayManager;
 
-public class LocalShooterMelee {
+public final class LocalShooterMelee extends LocalShooterAspect {
+
+    public LocalShooterMelee(LocalPlayer localShooter, LocalShooterProperty localShooterProperty) {
+        super(localShooter, localShooterProperty);
+    }
+
+    public void melee() {
+        // TODO
+    }
 
     private void doMuzzleMelee(GunDisplayInstance gunDisplayInstance) {
         LocalPlayer localPlayer = Minecraft.getInstance().player;

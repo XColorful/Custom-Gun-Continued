@@ -17,6 +17,7 @@ import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
 import net.minecraft.client.renderer.entity.state.ArmedEntityRenderState;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.world.entity.HumanoidArm;
+import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -24,6 +25,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import xiao.customgun.client.renderer.model.MuzzleFlashRender;
 import xiao.customgun.client.renderer.model.ShellRender;
 import xiao.customgun.client.renderer.shooter.HumanoidOffhandRender;
+import xiao.customgun.core.api.item.gun.IGunGetter;
 
 @Mixin(ItemInHandLayer.class)
 public class ItemInHandLayerMixin<S extends ArmedEntityRenderState, M extends EntityModel<S> & ArmedModel<?>> {
@@ -41,10 +43,11 @@ public class ItemInHandLayerMixin<S extends ArmedEntityRenderState, M extends En
         HumanoidOffhandRender.renderGun(renderState, poseStack, submitNodeCollector, lightCoords);
     }
 
-    @Inject(method = "submitArmWithItem(Lnet/minecraft/client/renderer/entity/state/ArmedEntityRenderState;Lnet/minecraft/client/renderer/item/ItemStackRenderState;Lnet/minecraft/world/entity/HumanoidArm;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;I)V",
+    @Inject(method = "submitArmWithItem(Lnet/minecraft/client/renderer/entity/state/ArmedEntityRenderState;Lnet/minecraft/client/renderer/item/ItemStackRenderState;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/entity/HumanoidArm;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;I)V",
             at = @At(value = "HEAD"), cancellable = true)
     private void renderArmWithItemHead(S renderState,
                                        ItemStackRenderState itemStackRenderState,
+                                       ItemStack itemStack,
                                        HumanoidArm arm, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int packedLight,
                                        CallbackInfo ci) {
         LocalPlayer player = Minecraft.getInstance().player;
@@ -52,15 +55,16 @@ public class ItemInHandLayerMixin<S extends ArmedEntityRenderState, M extends En
 //            MuzzleFlashRender.isSelf = true;
 //            ShellRender.isSelf = true;
 //        }
-//        if (IGunGetter.fromMainHand(livingEntity) != null && arm == HumanoidArm.LEFT) {
-//            ci.cancel();
-//        }
+        if (IGunGetter.fromItemStack(itemStack) != null && arm == HumanoidArm.LEFT) {
+            ci.cancel();
+        }
     }
 
-    @Inject(method = "submitArmWithItem(Lnet/minecraft/client/renderer/entity/state/ArmedEntityRenderState;Lnet/minecraft/client/renderer/item/ItemStackRenderState;Lnet/minecraft/world/entity/HumanoidArm;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;I)V",
+    @Inject(method = "submitArmWithItem(Lnet/minecraft/client/renderer/entity/state/ArmedEntityRenderState;Lnet/minecraft/client/renderer/item/ItemStackRenderState;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/entity/HumanoidArm;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;I)V",
             at = @At(value = "TAIL"))
     private void renderArmWithItemTail(S renderState,
                                        ItemStackRenderState itemStackRenderState,
+                                       ItemStack itemStack,
                                        HumanoidArm arm, PoseStack poseStack,
                                        SubmitNodeCollector submitNodeCollector,
                                        int lightCoords, CallbackInfo ci) {

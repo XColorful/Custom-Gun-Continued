@@ -20,24 +20,22 @@ import java.util.function.Predicate;
 
 public class LocalShooterProperty {
 
+    public static final ScheduledExecutorService SCHEDULED_EXECUTOR_SERVICE = Executors.newScheduledThreadPool(2);
     /**
-     * 玩家对象
+     * 点击按钮的时间戳，防止客户端点击按钮后误触开火
      */
+    public static long clientClickButtonTimestamp = -1L;
+
     private final LocalPlayer cgc$localPlayer;
     public LocalShooterProperty(LocalPlayer cgc$localPlayer) {
         this.cgc$localPlayer = cgc$localPlayer;
     }
 
-    public static final ScheduledExecutorService SCHEDULED_EXECUTOR_SERVICE = Executors.newScheduledThreadPool(2);
     public long clientBaseTimestamp = -1L;
     /**
      * 上一个 tick 的瞄准进度，用于插值，范围 0 ~ 1
      */
     public float oldAimingProgress = 0;
-    /**
-     * 点击按钮的时间戳，防止客户端点击按钮后误触开火
-     */
-    public static long clientClickButtonTimestamp = -1L;
     /**
      * 与射击有关的几个变量
      */

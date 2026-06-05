@@ -29,9 +29,9 @@ public final class AttachmentDisplay extends _AssetsDisplay<AttachmentDisplay> {
     // 显示
     private boolean enableSight = false;
     private boolean enableScope = false;
-    private float[] scopeZoomScale;
-    private int[] scopeViewIndex;
-    private float[] scopeViewFov;
+    private float @Nullable [] scopeZoomScale;
+    private int @Nullable [] scopeViewIndex;
+    private float @Nullable [] scopeViewFov;
     private boolean showMuzzle = false;
     private boolean showMount = true;
     private Map<String, _ModelNodeTextDisplay> modelNodeTextDisplay;
@@ -108,8 +108,8 @@ public final class AttachmentDisplay extends _AssetsDisplay<AttachmentDisplay> {
         super.validatePojo();
         if (!this.isValid()) return;
 
-        boolean n1 = (this.getSlotTextureLocation() == null | this.adapterNodeName == null | this.scopeZoomScale == null);
-        boolean n2 = (this.scopeViewFov == null | this.modelNodeTextDisplay == null | this.laserDisplay == null | this.attachmentSounds == null | this.scopeViewIndex == null);
+        boolean n1 = (this.getSlotTextureLocation() == null | this.adapterNodeName == null | this.modelNodeTextDisplay == null | this.laserDisplay == null);
+        boolean n2 = (this.attachmentSounds == null | this.scopeViewIndex == null);
         if (n1 | n2) {
             this.setValid(false);
             return;
@@ -147,13 +147,13 @@ public final class AttachmentDisplay extends _AssetsDisplay<AttachmentDisplay> {
     public String getAdapterNodeName() {
         return adapterNodeName;
     }
-    public float[] getScopeZoomScale() {
+    public float @Nullable [] getScopeZoomScale() {
         return scopeZoomScale;
     }
-    public int[] getScopeViewIndex() {
+    public int @Nullable [] getScopeViewIndex() {
         return scopeViewIndex;
     }
-    public float[] getScopeViewFov() {
+    public float @Nullable [] getScopeViewFov() {
         return scopeViewFov;
     }
     public boolean getShowMuzzle() {
@@ -218,10 +218,6 @@ public final class AttachmentDisplay extends _AssetsDisplay<AttachmentDisplay> {
 
         if (this.lodDisplay != null) this.lodDisplay.applyBackCompatibility();
         this.adapterNodeName = this.adapterNodeName == null ? "" : this.adapterNodeName;
-
-        this.scopeZoomScale = this.scopeZoomScale == null ? new float[]{1f} : this.scopeZoomScale;
-        this.scopeViewIndex = this.scopeViewIndex == null ? new int[]{0} : this.scopeViewIndex;
-        this.scopeViewFov = this.scopeViewFov == null ? new float[]{70f} : this.scopeViewFov;
 
         if (this.modelNodeTextDisplay == null) this.modelNodeTextDisplay = new HashMap<>();
         else this.modelNodeTextDisplay.values().forEach(_ModelNodeTextDisplay::applyBackCompatibility);

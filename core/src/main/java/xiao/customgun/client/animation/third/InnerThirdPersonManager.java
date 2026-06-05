@@ -8,15 +8,15 @@
 package xiao.customgun.client.animation.third;
 
 import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
 import net.minecraft.world.entity.LivingEntity;
 import xiao.customgun.client.resource.instance.assets.GunDisplayInstance;
 import xiao.customgun.core.api.entity.ILivingShooter;
 
 public class InnerThirdPersonManager {
 
-    public static void setRotationAnglesHead(LivingEntity entityIn,
-                                             ModelPart head, ModelPart body, ModelPart leftArm, ModelPart rightArm,
-                                             float limbSwingAmount) {
+    public static <T extends HumanoidRenderState> void setRotationAnglesHead(T renderState,
+                                                                            ModelPart head, ModelPart body, ModelPart leftArm, ModelPart rightArm) {
         // TODO
     }
 

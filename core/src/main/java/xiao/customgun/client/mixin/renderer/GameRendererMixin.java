@@ -27,7 +27,8 @@ public abstract class GameRendererMixin {
     public abstract Minecraft getMinecraft();
 
     @Shadow
-    public abstract void render(float pPartialTicks, long pNanoTime, boolean pRenderLevel);
+    public abstract void render(float pPartialTicks, long pNanoTime,
+                                boolean pRenderLevel);
 
     @Inject(method = "bobHurt", at = @At("HEAD"), cancellable = true)
     public void onBobHurt( // CameraRenderState cameraState

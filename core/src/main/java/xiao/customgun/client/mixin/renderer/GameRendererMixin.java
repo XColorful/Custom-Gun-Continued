@@ -10,8 +10,8 @@ package xiao.customgun.client.mixin.renderer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -32,12 +32,12 @@ public abstract class GameRendererMixin {
                                 boolean pRenderLevel);
 
     @Inject(method = "bobHurt", at = @At("HEAD"), cancellable = true)
-    public void onBobHurt( // CameraRenderState cameraState
+    public void onBobHurt(CameraRenderState cameraState,
                           PoseStack poseStack,
-                          float pPartialTicks, CallbackInfo ci) {
+                          CallbackInfo ci) {
         // 取消受伤导致的视角摇晃
-        if (this.getMinecraft().getCameraEntity() instanceof LocalPlayer player && !player.isDeadOrDying()) {
-            if (GunHurtBobTweak.onHurtBobTweak(player, poseStack, pPartialTicks)) {
+        if (cameraState.entityRenderState.isPlayer && !cameraState.entityRenderState.isDeadOrDying) {
+            if (GunHurtBobTweak.onHurtBobTweak(cameraState, poseStack)) {
                 ci.cancel();
                 return;
             }
@@ -55,9 +55,9 @@ public abstract class GameRendererMixin {
     }
 
     @Inject(method = "bobView", at = @At("HEAD"), cancellable = true)
-    public void onBobView( // CameraRenderState cameraState
+    public void onBobView(CameraRenderState cameraState,
                           PoseStack poseStack,
-                          float pPartialTicks, CallbackInfo ci) {
+                          CallbackInfo ci) {
         boolean cancel = false;
         if (!cgc$useFovSetting) {
             // TODO RenderItemInHandBobEvent

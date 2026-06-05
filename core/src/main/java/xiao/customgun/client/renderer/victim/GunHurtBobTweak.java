@@ -9,28 +9,28 @@ package xiao.customgun.client.renderer.victim;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.util.Mth;
 
 public class GunHurtBobTweak {
     private static long hurtByGunTimeStamp = -1L;
     private static float lastTweakMultiplier = 0.05f;
 
-    public static boolean onHurtBobTweak(LocalPlayer player, PoseStack matrixStack, float partialTicks) {
+    public static boolean onHurtBobTweak(CameraRenderState cameraState, PoseStack matrixStack) {
         // 原版受伤的时长是 500 ms，所以如果大于 500 ms，那么说明不是子弹造成的伤害了
         if (System.currentTimeMillis() - hurtByGunTimeStamp > 500) {
             // 返回 false，让程序调用原版受伤晃动
             return false;
         }
-        float zRot = (float) player.hurtTime - partialTicks;
+        float zRot = cameraState.entityRenderState.hurtTime;
         if (zRot < 0) {
             return true;
         }
-        float duration = (float) player.hurtDuration;
+        float duration = (float) cameraState.entityRenderState.hurtDuration;
         if (duration <= 0) return true;
         zRot /= duration;
         zRot = Mth.sin(zRot * zRot * zRot * zRot * (float) Math.PI);
-        float yRot = player.getHurtDir();
+        float yRot = cameraState.entityRenderState.hurtDir;
 
         yRot = yRot * lastTweakMultiplier;
         zRot = zRot * lastTweakMultiplier;

@@ -12,7 +12,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ArmedModel;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
 import net.minecraft.client.renderer.entity.state.ArmedEntityRenderState;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
@@ -26,26 +26,26 @@ import xiao.customgun.client.renderer.model.ShellRender;
 import xiao.customgun.client.renderer.shooter.HumanoidOffhandRender;
 
 @Mixin(ItemInHandLayer.class)
-public class ItemInHandLayerMixin<S extends ArmedEntityRenderState, M extends EntityModel<S> & ArmedModel> {
+public class ItemInHandLayerMixin<S extends ArmedEntityRenderState, M extends EntityModel<S> & ArmedModel<?>> {
 
-    @Inject(method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/client/renderer/entity/state/ArmedEntityRenderState;FF)V",
+    @Inject(method = "submit(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;ILnet/minecraft/client/renderer/entity/state/ArmedEntityRenderState;FF)V",
             at = @At(value = "TAIL"))
     private void render(PoseStack poseStack,
-                        MultiBufferSource buffer,
+                        SubmitNodeCollector submitNodeCollector,
                         int lightCoords,
                         S renderState,
                         float partialTicks, float ageInTicks,
                         CallbackInfo ci) {
         MuzzleFlashRender.isSelf = false;
         ShellRender.isSelf = false;
-        HumanoidOffhandRender.renderGun(renderState, poseStack, buffer, lightCoords);
+        HumanoidOffhandRender.renderGun(renderState, poseStack, submitNodeCollector, lightCoords);
     }
 
-    @Inject(method = "renderArmWithItem(Lnet/minecraft/client/renderer/entity/state/ArmedEntityRenderState;Lnet/minecraft/client/renderer/item/ItemStackRenderState;Lnet/minecraft/world/entity/HumanoidArm;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
+    @Inject(method = "submitArmWithItem(Lnet/minecraft/client/renderer/entity/state/ArmedEntityRenderState;Lnet/minecraft/client/renderer/item/ItemStackRenderState;Lnet/minecraft/world/entity/HumanoidArm;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;I)V",
             at = @At(value = "HEAD"), cancellable = true)
     private void renderArmWithItemHead(S renderState,
                                        ItemStackRenderState itemStackRenderState,
-                                       HumanoidArm arm, PoseStack poseStack, MultiBufferSource buffer, int packedLight,
+                                       HumanoidArm arm, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int packedLight,
                                        CallbackInfo ci) {
         LocalPlayer player = Minecraft.getInstance().player;
 //        if (livingEntity.equals(player)) {
@@ -57,12 +57,12 @@ public class ItemInHandLayerMixin<S extends ArmedEntityRenderState, M extends En
 //        }
     }
 
-    @Inject(method = "renderArmWithItem(Lnet/minecraft/client/renderer/entity/state/ArmedEntityRenderState;Lnet/minecraft/client/renderer/item/ItemStackRenderState;Lnet/minecraft/world/entity/HumanoidArm;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
+    @Inject(method = "submitArmWithItem(Lnet/minecraft/client/renderer/entity/state/ArmedEntityRenderState;Lnet/minecraft/client/renderer/item/ItemStackRenderState;Lnet/minecraft/world/entity/HumanoidArm;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;I)V",
             at = @At(value = "TAIL"))
     private void renderArmWithItemTail(S renderState,
                                        ItemStackRenderState itemStackRenderState,
                                        HumanoidArm arm, PoseStack poseStack,
-                                       MultiBufferSource buffer,
+                                       SubmitNodeCollector submitNodeCollector,
                                        int lightCoords, CallbackInfo ci) {
         MuzzleFlashRender.isSelf = false;
         ShellRender.isSelf = false;

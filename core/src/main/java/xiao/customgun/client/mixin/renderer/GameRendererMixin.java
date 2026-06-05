@@ -8,6 +8,7 @@
 package xiao.customgun.client.mixin.renderer;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
@@ -27,7 +28,7 @@ public abstract class GameRendererMixin {
     public abstract Minecraft getMinecraft();
 
     @Shadow
-    public abstract void render(float pPartialTicks, long pNanoTime,
+    public abstract void render(DeltaTracker deltaTracker,
                                 boolean pRenderLevel);
 
     @Inject(method = "bobHurt", at = @At("HEAD"), cancellable = true)

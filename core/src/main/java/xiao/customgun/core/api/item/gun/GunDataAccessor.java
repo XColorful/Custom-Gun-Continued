@@ -14,7 +14,9 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.CustomGun;
-import xiao.customgun.client.resource.assets.display.AttachmentDisplay;
+import xiao.customgun.client.api.resource.ClientResourceApi;
+import xiao.customgun.client.resource.instance.assets.GunDisplayInstance;
+import xiao.customgun.client.resource.instance.data.ClientAttachmentIndexInstance;
 import xiao.customgun.core.api.item.GunProperty;
 import xiao.customgun.core.api.item.IAmmo;
 import xiao.customgun.core.api.item.IAttachment;
@@ -78,18 +80,33 @@ public interface GunDataAccessor extends IGunDataAccess {
 
     @Override
     default float getScopeZoomScale(ItemStack gunItem) {
-        float zoomScale = 1.0F;
-        var scopeLocation = this.getAttachmentLocation(gunItem, AttachmentCategory.SCOPE);
-        @Nullable CompoundTag attachmentCustomDataTag = this.getAttachmentCustomDataTag(gunItem, AttachmentCategory.SCOPE);
-        int scopeViewIndex = AttachmentNBTAccessor.INSTANCE.getScopeViewIndex(attachmentCustomDataTag);
-        if (CustomGun.getMcSide().isClientSide()) {
-            /**
-             * {@link AttachmentDisplay#getScopeZoomScale()}
-             */
-            float[] scopeZoomScale = new float[]{1.0F, 1.0F}; // TODO ClientResourceApi
-            if (scopeZoomScale != null) {
-                return scopeZoomScale[scopeViewIndex % scopeZoomScale.length];
+        if (!CustomGun.getMcSide().isClientSide()) {
+            if (PlannedRefactor.MOVE_ASSETS_TO_DATA) {
+                throw new IllegalStateException("GunDataAccessor#getScopeZoomScale is client-side interface (currently)");
             }
+        }
+
+        @NotNull var scopeLocation = this.getAttachmentLocation(gunItem, AttachmentCategory.SCOPE);
+        boolean builtIn = false;
+        if (scopeLocation.equals(ResourceTag.NULL_LOCATION)) {
+            scopeLocation = this.getBuiltinAttachmentLocation(gunItem, AttachmentCategory.SCOPE);
+            builtIn = true;
+        }
+
+        float zoomScale = 1.0f;
+        if (!scopeLocation.equals(ResourceTag.NULL_LOCATION)) {
+            @Nullable CompoundTag attachmentCustomDataTag = this.getAttachmentCustomDataTag(gunItem, AttachmentCategory.SCOPE);
+            int scopeViewIndex = builtIn ? 0 : AttachmentNBTAccessor.INSTANCE.getScopeViewIndex(attachmentCustomDataTag);
+            @Nullable ClientAttachmentIndexInstance attachmentIndexInstance = ClientResourceApi.getClientAttachmentIndexInstance(scopeLocation);
+            if (attachmentIndexInstance != null) {
+                float[] scopeZoomScale = attachmentIndexInstance.getAttachmentDisplay().getScopeZoomScale();
+                if (scopeZoomScale != null) {
+                    zoomScale = scopeZoomScale[scopeViewIndex % scopeZoomScale.length];
+                }
+            }
+        } else {
+            GunDisplayInstance gunDisplayInstance = ClientResourceApi.getGunDisplayInstance(gunItem);
+            if (gunDisplayInstance != null) zoomScale = gunDisplayInstance.getPojo().getIronZoomScale();
         }
         return zoomScale;
     }

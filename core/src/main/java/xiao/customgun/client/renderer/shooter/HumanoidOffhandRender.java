@@ -9,20 +9,23 @@ package xiao.customgun.client.renderer.shooter;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.client.renderer.entity.state.ArmedEntityRenderState;
 
 public class HumanoidOffhandRender {
 
-    public static void renderGun(LivingEntity entity, PoseStack matrixStack, MultiBufferSource buffer, int lightCoords) {
-        renderOffhandGun(entity, matrixStack, buffer, lightCoords);
-        renderHotbarGun(entity, matrixStack, buffer, lightCoords);
+    public static <S extends ArmedEntityRenderState> void renderGun(S renderState,
+                                                                    PoseStack matrixStack, MultiBufferSource buffer, int lightCoords) {
+        renderOffhandGun(renderState, matrixStack, buffer, lightCoords);
+        renderHotbarGun(renderState, matrixStack, buffer, lightCoords);
     }
 
-    private static void renderOffhandGun(LivingEntity entity, PoseStack matrixStack, MultiBufferSource buffer, int lightCoords) {
+    private static <S extends ArmedEntityRenderState> void renderOffhandGun(S renderState,
+                                                                            PoseStack matrixStack, MultiBufferSource buffer, int lightCoords) {
         // TODO
     }
 
-    private static void renderHotbarGun(LivingEntity entity, PoseStack matrixStack, MultiBufferSource buffer, int lightCoords) {
+    private static <S extends ArmedEntityRenderState> void renderHotbarGun(S renderState,
+                                                                           PoseStack matrixStack, MultiBufferSource buffer, int lightCoords) {
         // TODO
     }
 }

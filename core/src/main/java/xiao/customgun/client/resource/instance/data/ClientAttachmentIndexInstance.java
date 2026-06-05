@@ -106,6 +106,7 @@ public final class ClientAttachmentIndexInstance extends PojoInstance<Attachment
     }
     public static boolean checkScopeViewFov(@NotNull AttachmentDisplay pojo) {
         float[] scopeViewFov = pojo.getScopeViewFov();
+        if (scopeViewFov == null || scopeViewFov.length == 0) return false;
         for (int i = 0; i < scopeViewFov.length; i++) {
             if (scopeViewFov[i] <= 0) return true;
         }
@@ -113,6 +114,7 @@ public final class ClientAttachmentIndexInstance extends PojoInstance<Attachment
     }
     public static boolean checkScopeZoomScale(@NotNull AttachmentDisplay pojo) {
         float[] scopeZoomScale = pojo.getScopeZoomScale();
+        if (scopeZoomScale == null || scopeZoomScale.length == 0) return false;
         for (int i = 0; i < scopeZoomScale.length; i++) {
             if (scopeZoomScale[i] < 1) return true;
         }
@@ -120,6 +122,7 @@ public final class ClientAttachmentIndexInstance extends PojoInstance<Attachment
     }
     public static boolean checkScopeViewIndex(@NotNull AttachmentDisplay pojo) {
         int[] scopeViewIndex = pojo.getScopeViewIndex();
+        if (scopeViewIndex == null || scopeViewIndex.length == 0) return false;
         for (int i = 0; i < scopeViewIndex.length; i++) {
             if (scopeViewIndex[i] < 1) return true;
         }

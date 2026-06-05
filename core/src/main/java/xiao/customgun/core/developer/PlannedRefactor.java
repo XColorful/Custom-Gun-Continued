@@ -22,4 +22,6 @@ public class PlannedRefactor {
     public static final boolean TODO_CLIENT_RELOAD = true;
     // Screen解耦 (Manager管理/post事件)
     public static final boolean ON_CREATE_SCREEN = false;
+    // 将Assets pojo的data移到Data
+    public static final boolean MOVE_ASSETS_TO_DATA = true;
 }

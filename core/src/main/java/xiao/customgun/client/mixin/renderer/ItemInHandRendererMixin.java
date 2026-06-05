@@ -11,7 +11,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.ItemInHandRenderer;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -35,7 +35,7 @@ public class ItemInHandRendererMixin implements KeepingItemRenderer {
 
     @Inject(method = "renderHandsWithItems", at = @At("HEAD"))
     public void onBeforeRenderHand(float frameInterp, PoseStack poseStack,
-                                   MultiBufferSource.BufferSource buffer,
+                                   SubmitNodeCollector nodeCollector,
                                    LocalPlayer player, int lightCoords,
                                    CallbackInfo ci) {
         // TODO BeforeRenderHandEvent

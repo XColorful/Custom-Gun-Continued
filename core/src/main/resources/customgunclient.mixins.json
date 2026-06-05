@@ -4,7 +4,14 @@
   "compatibilityLevel": "JAVA_21",
   "refmap": "customgun.refmap.json",
   "client": [
+    "MouseHandlerMixin",
     "entity.LocalPlayerMixin",
+    "gui.AbstractButtonMixin",
+    "model.HumanoidModelMixin",
+    "model.PlayerModelMixin",
+    "renderer.GameRendererMixin",
+    "renderer.ItemInHandLayerMixin",
+    "renderer.ItemInHandRendererMixin",
     "sound.SoundManagerMixin"
   ],
   "injectors": {

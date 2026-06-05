@@ -9,11 +9,16 @@ package xiao.customgun.client.entity.shooter;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import xiao.customgun.client.api.entity.LocalShooterProperty;
 import xiao.customgun.client.api.sound.gun.GunSoundType;
 import xiao.customgun.client.resource.instance.assets.GunDisplayInstance;
 import xiao.customgun.client.sound.SoundPlayManager;
 
-public class LocalShooterInspect extends LocalShooterAspect {
+public final class LocalShooterInspect extends LocalShooterAspect {
+
+    public LocalShooterInspect(LocalPlayer localShooter, LocalShooterProperty localShooterProperty) {
+        super(localShooter, localShooterProperty);
+    }
 
     public void inspect() {
         LocalPlayer localPlayer = Minecraft.getInstance().player;

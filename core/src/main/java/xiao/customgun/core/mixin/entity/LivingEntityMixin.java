@@ -111,7 +111,8 @@ public abstract class LivingEntityMixin extends Entity implements ILivingShooter
 
     // --------IGunOperator--------
 
-    @Override public void cgc$crawl(boolean isCrawl) {
+    @Override
+    public void cgc$crawl(boolean isCrawl) {
         this.cgc$crawl.crawl(isCrawl);
     }
 
@@ -119,18 +120,21 @@ public abstract class LivingEntityMixin extends Entity implements ILivingShooter
         this.cgc$draw.draw(gunItemSupplier);
     }
 
-    @Override public void cgc$fireSelect() {
+    @Override
+    public void cgc$fireSelect() {
         this.cgc$fireSelect.fireSelect();
     }
 
-    @Override public void cgc$aim(boolean isAim) {
+    @Override
+    public void cgc$aim(boolean isAim) {
         this.cgc$aim.aim(isAim);
     }
     @Override public void cgc$zoom() {
         this.cgc$aim.zoom();
     }
 
-    @Override public void cgc$melee() {
+    @Override
+    public void cgc$melee() {
         this.cgc$melee.melee();
     }
 
@@ -144,11 +148,13 @@ public abstract class LivingEntityMixin extends Entity implements ILivingShooter
         return this.cgc$shoot(pitch, yaw, System.currentTimeMillis() - cgc$shooterProperty.baseTimestamp);
     }
 
-    @Override public void cgc$bolt() {
+    @Override
+    public void cgc$bolt() {
         this.cgc$bolt.bolt();
     }
 
-    @Override public void cgc$reload() {
+    @Override
+    public void cgc$reload() {
         this.cgc$reload.reload();
     }
     @Override public void cgc$cancelReload() {

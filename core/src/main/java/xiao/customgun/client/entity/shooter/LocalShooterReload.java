@@ -9,11 +9,24 @@ package xiao.customgun.client.entity.shooter;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import xiao.customgun.client.api.entity.LocalShooterProperty;
 import xiao.customgun.client.api.sound.gun.GunSoundType;
 import xiao.customgun.client.resource.instance.assets.GunDisplayInstance;
 import xiao.customgun.client.sound.SoundPlayManager;
 
-public class LocalShooterReload extends LocalShooterAspect {
+public final class LocalShooterReload extends LocalShooterAspect {
+
+    public LocalShooterReload(LocalPlayer localShooter, LocalShooterProperty localShooterProperty) {
+        super(localShooter, localShooterProperty);
+    }
+
+    public void cancelReload() {
+        // TODO
+    }
+
+    public void reload() {
+        // TODO
+    }
 
     private void doReload(GunDisplayInstance gunDisplayInstance) {
         LocalPlayer localPlayer = Minecraft.getInstance().player;

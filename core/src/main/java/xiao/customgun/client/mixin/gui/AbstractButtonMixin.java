@@ -8,6 +8,7 @@
 package xiao.customgun.client.mixin.gui;
 
 import net.minecraft.client.gui.components.AbstractButton;
+import net.minecraft.client.input.MouseButtonEvent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -20,8 +21,8 @@ public class AbstractButtonMixin {
     /**
      * 记录点击按钮的时间，后续方便给予射击冷却，防止点击按钮后误触开火
      */
-    @Inject(method = "onClick(DD)V", at = @At("HEAD"))
-    public void onClickHead(double mouseX, double mouseY,
+    @Inject(method = "onClick(Lnet/minecraft/client/input/MouseButtonEvent;Z)V", at = @At("HEAD"))
+    public void onClickHead(MouseButtonEvent event, boolean doubleClick,
                             CallbackInfo ci) {
         LocalShooterProperty.clientClickButtonTimestamp = System.currentTimeMillis();
     }

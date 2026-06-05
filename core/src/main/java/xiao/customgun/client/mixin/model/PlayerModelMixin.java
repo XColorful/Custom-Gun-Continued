@@ -10,7 +10,7 @@ package xiao.customgun.client.mixin.model;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
-import net.minecraft.client.renderer.entity.state.PlayerRenderState;
+import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -21,7 +21,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import xiao.customgun.client.api.renderer.KeepingItemRenderer;
 
 @Mixin(PlayerModel.class)
-public class PlayerModelMixin extends HumanoidModel<PlayerRenderState> {
+public class PlayerModelMixin extends HumanoidModel<AvatarRenderState> {
     @Shadow
     @Final public ModelPart leftSleeve;
 
@@ -35,9 +35,9 @@ public class PlayerModelMixin extends HumanoidModel<PlayerRenderState> {
     /**
      * 用于清除默认的手臂旋转
      */
-    @Inject(method = "setupAnim(Lnet/minecraft/client/renderer/entity/state/PlayerRenderState;)V",
+    @Inject(method = "setupAnim(Lnet/minecraft/client/renderer/entity/state/AvatarRenderState;)V",
             at = @At(value = "TAIL"))
-    private void setRotationAnglesTail(PlayerRenderState renderState,
+    private void setRotationAnglesTail(AvatarRenderState renderState,
                                        CallbackInfo ci) {
 //        if (!(entityIn instanceof Player player)) {
 //            return;

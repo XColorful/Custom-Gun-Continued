@@ -24,4 +24,8 @@ public class PlannedRefactor {
     public static final boolean ON_CREATE_SCREEN = false;
     // 将Assets pojo的data移到Data
     public static final boolean MOVE_ASSETS_TO_DATA = true;
+    // 粒子大小
+    public static final float PARTICLE_SIZE = 0.05f;
+    // 生成粒子(事件钩子)
+    public static final boolean ON_SPAWN_BULLET_PARTICLE = false;
 }

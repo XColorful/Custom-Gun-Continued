@@ -16,6 +16,7 @@ import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
@@ -134,6 +135,7 @@ public class BulletHoleParticle extends TextureSheetParticle {
 
     // --------便利方法--------
 
+    @SuppressWarnings("deprecation")
     private TextureAtlasSprite calculateSprite(BlockPos pos) {
         Minecraft minecraft = Minecraft.getInstance();
         Level world = minecraft.level;
@@ -141,7 +143,7 @@ public class BulletHoleParticle extends TextureSheetParticle {
             BlockState state = world.getBlockState(pos);
             return minecraft.getBlockRenderer().getBlockModelShaper().getTexture(state, world, pos);
         }
-        return minecraft.getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(MissingTextureAtlasSprite.getLocation());
+        return minecraft.getTextureAtlas(TextureAtlas.LOCATION_BLOCKS).apply(MissingTextureAtlasSprite.getLocation());
     }
 
     @Override

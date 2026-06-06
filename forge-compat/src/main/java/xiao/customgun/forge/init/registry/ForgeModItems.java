@@ -6,8 +6,8 @@ import xiao.customgun.core.item.ammo.AmmoItem;
 import xiao.customgun.core.item.attachment.AttachmentItem;
 import xiao.customgun.core.item.gun.GunItem;
 import xiao.customgun.forge.item.ammo.ForgeAmmoItem;
-import xiao.customgun.forge.item.ammo.ForgeAttachmentItem;
-import xiao.customgun.forge.item.ammo.ForgeGunItem;
+import xiao.customgun.forge.item.attachment.ForgeAttachmentItem;
+import xiao.customgun.forge.item.gun.ForgeGunItem;
 
 import java.util.HashMap;
 import java.util.Map;

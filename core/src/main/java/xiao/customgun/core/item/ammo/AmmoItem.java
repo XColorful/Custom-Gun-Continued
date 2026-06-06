@@ -8,6 +8,7 @@
 package xiao.customgun.core.item.ammo;
 
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import xiao.customgun.core.init.registry.ModItems;
 
 public class AmmoItem extends Item {
@@ -17,5 +18,11 @@ public class AmmoItem extends Item {
     }
     public AmmoItem() {
         this(ModItems.CUSTOM_ITEM_PROPERTY);
+    }
+
+    // TODO 删掉测试代码
+    @Deprecated()
+    public int test(ItemStack stack) {
+        return stack.getCount() + 1;
     }
 }

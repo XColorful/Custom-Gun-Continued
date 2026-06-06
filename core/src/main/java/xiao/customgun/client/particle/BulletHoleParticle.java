@@ -157,7 +157,7 @@ public class BulletHoleParticle extends TextureSheetParticle {
     private int calculateLifetime(ClientLevel level) {
         int lifeTicks = RenderConfig.BULLET_HOLE_PARTICLE_LIFE.get();
         if (lifeTicks <= 1) return lifeTicks;
-        else return lifeTicks + level.random.nextInt(lifeTicks / 2);
+        else return lifeTicks + level.getRandom().nextInt(lifeTicks / 2);
     }
 
     // --------Getter--------

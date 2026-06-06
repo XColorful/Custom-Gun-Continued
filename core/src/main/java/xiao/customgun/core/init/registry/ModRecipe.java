@@ -22,7 +22,7 @@ public class ModRecipe {
     public static final IRegistrar<RecipeType<?>> RECIPE_TYPES = CustomGun.getRegistrarFactory().createRecipes(CustomGun.MOD_ID);
     public static final IRegistrar<RecipeType<?>> RECIPE_TYPES_OLD1 = CustomGun.getRegistrarFactory().createRecipes(CustomGun.MOD_ID_OLD1);
 
-    // 类加载顺序会保证在 ↑调用 前执行
+
     public static final IRegistryObject<RecipeSerializer<?>> TABLE_RECIPE_SERIALIZER = RECIPE_SERIALIZERS.register(CustomRecipeType.MOD_TABLE_RECIPE.getTagName(),
             TableRecipeSerializer::new);
     public static final IRegistryObject<RecipeSerializer<?>> TABLE_RECIPE_SERIALIZER_OLD1 = RECIPE_SERIALIZERS_OLD1.register(CustomRecipeType.MOD_TABLE_RECIPE.getTagNameOld(),

@@ -49,6 +49,10 @@ public interface GunDataAccessor extends IGunDataAccess {
         var gunDisplayLocation = NBTUtils.getResourceLocation(gunItem, GunProperty.GUN_DISPLAY_LOCATION.getTagName());
         return gunDisplayLocation;
     }
+    @Override
+    default void setGunDisplayLocation(ItemStack gunItem, ResourceLocation gunDisplayLocation) {
+        NBTUtils.setResourceLocation(gunItem, GunProperty.GUN_DISPLAY_LOCATION.getTagName(), gunDisplayLocation);
+    }
 
     // --------IGunPojoGetter--------
 

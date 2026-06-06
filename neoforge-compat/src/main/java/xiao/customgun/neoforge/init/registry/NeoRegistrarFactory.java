@@ -8,6 +8,7 @@
 package xiao.customgun.neoforge.init.registry;
 
 import net.minecraft.core.Registry;
+import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.EntityType;
@@ -80,6 +81,11 @@ public class NeoRegistrarFactory implements IRegistrarFactory {
     @Override
     public IRegistrar<RecipeType<?>> createRecipes(String modId) {
         return new NeoRegistrar<>(DeferredRegister.create(Registries.RECIPE_TYPE, modId));
+    }
+
+    @Override
+    public IRegistrar<ParticleType<?>> createParticleTypes(String modId) {
+        return new NeoRegistrar<>(DeferredRegister.create(Registries.PARTICLE_TYPE, modId));
     }
 
     @Override

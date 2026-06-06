@@ -7,15 +7,16 @@
 
 package xiao.customgun.core.particle;
 
-import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import xiao.customgun.core.api.minecraft.particle.CustomParticleType;
 import xiao.customgun.core.api.particle.BulletHoleOptionTag;
 import xiao.customgun.core.api.resource.ResourceTag;
@@ -36,7 +37,6 @@ public record BulletHoleOption(Direction direction, BlockPos pos,
         return ModParticles.BULLET_HOLE_PARTICLE_TYPE;
     }
 
-    @Override
     public void writeToNetwork(FriendlyByteBuf buffer) {
         buffer.writeEnum(this.direction);
         buffer.writeBlockPos(this.pos);
@@ -54,37 +54,18 @@ public record BulletHoleOption(Direction direction, BlockPos pos,
         return new BulletHoleOption(direction, pos, ammoLocation, gunDisplayLocation, gunLocation);
     }
 
-    @Override
     public String writeToString() {
         return CustomParticleType.BULLET_HOLE.getRegistryName() + " " + this.direction.getName();
     }
 
     // --------Mod particle--------
 
-    @SuppressWarnings("deprecation")
-    public static final ParticleOptions.Deserializer<BulletHoleOption> DESERIALIZER = new ParticleOptions.Deserializer<>() {
-        @Override
-        public BulletHoleOption fromCommand(ParticleType<BulletHoleOption> particleType, StringReader reader) throws CommandSyntaxException {
-            reader.expect(' ');
-            int dir = reader.readInt();
-            reader.expect(' ');
-            long pos = reader.readLong();
-            reader.expect(' ');
-            var ammoLocation = reader.readString();
-            reader.expect(' ');
-            var gunDisplayLocation = reader.readString();
-            reader.expect(' ');
-            var gunLocation = reader.readString();
-            return new BulletHoleOption(dir, pos, ammoLocation, gunDisplayLocation, gunLocation);
-        }
+    public static final StreamCodec<RegistryFriendlyByteBuf, BulletHoleOption> STREAM_CODEC = StreamCodec.of(
+            (buffer, option) -> option.writeToNetwork(buffer),
+            BulletHoleOption::fromNetwork
+    );
 
-        @Override
-        public BulletHoleOption fromNetwork(ParticleType<BulletHoleOption> particleType, FriendlyByteBuf buffer) {
-            return BulletHoleOption.fromNetwork(buffer);
-        }
-    };
-
-    public static final Codec<BulletHoleOption> CODEC = RecordCodecBuilder.create(builder ->
+    public static final MapCodec<BulletHoleOption> CODEC = RecordCodecBuilder.mapCodec(builder ->
             builder.group(
                     Codec.INT.fieldOf(BulletHoleOptionTag.DIRECTION).forGetter(option -> option.direction.ordinal()),
                     Codec.LONG.fieldOf(BulletHoleOptionTag.POSITION).forGetter(option -> option.pos.asLong()),

@@ -21,6 +21,7 @@ import xiao.customgun.client.resource.assets.display.AmmoDisplay;
 import xiao.customgun.client.resource.assets.display.AttachmentDisplay;
 import xiao.customgun.client.resource.assets.display.BlockDisplay;
 import xiao.customgun.client.resource.assets.display.GunDisplay;
+import xiao.customgun.client.resource.assets.info.GunpackInfo;
 import xiao.customgun.client.resource.assets.model.BedrockModel;
 import xiao.customgun.client.resource.assets.script.AssetsScript;
 import xiao.customgun.client.resource.instance.assets.GunDisplayInstance;
@@ -38,6 +39,13 @@ import java.util.Map;
 import java.util.Set;
 
 public class ClientResourceApi {
+
+    // --------gunpack info--------
+
+    public static @Nullable GunpackInfo getGunpackInfo(ResourceLocation gunpackInfoLocation) {
+        var assetsManager = AllAssetsManager.INSTANCE.gunpackInfoManager;
+        return assetsManager != null ? assetsManager.getPojo(gunpackInfoLocation) : null;
+    }
 
     // --------animation--------
 

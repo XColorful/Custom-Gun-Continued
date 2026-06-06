@@ -28,4 +28,6 @@ public class PlannedRefactor {
     public static final float PARTICLE_SIZE = 0.05f;
     // 生成粒子(事件钩子)
     public static final boolean ON_SPAWN_BULLET_PARTICLE = false;
+    // 子弹盒颜色
+    public static final int MAGIC_AMMO_BOX_COLOR = 0x727d6b;
 }

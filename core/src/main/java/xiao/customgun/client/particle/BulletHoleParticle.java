@@ -13,8 +13,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SingleQuadParticle;
-import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.client.renderer.state.QuadParticleRenderState;
+import net.minecraft.client.renderer.state.level.QuadParticleRenderState;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.ARGB;
@@ -103,7 +102,7 @@ public class BulletHoleParticle extends SingleQuadParticle {
 
         // 0 - 30 tick 内，从 15 亮度到 0 亮度
         int light = Math.max(15 - this.age / 2, 0);
-        int lightColor = LightTexture.pack(light, light);
+        int lightColor = light << 4 | light << 20; // LightTexture.pack(int blockLight, int skyLight) { return blockLight << 4 | skyLight << 20; }
 
         // 颜色，逐渐渐变到 0 0 0，也就是黑色
         float colorPercent = light / 15.0f;
@@ -142,10 +141,12 @@ public class BulletHoleParticle extends SingleQuadParticle {
         Level world = minecraft.level;
         if (world != null) {
             BlockState state = world.getBlockState(pos);
-            return minecraft.getBlockRenderer().getBlockModelShaper().getParticleIcon(state, world, pos);
+//            return minecraft.getBlockRenderer().getBlockModelShaper().getParticleIcon(state, world, pos);
         }
         CustomGun.LOGGER.warn("BulletHoleParticle: In calculateSprite {}, minecraft.level is null", pos);
-        return minecraft.getModelManager().getMissingBlockStateModel().particleIcon(world, BlockPos.ZERO, AIR.defaultBlockState());
+//        return minecraft.getModelManager().getMissingBlockStateModel().particleIcon(world, BlockPos.ZERO, AIR.defaultBlockState());
+        // TODO 貌似没找到 TextureAtlasSprite 获取方式
+        return null;
     }
 
     @Override
@@ -180,7 +181,7 @@ public class BulletHoleParticle extends SingleQuadParticle {
 
     @ApiStatus.AvailableSince("1.21.10")
     @Override protected @NotNull Layer getLayer() {
-        return Layer.TERRAIN;
+        return Layer.TRANSLUCENT_TERRAIN;
     }
 
 

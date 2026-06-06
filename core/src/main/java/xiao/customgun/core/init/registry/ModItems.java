@@ -21,15 +21,22 @@ import xiao.customgun.core.item.ammobox.AmmoBoxItem;
 import xiao.customgun.core.item.attachment.AttachmentItem;
 import xiao.customgun.core.item.gun.GunItem;
 
+/**
+ * <ul>
+ * <li>用 {@link IRegistrar#register} 的是正常注册，获取的就是传入的类型</li>
+ * <li>用 {@link IRegistrar#registerItem} 的是 hack 实现，也可以当传入的类型用</li>
+ * </ul>
+ * 类型检查用<code>instanceof</code>而不要用<code>getClass</code>，除非调用方不打算做平台抽象层
+ */
 public class ModItems {
     public static final IRegistrar<Item> ITEMS = CustomGun.getRegistrarFactory().createItems(CustomGun.MOD_ID);
-
 
     public static final Item.Properties CUSTOM_ITEM_PROPERTY = new Item.Properties()
             .stacksTo(1); // 堆叠数会重载getter来修改
 
-    public static final IRegistryObject<Item> GUN = ITEMS.register(ItemType.GUN.getTagName(), GunItem::new);
-    public static final IRegistryObject<Item> ATTACHMENT = ITEMS.register(ItemType.ATTACHMENT.getTagName(), AttachmentItem::new);
-    public static final IRegistryObject<Item> AMMO = ITEMS.register(ItemType.AMMO.getTagName(), AmmoItem::new);
+
+    public static final IRegistryObject<Item> GUN = ITEMS.registerItem(ItemType.GUN.getTagName(), GunItem.class);
+    public static final IRegistryObject<Item> ATTACHMENT = ITEMS.registerItem(ItemType.ATTACHMENT.getTagName(), AttachmentItem.class);
+    public static final IRegistryObject<Item> AMMO = ITEMS.registerItem(ItemType.AMMO.getTagName(), AmmoItem.class);
     public static final IRegistryObject<Item> AMMO_BOX = ITEMS.register(ItemType.AMMO_BOX.getTagName(), AmmoBoxItem::new);
 }

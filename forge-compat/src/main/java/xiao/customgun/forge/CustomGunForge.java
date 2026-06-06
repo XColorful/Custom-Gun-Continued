@@ -29,6 +29,7 @@ import xiao.customgun.core.api.minecraft.ICapabilityProvider;
 import xiao.customgun.core.api.minecraft.IMcRegistry;
 import xiao.customgun.core.api.network.INetworkAdapter;
 import xiao.customgun.core.api.network.INetworkHook;
+import xiao.customgun.core.init.registry.ModItems;
 import xiao.customgun.core.init.registry.ModRecipe;
 import xiao.customgun.core.init.registry.ModSounds;
 import xiao.customgun.forge.common.ForgeSideExecutor;
@@ -75,6 +76,7 @@ public class CustomGunForge {
 
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
+        ModItems.ITEMS.registerAll(modEventBus);
         ModRecipe.RECIPE_SERIALIZERS.registerAll(modEventBus);
         ModRecipe.RECIPE_SERIALIZERS_OLD1.registerAll(modEventBus);
         ModRecipe.RECIPE_TYPES.registerAll(modEventBus);

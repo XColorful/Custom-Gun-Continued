@@ -8,6 +8,7 @@
 package xiao.customgun.core.api.init.registry;
 
 import net.minecraft.core.Registry;
+import net.minecraft.core.particles.ParticleType;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.inventory.MenuType;
@@ -37,6 +38,7 @@ public interface IRegistrarFactory {
     IRegistrar<EntityType<?>> createEntityTypes(String modId);
     IRegistrar<RecipeSerializer<?>> createRecipeSerializers(String modId);
     IRegistrar<RecipeType<?>> createRecipes(String modId);
+    IRegistrar<ParticleType<?>> createParticleTypes(String modId);
 
     IMenuTypeFactory getMenuTypeFactory();
 }

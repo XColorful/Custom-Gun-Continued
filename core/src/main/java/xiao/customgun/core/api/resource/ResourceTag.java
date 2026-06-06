@@ -17,7 +17,8 @@ public interface ResourceTag {
         String getConstantName();
     }
 
-    Identifier NULL_LOCATION = CustomGun.getMcRegistry().createResourceLocation(CustomGun.MOD_ID + ":null");
+    String nullLocation = CustomGun.MOD_ID + ":null";
+    Identifier NULL_LOCATION = CustomGun.getMcRegistry().createResourceLocation(nullLocation);
 
     @FunctionalInterface
     interface TriConsumer<A, B, C> {

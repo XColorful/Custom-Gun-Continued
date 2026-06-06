@@ -158,6 +158,19 @@ public interface GunDataAccessor extends IGunDataAccess {
         NBTUtils.setInt(gunItem, GunProperty.LASER_COLOR.getTagName(), colorInt);
     }
 
+    @Override
+    default boolean hasTooltipMask(ItemStack gunItem) {
+        return NBTUtils.hasKey(gunItem, GunProperty.TOOLTIP_MASK.getTagName());
+    }
+    @Override
+    default int getTooltipMask(ItemStack gunItem) {
+        return NBTUtils.getInt(gunItem, GunProperty.TOOLTIP_MASK.getTagName());
+    }
+    @Override
+    default void setTooltipMask(ItemStack gunItem, int tooltipMask) {
+        NBTUtils.setInt(gunItem, GunProperty.TOOLTIP_MASK.getTagName(), tooltipMask);
+    }
+
     // --------IGunAmmoDataAccess--------
 
     @Override

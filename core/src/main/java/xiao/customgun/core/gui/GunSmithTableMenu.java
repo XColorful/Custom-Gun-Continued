@@ -5,7 +5,7 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package xiao.customgun.core.inventory;
+package xiao.customgun.core.gui;
 
 public class GunSmithTableMenu {
 }

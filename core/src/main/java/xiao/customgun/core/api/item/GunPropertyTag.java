@@ -19,6 +19,7 @@ public class GunPropertyTag {
     public static final String OVERHEAT_LOCK = "overheat_lock";
     public static final String ATTACHMENT_LOCK = "attachment_lock";
     public static final String LASER_COLOR = "laser_color";
+    public static final String TOOLTIP_MASK = "tooltip_mask";
 
     // --------IGunAmmoDataAccess--------
     public static final String DUMMY_AMMO = "dummy_ammo";

@@ -88,7 +88,7 @@ public class BulletHoleParticle extends SingleQuadParticle {
 
     @Override
     public void extract(QuadParticleRenderState particleTypeRenderState, Camera camera, float partialTicks) {
-        Vec3 view = camera.getPosition();
+        Vec3 view = camera.position();
         float particleX = (float) (Mth.lerp(partialTicks, this.xo, this.x) - view.x());
         float particleY = (float) (Mth.lerp(partialTicks, this.yo, this.y) - view.y());
         float particleZ = (float) (Mth.lerp(partialTicks, this.zo, this.z) - view.z());

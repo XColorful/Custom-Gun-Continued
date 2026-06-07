@@ -28,8 +28,8 @@ public class AttachmentItem extends Item implements IAttachment, AttachmentDataA
     // --------Client--------
 
     @Override
-    public @NotNull Component getName(@NotNull ItemStack ammoItem) {
-        var name = _AttachmentItem.getName(this, ammoItem);
-        return name != null ? name : super.getName(ammoItem);
+    public @NotNull Component getName(@NotNull ItemStack attachmentItem) {
+        var name = _AttachmentItem.getName(this, attachmentItem);
+        return name != null ? name : super.getName(attachmentItem);
     }
 }

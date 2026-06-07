@@ -20,6 +20,9 @@ import java.util.function.BiFunction;
 
 public enum GunProperty implements ResourceTag {
     // IGunDataAccess
+    MANAGER_GROUP(GunPropertyTag.MANAGER_GROUP,
+            IGunDataAccess::getManagerGroupTag,
+            IGunDataAccess::setManagerGroupTag),
     GUN_LOCATION(GunPropertyTag.GUN_LOCATION,
             IGunDataAccess::getGunLocation,
             IGunDataAccess::setGunLocation),

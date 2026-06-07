@@ -10,6 +10,7 @@ package xiao.customgun.core.api.item;
 public class GunPropertyTag {
 
     // --------IGunDataAccess--------
+    public static final String MANAGER_GROUP = "manager_group";
     public static final String GUN_LOCATION = "gun_rl";
     public static final String GUN_DISPLAY_LOCATION = "gun_display_rl";
 

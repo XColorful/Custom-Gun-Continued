@@ -13,11 +13,13 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.resource.ResourceTag;
 
-public interface IGunDataAccess extends IGunPojoGetter,
-        IGunStateAccess,
+public interface IGunDataAccess extends IGunStateAccess,
         IGunAmmoDataAccess, IGunAttachmentDataAccess,
         IGunExpAccess,
         _IGunPropertyAccess {
+
+    @Nullable String getManagerGroupTag(ItemStack gunItem);
+    void setManagerGroupTag(ItemStack gunItem, String managerGroupTag);
 
     /**
      * 获取枪械ID，如不存在则返回 {@link ResourceTag#NULL_LOCATION}

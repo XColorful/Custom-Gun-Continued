@@ -7,6 +7,8 @@
 
 package xiao.customgun.core.api.item.gun;
 
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.resource.ResourceTag;
 
@@ -17,39 +19,49 @@ public enum GunCategory implements ResourceTag.CategoryTag {
     /**
      * 霰弹枪
      */
-    SHOTGUN(GunCategoryTag.SHOTGUN),
+    SHOTGUN(GunCategoryTag.SHOTGUN,
+            Component.translatable("customgun.guncategory.shotgun")),
     /**
      * 手枪
      */
-    PISTOL(GunCategoryTag.PISTOL),
+    PISTOL(GunCategoryTag.PISTOL,
+            Component.translatable("customgun.guncategory.pistol")),
     /**
      * 步枪
      */
-    RIFLE(GunCategoryTag.RIFLE),
+    RIFLE(GunCategoryTag.RIFLE,
+            Component.translatable("customgun.guncategory.rifle")),
     /**
      * 狙击枪
      */
-    SNIPER(GunCategoryTag.SNIPER),
+    SNIPER(GunCategoryTag.SNIPER,
+            Component.translatable("customgun.guncategory.sniper")),
     /**
      * 机枪
      */
-    MG(GunCategoryTag.MG),
+    MG(GunCategoryTag.MG,
+            Component.translatable("customgun.guncategory.mg")),
     /**
      * 冲锋枪
      */
-    SMG(GunCategoryTag.SMG),
+    SMG(GunCategoryTag.SMG,
+            Component.translatable("customgun.guncategory.smg")),
     /**
      * 火箭筒
      */
-    RPG(GunCategoryTag.RPG),
+    RPG(GunCategoryTag.RPG,
+            Component.translatable("customgun.guncategory.rpg")),
     /**
      * 自定义
      */
-    CUSTOM(GunCategoryTag.CUSTOM);
+    CUSTOM(GunCategoryTag.CUSTOM,
+            Component.translatable("customgun.guncategory.custom"));
 
     public final String categoryName;
-    GunCategory(String name) {
+    public final MutableComponent categoryLang;
+    GunCategory(String name, MutableComponent lang) {
         this.categoryName = name;
+        this.categoryLang = lang;
     }
 
     @Override public String getTagName() {
@@ -57,6 +69,10 @@ public enum GunCategory implements ResourceTag.CategoryTag {
     }
     @Override public String getCategoryName() {
         return this.categoryName;
+    }
+
+    public final MutableComponent getCategoryLang() {
+        return this.categoryLang;
     }
 
     private static final Map<String, GunCategory> GUN_CATEGORIES = new HashMap<>();

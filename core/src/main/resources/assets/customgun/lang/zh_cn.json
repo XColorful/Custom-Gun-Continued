@@ -1,3 +1,12 @@
 {
-  "customgun.unknown": "未知"
+  "customgun.unknown": "未知",
+
+  "customgun.guncategory.shotgun": "霰弹枪",
+  "customgun.guncategory.pistol": "手枪",
+  "customgun.guncategory.rifle": "步枪",
+  "customgun.guncategory.sniper": "狙击枪",
+  "customgun.guncategory.mg": "机枪",
+  "customgun.guncategory.smg": "冲锋枪",
+  "customgun.guncategory.rpg": "RPG",
+  "customgun.guncategory.custom": "自定义"
 }

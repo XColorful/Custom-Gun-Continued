@@ -1,4 +1,4 @@
-package xiao.customgun.core.api.gun.state;
+package xiao.customgun.core.api.gun.action;
 
 import xiao.customgun.core.api.gun.IGunSubManager;
 

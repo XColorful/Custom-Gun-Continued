@@ -5,13 +5,14 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package xiao.customgun.core.gun.shoot;
+package xiao.customgun.core.gun.attack;
 
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import xiao.customgun.CustomGun;
 import xiao.customgun.core.api.entity.ShooterProperty;
-import xiao.customgun.core.api.gun.shoot.IGunAttackManager;
+import xiao.customgun.core.api.gun.attack.IGunAttackManager;
 
 import java.util.function.Supplier;
 
@@ -25,10 +26,15 @@ public class GunAttackManager implements IGunAttackManager {
         return _MANAGER_NAME;
     }
 
-    // --------IGunShootRuntime--------
+    // --------IGunAttackRuntime--------
 
     @Override
     public void shoot(ShooterProperty shooterProperty, ItemStack gunItem, LivingEntity livingShooter, Supplier<Float> pitch, Supplier<Float> yaw) {
+    }
+    @Override
+    public void doBulletSpread(ShooterProperty shooterProperty, ItemStack gunItem, LivingEntity livingShooter,
+                               Projectile projectile, int bulletId, float processedSpeed,
+                               float inaccuracy, float pitch, float yaw) {
     }
 
     @Override

@@ -5,7 +5,7 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package xiao.customgun.core.api.gun.state;
+package xiao.customgun.core.api.gun.action;
 
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
@@ -45,4 +45,9 @@ public interface IGunActionRuntime {
      * 尝试打断换弹时调用
      */
     void interruptReload(ShooterProperty shooterProperty, ItemStack gunItem, LivingEntity livingShooter);
+
+    /**
+     * 切换开火模式时调用
+     */
+    void fireSelect(ShooterProperty shooterProperty, ItemStack gunItem);
 }

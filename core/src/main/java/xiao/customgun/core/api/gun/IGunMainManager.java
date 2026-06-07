@@ -13,9 +13,9 @@ package xiao.customgun.core.api.gun;
 
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import xiao.customgun.core.api.gun.ammo.IGunInventoryManager;
-import xiao.customgun.core.api.gun.shoot.IGunAttackManager;
-import xiao.customgun.core.api.gun.state.IGunActionManager;
+import xiao.customgun.core.api.gun.inventory.IGunInventoryManager;
+import xiao.customgun.core.api.gun.attack.IGunAttackManager;
+import xiao.customgun.core.api.gun.action.IGunActionManager;
 import xiao.customgun.core.api.item.IGun;
 
 public interface IGunMainManager extends IGunSubManager {

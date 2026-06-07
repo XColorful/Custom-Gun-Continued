@@ -5,14 +5,14 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package xiao.customgun.core.gun.state;
+package xiao.customgun.core.gun.action;
 
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import xiao.customgun.CustomGun;
 import xiao.customgun.core.api.entity.ReloadState;
 import xiao.customgun.core.api.entity.ShooterProperty;
-import xiao.customgun.core.api.gun.state.IGunActionManager;
+import xiao.customgun.core.api.gun.action.IGunActionManager;
 
 public class GunActionManager implements IGunActionManager {
     public static final GunActionManager INSTANCE = new GunActionManager();
@@ -24,7 +24,7 @@ public class GunActionManager implements IGunActionManager {
         return _MANAGER_NAME;
     }
 
-    // --------IGunStateRuntime--------
+    // --------IGunActionRuntime--------
 
     @Override
     public boolean startBolt(ShooterProperty shooterProperty, ItemStack gunItem, LivingEntity livingShooter) {
@@ -49,6 +49,9 @@ public class GunActionManager implements IGunActionManager {
     }
     @Override
     public void interruptReload(ShooterProperty shooterProperty, ItemStack gunItem, LivingEntity livingShooter) {
+    }
 
+    @Override
+    public void fireSelect(ShooterProperty shooterProperty, ItemStack gunItem) {
     }
 }

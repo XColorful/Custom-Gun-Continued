@@ -12,6 +12,7 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.resource.ResourceTag;
+import xiao.customgun.core.resource.instance.data.GunIndexInstance;
 
 public interface IGunDataAccess extends IGunStateAccess,
         IGunAmmoDataAccess, IGunAttachmentDataAccess,
@@ -27,9 +28,9 @@ public interface IGunDataAccess extends IGunStateAccess,
     @NotNull ResourceLocation getGunLocation(ItemStack gunItem);
     void setGunLocation(ItemStack gunItem, ResourceLocation gunLocation);
     /**
-     * 获取指定的GunDisplay，如无则返回 // TODO
+     * 获取NBT指定的GunDisplay，其次查找{@link GunIndexInstance} 如无则返回 {@link ResourceTag#NULL_LOCATION}
      */
-    @Nullable ResourceLocation getGunDisplayLocation(ItemStack gunItem);
+    @NotNull ResourceLocation getGunDisplayLocation(ItemStack gunItem);
     void setGunDisplayLocation(ItemStack gunItem, ResourceLocation gunDisplayLocation);
 
     // --------Deprecated--------

@@ -29,8 +29,6 @@ import xiao.customgun.core.api.minecraft.capability.IInventoryCapability;
 import xiao.customgun.core.api.resource.ResourceApi;
 import xiao.customgun.core.api.resource.ResourceTag;
 import xiao.customgun.core.developer.PlannedRefactor;
-import xiao.customgun.core.resource.data.data.GunData;
-import xiao.customgun.core.resource.data.index.GunIndex;
 import xiao.customgun.core.resource.instance.data.GunIndexInstance;
 import xiao.customgun.core.util.NBTUtils;
 
@@ -57,9 +55,15 @@ public interface GunDataAccessor extends IGunDataAccess {
         NBTUtils.setResourceLocation(gunItem, GunProperty.GUN_LOCATION.getTagName(), gunLocation);
     }
     @Override
-    default @Nullable ResourceLocation getGunDisplayLocation(ItemStack gunItem) {
+    default @NotNull ResourceLocation getGunDisplayLocation(ItemStack gunItem) {
         var gunDisplayLocation = NBTUtils.getResourceLocation(gunItem, GunProperty.GUN_DISPLAY_LOCATION.getTagName());
-        return gunDisplayLocation;
+        if (gunDisplayLocation != null) return gunDisplayLocation;
+
+        var gunLocation = this.getGunLocation(gunItem);
+        GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(gunLocation);
+        if (gunIndexInstance == null) return ResourceTag.NULL_LOCATION;
+
+        return gunIndexInstance.getPojo().getDisplayIndexLocation();
     }
     @Override
     default void setGunDisplayLocation(ItemStack gunItem, ResourceLocation gunDisplayLocation) {

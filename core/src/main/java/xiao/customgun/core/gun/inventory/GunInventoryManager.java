@@ -5,12 +5,12 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package xiao.customgun.core.gun.ammo;
+package xiao.customgun.core.gun.inventory;
 
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import xiao.customgun.CustomGun;
-import xiao.customgun.core.api.gun.ammo.IGunInventoryManager;
+import xiao.customgun.core.api.gun.inventory.IGunInventoryManager;
 import xiao.customgun.core.api.minecraft.capability.IInventoryCapability;
 
 public class GunInventoryManager implements IGunInventoryManager {
@@ -22,6 +22,8 @@ public class GunInventoryManager implements IGunInventoryManager {
     @Override public String getManagerName() {
         return _MANAGER_NAME;
     }
+
+    // --------IGunInventoryRuntime--------
 
     @Override
     public void dropAllAmmo(ItemStack gunItem, LivingEntity livingShooter) {

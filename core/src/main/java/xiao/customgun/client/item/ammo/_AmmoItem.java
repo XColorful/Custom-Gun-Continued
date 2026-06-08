@@ -10,9 +10,9 @@ package xiao.customgun.client.item.ammo;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.client.api.resource.ClientResourceApi;
@@ -34,7 +34,7 @@ public class _AmmoItem {
     }
 
     public static void appendHoverText(IAmmo _this,
-                                       ItemStack ammoItem, @Nullable Level level, List<Component> components, TooltipFlag isAdvanced) {
+                                       ItemStack ammoItem, Item.TooltipContext context, List<Component> components, TooltipFlag isAdvanced) {
         var ammoLocation = _this.getAmmoLocation(ammoItem);
         ClientAmmoIndexInstance clientAmmoIndexInstance = ClientResourceApi.getClientAmmoIndexInstance(ammoLocation);
         if (clientAmmoIndexInstance != null) {

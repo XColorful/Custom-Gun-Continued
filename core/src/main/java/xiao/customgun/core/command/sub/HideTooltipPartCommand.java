@@ -17,6 +17,8 @@ import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import xiao.customgun.core.api.item.IGun;
+import xiao.customgun.core.api.item.gun.IGunGetter;
 
 import static xiao.customgun.core.command.CommandArg.*;
 
@@ -35,9 +37,12 @@ public class HideTooltipPartCommand {
         int mask = IntegerArgumentType.getInteger(context, MASK);
         for (Entity entity : entities) {
             if (entity instanceof LivingEntity living) {
-                ItemStack stack = living.getMainHandItem();
-                // TODO IGun
-                // TODO GunTooltipPart
+                ItemStack gunItem = living.getMainHandItem();
+                IGun iGun = IGunGetter.fromItemStack(gunItem);
+                if (iGun != null) {
+                    iGun.setTooltipMask(gunItem, mask);
+                    cnt++;
+                }
             }
         }
         return cnt;

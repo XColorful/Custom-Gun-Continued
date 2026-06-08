@@ -19,5 +19,10 @@ public class NeoAttachmentItem extends AttachmentItem {
     @OnlyIn(Dist.CLIENT)
     @Override
     public void initializeClient(Consumer<IClientItemExtensions> consumer) {
+        registerClientExtension(consumer);
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public static void registerClientExtension(Consumer<IClientItemExtensions> consumer) {
     }
 }

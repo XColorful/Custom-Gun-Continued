@@ -19,7 +19,7 @@ public class ForgeGunItem extends GunItem {
     @OnlyIn(Dist.CLIENT)
     @Override
     public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-        initializeClient(this, consumer);
+        registerClientExtension(consumer);
     }
 
     /**
@@ -31,6 +31,6 @@ public class ForgeGunItem extends GunItem {
      * 比如注册<code>MyGunItem extends GunItem</code>并重载final getter/setter来锁定子Manager
      */
     @OnlyIn(Dist.CLIENT)
-    public static void initializeClient(GunItem _this, Consumer<IClientItemExtensions> consumer) {
+    public static void registerClientExtension(Consumer<IClientItemExtensions> consumer) {
     }
 }

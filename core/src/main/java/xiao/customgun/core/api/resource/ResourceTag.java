@@ -15,7 +15,7 @@ public interface ResourceTag {
     }
     interface RegistryTag extends ResourceTag {
         String getRegistryName();
-        ResourceLocation getRegistryLocation();
+        Identifier getRegistryLocation();
     }
     interface ConstantTag extends ResourceTag {
         String getConstantName();

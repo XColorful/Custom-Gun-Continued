@@ -7,7 +7,7 @@
 
 package xiao.customgun.core.api.minecraft.recipe;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.CustomGun;
 import xiao.customgun.core.api.resource.ResourceTag;
@@ -26,7 +26,7 @@ public enum CustomRecipeType implements ResourceTag.RegistryTag {
     public final String typeNameOld;
     public final String registryName;
     public final String registryNameOld;
-    public final ResourceLocation registryLocation;
+    public final Identifier registryLocation;
     CustomRecipeType(String name, String nameOld) {
         this.typeName = name;
         this.typeNameOld = nameOld;
@@ -47,7 +47,7 @@ public enum CustomRecipeType implements ResourceTag.RegistryTag {
     public String getRegistryNameOld() {
         return this.registryNameOld;
     }
-    @Override public ResourceLocation getRegistryLocation() {
+    @Override public Identifier getRegistryLocation() {
         return this.registryLocation;
     }
 

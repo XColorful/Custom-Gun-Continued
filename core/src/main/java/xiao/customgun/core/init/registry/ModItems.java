@@ -12,7 +12,7 @@
 package xiao.customgun.core.init.registry;
 
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import xiao.customgun.CustomGun;
 import xiao.customgun.core.api.init.registry.IRegistrar;
@@ -35,7 +35,7 @@ import java.util.function.Function;
 public class ModItems {
     public static final IRegistrar<Item> ITEMS = CustomGun.getRegistrarFactory().createItems(CustomGun.MOD_ID);
 
-    public static final Function<ResourceLocation, Item.Properties> CUSTOM_ITEM_PROPERTY = (registryLocation) -> new Item.Properties()
+    public static final Function<Identifier, Item.Properties> CUSTOM_ITEM_PROPERTY = (registryLocation) -> new Item.Properties()
             .setId(CustomGun.getMcRegistry().createResourceKey(Registries.ITEM, registryLocation))
             .stacksTo(1); // 堆叠数会重载getter来修改
 

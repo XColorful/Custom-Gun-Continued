@@ -7,7 +7,7 @@
 
 package xiao.customgun.core.api.minecraft.particle;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.CustomGun;
 import xiao.customgun.core.api.resource.ResourceTag;
@@ -20,7 +20,7 @@ public enum CustomParticleType implements ResourceTag.RegistryTag {
 
     public final String typeName;
     public final String registryName;
-    public final ResourceLocation registryLocation;
+    public final Identifier registryLocation;
     CustomParticleType(String name) {
         this.typeName = name;
         this.registryName = String.format("%s:%s", CustomGun.MOD_ID, this.typeName);
@@ -32,7 +32,7 @@ public enum CustomParticleType implements ResourceTag.RegistryTag {
     @Override public String getRegistryName() {
         return this.registryName;
     }
-    @Override public ResourceLocation getRegistryLocation() {
+    @Override public Identifier getRegistryLocation() {
         return this.registryLocation;
     }
 

@@ -15,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 import xiao.customgun.client.item.ammobox._AmmoBoxItem;
 import xiao.customgun.core.api.item.IAmmoBox;
 import xiao.customgun.core.api.item.ammobox.AmmoBoxDataAccessor;
+import xiao.customgun.core.api.minecraft.item.ItemType;
 import xiao.customgun.core.init.registry.ModItems;
 
 public class AmmoBoxItem extends Item implements IAmmoBox, AmmoBoxDataAccessor {
@@ -23,7 +24,7 @@ public class AmmoBoxItem extends Item implements IAmmoBox, AmmoBoxDataAccessor {
         super(properties);
     }
     public AmmoBoxItem() {
-        this(ModItems.CUSTOM_ITEM_PROPERTY);
+        this(ModItems.CUSTOM_ITEM_PROPERTY.apply(ItemType.AMMO_BOX.getRegistryLocation()));
     }
 
     // --------Client--------

@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import xiao.customgun.client.item.attachment._AttachmentItem;
 import xiao.customgun.core.api.item.IAttachment;
 import xiao.customgun.core.api.item.attachment.AttachmentDataAccessor;
+import xiao.customgun.core.api.minecraft.item.ItemType;
 import xiao.customgun.core.init.registry.ModItems;
 
 public class AttachmentItem extends Item implements IAttachment, AttachmentDataAccessor {
@@ -22,7 +23,7 @@ public class AttachmentItem extends Item implements IAttachment, AttachmentDataA
         super(properties);
     }
     public AttachmentItem() {
-        this(ModItems.CUSTOM_ITEM_PROPERTY);
+        this(ModItems.CUSTOM_ITEM_PROPERTY.apply(ItemType.ATTACHMENT.getRegistryLocation()));
     }
 
     // --------Client--------

@@ -29,4 +29,18 @@ public interface IRegistrar<T> {
      * @param registrarHook 实际的注册钩子，例如 Forge 的 IEventBus
      */
     void registerAll(Object registrarHook);
+
+    // --------hack--------
+
+    /**
+     * 解决以下问题:
+     * <ul>
+     * <li>{@link xiao.customgun.core}不能包含forge/neoforge import
+     * <li>mixin无法通过注入函数来实现重载
+     * <li>{@link xiao.customgun.core}需要重载forge/neoforge接口
+     * </ul>
+     * (黑魔法)替换注册的类型, core仍然可以强转成core的类用
+     * @return 被替换过的class supplier
+     */
+    <V extends T> IRegistryObject<V> registerItem(final String name, final Class<? extends V> clazz);
 }

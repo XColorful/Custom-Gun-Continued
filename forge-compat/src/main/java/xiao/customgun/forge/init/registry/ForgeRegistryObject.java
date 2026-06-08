@@ -7,6 +7,7 @@
 
 package xiao.customgun.forge.init.registry;
 
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.registries.RegistryObject;
 import xiao.customgun.core.api.init.registry.IRegistryObject;
 
@@ -30,5 +31,10 @@ public class ForgeRegistryObject<T> implements IRegistryObject<T> {
     @Override
     public T get() {
         return registryObject.get();
+    }
+
+    @Override
+    public ResourceLocation getRegistryName() {
+        return registryObject.getId();
     }
 }

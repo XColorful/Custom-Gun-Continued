@@ -37,7 +37,13 @@ public enum AmmoBoxProperty implements ResourceTag {
     // IAmmoBoxDataAccess
     AMMO_COUNT(AmmoBoxPropertyTag.AMMO_COUNT,
             IAmmoBoxDataAccess::getAmmoCount,
-            IAmmoBoxDataAccess::setAmmoCount);
+            IAmmoBoxDataAccess::setAmmoCount),
+    BOX_LEVEL(AmmoBoxPropertyTag.BOX_LEVEL,
+            IAmmoBoxDataAccess::getBoxLevel,
+            IAmmoBoxDataAccess::setBoxLevel),
+    STATUS_MASK(AmmoBoxPropertyTag.STATUS_MASK,
+            IAmmoBoxDataAccess::getStatusMask,
+            null);
 
     public final String propertyName;
     private final BiFunction<IAmmoBoxDataAccess, ItemStack, ?> getter;

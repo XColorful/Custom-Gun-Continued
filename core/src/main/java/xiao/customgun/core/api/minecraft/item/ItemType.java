@@ -15,10 +15,24 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum ItemType implements ResourceTag.RegistryTag {
+    // Item
     GUN(ItemTypeTag.GUN, ItemTypeTag.GUN_OLD1),
     ATTACHMENT(ItemTypeTag.ATTACHMENT, null),
     AMMO(ItemTypeTag.AMMO, null),
-    AMMO_BOX(ItemTypeTag.AMMO_BOX, null);
+    AMMO_BOX(ItemTypeTag.AMMO_BOX, null),
+
+    /*
+    放在扩展模组里更好
+     */
+    // BlockItem
+    @Deprecated WORKBENCH_212(ItemTypeTag.WORKBENCH_212, ItemTypeTag.WORKBENCH_212_OLD1),
+    @Deprecated WORKBENCH_111(ItemTypeTag.WORKBENCH_111, ItemTypeTag.WORKBENCH_111_OLD1),
+    @Deprecated WORKBENCH_211(ItemTypeTag.WORKBENCH_211, ItemTypeTag.WORKBENCH_211_OLD1),
+    @Deprecated WORKBENCH_121(ItemTypeTag.WORKBENCH_121, ItemTypeTag.WORKBENCH_121_OLD1),
+    @Deprecated STATUE(ItemTypeTag.STATUE, null),
+    @Deprecated TARGET(ItemTypeTag.TARGET, null),
+    // Item (Entity)
+    @Deprecated TARGET_MINECART(ItemTypeTag.TARGET_MINECART, null),;
 
     public final String typeName;
     public final String typeNameOld;

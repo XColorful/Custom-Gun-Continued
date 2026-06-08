@@ -66,7 +66,7 @@ public interface IAmmoDataAccess extends IAmmoPojoGetter,
     }
 
     @Deprecated default boolean isAllTypeCreative(ItemStack ammoItem) {
-        return isAlmightyAmmo(ammoItem);
+        return isAlmightyAmmo(ammoItem) && hasInfiniteFeed(ammoItem);
     }
 
     @Deprecated default boolean isAmmoOfGun(ItemStack gunItem, ItemStack ammoItem) {

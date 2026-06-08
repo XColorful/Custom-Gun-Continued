@@ -94,7 +94,7 @@ tasks.named('jar', Jar).configure {
 //        attributes([
 //                "Implementation-Title"    : mod_name,
 //                "Implementation-Version"  : mod_version,
-//                "MixinConfigs"            : mixin_config_file
+//                "MixinConfigs"            : mixin_config_file + "," + mixin_config_file_neo
 //        ])
 //    }
 }

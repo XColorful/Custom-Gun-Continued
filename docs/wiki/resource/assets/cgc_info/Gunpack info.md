@@ -4,8 +4,8 @@
 > wiki 版本：`0.0.0`.0
 
 - `gunpack_version`/`version`（String）：
-- `name_location`/`name`（ResourceLocation）：
-- `tooltip_location`/`desc`（ResourceLocation）：
+- `name_lang`/`name`（MutableComponent）：
+- `tooltip_lang`/`desc`（MutableComponent）：
 - `license`（String）：
 - `authors`（List\<String>）：
 - `date`（String）：
@@ -14,8 +14,8 @@
 ```json
 {
 	"gunpack_version": "",
-	"name_location": "namespace:location",
-	"tooltip_location": "namespace:location",
+	"name_lang": "",
+	"tooltip_lang": "",
 	"license": "",
 	"authors": [
 		""
@@ -29,8 +29,8 @@
 > wiki verison: `0.0.0`.0
 
 - `gunpack_version`/`version`(String):
-- `name_location`/`name`(ResourceLocation):
-- `tooltip_location`/`desc`(ResourceLocation):
+- `name_lang`/`name`(MutableComponent):
+- `tooltip_lang`/`desc`(MutableComponent):
 - `license`(String):
 - `authors`(List\<String>):
 - `date`(String):
@@ -39,8 +39,8 @@
 ```json
 {
 	"gunpack_version": "",
-	"name_location": "namespace:location",
-	"tooltip_location": "namespace:location",
+	"name_lang": "",
+	"tooltip_lang": "",
 	"license": "",
 	"authors": [
 		""

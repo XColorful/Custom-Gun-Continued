@@ -20,6 +20,9 @@ import java.util.function.BiFunction;
 
 public enum GunProperty implements ResourceTag {
     // IGunDataAccess
+    MANAGER_GROUP(GunPropertyTag.MANAGER_GROUP,
+            IGunDataAccess::getManagerGroupTag,
+            IGunDataAccess::setManagerGroupTag),
     GUN_LOCATION(GunPropertyTag.GUN_LOCATION,
             IGunDataAccess::getGunLocation,
             IGunDataAccess::setGunLocation),
@@ -43,6 +46,9 @@ public enum GunProperty implements ResourceTag {
     LASER_COLOR(GunPropertyTag.LASER_COLOR,
             IGunDataAccess::getLaserColorInt,
             IGunDataAccess::setLaserColorInt),
+    TOOLTIP_MASK(GunPropertyTag.TOOLTIP_MASK,
+            IGunDataAccess::getTooltipMask,
+            IGunDataAccess::setTooltipMask),
 
     // IGunAmmoDataAccess
     DUMMY_AMMO(GunPropertyTag.DUMMY_AMMO,

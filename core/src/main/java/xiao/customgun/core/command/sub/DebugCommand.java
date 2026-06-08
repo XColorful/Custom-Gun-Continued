@@ -21,10 +21,14 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.CustomGun;
 import xiao.customgun.client.resource.AllAssetsManager;
 import xiao.customgun.core.api.entity.ILivingShooter;
+import xiao.customgun.core.init.registry.ModItems;
+import xiao.customgun.core.item.ammo.AmmoItem;
 import xiao.customgun.core.resource.AllDataManager;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.resource.ResourcePojoManager;
@@ -62,6 +66,7 @@ public class DebugCommand {
                 .then(Commands.literal("mixinTest")
                         .then(Commands.literal("ILivingShooter")
                                 .executes(DebugCommand::testLivingShooterMixin)))
+                .then(Commands.literal("testForgeMixin").executes(DebugCommand::testForgeMixin))
                 .then(Commands.argument(ENABLE, BoolArgumentType.bool())
                         .executes(DebugCommand::setValue));
     }
@@ -238,5 +243,12 @@ public class DebugCommand {
             source.sendFailure(Component.literal(player.getName() + " is not a ILivingShooter!"));
         }
         return Command.SINGLE_SUCCESS;
+    }
+
+    @SuppressWarnings("deprecation")
+    private static int testForgeMixin(CommandContext<CommandSourceStack> context) {
+        Item item = ModItems.AMMO.get();
+        context.getSource().sendSuccess(() -> Component.literal("" + ((AmmoItem)item).test(ItemStack.EMPTY)), false);
+        return 1;
     }
 }

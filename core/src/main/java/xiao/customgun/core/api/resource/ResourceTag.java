@@ -1,7 +1,10 @@
 package xiao.customgun.core.api.resource;
 
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.NotNull;
 import xiao.customgun.CustomGun;
+
+import java.util.Objects;
 
 public interface ResourceTag {
 
@@ -18,7 +21,7 @@ public interface ResourceTag {
     }
 
     String nullLocation = CustomGun.MOD_ID + ":null";
-    ResourceLocation NULL_LOCATION = CustomGun.getMcRegistry().createResourceLocation(nullLocation);
+    @NotNull ResourceLocation NULL_LOCATION = Objects.requireNonNull(CustomGun.getMcRegistry().createResourceLocation(nullLocation));
 
     @FunctionalInterface
     interface TriConsumer<A, B, C> {

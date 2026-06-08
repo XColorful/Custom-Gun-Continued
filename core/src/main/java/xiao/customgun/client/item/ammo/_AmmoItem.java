@@ -13,6 +13,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.client.api.resource.ClientResourceApi;
@@ -20,7 +21,7 @@ import xiao.customgun.client.resource.assets.info.GunpackInfo;
 import xiao.customgun.client.resource.instance.data.ClientAmmoIndexInstance;
 import xiao.customgun.core.api.item.IAmmo;
 
-import java.util.List;
+import java.util.function.Consumer;
 
 public class _AmmoItem {
 
@@ -34,20 +35,20 @@ public class _AmmoItem {
     }
 
     public static void appendHoverText(IAmmo _this,
-                                       ItemStack ammoItem, Item.TooltipContext context, List<Component> components, TooltipFlag isAdvanced) {
+                                       ItemStack ammoItem, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag tooltipFlag) {
         var ammoLocation = _this.getAmmoLocation(ammoItem);
         ClientAmmoIndexInstance clientAmmoIndexInstance = ClientResourceApi.getClientAmmoIndexInstance(ammoLocation);
         if (clientAmmoIndexInstance != null) {
             @NotNull MutableComponent tooltipLang = clientAmmoIndexInstance.getPojo().getTooltipLang()
                     .copy().withStyle(ChatFormatting.GRAY);
-            components.add(tooltipLang);
+            builder.accept(tooltipLang);
         }
 
         GunpackInfo gunpackInfo = ClientResourceApi.getGunpackInfo(ammoLocation);
         if (gunpackInfo != null) {
             @NotNull MutableComponent nameLang = gunpackInfo.getNameLang()
                     .copy().withStyle(ChatFormatting.BLUE).withStyle(ChatFormatting.ITALIC);
-            components.add(nameLang);
+            builder.accept(nameLang);
         }
     }
 }

@@ -48,6 +48,13 @@ public interface IGunStateAccess {
     int getLaserColorInt(ItemStack gunItem);
     void setLaserColorInt(ItemStack gunItem, int colorInt);
 
+    /**
+     * 获取tooltip掩码 (服务端处理数据，客户端读取)
+     */
+    boolean hasTooltipMask(ItemStack gunItem);
+    int getTooltipMask(ItemStack gunItem);
+    void setTooltipMask(ItemStack gunItem, int tooltipMask);
+
     // --------Deprecated--------
 
     @Deprecated static FireModeType getMainHandFireMode(LivingEntity livingEntity) {
@@ -59,6 +66,6 @@ public interface IGunStateAccess {
     }
 
     // ↓把Heat属性的计算方法放IGun，那不是到处拉屎吗?
-    @Deprecated float lerpRPM(ItemStack gunItem);
-    @Deprecated float lerpInaccuracy(ItemStack gunItem);
+    @Deprecated default float lerpRPM(ItemStack gunItem) { return 1f; }
+    @Deprecated default float lerpInaccuracy(ItemStack gunItem) { return 1f; }
 }

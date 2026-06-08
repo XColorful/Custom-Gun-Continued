@@ -19,6 +19,8 @@ public class AmmoBoxPropertyTag {
 
     // IAmmoBoxDataAccess
     public static final String AMMO_COUNT = "ammo_count";
+    public static final String BOX_LEVEL = "box_level";
+    public static final String STATUS_MASK = "status_mask";
 
     private AmmoBoxPropertyTag() {}
 }

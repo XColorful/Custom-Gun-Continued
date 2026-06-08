@@ -11,13 +11,14 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import org.jetbrains.annotations.NotNull;
 import xiao.customgun.client.item.ammo._AmmoItem;
 import xiao.customgun.core.api.item.IAmmo;
 import xiao.customgun.core.api.item.ammo.AmmoDataAccessor;
 import xiao.customgun.core.init.registry.ModItems;
 
-import java.util.List;
+import java.util.function.Consumer;
 
 public class AmmoItem extends Item implements IAmmo, AmmoDataAccessor {
 
@@ -36,9 +37,10 @@ public class AmmoItem extends Item implements IAmmo, AmmoDataAccessor {
         return name != null ? name : super.getName(ammoItem);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
-    public void appendHoverText(ItemStack ammoItem, TooltipContext context, List<Component> components, TooltipFlag isAdvanced) {
-        _AmmoItem.appendHoverText(this, ammoItem, context, components, isAdvanced);
+    public void appendHoverText(ItemStack ammoItem, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag tooltipFlag) {
+        _AmmoItem.appendHoverText(this, ammoItem, context, display, builder, tooltipFlag);
     }
 
     // TODO 删掉测试代码

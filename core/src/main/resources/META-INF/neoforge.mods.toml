@@ -17,6 +17,8 @@ description='''${mod_description}'''
 config="customgun.mixins.json"
 [[mixins]]
 config="customgunclient.mixins.json"
+[[mixins]]
+config="customgunneoforgeclient.mixins.json"
 
 [[dependencies.${mod_id}]]
 modId="${target_modloader}"

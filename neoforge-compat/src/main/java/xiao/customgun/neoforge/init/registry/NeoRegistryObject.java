@@ -7,6 +7,7 @@
 
 package xiao.customgun.neoforge.init.registry;
 
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import xiao.customgun.core.api.init.registry.IRegistryObject;
 
@@ -28,5 +29,10 @@ public class NeoRegistryObject<R, T extends R> implements IRegistryObject<T> {
     @Override
     public T get() {
         return registryObject.get();
+    }
+
+    @Override
+    public ResourceLocation getRegistryName() {
+        return registryObject.getId();
     }
 }

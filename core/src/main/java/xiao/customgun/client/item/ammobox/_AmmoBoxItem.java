@@ -8,9 +8,9 @@
 package xiao.customgun.client.item.ammobox;
 
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.DyedItemColor;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.item.IAmmoBox;
 import xiao.customgun.core.api.item.ammobox.IAmmoBoxGetter;
@@ -31,9 +31,7 @@ public class _AmmoBoxItem {
      * 原版逻辑不使用 {@link NBTUtils} 跨版本封装
      */
     private static int getDisplayComponent(ItemStack ammoItem) {
-        @Nullable CompoundTag display = NBTUtils.getCompoundTag(ammoItem, "display");
-        if (NBTUtils.hasKey(display, "color")) return NBTUtils.getInt(display, "color");
-        else return PlannedRefactor.MAGIC_AMMO_BOX_COLOR;
+        return DyedItemColor.getOrDefault(ammoItem, PlannedRefactor.MAGIC_AMMO_BOX_COLOR);
     }
 
     public static float getStatus(ItemStack ammoItem, @Nullable ClientLevel level, @Nullable LivingEntity entity, int seed) {

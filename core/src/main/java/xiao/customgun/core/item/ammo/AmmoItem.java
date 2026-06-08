@@ -11,9 +11,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import xiao.customgun.client.item.ammo._AmmoItem;
 import xiao.customgun.core.api.item.IAmmo;
 import xiao.customgun.core.api.item.ammo.AmmoDataAccessor;
@@ -39,8 +37,8 @@ public class AmmoItem extends Item implements IAmmo, AmmoDataAccessor {
     }
 
     @Override
-    public void appendHoverText(ItemStack ammoItem, @Nullable Level level, List<Component> components, TooltipFlag isAdvanced) {
-        _AmmoItem.appendHoverText(this, ammoItem, level, components, isAdvanced);
+    public void appendHoverText(ItemStack ammoItem, TooltipContext context, List<Component> components, TooltipFlag isAdvanced) {
+        _AmmoItem.appendHoverText(this, ammoItem, context, components, isAdvanced);
     }
 
     // TODO 删掉测试代码

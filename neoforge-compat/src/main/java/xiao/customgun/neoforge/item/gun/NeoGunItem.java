@@ -16,12 +16,6 @@ import java.util.function.Consumer;
 
 public class NeoGunItem extends GunItem {
 
-    @OnlyIn(Dist.CLIENT)
-    @Override
-    public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-        registerClientExtension(consumer);
-    }
-
     /**
      * 预留给扩展模组用:
      * <ul>

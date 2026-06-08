@@ -158,15 +158,35 @@ public class ResourceApi {
     // --------data instance--------
 
     public static @Nullable GunIndexInstance getGunIndexInstance(Identifier gunLocation) {
-        return DataInstanceManager.GUN_INDEX.get(gunLocation);
+        if (CustomGun.getSideExecutor().getLogicalSide().isServer()) return DataInstanceManager.GUN_INDEX.get(gunLocation);
+        else return SyncDataCache.INSTANCE.GUN_INDEX.get(gunLocation);
+    }
+    public static Set<Map.Entry<Identifier, GunIndexInstance>> getAllGunIndexInstance() {
+        if (CustomGun.getSideExecutor().getLogicalSide().isServer()) return DataInstanceManager.GUN_INDEX.entrySet();
+        else return SyncDataCache.INSTANCE.GUN_INDEX.entrySet();
     }
     public static @Nullable AttachmentIndexInstance getAttachmentIndexInstance(Identifier attachmentLocation) {
-        return DataInstanceManager.ATTACHMENT_INDEX.get(attachmentLocation);
+        if (CustomGun.getSideExecutor().getLogicalSide().isServer()) return DataInstanceManager.ATTACHMENT_INDEX.get(attachmentLocation);
+        else return SyncDataCache.INSTANCE.ATTACHMENT_INDEX.get(attachmentLocation);
+    }
+    public static Set<Map.Entry<Identifier, AttachmentIndexInstance>> getAllAttachmentIndexInstance() {
+        if (CustomGun.getSideExecutor().getLogicalSide().isServer()) return DataInstanceManager.ATTACHMENT_INDEX.entrySet();
+        else return SyncDataCache.INSTANCE.ATTACHMENT_INDEX.entrySet();
     }
     public static @Nullable AmmoIndexInstance getAmmoIndexInstance(Identifier ammoLocation) {
-        return DataInstanceManager.AMMO_INDEX.get(ammoLocation);
+        if (CustomGun.getSideExecutor().getLogicalSide().isServer()) return DataInstanceManager.AMMO_INDEX.get(ammoLocation);
+        else return SyncDataCache.INSTANCE.AMMO_INDEX.get(ammoLocation);
+    }
+    public static Set<Map.Entry<Identifier, AmmoIndexInstance>> getAllAmmoIndexInstance() {
+        if (CustomGun.getSideExecutor().getLogicalSide().isServer()) return DataInstanceManager.AMMO_INDEX.entrySet();
+        else return SyncDataCache.INSTANCE.AMMO_INDEX.entrySet();
     }
     public static @Nullable BlockIndexInstance getBlockIndexInstance(Identifier blockLocation) {
-        return DataInstanceManager.BLOCK_INDEX.get(blockLocation);
+        if (CustomGun.getSideExecutor().getLogicalSide().isServer()) return DataInstanceManager.BLOCK_INDEX.get(blockLocation);
+        else return SyncDataCache.INSTANCE.BLOCK_INDEX.get(blockLocation);
+    }
+    public static Set<Map.Entry<Identifier, BlockIndexInstance>> getAllBlockIndexInstance() {
+        if (CustomGun.getSideExecutor().getLogicalSide().isServer()) return DataInstanceManager.BLOCK_INDEX.entrySet();
+        else return SyncDataCache.INSTANCE.BLOCK_INDEX.entrySet();
     }
 }

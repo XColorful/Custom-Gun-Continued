@@ -4,18 +4,19 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.minecraft.capability.IInventoryCapability;
 
 public class ForgeInventoryCapability implements IInventoryCapability {
 
-    private final @NotNull net.minecraftforge.items.IItemHandler itemHandler;
-    private ForgeInventoryCapability(@NotNull net.minecraftforge.items.IItemHandler itemHandler) {
+    private final @NotNull IItemHandler itemHandler;
+    private ForgeInventoryCapability(@NotNull IItemHandler itemHandler) {
         this.itemHandler = itemHandler;
     }
     public static ForgeInventoryCapability fromLivingEntity(LivingEntity livingEntity, @Nullable Direction facing) {
-        net.minecraftforge.items.IItemHandler itemHandler = livingEntity.getCapability(ForgeCapabilities.ITEM_HANDLER, facing).orElse(null);
+        IItemHandler itemHandler = livingEntity.getCapability(ForgeCapabilities.ITEM_HANDLER, facing).orElse(null);
         if (itemHandler != null) return new ForgeInventoryCapability(itemHandler);
         else return null;
     }

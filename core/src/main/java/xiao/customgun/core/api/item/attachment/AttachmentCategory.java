@@ -7,6 +7,8 @@
 
 package xiao.customgun.core.api.item.attachment;
 
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.item.GunProperty;
 import xiao.customgun.core.api.resource.ResourceTag;
@@ -21,39 +23,48 @@ public enum AttachmentCategory implements ResourceTag.CategoryTag {
     /**
      * 枪口组件
      */
-    MUZZLE(AttachmentCategoryTag.MUZZLE, null),
+    MUZZLE(AttachmentCategoryTag.MUZZLE, null,
+            Component.translatable("customgun.attachmentcategory.muzzle")),
     /**
      * 激光指示器
      */
-    LASER(AttachmentCategoryTag.LASER, null),
+    LASER(AttachmentCategoryTag.LASER, null,
+            Component.translatable("customgun.attachmentcategory.laser")),
     /**
      * 握把
      */
-    GRIP(AttachmentCategoryTag.GRIP, null),
+    GRIP(AttachmentCategoryTag.GRIP, null,
+            Component.translatable("customgun.attachmentcategory.grip")),
     /**
      * 扩容弹夹（匣）
      */
-    MAGAZINE(AttachmentCategoryTag.MAGAZINE, AttachmentCategoryTag.MAGAZINE_OLD1),
+    MAGAZINE(AttachmentCategoryTag.MAGAZINE, AttachmentCategoryTag.MAGAZINE_OLD1,
+            Component.translatable("customgun.attachmentcategory.magazine")),
     /**
      * 瞄具
      */
-    SCOPE(AttachmentCategoryTag.SCOPE, null),
+    SCOPE(AttachmentCategoryTag.SCOPE, null,
+            Component.translatable("customgun.attachmentcategory.scope")),
     /**
      * 枪托
      */
-    STOCK(AttachmentCategoryTag.STOCK, null),
+    STOCK(AttachmentCategoryTag.STOCK, null,
+            Component.translatable("customgun.attachmentcategory.stock")),
     /**
      * 用于兼容已有网络包解析
      */
-    NONE(AttachmentCategoryTag.NONE, null);
+    NONE(AttachmentCategoryTag.NONE, null,
+            Component.translatable("customgun.attachmentcategory.none"));
 
     public final String tagName;
     public final String categoryName;
     public final String categoryNameOld;
-    AttachmentCategory(String name, String nameOld) {
+    public final MutableComponent categoryLang;
+    AttachmentCategory(String name, String nameOld, MutableComponent lang) {
         this.tagName = GunProperty.ATTACHMENT_PREFIX.getTagName() + name;
         this.categoryName = name;
         this.categoryNameOld = nameOld;
+        this.categoryLang = lang;
     }
 
     @Override public String getTagName() {
@@ -61,6 +72,10 @@ public enum AttachmentCategory implements ResourceTag.CategoryTag {
     }
     @Override public String getCategoryName() {
         return this.categoryName;
+    }
+
+    public final MutableComponent getCategoryLang() {
+        return this.categoryLang;
     }
 
     private static final Map<String, AttachmentCategory> CATEGORIES = new HashMap<>();

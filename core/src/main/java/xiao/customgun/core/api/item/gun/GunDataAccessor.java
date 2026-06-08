@@ -20,20 +20,30 @@ import xiao.customgun.client.resource.instance.data.ClientAttachmentIndexInstanc
 import xiao.customgun.core.api.item.GunProperty;
 import xiao.customgun.core.api.item.IAmmo;
 import xiao.customgun.core.api.item.IAttachment;
+import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.api.item.ammo.IAmmoGetter;
 import xiao.customgun.core.api.item.attachment.AttachmentCategory;
 import xiao.customgun.core.api.item.attachment.AttachmentNBTAccessor;
 import xiao.customgun.core.api.item.attachment.IAttachmentGetter;
+import xiao.customgun.core.api.minecraft.capability.IInventoryCapability;
 import xiao.customgun.core.api.resource.ResourceApi;
 import xiao.customgun.core.api.resource.ResourceTag;
 import xiao.customgun.core.developer.PlannedRefactor;
-import xiao.customgun.core.resource.data.data.GunData;
-import xiao.customgun.core.resource.data.index.GunIndex;
+import xiao.customgun.core.resource.instance.data.GunIndexInstance;
 import xiao.customgun.core.util.NBTUtils;
 
 public interface GunDataAccessor extends IGunDataAccess {
 
     // --------IGunDataAccess--------
+
+    @Override
+    default @Nullable String getManagerGroupTag(ItemStack gunItem) {
+        return NBTUtils.getString(gunItem, GunProperty.MANAGER_GROUP.getTagName());
+    }
+    @Override
+    default void setManagerGroupTag(ItemStack gunItem, String managerGroupTag) {
+        NBTUtils.setString(gunItem, GunProperty.MANAGER_GROUP.getTagName(), managerGroupTag);
+    }
 
     @Override
     default @NotNull Identifier getGunLocation(ItemStack gunItem) {
@@ -45,23 +55,19 @@ public interface GunDataAccessor extends IGunDataAccess {
         NBTUtils.setResourceLocation(gunItem, GunProperty.GUN_LOCATION.getTagName(), gunLocation);
     }
     @Override
-    default @Nullable Identifier getGunDisplayLocation(ItemStack gunItem) {
+    default @NotNull Identifier getGunDisplayLocation(ItemStack gunItem) {
         var gunDisplayLocation = NBTUtils.getResourceLocation(gunItem, GunProperty.GUN_DISPLAY_LOCATION.getTagName());
-        return gunDisplayLocation;
-    }
+        if (gunDisplayLocation != null) return gunDisplayLocation;
 
-    // --------IGunPojoGetter--------
+        var gunLocation = this.getGunLocation(gunItem);
+        GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(gunLocation);
+        if (gunIndexInstance == null) return ResourceTag.NULL_LOCATION;
 
-    @Override
-    default @Nullable GunIndex getGunIndex(ItemStack gunItem) {
-        var indexLocation = this.getGunLocation(gunItem);
-        return ResourceApi.getGunIndex(indexLocation);
+        return gunIndexInstance.getPojo().getDisplayIndexLocation();
     }
     @Override
-    default @Nullable GunData getGunData(ItemStack gunItem) {
-        @Nullable GunIndex gunIndex = this.getGunIndex(gunItem);
-        if (gunIndex == null) return null;
-        return ResourceApi.getGunData(gunIndex.getDataLocation());
+    default void setGunDisplayLocation(ItemStack gunItem, ResourceLocation gunDisplayLocation) {
+        NBTUtils.setResourceLocation(gunItem, GunProperty.GUN_DISPLAY_LOCATION.getTagName(), gunDisplayLocation);
     }
 
     // --------IGunStateAccess--------
@@ -154,6 +160,19 @@ public interface GunDataAccessor extends IGunDataAccess {
         NBTUtils.setInt(gunItem, GunProperty.LASER_COLOR.getTagName(), colorInt);
     }
 
+    @Override
+    default boolean hasTooltipMask(ItemStack gunItem) {
+        return NBTUtils.hasKey(gunItem, GunProperty.TOOLTIP_MASK.getTagName());
+    }
+    @Override
+    default int getTooltipMask(ItemStack gunItem) {
+        return NBTUtils.getInt(gunItem, GunProperty.TOOLTIP_MASK.getTagName());
+    }
+    @Override
+    default void setTooltipMask(ItemStack gunItem, int tooltipMask) {
+        NBTUtils.setInt(gunItem, GunProperty.TOOLTIP_MASK.getTagName(), tooltipMask);
+    }
+
     // --------IGunAmmoDataAccess--------
 
     @Override
@@ -165,13 +184,13 @@ public interface GunDataAccessor extends IGunDataAccess {
         IAmmo iAmmo = IAmmoGetter.fromItemStack(ammoItem);
         if (iAmmo == null) return 0;
 
-        @Nullable GunData gunData = this.getGunData(gunItem);
-        if (gunData == null) return 0;
+        GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(this.getGunLocation(gunItem));
+        if (gunIndexInstance == null) return 0;
 
         var customData = NBTUtils.getCustomData(ammoItem);
         if (customData == null) return 0;
         @NotNull CompoundTag customDataTag = NBTUtils.getCustomDataTag(customData);
-        if (!iAmmo.getAmmoLocation(customDataTag).equals(gunData.getAmmoLocation())
+        if (!iAmmo.getAmmoLocation(customDataTag).equals(gunIndexInstance.getGunData().getAmmoLocation())
                 && !iAmmo.isAlmightyAmmo(customDataTag)) {
             return 0;
         }
@@ -220,19 +239,42 @@ public interface GunDataAccessor extends IGunDataAccess {
 
     @Override
     default boolean useInventoryAmmo(ItemStack gunItem) {
-        @Nullable GunData gunData = this.getGunData(gunItem);
-        if (gunData == null) return false;
-        return gunData.getReloadData().getAmmoFeedType() == AmmoFeedType.INVENTORY;
+        GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(this.getGunLocation(gunItem));
+        if (gunIndexInstance == null) return false;
+        return gunIndexInstance.getGunData().getReloadData().getAmmoFeedType() == AmmoFeedType.INVENTORY;
     }
     @Override
     default boolean hasInventoryAmmo(LivingEntity livingEntity, ItemStack gunItem) {
-        // TODO
+        IGun iGun = IGunGetter.fromItemStack(gunItem);
+        if (iGun == null) return false;
+
+        IInventoryCapability inventoryCapability = CustomGun.getCapabilityProvider().getItemHandler(livingEntity, null);
+        if (inventoryCapability == null) return false;
+
+        for (int i = 0; i < inventoryCapability.getContainerSize(); i++) {
+            ItemStack ammoItem = inventoryCapability.getItemReadOnly(i);
+
+            if (iGun.isMatchedAmmo(gunItem, ammoItem)) {
+                return true;
+            }
+        }
         return false;
     }
     @Override
     default int getInventoryAmmoCount(LivingEntity livingEntity, ItemStack gunItem) {
-        // TODO
-        return 0;
+        IGun iGun = IGunGetter.fromItemStack(gunItem);
+        if (iGun == null) return 0;
+
+        IInventoryCapability inventoryCapability = CustomGun.getCapabilityProvider().getItemHandler(livingEntity, null);
+        if (inventoryCapability == null) return 0;
+
+        int count = 0;
+        for (int i = 0; i < inventoryCapability.getContainerSize(); i++) {
+            ItemStack ammoItem = inventoryCapability.getItemReadOnly(i);
+
+            count += iGun.consumableAmmoCount(gunItem, ammoItem);
+        }
+        return count;
     }
 
     @Override
@@ -308,20 +350,30 @@ public interface GunDataAccessor extends IGunDataAccess {
     @Override
     default boolean isAttachmentEnabled(ItemStack gunItem, AttachmentCategory attachmentCategory) {
         if (attachmentCategory == AttachmentCategory.NONE) return false;
-        // TODO
-        return false;
+        IGun iGun = IGunGetter.fromItemStack(gunItem);
+        if (iGun == null) return false;
+
+        GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(iGun.getGunLocation(gunItem));
+        if (gunIndexInstance == null) return false;
+
+        return gunIndexInstance.getGunData().getAllowAttachmentTypes().contains(attachmentCategory);
     }
     @Override
     default boolean canInstallAttachment(ItemStack gunItem, ItemStack attachmentItem) {
         IAttachment iAttachment = IAttachmentGetter.fromItemStack(attachmentItem);
         if (iAttachment == null) return false;
 
+        IGun iGun = IGunGetter.fromItemStack(gunItem);
+        if (iGun == null) return false;
+
+        var gunLocation = iGun.getGunLocation(gunItem);
+        var attachmentLocation = iAttachment.getAttachmentLocation(attachmentItem);
         AttachmentCategory category = iAttachment.getAttachmentCategory(attachmentItem);
         if (!this.isAttachmentEnabled(gunItem, category)) {
             return false;
         }
-        // TODO 查找Tag
-        return false;
+        // TODO AllowAttachmentTagMatcher
+        return true;
     }
 
     @Override
@@ -357,9 +409,9 @@ public interface GunDataAccessor extends IGunDataAccess {
 
     @Override
     default @NotNull Identifier getBuiltinAttachmentLocation(ItemStack gunItem, AttachmentCategory attachmentCategory) {
-        @Nullable GunData gunData = this.getGunData(gunItem);
-        if (gunData == null) return ResourceTag.NULL_LOCATION;
-        var location = gunData.getBuiltinAttachments().get(attachmentCategory);
+        GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(this.getGunLocation(gunItem));
+        if (gunIndexInstance == null) return ResourceTag.NULL_LOCATION;
+        var location = gunIndexInstance.getGunData().getBuiltinAttachments().get(attachmentCategory);
         return location != null ? location : ResourceTag.NULL_LOCATION;
     }
 

@@ -9,12 +9,22 @@ package xiao.customgun.core.api.item.ammobox;
 
 import net.minecraft.world.item.ItemStack;
 import xiao.customgun.core.api.item.AmmoBoxProperty;
+import xiao.customgun.core.api.item.AmmoBoxPropertyTag;
 import xiao.customgun.core.api.item.ammo.AmmoDataAccessor;
 import xiao.customgun.core.util.NBTUtils;
 
 public interface AmmoBoxDataAccessor extends AmmoDataAccessor, IAmmoBoxDataAccess {
 
     // --------IAmmoDataAccess--------
+
+    @Override
+    default int getBoxLevel(ItemStack ammoItem) {
+        return Math.max(0, NBTUtils.getInt(ammoItem, AmmoBoxPropertyTag.BOX_LEVEL));
+    }
+    @Override
+    default void setBoxLevel(ItemStack ammoItem, int boxLevel) {
+        NBTUtils.setInt(ammoItem, AmmoBoxPropertyTag.BOX_LEVEL, boxLevel);
+    }
 
     @Override
     default int getAmmoCount(ItemStack ammoItem) {
@@ -26,4 +36,9 @@ public interface AmmoBoxDataAccessor extends AmmoDataAccessor, IAmmoBoxDataAcces
     }
 
     // --------IAmmoBoxDataAccess--------
+
+    @Override
+    default int getStatusMask(ItemStack ammoItem) {
+        return AmmoBoxStatus.StatusMask.fromAmmoBox(ammoItem).toMask();
+    }
 }

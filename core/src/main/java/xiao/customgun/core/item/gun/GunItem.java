@@ -8,6 +8,7 @@
 package xiao.customgun.core.item.gun;
 
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
@@ -43,7 +44,7 @@ public class GunItem extends Item implements IGun, GunDataAccessor {
      * 阻止玩家手臂挥动
      */
     @Override
-    public boolean onEntitySwing(ItemStack gunItem, LivingEntity livingShooter) {
+    public boolean onEntitySwing(ItemStack gunItem, LivingEntity livingShooter, InteractionHand hand) {
         return true;
     }
 

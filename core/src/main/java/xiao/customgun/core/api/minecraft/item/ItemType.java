@@ -7,6 +7,7 @@
 
 package xiao.customgun.core.api.minecraft.item;
 
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.CustomGun;
 import xiao.customgun.core.api.resource.ResourceTag;
@@ -37,10 +38,12 @@ public enum ItemType implements ResourceTag.RegistryTag {
     public final String typeName;
     public final String typeNameOld;
     public final String registryName;
+    public final ResourceLocation registryLocation;
     ItemType(String name, String nameOld) {
         this.typeName = name;
         this.typeNameOld = nameOld;
         this.registryName = String.format("%s:%s", CustomGun.MOD_ID, this.typeName);
+        this.registryLocation = CustomGun.getMcRegistry().createResourceLocation(this.registryName);
     }
 
     @Override public String getTagName() {
@@ -48,6 +51,9 @@ public enum ItemType implements ResourceTag.RegistryTag {
     }
     @Override public String getRegistryName() {
         return this.registryName;
+    }
+    @Override public ResourceLocation getRegistryLocation() {
+        return this.registryLocation;
     }
 
     private static final Map<String, ItemType> ITEM_TYPES = new HashMap<>();

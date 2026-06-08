@@ -7,6 +7,7 @@
 
 package xiao.customgun.core.api.minecraft.recipe;
 
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.CustomGun;
 import xiao.customgun.core.api.resource.ResourceTag;
@@ -25,11 +26,13 @@ public enum CustomRecipeType implements ResourceTag.RegistryTag {
     public final String typeNameOld;
     public final String registryName;
     public final String registryNameOld;
+    public final ResourceLocation registryLocation;
     CustomRecipeType(String name, String nameOld) {
         this.typeName = name;
         this.typeNameOld = nameOld;
         this.registryName = String.format("%s:%s", CustomGun.MOD_ID, this.typeName);
         this.registryNameOld = String.format("%s:%s", CustomGun.MOD_ID_OLD1, this.typeNameOld);
+        this.registryLocation = CustomGun.getMcRegistry().createResourceLocation(this.registryName);
     }
 
     @Override public String getTagName() {
@@ -43,6 +46,9 @@ public enum CustomRecipeType implements ResourceTag.RegistryTag {
     }
     public String getRegistryNameOld() {
         return this.registryNameOld;
+    }
+    @Override public ResourceLocation getRegistryLocation() {
+        return this.registryLocation;
     }
 
     private static final Map<String, CustomRecipeType> RECIPE_TYPES = new HashMap<>();

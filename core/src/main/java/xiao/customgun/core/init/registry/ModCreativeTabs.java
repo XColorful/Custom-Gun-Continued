@@ -12,9 +12,11 @@ import net.minecraft.world.item.ItemStack;
 import xiao.customgun.CustomGun;
 import xiao.customgun.core.api.init.registry.IRegistrar;
 import xiao.customgun.core.api.init.registry.IRegistryObject;
+import xiao.customgun.core.api.minecraft.tab.AmmoTab;
 import xiao.customgun.core.api.minecraft.tab.AttachmentTab;
 import xiao.customgun.core.api.minecraft.tab.GunTab;
 
+import static xiao.customgun.core.api.item.ammo.AmmoCategory.*;
 import static xiao.customgun.core.api.item.attachment.AttachmentCategory.*;
 import static xiao.customgun.core.api.item.gun.GunCategory.*;
 
@@ -22,10 +24,19 @@ public class ModCreativeTabs {
     public static final IRegistrar<CreativeModeTab> TABS = CustomGun.getRegistrarFactory().createCreativeTabs(CustomGun.MOD_ID);
 
 
+    // --------Ammo--------
+
+    public static IRegistryObject<CreativeModeTab> AMMO_TAB = TABS.register(AMMO.getCategoryName(), () -> CreativeModeTab.builder()
+            .title(AMMO.getCategoryLang())
+            .icon(() -> ItemStack.EMPTY)
+            .displayItems((parameters, output) -> output.acceptAll(AmmoTab.buildAmmoItems(AMMO)))
+            .build()
+    );
+
     // --------AttachmentCategory--------
 
     public static IRegistryObject<CreativeModeTab> ATTACHMENT_MUZZLE_TAB = TABS.register(MUZZLE.getCategoryName(), () -> CreativeModeTab.builder()
-            .title(MUZZLE.getCategoryLang())
+            .title(MUZZLE.getCategoryLang()).withTabsBefore(AMMO_TAB.getRegistryName())
             .icon(() -> ItemStack.EMPTY)
             .displayItems((parameters, output) -> output.acceptAll(AttachmentTab.buildAttachmentItems(MUZZLE)))
             .build()

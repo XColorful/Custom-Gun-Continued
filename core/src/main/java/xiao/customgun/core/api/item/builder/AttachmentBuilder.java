@@ -26,7 +26,7 @@ public class AttachmentBuilder {
         ItemStack attachmentItem = new ItemStack(attachment);
         IAttachment iAttachment = IAttachmentGetter.fromItemStack(attachmentItem);
         if(iAttachment != null) return new AttachmentBuilder(iAttachment, attachmentItem);
-        else throw new IllegalArgumentException("Item is not a attachment");
+        else throw new IllegalArgumentException("Item is not a IAttachment");
     }
 
     public <T> AttachmentBuilder setProperty(AttachmentProperty property, Class<T> type, T value) {

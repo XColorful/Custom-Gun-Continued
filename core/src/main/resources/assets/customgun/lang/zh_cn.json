@@ -16,5 +16,7 @@
   "customgun.attachmentcategory.magazine": "扩容弹匣",
   "customgun.attachmentcategory.scope": "瞄具",
   "customgun.attachmentcategory.stock": "枪托",
-  "customgun.attachmentcategory.none": "未知配件"
+  "customgun.attachmentcategory.none": "未知配件",
+
+  "customgun.ammocategory.ammo": "子弹"
 }

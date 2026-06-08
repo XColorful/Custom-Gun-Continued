@@ -11,21 +11,21 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.minecraft.capability.IInventoryCapability;
 
 public class NeoInventoryCapability implements IInventoryCapability {
 
-    private final @NotNull net.neoforged.neoforge.items.IItemHandler itemHandler;
-    private NeoInventoryCapability(@NotNull net.neoforged.neoforge.items.IItemHandler itemHandler) {
+    private final @NotNull IItemHandler itemHandler;
+    private NeoInventoryCapability(@NotNull IItemHandler itemHandler) {
         this.itemHandler = itemHandler;
     }
     public static NeoInventoryCapability fromLivingEntity(LivingEntity livingEntity, @Nullable Direction facing) {
-        net.neoforged.neoforge.items.IItemHandler itemHandler;
+        IItemHandler itemHandler;
         if (facing != null) itemHandler = livingEntity.getCapability(Capabilities.ItemHandler.ENTITY_AUTOMATION, facing);
         else itemHandler = livingEntity.getCapability(Capabilities.ItemHandler.ENTITY, null);
-
         if (itemHandler != null) return new NeoInventoryCapability(itemHandler);
         else return null;
     }

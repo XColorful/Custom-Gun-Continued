@@ -7,6 +7,7 @@
 
 package xiao.customgun.neoforge.init.registry;
 
+import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -40,5 +41,16 @@ public class NeoRegistrar<T> implements IRegistrar<T> {
         } else {
             CustomGun.LOGGER.error("Invalid registrar hook provided for NeoRegistrar: {}", registrarHook.getClass().getName());
         }
+    }
+
+    // --------hack--------
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <V extends T> IRegistryObject<V> registerItem(String name, Class<? extends V> clazz) {
+        Class<? extends Item> itemClass = (Class<? extends Item>) clazz;
+        Supplier<? extends Item> forgeItemSupplier = NeoModItems.getNeoSupplier(itemClass);
+        Supplier<? extends V> finalSupplier = (Supplier<? extends V>) forgeItemSupplier;
+        return this.register(name, finalSupplier);
     }
 }

@@ -28,6 +28,8 @@ import xiao.customgun.core.api.minecraft.ICapabilityProvider;
 import xiao.customgun.core.api.minecraft.IMcRegistry;
 import xiao.customgun.core.api.network.INetworkAdapter;
 import xiao.customgun.core.api.network.INetworkHook;
+import xiao.customgun.core.init.registry.ModCreativeTabs;
+import xiao.customgun.core.init.registry.ModItems;
 import xiao.customgun.core.init.registry.ModRecipe;
 import xiao.customgun.core.init.registry.ModSounds;
 import xiao.customgun.neoforge.common.NeoSideExecutor;
@@ -75,6 +77,8 @@ public class CustomGunNeoforge {
 
         NeoCapabilityRegistry.onRegisterCapabilities(modEventBus);
 
+        ModItems.ITEMS.registerAll(modEventBus);
+        ModCreativeTabs.TABS.registerAll(modEventBus);
         ModRecipe.RECIPE_SERIALIZERS.registerAll(modEventBus);
         ModRecipe.RECIPE_SERIALIZERS_OLD1.registerAll(modEventBus);
         ModRecipe.RECIPE_TYPES.registerAll(modEventBus);

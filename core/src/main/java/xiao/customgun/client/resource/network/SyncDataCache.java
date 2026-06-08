@@ -66,10 +66,10 @@ public final class SyncDataCache {
     public @NotNull volatile Map<Identifier, GunAttachmentData> gunAttachmentData = new HashMap<>();
 
     // data instance
-    public final Map<ResourceLocation, GunIndexInstance> GUN_INDEX = new HashMap<>();
-    public final Map<ResourceLocation, AttachmentIndexInstance> ATTACHMENT_INDEX = new HashMap<>();
-    public final Map<ResourceLocation, AmmoIndexInstance> AMMO_INDEX = new HashMap<>();
-    public final Map<ResourceLocation, BlockIndexInstance> BLOCK_INDEX = new HashMap<>();
+    public final Map<Identifier, GunIndexInstance> GUN_INDEX = new HashMap<>();
+    public final Map<Identifier, AttachmentIndexInstance> ATTACHMENT_INDEX = new HashMap<>();
+    public final Map<Identifier, AmmoIndexInstance> AMMO_INDEX = new HashMap<>();
+    public final Map<Identifier, BlockIndexInstance> BLOCK_INDEX = new HashMap<>();
 
     @ApiStatus.Internal
     public void clear() {

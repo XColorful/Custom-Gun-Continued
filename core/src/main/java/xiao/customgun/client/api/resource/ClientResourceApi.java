@@ -40,7 +40,7 @@ public class ClientResourceApi {
 
     // --------gunpack info--------
 
-    public static @Nullable GunpackInfo getGunpackInfo(ResourceLocation gunpackInfoLocation) {
+    public static @Nullable GunpackInfo getGunpackInfo(Identifier gunpackInfoLocation) {
         var assetsManager = AllAssetsManager.INSTANCE.gunpackInfoManager;
         return assetsManager != null ? assetsManager.getPojo(gunpackInfoLocation) : null;
     }

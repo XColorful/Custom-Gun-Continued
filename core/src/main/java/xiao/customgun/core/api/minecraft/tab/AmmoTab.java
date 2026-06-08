@@ -7,7 +7,7 @@
 
 package xiao.customgun.core.api.minecraft.tab;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import xiao.customgun.core.api.item.AmmoProperty;
 import xiao.customgun.core.api.item.ammo.AmmoCategory;
@@ -23,7 +23,7 @@ import java.util.Map;
 
 public class AmmoTab {
 
-    public static Comparator<Map.Entry<ResourceLocation, AmmoIndexInstance>> indexSort() {
+    public static Comparator<Map.Entry<Identifier, AmmoIndexInstance>> indexSort() {
         return Comparator.comparingInt(entry -> entry.getValue().getPojo().getSlotSort());
     }
 
@@ -34,7 +34,7 @@ public class AmmoTab {
             {
                 ItemStack ammoItem = AmmoBuilder.create(ModItems.AMMO.get())
                         .setProperty(AmmoProperty.AMMO_LOCATION,
-                                ResourceLocation.class,
+                                Identifier.class,
                                 entry.getKey())
                         .build();
                 ammoItems.add(ammoItem);

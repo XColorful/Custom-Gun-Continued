@@ -7,7 +7,7 @@
 
 package xiao.customgun.core.api.minecraft.tab;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import xiao.customgun.core.api.item.AttachmentProperty;
 import xiao.customgun.core.api.item.attachment.AttachmentCategory;
@@ -23,7 +23,7 @@ import java.util.Map;
 
 public class AttachmentTab {
 
-    public static Comparator<Map.Entry<ResourceLocation, AttachmentIndexInstance>> indexSort() {
+    public static Comparator<Map.Entry<Identifier, AttachmentIndexInstance>> indexSort() {
         return Comparator.comparingInt(entry -> entry.getValue().getPojo().getSlotSort());
     }
 
@@ -39,7 +39,7 @@ public class AttachmentTab {
                 ItemStack attachmentItem = AttachmentBuilder.create(ModItems.ATTACHMENT.get())
                         // 配件ResourceLocation
                         .setProperty(AttachmentProperty.ATTACHMENT_LOCATION,
-                                ResourceLocation.class,
+                                Identifier.class,
                                 entry.getKey())
                         // 配件类型
                         .setProperty(AttachmentProperty.ATTACHMENT_CATEGORY,

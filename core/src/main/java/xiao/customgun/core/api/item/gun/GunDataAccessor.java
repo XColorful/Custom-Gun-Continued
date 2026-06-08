@@ -66,7 +66,7 @@ public interface GunDataAccessor extends IGunDataAccess {
         return gunIndexInstance.getPojo().getDisplayIndexLocation();
     }
     @Override
-    default void setGunDisplayLocation(ItemStack gunItem, ResourceLocation gunDisplayLocation) {
+    default void setGunDisplayLocation(ItemStack gunItem, Identifier gunDisplayLocation) {
         NBTUtils.setResourceLocation(gunItem, GunProperty.GUN_DISPLAY_LOCATION.getTagName(), gunDisplayLocation);
     }
 

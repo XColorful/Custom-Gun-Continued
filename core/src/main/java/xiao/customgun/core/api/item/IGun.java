@@ -7,8 +7,10 @@
 
 package xiao.customgun.core.api.item;
 
+import xiao.customgun.core.api.gun.IGunRuntime;
 import xiao.customgun.core.api.item.gun.IGunDataAccess;
 import xiao.customgun.core.api.item.gun.IGunGetter;
 
-public interface IGun extends IGunDataAccess, IGunGetter {
+public interface IGun extends IGunRuntime, IAnimationItem,
+        IGunDataAccess, IGunGetter {
 }

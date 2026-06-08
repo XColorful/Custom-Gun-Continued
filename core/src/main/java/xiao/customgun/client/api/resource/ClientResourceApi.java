@@ -21,6 +21,7 @@ import xiao.customgun.client.resource.assets.display.AmmoDisplay;
 import xiao.customgun.client.resource.assets.display.AttachmentDisplay;
 import xiao.customgun.client.resource.assets.display.BlockDisplay;
 import xiao.customgun.client.resource.assets.display.GunDisplay;
+import xiao.customgun.client.resource.assets.info.GunpackInfo;
 import xiao.customgun.client.resource.assets.model.BedrockModel;
 import xiao.customgun.client.resource.assets.script.AssetsScript;
 import xiao.customgun.client.resource.instance.assets.GunDisplayInstance;
@@ -30,14 +31,19 @@ import xiao.customgun.client.resource.instance.data.ClientBlockIndexInstance;
 import xiao.customgun.client.resource.instance.data.ClientGunIndexInstance;
 import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.api.item.gun.IGunGetter;
-import xiao.customgun.core.api.resource.ResourceApi;
-import xiao.customgun.core.resource.data.index.GunIndex;
 
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 public class ClientResourceApi {
+
+    // --------gunpack info--------
+
+    public static @Nullable GunpackInfo getGunpackInfo(ResourceLocation gunpackInfoLocation) {
+        var assetsManager = AllAssetsManager.INSTANCE.gunpackInfoManager;
+        return assetsManager != null ? assetsManager.getPojo(gunpackInfoLocation) : null;
+    }
 
     // --------animation--------
 
@@ -128,20 +134,8 @@ public class ClientResourceApi {
         IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return null;
 
-        var gunLocation = iGun.getGunLocation(gunItem);
-        GunIndex gunIndex = ResourceApi.getGunIndex(gunLocation);
-        if (gunIndex == null) { // 没有索引默认是无效数据
-            return null;
-        }
-
-        // 优先用NBT指定的Display
-        @Nullable var displayLocation = iGun.getGunDisplayLocation(gunItem);
-        if (displayLocation != null) {
-            return getGunDisplayInstance(displayLocation, gunIndex.getDisplayIndexLocation());
-        }
-
-        // 一般的Display
-        return getGunDisplayInstance(gunIndex.getDisplayIndexLocation());
+        var displayLocation = iGun.getGunDisplayLocation(gunItem);
+        return getGunDisplayInstance(displayLocation);
     }
     public static @Nullable GunDisplayInstance getGunDisplayInstance(ResourceLocation displayLocation) {
         return AssetsInstanceManager.GUN_DISPLAY.get(displayLocation);

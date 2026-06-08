@@ -1,0 +1,12 @@
+{
+  "package": "xiao.customgun.forgeclient.mixin",
+  "minVersion": "0.8",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "customgun.refmap.json",
+  "client": [
+    "item.AmmoItemMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

@@ -7,6 +7,7 @@
 
 package xiao.customgun.forge.init.registry;
 
+import net.minecraft.world.item.Item;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
@@ -40,5 +41,16 @@ public class ForgeRegistrar<T> implements IRegistrar<T> {
         } else {
             CustomGun.LOGGER.error("Invalid registrar hook provided for ForgeRegistrar: {}", registrarHook.getClass().getName());
         }
+    }
+
+    // --------hack--------
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <V extends T> IRegistryObject<V> registerItem(String name, Class<? extends V> clazz) {
+        Class<? extends Item> itemClass = (Class<? extends Item>) clazz;
+        Supplier<? extends Item> forgeItemSupplier = ForgeModItems.getForgeSupplier(itemClass);
+        Supplier<? extends V> finalSupplier = (Supplier<? extends V>) forgeItemSupplier;
+        return this.register(name, finalSupplier);
     }
 }

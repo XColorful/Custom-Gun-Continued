@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import xiao.customgun.client.item.ammo._AmmoItem;
 import xiao.customgun.core.api.item.IAmmo;
 import xiao.customgun.core.api.item.ammo.AmmoDataAccessor;
+import xiao.customgun.core.api.minecraft.item.ItemType;
 import xiao.customgun.core.init.registry.ModItems;
 
 import java.util.List;
@@ -25,7 +26,7 @@ public class AmmoItem extends Item implements IAmmo, AmmoDataAccessor {
         super(properties);
     }
     public AmmoItem() {
-        this(ModItems.CUSTOM_ITEM_PROPERTY);
+        this(ModItems.CUSTOM_ITEM_PROPERTY.apply(ItemType.AMMO.getRegistryLocation()));
     }
 
     // --------Client--------

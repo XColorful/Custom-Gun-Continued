@@ -22,6 +22,7 @@ import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.api.item.gun.GunDataAccessor;
 import xiao.customgun.core.api.item.gun.IGunGetter;
 import xiao.customgun.core.api.minecraft.capability.IInventoryCapability;
+import xiao.customgun.core.api.minecraft.item.ItemType;
 import xiao.customgun.core.gui.tooltip.GunTooltip;
 import xiao.customgun.core.gun.GunManager;
 import xiao.customgun.core.init.registry.ModItems;
@@ -35,7 +36,7 @@ public class GunItem extends Item implements IGun, GunDataAccessor {
         super(properties);
     }
     public GunItem() {
-        this(ModItems.CUSTOM_ITEM_PROPERTY);
+        this(ModItems.CUSTOM_ITEM_PROPERTY.apply(ItemType.GUN.getRegistryLocation()));
     }
 
     // --------Item--------

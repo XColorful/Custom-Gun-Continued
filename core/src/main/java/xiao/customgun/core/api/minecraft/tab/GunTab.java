@@ -7,7 +7,7 @@
 
 package xiao.customgun.core.api.minecraft.tab;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import xiao.customgun.core.api.item.GunProperty;
 import xiao.customgun.core.api.item.builder.GunBuilder;
@@ -25,7 +25,7 @@ import java.util.Map;
 
 public class GunTab {
 
-    public static Comparator<Map.Entry<ResourceLocation, GunIndexInstance>> indexSort() {
+    public static Comparator<Map.Entry<Identifier, GunIndexInstance>> indexSort() {
         return Comparator.comparingInt(entry -> entry.getValue().getPojo().getSlotSort());
     }
 
@@ -38,7 +38,7 @@ public class GunTab {
                 ItemStack gunItem = GunBuilder.create(ModItems.GUN.get())
                         // 枪械ResourceLocation
                         .setProperty(GunProperty.GUN_LOCATION,
-                                ResourceLocation.class,
+                                Identifier.class,
                                 entry.getKey())
                         // 开火模式
                         .setProperty(GunProperty.FIRE_MODE_TYPE,

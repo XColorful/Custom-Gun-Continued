@@ -7,7 +7,7 @@
 
 package xiao.customgun.core.api.init.registry;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.function.Supplier;
 
@@ -30,5 +30,5 @@ public interface IRegistryObject<T> extends Supplier<T> {
     /**
      * @return 完整的注册名称，"namespace:location"
      */
-    ResourceLocation getRegistryName();
+    Identifier getRegistryName();
 }

@@ -7,7 +7,7 @@
 
 package xiao.customgun.core.gui.tooltip;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -18,7 +18,7 @@ import xiao.customgun.core.resource.data.data.GunData;
 import xiao.customgun.core.resource.instance.data.GunIndexInstance;
 
 public record GunTooltip(ItemStack gunItem, IGun iGun,
-                         ResourceLocation ammoLocation, ResourceLocation gunLocation)
+                         Identifier ammoLocation, Identifier gunLocation)
         implements TooltipComponent {
 
     public static @Nullable GunTooltip fromItem(@Nullable ItemStack gunItem) {

@@ -26,11 +26,11 @@ import java.util.Map;
 public class GunTab {
 
     public static Comparator<Map.Entry<ResourceLocation, GunIndexInstance>> indexSort() {
-        return Comparator.comparingInt(m -> m.getValue().getPojo().getSlotSort());
+        return Comparator.comparingInt(entry -> entry.getValue().getPojo().getSlotSort());
     }
 
     public static List<ItemStack> buildGunItems(GunCategory gunCategory) {
-        List<ItemStack> stacks = new ArrayList<>();
+        List<ItemStack> gunItems = new ArrayList<>();
         ResourceApi.getAllGunIndexInstance().stream().sorted(indexSort()).forEach(entry -> {
             GunIndexInstance gunIndexInstance = entry.getValue();
             if (gunIndexInstance.getPojo().getGunCategory() == gunCategory) {
@@ -53,9 +53,9 @@ public class GunTab {
                                 Integer.class,
                                 1)
                         .build();
-                stacks.add(gunItem);
+                gunItems.add(gunItem);
             }
         });
-        return stacks;
+        return gunItems;
     }
 }

@@ -8,5 +8,13 @@
   "customgun.guncategory.mg": "机枪",
   "customgun.guncategory.smg": "冲锋枪",
   "customgun.guncategory.rpg": "RPG",
-  "customgun.guncategory.custom": "自定义"
+  "customgun.guncategory.custom": "自定义",
+
+  "customgun.attachmentcategory.muzzle": "枪口",
+  "customgun.attachmentcategory.laser": "激光指示器",
+  "customgun.attachmentcategory.grip": "握把",
+  "customgun.attachmentcategory.magazine": "扩容弹匣",
+  "customgun.attachmentcategory.scope": "瞄具",
+  "customgun.attachmentcategory.stock": "枪托",
+  "customgun.attachmentcategory.none": "未知配件"
 }

@@ -8,5 +8,13 @@
   "customgun.guncategory.mg": "Machine Gun",
   "customgun.guncategory.smg": "SMG",
   "customgun.guncategory.rpg": "RPG",
-  "customgun.guncategory.custom": "Custom"
+  "customgun.guncategory.custom": "Custom",
+
+  "customgun.attachmentcategory.muzzle": "Muzzle",
+  "customgun.attachmentcategory.laser": "Laser",
+  "customgun.attachmentcategory.grip": "Grip",
+  "customgun.attachmentcategory.magazine": "Magazine",
+  "customgun.attachmentcategory.scope": "Scope",
+  "customgun.attachmentcategory.stock": "Stock",
+  "customgun.attachmentcategory.none": "Unknown Attachments"
 }

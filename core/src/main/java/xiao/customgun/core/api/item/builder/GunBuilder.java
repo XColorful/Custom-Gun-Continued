@@ -15,8 +15,8 @@ import xiao.customgun.core.api.item.gun.IGunGetter;
 
 public class GunBuilder {
 
-    private IGun iGun;
-    private ItemStack gunItem;
+    private final IGun iGun;
+    private final ItemStack gunItem;
 
     private GunBuilder(IGun iGun, ItemStack gunItem) {
         this.iGun = iGun;

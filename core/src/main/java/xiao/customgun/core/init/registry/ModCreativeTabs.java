@@ -12,18 +12,59 @@ import net.minecraft.world.item.ItemStack;
 import xiao.customgun.CustomGun;
 import xiao.customgun.core.api.init.registry.IRegistrar;
 import xiao.customgun.core.api.init.registry.IRegistryObject;
+import xiao.customgun.core.api.minecraft.tab.AttachmentTab;
 import xiao.customgun.core.api.minecraft.tab.GunTab;
 
+import static xiao.customgun.core.api.item.attachment.AttachmentCategory.*;
 import static xiao.customgun.core.api.item.gun.GunCategory.*;
 
 public class ModCreativeTabs {
     public static final IRegistrar<CreativeModeTab> TABS = CustomGun.getRegistrarFactory().createCreativeTabs(CustomGun.MOD_ID);
 
 
+    // --------AttachmentCategory--------
+
+    public static IRegistryObject<CreativeModeTab> ATTACHMENT_MUZZLE_TAB = TABS.register(MUZZLE.getCategoryName(), () -> CreativeModeTab.builder()
+            .title(MUZZLE.getCategoryLang())
+            .icon(() -> ItemStack.EMPTY)
+            .displayItems((parameters, output) -> output.acceptAll(AttachmentTab.buildAttachmentItems(MUZZLE)))
+            .build()
+    );
+    public static IRegistryObject<CreativeModeTab> ATTACHMENT_LASER_TAB = TABS.register(LASER.getCategoryName(), () -> CreativeModeTab.builder()
+            .title(LASER.getCategoryLang()).withTabsBefore(ATTACHMENT_MUZZLE_TAB.getRegistryName())
+            .icon(() -> ItemStack.EMPTY)
+            .displayItems((parameters, output) -> output.acceptAll(AttachmentTab.buildAttachmentItems(LASER)))
+            .build()
+    );
+    public static IRegistryObject<CreativeModeTab> ATTACHMENT_GRIP_TAB = TABS.register(GRIP.getCategoryName(), () -> CreativeModeTab.builder()
+            .title(GRIP.getCategoryLang()).withTabsBefore(ATTACHMENT_LASER_TAB.getRegistryName())
+            .icon(() -> ItemStack.EMPTY)
+            .displayItems((parameters, output) -> output.acceptAll(AttachmentTab.buildAttachmentItems(GRIP)))
+            .build()
+    );
+    public static IRegistryObject<CreativeModeTab> ATTACHMENT_MAGAZINE_TAB = TABS.register(MAGAZINE.getCategoryName(), () -> CreativeModeTab.builder()
+            .title(MAGAZINE.getCategoryLang()).withTabsBefore(ATTACHMENT_GRIP_TAB.getRegistryName())
+            .icon(() -> ItemStack.EMPTY)
+            .displayItems((parameters, output) -> output.acceptAll(AttachmentTab.buildAttachmentItems(MAGAZINE)))
+            .build()
+    );
+    public static IRegistryObject<CreativeModeTab> ATTACHMENT_SCOPE_TAB = TABS.register(SCOPE.getCategoryName(), () -> CreativeModeTab.builder()
+            .title(SCOPE.getCategoryLang()).withTabsBefore(ATTACHMENT_MAGAZINE_TAB.getRegistryName())
+            .icon(() -> ItemStack.EMPTY)
+            .displayItems((parameters, output) -> output.acceptAll(AttachmentTab.buildAttachmentItems(SCOPE)))
+            .build()
+    );
+    public static IRegistryObject<CreativeModeTab> ATTACHMENT_STOCK_TAB = TABS.register(STOCK.getCategoryName(), () -> CreativeModeTab.builder()
+            .title(STOCK.getCategoryLang()).withTabsBefore(ATTACHMENT_SCOPE_TAB.getRegistryName())
+            .icon(() -> ItemStack.EMPTY)
+            .displayItems((parameters, output) -> output.acceptAll(AttachmentTab.buildAttachmentItems(STOCK)))
+            .build()
+    );
+
     // --------GunCategory--------
 
     public static IRegistryObject<CreativeModeTab> GUN_SHOTGUN_TAB = TABS.register(SHOTGUN.getCategoryName(), () -> CreativeModeTab.builder()
-            .title(SHOTGUN.getCategoryLang())
+            .title(SHOTGUN.getCategoryLang()).withTabsBefore(ATTACHMENT_STOCK_TAB.getRegistryName())
             .icon(() -> ItemStack.EMPTY)
             .displayItems((parameters, output) -> output.acceptAll(GunTab.buildGunItems(SHOTGUN)))
             .build()

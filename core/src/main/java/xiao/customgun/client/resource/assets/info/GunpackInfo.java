@@ -9,10 +9,10 @@ package xiao.customgun.client.resource.assets.info;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import net.minecraft.resources.Identifier;
-import xiao.customgun.core.api.resource.ResourceTag;
+import net.minecraft.network.chat.MutableComponent;
 import xiao.customgun.core.api.resource.assets.info.GunpackInfoTag;
 import xiao.customgun.core.resource.ResourcePojo;
+import xiao.customgun.core.util.ComponentUtils;
 import xiao.customgun.core.util.JsonUtils;
 
 import java.io.IOException;
@@ -22,8 +22,8 @@ import java.util.List;
 public final class GunpackInfo extends ResourcePojo<GunpackInfo> {
 
     private String gunpackVersion;
-    private Identifier nameLocation;
-    private Identifier tooltipLocation;
+    private MutableComponent nameLang;
+    private MutableComponent tooltipLang;
     private String license;
     private List<String> authors;
     private String date;
@@ -41,8 +41,8 @@ public final class GunpackInfo extends ResourcePojo<GunpackInfo> {
                 String key = reader.nextName();
                 switch (key) {
                     case GunpackInfoTag.GUNPACK_VERSION, GunpackInfoTag.GUNPACK_VERSION_OLD1 -> pojo.gunpackVersion = JsonUtils.readString(reader);
-                    case GunpackInfoTag.NAME_LOCATION, GunpackInfoTag.NAME_LOCATION_OLD1 -> pojo.nameLocation = JsonUtils.readResourceLocation(reader);
-                    case GunpackInfoTag.TOOLTIP_LOCATION, GunpackInfoTag.TOOLTIP_LOCATION_OLD1 -> pojo.tooltipLocation = JsonUtils.readResourceLocation(reader);
+                    case GunpackInfoTag.NAME_LANG, GunpackInfoTag.NAME_LANG_OLD1 -> pojo.nameLang = JsonUtils.readTranslatable(reader);
+                    case GunpackInfoTag.TOOLTIP_LANG, GunpackInfoTag.TOOLTIP_LANG_OLD1 -> pojo.tooltipLang = JsonUtils.readTranslatable(reader);
                     case GunpackInfoTag.LICENSE -> pojo.license = JsonUtils.readString(reader);
                     case GunpackInfoTag.AUTHORS -> pojo.authors = JsonUtils.readStringList(reader);
                     case GunpackInfoTag.DATE -> pojo.date = JsonUtils.readString(reader);
@@ -62,8 +62,8 @@ public final class GunpackInfo extends ResourcePojo<GunpackInfo> {
     public void toJson(JsonWriter writer) throws IOException {
         writer.beginObject(); {
             JsonUtils.writeString(writer, GunpackInfoTag.GUNPACK_VERSION, this.gunpackVersion);
-            JsonUtils.writeResourceLocation(writer, GunpackInfoTag.NAME_LOCATION, this.nameLocation);
-            JsonUtils.writeResourceLocation(writer, GunpackInfoTag.TOOLTIP_LOCATION, this.tooltipLocation);
+            JsonUtils.writeTranslatable(writer, GunpackInfoTag.NAME_LANG, this.nameLang);
+            JsonUtils.writeTranslatable(writer, GunpackInfoTag.TOOLTIP_LANG, this.tooltipLang);
             JsonUtils.writeString(writer, GunpackInfoTag.LICENSE, this.license);
             JsonUtils.writeStringList(writer, GunpackInfoTag.AUTHORS, this.authors);
             JsonUtils.writeString(writer, GunpackInfoTag.DATE, this.date);
@@ -76,13 +76,14 @@ public final class GunpackInfo extends ResourcePojo<GunpackInfo> {
     protected void validatePojo() {
         if (ENABLE_BACK_COMPATIBILITY) this.applyBackCompatibility();
 
-        boolean n1 = (this.gunpackVersion == null | this.nameLocation == null | this.tooltipLocation == null | this.license == null);
-        boolean n2 = (this.authors == null | this.date == null | this.gunpackUrl == null);
-        if (n1 | n2) {
+        boolean n1 = (this.gunpackVersion == null | this.license == null | this.authors == null | this.date == null | this.gunpackUrl == null);
+        if (n1) {
             this.setValid(false);
             return;
         }
 
+        if (this.nameLang == null) this.nameLang = ComponentUtils.unknownTranslatableKey();
+        if (this.tooltipLang == null) this.tooltipLang = ComponentUtils.unknownTranslatableKey();
         this.setValid(true);
     }
 
@@ -91,11 +92,11 @@ public final class GunpackInfo extends ResourcePojo<GunpackInfo> {
     public String getGunpackVersion() {
         return gunpackVersion;
     }
-    public Identifier getNameLocation() {
-        return nameLocation;
+    public MutableComponent getNameLang() {
+        return nameLang;
     }
-    public Identifier getTooltipLocation() {
-        return tooltipLocation;
+    public MutableComponent getTooltipLang() {
+        return tooltipLang;
     }
     public String getLicense() {
         return license;
@@ -113,11 +114,11 @@ public final class GunpackInfo extends ResourcePojo<GunpackInfo> {
     public void setGunpackVersion(String gunpackVersion) {
         this.gunpackVersion = gunpackVersion;
     }
-    public void setNameLocation(Identifier nameLocation) {
-        this.nameLocation = nameLocation;
+    public void setNameLang(MutableComponent nameLang) {
+        this.nameLang = nameLang;
     }
-    public void setTooltipLocation(Identifier tooltipLocation) {
-        this.tooltipLocation = tooltipLocation;
+    public void setTooltipLang(MutableComponent tooltipLang) {
+        this.tooltipLang = tooltipLang;
     }
     public void setLicense(String license) {
         this.license = license;
@@ -137,8 +138,6 @@ public final class GunpackInfo extends ResourcePojo<GunpackInfo> {
     @Override
     public GunpackInfo applyBackCompatibility() {
         this.gunpackVersion = this.gunpackVersion == null ? "" : this.gunpackVersion;
-        this.nameLocation = this.nameLocation == null ? ResourceTag.NULL_LOCATION : this.nameLocation;
-        this.tooltipLocation = this.tooltipLocation == null ? ResourceTag.NULL_LOCATION : this.tooltipLocation;
         this.license = this.license == null ? "" : this.license;
         this.authors = this.authors == null ? new ArrayList<>() : this.authors;
         this.date = this.date == null ? "" : this.date;

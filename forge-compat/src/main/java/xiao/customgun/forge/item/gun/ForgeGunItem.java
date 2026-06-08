@@ -1,0 +1,36 @@
+/*
+ * Copyright (c) 2024-2026 MCModderAnchor (https://github.com/MCModderAnchor)
+ * SPDX-License-Identifier: GPL-3.0-only
+ *
+ * Source: https://github.com/MCModderAnchor/TACZ
+ */
+
+package xiao.customgun.forge.item.gun;
+
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.extensions.common.IClientItemExtensions;
+import xiao.customgun.core.item.gun.GunItem;
+
+import java.util.function.Consumer;
+
+public class ForgeGunItem extends GunItem {
+
+    @OnlyIn(Dist.CLIENT)
+    @Override
+    public void initializeClient(Consumer<IClientItemExtensions> consumer) {
+        initializeClient(this, consumer);
+    }
+
+    /**
+     * 预留给扩展模组用:
+     * <ul>
+     * <li>扩展模组core模块只能继承{@link GunItem}而不是{@link ForgeGunItem} (除非不想做平台抽象层)</li>
+     * <li>因而留一个static接口</li>
+     * </ul>
+     * 比如注册<code>MyGunItem extends GunItem</code>并重载final getter/setter来锁定子Manager
+     */
+    @OnlyIn(Dist.CLIENT)
+    public static void initializeClient(GunItem _this, Consumer<IClientItemExtensions> consumer) {
+    }
+}

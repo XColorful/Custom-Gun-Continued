@@ -20,8 +20,8 @@ import java.util.function.BiFunction;
 public enum AmmoBoxProperty implements ResourceTag {
     // IAmmoDataAccess
     AMMO_LOCATION(AmmoBoxPropertyTag.AMMO_LOCATION,
-            IAmmoBoxDataAccess::getAmmoCount,
-            IAmmoBoxDataAccess::setAmmoCount),
+            IAmmoBoxDataAccess::getAmmoLocation,
+            IAmmoBoxDataAccess::setAmmoLocation),
     INFINITE_FEED(AmmoBoxPropertyTag.INFINITE_FEED,
             IAmmoBoxDataAccess::hasInfiniteFeed,
             IAmmoBoxDataAccess::setInfiniteFeed),

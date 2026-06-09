@@ -8,7 +8,7 @@
 package xiao.customgun.client.gui.tooltip.gun;
 
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 public final class GunDescriptionPart implements GunTooltipPart {
     public static final GunDescriptionPart INSTANCE = new GunDescriptionPart();
@@ -29,13 +29,13 @@ public final class GunDescriptionPart implements GunTooltipPart {
 
     @Override
     public void renderText(ClientGunTooltip.Context context,
-                           GuiGraphics guiGraphics,
+                           GuiGraphicsExtractor guiGraphics,
                            Font font, int pX, int pY) {
     }
     @Override
     public void renderImage(ClientGunTooltip.Context context,
                             Font font, int pX, int pY,
                             int width, int height,
-                            GuiGraphics guiGraphics) {
+                            GuiGraphicsExtractor guiGraphics) {
     }
 }

@@ -8,7 +8,7 @@
 package xiao.customgun.client.gui.tooltip.attachment;
 
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
@@ -43,13 +43,13 @@ public class ClientAttachmentTooltip implements ClientTooltipComponent {
         return this.context.getMaxWidth();
     }
     @Override
-    public void renderText(GuiGraphics guiGraphics,
+    public void extractText(GuiGraphicsExtractor guiGraphics,
                            Font font, int pX, int pY) {
     }
     @Override
-    public void renderImage(Font font, int pX, int pY,
+    public void extractImage(Font font, int pX, int pY,
                             int width, int height,
-                            GuiGraphics guiGraphics) {
+                            GuiGraphicsExtractor guiGraphics) {
     }
 
     // --------record--------

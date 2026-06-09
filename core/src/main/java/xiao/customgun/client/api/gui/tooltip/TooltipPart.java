@@ -1,7 +1,7 @@
 package xiao.customgun.client.api.gui.tooltip;
 
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 public interface TooltipPart<T extends BaseTooltipContext<?>> {
 
@@ -10,11 +10,11 @@ public interface TooltipPart<T extends BaseTooltipContext<?>> {
     int measureHeight(T context);
 
     void renderText(T context,
-                    GuiGraphics guiGraphics,
+                    GuiGraphicsExtractor guiGraphics,
                     Font font, int pX, int pY);
 
     void renderImage(T context,
                      Font font, int pX, int pY,
                      int width, int height,
-                     GuiGraphics guiGraphics);
+                     GuiGraphicsExtractor guiGraphics);
 }

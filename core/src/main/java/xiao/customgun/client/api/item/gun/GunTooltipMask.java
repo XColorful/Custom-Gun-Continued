@@ -7,30 +7,40 @@
 
 package xiao.customgun.client.api.item.gun;
 
-import xiao.customgun.client.gui.tooltip.ClientGunTooltip;import java.util.EnumSet;
+import xiao.customgun.client.gui.tooltip.gun.*;
+import xiao.customgun.core.api.resource.ResourceTag;
 
-public enum GunTooltipMask {
-    DESCRIPTION(10),
-    AMMO_INFO(24),
-    BASE_INFO(34),
-    EXTRA_DAMAGE_INFO(34),
-    UPGRADES_TIP(14),
-    PACK_INFO(14);
+import java.util.EnumSet;
 
+public enum GunTooltipMask implements ResourceTag.MaskTag {
+    DESCRIPTION(GunDescriptionPart.INSTANCE),
+    AMMO_INFO(GunAmmoInfoPart.INSTANCE),
+    BASE_INFO(GunBaseInfoPart.INSTANCE),
+    EXTRA_DAMAGE_INFO(GunExtraDamageInfoPart.INSTANCE),
+    UPGRADES_TIP(GunUpgradesTipPart.INSTANCE),
+    PACK_INFO(GunPackInfoPart.INSTANCE);
+
+    public final String maskName;
     private final int mask;
     /**
      * 从 {@link ClientGunTooltip} 提取而来
      */
-    private final int baseHeight;
-    GunTooltipMask(int baseHeight) {
+    private final GunTooltipPart tooltipPart;
+    GunTooltipMask(GunTooltipPart tooltipPart) {
+        this.maskName = this.name().toLowerCase();
         this.mask = 1 << this.ordinal();
-        this.baseHeight = baseHeight;
+        this.tooltipPart = tooltipPart;
     }
+    @Override
+    public String getTagName() {
+        return this.maskName;
+    }
+    @Override
     public int getMask() {
         return this.mask;
     }
-    public int getBaseHeight() {
-        return this.baseHeight;
+    public GunTooltipPart getTooltipPart() {
+        return this.tooltipPart;
     }
 
     private static final GunTooltipMask[] VALUES = values();
@@ -51,27 +61,5 @@ public enum GunTooltipMask {
             bitmap |= value.mask;
         }
         return bitmap;
-    }
-
-    /**
-     * 从 {@link ClientGunTooltip} 提取而来
-     */
-    public static int calculateHeight(ClientGunTooltip.DrawTooltipContext context) {
-        int height = 0;
-        EnumSet<GunTooltipMask> visibleParts = context.visibleParts();
-        for (GunTooltipMask part : visibleParts) {
-            height += part.baseHeight;
-        }
-
-        // description动态高度
-        if (visibleParts.contains(DESCRIPTION)) {
-            height -= DESCRIPTION.baseHeight;
-
-            var desc = context.desc();
-            if (desc != null && !desc.isEmpty()) {
-                height += DESCRIPTION.baseHeight * desc.size() + 2;
-            }
-        }
-        return height;
     }
 }

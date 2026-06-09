@@ -20,6 +20,9 @@ public interface ResourceTag {
     interface ConstantTag extends ResourceTag {
         String getConstantName();
     }
+    interface MaskTag extends ResourceTag {
+        int getMask();
+    }
 
     String nullLocation = CustomGun.MOD_ID + ":null";
     @NotNull ResourceLocation NULL_LOCATION = Objects.requireNonNull(CustomGun.getMcRegistry().createResourceLocation(nullLocation));

@@ -10,6 +10,7 @@ package xiao.customgun.core.api.item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.item.attachment.IAttachmentDataAccess;
+import xiao.customgun.core.api.item.attachment.IAttachmentStateAccess;
 import xiao.customgun.core.api.item.attachment._IAttachmentPropertyAccess;
 import xiao.customgun.core.api.resource.ResourceTag;
 
@@ -31,7 +32,12 @@ public enum AttachmentProperty implements ResourceTag {
             IAttachmentDataAccess::setScopeViewIndex),
     LASER_COLOR(AttachmentPropertyTag.LASER_COLOR,
             IAttachmentDataAccess::getLaserColor,
-            IAttachmentDataAccess::setLaserColor);
+            IAttachmentDataAccess::setLaserColor),
+
+    // IAttachmentStateAccess
+    TOOLTIP_MASK(AttachmentPropertyTag.TOOLTIP_MASK,
+            IAttachmentStateAccess::getTooltipMask,
+            IAttachmentStateAccess::setTooltipMask);
 
     public final String propertyName;
     private final BiFunction<IAttachmentDataAccess, ItemStack, ?> getter;

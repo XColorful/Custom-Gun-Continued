@@ -18,15 +18,6 @@ public interface AmmoBoxDataAccessor extends AmmoDataAccessor, IAmmoBoxDataAcces
     // --------IAmmoDataAccess--------
 
     @Override
-    default int getBoxLevel(ItemStack ammoItem) {
-        return Math.max(0, NBTUtils.getInt(ammoItem, AmmoBoxPropertyTag.BOX_LEVEL));
-    }
-    @Override
-    default void setBoxLevel(ItemStack ammoItem, int boxLevel) {
-        NBTUtils.setInt(ammoItem, AmmoBoxPropertyTag.BOX_LEVEL, boxLevel);
-    }
-
-    @Override
     default int getAmmoCount(ItemStack ammoItem) {
         return Math.max(0, NBTUtils.getInt(ammoItem, AmmoBoxProperty.AMMO_COUNT.getTagName()));
     }
@@ -36,6 +27,15 @@ public interface AmmoBoxDataAccessor extends AmmoDataAccessor, IAmmoBoxDataAcces
     }
 
     // --------IAmmoBoxDataAccess--------
+
+    @Override
+    default int getBoxLevel(ItemStack ammoItem) {
+        return Math.max(0, NBTUtils.getInt(ammoItem, AmmoBoxPropertyTag.BOX_LEVEL));
+    }
+    @Override
+    default void setBoxLevel(ItemStack ammoItem, int boxLevel) {
+        NBTUtils.setInt(ammoItem, AmmoBoxPropertyTag.BOX_LEVEL, boxLevel);
+    }
 
     @Override
     default int getStatusMask(ItemStack ammoItem) {

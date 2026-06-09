@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
@@ -52,7 +53,8 @@ public class ClientAttachmentTooltip implements ClientTooltipComponent {
 
     // --------record--------
 
-    protected static final class View extends BaseTooltipView {
+    @ApiStatus.Internal
+    public static final class View extends BaseTooltipView {
         public @Nullable List<Component> attachmentProperties;
         public @Nullable MutableComponent tips;
         public @Nullable MutableComponent gunInstallability;
@@ -60,7 +62,8 @@ public class ClientAttachmentTooltip implements ClientTooltipComponent {
         public View() {
         }
     }
-    protected static final class Context extends BaseTooltipContext<View> {
+    @ApiStatus.Internal
+    public static final class Context extends BaseTooltipContext<View> {
         public final AttachmentTooltip attachmentTooltip;
         public Context(@NotNull View view, AttachmentTooltip attachmentTooltip) {
             super(view);

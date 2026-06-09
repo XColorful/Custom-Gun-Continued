@@ -14,7 +14,7 @@ import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.api.item.gun.IGunGetter;
 import xiao.customgun.core.api.resource.ResourceTag;
 
-public interface IAmmoDataAccess extends IAmmoPojoGetter,
+public interface IAmmoDataAccess extends IAmmoStateAccess,
         IAmmoNBTAccess,
         IAmmoExpAccess,
         _IAmmoPropertyAccess {

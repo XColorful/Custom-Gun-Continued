@@ -17,5 +17,6 @@ public interface TooltipPart<T extends BaseTooltipContext<?>> {
 
     void renderImage(T context,
                      Font font, int pX, int pY,
+                     int width, int height,
                      GuiGraphics guiGraphics);
 }

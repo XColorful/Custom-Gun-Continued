@@ -14,6 +14,9 @@ public class AmmoBoxPropertyTag {
     public static final String INFINITE_FEED = AmmoPropertyTag.INFINITE_FEED;
     public static final String ALMIGHTY_AMMO = AmmoPropertyTag.ALMIGHTY_AMMO;
 
+    // IAmmoStateAccess
+    public static final String TOOLTIP_MASK = AmmoPropertyTag.TOOLTIP_MASK;
+
     // IAmmoExpAccess
     public static final String AMMO_LEVEL = AmmoPropertyTag.AMMO_LEVEL;
 

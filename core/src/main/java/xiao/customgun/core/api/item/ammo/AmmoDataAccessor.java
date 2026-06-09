@@ -11,11 +11,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.item.AmmoProperty;
-import xiao.customgun.core.api.resource.ResourceApi;
 import xiao.customgun.core.api.resource.ResourceTag;
-import xiao.customgun.core.resource.data.index.AmmoIndex;
 import xiao.customgun.core.util.NBTUtils;
 
 public interface AmmoDataAccessor extends AmmoNBTAccessor, IAmmoDataAccess {
@@ -89,12 +86,19 @@ public interface AmmoDataAccessor extends AmmoNBTAccessor, IAmmoDataAccess {
         NBTUtils.setCustomDataTag(ammoItem, customDataTag);
     }
 
-    // --------IAmmoPojoGetter--------
+    // --------IAmmoStateAccess--------
 
     @Override
-    default @Nullable AmmoIndex getAmmoIndex(ItemStack ammoItem) {
-        var indexLocation = this.getAmmoLocation(ammoItem);
-        return ResourceApi.getAmmoIndex(indexLocation);
+    default boolean hasTooltipMask(ItemStack ammoItem) {
+        return NBTUtils.hasKey(ammoItem, AmmoProperty.TOOLTIP_MASK.getTagName());
+    }
+    @Override
+    default int getTooltipMask(ItemStack ammoItem) {
+        return NBTUtils.getInt(ammoItem, AmmoProperty.TOOLTIP_MASK.getTagName());
+    }
+    @Override
+    default void setTooltipMask(ItemStack ammoItem, int tooltipMask) {
+        NBTUtils.setInt(ammoItem, AmmoProperty.TOOLTIP_MASK.getTagName(), tooltipMask);
     }
 
     // --------IAmmoExpAccess--------

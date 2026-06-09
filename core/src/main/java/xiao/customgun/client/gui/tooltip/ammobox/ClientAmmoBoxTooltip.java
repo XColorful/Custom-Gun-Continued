@@ -12,6 +12,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
@@ -48,13 +49,15 @@ public class ClientAmmoBoxTooltip implements ClientTooltipComponent {
 
     // --------record--------
 
-    protected static final class View extends BaseTooltipView {
+    @ApiStatus.Internal
+    public static final class View extends BaseTooltipView {
         public @Nullable Component ammoName;
         public @Nullable Component ammoCount;
         public View() {
         }
     }
-    protected static final class Context extends BaseTooltipContext<View> {
+    @ApiStatus.Internal
+    public static final class Context extends BaseTooltipContext<View> {
         public final AmmoBoxTooltip ammoBoxTooltip;
         public Context(@NotNull View view, AmmoBoxTooltip ammoBoxTooltip) {
             super(view);

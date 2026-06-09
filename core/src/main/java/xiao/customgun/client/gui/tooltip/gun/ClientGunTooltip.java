@@ -44,7 +44,7 @@ public class ClientGunTooltip implements ClientTooltipComponent {
 
     // --------ClientTooltipComponent--------
 
-    @Override public int getHeight() {
+    @Override public int getHeight(Font font) {
         return this.context.getHeight();
     }
     @Override public int getWidth(Font font) {
@@ -61,10 +61,12 @@ public class ClientGunTooltip implements ClientTooltipComponent {
     }
     @Override
     public void renderImage(Font font, int pX, int pY,
+                            int width, int height,
                             GuiGraphics guiGraphics) {
         for (GunTooltipMask mask : this.context.visibleParts) {
             mask.getTooltipPart().renderImage(this.context,
                     font, pX, pY,
+                    width, height,
                     guiGraphics);
         }
     }

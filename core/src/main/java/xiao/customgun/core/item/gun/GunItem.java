@@ -22,7 +22,7 @@ import xiao.customgun.core.api.item.gun.GunDataAccessor;
 import xiao.customgun.core.api.item.gun.IGunGetter;
 import xiao.customgun.core.api.minecraft.capability.IInventoryCapability;
 import xiao.customgun.core.api.minecraft.item.ItemType;
-import xiao.customgun.core.gui.tooltip.GunTooltip;
+import xiao.customgun.core.gui.tooltip.gun.GunTooltip;
 import xiao.customgun.core.gun.GunManager;
 import xiao.customgun.core.init.registry.ModItems;
 

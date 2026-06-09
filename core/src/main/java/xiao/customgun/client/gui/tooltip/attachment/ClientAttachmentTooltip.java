@@ -36,7 +36,7 @@ public class ClientAttachmentTooltip implements ClientTooltipComponent {
 
     // --------ClientTooltipComponent--------
 
-    @Override public int getHeight() {
+    @Override public int getHeight(Font font) {
         return this.context.getHeight();
     }
     @Override public int getWidth(Font font) {
@@ -48,6 +48,7 @@ public class ClientAttachmentTooltip implements ClientTooltipComponent {
     }
     @Override
     public void renderImage(Font font, int pX, int pY,
+                            int width, int height,
                             GuiGraphics guiGraphics) {
     }
 

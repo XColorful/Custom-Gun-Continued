@@ -33,6 +33,7 @@ public final class GunUpgradesTipPart implements GunTooltipPart {
     @Override
     public void renderImage(ClientGunTooltip.Context context,
                             Font font, int pX, int pY,
+                            int width, int height,
                             GuiGraphics guiGraphics) {
     }
 }

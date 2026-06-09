@@ -7,7 +7,7 @@
 
 package xiao.customgun.core.gui.tooltip.ammobox;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -20,7 +20,7 @@ import xiao.customgun.core.init.registry.ModItems;
 public record AmmoBoxTooltip(ItemStack ammoBoxItem, IAmmoBox iAmmoBox,
                              // --------Cache--------
                              ItemStack ammoItem,
-                             ResourceLocation ammoLocation,
+                             Identifier ammoLocation,
                              int ammoCount)
         implements TooltipComponent {
 
@@ -32,7 +32,7 @@ public record AmmoBoxTooltip(ItemStack ammoBoxItem, IAmmoBox iAmmoBox,
         int ammoCount = iAmmoBox.getAmmoCount(ammoBoxItem);
         ItemStack ammoItem = AmmoBuilder.create(ModItems.AMMO.get())
                 .setProperty(AmmoProperty.AMMO_LOCATION,
-                        ResourceLocation.class,
+                        Identifier.class,
                         ammoLocation)
                 .build();
         return new AmmoBoxTooltip(ammoBoxItem, iAmmoBox,

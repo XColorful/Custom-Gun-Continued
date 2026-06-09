@@ -7,7 +7,7 @@
 
 package xiao.customgun.core.gui.tooltip.attachment;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -17,7 +17,7 @@ import xiao.customgun.core.api.item.attachment.IAttachmentGetter;
 
 public record AttachmentTooltip(ItemStack attachmentItem, IAttachment iAttachment,
                                 // --------Cache--------
-                                ResourceLocation attachmentLocation,
+                                Identifier attachmentLocation,
                                 AttachmentCategory attachmentCategory)
         implements TooltipComponent {
 

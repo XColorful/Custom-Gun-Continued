@@ -39,7 +39,7 @@ public record GunTooltip(ItemStack gunItem, IGun iGun,
         var ammoLocation = gunData.getAmmoLocation();
         ItemStack ammoItem = AmmoBuilder.create(ModItems.AMMO.get())
                 .setProperty(AmmoProperty.AMMO_LOCATION,
-                        ResourceLocation.class,
+                        Identifier.class,
                         ammoLocation)
                 .build();
         return new GunTooltip(gunItem, iGun,

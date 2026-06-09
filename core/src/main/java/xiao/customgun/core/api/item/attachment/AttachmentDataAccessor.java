@@ -11,11 +11,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import xiao.customgun.core.api.resource.ResourceApi;
 import xiao.customgun.core.api.resource.ResourceTag;
-import xiao.customgun.core.resource.data.data.AttachmentData;
-import xiao.customgun.core.resource.data.index.AttachmentIndex;
 import xiao.customgun.core.util.NBTUtils;
 
 public interface AttachmentDataAccessor extends AttachmentNBTAccessor, IAttachmentDataAccess {
@@ -90,19 +86,5 @@ public interface AttachmentDataAccessor extends AttachmentNBTAccessor, IAttachme
         @NotNull CompoundTag customDataTag = NBTUtils.getCustomDataTag(customData);
         this.setLaserColor(customDataTag, laserColor);
         NBTUtils.setCustomDataTag(attachmentItem, customDataTag);
-    }
-
-    // --------IAttachmentPojoGetter--------
-
-    @Override
-    default @Nullable AttachmentIndex getAttachmentIndex(ItemStack attachmentItem) {
-        var indexLocation = this.getAttachmentLocation(attachmentItem);
-        return ResourceApi.getAttachmentIndex(indexLocation);
-    }
-    @Override
-    default @Nullable AttachmentData getAttachmentData(ItemStack attachmentItem) {
-        @Nullable AttachmentIndex attachmentIndex = this.getAttachmentIndex(attachmentItem);
-        if (attachmentIndex == null) return null;
-        return ResourceApi.getAttachmentData(attachmentIndex.getDataLocation());
     }
 }

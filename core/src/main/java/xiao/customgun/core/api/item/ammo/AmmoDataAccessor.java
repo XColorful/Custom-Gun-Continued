@@ -11,11 +11,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.item.AmmoProperty;
-import xiao.customgun.core.api.resource.ResourceApi;
 import xiao.customgun.core.api.resource.ResourceTag;
-import xiao.customgun.core.resource.data.index.AmmoIndex;
 import xiao.customgun.core.util.NBTUtils;
 
 public interface AmmoDataAccessor extends AmmoNBTAccessor, IAmmoDataAccess {
@@ -87,14 +84,6 @@ public interface AmmoDataAccessor extends AmmoNBTAccessor, IAmmoDataAccess {
         @NotNull CompoundTag customDataTag = NBTUtils.getCustomDataTag(customData);
         this.setAlmightyAmmo(customDataTag, almighty);
         NBTUtils.setCustomDataTag(ammoItem, customDataTag);
-    }
-
-    // --------IAmmoPojoGetter--------
-
-    @Override
-    default @Nullable AmmoIndex getAmmoIndex(ItemStack ammoItem) {
-        var indexLocation = this.getAmmoLocation(ammoItem);
-        return ResourceApi.getAmmoIndex(indexLocation);
     }
 
     // --------IAmmoExpAccess--------

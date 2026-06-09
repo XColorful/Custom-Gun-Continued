@@ -86,6 +86,21 @@ public interface AmmoDataAccessor extends AmmoNBTAccessor, IAmmoDataAccess {
         NBTUtils.setCustomDataTag(ammoItem, customDataTag);
     }
 
+    // --------IAmmoStateAccess--------
+
+    @Override
+    default boolean hasTooltipMask(ItemStack ammoItem) {
+        return NBTUtils.hasKey(ammoItem, AmmoProperty.TOOLTIP_MASK.getTagName());
+    }
+    @Override
+    default int getTooltipMask(ItemStack ammoItem) {
+        return NBTUtils.getInt(ammoItem, AmmoProperty.TOOLTIP_MASK.getTagName());
+    }
+    @Override
+    default void setTooltipMask(ItemStack ammoItem, int tooltipMask) {
+        NBTUtils.setInt(ammoItem, AmmoProperty.TOOLTIP_MASK.getTagName(), tooltipMask);
+    }
+
     // --------IAmmoExpAccess--------
 
     @Override

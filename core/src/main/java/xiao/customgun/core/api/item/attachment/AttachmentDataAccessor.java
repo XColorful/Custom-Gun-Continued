@@ -11,6 +11,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import xiao.customgun.core.api.item.AttachmentProperty;
 import xiao.customgun.core.api.resource.ResourceTag;
 import xiao.customgun.core.util.NBTUtils;
 
@@ -86,5 +87,20 @@ public interface AttachmentDataAccessor extends AttachmentNBTAccessor, IAttachme
         @NotNull CompoundTag customDataTag = NBTUtils.getCustomDataTag(customData);
         this.setLaserColor(customDataTag, laserColor);
         NBTUtils.setCustomDataTag(attachmentItem, customDataTag);
+    }
+
+    // --------IAttachmentStateAccess--------
+
+    @Override
+    default boolean hasTooltipMask(ItemStack attachmentItem) {
+        return NBTUtils.hasKey(attachmentItem, AttachmentProperty.TOOLTIP_MASK.getTagName());
+    }
+    @Override
+    default int getTooltipMask(ItemStack attachmentItem) {
+        return NBTUtils.getInt(attachmentItem, AttachmentProperty.TOOLTIP_MASK.getTagName());
+    }
+    @Override
+    default void setTooltipMask(ItemStack attachmentItem, int tooltipMask) {
+        NBTUtils.setInt(attachmentItem, AttachmentProperty.TOOLTIP_MASK.getTagName(), tooltipMask);
     }
 }

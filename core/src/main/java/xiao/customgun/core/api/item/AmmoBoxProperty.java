@@ -29,6 +29,11 @@ public enum AmmoBoxProperty implements ResourceTag {
             IAmmoBoxDataAccess::isAlmightyAmmo,
             IAmmoBoxDataAccess::setAlmightyAmmo),
 
+    // IAmmoStateAccess
+    TOOLTIP_MASK(AmmoBoxPropertyTag.TOOLTIP_MASK,
+            IAmmoBoxDataAccess::getTooltipMask,
+            IAmmoBoxDataAccess::setTooltipMask),
+
     // IAmmoExpAccess
     AMMO_LEVEL(AmmoBoxPropertyTag.AMMO_LEVEL,
             IAmmoBoxDataAccess::getAmmoLevel,

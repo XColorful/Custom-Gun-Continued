@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import xiao.customgun.client.resource.assets.display.AttachmentDisplay;
 import xiao.customgun.core.api.resource.ResourceTag;
 
-public interface IAttachmentDataAccess extends
+public interface IAttachmentDataAccess extends IAttachmentStateAccess,
         IAttachmentNBTAccess,
         _IAttachmentPropertyAccess {
 

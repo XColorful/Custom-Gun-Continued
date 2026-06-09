@@ -16,5 +16,8 @@ public class AttachmentPropertyTag {
     public static final String SCOPE_VIEW_INDEX = "scope_view_index";
     public static final String LASER_COLOR = "laser_color";
 
+    // --------IAttachmentStateAccess--------
+    public static final String TOOLTIP_MASK = "tooltip_mask";
+
     private AttachmentPropertyTag() {}
 }

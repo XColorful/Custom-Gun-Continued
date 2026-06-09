@@ -26,9 +26,13 @@ public final class GunAmmoInfoPart implements GunTooltipPart {
     }
 
     @Override
-    public void renderText(ClientGunTooltip.Context context, Font font, int pX, int pY, Matrix4f matrix4f, MultiBufferSource.BufferSource bufferSource) {
+    public void renderText(ClientGunTooltip.Context context,
+                           Font font, int pX, int pY,
+                           Matrix4f matrix4f, MultiBufferSource.BufferSource bufferSource) {
     }
     @Override
-    public void renderImage(ClientGunTooltip.Context context, Font font, int pX, int pY, GuiGraphics guiGraphics) {
+    public void renderImage(ClientGunTooltip.Context context,
+                            Font font, int pX, int pY,
+                            GuiGraphics guiGraphics) {
     }
 }

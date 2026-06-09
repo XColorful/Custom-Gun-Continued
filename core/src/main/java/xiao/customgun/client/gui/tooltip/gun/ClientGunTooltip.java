@@ -15,6 +15,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
@@ -70,7 +71,8 @@ public class ClientGunTooltip implements ClientTooltipComponent {
 
     // --------record--------
 
-    protected static final class View extends BaseTooltipView {
+    @ApiStatus.Internal
+    public static final class View extends BaseTooltipView {
         public @Nullable List<FormattedCharSequence> desc;
         public @Nullable Component ammoName;
         public @Nullable MutableComponent ammoCount;
@@ -84,7 +86,8 @@ public class ClientGunTooltip implements ClientTooltipComponent {
         public View() {
         }
     }
-    protected static final class Context extends BaseTooltipContext<View> {
+    @ApiStatus.Internal
+    public static final class Context extends BaseTooltipContext<View> {
         public final @NotNull GunTooltip gunTooltip;
         public final @NotNull EnumSet<GunTooltipMask> visibleParts;
         public @Nullable GunIndexInstance gunIndexInstance;

@@ -15,7 +15,10 @@ public class AmmoPropertyTag {
     public static final String INFINITE_FEED = "infinite_feed";
     public static final String ALMIGHTY_AMMO = "almighty_ammo";
 
-    // --------IAmmoExpAccess
+    // --------IAmmoStateAccess--------
+    public static final String TOOLTIP_MASK = "tooltip_mask";
+
+    // --------IAmmoExpAccess--------
     public static final String AMMO_LEVEL = "ammo_level";
 
     private AmmoPropertyTag() {}

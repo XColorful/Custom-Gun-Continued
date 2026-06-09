@@ -5,20 +5,25 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package xiao.customgun.core.gui.tooltip;
+package xiao.customgun.core.gui.tooltip.gun;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
+import xiao.customgun.core.api.item.AmmoProperty;
 import xiao.customgun.core.api.item.IGun;
+import xiao.customgun.core.api.item.builder.AmmoBuilder;
 import xiao.customgun.core.api.item.gun.IGunGetter;
 import xiao.customgun.core.api.resource.ResourceApi;
+import xiao.customgun.core.init.registry.ModItems;
 import xiao.customgun.core.resource.data.data.GunData;
 import xiao.customgun.core.resource.instance.data.GunIndexInstance;
 
 public record GunTooltip(ItemStack gunItem, IGun iGun,
-                         ResourceLocation ammoLocation, ResourceLocation gunLocation)
+                         // --------Cache--------
+                         ItemStack ammoItem,
+                         ResourceLocation gunLocation)
         implements TooltipComponent {
 
     public static @Nullable GunTooltip fromItem(@Nullable ItemStack gunItem) {
@@ -31,6 +36,14 @@ public record GunTooltip(ItemStack gunItem, IGun iGun,
         if (gunIndexInstance == null) return null;
 
         GunData gunData = gunIndexInstance.getGunData();
-        return new GunTooltip(gunItem, iGun, gunLocation, gunData.getAmmoLocation());
+        var ammoLocation = gunData.getAmmoLocation();
+        ItemStack ammoItem = AmmoBuilder.create(ModItems.AMMO.get())
+                .setProperty(AmmoProperty.AMMO_LOCATION,
+                        ResourceLocation.class,
+                        ammoLocation)
+                .build();
+        return new GunTooltip(gunItem, iGun,
+                ammoItem,
+                gunLocation);
     }
 }

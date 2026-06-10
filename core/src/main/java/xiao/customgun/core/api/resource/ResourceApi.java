@@ -9,6 +9,7 @@ package xiao.customgun.core.api.resource;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeManager;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.CustomGun;
 import xiao.customgun.client.api.resource.ClientResourceApi;
@@ -212,6 +213,14 @@ public class ResourceApi {
     public static Set<Map.Entry<ResourceLocation, GunIndexInstance>> getAllGunIndexInstance() {
         if (CustomGun.getSideExecutor().getLogicalSide().isServer()) return _DataInstanceManager.GUN_INDEX.entrySet();
         else return SyncDataCache.INSTANCE.GUN_INDEX.entrySet();
+    }
+    public static @Nullable Integer getGunSort(ResourceLocation gunLocation) {
+        if (CustomGun.getSideExecutor().getLogicalSide().isServer()) return _DataInstanceManager.GUN_SORT.getGunSort(gunLocation);
+        else return SyncDataCache.INSTANCE.GUN_SORT.getGunSort(gunLocation);
+    }
+    public static @NotNull Map<ResourceLocation, Integer> getAllGunSort() {
+        if (CustomGun.getSideExecutor().getLogicalSide().isServer()) return _DataInstanceManager.GUN_SORT.getAllGunSort();
+        else return SyncDataCache.INSTANCE.GUN_SORT.getAllGunSort();
     }
     public static @Nullable AttachmentIndexInstance getAttachmentIndexInstance(ResourceLocation attachmentLocation) {
         if (CustomGun.getSideExecutor().getLogicalSide().isServer()) return _DataInstanceManager.ATTACHMENT_INDEX.get(attachmentLocation);

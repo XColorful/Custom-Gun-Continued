@@ -15,6 +15,7 @@ import xiao.customgun.core.api.resource.ResourceApi;
 import xiao.customgun.core.resource.instance.PojoInstance;
 import xiao.customgun.core.resource.instance.data.*;
 import xiao.customgun.core.resource.network._AttachmentInstallabilityCache;
+import xiao.customgun.core.resource.network._GunSortCache;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,6 +32,7 @@ public class _DataInstanceManager {
 
     // data
     public static final Map<ResourceLocation, GunIndexInstance> GUN_INDEX = new HashMap<>();
+    public static final _GunSortCache GUN_SORT = new _GunSortCache();
     public static final Map<ResourceLocation, AttachmentIndexInstance> ATTACHMENT_INDEX = new HashMap<>();
     public static final Map<ResourceLocation, AmmoIndexInstance> AMMO_INDEX = new HashMap<>();
     public static final Map<ResourceLocation, BlockIndexInstance> BLOCK_INDEX = new HashMap<>();
@@ -43,6 +45,7 @@ public class _DataInstanceManager {
      */
     public static void clear() {
         GUN_INDEX.clear();
+        GUN_SORT.clear();
         ATTACHMENT_INDEX.clear();
         AMMO_INDEX.clear();
         BLOCK_INDEX.clear();
@@ -55,6 +58,7 @@ public class _DataInstanceManager {
         clear();
 
         buildPojoInstance(ResourceApi.getAllGunIndex(), GUN_INDEX, GunIndexInstance::fromPojo, GunIndexInstance.class);
+        GUN_SORT.reload();
         buildPojoInstance(ResourceApi.getAllAttachmentIndex(), ATTACHMENT_INDEX, AttachmentIndexInstance::fromPojo, AttachmentIndexInstance.class);
         buildPojoInstance(ResourceApi.getAllAmmoIndex(), AMMO_INDEX, AmmoIndexInstance::fromPojo, AmmoIndexInstance.class);
         buildPojoInstance(ResourceApi.getAllBlockIndex(), BLOCK_INDEX, BlockIndexInstance::fromPojo, BlockIndexInstance.class);

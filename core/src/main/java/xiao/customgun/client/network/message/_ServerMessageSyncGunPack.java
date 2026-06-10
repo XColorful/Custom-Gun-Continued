@@ -8,6 +8,7 @@
 package xiao.customgun.client.network.message;
 
 import org.jetbrains.annotations.ApiStatus;
+import xiao.customgun.CustomGun;
 import xiao.customgun.client.resource._AssetsInstanceManager;
 import xiao.customgun.client.resource.network.SyncDataCache;
 import xiao.customgun.core.network.message.ServerMessageSyncGunPack;
@@ -36,8 +37,13 @@ public class _ServerMessageSyncGunPack {
             if (currentTicket < lastActiveTicket) {
                 return null; // 有新包送达，老包直接提前放弃
             }
+
             // 纯Pojo解析可以放网络线程异步处理
-            return SyncDataCache.INSTANCE.rebuildFromNetworkAsync(message.cache());
+            long t0 = System.nanoTime();
+            var parsed = SyncDataCache.INSTANCE.rebuildFromNetworkAsync(message.cache());
+            long t1 = System.nanoTime();
+            CustomGun.LOGGER.debug("ServerMessageSyncGunPack: rebuildFromNetworkAsync: {} ms", (t1 - t0) / 1_000_000.0);
+            return parsed;
         }, ForkJoinPool.commonPool()).thenAcceptAsync((parsedResult) -> {
             // 此时已由handler::accept切回主线程排队队列中
 
@@ -48,11 +54,17 @@ public class _ServerMessageSyncGunPack {
             }
 
             // 在主线程完成全套字段引用的替换
+            long t2 = System.nanoTime();
             SyncDataCache.INSTANCE.setParseResult(parsedResult);
+            long t3 = System.nanoTime();
+            CustomGun.LOGGER.debug("ServerMessageSyncGunPack: setParseResult: {} ms", (t3 - t2) / 1_000_000.0);
 
             // 通知客户端重新构建PojoInstance (主线程)
             lastCompletedTicket = currentTicket;
+            long t4 = System.nanoTime();
             _AssetsInstanceManager.reload();
+            long t5 = System.nanoTime();
+            CustomGun.LOGGER.debug("ServerMessageSyncGunPack: reload AssetsInstanceManager: {} ms", (t5 - t4) / 1_000_000.0);
         }, handler::accept);
     }
 }

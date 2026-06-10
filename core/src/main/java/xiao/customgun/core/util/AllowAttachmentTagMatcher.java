@@ -7,11 +7,11 @@
 
 package xiao.customgun.core.util;
 
-import xiao.customgun.core.resource.instance.data.AttachmentTagDataInstance;
+import xiao.customgun.core.resource.network._AttachmentInstallabilityCache;
 
 /**
  * @deprecated 有刺鼻的味道
- * Go to {@link AttachmentTagDataInstance}
+ * Go to {@link _AttachmentInstallabilityCache}
  */
 @Deprecated(forRemoval = true)
 public class AllowAttachmentTagMatcher {

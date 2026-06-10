@@ -30,6 +30,7 @@ import xiao.customgun.core.resource.data.modtags.GunAttachmentData;
 import xiao.customgun.core.resource.data.recipefilter.RecipeFilterData;
 import xiao.customgun.core.resource.data.script.DataScript;
 import xiao.customgun.core.resource.instance.data.*;
+import xiao.customgun.core.util.ClassUtils;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -236,13 +237,12 @@ public class ResourceApi {
         if (CustomGun.getSideExecutor().getLogicalSide().isServer()) return _DataInstanceManager.BLOCK_INDEX.entrySet();
         else return SyncDataCache.INSTANCE.BLOCK_INDEX.entrySet();
     }
-
-    public static @Nullable AttachmentTagDataInstance getAttachmentTagDataInstance(ResourceLocation attachmentTagDataLocation) {
-        if (CustomGun.getSideExecutor().getLogicalSide().isServer()) return _DataInstanceManager.ATTACHMENT_TAG_DATA.get(attachmentTagDataLocation);
-        else return SyncDataCache.INSTANCE.ATTACHMENT_TAG_DATA.get(attachmentTagDataLocation);
+    public static boolean hasAttachmentInstallability(ResourceLocation attachmentLocation, ResourceLocation gunLocation) {
+        if (CustomGun.getSideExecutor().getLogicalSide().isServer()) return _DataInstanceManager.ATTACHMENT_INSTALLABILITY.hasAttachmentInstallability(attachmentLocation, gunLocation);
+        else return SyncDataCache.INSTANCE.ATTACHMENT_INSTALLABILITY.hasAttachmentInstallability(attachmentLocation, gunLocation);
     }
-    public static Set<Map.Entry<ResourceLocation, AttachmentTagDataInstance>> getAllAttachmentTagDataInstance() {
-        if (CustomGun.getSideExecutor().getLogicalSide().isServer()) return _DataInstanceManager.ATTACHMENT_TAG_DATA.entrySet();
-        else return SyncDataCache.INSTANCE.ATTACHMENT_TAG_DATA.entrySet();
+    public static @Nullable ClassUtils.ArraySet<ResourceLocation> getAttachmentInstallability(ResourceLocation attachmentLocation) {
+        if (CustomGun.getSideExecutor().getLogicalSide().isServer()) return _DataInstanceManager.ATTACHMENT_INSTALLABILITY.getAttachmentInstallability(attachmentLocation);
+        else return SyncDataCache.INSTANCE.ATTACHMENT_INSTALLABILITY.getAttachmentInstallability(attachmentLocation);
     }
 }

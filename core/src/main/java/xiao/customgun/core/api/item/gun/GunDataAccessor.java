@@ -399,7 +399,9 @@ public interface GunDataAccessor extends IGunDataAccess {
             return null;
         }
 
-        return NBTUtils.getCompoundTag(customDataTag, attachmentCategory.getTagName());
+        return NBTUtils.getCompoundTag(customDataTag,
+                attachmentCategory.getTagName()); // 存在枪械根目录的key用带前缀的版本
+//                attachmentCategory.getCategoryName());
     }
 
     @Override
@@ -432,12 +434,17 @@ public interface GunDataAccessor extends IGunDataAccess {
         @NotNull CompoundTag attachmentCustomDataTag = NBTUtils.getCustomDataTag(customData);
 
         AttachmentCategory category = iAttachment.getAttachmentCategory(attachmentItem);
-        NBTUtils.setCompoundTag(gunItem, category.getTagName(), attachmentCustomDataTag);
+        NBTUtils.setCompoundTag(gunItem,
+                category.getTagName(), // 存在枪械根目录的key用带前缀的版本
+//                category.getCategoryName(),
+                attachmentCustomDataTag);
         return true;
     }
     @Override
     default void removeAttachment(ItemStack gunItem, AttachmentCategory attachmentCategory) {
-        NBTUtils.removeKey(gunItem, attachmentCategory.getTagName());
+        NBTUtils.removeKey(gunItem,
+                attachmentCategory.getTagName()); // 存在枪械根目录的key用带前缀的版本
+//                attachmentCategory.getCategoryName());
     }
 
     // --------IGunExpAccess--------

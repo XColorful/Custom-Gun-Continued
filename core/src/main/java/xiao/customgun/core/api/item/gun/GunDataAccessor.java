@@ -187,7 +187,7 @@ public interface GunDataAccessor extends IGunDataAccess {
         GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(this.getGunLocation(gunItem));
         if (gunIndexInstance == null) return 0;
 
-        var customData = NBTUtils.getCustomData(ammoItem);
+        @Nullable var customData = NBTUtils.getCustomData(ammoItem);
         if (customData == null) return 0;
         @NotNull CompoundTag customDataTag = NBTUtils.getCustomDataTag(customData);
         if (!iAmmo.getAmmoLocation(customDataTag).equals(gunIndexInstance.getGunData().getAmmoLocation())
@@ -425,7 +425,7 @@ public interface GunDataAccessor extends IGunDataAccess {
         }
 
         // 没有CustomData就没数据，为无效配件
-        var customData = NBTUtils.getCustomData(attachmentItem);
+        @Nullable var customData = NBTUtils.getCustomData(attachmentItem);
         if (customData == null) {
             return false;
         }

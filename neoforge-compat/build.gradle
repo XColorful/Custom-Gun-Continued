@@ -108,6 +108,6 @@ tasks.matching { it.name == 'jarJar' || it.name == 'reobfJarJar' }.configureEach
     if (it.hasProperty("archiveClassifier")) {
         it.archiveBaseName.set(mod_id)
         it.archiveVersion.set(mod_version)
-        it.archiveClassifier.set("${neoforge_id}-${minecraft_support_version}")
+        it.archiveClassifier.set("${neoforge_id}-${minecraft_version}")
     }
 }

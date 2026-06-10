@@ -8,19 +8,20 @@
 package xiao.customgun.core.resource.data.modtags;
 
 import xiao.customgun.core.resource.ResourcePojo;
-import xiao.customgun.core.util.ClassUtils;
+
+import java.util.List;
 
 public abstract class _SimpleTagData<T extends _SimpleTagData<T>> extends ResourcePojo<T> {
 
-    private ClassUtils.ArraySet<String> tags = new ClassUtils.ArraySet<>();
+    private List<String> tags;
 
     // --------Getter & Setter--------
 
-    public final ClassUtils.ArraySet<String> getTags() {
+    public final List<String> getTags() {
         return tags;
     }
 
-    public final void setTags(ClassUtils.ArraySet<String> tags) {
+    public final void setTags(List<String> tags) {
         this.tags = tags;
     }
 

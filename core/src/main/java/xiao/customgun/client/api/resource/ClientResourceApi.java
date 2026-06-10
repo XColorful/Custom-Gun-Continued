@@ -44,6 +44,10 @@ public class ClientResourceApi {
         var assetsManager = _AllAssetsManager.INSTANCE.gunpackInfoManager;
         return assetsManager != null ? assetsManager.getPojo(gunpackInfoLocation) : null;
     }
+    public static Set<Map.Entry<ResourceLocation, GunpackInfo>> getAllGunpackInfo() {
+        var assetsManager = _AllAssetsManager.INSTANCE.gunpackInfoManager;
+        return assetsManager != null ? assetsManager.getAllPojo().entrySet() : new HashSet<>();
+    }
 
     // --------animation--------
 
@@ -51,9 +55,17 @@ public class ClientResourceApi {
         var assetsManager = _AllAssetsManager.INSTANCE.bedrockAnimationManager;
         return assetsManager != null ? assetsManager.getPojo(animationLocation) : null;
     }
+    public static Set<Map.Entry<ResourceLocation, BedrockAnimation>> getAllBedrockAnimation() {
+        var assetsManager = _AllAssetsManager.INSTANCE.bedrockAnimationManager;
+        return assetsManager != null ? assetsManager.getAllPojo().entrySet() : new HashSet<>();
+    }
     public static @Nullable GltfAnimation getGltfAnimation(ResourceLocation animationLocation) {
         var assetsManager = _AllAssetsManager.INSTANCE.gltfAnimationManager;
         return assetsManager != null ? assetsManager.getPojo(animationLocation) : null;
+    }
+    public static Set<Map.Entry<ResourceLocation, GltfAnimation>> getAllGltfAnimation() {
+        var assetsManager = _AllAssetsManager.INSTANCE.gltfAnimationManager;
+        return assetsManager != null ? assetsManager.getAllPojo().entrySet() : new HashSet<>();
     }
 
     // --------display--------
@@ -118,14 +130,26 @@ public class ClientResourceApi {
     public static @Nullable ClientGunIndexInstance getClientGunIndexInstance(ResourceLocation gunLocation) {
         return _AssetsInstanceManager.GUN_INDEX.get(gunLocation);
     }
+    public static Set<Map.Entry<ResourceLocation, ClientGunIndexInstance>> getAllClientGunIndexInstance() {
+        return _AssetsInstanceManager.GUN_INDEX.entrySet();
+    }
     public static @Nullable ClientAttachmentIndexInstance getClientAttachmentIndexInstance(ResourceLocation attachmentLocation) {
         return _AssetsInstanceManager.ATTACHMENT_INDEX.get(attachmentLocation);
+    }
+    public static Set<Map.Entry<ResourceLocation, ClientAttachmentIndexInstance>> getAllClientAttachmentIndexInstance() {
+        return _AssetsInstanceManager.ATTACHMENT_INDEX.entrySet();
     }
     public static @Nullable ClientAmmoIndexInstance getClientAmmoIndexInstance(ResourceLocation ammoLocation) {
         return _AssetsInstanceManager.AMMO_INDEX.get(ammoLocation);
     }
+    public static Set<Map.Entry<ResourceLocation, ClientAmmoIndexInstance>> getAllClientAmmoIndexInstance() {
+        return _AssetsInstanceManager.AMMO_INDEX.entrySet();
+    }
     public static @Nullable ClientBlockIndexInstance getClientBlockIndexInstance(ResourceLocation blockLocation) {
         return _AssetsInstanceManager.BLOCK_INDEX.get(blockLocation);
+    }
+    public static Set<Map.Entry<ResourceLocation, ClientBlockIndexInstance>> getAllClientBlockIndexInstance() {
+        return _AssetsInstanceManager.BLOCK_INDEX.entrySet();
     }
 
     // --------assets instance--------
@@ -143,6 +167,9 @@ public class ClientResourceApi {
     public static @Nullable GunDisplayInstance getGunDisplayInstance(ResourceLocation displayLocation, ResourceLocation fallbackLocation) {
         GunDisplayInstance instance = getGunDisplayInstance(displayLocation);
         return instance != null ? instance : getGunDisplayInstance(fallbackLocation);
+    }
+    public static Set<Map.Entry<ResourceLocation, GunDisplayInstance>> getAllGunDisplayInstance() {
+        return _AssetsInstanceManager.GUN_DISPLAY.entrySet();
     }
 
     // --------recipe--------

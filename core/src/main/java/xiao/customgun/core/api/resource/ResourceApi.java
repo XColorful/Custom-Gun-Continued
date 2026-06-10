@@ -24,12 +24,12 @@ import xiao.customgun.core.resource.data.index.AmmoIndex;
 import xiao.customgun.core.resource.data.index.AttachmentIndex;
 import xiao.customgun.core.resource.data.index.BlockIndex;
 import xiao.customgun.core.resource.data.index.GunIndex;
+import xiao.customgun.core.resource.data.meta.GunpackMeta;
+import xiao.customgun.core.resource.data.modtags.AttachmentTagData;
+import xiao.customgun.core.resource.data.modtags.GunAttachmentData;
 import xiao.customgun.core.resource.data.recipefilter.RecipeFilterData;
 import xiao.customgun.core.resource.data.script.DataScript;
-import xiao.customgun.core.resource.instance.data.AmmoIndexInstance;
-import xiao.customgun.core.resource.instance.data.AttachmentIndexInstance;
-import xiao.customgun.core.resource.instance.data.BlockIndexInstance;
-import xiao.customgun.core.resource.instance.data.GunIndexInstance;
+import xiao.customgun.core.resource.instance.data.*;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -45,15 +45,30 @@ public class ResourceApi {
         if (dataManager != null && dataManager.gunDataManager != null) return dataManager.gunDataManager.getPojo(dataLocation);
         else return SyncDataCache.INSTANCE.gunData.get(dataLocation);
     }
+    public static Set<Map.Entry<ResourceLocation, GunData>> getAllGunData() {
+        var dataManager = _AllDataManager.getCurrent();
+        if (dataManager != null && dataManager.gunDataManager != null) return dataManager.gunDataManager.getAllPojo().entrySet();
+        else return SyncDataCache.INSTANCE.gunData.entrySet();
+    }
     public static @Nullable AttachmentData getAttachmentData(ResourceLocation dataLocation) {
         var dataManager = _AllDataManager.getCurrent();
         if (dataManager != null && dataManager.attachmentDataManager != null) return dataManager.attachmentDataManager.getPojo(dataLocation);
         else return SyncDataCache.INSTANCE.attachmentData.get(dataLocation);
     }
+    public static Set<Map.Entry<ResourceLocation, AttachmentData>> getAllAttachmentData() {
+        var dataManager = _AllDataManager.getCurrent();
+        if (dataManager != null && dataManager.attachmentDataManager != null) return dataManager.attachmentDataManager.getAllPojo().entrySet();
+        else return SyncDataCache.INSTANCE.attachmentData.entrySet();
+    }
     public static @Nullable BlockData getBlockData(ResourceLocation dataLocation) {
         var dataManager = _AllDataManager.getCurrent();
         if (dataManager != null && dataManager.blockDataManager != null) return dataManager.blockDataManager.getPojo(dataLocation);
         else return SyncDataCache.INSTANCE.blockData.get(dataLocation);
+    }
+    public static Set<Map.Entry<ResourceLocation, BlockData>> getAllBlockData() {
+        var dataManager = _AllDataManager.getCurrent();
+        if (dataManager != null && dataManager.blockDataManager != null) return dataManager.blockDataManager.getAllPojo().entrySet();
+        else return SyncDataCache.INSTANCE.blockData.entrySet();
     }
 
     // --------index--------
@@ -99,6 +114,19 @@ public class ResourceApi {
         else return SyncDataCache.INSTANCE.blockIndex.entrySet();
     }
 
+    // --------meta--------
+
+    public static @Nullable GunpackMeta getGunpackMeta(ResourceLocation gunpackMetaLocation) {
+        var dataManager = _AllDataManager.getCurrent();
+        if (dataManager != null && dataManager.gunpackMetaManager != null) return dataManager.gunpackMetaManager.getPojo(gunpackMetaLocation);
+        else return null;
+    }
+    public static Set<Map.Entry<ResourceLocation, GunpackMeta>> getAllGunpackMeta() {
+        var dataManager = _AllDataManager.getCurrent();
+        if (dataManager != null && dataManager.gunpackMetaManager != null) return dataManager.gunpackMetaManager.getAllPojo().entrySet();
+        else return new HashSet<>();
+    }
+
     // --------recipe--------
 
     public static @Nullable RecipeManager getRecipeManager() {
@@ -132,6 +160,11 @@ public class ResourceApi {
         if (dataManager != null && dataManager.recipeFilterDataManager != null) return dataManager.recipeFilterDataManager.getPojo(filterLocation);
         else return SyncDataCache.INSTANCE.recipeFilterData.get(filterLocation);
     }
+    public static Set<Map.Entry<ResourceLocation, RecipeFilterData>> getAllRecipeFilterData() {
+        var dataManager = _AllDataManager.getCurrent();
+        if (dataManager != null && dataManager.recipeFilterDataManager != null) return dataManager.recipeFilterDataManager.getAllPojo().entrySet();
+        else return SyncDataCache.INSTANCE.recipeFilterData.entrySet();
+    }
 
     // --------script--------
 
@@ -144,6 +177,29 @@ public class ResourceApi {
         var dataManager = _AllDataManager.getCurrent();
         if (dataManager != null && dataManager.scriptManager != null) return dataManager.scriptManager.getAllFiles().entrySet();
         else return new HashSet<>();
+    }
+
+    // --------modtags--------
+
+    public static @Nullable AttachmentTagData getAttachmentTagData(ResourceLocation attachmentTagDataLocation) {
+        var dataManager = _AllDataManager.getCurrent();
+        if (dataManager != null && dataManager.attachmentTagManager != null) return dataManager.attachmentTagManager.getPojo(attachmentTagDataLocation);
+        else return SyncDataCache.INSTANCE.attachmentTagData.get(attachmentTagDataLocation);
+    }
+    public static Set<Map.Entry<ResourceLocation, AttachmentTagData>> getAllAttachmentTagData() {
+        var dataManager = _AllDataManager.getCurrent();
+        if (dataManager != null && dataManager.attachmentTagManager != null) return dataManager.attachmentTagManager.getAllPojo().entrySet();
+        else return SyncDataCache.INSTANCE.attachmentTagData.entrySet();
+    }
+    public static @Nullable GunAttachmentData getGunAttachmentData(ResourceLocation gunAttachmentDataLocation) {
+        var dataManager = _AllDataManager.getCurrent();
+        if (dataManager != null && dataManager.gunAttachmentDataManager != null) return dataManager.gunAttachmentDataManager.getPojo(gunAttachmentDataLocation);
+        else return SyncDataCache.INSTANCE.gunAttachmentData.get(gunAttachmentDataLocation);
+    }
+    public static Set<Map.Entry<ResourceLocation, GunAttachmentData>> getAllGunAttachmentData() {
+        var dataManager = _AllDataManager.getCurrent();
+        if (dataManager != null && dataManager.gunAttachmentDataManager != null) return dataManager.gunAttachmentDataManager.getAllPojo().entrySet();
+        else return SyncDataCache.INSTANCE.gunAttachmentData.entrySet();
     }
 
     // --------data instance--------
@@ -179,5 +235,14 @@ public class ResourceApi {
     public static Set<Map.Entry<ResourceLocation, BlockIndexInstance>> getAllBlockIndexInstance() {
         if (CustomGun.getSideExecutor().getLogicalSide().isServer()) return _DataInstanceManager.BLOCK_INDEX.entrySet();
         else return SyncDataCache.INSTANCE.BLOCK_INDEX.entrySet();
+    }
+
+    public static @Nullable AttachmentTagDataInstance getAttachmentTagDataInstance(ResourceLocation attachmentTagDataLocation) {
+        if (CustomGun.getSideExecutor().getLogicalSide().isServer()) return _DataInstanceManager.ATTACHMENT_TAG_DATA.get(attachmentTagDataLocation);
+        else return SyncDataCache.INSTANCE.ATTACHMENT_TAG_DATA.get(attachmentTagDataLocation);
+    }
+    public static Set<Map.Entry<ResourceLocation, AttachmentTagDataInstance>> getAllAttachmentTagDataInstance() {
+        if (CustomGun.getSideExecutor().getLogicalSide().isServer()) return _DataInstanceManager.ATTACHMENT_TAG_DATA.entrySet();
+        else return SyncDataCache.INSTANCE.ATTACHMENT_TAG_DATA.entrySet();
     }
 }

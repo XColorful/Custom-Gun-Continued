@@ -187,7 +187,7 @@ public interface GunDataAccessor extends IGunDataAccess {
         GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(this.getGunLocation(gunItem));
         if (gunIndexInstance == null) return 0;
 
-        var customData = NBTUtils.getCustomData(ammoItem);
+        @Nullable var customData = NBTUtils.getCustomData(ammoItem);
         if (customData == null) return 0;
         @NotNull CompoundTag customDataTag = NBTUtils.getCustomDataTag(customData);
         if (!iAmmo.getAmmoLocation(customDataTag).equals(gunIndexInstance.getGunData().getAmmoLocation())
@@ -399,7 +399,9 @@ public interface GunDataAccessor extends IGunDataAccess {
             return null;
         }
 
-        return NBTUtils.getCompoundTag(customDataTag, attachmentCategory.getTagName());
+        return NBTUtils.getCompoundTag(customDataTag,
+                attachmentCategory.getTagName()); // 存在枪械根目录的key用带前缀的版本
+//                attachmentCategory.getCategoryName());
     }
 
     @Override
@@ -425,19 +427,24 @@ public interface GunDataAccessor extends IGunDataAccess {
         }
 
         // 没有CustomData就没数据，为无效配件
-        var customData = NBTUtils.getCustomData(attachmentItem);
+        @Nullable var customData = NBTUtils.getCustomData(attachmentItem);
         if (customData == null) {
             return false;
         }
         @NotNull CompoundTag attachmentCustomDataTag = NBTUtils.getCustomDataTag(customData);
 
         AttachmentCategory category = iAttachment.getAttachmentCategory(attachmentItem);
-        NBTUtils.setCompoundTag(gunItem, category.getTagName(), attachmentCustomDataTag);
+        NBTUtils.setCompoundTag(gunItem,
+                category.getTagName(), // 存在枪械根目录的key用带前缀的版本
+//                category.getCategoryName(),
+                attachmentCustomDataTag);
         return true;
     }
     @Override
     default void removeAttachment(ItemStack gunItem, AttachmentCategory attachmentCategory) {
-        NBTUtils.removeKey(gunItem, attachmentCategory.getTagName());
+        NBTUtils.removeKey(gunItem,
+                attachmentCategory.getTagName()); // 存在枪械根目录的key用带前缀的版本
+//                attachmentCategory.getCategoryName());
     }
 
     // --------IGunExpAccess--------

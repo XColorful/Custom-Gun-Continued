@@ -69,7 +69,7 @@ public class NBTUtils {
 
     public static @Nullable Identifier getResourceLocation(@Nullable ItemStack itemStack, String key) {
         @Nullable var customData = getCustomData(itemStack);
-        return customData != null ? mcRegistry.createResourceLocation(getString(getCustomDataTag(customData), key)) : null;
+        return customData != null ? getResourceLocation(getCustomDataTag(customData), key) : null;
     }
     public static void setResourceLocation(@NotNull ItemStack itemStack, String key, @Nullable Identifier value) {
         var customData = getOrCreateCustomData(itemStack);

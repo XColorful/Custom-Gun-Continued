@@ -11,6 +11,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.item.AmmoProperty;
 import xiao.customgun.core.api.resource.ResourceTag;
 import xiao.customgun.core.util.NBTUtils;
@@ -21,15 +22,14 @@ public interface AmmoDataAccessor extends AmmoNBTAccessor, IAmmoDataAccess {
 
     @Override
     default @NotNull Identifier getAmmoLocation(ItemStack ammoItem) {
-        var customData = NBTUtils.getCustomData(ammoItem);
+        @Nullable var customData = NBTUtils.getCustomData(ammoItem);
         if (customData == null) return ResourceTag.NULL_LOCATION;
         @NotNull CompoundTag customDataTag = NBTUtils.getCustomDataTag(customData);
         return this.getAmmoLocation(customDataTag);
     }
     @Override
     default void setAmmoLocation(ItemStack ammoItem, Identifier ammoLocation) {
-        var customData = NBTUtils.getCustomData(ammoItem);
-        if (customData == null) return;
+        var customData = NBTUtils.getOrCreateCustomData(ammoItem);
         @NotNull CompoundTag customDataTag = NBTUtils.getCustomDataTag(customData);
         this.setAmmoLocation(customDataTag, ammoLocation);
         NBTUtils.setCustomDataTag(ammoItem, customDataTag);
@@ -56,15 +56,14 @@ public interface AmmoDataAccessor extends AmmoNBTAccessor, IAmmoDataAccess {
 
     @Override
     default boolean hasInfiniteFeed(ItemStack ammoItem) {
-        var customData = NBTUtils.getCustomData(ammoItem);
+        @Nullable var customData = NBTUtils.getCustomData(ammoItem);
         if (customData == null) return false;
         @NotNull CompoundTag customDataTag = NBTUtils.getCustomDataTag(customData);
         return this.hasInfiniteFeed(customDataTag);
     }
     @Override
     default void setInfiniteFeed(ItemStack ammoItem, boolean infiniteFeed) {
-        var customData = NBTUtils.getCustomData(ammoItem);
-        if (customData == null) return;
+        var customData = NBTUtils.getOrCreateCustomData(ammoItem);
         @NotNull CompoundTag customDataTag = NBTUtils.getCustomDataTag(customData);
         this.setInfiniteFeed(customDataTag, infiniteFeed);
         NBTUtils.setCustomDataTag(ammoItem, customDataTag);
@@ -72,15 +71,14 @@ public interface AmmoDataAccessor extends AmmoNBTAccessor, IAmmoDataAccess {
 
     @Override
     default boolean isAlmightyAmmo(ItemStack ammoItem) {
-        var customData = NBTUtils.getCustomData(ammoItem);
+        @Nullable var customData = NBTUtils.getCustomData(ammoItem);
         if (customData == null) return false;
         @NotNull CompoundTag customDataTag = NBTUtils.getCustomDataTag(customData);
         return this.isAlmightyAmmo(customDataTag);
     }
     @Override
     default void setAlmightyAmmo(ItemStack ammoItem, boolean almighty) {
-        var customData = NBTUtils.getCustomData(ammoItem);
-        if (customData == null) return;
+        var customData = NBTUtils.getOrCreateCustomData(ammoItem);
         @NotNull CompoundTag customDataTag = NBTUtils.getCustomDataTag(customData);
         this.setAlmightyAmmo(customDataTag, almighty);
         NBTUtils.setCustomDataTag(ammoItem, customDataTag);

@@ -36,7 +36,8 @@ public interface AttachmentNBTAccessor extends IAttachmentNBTAccess {
     }
     @Override
     default void setAttachmentCategory(CompoundTag attachmentCustomDataTag, AttachmentCategory attachmentCategory) {
-        NBTUtils.setString(attachmentCustomDataTag, AttachmentProperty.ATTACHMENT_CATEGORY.getTagName(), attachmentCategory.getTagName());
+        NBTUtils.setString(attachmentCustomDataTag, AttachmentProperty.ATTACHMENT_CATEGORY.getTagName(),
+                attachmentCategory.getCategoryName()); // 存在配件NBT里用不带前缀的简写
     }
 
     @Override

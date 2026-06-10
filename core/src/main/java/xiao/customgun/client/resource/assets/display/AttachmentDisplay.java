@@ -109,14 +109,14 @@ public final class AttachmentDisplay extends _AssetsDisplay<AttachmentDisplay> {
         if (!this.isValid()) return;
 
         boolean n1 = (this.getSlotTextureLocation() == null | this.adapterNodeName == null | this.modelNodeTextDisplay == null | this.laserDisplay == null);
-        boolean n2 = (this.attachmentSounds == null | this.scopeViewIndex == null);
+        boolean n2 = (this.attachmentSounds == null);
         if (n1 | n2) {
             this.setValid(false);
             return;
         }
         if (this.lodDisplay != null) this.lodDisplay.validate();
-        this.laserDisplay.validate();
-        boolean v1 = ((this.lodDisplay == null || this.lodDisplay.isValid()) & this.laserDisplay.isValid());
+        if (this.laserDisplay != null) this.laserDisplay.validate();
+        boolean v1 = ((this.lodDisplay == null || this.lodDisplay.isValid()) & (this.laserDisplay == null || this.laserDisplay.isValid()));
         if (!v1) {
             this.setValid(false);
             return;

@@ -101,7 +101,7 @@ public class ClientGunTooltip implements ClientTooltipComponent {
             ItemStack gunItem = gunTooltip.gunItem();
             this.visibleParts = GunTooltipMask.fromBitmap(iGun.getTooltipMask(gunItem));
             this.gunIndexInstance = ResourceApi.getGunIndexInstance(gunTooltip.gunLocation());
-            this.gunDisplayInstance = ClientResourceApi.getGunDisplayInstance(gunTooltip.gunLocation());
+            this.gunDisplayInstance = ClientResourceApi.getGunDisplayInstance(iGun.getGunDisplayLocation(gunItem));
             this.buildView();
         }
         @Override

@@ -8,6 +8,7 @@
 package xiao.customgun.core.resource;
 
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.CustomGun;
 import xiao.customgun.core.api.resource.ResourceApi;
@@ -27,7 +28,8 @@ import java.util.function.Function;
  * <p>
  * Pojo自身的校验只包含自身(可并发各自同时校验)的类型检查，valid只保证自身接口的@Nullable/@NotNull生效，不保证跨Pojo索引生效
  */
-public class DataInstanceManager {
+@ApiStatus.Internal
+public class _DataInstanceManager {
 
     // data
     public static final Map<ResourceLocation, GunIndexInstance> GUN_INDEX = new HashMap<>();
@@ -35,7 +37,7 @@ public class DataInstanceManager {
     public static final Map<ResourceLocation, AmmoIndexInstance> AMMO_INDEX = new HashMap<>();
     public static final Map<ResourceLocation, BlockIndexInstance> BLOCK_INDEX = new HashMap<>();
 
-    private DataInstanceManager() {}
+    private _DataInstanceManager() {}
 
     /**
      * 主线程操作(线程不安全)

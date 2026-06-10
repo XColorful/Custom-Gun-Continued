@@ -36,7 +36,7 @@ import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 
-import static xiao.customgun.core.resource.DataInstanceManager.buildPojoInstance;
+import static xiao.customgun.core.resource._DataInstanceManager.buildPojoInstance;
 
 public final class SyncDataCache {
     public static final SyncDataCache INSTANCE = new SyncDataCache();

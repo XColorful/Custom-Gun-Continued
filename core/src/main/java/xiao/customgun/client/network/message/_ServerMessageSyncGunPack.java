@@ -8,10 +8,10 @@
 package xiao.customgun.client.network.message;
 
 import org.jetbrains.annotations.ApiStatus;
-import xiao.customgun.client.resource.AssetsInstanceManager;
+import xiao.customgun.client.resource._AssetsInstanceManager;
 import xiao.customgun.client.resource.network.SyncDataCache;
 import xiao.customgun.core.network.message.ServerMessageSyncGunPack;
-import xiao.customgun.core.resource.AllDataManager;
+import xiao.customgun.core.resource._AllDataManager;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ForkJoinPool;
@@ -26,7 +26,7 @@ public class _ServerMessageSyncGunPack {
 
     public static void doSync(ServerMessageSyncGunPack message, Consumer<Runnable> handler, boolean remoteConnection) {
         if (remoteConnection) {
-            AllDataManager.clearInstance();
+            _AllDataManager.clearInstance();
         }
 
         final long currentTicket = TICKET_COUNTER.incrementAndGet();
@@ -52,7 +52,7 @@ public class _ServerMessageSyncGunPack {
 
             // 通知客户端重新构建PojoInstance (主线程)
             lastCompletedTicket = currentTicket;
-            AssetsInstanceManager.reload();
+            _AssetsInstanceManager.reload();
         }, handler::accept);
     }
 }

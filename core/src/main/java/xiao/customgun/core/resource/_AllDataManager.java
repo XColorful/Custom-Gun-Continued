@@ -143,7 +143,7 @@ public class _AllDataManager implements IEventHandler {
                 (barrier, resourceManager, preparationProfiler, reloadProfiler, backgroundExecutor, gameExecutor) -> {
                     return barrier
                             .wait(Void.TYPE)
-                            .thenRunAsync(() -> {// TODO
+                            .thenRunAsync(() -> {
                             }, gameExecutor);
                 }
         );

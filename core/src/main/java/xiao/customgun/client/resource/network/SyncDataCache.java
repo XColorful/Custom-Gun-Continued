@@ -25,10 +25,7 @@ import xiao.customgun.core.resource.data.index.GunIndex;
 import xiao.customgun.core.resource.data.modtags.AttachmentTagData;
 import xiao.customgun.core.resource.data.modtags.GunAttachmentData;
 import xiao.customgun.core.resource.data.recipefilter.RecipeFilterData;
-import xiao.customgun.core.resource.instance.data.AmmoIndexInstance;
-import xiao.customgun.core.resource.instance.data.AttachmentIndexInstance;
-import xiao.customgun.core.resource.instance.data.BlockIndexInstance;
-import xiao.customgun.core.resource.instance.data.GunIndexInstance;
+import xiao.customgun.core.resource.instance.data.*;
 import xiao.customgun.core.resource.network.SyncDataType;
 import xiao.customgun.core.util.JsonUtils;
 
@@ -71,6 +68,8 @@ public final class SyncDataCache {
     public final Map<ResourceLocation, AmmoIndexInstance> AMMO_INDEX = new HashMap<>();
     public final Map<ResourceLocation, BlockIndexInstance> BLOCK_INDEX = new HashMap<>();
 
+    public final Map<ResourceLocation, AttachmentTagDataInstance> ATTACHMENT_TAG_DATA = new HashMap<>();
+
     @ApiStatus.Internal
     public void clear() {
         this.gunData = new HashMap<>();
@@ -92,6 +91,8 @@ public final class SyncDataCache {
         this.ATTACHMENT_INDEX.clear();
         this.AMMO_INDEX.clear();
         this.BLOCK_INDEX.clear();
+
+        this.ATTACHMENT_TAG_DATA.clear();
     }
 
     /**
@@ -115,13 +116,14 @@ public final class SyncDataCache {
 
         this.attachmentTagData = (Map<ResourceLocation, AttachmentTagData>) result.getOrDefault(SyncDataType.ATTACHMENT_TAG, new HashMap<>());
         this.gunAttachmentData = (Map<ResourceLocation, GunAttachmentData>) result.getOrDefault(SyncDataType.GUN_ATTACHMENT, new HashMap<>());
-        // TODO AllowAttachmentTagMatcher.resetCache()
 
         // data instance
         buildPojoInstance(ResourceApi.getAllGunIndex(), this.GUN_INDEX, GunIndexInstance::fromPojo, GunIndexInstance.class);
         buildPojoInstance(ResourceApi.getAllAttachmentIndex(), this.ATTACHMENT_INDEX, AttachmentIndexInstance::fromPojo, AttachmentIndexInstance.class);
         buildPojoInstance(ResourceApi.getAllAmmoIndex(), this.AMMO_INDEX, AmmoIndexInstance::fromPojo, AmmoIndexInstance.class);
         buildPojoInstance(ResourceApi.getAllBlockIndex(), this.BLOCK_INDEX, BlockIndexInstance::fromPojo, BlockIndexInstance.class);
+
+        buildPojoInstance(ResourceApi.getAllAttachmentTagData(), this.ATTACHMENT_TAG_DATA, AttachmentTagDataInstance::fromPojo, AttachmentTagDataInstance.class);
     }
     /**
      * 线程安全

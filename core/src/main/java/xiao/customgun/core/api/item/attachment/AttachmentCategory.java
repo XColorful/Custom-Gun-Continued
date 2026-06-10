@@ -82,6 +82,7 @@ public enum AttachmentCategory implements ResourceTag.CategoryTag {
 
     static {
         for (AttachmentCategory type : values()) {
+            CATEGORIES.put(type.tagName, type);
             CATEGORIES.put(type.categoryName, type);
             if (type.categoryNameOld != null) CATEGORIES.put(type.categoryNameOld, type);
         }

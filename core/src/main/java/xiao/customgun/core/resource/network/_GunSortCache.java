@@ -1,0 +1,51 @@
+package xiao.customgun.core.resource.network;
+
+import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import xiao.customgun.core.api.resource.ResourceApi;
+import xiao.customgun.core.resource._DataInstanceManager;
+import xiao.customgun.core.resource.instance.data.GunIndexInstance;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class _GunSortCache {
+
+    private final Map<ResourceLocation, Integer> gunSorts;
+
+    @ApiStatus.Internal
+    public _GunSortCache() {
+        this.gunSorts = new HashMap<>();
+    }
+
+    /**
+     * 主线程操作(线程不安全)
+     * <p>
+     * 命名跟{@link _DataInstanceManager#clear()}保持同构
+     */
+    public void clear() {
+        this.gunSorts.clear();
+    }
+    /**
+     * 主线程操作(线程不安全)
+     * <p>
+     * 命名跟{@link _DataInstanceManager#clear()}保持同构
+     */
+    public void reload() {
+        for (Map.Entry<ResourceLocation, GunIndexInstance> entry : ResourceApi.getAllGunIndexInstance()) {
+            GunIndexInstance gunIndexInstance = entry.getValue();
+            this.gunSorts.put(entry.getKey(), gunIndexInstance.getPojo().getSlotSort());
+        }
+    }
+
+    // --------Getter--------
+
+    public @Nullable Integer getGunSort(ResourceLocation gunLocation) {
+        return this.gunSorts.get(gunLocation);
+    }
+    public @NotNull Map<ResourceLocation, Integer> getAllGunSort() {
+        return this.gunSorts;
+    }
+}

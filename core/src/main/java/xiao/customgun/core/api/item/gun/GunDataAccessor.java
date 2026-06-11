@@ -372,8 +372,7 @@ public interface GunDataAccessor extends IGunDataAccess {
         if (!this.isAttachmentEnabled(gunItem, category)) {
             return false;
         }
-        // TODO AllowAttachmentTagMatcher
-        return true;
+        return ResourceApi.hasAttachmentInstallability(attachmentLocation, gunLocation);
     }
 
     @Override

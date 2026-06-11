@@ -7,7 +7,6 @@
 
 package xiao.customgun.core.resource.data;
 
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import org.jetbrains.annotations.ApiStatus;
 import xiao.customgun.core.api.resource.FileExtensionType;
@@ -19,7 +18,6 @@ import xiao.customgun.core.resource.data.recipefilter.RecipeFilterData;
 import xiao.customgun.core.resource.network.SyncDataType;
 
 import java.util.Arrays;
-import java.util.Map;
 
 /**
  * 目录名称{@link DataFolderType}
@@ -33,8 +31,5 @@ public final class RecipeFilterDataManager extends ResourcePojoManager<RecipeFil
     }
     @Override public SyncDataType getSyncDataType() {
         return SyncDataType.RECIPE_FILTER;
-    }
-    @Override public Map<ResourceLocation, String> getNetworkCache() {
-        return Map.of();
     }
 }

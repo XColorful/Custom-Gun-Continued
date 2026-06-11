@@ -15,14 +15,14 @@ import xiao.customgun.CustomGun;
 import xiao.customgun.core.api.event.*;
 import xiao.customgun.core.entity.LivingShooterSyncHandler;
 import xiao.customgun.core.entity.victim.BulletVictimKnockback;
-import xiao.customgun.core.resource.AllDataManager;
+import xiao.customgun.core.resource._AllDataManager;
 
 public class CoreEventHandlers {
 
     public static void registerAll(ICustomEventRegister customEventRegister) {
-        register(customEventRegister, AllDataManager._getInternal(), EventType.ADD_SERVER_RELOAD_LISTENER_EVENT, EventPriority.NORMAL, false);
-        register(customEventRegister, AllDataManager._getInternal(), EventType.TAGS_UPDATED_EVENT, EventPriority.NORMAL, false);
-        register(customEventRegister, AllDataManager._getInternal(), EventType.DATAPACK_SYNC_EVENT, EventPriority.NORMAL, false);
+        register(customEventRegister, _AllDataManager._getInternal(), EventType.ADD_SERVER_RELOAD_LISTENER_EVENT, EventPriority.NORMAL, false);
+        register(customEventRegister, _AllDataManager._getInternal(), EventType.TAGS_UPDATED_EVENT, EventPriority.NORMAL, false);
+        register(customEventRegister, _AllDataManager._getInternal(), EventType.DATAPACK_SYNC_EVENT, EventPriority.NORMAL, false);
         register(customEventRegister, LivingShooterSyncHandler.get(), EventType.SERVER_TICK_EVENT, EventPriority.NORMAL, false);
         register(customEventRegister, LivingShooterSyncHandler.get(), EventType.ENTITY_JOIN_LEVEL_EVENT, EventPriority.NORMAL, false);
         register(customEventRegister, LivingShooterSyncHandler.get(), EventType.PLAYER_CLONE_EVENT, EventPriority.NORMAL, false);

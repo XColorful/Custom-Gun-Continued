@@ -18,6 +18,7 @@ import org.jetbrains.annotations.Nullable;
 import xiao.customgun.CustomGun;
 import xiao.customgun.core.api.event.*;
 import xiao.customgun.core.api.resource.INetworkCacheReloadListener;
+import xiao.customgun.core.api.resource.ResourceApi;
 import xiao.customgun.core.api.resource.data.DataFolderType;
 import xiao.customgun.core.init.registry.ModRecipe;
 import xiao.customgun.core.network.message.ServerMessageSyncGunPack;
@@ -31,21 +32,25 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-public class AllDataManager implements IEventHandler {
-    protected static final AllDataManager INSTANCE = new AllDataManager();
-    private static volatile AllDataManager CURRENT;
+/**
+ * Go to {@link ResourceApi}
+ */
+@ApiStatus.Internal
+public class _AllDataManager implements IEventHandler {
+    protected static final _AllDataManager INSTANCE = new _AllDataManager();
+    private static volatile _AllDataManager CURRENT;
     /**
      * 仅单人游戏/专用服务端可用
      */
-    public static @Nullable AllDataManager getCurrent() {
+    public static @Nullable _AllDataManager getCurrent() {
         return CURRENT;
     }
     /**
      * 线程安全
      */
     public static void clearInstance() {
-        if (AllDataManager.CURRENT == null) return;
-        AllDataManager.CURRENT = null;
+        if (_AllDataManager.CURRENT == null) return;
+        _AllDataManager.CURRENT = null;
     }
 
     @Override public String getEventHandlerName() {
@@ -102,7 +107,7 @@ public class AllDataManager implements IEventHandler {
      */
     public ScriptManager scriptManager;
 
-    private AllDataManager() {
+    private _AllDataManager() {
         this.reloadListeners = new ArrayList<>();
         this.networkCacheListeners = new ArrayList<>();
     }
@@ -138,7 +143,7 @@ public class AllDataManager implements IEventHandler {
                 (barrier, resourceManager, backgroundExecutor, gameExecutor) -> {
                     return barrier
                             .wait(Void.TYPE)
-                            .thenRunAsync(() -> {// TODO
+                            .thenRunAsync(() -> {
                             }, gameExecutor);
                 }
         );
@@ -161,9 +166,9 @@ public class AllDataManager implements IEventHandler {
     }
 
     private static void onAddServerReloadListenerEvent(IAddServerReloadListenerEvent event) {
-        AllDataManager.INSTANCE.reloadAndRegister(event);
-        AllDataManager.CURRENT = AllDataManager.INSTANCE;
-        AllDataManager.INSTANCE.recipeManager = event.getServerResources().getRecipeManager();
+        _AllDataManager.INSTANCE.reloadAndRegister(event);
+        _AllDataManager.CURRENT = _AllDataManager.INSTANCE;
+        _AllDataManager.INSTANCE.recipeManager = event.getServerResources().getRecipeManager();
     }
 
     /**
@@ -186,7 +191,7 @@ public class AllDataManager implements IEventHandler {
         }
 
         // 需要等ResourcePojoManager#apply全结束才执行
-        DataInstanceManager.reload();
+        _DataInstanceManager.reload();
     }
 
     private static void onDatapackSyncEvent(IDatapackSyncEvent event) {
@@ -197,7 +202,7 @@ public class AllDataManager implements IEventHandler {
     }
 
     public static void onServerStopped(MinecraftServer server) {
-        AllDataManager.clearInstance();
+        _AllDataManager.clearInstance();
     }
 
     public static void reloadAllPack() {
@@ -215,6 +220,6 @@ public class AllDataManager implements IEventHandler {
 
     @ApiStatus.Internal
     public static IEventHandler _getInternal() {
-        return AllDataManager.INSTANCE;
+        return _AllDataManager.INSTANCE;
     }
 }

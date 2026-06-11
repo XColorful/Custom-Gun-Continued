@@ -12,7 +12,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import xiao.customgun.client.resource.AllAssetsManager;
+import xiao.customgun.client.resource._AllAssetsManager;
 import xiao.customgun.core.developer.PlannedRefactor;
 
 import static xiao.customgun.client.command.ClientCommandArg.RELOAD_CLIENT;
@@ -30,6 +30,6 @@ public class _ReloadCommand {
     }
 
     public static void reloadClient() {
-        AllAssetsManager.reloadAllPack();
+        _AllAssetsManager.reloadAllPack();
     }
 }

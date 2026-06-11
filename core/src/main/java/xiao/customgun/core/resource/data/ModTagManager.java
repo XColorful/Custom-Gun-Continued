@@ -25,7 +25,6 @@ import xiao.customgun.core.util.JsonUtils;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 
 /**
@@ -57,9 +56,6 @@ public abstract class ModTagManager <T extends ResourcePojo<T>> extends Resource
         @Override public SyncDataType getSyncDataType() {
             return SyncDataType.ATTACHMENT_TAG;
         }
-        @Override public Map<Identifier, String> getNetworkCache() {
-            return Map.of();
-        }
 
         @Override
         protected boolean isPojoLocationValid(Identifier pojoLocation) {
@@ -76,9 +72,6 @@ public abstract class ModTagManager <T extends ResourcePojo<T>> extends Resource
         }
         @Override public SyncDataType getSyncDataType() {
             return SyncDataType.GUN_ATTACHMENT;
-        }
-        @Override public Map<Identifier, String> getNetworkCache() {
-            return Map.of();
         }
     }
 }

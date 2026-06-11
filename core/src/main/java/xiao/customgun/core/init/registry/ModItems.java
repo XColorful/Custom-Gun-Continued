@@ -27,8 +27,8 @@ import java.util.function.Function;
 
 /**
  * <ul>
- * <li>用 {@link IRegistrar#register} 的是正常注册，获取的就是传入的类型</li>
- * <li>用 {@link IRegistrar#registerItem} 的是 hack 实现，也可以当传入的类型用</li>
+ *     <li>用 {@link IRegistrar#register} 的是正常注册，获取的就是传入的类型</li>
+ *     <li>用 {@link IRegistrar#registerItem} 的是 hack 实现，也可以当传入的类型用</li>
  * </ul>
  * 类型检查用<code>instanceof</code>而不要用<code>getClass</code>，除非调用方不打算做平台抽象层
  */

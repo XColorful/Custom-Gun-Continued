@@ -10,6 +10,7 @@ package xiao.customgun.client.resource;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.Identifier;
+import org.jetbrains.annotations.ApiStatus;
 import xiao.customgun.client.api.resource.ClientResourceApi;
 import xiao.customgun.client.resource.instance.assets.GunDisplayInstance;
 import xiao.customgun.client.resource.instance.data.ClientAmmoIndexInstance;
@@ -21,14 +22,15 @@ import xiao.customgun.core.api.resource.ResourceApi;
 import java.util.HashMap;
 import java.util.Map;
 
-import static xiao.customgun.core.resource.DataInstanceManager.buildPojoInstance;
+import static xiao.customgun.core.resource._DataInstanceManager.buildPojoInstance;
 
 /**
  * 存放Pojo二次校验后的实例，直接丢弃索引无效的ResourceLocation
  * <p>
  * Pojo自身的校验只包含自身(可并发各自同时校验)的类型检查，valid只保证自身接口的@Nullable/@NotNull生效，不保证跨Pojo索引生效
  */
-public class AssetsInstanceManager {
+@ApiStatus.Internal
+public class _AssetsInstanceManager {
 
     // data
     public static final Map<Identifier, ClientGunIndexInstance> GUN_INDEX = new HashMap<>();
@@ -39,7 +41,7 @@ public class AssetsInstanceManager {
     // assets
     public static final Map<Identifier, GunDisplayInstance> GUN_DISPLAY = new HashMap<>(); // displayLocation -> GunDisplay
 
-    private AssetsInstanceManager() {}
+    private _AssetsInstanceManager() {}
 
     /**
      * 主线程操作(线程不安全)

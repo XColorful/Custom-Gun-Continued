@@ -5,7 +5,7 @@
 package xiao.customgun.core.init;
 
 import net.minecraft.server.MinecraftServer;
-import xiao.customgun.core.resource.AllDataManager;
+import xiao.customgun.core.resource._AllDataManager;
 
 public class ModEvent {
 
@@ -19,6 +19,6 @@ public class ModEvent {
     }
 
     public void onServerStopping(MinecraftServer server) {
-        if (AllDataManager.getCurrent() != null) AllDataManager.onServerStopped(server);
+        if (_AllDataManager.getCurrent() != null) _AllDataManager.onServerStopped(server);
     }
 }

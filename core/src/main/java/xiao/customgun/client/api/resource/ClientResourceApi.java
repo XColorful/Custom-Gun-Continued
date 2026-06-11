@@ -13,8 +13,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
-import xiao.customgun.client.resource.AllAssetsManager;
-import xiao.customgun.client.resource.AssetsInstanceManager;
+import xiao.customgun.client.resource._AllAssetsManager;
+import xiao.customgun.client.resource._AssetsInstanceManager;
 import xiao.customgun.client.resource.assets.animation.BedrockAnimation;
 import xiao.customgun.client.resource.assets.animation.GltfAnimation;
 import xiao.customgun.client.resource.assets.display.AmmoDisplay;
@@ -41,91 +41,115 @@ public class ClientResourceApi {
     // --------gunpack info--------
 
     public static @Nullable GunpackInfo getGunpackInfo(Identifier gunpackInfoLocation) {
-        var assetsManager = AllAssetsManager.INSTANCE.gunpackInfoManager;
+        var assetsManager = _AllAssetsManager.INSTANCE.gunpackInfoManager;
         return assetsManager != null ? assetsManager.getPojo(gunpackInfoLocation) : null;
+    }
+    public static Set<Map.Entry<ResourceLocation, GunpackInfo>> getAllGunpackInfo() {
+        var assetsManager = _AllAssetsManager.INSTANCE.gunpackInfoManager;
+        return assetsManager != null ? assetsManager.getAllPojo().entrySet() : new HashSet<>();
     }
 
     // --------animation--------
 
     public static @Nullable BedrockAnimation getBedrockAnimation(Identifier animationLocation) {
-        var assetsManager = AllAssetsManager.INSTANCE.bedrockAnimationManager;
+        var assetsManager = _AllAssetsManager.INSTANCE.bedrockAnimationManager;
         return assetsManager != null ? assetsManager.getPojo(animationLocation) : null;
     }
+    public static Set<Map.Entry<Identifier, BedrockAnimation>> getAllBedrockAnimation() {
+        var assetsManager = _AllAssetsManager.INSTANCE.bedrockAnimationManager;
+        return assetsManager != null ? assetsManager.getAllPojo().entrySet() : new HashSet<>();
+    }
     public static @Nullable GltfAnimation getGltfAnimation(Identifier animationLocation) {
-        var assetsManager = AllAssetsManager.INSTANCE.gltfAnimationManager;
+        var assetsManager = _AllAssetsManager.INSTANCE.gltfAnimationManager;
         return assetsManager != null ? assetsManager.getPojo(animationLocation) : null;
+    }
+    public static Set<Map.Entry<ResourceLocation, GltfAnimation>> getAllGltfAnimation() {
+        var assetsManager = _AllAssetsManager.INSTANCE.gltfAnimationManager;
+        return assetsManager != null ? assetsManager.getAllPojo().entrySet() : new HashSet<>();
     }
 
     // --------display--------
 
     public static @Nullable GunDisplay getGunDisplay(Identifier displayLocation) {
-        var assetsManager = AllAssetsManager.INSTANCE.gunDisplayManager;
+        var assetsManager = _AllAssetsManager.INSTANCE.gunDisplayManager;
         return assetsManager != null ? assetsManager.getPojo(displayLocation) : null;
     }
     public static Set<Map.Entry<Identifier, GunDisplay>> getAllGunDisplay() {
-        var assetsManager = AllAssetsManager.INSTANCE.gunDisplayManager;
+        var assetsManager = _AllAssetsManager.INSTANCE.gunDisplayManager;
         return assetsManager != null ? assetsManager.getAllPojo().entrySet() : new HashSet<>();
     }
     public static @Nullable AttachmentDisplay getAttachmentDisplay(Identifier attachmentDisplayLocation) {
-        var assetsManager = AllAssetsManager.INSTANCE.attachmentDisplayManager;
+        var assetsManager = _AllAssetsManager.INSTANCE.attachmentDisplayManager;
         return assetsManager != null ? assetsManager.getPojo(attachmentDisplayLocation) : null;
     }
     public static Set<Map.Entry<Identifier, AttachmentDisplay>> getAllAttachmentDisplay() {
-        var assetsManager = AllAssetsManager.INSTANCE.attachmentDisplayManager;
+        var assetsManager = _AllAssetsManager.INSTANCE.attachmentDisplayManager;
         return assetsManager != null ? assetsManager.getAllPojo().entrySet() : new HashSet<>();
     }
     public static @Nullable AmmoDisplay getAmmoDisplay(Identifier ammoDisplayLocation) {
-        var assetsManager = AllAssetsManager.INSTANCE.ammoDisplayManager;
+        var assetsManager = _AllAssetsManager.INSTANCE.ammoDisplayManager;
         return assetsManager != null ? assetsManager.getPojo(ammoDisplayLocation) : null;
     }
     public static Set<Map.Entry<Identifier, AmmoDisplay>> getAllAmmoDisplay() {
-        var assetsManager = AllAssetsManager.INSTANCE.ammoDisplayManager;
+        var assetsManager = _AllAssetsManager.INSTANCE.ammoDisplayManager;
         return assetsManager != null ? assetsManager.getAllPojo().entrySet() : new HashSet<>();
     }
     public static @Nullable BlockDisplay getBlockDisplay(Identifier blockDisplayLocation) {
-        var assetsManager = AllAssetsManager.INSTANCE.blockDisplayManager;
+        var assetsManager = _AllAssetsManager.INSTANCE.blockDisplayManager;
         return assetsManager != null ? assetsManager.getPojo(blockDisplayLocation) : null;
     }
     public static Set<Map.Entry<Identifier, BlockDisplay>> getAllBlockDisplay() {
-        var assetsManager = AllAssetsManager.INSTANCE.blockDisplayManager;
+        var assetsManager = _AllAssetsManager.INSTANCE.blockDisplayManager;
         return assetsManager != null ? assetsManager.getAllPojo().entrySet() : new HashSet<>();
     }
 
     // --------model--------
 
     public static @Nullable BedrockModel getBedrockModel(Identifier bedrockModelLocation) {
-        var assetsManager = AllAssetsManager.INSTANCE.bedrockModelManager;
+        var assetsManager = _AllAssetsManager.INSTANCE.bedrockModelManager;
         return assetsManager != null ? assetsManager.getPojo(bedrockModelLocation) : null;
     }
     public static Set<Map.Entry<Identifier, BedrockModel>> getAllBedrockModel() {
-        var assetsManager = AllAssetsManager.INSTANCE.bedrockModelManager;
+        var assetsManager = _AllAssetsManager.INSTANCE.bedrockModelManager;
         return assetsManager != null ? assetsManager.getAllPojo().entrySet() : new HashSet<>();
     }
 
     // --------script--------
 
     public static @Nullable AssetsScript getAssetsScript(Identifier scriptLocation) {
-        var assetsManager = AllAssetsManager.INSTANCE.clientScriptManager;
+        var assetsManager = _AllAssetsManager.INSTANCE.clientScriptManager;
         return assetsManager != null ? assetsManager.getFile(scriptLocation) : null;
     }
     public static Set<Map.Entry<Identifier, AssetsScript>> getAllAssetsScript() {
-        var assetsManager = AllAssetsManager.INSTANCE.clientScriptManager;
+        var assetsManager = _AllAssetsManager.INSTANCE.clientScriptManager;
         return assetsManager != null ? assetsManager.getAllFiles().entrySet() : new HashSet<>();
     }
 
     // --------data instance--------
 
     public static @Nullable ClientGunIndexInstance getClientGunIndexInstance(Identifier gunLocation) {
-        return AssetsInstanceManager.GUN_INDEX.get(gunLocation);
+        return _AssetsInstanceManager.GUN_INDEX.get(gunLocation);
+    }
+    public static Set<Map.Entry<Identifier, ClientGunIndexInstance>> getAllClientGunIndexInstance() {
+        return _AssetsInstanceManager.GUN_INDEX.entrySet();
     }
     public static @Nullable ClientAttachmentIndexInstance getClientAttachmentIndexInstance(Identifier attachmentLocation) {
-        return AssetsInstanceManager.ATTACHMENT_INDEX.get(attachmentLocation);
+        return _AssetsInstanceManager.ATTACHMENT_INDEX.get(attachmentLocation);
+    }
+    public static Set<Map.Entry<Identifier, ClientAttachmentIndexInstance>> getAllClientAttachmentIndexInstance() {
+        return _AssetsInstanceManager.ATTACHMENT_INDEX.entrySet();
     }
     public static @Nullable ClientAmmoIndexInstance getClientAmmoIndexInstance(Identifier ammoLocation) {
-        return AssetsInstanceManager.AMMO_INDEX.get(ammoLocation);
+        return _AssetsInstanceManager.AMMO_INDEX.get(ammoLocation);
+    }
+    public static Set<Map.Entry<Identifier, ClientAmmoIndexInstance>> getAllClientAmmoIndexInstance() {
+        return _AssetsInstanceManager.AMMO_INDEX.entrySet();
     }
     public static @Nullable ClientBlockIndexInstance getClientBlockIndexInstance(Identifier blockLocation) {
-        return AssetsInstanceManager.BLOCK_INDEX.get(blockLocation);
+        return _AssetsInstanceManager.BLOCK_INDEX.get(blockLocation);
+    }
+    public static Set<Map.Entry<Identifier, ClientBlockIndexInstance>> getAllClientBlockIndexInstance() {
+        return _AssetsInstanceManager.BLOCK_INDEX.entrySet();
     }
 
     // --------assets instance--------
@@ -138,11 +162,14 @@ public class ClientResourceApi {
         return getGunDisplayInstance(displayLocation);
     }
     public static @Nullable GunDisplayInstance getGunDisplayInstance(Identifier displayLocation) {
-        return AssetsInstanceManager.GUN_DISPLAY.get(displayLocation);
+        return _AssetsInstanceManager.GUN_DISPLAY.get(displayLocation);
     }
     public static @Nullable GunDisplayInstance getGunDisplayInstance(Identifier displayLocation, Identifier fallbackLocation) {
         GunDisplayInstance instance = getGunDisplayInstance(displayLocation);
         return instance != null ? instance : getGunDisplayInstance(fallbackLocation);
+    }
+    public static Set<Map.Entry<ResourceLocation, GunDisplayInstance>> getAllGunDisplayInstance() {
+        return _AssetsInstanceManager.GUN_DISPLAY.entrySet();
     }
 
     // --------recipe--------

@@ -19,8 +19,8 @@ public class NeoGunItem extends GunItem {
     /**
      * 预留给扩展模组用:
      * <ul>
-     * <li>扩展模组core模块只能继承{@link GunItem}而不是{@link NeoGunItem} (除非不想做平台抽象层)</li>
-     * <li>因而留一个static接口</li>
+     *     <li>扩展模组core模块只能继承{@link GunItem}而不是{@link NeoGunItem} (除非不想做平台抽象层)</li>
+     *     <li>因而留一个static接口</li>
      * </ul>
      * 比如注册<code>MyGunItem extends GunItem</code>并重载final getter/setter来锁定子Manager
      */

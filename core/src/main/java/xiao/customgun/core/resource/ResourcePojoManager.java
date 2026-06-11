@@ -203,7 +203,7 @@ public abstract class ResourcePojoManager<T extends ResourcePojo<T>>
         if (this instanceof INetworkCacheReloadListener) this.writeStringMap();
     }
     protected void writeStringMap() {
-        Map<ResourceLocation, String> newStringMap = new HashMap<>();
+        Map<Identifier, String> newStringMap = new HashMap<>();
         for (var entry : this.pojoMap.entrySet()) {
             var pojoLocation = entry.getKey();
             try (StringWriter stringWriter = new StringWriter();
@@ -220,7 +220,7 @@ public abstract class ResourcePojoManager<T extends ResourcePojo<T>>
         }
         this.stringMap = newStringMap;
     }
-    public Map<ResourceLocation, String> getNetworkCache() {
+    public Map<Identifier, String> getNetworkCache() {
         return this.stringMap;
     }
 }

@@ -68,7 +68,7 @@ public class ResourceApi {
         if (dataManager != null && dataManager.blockDataManager != null) return dataManager.blockDataManager.getPojo(dataLocation);
         else return SyncDataCache.INSTANCE.blockData.get(dataLocation);
     }
-    public static Set<Map.Entry<ResourceLocation, BlockData>> getAllBlockData() {
+    public static Set<Map.Entry<Identifier, BlockData>> getAllBlockData() {
         var dataManager = _AllDataManager.getCurrent();
         if (dataManager != null && dataManager.blockDataManager != null) return dataManager.blockDataManager.getAllPojo().entrySet();
         else return SyncDataCache.INSTANCE.blockData.entrySet();
@@ -119,12 +119,12 @@ public class ResourceApi {
 
     // --------meta--------
 
-    public static @Nullable GunpackMeta getGunpackMeta(ResourceLocation gunpackMetaLocation) {
+    public static @Nullable GunpackMeta getGunpackMeta(Identifier gunpackMetaLocation) {
         var dataManager = _AllDataManager.getCurrent();
         if (dataManager != null && dataManager.gunpackMetaManager != null) return dataManager.gunpackMetaManager.getPojo(gunpackMetaLocation);
         else return null;
     }
-    public static Set<Map.Entry<ResourceLocation, GunpackMeta>> getAllGunpackMeta() {
+    public static Set<Map.Entry<Identifier, GunpackMeta>> getAllGunpackMeta() {
         var dataManager = _AllDataManager.getCurrent();
         if (dataManager != null && dataManager.gunpackMetaManager != null) return dataManager.gunpackMetaManager.getAllPojo().entrySet();
         else return new HashSet<>();
@@ -171,7 +171,7 @@ public class ResourceApi {
         if (dataManager != null && dataManager.recipeFilterDataManager != null) return dataManager.recipeFilterDataManager.getPojo(filterLocation);
         else return SyncDataCache.INSTANCE.recipeFilterData.get(filterLocation);
     }
-    public static Set<Map.Entry<ResourceLocation, RecipeFilterData>> getAllRecipeFilterData() {
+    public static Set<Map.Entry<Identifier, RecipeFilterData>> getAllRecipeFilterData() {
         var dataManager = _AllDataManager.getCurrent();
         if (dataManager != null && dataManager.recipeFilterDataManager != null) return dataManager.recipeFilterDataManager.getAllPojo().entrySet();
         else return SyncDataCache.INSTANCE.recipeFilterData.entrySet();
@@ -192,22 +192,22 @@ public class ResourceApi {
 
     // --------modtags--------
 
-    public static @Nullable AttachmentTagData getAttachmentTagData(ResourceLocation attachmentTagDataLocation) {
+    public static @Nullable AttachmentTagData getAttachmentTagData(Identifier attachmentTagDataLocation) {
         var dataManager = _AllDataManager.getCurrent();
         if (dataManager != null && dataManager.attachmentTagManager != null) return dataManager.attachmentTagManager.getPojo(attachmentTagDataLocation);
         else return SyncDataCache.INSTANCE.attachmentTagData.get(attachmentTagDataLocation);
     }
-    public static Set<Map.Entry<ResourceLocation, AttachmentTagData>> getAllAttachmentTagData() {
+    public static Set<Map.Entry<Identifier, AttachmentTagData>> getAllAttachmentTagData() {
         var dataManager = _AllDataManager.getCurrent();
         if (dataManager != null && dataManager.attachmentTagManager != null) return dataManager.attachmentTagManager.getAllPojo().entrySet();
         else return SyncDataCache.INSTANCE.attachmentTagData.entrySet();
     }
-    public static @Nullable GunAttachmentData getGunAttachmentData(ResourceLocation gunAttachmentDataLocation) {
+    public static @Nullable GunAttachmentData getGunAttachmentData(Identifier gunAttachmentDataLocation) {
         var dataManager = _AllDataManager.getCurrent();
         if (dataManager != null && dataManager.gunAttachmentDataManager != null) return dataManager.gunAttachmentDataManager.getPojo(gunAttachmentDataLocation);
         else return SyncDataCache.INSTANCE.gunAttachmentData.get(gunAttachmentDataLocation);
     }
-    public static Set<Map.Entry<ResourceLocation, GunAttachmentData>> getAllGunAttachmentData() {
+    public static Set<Map.Entry<Identifier, GunAttachmentData>> getAllGunAttachmentData() {
         var dataManager = _AllDataManager.getCurrent();
         if (dataManager != null && dataManager.gunAttachmentDataManager != null) return dataManager.gunAttachmentDataManager.getAllPojo().entrySet();
         else return SyncDataCache.INSTANCE.gunAttachmentData.entrySet();
@@ -255,11 +255,11 @@ public class ResourceApi {
         if (CustomGun.getSideExecutor().getLogicalSide().isServer()) return _DataInstanceManager.BLOCK_INDEX.entrySet();
         else return SyncDataCache.INSTANCE.BLOCK_INDEX.entrySet();
     }
-    public static boolean hasAttachmentInstallability(ResourceLocation attachmentLocation, ResourceLocation gunLocation) {
+    public static boolean hasAttachmentInstallability(Identifier attachmentLocation, Identifier gunLocation) {
         if (CustomGun.getSideExecutor().getLogicalSide().isServer()) return _DataInstanceManager.ATTACHMENT_INSTALLABILITY.hasAttachmentInstallability(attachmentLocation, gunLocation);
         else return SyncDataCache.INSTANCE.ATTACHMENT_INSTALLABILITY.hasAttachmentInstallability(attachmentLocation, gunLocation);
     }
-    public static @Nullable ClassUtils.ArraySet<ResourceLocation> getAttachmentInstallability(ResourceLocation attachmentLocation) {
+    public static @Nullable ClassUtils.ArraySet<Identifier> getAttachmentInstallability(Identifier attachmentLocation) {
         if (CustomGun.getSideExecutor().getLogicalSide().isServer()) return _DataInstanceManager.ATTACHMENT_INSTALLABILITY.getAttachmentInstallability(attachmentLocation);
         else return SyncDataCache.INSTANCE.ATTACHMENT_INSTALLABILITY.getAttachmentInstallability(attachmentLocation);
     }

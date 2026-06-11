@@ -1,6 +1,6 @@
 package xiao.customgun.core.resource.network;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class _GunSortCache {
 
-    private final Map<ResourceLocation, Integer> gunSorts;
+    private final Map<Identifier, Integer> gunSorts;
 
     @ApiStatus.Internal
     public _GunSortCache() {
@@ -34,7 +34,7 @@ public class _GunSortCache {
      * 命名跟{@link _DataInstanceManager#clear()}保持同构
      */
     public void reload() {
-        for (Map.Entry<ResourceLocation, GunIndexInstance> entry : ResourceApi.getAllGunIndexInstance()) {
+        for (Map.Entry<Identifier, GunIndexInstance> entry : ResourceApi.getAllGunIndexInstance()) {
             GunIndexInstance gunIndexInstance = entry.getValue();
             this.gunSorts.put(entry.getKey(), gunIndexInstance.getPojo().getSlotSort());
         }
@@ -42,10 +42,10 @@ public class _GunSortCache {
 
     // --------Getter--------
 
-    public @Nullable Integer getGunSort(ResourceLocation gunLocation) {
+    public @Nullable Integer getGunSort(Identifier gunLocation) {
         return this.gunSorts.get(gunLocation);
     }
-    public @NotNull Map<ResourceLocation, Integer> getAllGunSort() {
+    public @NotNull Map<Identifier, Integer> getAllGunSort() {
         return this.gunSorts;
     }
 }

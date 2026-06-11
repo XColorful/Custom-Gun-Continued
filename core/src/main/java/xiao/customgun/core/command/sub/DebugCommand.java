@@ -25,11 +25,11 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.CustomGun;
-import xiao.customgun.client.resource.AllAssetsManager;
+import xiao.customgun.client.resource._AllAssetsManager;
 import xiao.customgun.core.api.entity.ILivingShooter;
 import xiao.customgun.core.init.registry.ModItems;
 import xiao.customgun.core.item.ammo.AmmoItem;
-import xiao.customgun.core.resource.AllDataManager;
+import xiao.customgun.core.resource._AllDataManager;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.resource.ResourcePojoManager;
 import xiao.customgun.core.resource.data.data.GunData;
@@ -123,7 +123,7 @@ public class DebugCommand {
     }
     private static void doTestGunData(CommandSourceStack source, String rlString) {
         var rl = CustomGun.getMcRegistry().createResourceLocation(rlString);
-        var allManager = AllDataManager.getCurrent();
+        var allManager = _AllDataManager.getCurrent();
         if (allManager == null) {
             source.sendFailure(Component.literal("AllDataManager is null"));
             return;
@@ -160,7 +160,7 @@ public class DebugCommand {
      */
     private static int testAllData(CommandContext<CommandSourceStack> context) {
         String path = StringArgumentType.getString(context, "path");
-        AllDataManager allManager = AllDataManager.getCurrent();
+        _AllDataManager allManager = _AllDataManager.getCurrent();
         if (allManager != null) {
             CommandSourceStack source = context.getSource();
             try {
@@ -177,7 +177,7 @@ public class DebugCommand {
                 testManager(indent, path, allManager.gunAttachmentDataManager);
                 testManager(indent, path, allManager.recipeFilterDataManager);
                 if (CustomGun.getMcSide().isClientSide()) {
-                    AllAssetsManager allAssetsManager = AllAssetsManager.INSTANCE;
+                    _AllAssetsManager allAssetsManager = _AllAssetsManager.INSTANCE;
                     testManager(indent, path, allAssetsManager.gunpackInfoManager);
                     testManager(indent, path, allAssetsManager.bedrockAnimationManager);
                     testManager(indent, path, allAssetsManager.gltfAnimationManager);

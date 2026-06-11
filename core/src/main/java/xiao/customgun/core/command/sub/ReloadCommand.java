@@ -18,7 +18,7 @@ import xiao.customgun.CustomGun;
 import xiao.customgun.client.command.sub._ReloadCommand;
 import xiao.customgun.core.api.common.ISideExecutor;
 import xiao.customgun.core.api.common.McSide;
-import xiao.customgun.core.resource.AllDataManager;
+import xiao.customgun.core.resource._AllDataManager;
 
 import java.util.concurrent.TimeUnit;
 
@@ -36,7 +36,7 @@ public class ReloadCommand {
         {
             ISideExecutor sideExecutor = CustomGun.getSideExecutor();
             sideExecutor.executeOn(McSide.CLIENT, () -> ReloadCommand::reloadClient);
-            sideExecutor.executeOnIsolated(McSide.DEDICATED_SERVER, () -> AllDataManager::reloadAllPack);
+            sideExecutor.executeOnIsolated(McSide.DEDICATED_SERVER, () -> _AllDataManager::reloadAllPack);
         }
         watch.stop();
         double time = watch.getTime(TimeUnit.MICROSECONDS) / 1000.0;

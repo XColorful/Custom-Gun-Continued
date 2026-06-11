@@ -25,18 +25,17 @@ import xiao.customgun.core.resource.data.index.GunIndex;
 import xiao.customgun.core.resource.data.modtags.AttachmentTagData;
 import xiao.customgun.core.resource.data.modtags.GunAttachmentData;
 import xiao.customgun.core.resource.data.recipefilter.RecipeFilterData;
-import xiao.customgun.core.resource.instance.data.AmmoIndexInstance;
-import xiao.customgun.core.resource.instance.data.AttachmentIndexInstance;
-import xiao.customgun.core.resource.instance.data.BlockIndexInstance;
-import xiao.customgun.core.resource.instance.data.GunIndexInstance;
+import xiao.customgun.core.resource.instance.data.*;
 import xiao.customgun.core.resource.network.SyncDataType;
+import xiao.customgun.core.resource.network._AttachmentInstallabilityCache;
+import xiao.customgun.core.resource.network._GunSortCache;
 import xiao.customgun.core.util.JsonUtils;
 
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 
-import static xiao.customgun.core.resource.DataInstanceManager.buildPojoInstance;
+import static xiao.customgun.core.resource._DataInstanceManager.buildPojoInstance;
 
 public final class SyncDataCache {
     public static final SyncDataCache INSTANCE = new SyncDataCache();
@@ -67,9 +66,11 @@ public final class SyncDataCache {
 
     // data instance
     public final Map<Identifier, GunIndexInstance> GUN_INDEX = new HashMap<>();
+    public final _GunSortCache GUN_SORT = new _GunSortCache();
     public final Map<Identifier, AttachmentIndexInstance> ATTACHMENT_INDEX = new HashMap<>();
     public final Map<Identifier, AmmoIndexInstance> AMMO_INDEX = new HashMap<>();
     public final Map<Identifier, BlockIndexInstance> BLOCK_INDEX = new HashMap<>();
+    public final _AttachmentInstallabilityCache ATTACHMENT_INSTALLABILITY = new _AttachmentInstallabilityCache();
 
     @ApiStatus.Internal
     public void clear() {
@@ -89,9 +90,11 @@ public final class SyncDataCache {
 
         // data instance
         this.GUN_INDEX.clear();
+        this.GUN_SORT.clear();
         this.ATTACHMENT_INDEX.clear();
         this.AMMO_INDEX.clear();
         this.BLOCK_INDEX.clear();
+        this.ATTACHMENT_INSTALLABILITY.clear();
     }
 
     /**
@@ -115,13 +118,14 @@ public final class SyncDataCache {
 
         this.attachmentTagData = (Map<Identifier, AttachmentTagData>) result.getOrDefault(SyncDataType.ATTACHMENT_TAG, new HashMap<>());
         this.gunAttachmentData = (Map<Identifier, GunAttachmentData>) result.getOrDefault(SyncDataType.GUN_ATTACHMENT, new HashMap<>());
-        // TODO AllowAttachmentTagMatcher.resetCache()
 
         // data instance
         buildPojoInstance(ResourceApi.getAllGunIndex(), this.GUN_INDEX, GunIndexInstance::fromPojo, GunIndexInstance.class);
+        this.GUN_SORT.reload();
         buildPojoInstance(ResourceApi.getAllAttachmentIndex(), this.ATTACHMENT_INDEX, AttachmentIndexInstance::fromPojo, AttachmentIndexInstance.class);
         buildPojoInstance(ResourceApi.getAllAmmoIndex(), this.AMMO_INDEX, AmmoIndexInstance::fromPojo, AmmoIndexInstance.class);
         buildPojoInstance(ResourceApi.getAllBlockIndex(), this.BLOCK_INDEX, BlockIndexInstance::fromPojo, BlockIndexInstance.class);
+        this.ATTACHMENT_INSTALLABILITY.reload();
     }
     /**
      * 线程安全

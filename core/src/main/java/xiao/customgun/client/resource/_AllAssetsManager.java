@@ -9,6 +9,7 @@ package xiao.customgun.client.resource;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.CustomGun;
 import xiao.customgun.client.api.event.IAddClientReloadListenerEvent;
@@ -19,15 +20,20 @@ import xiao.customgun.core.api.common.McSide;
 import xiao.customgun.core.api.event.EventType;
 import xiao.customgun.core.api.event.IEvent;
 import xiao.customgun.core.api.event.IEventHandler;
-import xiao.customgun.core.resource.AllDataManager;
+import xiao.customgun.core.api.resource.ResourceApi;
+import xiao.customgun.core.resource._AllDataManager;
 import xiao.customgun.core.resource.ResourceFileManager;
 import xiao.customgun.core.resource.ResourcePojoManager;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class AllAssetsManager implements IEventHandler {
-    public static final AllAssetsManager INSTANCE = new AllAssetsManager();
+/**
+ * Go to {@link ResourceApi}
+ */
+@ApiStatus.Internal
+public class _AllAssetsManager implements IEventHandler {
+    public static final _AllAssetsManager INSTANCE = new _AllAssetsManager();
 
     @Override public String getEventHandlerName() {
         return this.getClass().getName();
@@ -70,7 +76,7 @@ public class AllAssetsManager implements IEventHandler {
      */
     public @Nullable ClientScriptManager clientScriptManager;
 
-    private AllAssetsManager() {
+    private _AllAssetsManager() {
         this.reloadListeners = new ArrayList<>();
     }
 
@@ -93,7 +99,7 @@ public class AllAssetsManager implements IEventHandler {
                 CustomGun.getMcRegistry().createResourceLocation(CustomGun.MOD_ID + ":all_assets_manager"),
                 (sharedState, backgroundExecutor, barrier, gameExecutor) -> {
                     return barrier.wait("")
-                            .thenRunAsync(AssetsInstanceManager::reload, gameExecutor);
+                            .thenRunAsync(_AssetsInstanceManager::reload, gameExecutor);
                 }
         );
     }
@@ -110,7 +116,7 @@ public class AllAssetsManager implements IEventHandler {
         SoundManager.clearCacheOnReload();
 
         // TODO PlayerAnimatorCompat.init()
-        AllAssetsManager.INSTANCE.reloadAndRegister(event);
+        _AllAssetsManager.INSTANCE.reloadAndRegister(event);
         // TODO PlayerAnimatorCompat
         if (CustomGun.getMcRegistry().isModLoaded(PlayerAnimator.MOD_ID)) {
             INSTANCE.playerAnimationManager = INSTANCE.addToListener(INSTANCE.reloadListeners, new AnimationManager.PlayerAnimationManager());
@@ -126,7 +132,7 @@ public class AllAssetsManager implements IEventHandler {
         try {
             Minecraft.getInstance().reloadResourcePacks().get();
             if (CustomGun.getMinecraftServer() != null) {
-                AllDataManager.reloadAllPack();
+                _AllDataManager.reloadAllPack();
             }
         } catch (Exception e) {
             throw new RuntimeException(e);

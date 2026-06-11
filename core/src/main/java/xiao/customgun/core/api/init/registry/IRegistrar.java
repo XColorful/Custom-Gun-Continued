@@ -35,9 +35,9 @@ public interface IRegistrar<T> {
     /**
      * 解决以下问题:
      * <ul>
-     * <li>{@link xiao.customgun.core}不能包含forge/neoforge import
-     * <li>mixin无法通过注入函数来实现重载
-     * <li>{@link xiao.customgun.core}需要重载forge/neoforge接口
+     *     <li>{@link xiao.customgun.core}不能包含forge/neoforge import
+     *     <li>mixin无法通过注入函数来实现重载
+     *     <li>{@link xiao.customgun.core}需要重载forge/neoforge接口
      * </ul>
      * (黑魔法)替换注册的类型, core仍然可以强转成core的类用
      * @return 被替换过的class supplier

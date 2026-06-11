@@ -35,6 +35,7 @@ public record ServerMessageSyncGunPack(Map<SyncDataType, Map<ResourceLocation, S
     @Override
     public void handle(ServerMessageSyncGunPack message, Consumer<Runnable> handler, NetworkContext context) {
         if (CustomGun.getSideExecutor().getLogicalSide().isClient()) {
+            CustomGun.LOGGER.debug("ServerMessageSyncGunPack: Received sync pack message from server");
             Connection connection = context.connection();
             boolean remoteConnection = connection != null && !connection.isMemoryConnection();
             // 客户端侧可以异步解析Pojo，把enqueue的handler传过去

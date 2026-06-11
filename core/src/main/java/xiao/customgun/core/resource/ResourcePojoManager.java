@@ -9,6 +9,7 @@ package xiao.customgun.core.resource;
 
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import com.google.gson.stream.MalformedJsonException;
 import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.ResourceLocation;
@@ -18,9 +19,11 @@ import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
 import org.jetbrains.annotations.NotNull;
 import xiao.customgun.CustomGun;
+import xiao.customgun.core.api.resource.INetworkCacheReloadListener;
 import xiao.customgun.core.util.JsonUtils;
 
 import java.io.Reader;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +39,14 @@ public abstract class ResourcePojoManager<T extends ResourcePojo<T>>
     private final PackType packType;
     private final List<FileToIdConverter> fileToIdConverters;
     private final JsonUtils.ReadFunction<T> fromJson;
-    protected Map<ResourceLocation, T> pojoMap;
+    protected @NotNull Map<ResourceLocation, T> pojoMap;
+
+    /**
+     * TODO 当前网络缓存使用 JSON String
+     * 后续可改为 UTF-8 byte[]（或直接 ByteBuf）以减少 String 分配和
+     * UTF-16/UTF-8 转换开销，但需要修改网络协议及客户端解析逻辑
+     */
+    protected @NotNull Map<ResourceLocation, String> stringMap;
 
     /**
      * 是否允许带注释的非标准 Json
@@ -75,6 +85,7 @@ public abstract class ResourcePojoManager<T extends ResourcePojo<T>>
         this.validateAtRead = validateAtRead;
         this.validateAtApply = validateAtApply;
         this.logParseException = logParseException;
+        this.stringMap = new HashMap<>();
     }
 
     public ResourceLocation getRegistryName() {
@@ -182,8 +193,34 @@ public abstract class ResourcePojoManager<T extends ResourcePojo<T>>
             }
         }
         onApplyPojoMap(pObject);
+        onWriteNetworkCache();
     }
     protected void onApplyPojoMap(Map<ResourceLocation, T> newPojoMap) {
         this.pojoMap = newPojoMap;
+    }
+
+    protected void onWriteNetworkCache() {
+        if (this instanceof INetworkCacheReloadListener) this.writeStringMap();
+    }
+    protected void writeStringMap() {
+        Map<ResourceLocation, String> newStringMap = new HashMap<>();
+        for (var entry : this.pojoMap.entrySet()) {
+            var pojoLocation = entry.getKey();
+            try (StringWriter stringWriter = new StringWriter();
+                 JsonWriter writer = new JsonWriter(stringWriter)) {
+
+                writer.setLenient(this.lenientPojo);
+                entry.getValue().toJson(writer);
+                newStringMap.put(pojoLocation, stringWriter.toString());
+            } catch (Exception e) { // IO 异常或其他未知错误
+                if (this.logParseException) {
+                    CustomGun.LOGGER.error("{}: Failed to write pojo file at: {}", this.managerName, pojoLocation, e);
+                }
+            }
+        }
+        this.stringMap = newStringMap;
+    }
+    public Map<ResourceLocation, String> getNetworkCache() {
+        return this.stringMap;
     }
 }

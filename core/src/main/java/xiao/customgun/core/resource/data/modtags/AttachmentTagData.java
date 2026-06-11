@@ -9,10 +9,10 @@ package xiao.customgun.core.resource.data.modtags;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import xiao.customgun.core.util.ClassUtils;
 import xiao.customgun.core.util.JsonUtils;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * 存放配件ResourceLocation的Tag
@@ -27,7 +27,7 @@ public final class AttachmentTagData extends _SimpleTagData<AttachmentTagData> {
     @Override
     protected AttachmentTagData fromJsonReader(JsonReader reader) throws IOException {
         AttachmentTagData pojo = new AttachmentTagData();
-        pojo.setTags(JsonUtils.readArraySet(reader, JsonUtils::readString));
+        pojo.setTags(JsonUtils.readList(reader, JsonUtils::readString));
         return pojo;
     }
 
@@ -63,7 +63,7 @@ public final class AttachmentTagData extends _SimpleTagData<AttachmentTagData> {
 
     @Override
     public AttachmentTagData applyBackCompatibility() {
-        this.setTags(this.getTags() == null ? new ClassUtils.ArraySet<>() : this.getTags());
+        this.setTags(this.getTags() == null ? new ArrayList<>() : this.getTags());
         return this;
     }
 }

@@ -7,7 +7,7 @@
 
 package xiao.customgun.core.util;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import xiao.customgun.core.api.resource.ResourceApi;
 import xiao.customgun.core.resource.network._AttachmentInstallabilityCache;
 
@@ -19,7 +19,7 @@ import xiao.customgun.core.resource.network._AttachmentInstallabilityCache;
 public class AllowAttachmentTagMatcher {
 
     @Deprecated
-    public static boolean match(ResourceLocation gunId, ResourceLocation attachmentId) {
+    public static boolean match(Identifier gunId, Identifier attachmentId) {
         return ResourceApi.hasAttachmentInstallability(attachmentId, gunId);
     }
 }

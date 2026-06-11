@@ -44,7 +44,7 @@ public class ClientResourceApi {
         var assetsManager = _AllAssetsManager.INSTANCE.gunpackInfoManager;
         return assetsManager != null ? assetsManager.getPojo(gunpackInfoLocation) : null;
     }
-    public static Set<Map.Entry<ResourceLocation, GunpackInfo>> getAllGunpackInfo() {
+    public static Set<Map.Entry<Identifier, GunpackInfo>> getAllGunpackInfo() {
         var assetsManager = _AllAssetsManager.INSTANCE.gunpackInfoManager;
         return assetsManager != null ? assetsManager.getAllPojo().entrySet() : new HashSet<>();
     }
@@ -63,7 +63,7 @@ public class ClientResourceApi {
         var assetsManager = _AllAssetsManager.INSTANCE.gltfAnimationManager;
         return assetsManager != null ? assetsManager.getPojo(animationLocation) : null;
     }
-    public static Set<Map.Entry<ResourceLocation, GltfAnimation>> getAllGltfAnimation() {
+    public static Set<Map.Entry<Identifier, GltfAnimation>> getAllGltfAnimation() {
         var assetsManager = _AllAssetsManager.INSTANCE.gltfAnimationManager;
         return assetsManager != null ? assetsManager.getAllPojo().entrySet() : new HashSet<>();
     }
@@ -168,7 +168,7 @@ public class ClientResourceApi {
         GunDisplayInstance instance = getGunDisplayInstance(displayLocation);
         return instance != null ? instance : getGunDisplayInstance(fallbackLocation);
     }
-    public static Set<Map.Entry<ResourceLocation, GunDisplayInstance>> getAllGunDisplayInstance() {
+    public static Set<Map.Entry<Identifier, GunDisplayInstance>> getAllGunDisplayInstance() {
         return _AssetsInstanceManager.GUN_DISPLAY.entrySet();
     }
 

@@ -10,13 +10,20 @@ import java.util.Map;
 
 public enum CustomEntityType implements ResourceTag.RegistryTag {
     // Gun Entity
-    GUN_PROJECTILE(CustomEntityTypeTag.GUN_PROJECTILE);
+    GUN_PROJECTILE(CustomEntityTypeTag.GUN_PROJECTILE, CustomEntityTypeTag.GUN_PROJECTILE_OLD1),
+
+    /*
+    放在扩展模组里更好
+     */
+    @Deprecated TARGET_MINECART(CustomEntityTypeTag.TARGET_MINECART, null);
 
     public final String typeName;
+    public final String typeNameOld;
     public final String registryName;
     public final ResourceLocation registryLocation;
-    CustomEntityType(String name) {
+    CustomEntityType(String name, @Nullable String nameOld) {
         this.typeName = name;
+        this.typeNameOld = nameOld;
         this.registryName = String.format("%s:%s", CustomGun.MOD_ID, this.typeName);
         this.registryLocation = CustomGun.getMcRegistry().createResourceLocation(this.registryName);
     }
@@ -36,6 +43,7 @@ public enum CustomEntityType implements ResourceTag.RegistryTag {
     static {
         for (CustomEntityType type : CustomEntityType.values()) {
             ENTITY_TYPES.put(type.typeName, type);
+            if (type.typeNameOld != null) ENTITY_TYPES.put(type.typeNameOld, type);
             ENTITY_TYPES.put(type.registryName, type);
         }
     }

@@ -2,9 +2,9 @@
  * Go to BattleRoyale GameManager 的设计
  */
 
-package xiao.customgun.core.api.gun;
+package xiao.customgun.core.api.projectile;
 
-public interface IGunSubManager {
+public interface IProjectileSubManager {
 
     String getManagerName();
 }

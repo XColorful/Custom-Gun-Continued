@@ -21,11 +21,11 @@ import xiao.customgun.core.util.NBTUtils;
 public class GunProjectile extends Projectile implements IGunProjectile, GunProjectileDataAccessor {
 
     // --------Cache--------
-    public GunIndexInstance gunIndexInstanceCache;
-    public AmmoIndexInstance ammoIndexInstanceCache;
+    private @Nullable GunIndexInstance gunIndexInstanceCache;
+    private @Nullable AmmoIndexInstance ammoIndexInstanceCache;
     // --------Mixin--------
-//    public ClientGunIndexInstance cgc$clientGunIndexInstanceCache;
-//    public GunDisplayInstance cgc$gunDisplayInstanceCache;
+//    private @Nullable ClientGunIndexInstance cgc$clientGunIndexInstanceCache;
+//    private @Nullable GunDisplayInstance cgc$gunDisplayInstanceCache;
 
     public GunProjectile(EntityType<? extends Projectile> entityType, Level level) {
         super(entityType, level);
@@ -93,5 +93,25 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
         @Nullable CompoundTag extraStateTag = this.getExtraStateTag(compoundTag); if (extraStateTag != null) this.setExtraStateTag(_this, extraStateTag);
 
         this.rebuildCache();
+    }
+
+    // --------IGunProjectile--------
+
+    @Override
+    public @Nullable GunIndexInstance getGunIndexInstanceCache() {
+        return this.gunIndexInstanceCache;
+    }
+    @Override
+    public @Nullable AmmoIndexInstance getAmmoIndexInstanceCache() {
+        return this.ammoIndexInstanceCache;
+    }
+
+    @Override
+    public void setGunIndexInstanceCache(GunIndexInstance cache) {
+        this.gunIndexInstanceCache = cache;
+    }
+    @Override
+    public void setAmmoIndexInstanceCache(AmmoIndexInstance cache) {
+        this.ammoIndexInstanceCache = cache;
     }
 }

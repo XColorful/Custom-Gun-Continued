@@ -1,5 +1,6 @@
 package xiao.customgun.forgeclient.mixin.entity;
 
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -14,8 +15,8 @@ import xiao.customgun.core.entity.projectile.GunProjectile;
 public abstract class GunProjectileMixin implements IClientGunProjectile {
 
     // --------Cache--------
-    public ClientGunIndexInstance cgc$clientGunIndexInstanceCache;
-    public GunDisplayInstance cgc$gunDisplayInstanceCache;
+    private @Nullable ClientGunIndexInstance cgc$clientGunIndexInstanceCache;
+    private @Nullable GunDisplayInstance cgc$gunDisplayInstanceCache;
 
     @Inject(method = "rebuildCache()V",
             at = @At("TAIL"),
@@ -30,11 +31,11 @@ public abstract class GunProjectileMixin implements IClientGunProjectile {
     // --------IClientGunProjectile--------
 
     @Override
-    public ClientGunIndexInstance cgc$getClientGunIndexInstanceCache() {
+    public @Nullable ClientGunIndexInstance cgc$getClientGunIndexInstanceCache() {
         return this.cgc$clientGunIndexInstanceCache;
     }
     @Override
-    public GunDisplayInstance cgc$getClientGunDisplayInstanceCache() {
+    public @Nullable GunDisplayInstance cgc$getClientGunDisplayInstanceCache() {
         return this.cgc$gunDisplayInstanceCache;
     }
 

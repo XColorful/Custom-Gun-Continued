@@ -7,6 +7,7 @@ import xiao.customgun.core.api.projectile.ProjectileManagerGroup;
 import xiao.customgun.core.projectile.effect.ProjectileEffectManager;
 import xiao.customgun.core.projectile.impact.ProjectileImpactManager;
 import xiao.customgun.core.projectile.physics.ProjectilePhysicsManager;
+import xiao.customgun.core.projectile.process.ProjectileProcessManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,7 +18,8 @@ public class ProjectileManager implements IProjectileManager {
     private final ProjectileManagerGroup defaultGroup = new ProjectileManagerGroup("default",
             ProjectileEffectManager.INSTANCE,
             ProjectileImpactManager.INSTANCE,
-            ProjectilePhysicsManager.INSTANCE);
+            ProjectilePhysicsManager.INSTANCE,
+            ProjectileProcessManager.INSTANCE);
     private final Map<String, ProjectileManagerGroup> managerGroups;
 
     protected ProjectileManager() {

@@ -30,4 +30,8 @@ public class PlannedRefactor {
     public static final boolean ON_SPAWN_BULLET_PARTICLE = false;
     // 子弹盒颜色
     public static final int MAGIC_AMMO_BOX_COLOR = 0x727d6b;
+    // onProjectileTick (onGameTick)
+    public static final boolean ON_PROJECTILE_TICK_EVENT = false;
+    // onProjectileTickFinish (onGameTickFinish)
+    public static final boolean ON_PROJECTILE_TICK_FINISH_EVENT = false;
 }

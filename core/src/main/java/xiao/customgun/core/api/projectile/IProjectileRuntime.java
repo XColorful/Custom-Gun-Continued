@@ -9,11 +9,13 @@ import xiao.customgun.core.api.entity.projectile.IGunProjectileStateAccess;
 import xiao.customgun.core.api.projectile.effect.IProjectileEffectRuntime;
 import xiao.customgun.core.api.projectile.impact.IProjectileImpactRuntime;
 import xiao.customgun.core.api.projectile.physics.IProjectilePhysicsRuntime;
+import xiao.customgun.core.api.projectile.process.IProjectileProcessRuntime;
 
 public interface IProjectileRuntime extends
         IProjectileEffectRuntime,
         IProjectileImpactRuntime,
-        IProjectilePhysicsRuntime {
+        IProjectilePhysicsRuntime,
+        IProjectileProcessRuntime {
 
     /**
      * {@link GunProjectileProperty} {@link IGunProjectileDataAccess}

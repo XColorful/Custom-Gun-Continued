@@ -21,10 +21,13 @@ import xiao.customgun.core.api.entity.IGunProjectile;
 import xiao.customgun.core.api.entity.gun.GunPropertyCache;
 import xiao.customgun.core.api.entity.projectile.GunProjectileDataAccessor;
 import xiao.customgun.core.api.entity.shooter.ILivingShooterGetter;
+import xiao.customgun.core.api.projectile.ProjectileManagerGroup;
 import xiao.customgun.core.api.resource.ResourceApi;
 import xiao.customgun.core.api.resource.ResourceTag;
 import xiao.customgun.core.config.AmmoConfig;
 import xiao.customgun.core.config.SyncConfig;
+import xiao.customgun.core.developer.PlannedRefactor;
+import xiao.customgun.core.projectile.ProjectileManager;
 import xiao.customgun.core.resource.data.data.GunData;
 import xiao.customgun.core.resource.data.data.gun._BulletData;
 import xiao.customgun.core.resource.data.data.gun.bullet._ExplosionData;
@@ -40,13 +43,13 @@ import java.util.List;
  */
 public class GunProjectile extends Projectile implements IGunProjectile, GunProjectileDataAccessor {
 
-    private Vec3 spawnPos;
-    private final DataCache dataCache = new DataCache();
-    private final StateCache stateCache = new StateCache();
+    protected Vec3 spawnPos;
+    protected final DataCache dataCache = new DataCache();
+    protected final StateCache stateCache = new StateCache();
 
     // --------Cache--------
-    private @Nullable GunIndexInstance gunIndexInstanceCache;
-    private @Nullable AmmoIndexInstance ammoIndexInstanceCache;
+    protected @Nullable GunIndexInstance gunIndexInstanceCache;
+    protected @Nullable AmmoIndexInstance ammoIndexInstanceCache;
     // --------Mixin--------
 //    private @Nullable ClientGunIndexInstance cgc$clientGunIndexInstanceCache;
 //    private @Nullable GunDisplayInstance cgc$gunDisplayInstanceCache;
@@ -100,6 +103,24 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
         this.gunIndexInstanceCache = ResourceApi.getGunIndexInstance(this.getGunLocation(this));
         this.ammoIndexInstanceCache = ResourceApi.getAmmoIndexInstance(this.getAmmoLocation(this));
         // --------Mixin--------
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+
+        ProjectileManagerGroup group = ProjectileManager.INSTANCE.getProjectileManagerGroup(this.getManagerGroupTag(this));
+        TickContext tickContext = new TickContext();
+
+        if (PlannedRefactor.ON_PROJECTILE_TICK_EVENT) {
+            return;
+        }
+
+        this.processTick(group, tickContext, this, this);
+
+        if (PlannedRefactor.ON_PROJECTILE_TICK_FINISH_EVENT) {
+            return;
+        }
     }
 
     /**
@@ -265,6 +286,41 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
     }
     @Override public void setExtraStateTag(Entity entity, CompoundTag extraStateTag) {
         this.stateCache.extraStateTag = extraStateTag;
+    }
+
+    // --------IProjectileRuntime--------
+
+    // --------IProjectileEffectRuntime--------
+
+    @Override public void impactEffect(ProjectileManagerGroup group, TickContext tickContext, IGunProjectile iGunProjectile, Entity gunProjectile) {
+        group.projectileEffectManager().impactEffect(group, tickContext, iGunProjectile, gunProjectile);
+    }
+    @Override public void moveEffect(ProjectileManagerGroup group, TickContext tickContext, IGunProjectile iGunProjectile, Entity gunProjectile) {
+        group.projectileEffectManager().impactEffect(group, tickContext, iGunProjectile, gunProjectile);
+    }
+
+    // --------IProjectileImpactRuntime--------
+
+    @Override public void preImpactTick(ProjectileManagerGroup group, TickContext tickContext, IGunProjectile iGunProjectile, Entity gunProjectile) {
+        group.projectileImpactManager().preImpactTick(group, tickContext, iGunProjectile, gunProjectile);
+    }
+    @Override public void impactTick(ProjectileManagerGroup group, TickContext tickContext, IGunProjectile iGunProjectile, Entity gunProjectile) {
+        group.projectileImpactManager().impactTick(group, tickContext, iGunProjectile, gunProjectile);
+    }
+
+    // --------IProjectilePhysicsRuntime--------
+
+    @Override public void physicTick(ProjectileManagerGroup group, TickContext tickContext, IGunProjectile iGunProjectile, Entity gunProjectile) {
+        group.projectilePhysicsManager().physicTick(group, tickContext, iGunProjectile, gunProjectile);
+    }
+    @Override public void physicMove(ProjectileManagerGroup group, TickContext tickContext, IGunProjectile iGunProjectile, Entity gunProjectile) {
+        group.projectilePhysicsManager().physicMove(group, tickContext, iGunProjectile, gunProjectile);
+    }
+
+    // --------IProjectileProcessRuntime--------
+
+    @Override public void processTick(ProjectileManagerGroup group, TickContext tickContext, IGunProjectile iGunProjectile, Entity gunProjectile) {
+        group.projectileProcessManager().processTick(group, tickContext, iGunProjectile, gunProjectile);
     }
 
     // --------Deprecated--------

@@ -9,6 +9,7 @@ package xiao.customgun.core.entity.projectile;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
@@ -21,13 +22,15 @@ import xiao.customgun.core.api.entity.gun.GunPropertyCache;
 import xiao.customgun.core.api.entity.projectile.GunProjectileDataAccessor;
 import xiao.customgun.core.api.entity.shooter.ILivingShooterGetter;
 import xiao.customgun.core.api.resource.ResourceApi;
+import xiao.customgun.core.api.resource.ResourceTag;
 import xiao.customgun.core.config.AmmoConfig;
 import xiao.customgun.core.config.SyncConfig;
+import xiao.customgun.core.resource.data.data.GunData;
+import xiao.customgun.core.resource.data.data.gun._BulletData;
 import xiao.customgun.core.resource.data.data.gun.bullet._ExplosionData;
 import xiao.customgun.core.resource.data.data.gun.bullet.damage._DistanceDamageData;
 import xiao.customgun.core.resource.instance.data.AmmoIndexInstance;
 import xiao.customgun.core.resource.instance.data.GunIndexInstance;
-import xiao.customgun.core.util.NBTUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +41,8 @@ import java.util.List;
 public class GunProjectile extends Projectile implements IGunProjectile, GunProjectileDataAccessor {
 
     private Vec3 spawnPos;
+    private final DataCache dataCache = new DataCache();
+    private final StateCache stateCache = new StateCache();
 
     // --------Cache--------
     private @Nullable GunIndexInstance gunIndexInstanceCache;
@@ -62,10 +67,33 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
         @Nullable GunPropertyCache gunPropertyCache = livingShooter != null ? ILivingShooterGetter.cgc$fromLivingEntity(livingShooter).cgc$getGunPropertyCache() : null;
 
         this.rebuildCache();
+        this.constructInitData();
     }
 
     @Override
     protected void defineSynchedData() {
+    }
+
+    protected void constructInitData() {
+        if (this.gunIndexInstanceCache == null) {
+            return;
+        }
+
+        GunData gunData = this.gunIndexInstanceCache.getGunData();
+        _BulletData bulletData = gunData.getBulletData();
+        this.stateCache.lifetimeTicks = (int) (bulletData.getLifetimeSeconds() * 20);
+        this.stateCache.bulletSpeed = bulletData.getBulletSpeed();
+        this.stateCache.gravity = bulletData.getGravity();
+        this.stateCache.friction = bulletData.getFriction();
+        int tracerInterval = bulletData.getTracerInterval();
+        if (tracerInterval >= 0) {
+            Entity owner = this.getOwner();
+            if (owner instanceof LivingEntity livingEntity) {
+                this.stateCache.isTracer = ILivingShooterGetter.cgc$fromLivingEntity(livingEntity).cgc$nextBulletIsTracer(tracerInterval);
+            }
+        }
+        this.stateCache.fireAspect = bulletData.isFireAspect();
+        this.stateCache.knockbackStrength = bulletData.getKnockbackStrength();
     }
 
     public void rebuildCache() {
@@ -74,45 +102,50 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
         // --------Mixin--------
     }
 
+    /**
+     * 优化：原版机制在创建实体后，会先调用 {@link #addAdditionalSaveData}，再调用 {@link #readAdditionalSaveData}
+     * 扩展模组如要手动调用，则先使用 {@link #addAdditionalSaveData} 刷新NBT数据
+     */
     @Override
     public void addAdditionalSaveData(@NotNull CompoundTag compoundTag) {
         super.addAdditionalSaveData(compoundTag);
-        @NotNull CompoundTag _this = NBTUtils.getOrCreateCustomData(this);
         // ----IGunProjectileDataAccess----
-        this.setManagerGroupTag(compoundTag, this.getManagerGroupTag(_this));
-        this.setGunLocation(compoundTag, this.getGunLocation(_this));
-        this.setGunDisplayLocation(compoundTag, this.getGunDisplayLocation(_this));
-        this.setAmmoLocation(compoundTag, this.getAmmoLocation(_this));
-        if (this.hasExtraDataTag(this)) this.setExtraDataTag(compoundTag, this.getExtraDataTag(_this));
+        this.setManagerGroupTag(compoundTag, this.getManagerGroupTag(this));
+        this.setGunLocation(compoundTag, this.getGunLocation(this));
+        this.setGunDisplayLocation(compoundTag, this.getGunDisplayLocation(this));
+        this.setAmmoLocation(compoundTag, this.getAmmoLocation(this));
+        if (this.hasExtraDataTag(this)) this.setExtraDataTag(compoundTag, this.getExtraDataTag(this));
         // ----IGunProjectileStateAccess----
-        this.setLifetimeTicks(compoundTag, this.getLifetimeTicks(_this));
-        this.setBulletSpeed(compoundTag, this.getBulletSpeed(_this));
-        this.setGravity(compoundTag, this.getGravity(_this));
-        this.setFriction(compoundTag, this.getFriction(_this));
-        this.setIsTracer(compoundTag, this.getIsTracer(_this));
-        this.setFireAspect(compoundTag, this.getFireAspect(_this));
-        this.setKnockbackStrength(compoundTag, this.getKnockbackStrength(_this));
-        if (this.hasExtraStateTag(this)) this.setExtraStateTag(compoundTag, this.getExtraStateTag(_this));
+        this.setLifetimeTicks(compoundTag, this.getLifetimeTicks(this));
+        this.setBulletSpeed(compoundTag, this.getBulletSpeed(this));
+        this.setGravity(compoundTag, this.getGravity(this));
+        this.setFriction(compoundTag, this.getFriction(this));
+        this.setIsTracer(compoundTag, this.getIsTracer(this));
+        this.setFireAspect(compoundTag, this.getFireAspect(this));
+        this.setKnockbackStrength(compoundTag, this.getKnockbackStrength(this));
+        if (this.hasExtraStateTag(this)) this.setExtraStateTag(compoundTag, this.getExtraStateTag(this));
     }
+    /**
+     * 手动调用前请用 {@link #addAdditionalSaveData} 刷新NBT数据，并向返回的NBT里修改数据，再调用该方法
+     */
     @Override
     public void readAdditionalSaveData(@NotNull CompoundTag compoundTag) {
         super.readAdditionalSaveData(compoundTag);
-        @NotNull CompoundTag _this = NBTUtils.getOrCreateCustomData(this);
         // ----IGunProjectileDataAccess----
-        this.setManagerGroupTag(_this, this.getManagerGroupTag(compoundTag));
-        this.setGunLocation(_this, this.getGunLocation(compoundTag));
-        this.setGunDisplayLocation(_this, this.getGunDisplayLocation(compoundTag));
-        this.setAmmoLocation(_this, this.getAmmoLocation(compoundTag));
-        @Nullable CompoundTag extraDataTag = this.getExtraDataTag(compoundTag); if (extraDataTag != null) this.setExtraDataTag(_this, extraDataTag);
+        this.setManagerGroupTag(this, this.getManagerGroupTag(compoundTag));
+        this.setGunLocation(this, this.getGunLocation(compoundTag));
+        this.setGunDisplayLocation(this, this.getGunDisplayLocation(compoundTag));
+        this.setAmmoLocation(this, this.getAmmoLocation(compoundTag));
+        @Nullable CompoundTag extraDataTag = this.getExtraDataTag(compoundTag); if (extraDataTag != null) this.setExtraDataTag(this, extraDataTag);
         // ----IGunProjectileStateAccess----
-        this.setLifetimeTicks(_this, this.getLifetimeTicks(compoundTag));
-        this.setBulletSpeed(_this, this.getBulletSpeed(compoundTag));
-        this.setGravity(_this, this.getGravity(compoundTag));
-        this.setFriction(_this, this.getFriction(compoundTag));
-        this.setIsTracer(_this, this.getIsTracer(compoundTag));
-        this.setFireAspect(_this, this.getFireAspect(compoundTag));
-        this.setKnockbackStrength(_this, this.getKnockbackStrength(compoundTag));
-        @Nullable CompoundTag extraStateTag = this.getExtraStateTag(compoundTag); if (extraStateTag != null) this.setExtraStateTag(_this, extraStateTag);
+        this.setLifetimeTicks(this, this.getLifetimeTicks(compoundTag));
+        this.setBulletSpeed(this, this.getBulletSpeed(compoundTag));
+        this.setGravity(this, this.getGravity(compoundTag));
+        this.setFriction(this, this.getFriction(compoundTag));
+        this.setIsTracer(this, this.getIsTracer(compoundTag));
+        this.setFireAspect(this, this.getFireAspect(compoundTag));
+        this.setKnockbackStrength(this, this.getKnockbackStrength(compoundTag));
+        @Nullable CompoundTag extraStateTag = this.getExtraStateTag(compoundTag); if (extraStateTag != null) this.setExtraStateTag(this, extraStateTag);
 
         this.rebuildCache();
     }
@@ -135,6 +168,103 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
     @Override
     public void setAmmoIndexInstanceCache(AmmoIndexInstance cache) {
         this.ammoIndexInstanceCache = cache;
+    }
+
+    // --------IGunProjectileDataAccess--------
+    // 对实体的字段操作改为内存操作
+    // 但保留写入指定NBT的操作 (IGunProjectileNBTAccess)
+
+    @Override public @Nullable String getManagerGroupTag(Entity gunProjectile) {
+        return this.dataCache.managerGroupTag;
+    }
+    @Override public void setManagerGroupTag(Entity entity, String managerGroupTag) {
+        this.dataCache.managerGroupTag = managerGroupTag;
+    }
+    @Override public @NotNull ResourceLocation getGunLocation(Entity gunProjectile) {
+        var gunLocation = this.dataCache.gunLocation;
+        return gunLocation != null ? gunLocation : ResourceTag.NULL_LOCATION;
+    }
+    @Override public void setGunLocation(Entity entity, ResourceLocation gunLocation) {
+        this.dataCache.gunLocation = gunLocation;
+    }
+    @Override public @NotNull ResourceLocation getGunDisplayLocation(Entity gunProjectile) {
+        var gunDisplayLocation = this.dataCache.gunDisplayLocation;
+        return gunDisplayLocation != null ? gunDisplayLocation : ResourceTag.NULL_LOCATION;
+    }
+    @Override public void setGunDisplayLocation(Entity entity, ResourceLocation gunDisplayLocation) {
+        this.dataCache.gunDisplayLocation = gunDisplayLocation;
+    }
+    @Override public @NotNull ResourceLocation getAmmoLocation(Entity gunProjectile) {
+        var ammoLocation = this.dataCache.ammoLocation;
+        return ammoLocation != null ? ammoLocation : ResourceTag.NULL_LOCATION;
+    }
+    @Override public void setAmmoLocation(Entity entity, ResourceLocation ammoLocation) {
+        this.dataCache.ammoLocation = ammoLocation;
+    }
+    @Override public boolean hasExtraDataTag(Entity gunProjectile) {
+        return this.dataCache.extraDataTag != null;
+    }
+    @Override public @Nullable CompoundTag getExtraDataTag(Entity gunProjectile) {
+        return this.dataCache.extraDataTag;
+    }
+    @Override public void setExtraDataTag(Entity entity, CompoundTag extraDataTag) {
+        this.dataCache.extraDataTag = extraDataTag;
+    }
+
+    // --------IGunProjectileStateAccess--------
+    // 对实体的字段操作改为内存操作
+    // 但保留写入指定NBT的操作 (IGunProjectileNBTAccess)
+
+    @Override public int getLifetimeTicks(Entity gunProjectile) {
+        return this.stateCache.lifetimeTicks;
+    }
+    @Override public void setLifetimeTicks(Entity entity, int lifetimeTicks) {
+        this.stateCache.lifetimeTicks = lifetimeTicks;
+    }
+    @Override public float getBulletSpeed(Entity gunProjectile) {
+        return this.stateCache.bulletSpeed;
+    }
+    @Override public void setBulletSpeed(Entity entity, float bulletSpeed) {
+        this.stateCache.bulletSpeed = bulletSpeed;
+    }
+    @Override public float getGravity(Entity gunProjectile) {
+        return this.stateCache.gravity;
+    }
+    @Override public void setGravity(Entity entity, float gravity) {
+        this.stateCache.gravity = gravity;
+    }
+    @Override public float getFriction(Entity gunProjectile) {
+        return this.stateCache.friction;
+    }
+    @Override public void setFriction(Entity entity, float friction) {
+        this.stateCache.friction = friction;
+    }
+    @Override public boolean getIsTracer(Entity gunProjectile) {
+        return this.stateCache.isTracer;
+    }
+    @Override public void setIsTracer(Entity entity, boolean isTracer) {
+        this.stateCache.isTracer = isTracer;
+    }
+    @Override public boolean getFireAspect(Entity gunProjectile) {
+        return this.stateCache.fireAspect;
+    }
+    @Override public void setFireAspect(Entity entity, boolean fireAspect) {
+        this.stateCache.fireAspect = fireAspect;
+    }
+    @Override public float getKnockbackStrength(Entity gunProjectile) {
+        return this.stateCache.knockbackStrength;
+    }
+    @Override public void setKnockbackStrength(Entity entity, float knockbackStrength) {
+        this.stateCache.knockbackStrength = knockbackStrength;
+    }
+    @Override public boolean hasExtraStateTag(Entity gunProjectile) {
+        return this.stateCache.extraStateTag != null;
+    }
+    @Override public @Nullable CompoundTag getExtraStateTag(Entity gunProjectile) {
+        return this.stateCache.extraStateTag;
+    }
+    @Override public void setExtraStateTag(Entity entity, CompoundTag extraStateTag) {
+        this.stateCache.extraStateTag = extraStateTag;
     }
 
     // --------Deprecated--------

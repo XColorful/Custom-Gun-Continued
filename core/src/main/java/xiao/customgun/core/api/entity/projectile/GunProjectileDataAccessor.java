@@ -102,6 +102,15 @@ public interface GunProjectileDataAccessor extends GunProjectileNBTAccessor, IGu
     }
 
     @Override
+    default int getPierce(Entity gunProjectile) {
+        return NBTUtils.getInt(gunProjectile, GunProjectileProperty.PIERCE.getTagName());
+    }
+    @Override
+    default void setPierce(Entity gunProjectile, int pierce) {
+        NBTUtils.setInt(gunProjectile, GunProjectileProperty.PIERCE.getTagName(), pierce);
+    }
+
+    @Override
     default boolean getIsTracer(Entity gunProjectile) {
         return NBTUtils.getBoolean(gunProjectile, GunProjectileProperty.IS_TRACER.getTagName());
     }

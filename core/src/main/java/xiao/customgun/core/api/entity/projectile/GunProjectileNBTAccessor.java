@@ -105,6 +105,15 @@ public interface GunProjectileNBTAccessor extends IGunProjectileNBTAccess {
     }
 
     @Override
+    default int getPierce(CompoundTag gunProjectileCustomDataTag) {
+        return NBTUtils.getInt(gunProjectileCustomDataTag, GunProjectileProperty.PIERCE.getTagName());
+    }
+    @Override
+    default void setPierce(CompoundTag gunProjectileCustomDataTag, int pierce) {
+        NBTUtils.setInt(gunProjectileCustomDataTag, GunProjectileProperty.PIERCE.getTagName(), pierce);
+    }
+
+    @Override
     default boolean getIsTracer(CompoundTag gunProjectileCustomDataTag) {
         return NBTUtils.getBoolean(gunProjectileCustomDataTag, GunProjectileProperty.IS_TRACER.getTagName());
     }

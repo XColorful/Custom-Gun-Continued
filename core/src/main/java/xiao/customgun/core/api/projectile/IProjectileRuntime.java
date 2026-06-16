@@ -37,6 +37,7 @@ public interface IProjectileRuntime extends
         public float bulletSpeed = 0;
         public float gravity = 0;
         public float friction = 0;
+        public int pierce = 0;
         public boolean isTracer = false;
         public boolean fireAspect = false;
         public float knockbackStrength = 0;

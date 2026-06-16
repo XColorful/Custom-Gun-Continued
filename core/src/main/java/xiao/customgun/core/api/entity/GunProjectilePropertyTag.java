@@ -14,6 +14,7 @@ public final class GunProjectilePropertyTag {
     public static final String BULLET_SPEED = "bullet_speed";
     public static final String GRAVITY = "gravity";
     public static final String FRICTION = "friction";
+    public static final String PIERCE = "pierce";
     public static final String IS_TRACER = "is_tracer";
     public static final String FIRE_ASPECT = "fire_aspect";
     public static final String KNOCKBACK_STRENGTH = "knockback_strength";

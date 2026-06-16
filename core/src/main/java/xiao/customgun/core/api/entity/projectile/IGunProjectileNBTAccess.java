@@ -46,6 +46,9 @@ public interface IGunProjectileNBTAccess {
     float getFriction(CompoundTag gunProjectileCustomDataTag);
     void setFriction(CompoundTag gunProjectileCustomDataTag, float friction);
 
+    int getPierce(CompoundTag gunProjectileCustomDataTag);
+    void setPierce(CompoundTag gunProjectileCustomDataTag, int pierce);
+
     boolean getIsTracer(CompoundTag gunProjectileCustomDataTag);
     void setIsTracer(CompoundTag gunProjectileCustomDataTag, boolean isTracer);
 

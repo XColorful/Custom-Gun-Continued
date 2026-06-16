@@ -40,10 +40,10 @@ public class BulletVictimKnockback implements IEventHandler {
 
     private void onLivingKnockback(ILivingKnockbackEvent event) {
         IBulletVictimEntity victimEntity = IBulletVictimEntityGetter.fromLivingEntity(event.getEntity());
-        float strength = victimEntity.cgc$getKnockBackStrength();
+        float strength = victimEntity.cgc$getKnockbackStrength();
         if (strength >= 0) {
             event.setKnockbackStrength(strength);
-            victimEntity.cgc$resetKnockBackStrength();
+            victimEntity.cgc$resetKnockbackStrength();
         }
     }
 }

@@ -34,4 +34,6 @@ public class PlannedRefactor {
     public static final boolean ON_PROJECTILE_TICK_EVENT = false;
     // onProjectileTickFinish (onGameTickFinish)
     public static final boolean ON_PROJECTILE_TICK_FINISH_EVENT = false;
+    // 添加config来做一般Entity的击退 (扩展模组就应该直接注入IBulletVictimEntity而无需这个重构)
+    public static final boolean ON_NON_BULLET_VICTIM_HIT = true;
 }

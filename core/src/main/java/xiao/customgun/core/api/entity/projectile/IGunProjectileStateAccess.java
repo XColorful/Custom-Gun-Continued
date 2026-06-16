@@ -18,6 +18,9 @@ public interface IGunProjectileStateAccess {
     float getFriction(Entity gunProjectile);
     void setFriction(Entity gunProjectile, float friction);
 
+    int getPierce(Entity gunProjectile);
+    void setPierce(Entity gunProjectile, int pierce);
+
     boolean getIsTracer(Entity gunProjectile);
     void setIsTracer(Entity gunProjectile, boolean isTracer);
 

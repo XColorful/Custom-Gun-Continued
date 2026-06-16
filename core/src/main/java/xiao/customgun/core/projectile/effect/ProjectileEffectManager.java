@@ -3,7 +3,6 @@ package xiao.customgun.core.projectile.effect;
 import net.minecraft.world.entity.Entity;
 import xiao.customgun.CustomGun;
 import xiao.customgun.core.api.entity.IGunProjectile;
-import xiao.customgun.core.api.projectile.ProjectileManagerGroup;
 import xiao.customgun.core.api.projectile.effect.IProjectileEffectManager;
 import xiao.customgun.core.api.projectile.process.IProjectileProcessRuntime;
 
@@ -20,12 +19,15 @@ public class ProjectileEffectManager implements IProjectileEffectManager {
     // --------IProjectileEffectRuntime--------
 
     @Override
-    public void impactEffect(ProjectileManagerGroup group, IProjectileProcessRuntime.TickContext tickContext,
+    public void impactEffect(IProjectileProcessRuntime.TickContext tickContext,
                              IGunProjectile iGunProjectile, Entity gunProjectile) {
     }
 
     @Override
-    public void moveEffect(ProjectileManagerGroup group, IProjectileProcessRuntime.TickContext tickContext,
+    public void moveEffect(IProjectileProcessRuntime.TickContext tickContext,
                            IGunProjectile iGunProjectile, Entity gunProjectile) {
+        if (!gunProjectile.level().isClientSide()) return;
+        // ----仅逻辑客户端执行----
+
     }
 }

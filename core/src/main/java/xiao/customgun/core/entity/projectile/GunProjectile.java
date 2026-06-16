@@ -88,6 +88,7 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
         this.stateCache.bulletSpeed = bulletData.getBulletSpeed();
         this.stateCache.gravity = bulletData.getGravity();
         this.stateCache.friction = bulletData.getFriction();
+        this.stateCache.pierce = bulletData.getPierceCount();
         int tracerInterval = bulletData.getTracerInterval();
         if (tracerInterval >= 0) {
             Entity owner = this.getOwner();
@@ -110,13 +111,13 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
         super.tick();
 
         ProjectileManagerGroup group = ProjectileManager.INSTANCE.getProjectileManagerGroup(this.getManagerGroupTag(this));
-        TickContext tickContext = new TickContext();
+        TickContext tickContext = new TickContext(group);
 
         if (PlannedRefactor.ON_PROJECTILE_TICK_EVENT) {
             return;
         }
 
-        this.processTick(group, tickContext, this, this);
+        this.processTick(tickContext, this, this);
 
         if (PlannedRefactor.ON_PROJECTILE_TICK_FINISH_EVENT) {
             return;
@@ -141,6 +142,7 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
         this.setBulletSpeed(compoundTag, this.getBulletSpeed(this));
         this.setGravity(compoundTag, this.getGravity(this));
         this.setFriction(compoundTag, this.getFriction(this));
+        this.setPierce(compoundTag, this.getPierce(this));
         this.setIsTracer(compoundTag, this.getIsTracer(this));
         this.setFireAspect(compoundTag, this.getFireAspect(this));
         this.setKnockbackStrength(compoundTag, this.getKnockbackStrength(this));
@@ -163,6 +165,7 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
         this.setBulletSpeed(this, this.getBulletSpeed(compoundTag));
         this.setGravity(this, this.getGravity(compoundTag));
         this.setFriction(this, this.getFriction(compoundTag));
+        this.setPierce(this, this.getPierce(compoundTag));
         this.setIsTracer(this, this.getIsTracer(compoundTag));
         this.setFireAspect(this, this.getFireAspect(compoundTag));
         this.setKnockbackStrength(this, this.getKnockbackStrength(compoundTag));
@@ -260,6 +263,12 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
     @Override public void setFriction(Entity entity, float friction) {
         this.stateCache.friction = friction;
     }
+    @Override public int getPierce(Entity gunProjectile) {
+        return this.stateCache.pierce;
+    }
+    @Override public void setPierce(Entity gunProjectile, int pierce) {
+        this.stateCache.pierce = pierce;
+    }
     @Override public boolean getIsTracer(Entity gunProjectile) {
         return this.stateCache.isTracer;
     }
@@ -292,35 +301,44 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
 
     // --------IProjectileEffectRuntime--------
 
-    @Override public void impactEffect(ProjectileManagerGroup group, TickContext tickContext, IGunProjectile iGunProjectile, Entity gunProjectile) {
-        group.projectileEffectManager().impactEffect(group, tickContext, iGunProjectile, gunProjectile);
+    @Override public void impactEffect(TickContext tickContext, IGunProjectile iGunProjectile, Entity gunProjectile) {
+        tickContext.group.projectileEffectManager().impactEffect(tickContext, iGunProjectile, gunProjectile);
     }
-    @Override public void moveEffect(ProjectileManagerGroup group, TickContext tickContext, IGunProjectile iGunProjectile, Entity gunProjectile) {
-        group.projectileEffectManager().impactEffect(group, tickContext, iGunProjectile, gunProjectile);
+    @Override public void moveEffect(TickContext tickContext, IGunProjectile iGunProjectile, Entity gunProjectile) {
+        tickContext.group.projectileEffectManager().impactEffect(tickContext, iGunProjectile, gunProjectile);
     }
 
     // --------IProjectileImpactRuntime--------
 
-    @Override public void preImpactTick(ProjectileManagerGroup group, TickContext tickContext, IGunProjectile iGunProjectile, Entity gunProjectile) {
-        group.projectileImpactManager().preImpactTick(group, tickContext, iGunProjectile, gunProjectile);
+    @Override public void preImpactTick(TickContext tickContext, IGunProjectile iGunProjectile, Entity gunProjectile) {
+        tickContext.group.projectileImpactManager().preImpactTick(tickContext, iGunProjectile, gunProjectile);
     }
-    @Override public void impactTick(ProjectileManagerGroup group, TickContext tickContext, IGunProjectile iGunProjectile, Entity gunProjectile) {
-        group.projectileImpactManager().impactTick(group, tickContext, iGunProjectile, gunProjectile);
+    @Override public void impactTick(TickContext tickContext, IGunProjectile iGunProjectile, Entity gunProjectile) {
+        tickContext.group.projectileImpactManager().impactTick(tickContext, iGunProjectile, gunProjectile);
     }
 
     // --------IProjectilePhysicsRuntime--------
 
-    @Override public void physicTick(ProjectileManagerGroup group, TickContext tickContext, IGunProjectile iGunProjectile, Entity gunProjectile) {
-        group.projectilePhysicsManager().physicTick(group, tickContext, iGunProjectile, gunProjectile);
+    @Override public void physicTick(TickContext tickContext, IGunProjectile iGunProjectile, Entity gunProjectile) {
+        tickContext.group.projectilePhysicsManager().physicTick(tickContext, iGunProjectile, gunProjectile);
     }
-    @Override public void physicMove(ProjectileManagerGroup group, TickContext tickContext, IGunProjectile iGunProjectile, Entity gunProjectile) {
-        group.projectilePhysicsManager().physicMove(group, tickContext, iGunProjectile, gunProjectile);
+    @Override public void physicMove(TickContext tickContext, IGunProjectile iGunProjectile, Entity gunProjectile) {
+        tickContext.group.projectilePhysicsManager().physicMove(tickContext, iGunProjectile, gunProjectile);
     }
 
     // --------IProjectileProcessRuntime--------
 
-    @Override public void processTick(ProjectileManagerGroup group, TickContext tickContext, IGunProjectile iGunProjectile, Entity gunProjectile) {
-        group.projectileProcessManager().processTick(group, tickContext, iGunProjectile, gunProjectile);
+    @Override public void processTick(TickContext tickContext, IGunProjectile iGunProjectile, Entity gunProjectile) {
+        tickContext.group.projectileProcessManager().processTick(tickContext, iGunProjectile, gunProjectile);
+    }
+
+    // --------偷渡--------
+
+    /**
+     * 偷渡方法 {@link Projectile#lerpRotation(float, float)}
+     */
+    public static float lerpRotation(float rotO, float rot) {
+        return Projectile.lerpRotation(rotO, rot);
     }
 
     // --------Deprecated--------

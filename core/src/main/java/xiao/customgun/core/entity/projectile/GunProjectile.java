@@ -9,7 +9,7 @@ package xiao.customgun.core.entity.projectile;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -62,7 +62,7 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
     }
     public GunProjectile(EntityType<? extends Projectile> entityType, Level level,
                          @Nullable LivingEntity livingShooter,
-                         ResourceLocation gunLocation, ResourceLocation gunDisplayLocation, ResourceLocation ammoLocation) {
+                         Identifier gunLocation, Identifier gunDisplayLocation, Identifier ammoLocation) {
         this(entityType, level);
         this.setOwner(livingShooter);
         this.setGunLocation(this, gunLocation);
@@ -207,25 +207,25 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
     @Override public void setManagerGroupTag(Entity entity, String managerGroupTag) {
         this.dataCache.managerGroupTag = managerGroupTag;
     }
-    @Override public @NotNull ResourceLocation getGunLocation(Entity gunProjectile) {
+    @Override public @NotNull Identifier getGunLocation(Entity gunProjectile) {
         var gunLocation = this.dataCache.gunLocation;
         return gunLocation != null ? gunLocation : ResourceTag.NULL_LOCATION;
     }
-    @Override public void setGunLocation(Entity entity, ResourceLocation gunLocation) {
+    @Override public void setGunLocation(Entity entity, Identifier gunLocation) {
         this.dataCache.gunLocation = gunLocation;
     }
-    @Override public @NotNull ResourceLocation getGunDisplayLocation(Entity gunProjectile) {
+    @Override public @NotNull Identifier getGunDisplayLocation(Entity gunProjectile) {
         var gunDisplayLocation = this.dataCache.gunDisplayLocation;
         return gunDisplayLocation != null ? gunDisplayLocation : ResourceTag.NULL_LOCATION;
     }
-    @Override public void setGunDisplayLocation(Entity entity, ResourceLocation gunDisplayLocation) {
+    @Override public void setGunDisplayLocation(Entity entity, Identifier gunDisplayLocation) {
         this.dataCache.gunDisplayLocation = gunDisplayLocation;
     }
-    @Override public @NotNull ResourceLocation getAmmoLocation(Entity gunProjectile) {
+    @Override public @NotNull Identifier getAmmoLocation(Entity gunProjectile) {
         var ammoLocation = this.dataCache.ammoLocation;
         return ammoLocation != null ? ammoLocation : ResourceTag.NULL_LOCATION;
     }
-    @Override public void setAmmoLocation(Entity entity, ResourceLocation ammoLocation) {
+    @Override public void setAmmoLocation(Entity entity, Identifier ammoLocation) {
         this.dataCache.ammoLocation = ammoLocation;
     }
     @Override public boolean hasExtraDataTag(Entity gunProjectile) {
@@ -347,7 +347,7 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
     // --------Deprecated--------
     // 原字段的获取方式
 
-    @Deprecated public ResourceLocation ammoId() {
+    @Deprecated public Identifier ammoId() {
         return this.getAmmoLocation(this);
     }
     @Deprecated public float speed() {
@@ -420,10 +420,10 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
     @Deprecated public boolean isTracerAmmo() {
         return this.getIsTracer(this);
     }
-    @Deprecated public ResourceLocation gunId() {
+    @Deprecated public Identifier gunId() {
         return this.getGunLocation(this);
     }
-    @Deprecated public ResourceLocation gunDisplayId() {
+    @Deprecated public Identifier gunDisplayId() {
         return this.getGunDisplayLocation(this);
     }
     @Deprecated public float getArmorIgnore(@Nullable GunPropertyCache gunPropertyCache) {

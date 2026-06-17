@@ -1,7 +1,7 @@
 package xiao.customgun.core.api.entity.projectile;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.ApiStatus;
@@ -18,18 +18,18 @@ public interface IGunProjectileValueAccess {
     /**
      * 获取枪械ID，如不存在则返回 {@link ResourceTag#NULL_LOCATION}
      */
-    @NotNull ResourceLocation getGunLocation(ValueInput input);
-    void setGunLocation(ValueOutput output, ResourceLocation gunLocation);
+    @NotNull Identifier getGunLocation(ValueInput input);
+    void setGunLocation(ValueOutput output, Identifier gunLocation);
     /**
      * 获取NBT指定的GunDisplay，如无则返回 {@link ResourceTag#NULL_LOCATION}
      */
-    @NotNull ResourceLocation getGunDisplayLocation(ValueInput input);
-    void setGunDisplayLocation(ValueOutput output, ResourceLocation gunDisplayLocation);
+    @NotNull Identifier getGunDisplayLocation(ValueInput input);
+    void setGunDisplayLocation(ValueOutput output, Identifier gunDisplayLocation);
     /**
      * 获取子弹ID，如不存在则返回 {@link ResourceTag#NULL_LOCATION}
      */
-    @NotNull ResourceLocation getAmmoLocation(ValueInput input);
-    void setAmmoLocation(ValueOutput output, ResourceLocation ammoLocation);
+    @NotNull Identifier getAmmoLocation(ValueInput input);
+    void setAmmoLocation(ValueOutput output, Identifier ammoLocation);
 
     boolean hasExtraDataTag(ValueInput input);
     @Nullable CompoundTag getExtraDataTag(ValueInput input);

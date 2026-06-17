@@ -19,6 +19,7 @@ public class AmmoConfig {
     public static IModConfigSpec<Boolean> EXPLOSIVE_AMMO_FIRE;
     public static IModConfigSpec<Boolean> EXPLOSIVE_AMMO_KNOCK_BACK;
     public static IModConfigSpec<Integer> EXPLOSIVE_AMMO_VISIBLE_DISTANCE;
+    // TODO 这个得改ArraySet
     public static IModConfigSpec<List<String>> PASS_THROUGH_BLOCKS;
     public static IModConfigSpec<Boolean> DESTROY_GLASS;
     public static IModConfigSpec<Boolean> IGNITE_BLOCK;

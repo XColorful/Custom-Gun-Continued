@@ -8,6 +8,7 @@
 package xiao.customgun.core.entity.projectile;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -74,7 +75,7 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
     }
 
     @Override
-    protected void defineSynchedData() {
+    protected void defineSynchedData(SynchedEntityData.Builder entityData) {
     }
 
     protected void constructInitData() {

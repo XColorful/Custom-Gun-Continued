@@ -52,7 +52,7 @@ public class RayTraceUtils {
                 Vec3 delta = startPos.subtract(endPos);
                 return BlockHitResult.miss(
                         endPos,
-                        Direction.getNearest(delta.x, delta.y, delta.z), // Direction.getApproximateNearest()
+                        Direction.getApproximateNearest(delta.x, delta.y, delta.z),
                         BlockPos.containing(endPos)
                 );
             });

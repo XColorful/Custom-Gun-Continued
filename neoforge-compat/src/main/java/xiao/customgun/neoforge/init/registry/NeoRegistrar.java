@@ -7,6 +7,8 @@
 
 package xiao.customgun.neoforge.init.registry;
 
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
@@ -16,6 +18,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import xiao.customgun.CustomGun;
 import xiao.customgun.core.api.init.registry.IRegistrar;
 import xiao.customgun.core.api.init.registry.IRegistryObject;
+import xiao.customgun.neoforge.CustomGunNeoforge;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -59,7 +62,8 @@ public class NeoRegistrar<T> implements IRegistrar<T> {
     @Override
     public <E extends Entity> IRegistryObject<EntityType<E>> registerEntity(String name, Class<E> clazz, Function<EntityType.EntityFactory<E>, EntityType.Builder<E>> builderFactory) {
         EntityType.EntityFactory<E> factory = NeoModEntities.getNeoFactory(clazz);
-        DeferredHolder<EntityType<?>, EntityType<E>> deferredHolder = ((DeferredRegister<EntityType<?>>) deferredRegister).register(name, () -> builderFactory.apply(factory).build(name));
+        ResourceKey<EntityType<?>> nameRk = ResourceKey.create(Registries.ENTITY_TYPE, CustomGunNeoforge.mcRegistry.createResourceLocation(String.format("%s:%s", deferredRegister.getNamespace(), name)));
+        DeferredHolder<EntityType<?>, EntityType<E>> deferredHolder = ((DeferredRegister<EntityType<?>>) deferredRegister).register(name, () -> builderFactory.apply(factory).build(nameRk));
         return new NeoRegistryObject<>(deferredHolder, name);
     }
 }

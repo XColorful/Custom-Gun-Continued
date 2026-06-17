@@ -1,7 +1,7 @@
 package xiao.customgun.core.api.projectile;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.entity.GunProjectileProperty;
 import xiao.customgun.core.api.entity.projectile.IGunProjectileDataAccess;
@@ -22,9 +22,9 @@ public interface IProjectileRuntime extends
      */
     final class DataCache {
         public @Nullable String managerGroupTag;
-        public @Nullable ResourceLocation gunLocation;
-        public @Nullable ResourceLocation gunDisplayLocation;
-        public @Nullable ResourceLocation ammoLocation;
+        public @Nullable Identifier gunLocation;
+        public @Nullable Identifier gunDisplayLocation;
+        public @Nullable Identifier ammoLocation;
         public @Nullable CompoundTag extraDataTag;
         public DataCache() {
         }

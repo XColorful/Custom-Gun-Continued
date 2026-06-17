@@ -188,12 +188,12 @@ public class NBTUtils {
 //        setCustomDataTag(entity, customDataTag);
     }
 
-    public static @Nullable ResourceLocation getResourceLocation(@Nullable Entity entity, String key) {
+    public static @Nullable Identifier getResourceLocation(@Nullable Entity entity, String key) {
         @Nullable CompoundTag customDataTag =
                 getCustomData(entity);
         return customDataTag != null ? getResourceLocation(customDataTag, key) : null;
     }
-    public static void setResourceLocation(@NotNull Entity entity, String key, @Nullable ResourceLocation value) {
+    public static void setResourceLocation(@NotNull Entity entity, String key, @Nullable Identifier value) {
         @NotNull CompoundTag customDataTag =
                 getOrCreateCustomData(entity);
         setResourceLocation(customDataTag, key, value);
@@ -354,11 +354,11 @@ public class NBTUtils {
             else output.putString(key, value);
         }
 
-        public static @Nullable ResourceLocation getResourceLocation(@Nullable ValueInput input, String key) {
+        public static @Nullable Identifier getResourceLocation(@Nullable ValueInput input, String key) {
             if (input == null) return null;
             return input.getString(key).map(mcRegistry::createResourceLocation).orElse(null);
         }
-        public static void setResourceLocation(@Nullable ValueOutput output, String key, @Nullable ResourceLocation value) {
+        public static void setResourceLocation(@Nullable ValueOutput output, String key, @Nullable Identifier value) {
             if (output == null) return;
             if (value == null) output.discard(key);
             else output.putString(key, value.toString());

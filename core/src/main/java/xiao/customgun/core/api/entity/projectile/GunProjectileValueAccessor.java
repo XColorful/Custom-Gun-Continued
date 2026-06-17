@@ -1,7 +1,7 @@
 package xiao.customgun.core.api.entity.projectile;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.ApiStatus;
@@ -26,32 +26,32 @@ public interface GunProjectileValueAccessor extends IGunProjectileValueAccess {
     }
 
     @Override
-    default @NotNull ResourceLocation getGunLocation(ValueInput input) {
+    default @NotNull Identifier getGunLocation(ValueInput input) {
         var gunLocation = NBTUtils.Value.getResourceLocation(input, GunProjectileProperty.GUN_LOCATION.getTagName());
         return gunLocation != null ? gunLocation : ResourceTag.NULL_LOCATION;
     }
     @Override
-    default void setGunLocation(ValueOutput output, ResourceLocation gunLocation) {
+    default void setGunLocation(ValueOutput output, Identifier gunLocation) {
         NBTUtils.Value.setResourceLocation(output, GunProjectileProperty.GUN_LOCATION.getTagName(), gunLocation);
     }
 
     @Override
-    default @NotNull ResourceLocation getGunDisplayLocation(ValueInput input) {
+    default @NotNull Identifier getGunDisplayLocation(ValueInput input) {
         var gunDisplayLocation = NBTUtils.Value.getResourceLocation(input, GunProjectileProperty.GUN_DISPLAY_LOCATION.getTagName());
         return gunDisplayLocation != null ? gunDisplayLocation : ResourceTag.NULL_LOCATION;
     }
     @Override
-    default void setGunDisplayLocation(ValueOutput output, ResourceLocation gunDisplayLocation) {
+    default void setGunDisplayLocation(ValueOutput output, Identifier gunDisplayLocation) {
         NBTUtils.Value.setResourceLocation(output, GunProjectileProperty.GUN_DISPLAY_LOCATION.getTagName(), gunDisplayLocation);
     }
 
     @Override
-    default @NotNull ResourceLocation getAmmoLocation(ValueInput input) {
+    default @NotNull Identifier getAmmoLocation(ValueInput input) {
         var ammoLocation = NBTUtils.Value.getResourceLocation(input, GunProjectileProperty.AMMO_LOCATION.getTagName());
         return ammoLocation != null ? ammoLocation : ResourceTag.NULL_LOCATION;
     }
     @Override
-    default void setAmmoLocation(ValueOutput output, ResourceLocation ammoLocation) {
+    default void setAmmoLocation(ValueOutput output, Identifier ammoLocation) {
         NBTUtils.Value.setResourceLocation(output, GunProjectileProperty.AMMO_LOCATION.getTagName(), ammoLocation);
     }
 

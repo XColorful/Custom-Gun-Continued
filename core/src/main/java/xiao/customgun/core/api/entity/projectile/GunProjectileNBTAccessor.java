@@ -1,7 +1,7 @@
 package xiao.customgun.core.api.entity.projectile;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.entity.GunProjectileProperty;
@@ -24,32 +24,32 @@ public interface GunProjectileNBTAccessor extends GunProjectileValueAccessor, IG
     }
 
     @Override
-    default @NotNull ResourceLocation getGunLocation(CompoundTag gunProjectileCustomDataTag) {
+    default @NotNull Identifier getGunLocation(CompoundTag gunProjectileCustomDataTag) {
         var gunLocation = NBTUtils.getResourceLocation(gunProjectileCustomDataTag, GunProjectileProperty.GUN_LOCATION.getTagName());
         return gunLocation != null ? gunLocation : ResourceTag.NULL_LOCATION;
     }
     @Override
-    default void setGunLocation(CompoundTag gunProjectileCustomDataTag, ResourceLocation gunLocation) {
+    default void setGunLocation(CompoundTag gunProjectileCustomDataTag, Identifier gunLocation) {
         NBTUtils.setResourceLocation(gunProjectileCustomDataTag, GunProjectileProperty.GUN_LOCATION.getTagName(), gunLocation);
     }
 
     @Override
-    default @NotNull ResourceLocation getGunDisplayLocation(CompoundTag gunProjectileCustomDataTag) {
+    default @NotNull Identifier getGunDisplayLocation(CompoundTag gunProjectileCustomDataTag) {
         var gunDisplayLocation = NBTUtils.getResourceLocation(gunProjectileCustomDataTag, GunProjectileProperty.GUN_DISPLAY_LOCATION.getTagName());
         return gunDisplayLocation != null ? gunDisplayLocation : ResourceTag.NULL_LOCATION;
     }
     @Override
-    default void setGunDisplayLocation(CompoundTag gunProjectileCustomDataTag, ResourceLocation gunDisplayLocation) {
+    default void setGunDisplayLocation(CompoundTag gunProjectileCustomDataTag, Identifier gunDisplayLocation) {
         NBTUtils.setResourceLocation(gunProjectileCustomDataTag, GunProjectileProperty.GUN_DISPLAY_LOCATION.getTagName(), gunDisplayLocation);
     }
 
     @Override
-    default @NotNull ResourceLocation getAmmoLocation(CompoundTag gunProjectileCustomDataTag) {
+    default @NotNull Identifier getAmmoLocation(CompoundTag gunProjectileCustomDataTag) {
         var ammoLocation = NBTUtils.getResourceLocation(gunProjectileCustomDataTag, GunProjectileProperty.AMMO_LOCATION.getTagName());
         return ammoLocation != null ? ammoLocation : ResourceTag.NULL_LOCATION;
     }
     @Override
-    default void setAmmoLocation(CompoundTag gunProjectileCustomDataTag, ResourceLocation ammoLocation) {
+    default void setAmmoLocation(CompoundTag gunProjectileCustomDataTag, Identifier ammoLocation) {
         NBTUtils.setResourceLocation(gunProjectileCustomDataTag, GunProjectileProperty.AMMO_LOCATION.getTagName(), ammoLocation);
     }
 

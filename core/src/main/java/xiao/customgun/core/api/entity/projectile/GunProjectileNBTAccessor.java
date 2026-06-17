@@ -8,7 +8,7 @@ import xiao.customgun.core.api.entity.GunProjectileProperty;
 import xiao.customgun.core.api.resource.ResourceTag;
 import xiao.customgun.core.util.NBTUtils;
 
-public interface GunProjectileNBTAccessor extends IGunProjectileNBTAccess {
+public interface GunProjectileNBTAccessor extends GunProjectileValueAccessor, IGunProjectileNBTAccess {
 
     GunProjectileNBTAccessor INSTANCE = new GunProjectileNBTAccessor() {};
 

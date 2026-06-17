@@ -38,8 +38,8 @@ public class ModItems {
             .stacksTo(1); // 堆叠数会重载getter来修改
 
 
-    public static final IRegistryObject<Item> GUN = ITEMS.registerItem(ItemType.GUN.getTagName(), GunItem.class);
-    public static final IRegistryObject<Item> ATTACHMENT = ITEMS.registerItem(ItemType.ATTACHMENT.getTagName(), AttachmentItem.class);
-    public static final IRegistryObject<Item> AMMO = ITEMS.registerItem(ItemType.AMMO.getTagName(), AmmoItem.class);
+    public static final IRegistryObject<GunItem> GUN = ITEMS.registerItem(ItemType.GUN.getTagName(), GunItem.class);
+    public static final IRegistryObject<AttachmentItem> ATTACHMENT = ITEMS.registerItem(ItemType.ATTACHMENT.getTagName(), AttachmentItem.class);
+    public static final IRegistryObject<AmmoItem> AMMO = ITEMS.registerItem(ItemType.AMMO.getTagName(), AmmoItem.class);
     public static final IRegistryObject<Item> AMMO_BOX = ITEMS.register(ItemType.AMMO_BOX.getTagName(), AmmoBoxItem::new);
 }

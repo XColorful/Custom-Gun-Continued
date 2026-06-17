@@ -1,12 +1,5 @@
 /*
- * Copyright (c) 2025-2026 XiaoColorful (https://github.com/XColorful)
- * SPDX-License-Identifier: GPL-3.0-or-later
- *
- * Source: https://github.com/XColorful/BattleRoyale
- */
-
-/*
- * 跟 BattleRoyale GameManager 的设计高度同构
+ * Go to BattleRoyale GameManager 的设计
  */
 
 package xiao.customgun.core.gun;
@@ -27,7 +20,10 @@ public class GunManager implements IGunManager {
     public static final GunManager INSTANCE = new GunManager();
 
     private final GunManagerGroup defaultGroup = new GunManagerGroup("default",
-            GunAttackManager.INSTANCE, GunActionManager.INSTANCE, GunInventoryManager.INSTANCE, GunStateManager.INSTANCE);
+            GunActionManager.INSTANCE,
+            GunAttackManager.INSTANCE,
+            GunInventoryManager.INSTANCE,
+            GunStateManager.INSTANCE);
     private final Map<String, GunManagerGroup> managerGroups;
 
     protected GunManager() {

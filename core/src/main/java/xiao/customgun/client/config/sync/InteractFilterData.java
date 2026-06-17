@@ -5,7 +5,7 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package xiao.customgun.client.config;
+package xiao.customgun.client.config.sync;
 
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;

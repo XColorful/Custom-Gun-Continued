@@ -5,7 +5,7 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package xiao.customgun.client.config;
+package xiao.customgun.core.config.sync;
 
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.phys.AABB;
@@ -50,7 +50,7 @@ public class HeadAABBData {
         return null;
     }
 
-    public static @Nullable AABB getHeadAABB(Identifier id) {
-        return AABB_CHECK.get(id);
+    public static @Nullable AABB getHeadAABB(Identifier rl) {
+        return AABB_CHECK.get(rl);
     }
 }

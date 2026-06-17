@@ -7,20 +7,8 @@
 
 package xiao.customgun.core.api.entity;
 
-public interface IBulletVictimEntity {
+import xiao.customgun.core.api.entity.victim.IBulletVictimEntityImpact;
+import xiao.customgun.core.api.entity.victim.IBulletVictimKnockback;
 
-    /**
-     * 重置击退效果，实体此时恢复正常原版击退逻辑
-     */
-    void cgc$resetKnockBackStrength();
-
-    /**
-     * 获取击退强度，负数表示使用原版击退
-     */
-    float cgc$getKnockBackStrength();
-
-    /**
-     * 设置击退强度
-     */
-    void cgc$setKnockBackStrength(float strength);
+public interface IBulletVictimEntity extends IBulletVictimEntityImpact, IBulletVictimKnockback {
 }

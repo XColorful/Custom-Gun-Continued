@@ -36,10 +36,10 @@ public enum ItemType implements ResourceTag.RegistryTag {
     @Deprecated TARGET_MINECART(ItemTypeTag.TARGET_MINECART, null),;
 
     public final String typeName;
-    public final String typeNameOld;
+    public final @Nullable String typeNameOld;
     public final String registryName;
     public final Identifier registryLocation;
-    ItemType(String name, String nameOld) {
+    ItemType(String name, @Nullable String nameOld) {
         this.typeName = name;
         this.typeNameOld = nameOld;
         this.registryName = String.format("%s:%s", CustomGun.MOD_ID, this.typeName);

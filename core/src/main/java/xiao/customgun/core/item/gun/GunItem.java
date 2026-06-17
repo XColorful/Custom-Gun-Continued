@@ -166,7 +166,7 @@ public class GunItem extends Item implements IGun, GunDataAccessor {
     @Override
     public void tickHeat(ShooterProperty shooterProperty, ItemStack gunItem, LivingEntity livingShooter) {
         GunManager.INSTANCE.getManagerGroup(this.getManagerGroupTag(gunItem))
-                .gunStateRuntime()
+                .gunStateManager()
                 .tickHeat(shooterProperty, gunItem, livingShooter);
     }
 

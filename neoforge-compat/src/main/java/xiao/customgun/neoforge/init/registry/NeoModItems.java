@@ -29,9 +29,10 @@ public class NeoModItems {
     }
 
     @SuppressWarnings("unchecked")
-    public static <V extends Item> Supplier<? extends V> getNeoSupplier(Class<V> clazz) {
-        if (NEO_ITEM_MAP.containsKey(clazz)) {
-            return (Supplier<? extends V>) NEO_ITEM_MAP.get(clazz);
+    public static <I extends Item> Supplier<? extends I> getNeoSupplier(Class<I> clazz) {
+        Supplier<? extends Item> supplier = NEO_ITEM_MAP.get(clazz);
+        if (supplier != null) {
+            return (Supplier<? extends I>) supplier;
         }
 
         throw new IllegalArgumentException("No NeoForge item mapping registered for core class: " + clazz.getName());

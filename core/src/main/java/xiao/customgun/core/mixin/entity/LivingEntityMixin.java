@@ -12,6 +12,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -19,9 +20,11 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import xiao.customgun.core.api.entity.*;
 import xiao.customgun.core.api.entity.gun.GunPropertyCache;
+import xiao.customgun.core.api.projectile.physics.IProjectilePhysicsRuntime;
 import xiao.customgun.core.entity.LivingShooterSyncKey;
 import xiao.customgun.core.entity.gun.GunPropertyManager;
 import xiao.customgun.core.entity.shooter.*;
+import xiao.customgun.core.projectile.impact.ProjectileImpactManager;
 
 import java.util.function.Supplier;
 
@@ -214,15 +217,25 @@ public abstract class LivingEntityMixin extends Entity implements ILivingShooter
         return this.cgc$shooterProperty.gunPropertyCache;
     }
 
-    // --------IBulletVictimEntity--------
+    // --------IBulletVictimImpact--------
 
-    @Override public void cgc$resetKnockBackStrength() {
+    @Override public boolean cgc$onProjectileImpact(IProjectilePhysicsRuntime.EntityHitResult entityHitResult,
+                                                    IGunProjectile iGunProjectile, Entity gunProjectile) {
+        LivingEntity victimEntity = this.cgc$shooter; // entityHitResult.entity();
+        Vec3 hitPos = entityHitResult.hitPos();
+        boolean headshot = entityHitResult.headshot();
+        return ProjectileImpactManager.cgc$onProjectileImpact(entityHitResult, iGunProjectile, gunProjectile);
+    }
+
+    // --------IBulletVictimKnockback--------
+
+    @Override public void cgc$resetKnockbackStrength() {
         cgc$knockbackStrength = -1;
     }
-    @Override public float cgc$getKnockBackStrength() {
+    @Override public float cgc$getKnockbackStrength() {
         return cgc$knockbackStrength;
     }
-    @Override public void cgc$setKnockBackStrength(float strength) {
+    @Override public void cgc$setKnockbackStrength(float strength) {
         this.cgc$knockbackStrength = strength;
     }
 }

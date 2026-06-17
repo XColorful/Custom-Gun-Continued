@@ -29,9 +29,10 @@ public class ForgeModItems {
     }
 
     @SuppressWarnings("unchecked")
-    public static <V extends Item> Supplier<? extends V> getForgeSupplier(Class<V> clazz) {
-        if (FORGE_ITEM_MAP.containsKey(clazz)) {
-            return (Supplier<? extends V>) FORGE_ITEM_MAP.get(clazz);
+    public static <I extends Item> Supplier<? extends I> getForgeSupplier(Class<I> clazz) {
+        Supplier<? extends Item> supplier = FORGE_ITEM_MAP.get(clazz);
+        if (supplier != null) {
+            return (Supplier<? extends I>) supplier;
         }
 
         throw new IllegalArgumentException("No Forge item mapping registered for core class: " + clazz.getName());

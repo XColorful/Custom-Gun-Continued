@@ -1,12 +1,5 @@
 /*
- * Copyright (c) 2025-2026 XiaoColorful (https://github.com/XColorful)
- * SPDX-License-Identifier: GPL-3.0-or-later
- *
- * Source: https://github.com/XColorful/BattleRoyale
- */
-
-/*
- * 跟 BattleRoyale GameManager 的设计高度同构
+ * Go to BattleRoyale GameManager 的设计
  */
 
 package xiao.customgun.core.api.gun;
@@ -16,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import xiao.customgun.core.api.gun.inventory.IGunInventoryManager;
 import xiao.customgun.core.api.gun.attack.IGunAttackManager;
 import xiao.customgun.core.api.gun.action.IGunActionManager;
+import xiao.customgun.core.api.gun.state.IGunStateManager;
 import xiao.customgun.core.api.item.IGun;
 
 public interface IGunMainManager extends IGunSubManager {
@@ -30,13 +24,16 @@ public interface IGunMainManager extends IGunSubManager {
         return this.getManagerGroup(iGun.getManagerGroupTag(gunItem));
     }
 
-    default IGunAttackManager getGunAttackManager(IGun iGun, ItemStack gunItem) {
-        return this.getManagerGroup(iGun.getManagerGroupTag(gunItem)).gunAttackManager();
-    }
     default IGunActionManager getGunActionManager(IGun iGun, ItemStack gunItem) {
         return this.getManagerGroup(iGun.getManagerGroupTag(gunItem)).gunActionManager();
     }
+    default IGunAttackManager getGunAttackManager(IGun iGun, ItemStack gunItem) {
+        return this.getManagerGroup(iGun.getManagerGroupTag(gunItem)).gunAttackManager();
+    }
     default IGunInventoryManager getGunInventoryManager(IGun iGun, ItemStack gunItem) {
         return this.getManagerGroup(iGun.getManagerGroupTag(gunItem)).gunInventoryManager();
+    }
+    default IGunStateManager getGunStateManager(IGun iGun, ItemStack gunItem) {
+        return this.getManagerGroup(iGun.getManagerGroupTag(gunItem)).gunStateManager();
     }
 }

@@ -7,6 +7,11 @@
 
 package xiao.customgun.core.api.init.registry;
 
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.Item;
+
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -42,5 +47,16 @@ public interface IRegistrar<T> {
      * (黑魔法)替换注册的类型, core仍然可以强转成core的类用
      * @return 被替换过的class supplier
      */
-    <V extends T> IRegistryObject<V> registerItem(final String name, final Class<? extends V> clazz);
+    <I extends Item> IRegistryObject<I> registerItem(final String name, final Class<I> clazz);
+    /**
+     * 解决以下问题:
+     * <ul>
+     *     <li>{@link xiao.customgun.core}不能包含forge/neoforge import
+     *     <li>mixin无法通过注入函数来实现重载
+     *     <li>{@link xiao.customgun.core}需要实现forge/neoforge接口
+     * </ul>
+     * (黑魔法)替换注册的类型, core仍然可以强转成core的类用
+     * @return 被替换过的EntityType builder
+     */
+    <E extends Entity> IRegistryObject<EntityType<E>> registerEntity(final String name, final Class<E> clazz, final Function<EntityType.EntityFactory<E>, EntityType.Builder<E>> builderFactory);
 }

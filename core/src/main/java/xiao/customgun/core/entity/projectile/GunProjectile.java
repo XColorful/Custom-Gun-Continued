@@ -15,6 +15,8 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -130,7 +132,7 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
      * 扩展模组如要手动调用，则先使用 {@link #addAdditionalSaveData} 刷新NBT数据
      */
     @Override
-    public void addAdditionalSaveData(@NotNull CompoundTag compoundTag) {
+    public void addAdditionalSaveData(@NotNull ValueOutput compoundTag) {
         super.addAdditionalSaveData(compoundTag);
         // ----IGunProjectileDataAccess----
         this.setManagerGroupTag(compoundTag, this.getManagerGroupTag(this));
@@ -153,7 +155,7 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
      * 手动调用前请用 {@link #addAdditionalSaveData} 刷新NBT数据，并向返回的NBT里修改数据，再调用该方法
      */
     @Override
-    public void readAdditionalSaveData(@NotNull CompoundTag compoundTag) {
+    public void readAdditionalSaveData(@NotNull ValueInput compoundTag) {
         super.readAdditionalSaveData(compoundTag);
         // ----IGunProjectileDataAccess----
         this.setManagerGroupTag(this, this.getManagerGroupTag(compoundTag));

@@ -11,6 +11,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -77,11 +79,11 @@ public class NBTUtils {
     public static void setCustomDataTag(@NotNull Entity entity, @Nullable CompoundTag customDataTag) {
         CompoundTag nbt = entity.getPersistentData();
         if (nbt == customDataTag) return; // 同一个引用, 不然↓就把键删完了
-        for (String key : java.util.List.copyOf(nbt.getAllKeys())) { // nbt.keySet()
+        for (String key : java.util.List.copyOf(nbt.keySet())) {
             nbt.remove(key);
         }
         if (customDataTag != null) {
-            for (String key : customDataTag.getAllKeys()) { // customDataTag.keySet()
+            for (String key : customDataTag.keySet()) {
                 nbt.put(key, customDataTag.get(key));
             }
         }
@@ -341,5 +343,79 @@ public class NBTUtils {
      */
     @ApiStatus.AvailableSince("1.21.6")
     public static class Value {
+
+        public static @Nullable String getString(@Nullable ValueInput input, String key) {
+            if (input == null) return null;
+            return input.getString(key).orElse(null);
+        }
+        public static void setString(@Nullable ValueOutput output, String key, @Nullable String value) {
+            if (output == null) return;
+            if (value == null) output.discard(key);
+            else output.putString(key, value);
+        }
+
+        public static @Nullable ResourceLocation getResourceLocation(@Nullable ValueInput input, String key) {
+            if (input == null) return null;
+            return input.getString(key).map(mcRegistry::createResourceLocation).orElse(null);
+        }
+        public static void setResourceLocation(@Nullable ValueOutput output, String key, @Nullable ResourceLocation value) {
+            if (output == null) return;
+            if (value == null) output.discard(key);
+            else output.putString(key, value.toString());
+        }
+
+        public static float getFloat(@Nullable ValueInput input, String key) {
+            if (input == null) return 0;
+            return input.getFloatOr(key, 0F);
+        }
+        public static void setFloat(@Nullable ValueOutput output, String key, float value) {
+            if (output == null) return;
+            output.putFloat(key, value);
+        }
+
+        public static int getInt(@Nullable ValueInput input, String key) {
+            if (input == null) return 0;
+            return input.getIntOr(key, 0);
+        }
+        public static void setInt(@Nullable ValueOutput output, String key, int value) {
+            if (output == null) return;
+            output.putInt(key, value);
+        }
+
+        public static boolean getBoolean(@Nullable ValueInput input, String key) {
+            if (input == null) return false;
+            return input.getBooleanOr(key, false);
+        }
+        public static void setBoolean(@Nullable ValueOutput output, String key, boolean value) {
+            if (output == null) return;
+            output.putBoolean(key, value);
+        }
+
+        public static @Nullable CompoundTag getCompoundTag(@Nullable ValueInput input, String key) {
+            if (input == null) return null;
+            return input.read(key, CompoundTag.CODEC).orElse(null);
+        }
+        public static void setCompoundTag(@Nullable ValueOutput output, String key, @Nullable CompoundTag value) {
+            if (output == null) return;
+            if (value == null) output.discard(key);
+            else output.store(key, CompoundTag.CODEC, value);
+        }
+
+        public static @Nullable ValueInput getChildInput(@Nullable ValueInput input, String key) {
+            if (input == null) return null;
+            return input.child(key).orElse(null);
+        }
+        public static @Nullable ValueOutput getChildOutput(@Nullable ValueOutput output, String key) {
+            if (output == null) return null;
+            return output.child(key);
+        }
+
+        public static boolean hasKey(@Nullable ValueInput input, String key) {
+            if (input == null) return false;
+            return input.keySet().contains(key);
+        }
+        public static void removeKey(@Nullable ValueOutput output, String key) {
+            if (output != null) output.discard(key);
+        }
     }
 }

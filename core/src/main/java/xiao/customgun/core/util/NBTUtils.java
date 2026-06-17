@@ -77,11 +77,11 @@ public class NBTUtils {
     public static void setCustomDataTag(@NotNull Entity entity, @Nullable CompoundTag customDataTag) {
         CompoundTag nbt = entity.getPersistentData();
         if (nbt == customDataTag) return; // 同一个引用, 不然↓就把键删完了
-        for (String key : java.util.List.copyOf(nbt.getAllKeys())) {
+        for (String key : java.util.List.copyOf(nbt.getAllKeys())) { // nbt.keySet()
             nbt.remove(key);
         }
         if (customDataTag != null) {
-            for (String key : customDataTag.getAllKeys()) {
+            for (String key : customDataTag.getAllKeys()) { // customDataTag.keySet()
                 nbt.put(key, customDataTag.get(key));
             }
         }
@@ -332,5 +332,14 @@ public class NBTUtils {
     }
     public static void removeKey(@Nullable CompoundTag nbt, String key) {
         if (nbt != null) nbt.remove(key);
+    }
+
+
+    /**
+     * 对 {@code ValueInput} {@code ValueOutput} 的封装, 适用于Entity和Block的硬盘IO
+     * @since 1.21.6
+     */
+    @ApiStatus.AvailableSince("1.21.6")
+    public static class Value {
     }
 }

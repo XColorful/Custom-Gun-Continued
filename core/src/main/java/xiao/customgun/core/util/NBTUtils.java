@@ -7,6 +7,7 @@ package xiao.customgun.core.util;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -48,6 +49,40 @@ public class NBTUtils {
     @ApiStatus.AvailableSince("1.21.1")
     public static @NotNull CompoundTag getCustomDataTag(@NotNull CompoundTag customData) {
         return customData; // customData.copyTag()
+    }
+
+    /**
+     * 获取 根目录ForgeData/NeoForgeData
+     * 若移植Fabric则修改此处, 而不是引入接口放fabric-compat实现
+     */
+    public static @Nullable CompoundTag getCustomData(@Nullable Entity entity) {
+        if (entity == null) return null;
+        else return entity.getPersistentData();
+    }
+    public static @NotNull CompoundTag getOrCreateCustomData(@NotNull Entity entity) {
+        return entity.getPersistentData();
+    }
+    /**
+     * 写入 根目录ForgeData/NeoForgeData
+     */
+    @Deprecated
+    public static void setCustomData(@NotNull Entity entity, CompoundTag customData) {
+        setCustomDataTag(entity, customData);
+    }
+    /**
+     * 将 CompoundTag 写入 根目录ForgeData/NeoForgeData1
+     */
+    public static void setCustomDataTag(@NotNull Entity entity, @Nullable CompoundTag customDataTag) {
+        CompoundTag nbt = entity.getPersistentData();
+        if (nbt == customDataTag) return; // 同一个引用, 不然↓就把键删完了
+        for (String key : java.util.List.copyOf(nbt.getAllKeys())) {
+            nbt.remove(key);
+        }
+        if (customDataTag != null) {
+            for (String key : customDataTag.getAllKeys()) {
+                nbt.put(key, customDataTag.get(key));
+            }
+        }
     }
 
     // --------ItemStack--------
@@ -131,6 +166,96 @@ public class NBTUtils {
         CompoundTag customDataTag = getCustomDataTag(customData);
         removeKey(customDataTag, key);
         setCustomDataTag(itemStack, customDataTag);
+    }
+
+    // --------Entity--------
+    // (便利接口) 从根目录ForgeData/NeoForgeData获取数据
+    // Setter接口包含存储
+
+    public static @Nullable String getString(@Nullable Entity entity, String key) {
+        @Nullable CompoundTag customDataTag =
+                getCustomData(entity);
+        return customDataTag != null ? getString(customDataTag, key) : null;
+    }
+    public static void setString(@NotNull Entity entity, String key, @Nullable String value) {
+        @NotNull CompoundTag customDataTag =
+                getOrCreateCustomData(entity);
+        setString(customDataTag, key, value);
+//        setCustomDataTag(entity, customDataTag);
+    }
+
+    public static @Nullable ResourceLocation getResourceLocation(@Nullable Entity entity, String key) {
+        @Nullable CompoundTag customDataTag =
+                getCustomData(entity);
+        return customDataTag != null ? getResourceLocation(customDataTag, key) : null;
+    }
+    public static void setResourceLocation(@NotNull Entity entity, String key, @Nullable ResourceLocation value) {
+        @NotNull CompoundTag customDataTag =
+                getOrCreateCustomData(entity);
+        setResourceLocation(customDataTag, key, value);
+//        setCustomDataTag(entity, customDataTag);
+    }
+
+    public static float getFloat(@Nullable Entity entity, String key) {
+        @Nullable CompoundTag customDataTag =
+                getCustomData(entity);
+        return customDataTag != null ? getFloat(customDataTag, key) : 0;
+    }
+    public static void setFloat(@NotNull Entity entity, String key, float value) {
+        @NotNull CompoundTag customDataTag =
+                getOrCreateCustomData(entity);
+        setFloat(customDataTag, key, value);
+//        setCustomDataTag(entity, customDataTag);
+    }
+
+    public static int getInt(@Nullable Entity entity, String key) {
+        @Nullable CompoundTag customDataTag =
+                getCustomData(entity);
+        return customDataTag != null ? getInt(customDataTag, key) : 0;
+    }
+    public static void setInt(@NotNull Entity entity, String key, int value) {
+        @NotNull CompoundTag customDataTag =
+                getOrCreateCustomData(entity);
+        setInt(customDataTag, key, value);
+//        setCustomDataTag(entity, customDataTag);
+    }
+
+    public static boolean getBoolean(@Nullable Entity entity, String key) {
+        @Nullable CompoundTag customDataTag =
+                getCustomData(entity);
+        return customDataTag != null && getBoolean(customDataTag, key);
+    }
+    public static void setBoolean(@NotNull Entity entity, String key, boolean value) {
+        @NotNull CompoundTag customDataTag =
+                getOrCreateCustomData(entity);
+        setBoolean(customDataTag, key, value);
+//        setCustomDataTag(entity, customDataTag);
+    }
+
+    public static @Nullable CompoundTag getCompoundTag(@Nullable Entity entity, String key) {
+        @Nullable CompoundTag customDataTag =
+                getCustomData(entity);
+        return customDataTag != null ? getCompoundTag(customDataTag, key) : null;
+    }
+    public static void setCompoundTag(@NotNull Entity entity, String key, @Nullable CompoundTag value) {
+        @NotNull CompoundTag customDataTag =
+                getOrCreateCustomData(entity);
+        setCompoundTag(customDataTag, key, value);
+//        setCustomDataTag(entity, customDataTag);
+    }
+
+    public static boolean hasKey(@NotNull Entity entity, String key) {
+        @Nullable CompoundTag customDataTag =
+                getCustomData(entity);
+        if (customDataTag == null) return false;
+        return hasKey(customDataTag, key);
+    }
+    public static void removeKey(@NotNull Entity entity, String key) {
+        @Nullable CompoundTag customDataTag =
+                getCustomData(entity);
+        if (customDataTag == null) return;
+        removeKey(customDataTag, key);
+//        setCustomDataTag(entity, customDataTag);
     }
 
     // --------CompoundTag--------

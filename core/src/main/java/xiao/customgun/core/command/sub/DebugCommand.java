@@ -25,8 +25,11 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.CustomGun;
+import xiao.customgun.client.entity.IClientGunProjectile;
 import xiao.customgun.client.resource._AllAssetsManager;
 import xiao.customgun.core.api.entity.ILivingShooter;
+import xiao.customgun.core.entity.projectile.GunProjectile;
+import xiao.customgun.core.init.registry.ModEntities;
 import xiao.customgun.core.init.registry.ModItems;
 import xiao.customgun.core.item.ammo.AmmoItem;
 import xiao.customgun.core.resource._AllDataManager;
@@ -65,7 +68,9 @@ public class DebugCommand {
                                         .executes(DebugCommand::testAllData))))
                 .then(Commands.literal("mixinTest")
                         .then(Commands.literal("ILivingShooter")
-                                .executes(DebugCommand::testLivingShooterMixin)))
+                                .executes(DebugCommand::testLivingShooterMixin))
+                        .then(Commands.literal("GunProjectile")
+                                .executes(DebugCommand::testGunProjectileMixin)))
                 .then(Commands.literal("testForgeMixin").executes(DebugCommand::testForgeMixin))
                 .then(Commands.argument(ENABLE, BoolArgumentType.bool())
                         .executes(DebugCommand::setValue));
@@ -241,6 +246,16 @@ public class DebugCommand {
             source.sendSuccess(() -> Component.literal(player.getName() + " is ILivingShooter"), false);
         } else {
             source.sendFailure(Component.literal(player.getName() + " is not a ILivingShooter!"));
+        }
+        return Command.SINGLE_SUCCESS;
+    }
+    private static int testGunProjectileMixin(CommandContext<CommandSourceStack> context) {
+        CommandSourceStack source = context.getSource();
+        GunProjectile gunProjectile = new GunProjectile(ModEntities.GUN_PROJECTILE.get(), source.getLevel());
+        if (gunProjectile instanceof IClientGunProjectile iClientProjectile) {
+            source.sendSuccess(() -> Component.literal("GunProjectile is IClientGunProjectile"), false);
+        } else {
+            source.sendFailure(Component.literal("GunProjectile is not IClientGunProjectile"));
         }
         return Command.SINGLE_SUCCESS;
     }

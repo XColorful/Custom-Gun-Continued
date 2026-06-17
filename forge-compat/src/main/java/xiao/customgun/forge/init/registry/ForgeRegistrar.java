@@ -7,6 +7,8 @@
 
 package xiao.customgun.forge.init.registry;
 
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
@@ -15,6 +17,7 @@ import xiao.customgun.CustomGun;
 import xiao.customgun.core.api.init.registry.IRegistrar;
 import xiao.customgun.core.api.init.registry.IRegistryObject;
 
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -47,10 +50,16 @@ public class ForgeRegistrar<T> implements IRegistrar<T> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <V extends T> IRegistryObject<V> registerItem(String name, Class<? extends V> clazz) {
-        Class<? extends Item> itemClass = (Class<? extends Item>) clazz;
-        Supplier<? extends Item> forgeItemSupplier = ForgeModItems.getForgeSupplier(itemClass);
-        Supplier<? extends V> finalSupplier = (Supplier<? extends V>) forgeItemSupplier;
-        return this.register(name, finalSupplier);
+    public <I extends Item> IRegistryObject<I> registerItem(String name, Class<I> clazz) {
+        Supplier<? extends I> forgeItemSupplier = ForgeModItems.getForgeSupplier(clazz);
+        Supplier<? extends T> finalSupplier = (Supplier<? extends T>) forgeItemSupplier;
+        return (IRegistryObject<I>) this.register(name, finalSupplier);
+    }
+    @SuppressWarnings("unchecked")
+    @Override
+    public <E extends Entity> IRegistryObject<EntityType<E>> registerEntity(String name, Class<E> clazz, Function<EntityType.EntityFactory<E>, EntityType.Builder<E>> builderFactory) {
+        EntityType.EntityFactory<E> factory = ForgeModEntities.getForgeFactory(clazz);
+        RegistryObject<EntityType<E>> registryObject = ((DeferredRegister<EntityType<?>>) deferredRegister).register(name, () -> builderFactory.apply(factory).build(name));
+        return new ForgeRegistryObject<>(registryObject, name);
     }
 }

@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.resource.ResourceTag;
 
-public interface IGunProjectileNBTAccess {
+public interface IGunProjectileNBTAccess extends IGunProjectileValueAccess {
 
     @Nullable String getManagerGroupTag(CompoundTag gunProjectileCustomDataTag);
     void setManagerGroupTag(CompoundTag gunProjectileCustomDataTag, String managerGroupTag);

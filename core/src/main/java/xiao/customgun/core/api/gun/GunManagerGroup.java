@@ -7,6 +7,9 @@ import xiao.customgun.core.api.gun.action.IGunActionManager;
 import xiao.customgun.core.api.gun.state.IGunStateManager;
 import xiao.customgun.core.api.gun.state.IGunStateRuntime;
 
+/*
+文档译名: 枪械管理器组 (XiaoColorful译)
+ */
 public record GunManagerGroup(String managerGroupTag,
                               @NotNull IGunActionManager gunActionManager,
                               @NotNull IGunAttackManager gunAttackManager,

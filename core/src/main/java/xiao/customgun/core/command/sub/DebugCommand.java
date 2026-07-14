@@ -25,7 +25,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.CustomGun;
-import xiao.customgun.client.entity.IClientGunProjectile;
+import xiao.customgun.client.api.entity.IClientGunProjectile;
 import xiao.customgun.client.resource._AllAssetsManager;
 import xiao.customgun.core.api.entity.ILivingShooter;
 import xiao.customgun.core.entity.projectile.GunProjectile;

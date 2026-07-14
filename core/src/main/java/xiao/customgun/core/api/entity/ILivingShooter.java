@@ -12,6 +12,9 @@ import xiao.customgun.core.api.entity.shooter.IGunOperator;
 import xiao.customgun.core.api.entity.shooter.IShooterState;
 import xiao.customgun.core.api.entity.shooter.ISynGunState;
 
+/*
+文档译名: 射手生物 (XiaoColorful译); 否决译名: 射击生物(跟动词混淆), 射击者(范围超出了接口默认的LivingEntity)
+ */
 public interface ILivingShooter extends IGunOperator, IShooterState, ISynGunState, IGunCacheHolder {
 
     /**

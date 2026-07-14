@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import xiao.customgun.client.api.resource.ClientResourceApi;
-import xiao.customgun.client.entity.IClientGunProjectile;
+import xiao.customgun.client.api.entity.IClientGunProjectile;
 import xiao.customgun.client.resource.instance.assets.GunDisplayInstance;
 import xiao.customgun.client.resource.instance.data.ClientGunIndexInstance;
 import xiao.customgun.core.entity.projectile.GunProjectile;

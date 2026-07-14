@@ -6,6 +6,12 @@
  * {@link xiao.customgun.core.api.entity.ILivingShooter}
  */
 ```
+- Local Shooter: 本地射手生物
+```java
+/**
+ * {@link xiao.customgun.client.api.entity.ILocalShooter}
+ */
+```
 - Bullet Victim Entity：受弹实体
 ```java
 /**

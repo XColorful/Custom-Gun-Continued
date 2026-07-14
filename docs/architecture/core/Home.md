@@ -36,10 +36,10 @@
 ### 配置
 > _./core/config_
 
-- [AmmoConfig](./config/ammo-config.md)：子弹配置
-- [GunConfig](./config/gun-config.md)：枪械配置
-- [OtherConfig](./config/other-config.md)：杂项配置
-- [SyncConfig](./config/sync-config.md)：同步配置
+- AmmoConfig：子弹配置
+- GunConfig：枪械配置
+- OtherConfig：杂项配置
+- SyncConfig：同步配置
 
 ### 实体
 > _./core/entity_
@@ -73,6 +73,8 @@
 - [EventDispatcher](./event/event-dispatcher.md)：事件派发器
 - [EventPoster](./event/event-poster.md)：事件分发器
 - [EventRegister](./event/event-register.md)：事件注册器
+- Custom：自定义事件注册
+	- CoreEventHandlers：服务端事件注册
 
 ### 枪械
 > _./core/gun_
@@ -175,7 +177,7 @@
 ### 资源
 > _./core/resource_
 
-[资源文件说明](/docs/wiki/resource/Resource%20introduction.md)：
+[资源文件说明](/docs/wiki/resource/Resource%20introduction.md#数据包)：
 - Data：数据包POJO
 - Instance：POJO对象
 	- Data：数据包POJO对象
@@ -238,10 +240,10 @@ Module division based on the `xiao.customgun.core` top-level package
 ### Config
 > _./core/config_
 
-- [AmmoConfig](./config/ammo-config.md#English): Ammo config
-- [GunConfig](./config/gun-config.md#English): Gun config
-- [OtherConfig](./config/other-config.md#English): Miscellaneous config
-- [SyncConfig](./config/sync-config.md#English): Sync config
+- AmmoConfig: Ammo config
+- GunConfig: Gun config
+- OtherConfig: Miscellaneous config
+- SyncConfig: Sync config
 
 ### Entity
 > _./core/entity_
@@ -273,6 +275,8 @@ Module division based on the `xiao.customgun.core` top-level package
 - [EventDispatcher](./event/event-dispatcher.md#English): Event dispatcher
 - [EventPoster](./event/event-poster.md#English): Event poster
 - [EventRegister](./event/event-register.md#English): Event register
+- Custom: Custom event registration
+	- CoreEventHandlers: Server event registration
 
 ### Gun
 > _./core/gun_
@@ -375,7 +379,7 @@ Module division based on the `xiao.customgun.core` top-level package
 ### Resource
 > _./core/resource_
 
-[Resource-introduction](/docs/wiki/resource/Resource%20introduction.md#English):
+[Resource-introduction](/docs/wiki/resource/Resource%20introduction.md#Datapack):
 - Data: Datapack POJO
 - Instance: POJO object
 	- Data: Datapack POJO object

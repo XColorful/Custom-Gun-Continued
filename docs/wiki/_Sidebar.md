@@ -17,14 +17,14 @@
 			- [开镜配置](https://github.com/XColorful/Custom-Gun-Continued/wiki/Zoom-config)
 	- 指令
 		- [配件锁定指令](https://github.com/XColorful/Custom-Gun-Continued/wiki/Attachment-lock-command)
-		- [配置指令](https://github.com/XColorful/Custom-Gun-Continued/wiki/Attachmen-lock-command)
-		- [转换指令](https://github.com/XColorful/Custom-Gun-Continued/wiki/Attachmen-lock-command)
-		- [调试指令](https://github.com/XColorful/Custom-Gun-Continued/wiki/Attachmen-lock-command)
-		- [虚拟子弹指令](https://github.com/XColorful/Custom-Gun-Continued/wiki/Attachmen-lock-command)
-		- [隐藏提示框指令](https://github.com/XColorful/Custom-Gun-Continued/wiki/Attachmen-lock-command)
-		- [枪包列表指令](https://github.com/XColorful/Custom-Gun-Continued/wiki/Attachmen-lock-command)
-		- [覆写指令](https://github.com/XColorful/Custom-Gun-Continued/wiki/Attachmen-lock-command)
-		- [重载指令](https://github.com/XColorful/Custom-Gun-Continued/wiki/Attachmen-lock-command)
+		- [配置指令](https://github.com/XColorful/Custom-Gun-Continued/wiki/Config-command)
+		- [转换指令](https://github.com/XColorful/Custom-Gun-Continued/wiki/Convert-command)
+		- [调试指令](https://github.com/XColorful/Custom-Gun-Continued/wiki/Debug-command)
+		- [虚拟子弹指令](https://github.com/XColorful/Custom-Gun-Continued/wiki/Dummy-ammo-command)
+		- [隐藏提示框指令](https://github.com/XColorful/Custom-Gun-Continued/wiki/Hide-tooltip-part-command)
+		- [枪包列表指令](https://github.com/XColorful/Custom-Gun-Continued/wiki/List-pack-command)
+		- [覆写指令](https://github.com/XColorful/Custom-Gun-Continued/wiki/Overwrite-command)
+		- [重载指令](https://github.com/XColorful/Custom-Gun-Continued/wiki/Reload-command)
 	- [资源文件说明](https://github.com/XColorful/Custom-Gun-Continued/wiki/Resource-introduction)
 		- data
 			- cgc_data

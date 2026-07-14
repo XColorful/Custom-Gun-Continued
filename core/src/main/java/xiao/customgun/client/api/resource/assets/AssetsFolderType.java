@@ -11,7 +11,7 @@ import xiao.customgun.core.api.resource.ResourceTag;
 import xiao.customgun.core.api.resource.assets.AssetsFolderName;
 
 /**
- * "./tacz/{枪包}/assets/{namespace}/" 下的目录名
+ * "./resourcepacks/{枪包}/assets/{namespace}/" 下的目录名
  */
 public enum AssetsFolderType implements ResourceTag {
     GUNPACK_INFO(AssetsFolderName.GUNPACK_INFO),

@@ -10,7 +10,7 @@ package xiao.customgun.core.api.resource.data;
 import xiao.customgun.core.api.resource.ResourceTag;
 
 /**
- * "./tacz/{枪包}/data/{namespace}/" 下的目录名
+ * "./datapacks/{枪包}/data/{namespace}/" 下的目录名
  */
 public enum DataFolderType implements ResourceTag {
     GUNPACK_META(DataFolderName.GUNPACK_META),

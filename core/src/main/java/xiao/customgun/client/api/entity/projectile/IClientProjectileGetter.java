@@ -1,9 +1,9 @@
-package xiao.customgun.client.entity.projectile;
+package xiao.customgun.client.api.entity.projectile;
 
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import xiao.customgun.client.entity.IClientGunProjectile;
+import xiao.customgun.client.api.entity.IClientGunProjectile;
 import xiao.customgun.core.entity.projectile.GunProjectile;
 
 public interface IClientProjectileGetter {

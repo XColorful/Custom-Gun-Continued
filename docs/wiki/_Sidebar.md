@@ -3,6 +3,28 @@
 > - [**回到中文顶部**](#)
 ---
 - [主页](https://github.com/XColorful/Custom-Gun-Continued/wiki)
+	- 配置文件
+		- 服务端配置
+			- [子弹配置](https://github.com/XColorful/Custom-Gun-Continued/wiki/Ammo-config)
+			- [枪械配置](https://github.com/XColorful/Custom-Gun-Continued/wiki/Gun-config)
+			- [杂项配置](https://github.com/XColorful/Custom-Gun-Continued/wiki/Other-config)
+			- [同步配置](https://github.com/XColorful/Custom-Gun-Continued/wiki/Sync-config)
+		- 客户端配置
+			- [按键配置](https://github.com/XColorful/Custom-Gun-Continued/wiki/Key-config)
+			- [渲染配置](https://github.com/XColorful/Custom-Gun-Continued/wiki/Render-config)
+			- [资源配置](https://github.com/XColorful/Custom-Gun-Continued/wiki/Resource-config)
+			- [声音配置](https://github.com/XColorful/Custom-Gun-Continued/wiki/Sound-config)
+			- [开镜配置](https://github.com/XColorful/Custom-Gun-Continued/wiki/Zoom-config)
+	- 指令
+		- [配件锁定指令](https://github.com/XColorful/Custom-Gun-Continued/wiki/Attachment-lock-command)
+		- [配置指令](https://github.com/XColorful/Custom-Gun-Continued/wiki/Config-command)
+		- [转换指令](https://github.com/XColorful/Custom-Gun-Continued/wiki/Convert-command)
+		- [调试指令](https://github.com/XColorful/Custom-Gun-Continued/wiki/Debug-command)
+		- [虚拟子弹指令](https://github.com/XColorful/Custom-Gun-Continued/wiki/Dummy-ammo-command)
+		- [隐藏提示框指令](https://github.com/XColorful/Custom-Gun-Continued/wiki/Hide-tooltip-part-command)
+		- [枪包列表指令](https://github.com/XColorful/Custom-Gun-Continued/wiki/List-pack-command)
+		- [覆写指令](https://github.com/XColorful/Custom-Gun-Continued/wiki/Overwrite-command)
+		- [重载指令](https://github.com/XColorful/Custom-Gun-Continued/wiki/Reload-command)
 	- [资源文件说明](https://github.com/XColorful/Custom-Gun-Continued/wiki/Resource-introduction)
 		- data
 			- cgc_data
@@ -61,6 +83,28 @@
 				- [资源包材质](https://github.com/XColorful/Custom-Gun-Continued/wiki/Resourcepack-texture)
 
 - [Home](https://github.com/XColorful/Custom-Gun-Continued/wiki#English)
+	- Configuration
+		- Server configuration
+			- [Ammo config](https://github.com/XColorful/Custom-Gun-Continued/wiki/Ammo-config#English)
+			- [Gun config](https://github.com/XColorful/Custom-Gun-Continued/wiki/Gun-config#English)
+			- [Other config](https://github.com/XColorful/Custom-Gun-Continued/wiki/Other-config#English)
+			- [Sync config](https://github.com/XColorful/Custom-Gun-Continued/wiki/Sync-config#English)
+		- Client configuration
+			- [Key config](https://github.com/XColorful/Custom-Gun-Continued/wiki/Key-config#English)
+			- [Render config](https://github.com/XColorful/Custom-Gun-Continued/wiki/Render-config#English)
+			- [Resource config](https://github.com/XColorful/Custom-Gun-Continued/wiki/Resource-config#English)
+			- [Sound config](https://github.com/XColorful/Custom-Gun-Continued/wiki/Sound-config#English)
+			- [Zoom config](https://github.com/XColorful/Custom-Gun-Continued/wiki/Zoom-config#English)
+	- Command
+		- [Attachment lock command](https://github.com/XColorful/Custom-Gun-Continued/wiki/Attachment-lock-command#English)
+		- [Config command](https://github.com/XColorful/Custom-Gun-Continued/wiki/Config-command#English)
+		- [Convert command](https://github.com/XColorful/Custom-Gun-Continued/wiki/Convert-command#English)
+		- [Debug command](https://github.com/XColorful/Custom-Gun-Continued/wiki/Debug-command#English)
+		- [Dummy ammo command](https://github.com/XColorful/Custom-Gun-Continued/wiki/Dummy-ammo-command#English)
+		- [Hide tooltip part command](https://github.com/XColorful/Custom-Gun-Continued/wiki/Hide-tooltip-part-command#English)
+		- [List pack command](https://github.com/XColorful/Custom-Gun-Continued/wiki/List-pack-command#English)
+		- [Overwrite command](https://github.com/XColorful/Custom-Gun-Continued/wiki/Overwrite-command#English)
+		- [Reload command](https://github.com/XColorful/Custom-Gun-Continued/wiki/Reload-command#English)
 	- [Resource introduction](https://github.com/XColorful/Custom-Gun-Continued/wiki/Resource-introduction#English)
 		- data
 			- cgc_data

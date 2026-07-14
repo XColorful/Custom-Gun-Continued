@@ -1,3 +1,12 @@
+### Block
+
+- Bullet Victim Block：受弹方块
+```java
+/**
+ * {@link xiao.customgun.core.api.block.IBulletVictimBlock}
+ */
+```
+
 ### Entity
 
 - Living Shooter：射手生物

@@ -1,4 +1,4 @@
-package xiao.customgun.client.entity;
+package xiao.customgun.client.api.entity;
 
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.client.resource.instance.assets.GunDisplayInstance;

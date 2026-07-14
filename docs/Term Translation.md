@@ -33,6 +33,12 @@
  * {@link xiao.customgun.core.api.entity.IGunProjectile}
  */
 ```
+- Client Gun Projectile：本地枪射物
+```java
+/**
+ * {@link xiao.customgun.client.api.entity.IClientGunProjectile}
+ */
+```
 
 ### Gun
 

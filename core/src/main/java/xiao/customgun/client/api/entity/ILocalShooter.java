@@ -11,6 +11,9 @@ import xiao.customgun.client.api.entity.shooter.IClientGunOperator;
 import xiao.customgun.client.api.entity.shooter.ILocalShooterState;
 import xiao.customgun.core.api.entity.ILivingShooter;
 
+/*
+文档译名: 本地射手生物 (XiaoColorful译)
+ */
 public interface ILocalShooter extends IClientGunOperator, ILocalShooterState {
 
     /**

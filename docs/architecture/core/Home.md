@@ -192,16 +192,25 @@
 ### 工具
 > _./core/util_
 
-- ClassUtils：基本数据类，用于简化算法
+> 统一封装项目通用能力
+> 
+> 当存在对应工具时，必须优先使用工具提供的统一接口，而非直接调用平台或 Minecraft API，以保持一致性与兼容性
+
+- ClassUtils：基本数据结构，用于简化算法
+	- 已封装组合数据结构：`ArraySet`、`QueueSet`、`ArrayMap`
 - ColorUtils：处理颜色字符串、游戏内颜色等
 - ComponentUtils：文本组件工具
 - FileUtils：文件工具
 - JsonUtils：JSON 序列化封装
 - MathUtil：数学工具
-- NBTUtils：NBT 序列化封装
-- NetworkUtils：网络工具
+- NBTUtils：NBT 统一封装
+	- 必须使用此处而非直接调用 Minecraft `CompoundTag` API，以保持兼容性
+- NetworkUtils：`FriendlyByteBuf` 相关兼容封装
+	- 对于已封装的 `FriendlyByteBuf` 操作，必须使用此处
+	- 未封装的方法直接调用 `FriendlyByteBuf` 即可
 - RayTraceUtils：射线追踪工具
-- SendUtils：封装网络消息的发送，使网络处理器（`NetworkHandler`）与项目主体解耦
+- SendUtils：网络消息统一发送入口
+	- 所有消息发送均通过此处，与网络实现（`NetworkHandler`）解耦
 - WorldUtils：游戏内世界相关操作
 
 # English
@@ -394,14 +403,23 @@ Module division based on the `xiao.customgun.core` top-level package
 ### Utility
 > _./core/util_
 
-- ClassUtils: Basic data classes, used to simplify algorithms
-- ColorUtils: Handle color strings, in-game colors, etc.
+> Shared wrappers for common project functionality.
+>
+> When an equivalent utility exists, it must be used instead of calling platform or Minecraft APIs directly, to preserve consistency and compatibility.
+
+- ClassUtils: Basic data structures, used to simplify algorithms
+	- Encapsulates combined data structures: `ArraySet`, `QueueSet`, `ArrayMap`
+- ColorUtils: Utilities for color strings and in-game colors
 - ComponentUtils: Text component utilities
 - FileUtils: File utilities
 - JsonUtils: JSON serialization wrapper
 - MathUtil: Math utilities
-- NBTUtils: NBT serialization wrapper
-- NetworkUtils: Network utilities
+- NBTUtils: Unified NBT wrapper
+	- Must be used instead of directly calling Minecraft `CompoundTag` APIs to preserve compatibility
+- NetworkUtils: Compatibility wrappers for `FriendlyByteBuf`
+	- Wrapped `FriendlyByteBuf` operations must use this utility
+	- Operations without wrappers should call `FriendlyByteBuf` directly
 - RayTraceUtils: Ray trace utilities
-- SendUtils: Encapsulate the sending of network messages, decoupling `NetworkHandler` from the project main body
+- SendUtils: Unified entry point for sending network messages
+	- All network messages must be sent through this utility, decoupling callers from the underlying `NetworkHandler`
 - WorldUtils: In-game world related operations

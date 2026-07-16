@@ -10,7 +10,7 @@ package xiao.customgun.client.api.script;
 import com.google.common.collect.Maps;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
-import xiao.customgun.client.animation.ObjectAnimation;
+import xiao.customgun.client.api.animation.ObjectAnimation;
 import xiao.customgun.core.api.script.LuaLibrary;
 
 import java.util.Map;

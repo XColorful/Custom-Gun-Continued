@@ -88,8 +88,7 @@ public final class AttachmentData extends ResourcePojo<AttachmentData> {
 
                     case AttachmentDataTag.MELEE -> pojo.meleeModifier = _MeleeModifierData.fromJson(reader);
 
-                    case AttachmentDataTag.MAGAZINE_CATEGORY -> pojo.magazineCategory = JsonUtils.readFromString(reader, MagazineCategory::fromString);
-                    case AttachmentDataTag.MAGAZINE_CATEGORY_OLD1 -> pojo.magazineCategory = MagazineCategory.fromIndex(JsonUtils.readInt(reader));
+                    case AttachmentDataTag.MAGAZINE_CATEGORY -> pojo.magazineCategory = JsonUtils.readFromString(reader, MagazineCategory::fromString); case AttachmentDataTag.MAGAZINE_CATEGORY_OLD1 -> pojo.magazineCategory = MagazineCategory.fromIndex(JsonUtils.readInt(reader));
                     default -> reader.skipValue();
                 }
             }

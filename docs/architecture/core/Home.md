@@ -201,6 +201,7 @@
 - ColorUtils：处理颜色字符串、游戏内颜色等
 - ComponentUtils：文本组件工具
 - FileUtils：文件工具
+- IngredientUtils：`Ingredient.of()` 重载工具
 - JsonUtils：JSON 序列化封装
 - MathUtil：数学工具
 - NBTUtils：NBT 统一封装
@@ -412,6 +413,7 @@ Module division based on the `xiao.customgun.core` top-level package
 - ColorUtils: Utilities for color strings and in-game colors
 - ComponentUtils: Text component utilities
 - FileUtils: File utilities
+- IngredientUtils: Utilities for `Ingredient.of()` overloads
 - JsonUtils: JSON serialization wrapper
 - MathUtil: Math utilities
 - NBTUtils: Unified NBT wrapper

@@ -1,7 +1,7 @@
 [English](#English)
 
 # 配方数据
-> wiki 版本：`0.0.1`.1
+> wiki 版本：`0.0.1`.2
 
 - `type`（String）：
 - `table_ingredients`/`materials`（List<\_TableIngredientData>）：
@@ -15,6 +15,8 @@
 	- `result_item`/`item`（\_ResultItemData）：
 		- `item_location`/`item`（ResourceLocation）：
 		- `item_nbt`/`nbt`（CompoundTag）：
+	- ~~`ammo_count`~~
+	- ~~`attachments`~~
 	- ~~`nbt`~~
 	- `tab_group_location`/`group`（ResourceLocation）：
 	- `pojo_location`/`id`（ResourceLocation）：
@@ -46,7 +48,7 @@
 ```
 
 # English
-> wiki verison: `0.0.1`.1
+> wiki verison: `0.0.1`.2
 
 - `type`(String):
 - `table_ingredients`/`materials`(List<\_TableIngredientData>):
@@ -60,6 +62,8 @@
 	- `result_item`/`item`(\_ResultItemData):
 		- `item_location`/`item`(ResourceLocation):
 		- `item_nbt`/`nbt`(CompoundTag):
+	- ~~`ammo_count`~~
+	- ~~`attachments`~~
 	- ~~`nbt`~~
 	- `tab_group_location`/`group`(ResourceLocation):
 	- `pojo_location`/`id`(ResourceLocation):

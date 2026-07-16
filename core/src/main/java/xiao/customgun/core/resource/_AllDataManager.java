@@ -181,7 +181,7 @@ public class _AllDataManager implements IEventHandler {
         if (_this != null && _this.recipeManager != null) {
             List<TableRecipe> tableRecipes = _this.recipeManager.getAllRecipesFor(ModRecipe.TABLE_RECIPE_CRAFTING.get());
             for (TableRecipe tableRecipe : tableRecipes) {
-                tableRecipe.init();
+                tableRecipe.prepare();
             }
         }
 

@@ -462,6 +462,7 @@ Notation:
 |pojo.data.gun.`*`|data.data.gun|
 |pojo.data.loot|_Deprecated_|
 |pojo.data.recipe.`*`|data.recipe.`RecipeData`|
+|pojo.data.recipe.`GunResult`|_Deprecated_|
 |pojo.`*IndexPOJO`|data.index.`*Index`|
 |serialize.`CommonAmmoIndexSerializer`.deserialize|instance.data.`AmmoIndexInstance`.fromPojo|
 |serialize.`CommonAttachmentIndexSerializer`.deserialize|instance.data.`AttachmentIndexInstance`.fromPojo|

@@ -73,6 +73,6 @@ public class TableRecipeSerializer implements RecipeSerializer<TableRecipe> {
         }
         TableResult tableResult = tableRecipe.getTableResult();
         NetworkUtils.writeItem(buffer, tableResult.getResultItem());
-        NetworkUtils.writeResourceLocation(buffer, tableResult.getTabLocation());
+        NetworkUtils.writeResourceLocation(buffer, tableResult.getTabGroupLocation());
     }
 }

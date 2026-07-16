@@ -1,7 +1,7 @@
 # 自定义枪械永续
 
 ## API文档
-> 🧠前往[API索引](/docs/architecture/api/api-index.md)
+> 🧠前往[API索引](/docs/architecture/core/api/api-index.md)、[客户端API索引](/docs/architecture/client/api/api-index.md)
 
 查询核心 API 接口，面向扩展模组开发者
 
@@ -20,18 +20,18 @@
 # English
 
 ## API docs
-> 🧠Go to [API Index](/docs/architecture/api/api-index.md)
+> 🧠Go to [API Index](/docs/architecture/core/api/api-index.md#English)、[Client API Index](/docs/architecture/client/api/api-index.md#English)
 
 Explore core API interfaces, designed for addon developers.
 
 ## Architecture docs
-> 💡Go to [Architecture Overview](/docs/architecture/Home.md)
+> 💡Go to [Architecture Overview](/docs/architecture/Home.md#English)
 
 A quick overview of the mod's architecture, for core developers and debugging purposes.
 - Quickly understand the project: Provides project structure navigation to locate feature implementations and code locations.
 
 ## Wiki page
-> 😎Go to the [Custom Gun Continued wiki](/docs/wiki/Home.md)
+> 😎Go to the [Custom Gun Continued wiki](/docs/wiki/Home.md#English)
 
 Official Wiki guide, for end-users such as players and server owners.
 - Includes introductions to all game features and detailed configuration examples.

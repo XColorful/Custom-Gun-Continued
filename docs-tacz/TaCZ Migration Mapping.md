@@ -215,6 +215,7 @@ Notation:
 |---|---|
 |result.`GunSmithTableResult`|`TableResult`|
 |result.`RawGunTableResult`|`_TableResultRaw`|
+|result.`RawGunTableResult`.extraData|_Deprecated_|
 |`GunSmithTableIngredient`|`TableIngredient`|
 |`GunSmithTableRecipe`|`TableRecipe`|
 |`GunSmithTableSerializer`|`TableRecipeSerializer`|

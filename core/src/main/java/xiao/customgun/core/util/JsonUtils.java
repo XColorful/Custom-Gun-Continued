@@ -4,11 +4,17 @@
 
 package xiao.customgun.core.util;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.internal.Streams;
 import com.google.gson.internal.bind.JsonTreeReader;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
+import com.mojang.serialization.JsonOps;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
@@ -167,6 +173,41 @@ public class JsonUtils {
     }
     public static void writeTranslatable(JsonWriter writer, String key, MutableComponent value) throws IOException {
         if (value != null) writer.name(key).value(ComponentUtils.toTranslatableKey(value));
+    }
+
+    /**
+     * 读取 JsonObject 或 String 格式的 {@link CompoundTag}
+     */
+    public static @Nullable CompoundTag readNbt(JsonReader reader) throws IOException {
+        JsonToken peek = reader.peek();
+        return switch (peek) {
+            case STRING -> NBTUtils.Parser.fromString(readString(reader));
+            case BEGIN_OBJECT -> {
+                /*
+                JSON跟NBT不完全对应，不要改成流式解析
+                 */
+                JsonElement element = JsonParser.parseReader(reader);
+                yield NBTUtils.Parser.fromJson(element);
+            }
+            default -> {
+                reader.skipValue();
+                yield null;
+            }
+        };
+    }
+    /**
+     * 将 {@link CompoundTag} 写成 JsonObject
+     */
+    public static void writeNbt(JsonWriter writer, String key, CompoundTag value) throws IOException {
+        writer.name(key);
+        JsonElement jsonElement = NbtOps.INSTANCE.convertTo(JsonOps.INSTANCE, value);
+        Streams.write(jsonElement, writer);
+    }
+    /**
+     * 将 {@link CompoundTag} 写成 String
+     */
+    public static void writeNbtString(JsonWriter writer, String key, CompoundTag value) throws IOException {
+        writeString(writer, key, value.toString());
     }
 
     public static <T> T readFromString(JsonReader reader, FromStringFunction<T> function) throws IOException {

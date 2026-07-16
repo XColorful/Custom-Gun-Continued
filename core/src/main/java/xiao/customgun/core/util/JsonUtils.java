@@ -41,7 +41,7 @@ public class JsonUtils {
 
     @FunctionalInterface
     public interface ReadFunction<T> {
-        T apply(JsonReader reader) throws IOException;
+        @Nullable T apply(JsonReader reader) throws IOException;
     }
     @FunctionalInterface
     public interface WriteAction<T> {
@@ -50,7 +50,7 @@ public class JsonUtils {
 
     @FunctionalInterface
     public interface FromStringFunction<T> {
-        T apply(String name);
+        @Nullable T apply(String name);
     }
 
     @FunctionalInterface
@@ -100,7 +100,7 @@ public class JsonUtils {
     public static void writeLong(JsonWriter writer, String key, long value) throws IOException {
         writer.name(key).value(value);
     }
-    public static String readString(JsonReader reader) throws IOException {
+    public static @Nullable String readString(JsonReader reader) throws IOException {
         JsonToken peek = reader.peek();
         if (peek == JsonToken.STRING) return reader.nextString();
         if (peek == JsonToken.NULL) reader.nextNull();
@@ -111,7 +111,7 @@ public class JsonUtils {
         if (value != null) writer.name(key).value(value);
     }
 
-    public static Object readObject(JsonReader reader) throws IOException {
+    public static @Nullable Object readObject(JsonReader reader) throws IOException {
         JsonToken peek = reader.peek();
         return switch (peek) {
             case STRING -> reader.nextString();
@@ -130,7 +130,7 @@ public class JsonUtils {
 
     // --------代理 (用于POJO嵌套)--------
 
-    public static <T> T read(JsonReader reader, ReadFunction<T> function) throws IOException {
+    public static @Nullable <T> T read(JsonReader reader, ReadFunction<T> function) throws IOException {
         return function.apply(reader);
     }
     public static <T> void write(JsonWriter writer, String key, T value, WriteAction<T> action) throws IOException {
@@ -140,7 +140,7 @@ public class JsonUtils {
 
     // --------扩展类型--------
 
-    public static Color readColor(JsonReader reader) throws IOException {
+    public static @Nullable Color readColor(JsonReader reader) throws IOException {
         String s = JsonUtils.readString(reader);
         return s != null ? ColorUtils.fromRRGGBBtoColor(s) : null;
     }
@@ -155,7 +155,7 @@ public class JsonUtils {
         writer.name(key).value(ColorUtils.fromIntTo_RRGGBB(value));
     }
 
-    public static ResourceLocation readResourceLocation(JsonReader reader) throws IOException {
+    public static @Nullable ResourceLocation readResourceLocation(JsonReader reader) throws IOException {
         String rl = readString(reader);
         return rl != null ? mcRegistry.createResourceLocation(rl) : null;
     }
@@ -167,7 +167,7 @@ public class JsonUtils {
         else writer.nullValue();
     }
 
-    public static MutableComponent readTranslatable(JsonReader reader) throws IOException {
+    public static @Nullable MutableComponent readTranslatable(JsonReader reader) throws IOException {
         String s = JsonUtils.readString(reader);
         return s != null ? ComponentUtils.fromTranslatableKey(s) : null;
     }
@@ -210,7 +210,7 @@ public class JsonUtils {
         writeString(writer, key, value.toString());
     }
 
-    public static <T> T readFromString(JsonReader reader, FromStringFunction<T> function) throws IOException {
+    public static @Nullable <T> T readFromString(JsonReader reader, FromStringFunction<T> function) throws IOException {
         String valueStr = readString(reader);
         return valueStr != null ? function.apply(valueStr) : null;
     }

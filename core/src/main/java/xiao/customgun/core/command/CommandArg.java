@@ -47,7 +47,7 @@ public class CommandArg {
     // ListPackCommand
 
     // OverwriteCommand
-    public static final String OVERWRITE = "overwrite";
+    @Deprecated public static final String OVERWRITE = "overwrite";
 
     // ReloadCommand
     public static final String RELOAD = "reload";

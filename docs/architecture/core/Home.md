@@ -27,7 +27,6 @@
 	- DummyAmmoCommand：[虚拟子弹指令](/docs/wiki/command/Dummy%20ammo%20command.md)
 	- HideTooltipPartCommand：[隐藏提示框指令](/docs/wiki/command/Hide%20tooltip%20part%20command.md)
 	- ListPackCommand：[枪包列表指令](/docs/wiki/command/List%20pack%20command.md)
-	- OverwriteCommand：[覆写指令](/docs/wiki/command/Overwrite%20command.md)
 	- ReloadCommand：[重载指令](/docs/wiki/command/Reload%20command.md)
 
 ### 模组联动
@@ -241,7 +240,6 @@ Module division based on the `xiao.customgun.core` top-level package
 	- DummyAmmoCommand: [Dummy ammo command](/docs/wiki/command/Dummy%20ammo%20command.md#English)
 	- HideTooltipPartCommand: Hide tooltip part command
 	- ListPackCommand: [List pack command](/docs/wiki/command/List%20pack%20command.md#English)
-	- OverwriteCommand: [Overwrite command](/docs/wiki/command/Overwrite%20command.md#English)
 	- ReloadCommand: [Reload command](/docs/wiki/command/Reload%20command.md#English)
 
 ### Mod Compat

@@ -5,7 +5,7 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package xiao.customgun.client.animation;
+package xiao.customgun.client.api.animation;
 
 // TODO
 public class ObjectAnimation {

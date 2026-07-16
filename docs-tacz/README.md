@@ -23,7 +23,7 @@ This directory is **not** official TaCZ documentation. Instead, it serves as a r
 - Help developers navigate the TaCZ source code and migrate to this project
 
 ## Architecture docs
-> 💡Go to [Architecture Overview](/docs-tacz/architecture/Home.md)
+> 💡Go to [Architecture Overview](/docs-tacz/architecture/Home.md#English)
 
 ## Migration Mapping
 > 🔄Go to [TaCZ Migration Mapping](/docs-tacz/TaCZ%20Migration%20Mapping.md)

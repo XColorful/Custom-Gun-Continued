@@ -97,7 +97,7 @@ public abstract class LivingEntityMixin extends Entity implements ILivingShooter
         // 主手武器
         this.cgc$shooterProperty.currentGunItem = this.cgc$shooter::getMainHandItem;
         // 刷新属性缓存
-        GunPropertyManager.postChangeEvent(cgc$shooter, cgc$shooter.getMainHandItem());
+        GunPropertyManager.postChangeEvent(cgc$shooter);
     }
 
     @Override public ShooterProperty cgc$getShooterProperty() {

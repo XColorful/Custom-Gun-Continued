@@ -4,11 +4,17 @@
 
 package xiao.customgun.core.util;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.internal.Streams;
 import com.google.gson.internal.bind.JsonTreeReader;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
+import com.mojang.serialization.JsonOps;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
@@ -35,7 +41,7 @@ public class JsonUtils {
 
     @FunctionalInterface
     public interface ReadFunction<T> {
-        T apply(JsonReader reader) throws IOException;
+        @Nullable T apply(JsonReader reader) throws IOException;
     }
     @FunctionalInterface
     public interface WriteAction<T> {
@@ -44,7 +50,7 @@ public class JsonUtils {
 
     @FunctionalInterface
     public interface FromStringFunction<T> {
-        T apply(String name);
+        @Nullable T apply(String name);
     }
 
     @FunctionalInterface
@@ -94,7 +100,7 @@ public class JsonUtils {
     public static void writeLong(JsonWriter writer, String key, long value) throws IOException {
         writer.name(key).value(value);
     }
-    public static String readString(JsonReader reader) throws IOException {
+    public static @Nullable String readString(JsonReader reader) throws IOException {
         JsonToken peek = reader.peek();
         if (peek == JsonToken.STRING) return reader.nextString();
         if (peek == JsonToken.NULL) reader.nextNull();
@@ -105,7 +111,7 @@ public class JsonUtils {
         if (value != null) writer.name(key).value(value);
     }
 
-    public static Object readObject(JsonReader reader) throws IOException {
+    public static @Nullable Object readObject(JsonReader reader) throws IOException {
         JsonToken peek = reader.peek();
         return switch (peek) {
             case STRING -> reader.nextString();
@@ -124,7 +130,7 @@ public class JsonUtils {
 
     // --------代理 (用于POJO嵌套)--------
 
-    public static <T> T read(JsonReader reader, ReadFunction<T> function) throws IOException {
+    public static @Nullable <T> T read(JsonReader reader, ReadFunction<T> function) throws IOException {
         return function.apply(reader);
     }
     public static <T> void write(JsonWriter writer, String key, T value, WriteAction<T> action) throws IOException {
@@ -134,7 +140,7 @@ public class JsonUtils {
 
     // --------扩展类型--------
 
-    public static Color readColor(JsonReader reader) throws IOException {
+    public static @Nullable Color readColor(JsonReader reader) throws IOException {
         String s = JsonUtils.readString(reader);
         return s != null ? ColorUtils.fromRRGGBBtoColor(s) : null;
     }
@@ -149,7 +155,7 @@ public class JsonUtils {
         writer.name(key).value(ColorUtils.fromIntTo_RRGGBB(value));
     }
 
-    public static ResourceLocation readResourceLocation(JsonReader reader) throws IOException {
+    public static @Nullable ResourceLocation readResourceLocation(JsonReader reader) throws IOException {
         String rl = readString(reader);
         return rl != null ? mcRegistry.createResourceLocation(rl) : null;
     }
@@ -161,7 +167,7 @@ public class JsonUtils {
         else writer.nullValue();
     }
 
-    public static MutableComponent readTranslatable(JsonReader reader) throws IOException {
+    public static @Nullable MutableComponent readTranslatable(JsonReader reader) throws IOException {
         String s = JsonUtils.readString(reader);
         return s != null ? ComponentUtils.fromTranslatableKey(s) : null;
     }
@@ -169,7 +175,42 @@ public class JsonUtils {
         if (value != null) writer.name(key).value(ComponentUtils.toTranslatableKey(value));
     }
 
-    public static <T> T readFromString(JsonReader reader, FromStringFunction<T> function) throws IOException {
+    /**
+     * 读取 JsonObject 或 String 格式的 {@link CompoundTag}
+     */
+    public static @Nullable CompoundTag readNbt(JsonReader reader) throws IOException {
+        JsonToken peek = reader.peek();
+        return switch (peek) {
+            case STRING -> NBTUtils.Parser.fromString(readString(reader));
+            case BEGIN_OBJECT -> {
+                /*
+                JSON跟NBT不完全对应，不要改成流式解析
+                 */
+                JsonElement element = JsonParser.parseReader(reader);
+                yield NBTUtils.Parser.fromJson(element);
+            }
+            default -> {
+                reader.skipValue();
+                yield null;
+            }
+        };
+    }
+    /**
+     * 将 {@link CompoundTag} 写成 JsonObject
+     */
+    public static void writeNbt(JsonWriter writer, String key, CompoundTag value) throws IOException {
+        writer.name(key);
+        JsonElement jsonElement = NbtOps.INSTANCE.convertTo(JsonOps.INSTANCE, value);
+        Streams.write(jsonElement, writer);
+    }
+    /**
+     * 将 {@link CompoundTag} 写成 String
+     */
+    public static void writeNbtString(JsonWriter writer, String key, CompoundTag value) throws IOException {
+        writeString(writer, key, value.toString());
+    }
+
+    public static @Nullable <T> T readFromString(JsonReader reader, FromStringFunction<T> function) throws IOException {
         String valueStr = readString(reader);
         return valueStr != null ? function.apply(valueStr) : null;
     }

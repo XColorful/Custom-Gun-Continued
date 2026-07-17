@@ -106,13 +106,7 @@ public final class GunDisplayInstance extends PojoInstance<GunDisplay> {
             else if (!assetsScript.isValid()) CustomGun.LOGGER.debug("GunDisplayInstance: AssetsScript {} not valid", scriptLocation);
             else this.script = assetsScript.getResultTable();
         }
-        Map<String, Object> scriptParams = this.getPojo().getScriptParam();
-        if (scriptParams != null) {
-            this.scriptParamCache = new LuaTable();
-            for (Map.Entry<String, Object> entry : scriptParams.entrySet()) {
-                this.scriptParamCache.set(entry.getKey(), CoerceJavaToLua.coerce(entry.getValue()));
-            }
-        }
+        this.reloadScriptParams();
 
         return true;
     }
@@ -149,9 +143,15 @@ public final class GunDisplayInstance extends PojoInstance<GunDisplay> {
         if ((errorMask & ERR_IRON_VIEW_FOV) != 0) sb.append("\n\t- ironViewFov > 70");
         CustomGun.LOGGER.debug(sb.toString());
     }
-    private void loadScriptParams() {
-        // TODO
-        var params = this.getPojo().getScriptParam();
+    private void reloadScriptParams() {
+        // 加载状态机参数
+        Map<String, Object> params = this.getPojo().getScriptParam();
+        if (params != null) {
+            this.scriptParamCache = new LuaTable();
+            for (Map.Entry<String, Object> entry : params.entrySet()) {
+                this.scriptParamCache.set(entry.getKey(), CoerceJavaToLua.coerce(entry.getValue()));
+            }
+        }
     }
 
     // --------Getter--------

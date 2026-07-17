@@ -30,3 +30,23 @@ public static Ingredient of(TagKey<Item> p_204133_)这个方法在1.21.4+就没�
 - CGC的GunDisplayInstance是移除了异步加载的，你只需要完成脚本的TODO即可
 - 完成后立即向我报告，我需要亲自检查
 ```
+
+# 
+
+```
+研究下xiao.customgun.client.command.sub._ReloadCommand.reloadClientPack里TODO提到的问题，执行这个客户端指令时游戏会卡死
+- 是否能在这个时机手动重载资源包？
+- 是否有必要保留这个指令？
+```
+
+```
+如果去掉.get()，是否影响服务端xiao.customgun.core.command.sub.ReloadCommand指令的逻辑？
+```
+
+```
+那看看怎么样使客户端指令单独执行逻辑，而服务端保持原先的逻辑和功能？
+```
+
+```
+执行修改，并且往\docs\wiki\command\Reload command.md里补充简要的功能说明
+```

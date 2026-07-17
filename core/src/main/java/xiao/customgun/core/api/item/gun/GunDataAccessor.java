@@ -407,7 +407,7 @@ public interface GunDataAccessor extends IGunDataAccess {
             return AttachmentBuilder.create(ModItems.ATTACHMENT.get())
                     // 配件ResourceLocation
                     .setProperty(AttachmentProperty.ATTACHMENT_LOCATION,
-                            ResourceLocation.class,
+                            Identifier.class,
                             builtinAttachments.get(attachmentCategory))
                     // 配件类型
                     .setProperty(AttachmentProperty.ATTACHMENT_CATEGORY,

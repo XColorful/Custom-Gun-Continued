@@ -8,6 +8,7 @@
 package xiao.customgun.client.network.message;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -15,7 +16,14 @@ import org.jetbrains.annotations.ApiStatus;
 public class _ServerMessageCraft {
 
     public static void updateScreen(int containerId) {
-        LocalPlayer player = Minecraft.getInstance().player;
-        // TODO GunSmithTableScreen
+        Minecraft mc = Minecraft.getInstance();
+        LocalPlayer player = mc.player;
+        if (player != null && player.containerMenu.containerId == containerId) {
+            updateScreen(player, mc.screen);
+        }
+    }
+
+    public static void updateScreen(LocalPlayer localPlayer, Screen screen) {
+        // mixin注入点
     }
 }

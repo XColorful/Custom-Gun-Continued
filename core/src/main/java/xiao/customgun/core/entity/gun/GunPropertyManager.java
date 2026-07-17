@@ -14,6 +14,9 @@ import xiao.customgun.core.api.item.gun.IGunGetter;
 
 public class GunPropertyManager {
 
+    public static void postChangeEvent(LivingEntity livingShooter) {
+        postChangeEvent(livingShooter, livingShooter.getMainHandItem());
+    }
     public static void postChangeEvent(LivingEntity livingShooter, ItemStack gunItem) {
         IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return;

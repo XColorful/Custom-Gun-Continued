@@ -1,7 +1,7 @@
 [English](#English)
 
 # 自定义枪械永续wiki
-> wiki 版本：`0.0.1`.1
+> wiki 版本：`0.0.1`.2
 
 > 推荐安装[Stylus](https://chromewebstore.google.com/detail/stylus/clngdbkpkpeebahjckkjfobafhncgmne)插件并使用配置[Stylus-Obsidian-Topaz-Nord.json](https://github.com/XColorful/XColorful.github.io/blob/main/stylus/Stylus-Obsidian-Topaz-Nord.json)
 
@@ -31,7 +31,6 @@
 - [虚拟子弹指令](https://github.com/XColorful/Custom-Gun-Continued/wiki/Dummy-ammo-command)
 - [隐藏提示框指令](https://github.com/XColorful/Custom-Gun-Continued/wiki/Hide-tooltip-part-command)
 - [枪包列表指令](https://github.com/XColorful/Custom-Gun-Continued/wiki/List-pack-command)
-- [覆写指令](https://github.com/XColorful/Custom-Gun-Continued/wiki/Overwrite-command)
 - [重载指令](https://github.com/XColorful/Custom-Gun-Continued/wiki/Reload-command)
 
 ## 资源文件
@@ -41,7 +40,7 @@
 - [资源包](https://github.com/XColorful/Custom-Gun-Continued/wiki/Resource-introduction#资源包)
 
 # English
-> wiki verison: `0.0.1`.1
+> wiki verison: `0.0.1`.2
 
 > Recommend installing the [Stylus](https://chromewebstore.google.com/detail/stylus/clngdbkpkpeebahjckkjfobafhncgmne) extension and using the configuration [Stylus-Obsidian-Topaz-Nord.json](https://github.com/XColorful/XColorful.github.io/blob/main/stylus/Stylus-Obsidian-Topaz-Nord.json)
 
@@ -71,7 +70,6 @@
 - [Dummy ammo command](https://github.com/XColorful/Custom-Gun-Continued/wiki/Dummy-ammo-command#English)
 - [Hide tooltip part command](https://github.com/XColorful/Custom-Gun-Continued/wiki/Hide-tooltip-part-command#English)
 - [List pack command](https://github.com/XColorful/Custom-Gun-Continued/wiki/List-pack-command#English)
-- [Overwrite command](https://github.com/XColorful/Custom-Gun-Continued/wiki/Overwrite-command#English)
 - [Reload command](https://github.com/XColorful/Custom-Gun-Continued/wiki/Reload-command#English)
 
 ## Resource

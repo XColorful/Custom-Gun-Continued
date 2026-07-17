@@ -185,7 +185,7 @@ public class _AllDataManager implements IEventHandler {
                     .toList();
             for (var holder : tableRecipeHolders) {
                 if (holder.value() instanceof TableRecipe tableRecipe) {
-                    tableRecipe.init();
+                    tableRecipe.prepare();
                 }
             }
         }

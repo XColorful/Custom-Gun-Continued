@@ -10,6 +10,8 @@ package xiao.customgun.core.resource.data.recipefilter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import net.minecraft.resources.ResourceLocation;
+import xiao.customgun.CustomGun;
+import xiao.customgun.core.api.minecraft.IMcRegistry;
 import xiao.customgun.core.api.resource.data.recipefilter.RecipeFilterDataTag;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.util.JsonUtils;
@@ -18,6 +20,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 public final class RecipeFilterData extends ResourcePojo<RecipeFilterData> {
 
@@ -71,8 +74,39 @@ public final class RecipeFilterData extends ResourcePojo<RecipeFilterData> {
             return;
         }
 
-        // TODO: 在这里处理 String 到 ResourceLocation 或 Pattern 的转换逻辑
+        IMcRegistry mcRegistry = CustomGun.getMcRegistry();
+        this._whitelistLiteral = parseListToLiteral(mcRegistry, this.whitelistRaw);
+        this._whitelistPattern = parseListToPattern(this.whitelistRaw);
+        this._blacklistLiteral = parseListToLiteral(mcRegistry, this.blacklistRaw);
+        this._blacklistPattern = parseListToPattern(this.blacklistRaw);
         this.setValid(true);
+    }
+    /**
+     * 将不以 ^ 开头的字符串解析为 ResourceLocation
+     */
+    private static List<ResourceLocation> parseListToLiteral(IMcRegistry mcRegistry, List<String> raw) {
+        List<ResourceLocation> result = new ArrayList<>();
+        for (String entry : raw) {
+            if (entry.startsWith("^")) continue;
+            var rl = mcRegistry.createResourceLocation(entry);
+            if (rl != null) result.add(rl);
+        }
+        return result;
+    }
+    /**
+     * 将以 ^ 开头的字符串解析为正则为 Pattern
+     */
+    private static List<Pattern> parseListToPattern(List<String> raw) {
+        List<Pattern> result = new ArrayList<>();
+        for (String entry : raw) {
+            if (!entry.startsWith("^")) continue;
+            try {
+                result.add(Pattern.compile(entry));
+            } catch (PatternSyntaxException e) {
+                CustomGun.LOGGER.error("Failed to parse regex filter: {}", entry, e);
+            }
+        }
+        return result;
     }
 
     // --------Getter & Setter--------

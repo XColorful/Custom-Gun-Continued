@@ -105,7 +105,7 @@ public final class GunDisplayInstance extends PojoInstance<GunDisplay> {
             if (this.ammoParticleOptionsCache != null) {
                 var particleRl = this.ammoParticleCache.getParticleLocation();
                 try {
-                    this.ammoParticleOptionsCache = ParticleArgument.readParticle(new StringReader(particleRl.toString()), BuiltInRegistries.PARTICLE_TYPE.asLookup());
+                    this.ammoParticleOptionsCache = ParticleArgument.readParticle(new StringReader(particleRl.toString()), CustomGun.getRegistryAccess());
                 } catch (CommandSyntaxException e) {
                     CustomGun.LOGGER.debug("GunDisplayInstance: ParticleArgument.readParticle({}) failed", particleRl, e);
                 }

@@ -7,7 +7,12 @@
 
 package xiao.customgun.client.resource.instance.assets;
 
+import com.mojang.brigadier.StringReader;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
+import net.minecraft.commands.arguments.ParticleArgument;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -45,6 +50,7 @@ public final class GunDisplayInstance extends PojoInstance<GunDisplay> {
     private @Nullable Int2ObjectArrayMap<_SurroundDisplay> surroundDisplayByHotbarCache;
     private @Nullable Color tracerColorCache;
     private @Nullable _AmmoParticle ammoParticleCache;
+    private @Nullable ParticleOptions ammoParticleOptionsCache;
     private Map<GunSoundType, ResourceLocation> gunSoundsCache;
 
     private @Nullable LuaTable script = null;
@@ -96,6 +102,17 @@ public final class GunDisplayInstance extends PojoInstance<GunDisplay> {
         if (ammoDisplayOverride != null) {
             this.tracerColorCache = ammoDisplayOverride.getTracerColor();
             this.ammoParticleCache = ammoDisplayOverride.getAmmoParticle();
+            if (this.ammoParticleOptionsCache != null) {
+                var particleRl = this.ammoParticleCache.getParticleLocation();
+                try {
+                    this.ammoParticleOptionsCache = ParticleArgument.readParticle(new StringReader(particleRl.toString()), BuiltInRegistries.PARTICLE_TYPE.asLookup());
+                } catch (CommandSyntaxException e) {
+                    CustomGun.LOGGER.debug("GunDisplayInstance: ParticleArgument.readParticle({}) failed", particleRl, e);
+                }
+                if (this.ammoParticleOptionsCache == null) {
+                    CustomGun.LOGGER.debug("GunDisplayInstance: AmmoParticle {} not valid", particleRl);
+                }
+            }
         }
         this.gunSoundsCache = this.getPojo().getGunSounds();
 
@@ -106,13 +123,7 @@ public final class GunDisplayInstance extends PojoInstance<GunDisplay> {
             else if (!assetsScript.isValid()) CustomGun.LOGGER.debug("GunDisplayInstance: AssetsScript {} not valid", scriptLocation);
             else this.script = assetsScript.getResultTable();
         }
-        Map<String, Object> scriptParams = this.getPojo().getScriptParam();
-        if (scriptParams != null) {
-            this.scriptParamCache = new LuaTable();
-            for (Map.Entry<String, Object> entry : scriptParams.entrySet()) {
-                this.scriptParamCache.set(entry.getKey(), CoerceJavaToLua.coerce(entry.getValue()));
-            }
-        }
+        this.reloadScriptParams();
 
         return true;
     }
@@ -149,9 +160,15 @@ public final class GunDisplayInstance extends PojoInstance<GunDisplay> {
         if ((errorMask & ERR_IRON_VIEW_FOV) != 0) sb.append("\n\t- ironViewFov > 70");
         CustomGun.LOGGER.debug(sb.toString());
     }
-    private void loadScriptParams() {
-        // TODO
-        var params = this.getPojo().getScriptParam();
+    private void reloadScriptParams() {
+        // 加载状态机参数
+        Map<String, Object> params = this.getPojo().getScriptParam();
+        if (params != null) {
+            this.scriptParamCache = new LuaTable();
+            for (Map.Entry<String, Object> entry : params.entrySet()) {
+                this.scriptParamCache.set(entry.getKey(), CoerceJavaToLua.coerce(entry.getValue()));
+            }
+        }
     }
 
     // --------Getter--------
@@ -171,6 +188,9 @@ public final class GunDisplayInstance extends PojoInstance<GunDisplay> {
     }
     public @Nullable _AmmoParticle getAmmoParticle() {
         return this.ammoParticleCache;
+    }
+    public @Nullable ParticleOptions getParticleOptions() {
+        return this.ammoParticleOptionsCache;
     }
     public @Nullable ResourceLocation getGunSound(GunSoundType gunSoundType) {
         return this.gunSoundsCache.get(gunSoundType);

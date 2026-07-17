@@ -5,10 +5,14 @@
 
 package xiao.customgun.core.util;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.TagParser;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.common.crafting.CraftingHelper;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -332,6 +336,23 @@ public class NBTUtils {
         if (nbt != null) nbt.remove(key);
     }
 
+    public static class Parser {
+        public static @Nullable CompoundTag fromString(String nbt) {
+            if (nbt == null || nbt.isEmpty()) return null;
+
+            try {
+                return TagParser.parseTag(nbt);
+            } catch (Exception e) {
+                return null;
+            }
+        }
+        /**
+         * {@link CraftingHelper#getNBT(JsonElement)}
+         */
+        public static @Nullable CompoundTag fromJson(JsonElement json) {
+            return fromString(json.toString());
+        }
+    }
 
     /**
      * 对 {@code ValueInput} {@code ValueOutput} 的封装, 适用于Entity和Block的硬盘IO

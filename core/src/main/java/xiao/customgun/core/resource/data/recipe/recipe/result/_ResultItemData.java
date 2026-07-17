@@ -3,7 +3,7 @@ package xiao.customgun.core.resource.data.recipe.recipe.result;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import xiao.customgun.core.api.resource.data.recipe.recipe.result._ResultItemDataTag;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.util.JsonUtils;
@@ -16,7 +16,7 @@ import java.io.IOException;
  */
 public class _ResultItemData extends ResourcePojo<_ResultItemData> {
 
-    private ResourceLocation itemLocation;
+    private Identifier itemLocation;
     private CompoundTag itemNbt;
 
     private static final _ResultItemData PARSER = new _ResultItemData();
@@ -67,14 +67,14 @@ public class _ResultItemData extends ResourcePojo<_ResultItemData> {
 
     // --------Getter & Setter--------
 
-    public ResourceLocation getItemLocation() {
+    public Identifier getItemLocation() {
         return itemLocation;
     }
     public CompoundTag getItemNbt() {
         return itemNbt;
     }
 
-    public void setItemLocation(ResourceLocation itemLocation) {
+    public void setItemLocation(Identifier itemLocation) {
         this.itemLocation = itemLocation;
     }
     public void setItemNbt(CompoundTag itemNbt) {

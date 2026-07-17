@@ -23,7 +23,6 @@
 		- [虚拟子弹指令](https://github.com/XColorful/Custom-Gun-Continued/wiki/Dummy-ammo-command)
 		- [隐藏提示框指令](https://github.com/XColorful/Custom-Gun-Continued/wiki/Hide-tooltip-part-command)
 		- [枪包列表指令](https://github.com/XColorful/Custom-Gun-Continued/wiki/List-pack-command)
-		- [覆写指令](https://github.com/XColorful/Custom-Gun-Continued/wiki/Overwrite-command)
 		- [重载指令](https://github.com/XColorful/Custom-Gun-Continued/wiki/Reload-command)
 	- [资源文件说明](https://github.com/XColorful/Custom-Gun-Continued/wiki/Resource-introduction)
 		- data
@@ -103,7 +102,6 @@
 		- [Dummy ammo command](https://github.com/XColorful/Custom-Gun-Continued/wiki/Dummy-ammo-command#English)
 		- [Hide tooltip part command](https://github.com/XColorful/Custom-Gun-Continued/wiki/Hide-tooltip-part-command#English)
 		- [List pack command](https://github.com/XColorful/Custom-Gun-Continued/wiki/List-pack-command#English)
-		- [Overwrite command](https://github.com/XColorful/Custom-Gun-Continued/wiki/Overwrite-command#English)
 		- [Reload command](https://github.com/XColorful/Custom-Gun-Continued/wiki/Reload-command#English)
 	- [Resource introduction](https://github.com/XColorful/Custom-Gun-Continued/wiki/Resource-introduction#English)
 		- data

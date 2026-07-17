@@ -6,6 +6,8 @@ package xiao.customgun.client.init;
 
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.Connection;
+import xiao.customgun.client.resource._AssetsInstanceManager;
+import xiao.customgun.client.resource.network.SyncDataCache;
 import xiao.customgun.core.resource._AllDataManager;
 
 public class ClientModEvent {
@@ -17,9 +19,10 @@ public class ClientModEvent {
     }
 
     public void onClientLoggingIn(LocalPlayer player, Connection connection) {
-        // TODO 这里是原 client.event.CommonNetworkCacheEvent 的部分，应该在这里集中调用别的地方，而不是直接完成
         if (connection != null && !connection.isMemoryConnection()) {
             _AllDataManager.clearInstance();
+            SyncDataCache.INSTANCE.clear();
+            _AssetsInstanceManager.clear();
         }
     }
 

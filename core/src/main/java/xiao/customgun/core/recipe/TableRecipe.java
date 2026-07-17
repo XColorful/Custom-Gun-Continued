@@ -47,8 +47,8 @@ public class TableRecipe implements Recipe<RecipeInput> {
         this.recipeLocation = recipeLocation;
     }
 
-    public void init() {
-        this.tableResult.init();
+    public void prepare() {
+        this.tableResult.prepare();
     }
 
     public Identifier getRecipeLocation() {
@@ -108,7 +108,7 @@ public class TableRecipe implements Recipe<RecipeInput> {
         return this.tableResult.getResultItem();
     }
     public Identifier getTabLocation() {
-        return this.tableResult.getTabLocation();
+        return this.tableResult.getTabGroupLocation();
     }
 
     @Override

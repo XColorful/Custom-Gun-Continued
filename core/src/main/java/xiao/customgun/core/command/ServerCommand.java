@@ -40,8 +40,6 @@ public class ServerCommand {
                 .requires(CommandLevel.hasPermission(2)));
         root.then(DummyAmmoCommand.get()
                 .requires(CommandLevel.hasPermission(2)));
-        root.then(OverwriteCommand.get()
-                .requires(CommandLevel.hasPermission(2)));
         root.then(HideTooltipPartCommand.get()
                 .requires(CommandLevel.hasPermission(2)));
         root.then(ConvertCommand.get()

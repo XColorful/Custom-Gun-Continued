@@ -1,6 +1,6 @@
 package xiao.customgun.core.api.minecraft.tab;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.CreativeModeTab;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.init.registry.IRegistryObject;
@@ -14,7 +14,7 @@ import static xiao.customgun.core.init.registry.ModCreativeTabs.*;
 
 /**
  * 需要在 {@link ModCreativeTabs} 之后访问
- * 弱枚举类型，即仍然使用 {@link ResourceLocation} 以及 {@link TabGroup#getRegistryLocation()}
+ * 弱枚举类型，即仍然使用 {@link Identifier} 以及 {@link TabGroup#getRegistryLocation()}
  */
 public enum TabGroup implements ResourceTag.RegistryTag {
     AMMO(AMMO_TAB),
@@ -35,7 +35,7 @@ public enum TabGroup implements ResourceTag.RegistryTag {
 
     public final String typeName;
     public final String registryName;
-    public final ResourceLocation registryLocation;
+    public final Identifier registryLocation;
     public final IRegistryObject<CreativeModeTab> registryObject;
     TabGroup(IRegistryObject<CreativeModeTab> tabRegistryObject) {
         this.registryObject = tabRegistryObject;
@@ -49,12 +49,12 @@ public enum TabGroup implements ResourceTag.RegistryTag {
     @Override public String getRegistryName() {
         return this.registryName;
     }
-    @Override public ResourceLocation getRegistryLocation() {
+    @Override public Identifier getRegistryLocation() {
         return this.registryLocation;
     }
 
     private static final Map<String, TabGroup> TAB_GROUPS = new HashMap<>();
-    private static final Map<ResourceLocation, TabGroup> TAB_GROUP_LOCATIONS = new HashMap<>();
+    private static final Map<Identifier, TabGroup> TAB_GROUP_LOCATIONS = new HashMap<>();
 
     static {
         for (TabGroup group : values()) {
@@ -67,7 +67,7 @@ public enum TabGroup implements ResourceTag.RegistryTag {
     public static @Nullable TabGroup fromString(String name) {
         return name != null ? TAB_GROUPS.get(name) : null;
     }
-    public static @Nullable TabGroup fromLocation(ResourceLocation location) {
+    public static @Nullable TabGroup fromLocation(Identifier location) {
         return location != null ? TAB_GROUP_LOCATIONS.get(location) : null;
     }
 

@@ -84,8 +84,8 @@ public final class RecipeFilterData extends ResourcePojo<RecipeFilterData> {
     /**
      * 将不以 ^ 开头的字符串解析为 ResourceLocation
      */
-    private static List<ResourceLocation> parseListToLiteral(IMcRegistry mcRegistry, List<String> raw) {
-        List<ResourceLocation> result = new ArrayList<>();
+    private static List<Identifier> parseListToLiteral(IMcRegistry mcRegistry, List<String> raw) {
+        List<Identifier> result = new ArrayList<>();
         for (String entry : raw) {
             if (entry.startsWith("^")) continue;
             var rl = mcRegistry.createResourceLocation(entry);

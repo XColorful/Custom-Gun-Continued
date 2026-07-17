@@ -14,4 +14,9 @@ public class ForgeModConfigSpec<T> implements IModConfigSpec<T> {
     public T get() {
         return configValue.get();
     }
+
+    @Override
+    public void set(T value) {
+        configValue.set(value);
+    }
 }

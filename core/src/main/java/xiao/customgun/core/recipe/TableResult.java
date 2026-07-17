@@ -11,6 +11,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import xiao.customgun.core.api.minecraft.tab.TabGroup;
+import xiao.customgun.core.api.resource.ResourceTag;
 import xiao.customgun.core.resource.data.recipe.recipe._TableResultData;
 
 public class TableResult {
@@ -18,20 +20,23 @@ public class TableResult {
     private _TableResultData pojo;
 
     private ItemStack resultItem = ItemStack.EMPTY;
-    private ResourceLocation tabLocation;
+    /**
+     * 暂不使用 {@link TabGroup}
+     */
+    private ResourceLocation tabGroupLocation;
 
     private @Nullable _TableResultRaw raw;
 
-    public TableResult(ItemStack resultItem, @Nullable ResourceLocation tabLocation) {
-        this(null, resultItem, tabLocation, null);
+    public TableResult(ItemStack resultItem, @Nullable ResourceLocation tabGroupLocation) {
+        this(null, resultItem, tabGroupLocation, null);
     }
     public TableResult(@NotNull _TableResultRaw raw) {
         this(null, null, null, raw);
     }
-    public TableResult(_TableResultData pojo, ItemStack resultItem, @Nullable ResourceLocation tabLocation, @Nullable _TableResultRaw raw) {
+    public TableResult(_TableResultData pojo, ItemStack resultItem, @Nullable ResourceLocation tabGroupLocation, @Nullable _TableResultRaw raw) {
         this.pojo = pojo;
         this.resultItem = resultItem;
-        this.tabLocation = tabLocation; // TODO 换成注册的Tab
+        this.tabGroupLocation = tabGroupLocation;
         this.raw = raw;
     }
     public static TableResult fromPojo(_TableResultData pojo) {
@@ -42,9 +47,13 @@ public class TableResult {
         return this.pojo;
     }
 
-    public void init() {
+    public void prepare() {
         if (this.raw != null) {
-            // TODO
+            TableResult tableResult = this.raw.getTableResultOrEmpty();
+            this.resultItem = tableResult.getResultItem();
+            if (this.tabGroupLocation == null || this.tabGroupLocation.equals(ResourceTag.NULL_LOCATION)) {
+                this.tabGroupLocation = tableResult.getTabGroupLocation();
+            }
             this.raw = null;
         }
     }
@@ -52,7 +61,7 @@ public class TableResult {
     public ItemStack getResultItem() {
         return this.resultItem;
     }
-    public ResourceLocation getTabLocation() {
-        return this.tabLocation;
+    public ResourceLocation getTabGroupLocation() {
+        return this.tabGroupLocation;
     }
 }

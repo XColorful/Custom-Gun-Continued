@@ -20,12 +20,6 @@ public class TableResult {
     private _TableResultData pojo;
 
     private ItemStack resultItem = ItemStack.EMPTY;
-    private Identifier tabLocation;
-
-    private @Nullable _TableResultRaw raw;
-
-    public TableResult(ItemStack resultItem, @Nullable Identifier tabLocation) {
-        this(null, resultItem, tabLocation, null);
     /**
      * 暂不使用 {@link TabGroup}
      */

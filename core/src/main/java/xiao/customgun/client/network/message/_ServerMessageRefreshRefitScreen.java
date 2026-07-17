@@ -19,7 +19,7 @@ public class _ServerMessageRefreshRefitScreen {
     public static void updateScreen() {
         Minecraft mc = Minecraft.getInstance();
         LocalPlayer player = mc.player;
-        if (player != null && mc.screen instanceof GunRefitScreen screen) {
+        if (player != null && mc.gui.screen() instanceof GunRefitScreen screen) {
             // 刷新Screen
             screen.init();
 

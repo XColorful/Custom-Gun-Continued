@@ -19,7 +19,7 @@ public class _ServerMessageCraft {
         Minecraft mc = Minecraft.getInstance();
         LocalPlayer player = mc.player;
         if (player != null && player.containerMenu.containerId == containerId) {
-            updateScreen(player, mc.screen);
+            updateScreen(player, mc.gui.screen());
         }
     }
 

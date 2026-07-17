@@ -10,7 +10,7 @@ package xiao.customgun.client.renderer.item;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import xiao.customgun.client.api.sound.gun.GunSoundType;
@@ -37,7 +37,7 @@ public class AnimateGeoItemRenderer {
     public void renderFirstPerson(LocalPlayer player, ItemStack stack,
                                   ItemDisplayContext ctx,
                                   PoseStack poseStack,
-                                  MultiBufferSource bufferSource,
+                                  SubmitNodeCollector bufferSource,
                                   int light, float partialTick) {
     }
 }

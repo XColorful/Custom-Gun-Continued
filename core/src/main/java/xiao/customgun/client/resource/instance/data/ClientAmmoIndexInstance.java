@@ -62,7 +62,7 @@ public final class ClientAmmoIndexInstance extends PojoInstance<AmmoIndex> {
             _AmmoParticle ammoParticle = this.ammoDisplayCache.getAmmoParticle();
             var particleRl = ammoParticle.getParticleLocation();
             try {
-                this.ammoParticleOptionsCache = ParticleArgument.readParticle(new StringReader(particleRl.toString()), BuiltInRegistries.PARTICLE_TYPE.asLookup());
+                this.ammoParticleOptionsCache = ParticleArgument.readParticle(new StringReader(particleRl.toString()), CustomGun.getRegistryAccess());
             } catch (CommandSyntaxException e) {
                 CustomGun.LOGGER.debug("ClientAmmoIndexInstance: ParticleArgument.readParticle({}) failed", particleRl, e);
             }

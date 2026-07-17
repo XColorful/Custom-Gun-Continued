@@ -4,7 +4,6 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.common.crafting.CraftingHelper;
 import xiao.customgun.core.api.resource.data.recipe.recipe.result._ResultItemDataTag;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.util.JsonUtils;
@@ -12,7 +11,7 @@ import xiao.customgun.core.util.JsonUtils;
 import java.io.IOException;
 
 /**
- * 手动解析 1.20.1 原版{@link CraftingHelper#getItemStack}格式，不属于 TaCZ
+ * 手动解析 1.20.1 原版{@link CompoundTag#CODEC parse}格式，不属于 TaCZ
  * 即不支持 1.21.1 组件系统，但是高版本实际也只用了 CustomData，从而换取全版本兼容的格式
  */
 public class _ResultItemData extends ResourcePojo<_ResultItemData> {

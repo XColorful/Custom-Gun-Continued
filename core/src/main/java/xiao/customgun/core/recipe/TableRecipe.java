@@ -51,8 +51,8 @@ public class TableRecipe implements Recipe<Inventory> {
         this.recipeLocation = recipeLocation;
     }
 
-    public void init() {
-        this.tableResult.init();
+    public void prepare() {
+        this.tableResult.prepare();
     }
 
     public ResourceLocation getRecipeLocation() {
@@ -104,6 +104,6 @@ public class TableRecipe implements Recipe<Inventory> {
         return this.tableResult.getResultItem();
     }
     public ResourceLocation getTabLocation() {
-        return this.tableResult.getTabLocation();
+        return this.tableResult.getTabGroupLocation();
     }
 }

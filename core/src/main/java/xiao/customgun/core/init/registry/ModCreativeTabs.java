@@ -12,6 +12,9 @@ import net.minecraft.world.item.ItemStack;
 import xiao.customgun.CustomGun;
 import xiao.customgun.core.api.init.registry.IRegistrar;
 import xiao.customgun.core.api.init.registry.IRegistryObject;
+import xiao.customgun.core.api.item.ammo.AmmoCategory;
+import xiao.customgun.core.api.item.attachment.AttachmentCategory;
+import xiao.customgun.core.api.item.gun.GunCategory;
 import xiao.customgun.core.api.minecraft.tab.AmmoTab;
 import xiao.customgun.core.api.minecraft.tab.AttachmentTab;
 import xiao.customgun.core.api.minecraft.tab.GunTab;
@@ -20,6 +23,9 @@ import static xiao.customgun.core.api.item.ammo.AmmoCategory.*;
 import static xiao.customgun.core.api.item.attachment.AttachmentCategory.*;
 import static xiao.customgun.core.api.item.gun.GunCategory.*;
 
+/**
+ * 使用 {@link AmmoCategory}, {@link AttachmentCategory}, {@link GunCategory}
+ */
 public class ModCreativeTabs {
     public static final IRegistrar<CreativeModeTab> TABS = CustomGun.getRegistrarFactory().createCreativeTabs(CustomGun.MOD_ID);
 

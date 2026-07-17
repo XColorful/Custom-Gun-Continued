@@ -182,7 +182,7 @@ public class _AllDataManager implements IEventHandler {
             var tableRecipeHolders = _this.recipeManager.getAllRecipesFor(ModRecipe.TABLE_RECIPE_CRAFTING.get());
             for (var holder : tableRecipeHolders) {
                 TableRecipe tableRecipe = holder.value();
-                tableRecipe.init();
+                tableRecipe.prepare();
             }
         }
 

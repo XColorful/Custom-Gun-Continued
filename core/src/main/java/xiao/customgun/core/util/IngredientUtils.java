@@ -1,5 +1,6 @@
 package xiao.customgun.core.util;
 
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -14,6 +15,6 @@ public class IngredientUtils {
      * 参数 {@link TagKey} 全版本签名一致，各版本分支仅需替换方法体
      */
     public static Ingredient of(TagKey<Item> tagKey) {
-        return Ingredient.of(tagKey);
+        return Ingredient.of(BuiltInRegistries.ITEM.getOrThrow(tagKey));
     }
 }

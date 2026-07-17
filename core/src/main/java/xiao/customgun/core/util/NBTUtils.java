@@ -343,7 +343,7 @@ public class NBTUtils {
             if (nbt == null || nbt.isEmpty()) return null;
 
             try {
-                return TagParser.parseTag(nbt);
+                return TagParser.parseCompoundFully(nbt);
             } catch (Exception e) {
                 return null;
             }

@@ -76,7 +76,11 @@ public class _AssetsInstanceManager {
 
             // 自动切一次枪，以便刷新状态机
             ILocalShooterGetter.fromLocalPlayer(player).cgc$clientDraw(ItemStack.EMPTY);
+            onReloadRefresh();
         }
     }
+    public static void onReloadRefresh() {
+        // mixin注入点 @Mod("simplebedrockmodel")
+        // FirstPersonRenderHandler.reset();
     }
 }

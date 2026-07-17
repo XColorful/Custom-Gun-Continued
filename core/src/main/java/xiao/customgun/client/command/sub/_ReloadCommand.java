@@ -13,7 +13,6 @@ import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import xiao.customgun.client.resource._AllAssetsManager;
-import xiao.customgun.core.developer.PlannedRefactor;
 
 import static xiao.customgun.client.command.ClientCommandArg.RELOAD_CLIENT;
 
@@ -24,8 +23,7 @@ public class _ReloadCommand {
                 .executes(_ReloadCommand::reloadClientPack);
     }
     private static int reloadClientPack(CommandContext<CommandSourceStack> context) {
-        if (PlannedRefactor.TODO_CLIENT_RELOAD) return 0; // TODO 客户端执行会崩溃 (随便切换个资源包就能重载)
-        reloadClient();
+        _AllAssetsManager.reloadClientPack();
         return Command.SINGLE_SUCCESS;
     }
 

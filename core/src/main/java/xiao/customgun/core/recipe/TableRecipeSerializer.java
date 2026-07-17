@@ -42,7 +42,9 @@ public class TableRecipeSerializer {
         try (JsonReader reader = JsonUtils.getAsReader(jsonObject)) {
             RecipeData pojo = RecipeData.fromJson(reader);
             if (pojo != null) {
-                return TableRecipe.fromPojo(recipeLocation, pojo);
+                pojo.validate();
+                if (pojo.isValid()) return TableRecipe.fromPojo(recipeLocation, pojo);
+                else return TableRecipe.EMPTY;
             }
         } catch (IOException e) {
             CustomGun.LOGGER.error("TableRecipeSerializer: Failed to parse RecipeData (RecipeLocation {}) from jsonObject: {} {}", recipeLocation, e, jsonObject);
@@ -74,7 +76,7 @@ public class TableRecipeSerializer {
         }
         TableResult tableResult = tableRecipe.getTableResult();
         NetworkUtils.writeItem(buffer, tableResult.getResultItem());
-        NetworkUtils.writeResourceLocation(buffer, tableResult.getTabLocation());
+        NetworkUtils.writeResourceLocation(buffer, tableResult.getTabGroupLocation());
     }
 
     private static final MapCodec<TableRecipe> TABLE_RECIPE_MAP_CODEC = new MapCodec<>() {

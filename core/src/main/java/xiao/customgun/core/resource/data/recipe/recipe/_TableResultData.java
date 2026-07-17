@@ -25,7 +25,7 @@ public final class _TableResultData extends ResourcePojo<_TableResultData> {
     private RecipeResultType resultType;
     private int resultCount = 1;
     private @Nullable _ResultItemData resultItem;
-    private @Nullable ResourceLocation tabGroupLocation;
+    private @Nullable Identifier tabGroupLocation;
     /**
      * 同 {@link _DataIndex#getDataLocation()}
      */

@@ -7,7 +7,7 @@
 
 package xiao.customgun.core.recipe;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -37,11 +37,11 @@ import xiao.customgun.core.resource.instance.data.GunIndexInstance;
  */
 public class _TableResultRaw {
     private final @Nullable RecipeResultType recipeResultType;
-    private final ResourceLocation pojoLocation;
+    private final Identifier pojoLocation;
     private final int resultCount;
 
     public _TableResultRaw(@NotNull String recipeResultType,
-                           @NotNull ResourceLocation pojoLocation,
+                           @NotNull Identifier pojoLocation,
                            int resultCount) {
         this.recipeResultType = RecipeResultType.fromString(recipeResultType);
         this.pojoLocation = pojoLocation;
@@ -73,7 +73,7 @@ public class _TableResultRaw {
         ItemStack gunItem = GunBuilder.create(ModItems.GUN.get())
                 // 枪械ResourceLocation
                 .setProperty(GunProperty.GUN_LOCATION,
-                        ResourceLocation.class,
+                        Identifier.class,
                         this.pojoLocation)
                 // 开火模式
                 .setProperty(GunProperty.FIRE_MODE_TYPE,
@@ -102,7 +102,7 @@ public class _TableResultRaw {
         ItemStack attachmentItem = AttachmentBuilder.create(ModItems.ATTACHMENT.get())
                 // 配件ResourceLocation
                 .setProperty(AttachmentProperty.ATTACHMENT_LOCATION,
-                        ResourceLocation.class,
+                        Identifier.class,
                         this.pojoLocation)
                 // 配件类型
                 .setProperty(AttachmentProperty.ATTACHMENT_CATEGORY,
@@ -125,7 +125,7 @@ public class _TableResultRaw {
         ItemStack ammoItem = AmmoBuilder.create(ModItems.AMMO.get())
                 // 子弹ResourceLocation
                 .setProperty(AmmoProperty.AMMO_LOCATION,
-                        ResourceLocation.class,
+                        Identifier.class,
                         this.pojoLocation)
                 .build();
 

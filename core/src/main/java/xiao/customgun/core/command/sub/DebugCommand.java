@@ -71,7 +71,6 @@ public class DebugCommand {
                                 .executes(DebugCommand::testLivingShooterMixin))
                         .then(Commands.literal("GunProjectile")
                                 .executes(DebugCommand::testGunProjectileMixin)))
-                .then(Commands.literal("testForgeMixin").executes(DebugCommand::testForgeMixin))
                 .then(Commands.argument(ENABLE, BoolArgumentType.bool())
                         .executes(DebugCommand::setValue));
     }
@@ -258,12 +257,5 @@ public class DebugCommand {
             source.sendFailure(Component.literal("GunProjectile is not IClientGunProjectile"));
         }
         return Command.SINGLE_SUCCESS;
-    }
-
-    @SuppressWarnings("deprecation")
-    private static int testForgeMixin(CommandContext<CommandSourceStack> context) {
-        Item item = ModItems.AMMO.get();
-        context.getSource().sendSuccess(() -> Component.literal("" + ((AmmoItem)item).test(ItemStack.EMPTY)), false);
-        return 1;
     }
 }

@@ -38,8 +38,12 @@ public record ClientMessageCraft(
                 if (!(context.sender() instanceof ServerPlayer player)) {
                     return;
                 }
-                // TODO GunSmithTableMenu
+                handle(this, player, context);
             });
         }
+    }
+
+    public static void handle(ClientMessageCraft message, ServerPlayer player, NetworkContext context) {
+        // mixin注入点
     }
 }

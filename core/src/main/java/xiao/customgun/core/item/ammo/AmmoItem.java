@@ -41,10 +41,4 @@ public class AmmoItem extends Item implements IAmmo, AmmoDataAccessor {
     public void appendHoverText(ItemStack ammoItem, TooltipContext context, List<Component> components, TooltipFlag isAdvanced) {
         _AmmoItem.appendHoverText(this, ammoItem, context, components, isAdvanced);
     }
-
-    // TODO 删掉测试代码
-    @Deprecated()
-    public int test(ItemStack stack) {
-        return stack.getCount() + 1;
-    }
 }

@@ -13,14 +13,13 @@ import xiao.customgun.core.api.item.GunProperty;
 import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.api.item.gun.IGunGetter;
 
-public class GunBuilder {
+public final class GunBuilder extends ItemBuilder<GunBuilder> {
 
     private final IGun iGun;
-    private final ItemStack gunItem;
 
     private GunBuilder(IGun iGun, ItemStack gunItem) {
+        super(gunItem);
         this.iGun = iGun;
-        this.gunItem = gunItem;
     }
     public static GunBuilder create(ItemLike gun) {
         ItemStack gunItem = new ItemStack(gun);
@@ -30,11 +29,7 @@ public class GunBuilder {
     }
 
     public <T> GunBuilder setProperty(GunProperty property, Class<T> type, T value) {
-        property.set(this.iGun, this.gunItem, value);
+        property.set(this.iGun, this.itemStack, value);
         return this;
-    }
-
-    public ItemStack build() {
-        return this.gunItem;
     }
 }

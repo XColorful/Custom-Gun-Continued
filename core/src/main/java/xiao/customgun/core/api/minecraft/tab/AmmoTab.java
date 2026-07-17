@@ -33,6 +33,7 @@ public class AmmoTab {
             AmmoIndexInstance ammoIndexInstance = entry.getValue();
             {
                 ItemStack ammoItem = AmmoBuilder.create(ModItems.AMMO.get())
+                        // 子弹ResourceLocation
                         .setProperty(AmmoProperty.AMMO_LOCATION,
                                 ResourceLocation.class,
                                 entry.getKey())

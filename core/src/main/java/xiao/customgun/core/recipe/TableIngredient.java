@@ -7,9 +7,15 @@
 
 package xiao.customgun.core.recipe;
 
+import net.minecraft.core.registries.Registries;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.Ingredient;
+import xiao.customgun.CustomGun;
+import xiao.customgun.core.api.resource.ResourceTag;
 import xiao.customgun.core.resource.data.recipe.recipe._TableIngredientData;
 import xiao.customgun.core.resource.data.recipe.recipe.ingredient._IngredientFilterData;
+import xiao.customgun.core.util.IngredientUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +36,18 @@ public record TableIngredient(Ingredient ingredient, int count) {
     public static Ingredient fromPojo(_IngredientFilterData pojo) {
         var itemFilterLocation = pojo.getItemFilterLocation();
         var tagFilterLocation = pojo.getTagFilterLocation();
-        // TODO
+
+        // item优先
+        if (itemFilterLocation != null && !ResourceTag.NULL_LOCATION.equals(itemFilterLocation)) {
+            Item item = CustomGun.getMcRegistry().getItem(itemFilterLocation);
+            if (item != null) return Ingredient.of(item);
+            CustomGun.LOGGER.warn("TableIngredient: Item {} not found", itemFilterLocation);
+        }
+        // 其次tag
+        if (tagFilterLocation != null) {
+            return IngredientUtils.of(TagKey.create(Registries.ITEM, tagFilterLocation));
+        }
+
         return Ingredient.of();
     }
 }

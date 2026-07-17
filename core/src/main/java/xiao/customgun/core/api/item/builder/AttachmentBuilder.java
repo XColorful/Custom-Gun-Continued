@@ -13,14 +13,13 @@ import xiao.customgun.core.api.item.AttachmentProperty;
 import xiao.customgun.core.api.item.IAttachment;
 import xiao.customgun.core.api.item.attachment.IAttachmentGetter;
 
-public class AttachmentBuilder {
+public final class AttachmentBuilder extends ItemBuilder<AttachmentBuilder> {
 
     private final IAttachment iAttachment;
-    private final ItemStack attachmentItem;
 
     private AttachmentBuilder(IAttachment iAttachment, ItemStack attachmentItem) {
+        super(attachmentItem);
         this.iAttachment = iAttachment;
-        this.attachmentItem = attachmentItem;
     }
     public static AttachmentBuilder create(ItemLike attachment) {
         ItemStack attachmentItem = new ItemStack(attachment);
@@ -30,11 +29,7 @@ public class AttachmentBuilder {
     }
 
     public <T> AttachmentBuilder setProperty(AttachmentProperty property, Class<T> type, T value) {
-        property.set(this.iAttachment, this.attachmentItem, value);
+        property.set(this.iAttachment, this.itemStack, value);
         return this;
-    }
-
-    public ItemStack build() {
-        return this.attachmentItem;
     }
 }

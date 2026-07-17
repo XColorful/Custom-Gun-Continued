@@ -13,6 +13,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import com.google.gson.JsonElement;
+import net.minecraft.nbt.TagParser;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -336,6 +338,23 @@ public class NBTUtils {
         if (nbt != null) nbt.remove(key);
     }
 
+    public static class Parser {
+        public static @Nullable CompoundTag fromString(String nbt) {
+            if (nbt == null || nbt.isEmpty()) return null;
+
+            try {
+                return TagParser.parseTag(nbt);
+            } catch (Exception e) {
+                return null;
+            }
+        }
+        /**
+         * {@link CompoundTag#CODEC parse}
+         */
+        public static @Nullable CompoundTag fromJson(JsonElement json) {
+            return fromString(json.toString());
+        }
+    }
 
     /**
      * 对 {@code ValueInput} {@code ValueOutput} 的封装, 适用于Entity和Block的硬盘IO

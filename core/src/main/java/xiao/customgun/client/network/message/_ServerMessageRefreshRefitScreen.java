@@ -24,7 +24,7 @@ public class _ServerMessageRefreshRefitScreen {
             screen.init();
 
             // 刷新客户端配件数据
-            GunPropertyManager.postChangeEvent(player, player.getMainHandItem());
+            GunPropertyManager.postChangeEvent(player);
         }
     }
 }

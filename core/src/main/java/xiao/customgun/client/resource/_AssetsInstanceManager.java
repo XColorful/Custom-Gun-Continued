@@ -10,14 +10,18 @@ package xiao.customgun.client.resource;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
+import xiao.customgun.client.api.entity.shooter.ILocalShooterGetter;
 import xiao.customgun.client.api.resource.ClientResourceApi;
 import xiao.customgun.client.resource.instance.assets.GunDisplayInstance;
 import xiao.customgun.client.resource.instance.data.ClientAmmoIndexInstance;
 import xiao.customgun.client.resource.instance.data.ClientAttachmentIndexInstance;
 import xiao.customgun.client.resource.instance.data.ClientBlockIndexInstance;
 import xiao.customgun.client.resource.instance.data.ClientGunIndexInstance;
+import xiao.customgun.core.api.item.gun.IGunGetter;
 import xiao.customgun.core.api.resource.ResourceApi;
+import xiao.customgun.core.entity.gun.GunPropertyManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -67,6 +71,12 @@ public class _AssetsInstanceManager {
         buildPojoInstance(ClientResourceApi.getAllGunDisplay(), GUN_DISPLAY, GunDisplayInstance::fromPojo, GunDisplayInstance.class);
 
         LocalPlayer player = Minecraft.getInstance().player;
-        // TODO
+        if (player != null && IGunGetter.fromMainHand(player) != null) {
+            GunPropertyManager.postChangeEvent(player);
+
+            // 自动切一次枪，以便刷新状态机
+            ILocalShooterGetter.fromLocalPlayer(player).cgc$clientDraw(ItemStack.EMPTY);
+        }
+    }
     }
 }

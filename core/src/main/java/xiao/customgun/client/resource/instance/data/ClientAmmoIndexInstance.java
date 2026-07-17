@@ -7,6 +7,11 @@
 
 package xiao.customgun.client.resource.instance.data;
 
+import com.mojang.brigadier.StringReader;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.minecraft.commands.arguments.ParticleArgument;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.registries.BuiltInRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.CustomGun;
@@ -31,6 +36,7 @@ public final class ClientAmmoIndexInstance extends PojoInstance<AmmoIndex> {
     private @Nullable AmmoModelObject ammoShellModel;
 
     private AmmoDisplay ammoDisplayCache;
+    private @Nullable ParticleOptions ammoParticleOptionsCache;
 
     private ClientAmmoIndexInstance(@NotNull AmmoIndex pojo) {
         super(pojo);
@@ -51,6 +57,18 @@ public final class ClientAmmoIndexInstance extends PojoInstance<AmmoIndex> {
         } else if (!this.ammoDisplayCache.isValid()) {
             CustomGun.LOGGER.debug("ClientAmmoIndexInstance: AmmoDisplay {} not valid", this.getPojo().getDisplayIndexLocation());
             return false;
+        }
+        {
+            _AmmoParticle ammoParticle = this.ammoDisplayCache.getAmmoParticle();
+            var particleRl = ammoParticle.getParticleLocation();
+            try {
+                this.ammoParticleOptionsCache = ParticleArgument.readParticle(new StringReader(particleRl.toString()), BuiltInRegistries.PARTICLE_TYPE.asLookup());
+            } catch (CommandSyntaxException e) {
+                CustomGun.LOGGER.debug("ClientAmmoIndexInstance: ParticleArgument.readParticle({}) failed", particleRl, e);
+            }
+            if (this.ammoParticleOptionsCache == null) {
+                CustomGun.LOGGER.debug("ClientAmmoIndexInstance: AmmoParticle {} not valid", particleRl);
+            }
         }
 
         {
@@ -91,6 +109,12 @@ public final class ClientAmmoIndexInstance extends PojoInstance<AmmoIndex> {
 
     // --------Getter--------
 
+    public AmmoDisplay getAmmoDisplay() {
+        return this.ammoDisplayCache;
+    }
+    public @Nullable ParticleOptions getParticleOptions() {
+        return this.ammoParticleOptionsCache;
+    }
     public @Nullable AmmoModelObject getAmmoModel() {
         return this.ammoModel;
     }

@@ -126,12 +126,26 @@ public class _AllAssetsManager implements IEventHandler {
     }
 
     /**
-     * 物理客户端 {@link McSide#CLIENT} 执行/reload
-     * 当能获取到 MinecraftServer (单人游戏) 时一并/reload数据包
+     * 服务端指令 /cgc reload (单人游戏时线程转到客户端) 专用
+     * 同步等待客户端重载完成，再触发服务端数据包重载以保证时序
      */
     public static void reloadAllPack() {
         try {
             Minecraft.getInstance().reloadResourcePacks().get();
+            if (CustomGun.getMinecraftServer() != null) {
+                _AllDataManager.reloadAllPack();
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    /**
+     * 物理客户端 {@link McSide#CLIENT} 客户端指令 /cgc reload_client 专用
+     * 不阻塞渲染线程，避免死锁
+     */
+    public static void reloadClientPack() {
+        try {
+            Minecraft.getInstance().reloadResourcePacks();
             if (CustomGun.getMinecraftServer() != null) {
                 _AllDataManager.reloadAllPack();
             }

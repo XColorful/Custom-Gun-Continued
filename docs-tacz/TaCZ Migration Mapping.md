@@ -215,6 +215,7 @@ Notation:
 |---|---|
 |result.`GunSmithTableResult`|`TableResult`|
 |result.`RawGunTableResult`|`_TableResultRaw`|
+|result.`RawGunTableResult`.extraData|_Deprecated_|
 |`GunSmithTableIngredient`|`TableIngredient`|
 |`GunSmithTableRecipe`|`TableRecipe`|
 |`GunSmithTableSerializer`|`TableRecipeSerializer`|
@@ -461,6 +462,7 @@ Notation:
 |pojo.data.gun.`*`|data.data.gun|
 |pojo.data.loot|_Deprecated_|
 |pojo.data.recipe.`*`|data.recipe.`RecipeData`|
+|pojo.data.recipe.`GunResult`|_Deprecated_|
 |pojo.`*IndexPOJO`|data.index.`*Index`|
 |serialize.`CommonAmmoIndexSerializer`.deserialize|instance.data.`AmmoIndexInstance`.fromPojo|
 |serialize.`CommonAttachmentIndexSerializer`.deserialize|instance.data.`AttachmentIndexInstance`.fromPojo|
@@ -661,7 +663,6 @@ Notation:
 |---|---|
 |`CameraSetupEvent`||
 |`ClientPreventGunClick`||
-|`CommonNetworkCacheEvent`||
 |`FirstPersonRenderEvent`||
 |`FirstPersonRenderGunEvent`||
 |`InventoryEvent`||

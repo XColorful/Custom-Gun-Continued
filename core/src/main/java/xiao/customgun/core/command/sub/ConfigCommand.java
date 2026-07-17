@@ -14,6 +14,7 @@ import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
+import xiao.customgun.core.config.SyncConfig;
 
 import static xiao.customgun.core.command.CommandArg.CONFIG;
 import static xiao.customgun.core.command.CommandArg.STATE;
@@ -37,10 +38,9 @@ public class ConfigCommand {
             return 0;
         }
         switch (key) {
-            // TODO SyncConfig
-            case defaultTableLimit -> {}
-            case serverShootNetworkCheck -> {}
-            case serverShootCooldownCheck -> {}
+            case defaultTableLimit -> SyncConfig.ENABLE_TABLE_FILTER.set(state);
+            case serverShootNetworkCheck -> SyncConfig.SERVER_SHOOT_NETWORK_V.set(state);
+            case serverShootCooldownCheck -> SyncConfig.SERVER_SHOOT_COOLDOWN_V.set(state);
         }
         context.getSource().sendSystemMessage(Component.translatable(key.lang + "." + (state ? "enabled" : "disabled")));
         return Command.SINGLE_SUCCESS;

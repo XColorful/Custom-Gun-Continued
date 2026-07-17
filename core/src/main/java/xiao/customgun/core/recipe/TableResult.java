@@ -27,7 +27,7 @@ public class TableResult {
 
     private @Nullable _TableResultRaw raw;
 
-    public TableResult(ItemStack resultItem, @Nullable ResourceLocation tabGroupLocation) {
+    public TableResult(ItemStack resultItem, @Nullable Identifier tabGroupLocation) {
         this(null, resultItem, tabGroupLocation, null);
     }
     public TableResult(@NotNull _TableResultRaw raw) {

@@ -17,18 +17,18 @@ import xiao.customgun.CustomGun;
 import xiao.customgun.client.api.resource.ClientResourceApi;
 import xiao.customgun.client.resource.instance.assets.GunDisplayInstance;
 import xiao.customgun.client.resource.instance.data.ClientAttachmentIndexInstance;
-import xiao.customgun.core.api.item.GunProperty;
-import xiao.customgun.core.api.item.IAmmo;
-import xiao.customgun.core.api.item.IAttachment;
-import xiao.customgun.core.api.item.IGun;
+import xiao.customgun.core.api.item.*;
 import xiao.customgun.core.api.item.ammo.IAmmoGetter;
 import xiao.customgun.core.api.item.attachment.AttachmentCategory;
 import xiao.customgun.core.api.item.attachment.AttachmentNBTAccessor;
 import xiao.customgun.core.api.item.attachment.IAttachmentGetter;
+import xiao.customgun.core.api.item.builder.AttachmentBuilder;
+import xiao.customgun.core.api.item.builder.ItemBuilder;
 import xiao.customgun.core.api.minecraft.capability.IInventoryCapability;
 import xiao.customgun.core.api.resource.ResourceApi;
 import xiao.customgun.core.api.resource.ResourceTag;
 import xiao.customgun.core.developer.PlannedRefactor;
+import xiao.customgun.core.init.registry.ModItems;
 import xiao.customgun.core.resource.instance.data.GunIndexInstance;
 import xiao.customgun.core.util.NBTUtils;
 
@@ -377,13 +377,46 @@ public interface GunDataAccessor extends IGunDataAccess {
 
     @Override
     default @NotNull ItemStack getAttachment(ItemStack gunItem, AttachmentCategory attachmentCategory) {
-        // TODO
-        return ItemStack.EMPTY;
+        @Nullable CompoundTag attachmentCustomDataTag = this.getAttachmentCustomDataTag(gunItem, attachmentCategory);
+
+        if (attachmentCustomDataTag == null) {
+            return ItemStack.EMPTY;
+        }
+
+        return AttachmentBuilder.create(ModItems.ATTACHMENT.get())
+                // 先写已有的NBT
+                .setCustomDataTag(attachmentCustomDataTag)
+                // 配件类型在gun nbt的key
+                .setProperty(AttachmentProperty.ATTACHMENT_CATEGORY,
+                        AttachmentCategory.class,
+                        attachmentCategory)
+                .build();
     }
     @Override
     default @NotNull ItemStack getBuiltinAttachment(ItemStack gunItem, AttachmentCategory attachmentCategory) {
-        // TODO
-        return ItemStack.EMPTY;
+        IGun iGun = IGunGetter.fromItemStack(gunItem);
+        if (iGun == null) return ItemStack.EMPTY;
+
+        @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(iGun.getGunLocation(gunItem));
+        if (gunIndexInstance == null) {
+            return ItemStack.EMPTY;
+        }
+
+        var builtinAttachments = gunIndexInstance.getGunData().getBuiltinAttachments();
+        if (builtinAttachments.containsKey(attachmentCategory)) {
+            return AttachmentBuilder.create(ModItems.ATTACHMENT.get())
+                    // 配件ResourceLocation
+                    .setProperty(AttachmentProperty.ATTACHMENT_LOCATION,
+                            ResourceLocation.class,
+                            builtinAttachments.get(attachmentCategory))
+                    // 配件类型
+                    .setProperty(AttachmentProperty.ATTACHMENT_CATEGORY,
+                            AttachmentCategory.class,
+                            attachmentCategory)
+                    .build();
+        } else {
+            return ItemStack.EMPTY;
+        }
     }
 
     @Override
@@ -391,13 +424,13 @@ public interface GunDataAccessor extends IGunDataAccess {
         // 快的情况先排除
         @Nullable var customData = NBTUtils.getCustomData(gunItem);
         if (customData == null) return null;
-        @NotNull CompoundTag customDataTag = NBTUtils.getCustomDataTag(customData);
 
         // 稍慢的检查
         if (!isAttachmentEnabled(gunItem, attachmentCategory)) {
             return null;
         }
 
+        @NotNull CompoundTag customDataTag = NBTUtils.getCustomDataTag(customData); // 涉及tag复制 (1.21.1+)
         return NBTUtils.getCompoundTag(customDataTag,
                 attachmentCategory.getTagName()); // 存在枪械根目录的key用带前缀的版本
 //                attachmentCategory.getCategoryName());

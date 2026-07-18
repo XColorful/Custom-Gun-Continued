@@ -487,7 +487,7 @@ Notation:
 |---|---|
 |modifier.`AttachmentCacheProperty`|gun.`GunPropertyCache`|
 
-|com.tacz.guns.resource|xiao.customgun.core.entity|
+|com.tacz.guns.resource|xiao.customgun.core.item|
 |---|---|
 |modifier.`AttachmentPropertyManager`|gun.`GunPropertyManager`|
 

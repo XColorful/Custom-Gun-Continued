@@ -31,8 +31,8 @@ public class ProjectileImpactManager implements IProjectileImpactManager {
     /**
      * 方便扩展模组重载
      */
-    protected boolean onBulletVictimHit(IProjectilePhysicsRuntime.EntityHitResult entityHitResult,
-                                        IBulletVictimEntity iBulletVictimEntity, IGunProjectile iGunProjectile, Entity gunProjectile) {
+    protected boolean onBulletVictimHit(IProjectilePhysicsRuntime.EntityHitResult entityHitResult, IBulletVictimEntity iBulletVictimEntity,
+                                        IGunProjectile iGunProjectile, Entity gunProjectile) {
         return iBulletVictimEntity.cgc$onProjectileImpact(entityHitResult, iGunProjectile, gunProjectile);
     }
     /**
@@ -46,15 +46,15 @@ public class ProjectileImpactManager implements IProjectileImpactManager {
     /**
      * 方便扩展模组重载
      */
-    protected boolean onBulletVictimHit(BlockHitResult blockHitResult,
-                                        IBulletVictimBlock iBulletVictimBlock, IGunProjectile iGunProjectile, Entity gunProjectile) {
-        return iBulletVictimBlock.cgc$onProjectileImpact(blockHitResult, iGunProjectile, gunProjectile);
+    protected boolean onBulletVictimHit(BlockHitResult blockHitResult, IBulletVictimBlock iBulletVictimBlock, Block block,
+                                        IGunProjectile iGunProjectile, Entity gunProjectile) {
+        return iBulletVictimBlock.cgc$onProjectileImpact(blockHitResult, block, iGunProjectile, gunProjectile);
     }
     /**
      * 对一般Block的处理, 属于 {@link IProjectileImpactManager} 级别
      */
-    protected boolean onNonBulletVictimHit(BlockHitResult blockHitResult,
-                                           Block block, IGunProjectile iGunProjectile, Entity gunProjectile) {
+    protected boolean onNonBulletVictimHit(BlockHitResult blockHitResult, Block block,
+                                           IGunProjectile iGunProjectile, Entity gunProjectile) {
         gunProjectile.setDeltaMovement(blockHitResult.getLocation().subtract(gunProjectile.position()));
         gunProjectile.discard();
         return true;
@@ -110,7 +110,7 @@ public class ProjectileImpactManager implements IProjectileImpactManager {
                 Block block = gunProjectile.level().getBlockState(blockHitResult.getBlockPos()).getBlock();
                 @Nullable IBulletVictimBlock iBulletVictimBlock = IBulletVictimBlockGetter.fromBlock(block);
                 boolean processed = iBulletVictimBlock != null
-                        ? this.onBulletVictimHit(blockHitResult, iBulletVictimBlock, iGunProjectile, gunProjectile)
+                        ? this.onBulletVictimHit(blockHitResult, iBulletVictimBlock, block, iGunProjectile, gunProjectile)
                         : this.onNonBulletVictimHit(blockHitResult, block, iGunProjectile, gunProjectile);
                 if (processed) {
                     iGunProjectile.setPierce(gunProjectile, --pierce);

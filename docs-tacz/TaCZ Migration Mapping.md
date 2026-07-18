@@ -55,10 +55,23 @@ Notation:
 
 |com.tacz.guns.api.event|xiao.customgun.core.api.event|
 |---|---|
-|common.`*Event`||
-|common.`GunDamageSourcePart`||
+|common.`AttachmentPropertyEvent`|gun.`GunPropertyCacheEvent`|
+|common.`EntityHurtByGunEvent`.`Pre`|projectile.`ProjectileHitEntityEvent`|
+|common.`EntityHurtByGunEvent`.`Post`|projectile.`ProjectileHitEntityFinishEvent`|
+|common.`EntityKillByGunEvent`|projectile.`ProjectileKillEntityEvent`|
+|common.`GunDrawEvent`|shooter.`ShooterDrawEvent`|
+|common.`GunFinishReloadEvent`|shooter.`ShooterReloadFinishEvent`|
+|common.`GunFireEvent`|gun.`GunFireEvent`|
+|common.`GunFireSelectEvent`|shooter.`ShooterSwitchFireModeEvent`|
+|common.`GunMeleeEvent`|shooter.`ShooterMeleeEvent`|
+|common.`GunReloadEvent`|shooter.`ShooterReloadEvent`|
+|common.`GunShootEvent`|shooter.`ShooterFireEvent`|
 |common.`KubeJSGunEventPoster`||
-|server.`*Event`||
+|server.`AmmoHitBlockEvent`|projectile.`ProjectileHitBlockEvent`|
+
+|com.tacz.guns.api.event|xiao.customgun.core.api.minecraft|
+|---|---|
+|common.`GunDamageSourcePart`|damage.`CustomDamageType`.isPierce|
 
 #### Item API
 > ```java

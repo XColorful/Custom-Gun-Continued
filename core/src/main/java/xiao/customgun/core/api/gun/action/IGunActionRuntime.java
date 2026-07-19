@@ -52,5 +52,5 @@ public interface IGunActionRuntime {
     /**
      * 切换开火模式时调用
      */
-    void fireSelect(ShooterProperty shooterProperty, ItemStack gunItem);
+    void switchFireMode(ShooterProperty shooterProperty, ItemStack gunItem);
 }

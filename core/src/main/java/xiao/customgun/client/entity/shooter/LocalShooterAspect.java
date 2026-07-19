@@ -8,9 +8,12 @@
 package xiao.customgun.client.entity.shooter;
 
 import net.minecraft.client.player.LocalPlayer;
+import org.jetbrains.annotations.ApiStatus;
 import xiao.customgun.client.api.entity.LocalShooterProperty;
 
 public abstract class LocalShooterAspect {
+    @ApiStatus.Internal public static final int RELOAD_COOLDOWN_MS = 100;
+    @ApiStatus.Internal public static final int SHOOT_COOLDOWN_MS = 50;
 
     protected final LocalPlayer localShooter;
     protected final LocalShooterProperty localShooterProperty;

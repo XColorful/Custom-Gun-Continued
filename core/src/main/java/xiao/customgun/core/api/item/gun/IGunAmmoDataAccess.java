@@ -54,6 +54,7 @@ public interface IGunAmmoDataAccess {
      * 获取当前枪械弹匣弹药数
      */
     int getMagAmmoCount(ItemStack gunItem);
+    int getMagAmmoCountWithBarrel(ItemStack gunItem, BoltType boltType);
     void setMagAmmoCount(ItemStack gunItem, int count);
     int consumeMagAmmo(ItemStack gunItem);
 

@@ -32,7 +32,7 @@ public interface IClientGunOperator extends ICommonGunOperator {
     /**
      * 客户端切换开火模式
      */
-    @Override void cgc$fireSelect();
+    @Override void cgc$switchFireMode();
 
     /**
      * 客户端瞄准

@@ -9,7 +9,7 @@ package xiao.customgun.core.api.minecraft.damage;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.damagesource.DamageType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -31,9 +31,9 @@ public enum CustomDamageType implements ResourceTag.RegistryTag {
             CustomDamageTypeTag.OVERRIDER, CustomDamageTypeTag.OVERRIDER_OLD1);
 
     public static class Tag {
-        public static final @NotNull ResourceLocation BULLET_DAMAGE = CustomGun.getMcRegistry().createResourceLocation(String.format("%s:%s", CustomGun.MOD_ID, CustomDamageTypeTag.BULLET_DAMAGE));
-        public static final @NotNull ResourceLocation PIERCE_DAMAGE = CustomGun.getMcRegistry().createResourceLocation(String.format("%s:%s", CustomGun.MOD_ID, CustomDamageTypeTag.PIERCE_DAMAGE));
-        public static final @NotNull ResourceLocation BYPASS_DAMAGE = CustomGun.getMcRegistry().createResourceLocation(String.format("%s:%s", CustomGun.MOD_ID, CustomDamageTypeTag.BYPASS_DAMAGE));
+        public static final @NotNull Identifier BULLET_DAMAGE = CustomGun.getMcRegistry().createResourceLocation(String.format("%s:%s", CustomGun.MOD_ID, CustomDamageTypeTag.BULLET_DAMAGE));
+        public static final @NotNull Identifier PIERCE_DAMAGE = CustomGun.getMcRegistry().createResourceLocation(String.format("%s:%s", CustomGun.MOD_ID, CustomDamageTypeTag.PIERCE_DAMAGE));
+        public static final @NotNull Identifier BYPASS_DAMAGE = CustomGun.getMcRegistry().createResourceLocation(String.format("%s:%s", CustomGun.MOD_ID, CustomDamageTypeTag.BYPASS_DAMAGE));
     }
 
     public final boolean isPierce;
@@ -41,7 +41,7 @@ public enum CustomDamageType implements ResourceTag.RegistryTag {
     public final String typeName;
     public final String typeNameOld;
     public final String registryName;
-    public final ResourceLocation registryLocation;
+    public final Identifier registryLocation;
     public final ResourceKey<DamageType> resourceKey;
     CustomDamageType(boolean isPierce, boolean isBypass, String typeName, String typeNameOld) {
         this.isPierce = isPierce;
@@ -59,7 +59,7 @@ public enum CustomDamageType implements ResourceTag.RegistryTag {
     @Override public String getRegistryName() {
         return this.registryName;
     }
-    @Override public ResourceLocation getRegistryLocation() {
+    @Override public Identifier getRegistryLocation() {
         return this.registryLocation;
     }
 

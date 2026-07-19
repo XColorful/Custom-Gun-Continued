@@ -8,6 +8,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec2;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.CustomGun;
@@ -56,7 +57,7 @@ public final class ProjectileHitBlockEvent extends GunProjectileEvent implements
         if (!(this.gunProjectile.level() instanceof ServerLevel serverLevel)) return null;
         return new CommandSourceStack(
                 source != null ? source : CommandSource.NULL,
-                blockHitResult.getBlockPos().getCenter(),
+                Vec3.atCenterOf(blockHitResult.getBlockPos()),
                 Vec2.ZERO,
                 serverLevel,
                 CommandLevel.permission(4),

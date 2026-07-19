@@ -9,6 +9,7 @@ package xiao.customgun.core.resource.data.data.gun.melee;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import xiao.customgun.core.api.item.gun.MeleeType;
 import xiao.customgun.core.api.resource.data.data.gun.melee._DefaultMeleeDataTag;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.util.JsonUtils;
@@ -16,6 +17,8 @@ import xiao.customgun.core.util.JsonUtils;
 import java.io.IOException;
 
 public final class _DefaultMeleeData extends ResourcePojo<_DefaultMeleeData> {
+
+    private MeleeType meleeType;
 
     // 近战属性
     private float meleeDamage = 0.0F;
@@ -29,9 +32,6 @@ public final class _DefaultMeleeData extends ResourcePojo<_DefaultMeleeData> {
     // 命中效果
     private float knockbackStrength = 0.2F;
 
-    // 显示
-    private String animationType;
-
     private static final _DefaultMeleeData PARSER = new _DefaultMeleeData();
     public static _DefaultMeleeData fromJson(JsonReader reader) throws IOException {
         return PARSER.fromJsonReader(reader);
@@ -44,6 +44,8 @@ public final class _DefaultMeleeData extends ResourcePojo<_DefaultMeleeData> {
             while (reader.hasNext()) {
                 String key = reader.nextName();
                 switch (key) {
+                    case _DefaultMeleeDataTag.MELEE_TYPE, _DefaultMeleeDataTag.MELEE_TYPE_OLD1 -> pojo.meleeType = JsonUtils.readFromString(reader, MeleeType::fromString);
+
                     case _DefaultMeleeDataTag.MELEE_DAMAGE, _DefaultMeleeDataTag.MELEE_DAMAGE_OLD1 -> pojo.meleeDamage = JsonUtils.readFloat(reader);
                     case _DefaultMeleeDataTag.MELEE_DISTANCE, _DefaultMeleeDataTag.MELEE_DISTANCE_OLD1 -> pojo.meleeDistance = JsonUtils.readFloat(reader);
                     case _DefaultMeleeDataTag.RANGE_ANGLE -> pojo.rangeAngle = JsonUtils.readFloat(reader);
@@ -52,8 +54,6 @@ public final class _DefaultMeleeData extends ResourcePojo<_DefaultMeleeData> {
                     case _DefaultMeleeDataTag.BASE_COOLDOWN, _DefaultMeleeDataTag.BASE_COOLDOWN_OLD1 -> pojo.baseCooldown = JsonUtils.readFloat(reader);
 
                     case _DefaultMeleeDataTag.KNOCKBACK_STRENGTH, _DefaultMeleeDataTag.KNOCKBACK_STRENGTH_OLD1 -> pojo.knockbackStrength = JsonUtils.readFloat(reader);
-
-                    case _DefaultMeleeDataTag.ANIMATION_TYPE -> pojo.animationType = JsonUtils.readString(reader);
                     default -> reader.skipValue();
                 }
             }
@@ -69,6 +69,8 @@ public final class _DefaultMeleeData extends ResourcePojo<_DefaultMeleeData> {
     @Override
     public void toJson(JsonWriter writer) throws IOException {
         writer.beginObject(); {
+            JsonUtils.writeToString(writer, _DefaultMeleeDataTag.MELEE_TYPE_OLD1, this.meleeType);
+
             JsonUtils.writeFloat(writer, _DefaultMeleeDataTag.MELEE_DAMAGE, this.meleeDamage);
             JsonUtils.writeFloat(writer, _DefaultMeleeDataTag.MELEE_DISTANCE, this.meleeDistance);
             JsonUtils.writeFloat(writer, _DefaultMeleeDataTag.RANGE_ANGLE, this.rangeAngle);
@@ -77,8 +79,6 @@ public final class _DefaultMeleeData extends ResourcePojo<_DefaultMeleeData> {
             JsonUtils.writeFloat(writer, _DefaultMeleeDataTag.BASE_COOLDOWN, this.baseCooldown);
 
             JsonUtils.writeFloat(writer, _DefaultMeleeDataTag.KNOCKBACK_STRENGTH, this.knockbackStrength);
-
-            JsonUtils.writeString(writer, _DefaultMeleeDataTag.ANIMATION_TYPE, this.animationType);
         }
         writer.endObject();
     }
@@ -87,7 +87,7 @@ public final class _DefaultMeleeData extends ResourcePojo<_DefaultMeleeData> {
     protected void validatePojo() {
         if (ENABLE_BACK_COMPATIBILITY) this.applyBackCompatibility();
 
-        boolean n1 = (this.animationType == null);
+        boolean n1 = (this.meleeType == null);
         if (n1) {
             this.setValid(false);
             return;
@@ -98,6 +98,9 @@ public final class _DefaultMeleeData extends ResourcePojo<_DefaultMeleeData> {
 
     // --------Getter & Setter--------
 
+    public MeleeType getMeleeType() {
+        return meleeType;
+    }
     public float getMeleeDamage() {
         return meleeDamage;
     }
@@ -116,10 +119,10 @@ public final class _DefaultMeleeData extends ResourcePojo<_DefaultMeleeData> {
     public float getKnockbackStrength() {
         return knockbackStrength;
     }
-    public String getAnimationType() {
-        return animationType;
-    }
 
+    public void setMeleeType(MeleeType meleeType) {
+        this.meleeType = meleeType;
+    }
     public void setMeleeDamage(float meleeDamage) {
         this.meleeDamage = meleeDamage;
     }
@@ -138,15 +141,12 @@ public final class _DefaultMeleeData extends ResourcePojo<_DefaultMeleeData> {
     public void setKnockbackStrength(float knockbackStrength) {
         this.knockbackStrength = knockbackStrength;
     }
-    public void setAnimationType(String animationType) {
-        this.animationType = animationType;
-    }
 
     // --------Back compatibility--------
 
     @Override
     public _DefaultMeleeData applyBackCompatibility() {
-        this.animationType = this.animationType == null ? "" : this.animationType;
+        this.meleeType = this.meleeType == null ? MeleeType.PUSH : this.meleeType;
         return this;
     }
 }

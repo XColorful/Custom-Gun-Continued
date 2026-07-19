@@ -10,6 +10,7 @@ package xiao.customgun.core.api.item.gun;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.item.attachment.AttachmentCategory;
@@ -30,7 +31,17 @@ public interface IGunAttachmentDataAccess {
      */
     @NotNull ItemStack getBuiltinAttachment(ItemStack gunItem, AttachmentCategory attachmentCategory);
 
+    /**
+     * 1.21.1+涉及Tag复制
+     * 写入操作需要用{@link #setAttachmentCustomDataTag}保存
+     */
     @Nullable CompoundTag getAttachmentCustomDataTag(ItemStack gunItem, AttachmentCategory attachmentCategory);
+    /**
+     * 不包含检查
+     * 只能在{@link #getAttachmentCustomDataTag}后调用
+     */
+    @ApiStatus.Internal
+    void setAttachmentCustomDataTag(ItemStack gunItem, AttachmentCategory attachmentCategory, CompoundTag attachmentCustomDataTag);
 
     /**
      * 获取枪械配件ID，如不存在则返回 {@link ResourceTag#NULL_LOCATION}

@@ -36,7 +36,7 @@ public class ClientMessagePlayerFireSelect implements IMessage<ClientMessagePlay
                     return;
                 }
 
-                ILivingShooterGetter.cgc$fromLivingEntity(player).cgc$fireSelect();
+                ILivingShooterGetter.cgc$fromLivingEntity(player).cgc$switchFireMode();
             });
         }
     }

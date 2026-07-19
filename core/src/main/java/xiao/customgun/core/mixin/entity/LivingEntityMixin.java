@@ -22,7 +22,7 @@ import xiao.customgun.core.api.entity.*;
 import xiao.customgun.core.api.entity.gun.GunPropertyCache;
 import xiao.customgun.core.api.projectile.physics.IProjectilePhysicsRuntime;
 import xiao.customgun.core.entity.LivingShooterSyncKey;
-import xiao.customgun.core.entity.gun.GunPropertyManager;
+import xiao.customgun.core.item.gun.GunPropertyManager;
 import xiao.customgun.core.entity.shooter.*;
 import xiao.customgun.core.projectile.impact.ProjectileImpactManager;
 

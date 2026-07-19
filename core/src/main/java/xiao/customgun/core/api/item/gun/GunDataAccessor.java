@@ -32,6 +32,8 @@ import xiao.customgun.core.init.registry.ModItems;
 import xiao.customgun.core.resource.instance.data.GunIndexInstance;
 import xiao.customgun.core.util.NBTUtils;
 
+import java.util.function.Supplier;
+
 public interface GunDataAccessor extends IGunDataAccess {
 
     // --------IGunDataAccess--------
@@ -199,7 +201,9 @@ public interface GunDataAccessor extends IGunDataAccess {
     @Override
     default int consumeAmmoOnce(LivingEntity livingEntity, ItemStack gunItem) {
         if (PlannedRefactor.ON_CONSUME_AMMO) return 0;
-        // TODO 事件钩子，虚拟子弹，背包直读，NBT弹匣子弹
+        /**TODO 虚拟子弹，背包直读，NBT弹匣子弹
+         * {@link xiao.customgun.core.entity.shooter.LivingShooterShoot#shootInternal}
+         */
         return consumeMagAmmo(gunItem);
     }
 
@@ -280,6 +284,14 @@ public interface GunDataAccessor extends IGunDataAccess {
     @Override
     default int getMagAmmoCount(ItemStack gunItem) {
         return Math.max(0, NBTUtils.getInt(gunItem, GunProperty.MAG_AMMO.getTagName()));
+    }
+    @Override
+    default int getMagAmmoCountWithBarrel(ItemStack gunItem, BoltType boltType) {
+        if (boltType == BoltType.OPEN_BOLT) {
+            return this.getMagAmmoCount(gunItem);
+        } else {
+            return this.getMagAmmoCount(gunItem) + this.getBarrelAmmoCount(gunItem);
+        }
     }
     @Override
     default void setMagAmmoCount(ItemStack gunItem, int count) {
@@ -434,6 +446,19 @@ public interface GunDataAccessor extends IGunDataAccess {
         return NBTUtils.getCompoundTag(customDataTag,
                 attachmentCategory.getTagName()); // 存在枪械根目录的key用带前缀的版本
 //                attachmentCategory.getCategoryName());
+    }
+    @Override
+    default void setAttachmentCustomDataTag(ItemStack gunItem, AttachmentCategory attachmentCategory, CompoundTag attachmentCustomDataTag) {
+        @Nullable var customData = NBTUtils.getCustomData(gunItem);
+        if (customData == null && attachmentCustomDataTag == null) return;
+
+        @NotNull CompoundTag customDataTag = customData != null ? NBTUtils.getCustomDataTag(customData) : new CompoundTag();
+
+        // 将attachment Tag写入tag
+        NBTUtils.setCompoundTag(customDataTag, attachmentCategory.getTagName(), attachmentCustomDataTag);
+
+        // 将tag存入item
+        NBTUtils.setCustomDataTag(gunItem, customDataTag);
     }
 
     @Override

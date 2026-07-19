@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "customgun:bullet",
+    "customgun:piercer",
+    "customgun:breaker",
+    "customgun:overrider"
+  ]
+}

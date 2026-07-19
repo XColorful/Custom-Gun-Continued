@@ -68,56 +68,13 @@ public final class LivingShooterShoot extends LivingShooterAspect {
         @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(iGun.getGunLocation(currentGunItem));
         if (gunIndexInstance == null) return ShootResult.ID_NOT_EXIST;
 
-        if (SyncConfig.SERVER_SHOOT_COOLDOWN_V.get()) {
-            // 判断射击是否正在冷却
-            long coolDown = getShootCooldown(timestamp);
-            if (coolDown < 0) return ShootResult.UNKNOWN_FAIL;
-            else if (coolDown > 0) return ShootResult.COOL_DOWN;
-        }
-
-        if (SyncConfig.SERVER_SHOOT_NETWORK_V.get()) {
-            // 根据 tick time 和 允许的网络延迟波动 计算 时间戳的接受窗口
-            MinecraftServer server = ((ServerLevel) this.livingShooter.level()).getServer();
-            double tickTime = Math.max(server.tickTimes[server.getTickCount() % 100] * 1.0E-6D, 50);
-            long alpha = System.currentTimeMillis() - this.shooterProperty.baseTimestamp - timestamp;
-            if (alpha < -NETWORK_DELAY_MS || alpha > NETWORK_DELAY_MS + tickTime * 2) { // 允许 +- 300ms 的网络波动、窗口下限再扩大 2 个 tick time 时间(最坏情况射击会延迟2个 tick)
-                if (this.livingShooter instanceof ServerPlayer player) {
-                    SendUtils.sendMessageToPlayer(player, new ServerMessageSyncBaseTimestamp());
-                }
-                return ShootResult.NETWORK_FAIL;
-            }
-        }
-
-        // 检查是否正在换弹
-        if (this.shooterProperty.reloadStateType.isReloading()) {
-            return ShootResult.IS_RELOADING;
-        }
-        // 检查是否在切枪
-        if (draw.getDrawCooldown() > 0) {
-            return ShootResult.IS_DRAWING;
-        }
-        // 检查是否在拉栓
-        if (this.shooterProperty.isBolting) {
-            return ShootResult.IS_BOLTING;
-        }
-        // 检查是否在奔跑
-        if (this.shooterProperty.sprintTimeS > 0) {
-            return ShootResult.IS_SPRINTING;
-        }
-
         GunData gunData = gunIndexInstance.getGunData();
         FireModeType fireModeType = iGun.getFireModeType(currentGunItem);
         @Nullable _ChargingData chargeData = gunData.getChargingData().get(fireModeType);
-        if (hasChargeContext && !isChargeProgressReasonable(chargeData, chargeProgress)) {
-            return ShootResult.UNKNOWN_FAIL;
-        }
 
-        // 检查过热锁
-        if (iGun.hasHeat(currentGunItem)) {
-            if (iGun.hasOverheatLock(currentGunItem)) {
-                return ShootResult.OVERHEATED;
-            }
-        }
+        ShootResult errorResult = preCheckError(iGun, currentGunItem,
+                gunData, chargeData, timestamp, chargeProgress, hasChargeContext);
+        if (errorResult != null) return errorResult;
 
         // --------TODO
 //        int consumedAmmo = iGun.consumeAmmoOnce(this.livingShooter, currentGunItem);
@@ -164,6 +121,59 @@ public final class LivingShooterShoot extends LivingShooterAspect {
         // 执行枪械射击逻辑
         iGun.shoot(this.shooterProperty, currentGunItem, this.livingShooter, pitch, yaw);
         return ShootResult.SUCCESS;
+    }
+    @Nullable
+    private ShootResult preCheckError(IGun iGun, ItemStack gunItem,
+                                      GunData gunData, _ChargingData chargeData, long timestamp, float chargeProgress, boolean hasChargeContext) {
+        if (SyncConfig.SERVER_SHOOT_COOLDOWN_V.get()) {
+            // 判断射击是否正在冷却
+            long coolDown = getShootCooldown(timestamp);
+            if (coolDown < 0) return ShootResult.UNKNOWN_FAIL;
+            else if (coolDown > 0) return ShootResult.COOL_DOWN;
+        }
+
+        if (SyncConfig.SERVER_SHOOT_NETWORK_V.get()) {
+            // 根据 tick time 和 允许的网络延迟波动 计算 时间戳的接受窗口
+            MinecraftServer server = ((ServerLevel) this.livingShooter.level()).getServer();
+            double tickTime = Math.max(server.tickTimes[server.getTickCount() % 100] * 1.0E-6D, 50);
+            long alpha = System.currentTimeMillis() - this.shooterProperty.baseTimestamp - timestamp;
+            if (alpha < -NETWORK_DELAY_MS || alpha > NETWORK_DELAY_MS + tickTime * 2) { // 允许 +- 300ms 的网络波动、窗口下限再扩大 2 个 tick time 时间(最坏情况射击会延迟2个 tick)
+                if (this.livingShooter instanceof ServerPlayer player) {
+                    SendUtils.sendMessageToPlayer(player, new ServerMessageSyncBaseTimestamp());
+                }
+                return ShootResult.NETWORK_FAIL;
+            }
+        }
+
+        // 检查是否正在换弹
+        if (this.shooterProperty.reloadStateType.isReloading()) {
+            return ShootResult.IS_RELOADING;
+        }
+        // 检查是否在切枪
+        if (draw.getDrawCooldown() > 0) {
+            return ShootResult.IS_DRAWING;
+        }
+        // 检查是否在拉栓
+        if (this.shooterProperty.isBolting) {
+            return ShootResult.IS_BOLTING;
+        }
+        // 检查是否在奔跑
+        if (this.shooterProperty.sprintTimeS > 0) {
+            return ShootResult.IS_SPRINTING;
+        }
+
+        if (hasChargeContext && !isChargeProgressReasonable(chargeData, chargeProgress)) {
+            return ShootResult.UNKNOWN_FAIL;
+        }
+
+        // 检查过热锁
+        if (iGun.hasHeat(gunItem)) {
+            if (iGun.hasOverheatLock(gunItem)) {
+                return ShootResult.OVERHEATED;
+            }
+        }
+
+        return null;
     }
     private float validateChargeProgress(@Nullable _ChargingData chargeData, float chargeProgress, boolean hasChargeContext) {
         if (!hasChargeContext || !Float.isFinite(chargeProgress)) {
@@ -245,28 +255,7 @@ public final class LivingShooterShoot extends LivingShooterAspect {
             coolDown = coolDown - WINDOW_TIME_MS;
             return Math.max(coolDown, 0L);
         } else {
-            // ----TODO 把原模组GunData里的getShootInterval找个位置
-
-            // ----TODO 把原模组GunData里的getRoundsPerMinute找个位置
-            int rpm = gunData.getRpm();
-            _FireModeAdjustData fireModeAdjustData = gunData.getFireModeAdjustData().get(fireModeType);
-            if (fireModeAdjustData != null) {
-                rpm += fireModeAdjustData.getRpm();
-            }
-            if (rpm <= 0) rpm = 300;
-            // ----
-
-            GunPropertyCache gunPropertyCache = ILivingShooterGetter.cgc$fromLivingEntity(this.livingShooter).cgc$getGunPropertyCache();
-            if (gunPropertyCache != null) {
-                // TODO GunPropertyCache
-            }
-            _HeatData heatData = gunData.getHeatData();
-            if (heatData != null) {
-                rpm = (int) (rpm * iGun.lerpRPM(currentGunItem));
-            }
-
-            long shootInterval = 60_000L / rpm;
-            // ----
+            long shootInterval = _getShootInterval(this.livingShooter, gunData, fireModeType, iGun, currentGunItem);
 
             long coolDown = shootInterval - interval;
             // 给 5 ms 的窗口时间，以平衡延迟
@@ -285,5 +274,30 @@ public final class LivingShooterShoot extends LivingShooterAspect {
             IInventoryCapability inventoryCapability = CustomGun.getCapabilityProvider().getItemHandler(this.livingShooter, null);
             iGun.findAndExtractInventoryAmmo(inventoryCapability, gunItem, 1);
         }
+    }
+
+    // TODO 把原模组GunData里的getShootInterval找个位置
+    public static long _getShootInterval(LivingEntity livingShooter,
+                                  GunData gunData, FireModeType fireModeType, IGun iGun, ItemStack gunItem) {
+
+        // ----TODO 把原模组GunData里的getRoundsPerMinute找个位置
+        int rpm = gunData.getRpm();
+        _FireModeAdjustData fireModeAdjustData = gunData.getFireModeAdjustData().get(fireModeType);
+        if (fireModeAdjustData != null) {
+            rpm += fireModeAdjustData.getRpm();
+        }
+        if (rpm <= 0) rpm = 300;
+        // ----
+
+        GunPropertyCache gunPropertyCache = ILivingShooterGetter.cgc$fromLivingEntity(livingShooter).cgc$getGunPropertyCache();
+        if (gunPropertyCache != null) {
+            // TODO GunPropertyCache
+        }
+        _HeatData heatData = gunData.getHeatData();
+        if (heatData != null) {
+            rpm = (int) (rpm * iGun.lerpRPM(gunItem));
+        }
+
+        return 60_000L / rpm;
     }
 }

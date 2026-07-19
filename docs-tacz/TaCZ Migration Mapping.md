@@ -634,6 +634,10 @@ Notation:
 |---|---|
 |`IClientPlayerGunOperator`|`ILocalShooter`|
 
+|com.tacz.guns.api.client.gameplay|xiao.customgun.client.api.item|
+|---|---|
+|`LocalPlayerMelee`.MELEE_STOCK_ANIMATION|gun.`MeleeType`|
+
 #### Other API (Client)
 > ```java
 > package com.tacz.guns.api.client.other;

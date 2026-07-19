@@ -33,8 +33,8 @@ public class ModDamageTypes {
     public static DamageSource createDamage(RegistryAccess registryAccess, CustomDamageType customDamageType,
                                             Entity directEntity, Entity causingEntity) {
         var damageType = registryAccess
-                .registryOrThrow(Registries.DAMAGE_TYPE) // .lookupOrThrow(Registries.DAMAGE_TYPE)
-                .getHolderOrThrow(customDamageType.resourceKey); // .getOrThrow(customDamageType.resourceKey)
+                .lookupOrThrow(Registries.DAMAGE_TYPE)
+                .getOrThrow(customDamageType.resourceKey);
         return new DamageSource(damageType,
                 directEntity, causingEntity);
     }

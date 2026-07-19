@@ -66,7 +66,7 @@ Notation:
 |common.`GunMeleeEvent`|shooter.`ShooterMeleeEvent`|
 |common.`GunReloadEvent`|shooter.`ShooterReloadEvent`|
 |common.`GunShootEvent`|shooter.`ShooterFireEvent`|
-|common.`KubeJSGunEventPoster`||
+|common.`KubeJSGunEventPoster`|_Deprecated_|
 |server.`AmmoHitBlockEvent`|projectile.`ProjectileHitBlockEvent`|
 
 |com.tacz.guns.api.event|xiao.customgun.core.api.minecraft|
@@ -186,7 +186,7 @@ Notation:
 |carryon||
 |controllable||
 |jei||
-|kubejs||
+|kubejs|_Deprecated_|
 
 |com.tacz.guns.compat|xiao.customgun.client.compat|
 |---|---|

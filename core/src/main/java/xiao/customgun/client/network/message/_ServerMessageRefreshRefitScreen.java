@@ -11,7 +11,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import org.jetbrains.annotations.ApiStatus;
 import xiao.customgun.client.gui.GunRefitScreen;
-import xiao.customgun.core.entity.gun.GunPropertyManager;
+import xiao.customgun.core.item.gun.GunPropertyManager;
 
 @ApiStatus.Internal
 public class _ServerMessageRefreshRefitScreen {

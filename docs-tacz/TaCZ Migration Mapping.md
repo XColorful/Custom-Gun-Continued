@@ -616,8 +616,12 @@ Notation:
 
 |com.tacz.guns.api.client.event|xiao.customgun.client.api.event|
 |---|---|
-|`*Event`||
-|`SwapItemWithOffHand`||
+|`BeforeRenderHandEvent`|render.`BeforeRenderHandEvent`|
+|`RenderItemInHandBobEvent`.`BobHurt`|render.`ItemInHandBobEvent`.`Hurt`|
+|`RenderItemInHandBobEvent`.`BobView`|render.`ItemInHandBobEvent`.`View`|
+|`RenderLevelBobEvent`.`BobHurt`|render.`LevelBobEvent`.`Hurt`|
+|`RenderLevelBobEvent`.`BobView`|render.`LevelBobEvent`.`View`|
+|`SwapItemWithOffHand`|player.`SwapItemWithOffHandEvent`|
 
 #### Gameplay API (Client)
 > ```java

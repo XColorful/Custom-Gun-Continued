@@ -58,7 +58,7 @@ public final class GunData extends ResourcePojo<GunData> {
 
     // 扩展属性
     private _MeleeData meleeData; // 近战 (刺刀/枪托)
-    private _HeatData heatData; // 过热
+    private @Nullable _HeatData heatData; // 过热
     private Map<FireModeType, _ChargingData> chargingData; // 蓄力/延迟扳机
 
     // 配件
@@ -204,8 +204,8 @@ public final class GunData extends ResourcePojo<GunData> {
         boolean n1 = (this.bulletData == null | this.ammoLocation == null | this.boltType == null | this.inaccuracyData == null);
         boolean n2 = (this.recoilData == null | this.movementData == null | this.fireSoundData == null | this.reloadData == null);
         boolean n3 = (this.defaultFireModeType == null | this.fireModeTypes == null | this.fireModeAdjustData == null | this.burstData == null);
-        boolean n4 = (this.meleeData == null | this.heatData == null | this.chargingData == null | this.allowAttachmentTypes == null);
-        boolean n5 = (this.exclusiveAttachments == null | this.extendedMagAmmoSize == null | this.builtinAttachments == null);
+        boolean n4 = (this.meleeData == null | this.chargingData == null | this.allowAttachmentTypes == null | this.exclusiveAttachments == null);
+        boolean n5 = (this.extendedMagAmmoSize == null | this.builtinAttachments == null);
         if (n1 | n2 | n3 | n4 | n5) {
             this.setValid(false);
             return;
@@ -218,10 +218,10 @@ public final class GunData extends ResourcePojo<GunData> {
         this.reloadData.validate();
         this.burstData.validate();
         this.meleeData.validate();
-        this.heatData.validate();
+        if (this.heatData != null) this.heatData.validate();
         boolean v1 = (this.bulletData.isValid() & this.inaccuracyData.isValid() & this.recoilData.isValid());
         boolean v2 = (this.movementData.isValid() & this.fireSoundData.isValid() & this.reloadData.isValid());
-        boolean v3 = (this.burstData.isValid() & this.meleeData.isValid() & this.heatData.isValid());
+        boolean v3 = (this.burstData.isValid() & this.meleeData.isValid() & (this.heatData == null || this.heatData.isValid()));
         if (!(v1 & v2 & v3)) {
             this.setValid(false);
             return;
@@ -311,7 +311,7 @@ public final class GunData extends ResourcePojo<GunData> {
     public _MeleeData getMeleeData() {
         return meleeData;
     }
-    public _HeatData getHeatData() {
+    public @Nullable _HeatData getHeatData() {
         return heatData;
     }
     public Map<FireModeType, _ChargingData> getChargingData() {

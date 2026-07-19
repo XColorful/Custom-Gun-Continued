@@ -14,13 +14,13 @@ import xiao.customgun.client.api.sound.gun.GunSoundType;
 import xiao.customgun.client.resource.instance.assets.GunDisplayInstance;
 import xiao.customgun.client.sound.SoundPlayManager;
 
-public final class LocalShooterFireSelect extends LocalShooterAspect {
+public final class LocalShooterSwitchFireMode extends LocalShooterAspect {
 
-    public LocalShooterFireSelect(LocalPlayer localShooter, LocalShooterProperty localShooterProperty) {
+    public LocalShooterSwitchFireMode(LocalPlayer localShooter, LocalShooterProperty localShooterProperty) {
         super(localShooter, localShooterProperty);
     }
 
-    public void fireSelect() {
+    public void switchFireMode() {
         LocalPlayer localPlayer = Minecraft.getInstance().player;
         GunDisplayInstance gunDisplayInstance = null;
         SoundPlayManager.get().playGunSound(gunDisplayInstance.getGunSound(GunSoundType.FIRE_SELECT),

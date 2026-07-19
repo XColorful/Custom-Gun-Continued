@@ -38,8 +38,8 @@ public abstract class LivingEntityMixin extends Entity implements ILivingShooter
     private final LivingShooterSprint cgc$sprint = new LivingShooterSprint(cgc$shooter, cgc$shooterProperty);
 
     // 枪械操作
-    private final LivingShooterDrawGun cgc$draw = new LivingShooterDrawGun(cgc$shooter, cgc$shooterProperty);
-    private final LivingShooterFireSelect cgc$fireSelect = new LivingShooterFireSelect(cgc$shooter, cgc$shooterProperty);
+    private final LivingShooterDraw cgc$draw = new LivingShooterDraw(cgc$shooter, cgc$shooterProperty);
+    private final LivingShooterSwitchFireMode cgc$switchFireMode = new LivingShooterSwitchFireMode(cgc$shooter, cgc$shooterProperty);
     private final LivingShooterAim cgc$aim = new LivingShooterAim(cgc$shooter, cgc$shooterProperty);
     private final LivingShooterMelee cgc$melee = new LivingShooterMelee(cgc$shooter, cgc$shooterProperty, cgc$draw);
     private final LivingShooterShoot cgc$shoot = new LivingShooterShoot(cgc$shooter, cgc$shooterProperty, cgc$draw);
@@ -79,7 +79,7 @@ public abstract class LivingEntityMixin extends Entity implements ILivingShooter
         cgc$shooter.setSprinting(this.cgc$getProcessedSprintStatus(this.cgc$shooter.isSprinting()));
         // 从服务端同步数据
         LivingShooterSyncKey.SHOOT_COOL_DOWN_KEY.setValue(cgc$shooter, this.cgc$shoot.getShootCooldown());
-        LivingShooterSyncKey.MELEE_COOL_DOWN_KEY.setValue(cgc$shooter, this.cgc$melee.getMeleeCooldown());
+        LivingShooterSyncKey.MELEE_COOL_DOWN_KEY.setValue(cgc$shooter, this.cgc$melee.getMeleeCooldown(System.currentTimeMillis()));
         LivingShooterSyncKey.DRAW_COOL_DOWN_KEY.setValue(cgc$shooter, this.cgc$draw.getDrawCooldown());
         LivingShooterSyncKey.IS_BOLTING_KEY.setValue(cgc$shooter, this.cgc$shooterProperty.isBolting);
         LivingShooterSyncKey.RELOAD_STATE_KEY.setValue(cgc$shooter, reloadState);
@@ -124,8 +124,8 @@ public abstract class LivingEntityMixin extends Entity implements ILivingShooter
     }
 
     @Override
-    public void cgc$fireSelect() {
-        this.cgc$fireSelect.fireSelect();
+    public void cgc$switchFireMode() {
+        this.cgc$switchFireMode.switchFireMode();
     }
 
     @Override

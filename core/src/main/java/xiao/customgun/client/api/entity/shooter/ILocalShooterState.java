@@ -31,6 +31,7 @@ public interface ILocalShooterState {
 
     /**
      * 客户端射击冷却时间
+     * @return <=0即无冷却; >0为有冷却
      */
     long cgc$getShootCooldown();
 

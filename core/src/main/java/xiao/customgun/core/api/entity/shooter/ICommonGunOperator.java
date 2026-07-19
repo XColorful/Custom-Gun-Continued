@@ -15,9 +15,15 @@ public interface ICommonGunOperator {
 
     // --------枪械操作--------
 
-    void cgc$fireSelect();
+    void cgc$switchFireMode();
     void cgc$aim(boolean isAim);
     void cgc$melee();
     void cgc$bolt();
     void cgc$reload();
+
+    // --------Deprecated--------
+
+    @Deprecated default void cgc$fireSelect() {
+        this.cgc$switchFireMode();
+    }
 }

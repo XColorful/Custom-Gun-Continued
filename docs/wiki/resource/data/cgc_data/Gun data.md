@@ -1,7 +1,7 @@
 [English](#English)
 
 # 枪械数据
-> wiki 版本：`0.0.0`.0
+> wiki 版本：`0.0.1`.1
 
 - `bullet_data`/`bullet`（\_BulletData）：
 	- `display_damage`/`damage`（float）：
@@ -98,6 +98,8 @@
 	- `melee_distance`/`distance`（float）：
 	- `melee_cooldown`/`cooldown`（float）：
 	- `default_melee_data`/`default`（\_DefaultMeleeData）：
+		- `melee_type`/`animation_type`（MeleeType）：
+		---
 		- `melee_damage`/`damage`（float）：
 		- `melee_distance`/`distance`（float）：
 		- `range_angle`（float）：
@@ -106,8 +108,6 @@
 		- `base_cooldown`/`cooldown`（float）：
 		---
 		- `knockback_strength`/`knockback`（float）：
-		---
-		- `animation_type`（String）：
 - `heat_data`/`heat`（\_HeatData）：
 	- `max_heat`/`max`（float）：
 	- `heat_per_shot`/`per_shot`（float）：
@@ -270,13 +270,13 @@
 		"melee_distance": 0.0,
 		"melee_cooldown": 0.0,
 		"default_melee_data": {
+			"melee_type": "",
 			"melee_damage": 0.0,
 			"melee_distance": 0.0,
 			"range_angle": 0.0,
 			"damage_delay_seconds": 0.0,
 			"base_cooldown": 0.0,
-			"knockback_strength": 0.0,
-			"animation_type": ""
+			"knockback_strength": 0.0
 		}
 	},
 	"heat_data": {
@@ -331,7 +331,7 @@
 ```
 
 # English
-> wiki verison: `0.0.0`.0
+> wiki verison: `0.0.1`.1
 
 - `bullet_data`/`bullet`( \_BulletData):
 	- `display_damage`/`damage`(float):
@@ -428,6 +428,8 @@
 	- `melee_distance`/`distance`(float):
 	- `melee_cooldown`/`cooldown`(float):
 	- `default_melee_data`/`default`( \_DefaultMeleeData):
+		- `melee_type`/`animation_type`(MeleeType):
+		---
 		- `melee_damage`/`damage`(float):
 		- `melee_distance`/`distance`(float):
 		- `range_angle`(float):
@@ -436,8 +438,6 @@
 		- `base_cooldown`/`cooldown`(float):
 		---
 		- `knockback_strength`/`knockback`(float):
-		---
-		- `animation_type`(String):
 - `heat_data`/`heat`（\_HeatData）：
 	- `max_heat`/`max`（float）：
 	- `heat_per_shot`/`per_shot`（float）：
@@ -600,13 +600,13 @@
 		"melee_distance": 0.0,
 		"melee_cooldown": 0.0,
 		"default_melee_data": {
+			"melee_type": "",
 			"melee_damage": 0.0,
 			"melee_distance": 0.0,
 			"range_angle": 0.0,
 			"damage_delay_seconds": 0.0,
 			"base_cooldown": 0.0,
-			"knockback_strength": 0.0,
-			"animation_type": ""
+			"knockback_strength": 0.0
 		}
 	},
 	"heat_data": {

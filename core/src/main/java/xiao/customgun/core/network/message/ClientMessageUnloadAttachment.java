@@ -17,7 +17,7 @@ import xiao.customgun.core.api.item.attachment.AttachmentCategory;
 import xiao.customgun.core.api.item.gun.IGunGetter;
 import xiao.customgun.core.api.network.message.IMessage;
 import xiao.customgun.core.developer.PlannedRefactor;
-import xiao.customgun.core.entity.gun.GunPropertyManager;
+import xiao.customgun.core.item.gun.GunPropertyManager;
 import xiao.customgun.core.util.SendUtils;
 
 import java.util.function.Consumer;

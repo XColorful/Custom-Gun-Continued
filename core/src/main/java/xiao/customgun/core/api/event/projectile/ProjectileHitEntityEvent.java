@@ -10,7 +10,7 @@ package xiao.customgun.core.api.event.projectile;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -112,7 +112,7 @@ public class ProjectileHitEntityEvent extends GunProjectileEvent implements ILog
     public static class Context {
         @Nullable Entity victimEntity;
         @Nullable Entity causingEntity;
-        ResourceLocation gunLocation;
+        Identifier gunLocation;
         float baseDamage = 0;
         @Nullable DamageSource bulletDamage;
         @Nullable DamageSource piercerDamage;
@@ -127,7 +127,7 @@ public class ProjectileHitEntityEvent extends GunProjectileEvent implements ILog
         public @Nullable Entity getCausingEntity() {
             return this.causingEntity;
         }
-        public ResourceLocation getGunLocation() {
+        public Identifier getGunLocation() {
             return this.gunLocation;
         }
         public float getBaseDamage() {
@@ -152,7 +152,7 @@ public class ProjectileHitEntityEvent extends GunProjectileEvent implements ILog
         public void setCausingEntity(@Nullable Entity causingEntity) {
             this.causingEntity = causingEntity;
         }
-        public void setGunLocation(ResourceLocation gunLocation) {
+        public void setGunLocation(Identifier gunLocation) {
             this.gunLocation = gunLocation;
         }
         public void setBaseDamage(float baseDamage) {

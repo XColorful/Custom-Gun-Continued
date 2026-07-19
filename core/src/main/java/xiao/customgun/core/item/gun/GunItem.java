@@ -155,10 +155,10 @@ public class GunItem extends Item implements IGun, GunDataAccessor {
     }
 
     @Override
-    public void fireSelect(ShooterProperty shooterProperty, ItemStack gunItem) {
+    public void switchFireMode(ShooterProperty shooterProperty, ItemStack gunItem) {
         GunManager.INSTANCE.getManagerGroup(this.getManagerGroupTag(gunItem))
                 .gunActionManager()
-                .fireSelect(shooterProperty, gunItem);
+                .switchFireMode(shooterProperty, gunItem);
     }
 
     // --------IGunStateRuntime--------

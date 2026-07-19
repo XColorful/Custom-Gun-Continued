@@ -15,17 +15,23 @@ import java.util.Map;
 
 public enum MeleeType implements ResourceTag.CategoryTag {
     /**
-     * TODO 捅/刺刀?
+     * 刺刀
      */
-    PUSH(MeleeTypeTag.PUSH),
+    BAYONET(MeleeTypeTag.BAYONET, MeleeTypeTag.BAYONET_OLD1),
     /**
      * 枪托
      */
-    STOCK(MeleeTypeTag.STOCK);
+    STOCK(MeleeTypeTag.STOCK, MeleeTypeTag.STOCK_OLD1),
+    /**
+     * 枪推
+     */
+    PUSH(MeleeTypeTag.PUSH, MeleeTypeTag.PUSH_OLD1);
 
     public final String typeName;
-    MeleeType(String name) {
+    public final String typeNameOld;
+    MeleeType(String name, String nameOld) {
         this.typeName = name;
+        this.typeNameOld = nameOld;
     }
 
     @Override public String getTagName() {
@@ -40,6 +46,7 @@ public enum MeleeType implements ResourceTag.CategoryTag {
     static {
         for (MeleeType type : values()) {
             MELEE_TYPES.put(type.typeName, type);
+            MELEE_TYPES.put(type.typeNameOld, type);
         }
     }
 

@@ -31,7 +31,7 @@ public class LocalPlayerMixin implements ILocalShooter {
 
     // 枪械操作
     private final LocalShooterDraw cgc$localDraw = new LocalShooterDraw(cgc$localShooter, cgc$localShooterProperty);
-    private final LocalShooterFireSelect cgc$localFireSelect = new LocalShooterFireSelect(cgc$localShooter, cgc$localShooterProperty);
+    private final LocalShooterSwitchFireMode cgc$localSwitchFireMode = new LocalShooterSwitchFireMode(cgc$localShooter, cgc$localShooterProperty);
     private final LocalShooterAim cgc$localAim = new LocalShooterAim(cgc$localShooter, cgc$localShooterProperty);
     private final LocalShooterMelee cgc$localMelee = new LocalShooterMelee(cgc$localShooter, cgc$localShooterProperty);
     private final LocalShooterShoot cgc$localShoot = new LocalShooterShoot(cgc$localShooter, cgc$localShooterProperty);
@@ -90,8 +90,8 @@ public class LocalPlayerMixin implements ILocalShooter {
     }
 
     @Override
-    public void cgc$fireSelect() {
-        this.cgc$localFireSelect.fireSelect();
+    public void cgc$switchFireMode() {
+        this.cgc$localSwitchFireMode.switchFireMode();
     }
 
     @Override

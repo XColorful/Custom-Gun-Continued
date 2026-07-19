@@ -11,6 +11,8 @@ import xiao.customgun.core.api.resource.data.data.attachment._MeleeModifierDataT
 
 public class _DefaultMeleeDataTag {
 
+    public static final String MELEE_TYPE = "melee_type"; public static final String MELEE_TYPE_OLD1 = "animation_type";
+
     // 近战属性
     public static final String MELEE_DAMAGE = _MeleeModifierDataTag.MELEE_DAMAGE; public static final String MELEE_DAMAGE_OLD1 = "damage";
     public static final String MELEE_DISTANCE = _MeleeModifierDataTag.MELEE_DISTANCE; public static final String MELEE_DISTANCE_OLD1 = "distance";
@@ -22,9 +24,6 @@ public class _DefaultMeleeDataTag {
 
     // 命中效果
     public static final String KNOCKBACK_STRENGTH = _MeleeModifierDataTag.KNOCKBACK_STRENGTH; public static final String KNOCKBACK_STRENGTH_OLD1 = "knockback";
-
-    // 显示
-    public static final String ANIMATION_TYPE = "animation_type";
 
     private _DefaultMeleeDataTag() {}
 }

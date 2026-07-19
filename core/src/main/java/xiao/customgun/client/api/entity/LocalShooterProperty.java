@@ -22,6 +22,10 @@ public class LocalShooterProperty {
 
     public static final ScheduledExecutorService SCHEDULED_EXECUTOR_SERVICE = Executors.newScheduledThreadPool(2);
     /**
+     * 上一个 tick 的瞄准进度，用于插值，范围 0 ~ 1
+     */
+    public static float oldAimingProgress = 0;
+    /**
      * 点击按钮的时间戳，防止客户端点击按钮后误触开火
      */
     public static long clientClickButtonTimestamp = -1L;
@@ -32,10 +36,6 @@ public class LocalShooterProperty {
     }
 
     public long clientBaseTimestamp = -1L;
-    /**
-     * 上一个 tick 的瞄准进度，用于插值，范围 0 ~ 1
-     */
-    public float oldAimingProgress = 0;
     /**
      * 与射击有关的几个变量
      */

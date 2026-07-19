@@ -250,6 +250,8 @@ Notation:
 |com.tacz.guns.entity|xiao.customgun.core.entity|
 |---|---|
 |shooter.`LivingEntity*`|shooter.`LivingShooter*`|
+|shooter.`LivingEntityDrawGun`|shooter.`LivingShooterDraw`|
+|shooter.`LivingEntityFireSelect`|shooter.`LivingShooterSwitchFireMode`|
 |sync.core|sync|
 |sync.core.`DataHolder`|sync.`SyncDataHolder`|
 |sync.`ModSerializers`.RELOAD_STATE|sync.`Serializers`.RELOAD_STATE|
@@ -632,6 +634,10 @@ Notation:
 |---|---|
 |`IClientPlayerGunOperator`|`ILocalShooter`|
 
+|com.tacz.guns.api.client.gameplay|xiao.customgun.client.api.item|
+|---|---|
+|`LocalPlayerMelee`.MELEE_STOCK_ANIMATION|gun.`MeleeType`|
+
 #### Other API (Client)
 > ```java
 > package com.tacz.guns.api.client.other;
@@ -713,6 +719,7 @@ Notation:
 |com.tacz.guns.client.gameplay|xiao.customgun.client.entity|
 |---|---|
 |`LocalPlayer*`|shooter.`LocalShooter*`|
+|`LocalPlayerFireSelect`|shooter.`LocalShooterSwitchFireMode`|
 
 |com.tacz.guns.client.gameplay|xiao.customgun.client.api.entity|
 |---|---|

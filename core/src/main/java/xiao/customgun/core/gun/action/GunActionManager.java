@@ -52,6 +52,6 @@ public class GunActionManager implements IGunActionManager {
     }
 
     @Override
-    public void fireSelect(ShooterProperty shooterProperty, ItemStack gunItem) {
+    public void switchFireMode(ShooterProperty shooterProperty, ItemStack gunItem) {
     }
 }

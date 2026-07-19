@@ -7,12 +7,19 @@
 
 package xiao.customgun.client.entity.shooter;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 import xiao.customgun.client.api.entity.LocalShooterProperty;
+import xiao.customgun.client.api.resource.ClientResourceApi;
 import xiao.customgun.client.api.sound.gun.GunSoundType;
 import xiao.customgun.client.resource.instance.assets.GunDisplayInstance;
+import xiao.customgun.client.resource.instance.data.ClientGunIndexInstance;
 import xiao.customgun.client.sound.SoundPlayManager;
+import xiao.customgun.core.api.item.IGun;
+import xiao.customgun.core.api.item.gun.BoltType;
+import xiao.customgun.core.api.item.gun.IGunGetter;
+import xiao.customgun.core.resource.data.data.GunData;
 
 public final class LocalShooterInspect extends LocalShooterAspect {
 
@@ -21,10 +28,34 @@ public final class LocalShooterInspect extends LocalShooterAspect {
     }
 
     public void inspect() {
-        LocalPlayer localPlayer = Minecraft.getInstance().player;
-        boolean noAmmo = false;
-        GunDisplayInstance gunDisplayInstance = null;
-        SoundPlayManager.get().playGunSound(gunDisplayInstance.getGunSound(noAmmo ? GunSoundType.INSPECT_EMPTY_SOUND : GunSoundType.INSPECT_SOUND),
-                localPlayer);
+        ItemStack gunItem = this.localShooter.getMainHandItem();
+        IGun iGun = IGunGetter.fromItemStack(gunItem);
+        if (iGun == null) {
+            // TODO AnimateGeoItemRenderer
+            return;
+        }
+
+        // 检查状态锁
+        if (this.localShooterProperty.clientStateLock) return;
+
+        var gunLocation = iGun.getGunLocation(gunItem);
+        @Nullable ClientGunIndexInstance clientGunIndexInstance = ClientResourceApi.getClientGunIndexInstance(gunLocation);
+        if (clientGunIndexInstance == null) return;
+        GunData gunData = clientGunIndexInstance.getGunData();
+        if (gunData == null) return;
+
+        @Nullable GunDisplayInstance gunDisplayInstance = ClientResourceApi.getGunDisplayInstance(gunItem);
+        if (gunDisplayInstance == null) return;
+
+        BoltType boltType = gunData.getBoltType();
+        boolean hasAmmo = boltType == BoltType.OPEN_BOLT ? iGun.getMagAmmoCount(gunItem) > 0
+                : iGun.hasBarrelAmmo(gunItem);
+
+        // 触发 inspect，停止播放声音
+        SoundPlayManager.get().stopCurrentSound();
+        var soundLocation = gunDisplayInstance.getGunSound(!hasAmmo ? GunSoundType.INSPECT_EMPTY_SOUND : GunSoundType.INSPECT_SOUND);
+        SoundPlayManager.get().playGunSound(soundLocation,
+                this.localShooter);
+        // TODO GunDisplayInstance AnimationStateMachine
     }
 }

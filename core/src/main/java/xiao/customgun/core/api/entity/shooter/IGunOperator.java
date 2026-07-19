@@ -31,7 +31,7 @@ public interface IGunOperator extends ICommonGunOperator {
     /**
      * 切换开火模式 (服务端)
      */
-    @Override void cgc$fireSelect();
+    @Override void cgc$switchFireMode();
 
     /**
      * 应用瞄准 (服务端)

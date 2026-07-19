@@ -435,6 +435,19 @@ public interface GunDataAccessor extends IGunDataAccess {
                 attachmentCategory.getTagName()); // 存在枪械根目录的key用带前缀的版本
 //                attachmentCategory.getCategoryName());
     }
+    @Override
+    default void setAttachmentCustomDataTag(ItemStack gunItem, AttachmentCategory attachmentCategory, CompoundTag attachmentCustomDataTag) {
+        @Nullable var customData = NBTUtils.getCustomData(gunItem);
+        if (customData == null && attachmentCustomDataTag == null) return;
+
+        @NotNull CompoundTag customDataTag = customData != null ? NBTUtils.getCustomDataTag(customData) : new CompoundTag();
+
+        // 将attachment Tag写入tag
+        NBTUtils.setCompoundTag(customDataTag, attachmentCategory.getTagName(), attachmentCustomDataTag);
+
+        // 将tag存入item
+        NBTUtils.setCustomDataTag(gunItem, customDataTag);
+    }
 
     @Override
     default @NotNull ResourceLocation getAttachmentLocation(ItemStack gunItem, AttachmentCategory attachmentCategory) {

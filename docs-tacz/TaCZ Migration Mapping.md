@@ -55,10 +55,23 @@ Notation:
 
 |com.tacz.guns.api.event|xiao.customgun.core.api.event|
 |---|---|
-|common.`*Event`||
-|common.`GunDamageSourcePart`||
-|common.`KubeJSGunEventPoster`||
-|server.`*Event`||
+|common.`AttachmentPropertyEvent`|gun.`GunPropertyCacheEvent`|
+|common.`EntityHurtByGunEvent`.`Pre`|projectile.`ProjectileHitEntityEvent`|
+|common.`EntityHurtByGunEvent`.`Post`|projectile.`ProjectileHitEntityFinishEvent`|
+|common.`EntityKillByGunEvent`|projectile.`ProjectileKillEntityEvent`|
+|common.`GunDrawEvent`|shooter.`ShooterDrawEvent`|
+|common.`GunFinishReloadEvent`|shooter.`ShooterReloadFinishEvent`|
+|common.`GunFireEvent`|gun.`GunFireEvent`|
+|common.`GunFireSelectEvent`|shooter.`ShooterSwitchFireModeEvent`|
+|common.`GunMeleeEvent`|shooter.`ShooterMeleeEvent`|
+|common.`GunReloadEvent`|shooter.`ShooterReloadEvent`|
+|common.`GunShootEvent`|shooter.`ShooterFireEvent`|
+|common.`KubeJSGunEventPoster`|_Deprecated_|
+|server.`AmmoHitBlockEvent`|projectile.`ProjectileHitBlockEvent`|
+
+|com.tacz.guns.api.event|xiao.customgun.core.api.minecraft|
+|---|---|
+|common.`GunDamageSourcePart`|damage.`CustomDamageType`.isPierce|
 
 #### Item API
 > ```java
@@ -173,7 +186,7 @@ Notation:
 |carryon||
 |controllable||
 |jei||
-|kubejs||
+|kubejs|_Deprecated_|
 
 |com.tacz.guns.compat|xiao.customgun.client.compat|
 |---|---|
@@ -487,7 +500,7 @@ Notation:
 |---|---|
 |modifier.`AttachmentCacheProperty`|gun.`GunPropertyCache`|
 
-|com.tacz.guns.resource|xiao.customgun.core.entity|
+|com.tacz.guns.resource|xiao.customgun.core.item|
 |---|---|
 |modifier.`AttachmentPropertyManager`|gun.`GunPropertyManager`|
 
@@ -603,8 +616,12 @@ Notation:
 
 |com.tacz.guns.api.client.event|xiao.customgun.client.api.event|
 |---|---|
-|`*Event`||
-|`SwapItemWithOffHand`||
+|`BeforeRenderHandEvent`|render.`BeforeRenderHandEvent`|
+|`RenderItemInHandBobEvent`.`BobHurt`|render.`ItemInHandBobEvent`.`Hurt`|
+|`RenderItemInHandBobEvent`.`BobView`|render.`ItemInHandBobEvent`.`View`|
+|`RenderLevelBobEvent`.`BobHurt`|render.`LevelBobEvent`.`Hurt`|
+|`RenderLevelBobEvent`.`BobView`|render.`LevelBobEvent`.`View`|
+|`SwapItemWithOffHand`|player.`SwapItemWithOffHandEvent`|
 
 #### Gameplay API (Client)
 > ```java

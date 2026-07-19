@@ -21,7 +21,7 @@ import xiao.customgun.client.resource.instance.data.ClientBlockIndexInstance;
 import xiao.customgun.client.resource.instance.data.ClientGunIndexInstance;
 import xiao.customgun.core.api.item.gun.IGunGetter;
 import xiao.customgun.core.api.resource.ResourceApi;
-import xiao.customgun.core.entity.gun.GunPropertyManager;
+import xiao.customgun.core.item.gun.GunPropertyManager;
 
 import java.util.HashMap;
 import java.util.Map;

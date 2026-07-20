@@ -250,6 +250,7 @@ Notation:
 |com.tacz.guns.entity|xiao.customgun.core.entity|
 |---|---|
 |shooter.`LivingEntity*`|shooter.`LivingShooter*`|
+|shooter.`LivingEntityCrawl`|shooter.`LivingShooterProne`|
 |shooter.`LivingEntityDrawGun`|shooter.`LivingShooterDraw`|
 |shooter.`LivingEntityFireSelect`|shooter.`LivingShooterSwitchFireMode`|
 |sync.core|sync|
@@ -429,6 +430,7 @@ Notation:
 |message.event.`*`|message.event.`*`|
 |message.handshake.`*`|message.handshake.`*`|
 |message.`*Message*`|message.`*Message*`|
+|message.`ClientMessagePlayerCrawl`|message.`ClientMessagePlayerProne`|
 |`LoginIndexHolder`|`LoginIndexHolder`|
 |`NetworkHandler`|`NetworkHandler`|
 
@@ -725,6 +727,7 @@ Notation:
 |com.tacz.guns.client.gameplay|xiao.customgun.client.entity|
 |---|---|
 |`LocalPlayer*`|shooter.`LocalShooter*`|
+|`LocalPlayerCrawl`|shooter.`LocalShooterProne`|
 |`LocalPlayerFireSelect`|shooter.`LocalShooterSwitchFireMode`|
 
 |com.tacz.guns.client.gameplay|xiao.customgun.client.api.entity|

@@ -57,7 +57,7 @@ public class NetworkHandler {
         adapter.registerMessage(ID_COUNT.getAndIncrement(), ClientMessagePlayerCancelReload.class, ClientMessagePlayerCancelReload::decode, MessageDirection.CLIENT_TO_SERVER);
         adapter.registerMessage(ID_COUNT.getAndIncrement(), ClientMessagePlayerFireSelect.class, ClientMessagePlayerFireSelect::decode, MessageDirection.CLIENT_TO_SERVER);
         adapter.registerMessage(ID_COUNT.getAndIncrement(), ClientMessagePlayerAim.class, ClientMessagePlayerAim::decode, MessageDirection.CLIENT_TO_SERVER);
-        adapter.registerMessage(ID_COUNT.getAndIncrement(), ClientMessagePlayerCrawl.class, ClientMessagePlayerCrawl::decode, MessageDirection.CLIENT_TO_SERVER);
+        adapter.registerMessage(ID_COUNT.getAndIncrement(), ClientMessagePlayerProne.class, ClientMessagePlayerProne::decode, MessageDirection.CLIENT_TO_SERVER);
         adapter.registerMessage(ID_COUNT.getAndIncrement(), ClientMessagePlayerDrawGun.class, ClientMessagePlayerDrawGun::decode, MessageDirection.CLIENT_TO_SERVER);
 
         adapter.registerMessage(ID_COUNT.getAndIncrement(), ServerMessageSound.class, ServerMessageSound::decode, MessageDirection.SERVER_TO_CLIENT);

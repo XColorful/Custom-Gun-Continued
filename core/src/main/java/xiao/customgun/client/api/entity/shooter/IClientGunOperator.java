@@ -18,7 +18,7 @@ public interface IClientGunOperator extends ICommonGunOperator {
     /**
      * 客户端爬行
      */
-    @Override void cgc$crawl(boolean isCrawl);
+    @Override void cgc$prone(boolean isProne);
 
 
     // --------枪械操作--------

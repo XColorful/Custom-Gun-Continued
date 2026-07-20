@@ -49,7 +49,7 @@
 	- LivingShooterAim：瞄准
 	- LivingShooterAmmoCheck：子弹检查
 	- LivingShooterBolt：拉栓
-	- LivingShooterCrawl：趴下
+	- LivingShooterProne：趴下
 	- LivingShooterDrawGun：拔枪
 	- LivingShooterFireSelect：开火模式切换
 	- LivingShooterHeat：热量
@@ -262,7 +262,7 @@ Module division based on the `xiao.customgun.core` top-level package
 	- LivingShooterAim: Aim
 	- LivingShooterAmmoCheck: Ammo check
 	- LivingShooterBolt: Bolt
-	- LivingShooterCrawl: Crawl
+	- LivingShooterProne: Prone
 	- LivingShooterDrawGun: Draw gun
 	- LivingShooterFireSelect: Fire select
 	- LivingShooterHeat: Heat

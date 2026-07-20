@@ -16,31 +16,31 @@ import xiao.customgun.core.config.SyncConfig;
 
 import java.util.function.Consumer;
 
-public record ClientMessagePlayerCrawl(boolean isCrawl)
-        implements IMessage<ClientMessagePlayerCrawl> {
+public record ClientMessagePlayerProne(boolean isProne)
+        implements IMessage<ClientMessagePlayerProne> {
 
     @Override
-    public void encode(ClientMessagePlayerCrawl message, FriendlyByteBuf buffer) {
-        buffer.writeBoolean(message.isCrawl);
+    public void encode(ClientMessagePlayerProne message, FriendlyByteBuf buffer) {
+        buffer.writeBoolean(message.isProne);
     }
 
-    public static ClientMessagePlayerCrawl decode(FriendlyByteBuf buffer) {
-        return new ClientMessagePlayerCrawl(buffer.readBoolean());
+    public static ClientMessagePlayerProne decode(FriendlyByteBuf buffer) {
+        return new ClientMessagePlayerProne(buffer.readBoolean());
     }
 
     @Override
-    public void handle(ClientMessagePlayerCrawl message, Consumer<Runnable> handler, NetworkContext context) {
+    public void handle(ClientMessagePlayerProne message, Consumer<Runnable> handler, NetworkContext context) {
         if (CustomGun.getSideExecutor().getLogicalSide().isServer()) {
             handler.accept(() -> {
                 if (!(context.sender() instanceof ServerPlayer player)) {
                     return;
                 }
 
-                if (!SyncConfig.ENABLE_CRAWL.get()) {
+                if (!SyncConfig.ENABLE_PRONE.get()) {
                     return;
                 }
 
-                ILivingShooterGetter.cgc$fromLivingEntity(player).cgc$crawl(message.isCrawl);
+                ILivingShooterGetter.cgc$fromLivingEntity(player).cgc$prone(message.isProne);
             });
         }
     }

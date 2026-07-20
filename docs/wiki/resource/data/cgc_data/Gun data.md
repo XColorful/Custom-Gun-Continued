@@ -1,7 +1,7 @@
 [English](#English)
 
 # 枪械数据
-> wiki 版本：`0.0.1`.1
+> wiki 版本：`0.0.1`.2
 
 - `bullet_data`/`bullet`（\_BulletData）：
 	- `display_damage`/`damage`（float）：
@@ -51,7 +51,7 @@
 	- `yaw_recoil`/`yaw`（List\<\_RecoilEntryData>）：
 		- `time`（float）：
 		- `value`（float[]）：
-- `crawl_recoil_multiplier`（float）：
+- `prone_recoil_multiplier`/`crawl_recoil_multiplier`（float）：
 - 
 - `weight`（float）：
 - `movement_data`/`movement_speed`（\_MovementData）：
@@ -134,7 +134,7 @@
 - `extended_mag_ammo_size`/`extended_mag_ammo_amount`（int[]）：
 - `builtin_attachments`（Map\<AttachmentCategory, ResourceLocation>）：
 ---
-- `enable_crawl`/`can_crawl`（boolean）：
+- `enable_prone`/`can_crawl`（boolean）：
 - `enable_slide`/`can_slide`（boolean）：
 ---
 - `draw_time`（float）：
@@ -208,7 +208,7 @@
 			}
 		]
 	},
-	"crawl_recoil_multiplier": 0.0,
+	"prone_recoil_multiplier": 0.0,
 
 	"weight": 0.0,
 	"movement_data": {
@@ -318,7 +318,7 @@
 		"": "namespace:location"
 	},
 	
-	"enable_crawl": false,
+	"enable_prone": false,
 	"enable_slide": false,
 	
 	"draw_time": 0.0,
@@ -331,7 +331,7 @@
 ```
 
 # English
-> wiki verison: `0.0.1`.1
+> wiki verison: `0.0.1`.2
 
 - `bullet_data`/`bullet`( \_BulletData):
 	- `display_damage`/`damage`(float):
@@ -381,7 +381,7 @@
 	- `yaw_recoil`/`yaw`(List\< \_RecoilEntryData>):
 		- `time`(float):
 		- `value`(float[]):
-- `crawl_recoil_multiplier`(float):
+- `prone_recoil_multiplier`/`crawl_recoil_multiplier`(float):
 - 
 - `weight`(float):
 - `movement_data`/`movement_speed`( \_MovementData):
@@ -464,7 +464,7 @@
 - `extended_mag_ammo_size`/`extended_mag_ammo_amount`(int[]):
 - `builtin_attachments`(Map\<AttachmentCategory, ResourceLocation>):
 ---
-- `enable_crawl`/`can_crawl`(boolean):
+- `enable_prone`/`can_crawl`(boolean):
 - `enable_slide`/`can_slide`(boolean):
 ---
 - `draw_time`(float):
@@ -538,7 +538,7 @@
 			}
 		]
 	},
-	"crawl_recoil_multiplier": 0.0,
+	"prone_recoil_multiplier": 0.0,
 
 	"weight": 0.0,
 	"movement_data": {
@@ -648,7 +648,7 @@
 		"": "namespace:location"
 	},
 	
-	"enable_crawl": false,
+	"enable_prone": false,
 	"enable_slide": false,
 	
 	"draw_time": 0.0,

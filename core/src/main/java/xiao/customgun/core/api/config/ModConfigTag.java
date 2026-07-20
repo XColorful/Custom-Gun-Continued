@@ -124,8 +124,8 @@ public class ModConfigTag {
     public static final String clientGunPackDownloadUrls_path = "ClientGunPackDownloadUrls";
     public static final String clientGunPackDownloadUrls_comment = "Deprecated. Use vanilla server resource pack";
 
-    public static final String enableCrawl_path = "EnableCrawl";
-    public static final String enableCrawl_comment = "Whether or not players are allowed to use the crawl feature";
+    public static final String enableProne_path = "EnableProne"; public static final String enableProne_path_OLD1 = "EnableCrawl";
+    public static final String enableProne_comment = "Whether or not players are allowed to use the prone feature";
 
     public static final String enableTableFilter_path = "EnableDefaultGunSmithTableFilter";
     public static final String enableTableFilter_comment = "Enable the recipe limit of default gunsmith table or not";

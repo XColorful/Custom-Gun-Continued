@@ -43,7 +43,7 @@
 - Local Shooter (aspect)：本地射手生物（切面）
 	- LocalShooterAim：瞄准
 	- LocalShooterBolt：拉栓
-	- LocalShooterCrawl：趴下
+	- LocalShooterProne：趴下
 	- LocalShooterDraw：拔枪
 	- LocalShooterFireSelect：开火模式切换
 	- LocalShooterInspect：检视
@@ -204,7 +204,7 @@ Module division based on the `xiao.customgun.client` top-level package
 - Local Shooter (aspect):
 	- LocalShooterAim: Aim
 	- LocalShooterBolt: Bolt
-	- LocalShooterCrawl: Crawl
+	- LocalShooterProne: Prone
 	- LocalShooterDraw: Draw
 	- LocalShooterFireSelect: Fire select
 	- LocalShooterInspect: Inspect

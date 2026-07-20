@@ -14,9 +14,14 @@ import java.util.Map;
 
 public enum EventType {
     // tick
+    PREPARE_SERVER_TICK_EVENT(false),
     SERVER_TICK_EVENT(false),
     PREPARE_CLIENT_TICK_EVENT(true),
     CLIENT_TICK_EVENT(true),
+    PREPARE_SERVER_PLAYER_TICK_EVENT(false),
+    SERVER_PLAYER_TICK_EVENT(false),
+    PREPARE_CLIENT_PLAYER_TICK_EVENT(true),
+    CLIENT_PLAYER_TICK_EVENT(true),
     // entity
     ENTITY_JOIN_LEVEL_EVENT(false),
     // living entity

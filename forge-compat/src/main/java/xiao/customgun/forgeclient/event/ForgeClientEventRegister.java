@@ -13,7 +13,9 @@ import xiao.customgun.core.api.event.EventType;
 import xiao.customgun.core.api.event.IEventHandler;
 import xiao.customgun.core.api.event.IEventRegister;
 import xiao.customgun.forgeclient.event.events.AddClientReloadListenerEventManager;
+import xiao.customgun.forgeclient.event.events.ClientPlayerTickEventManager;
 import xiao.customgun.forgeclient.event.events.ClientTickEventManager;
+import xiao.customgun.forgeclient.event.events.PrepareClientPlayerTickEventManager;
 import xiao.customgun.forgeclient.event.events.InputKeyEventManager;
 import xiao.customgun.forgeclient.event.events.InteractionMappingEventManager;
 import xiao.customgun.forgeclient.event.events.MouseButtonEventManager;
@@ -28,6 +30,8 @@ public class ForgeClientEventRegister implements IEventRegister {
             // tick
             case PREPARE_CLIENT_TICK_EVENT -> PrepareClientTickEventManager.register(eventHandler, priority, receiveCanceled);
             case CLIENT_TICK_EVENT -> ClientTickEventManager.register(eventHandler, priority, receiveCanceled);
+            case PREPARE_CLIENT_PLAYER_TICK_EVENT -> PrepareClientPlayerTickEventManager.register(eventHandler, priority, receiveCanceled);
+            case CLIENT_PLAYER_TICK_EVENT -> ClientPlayerTickEventManager.register(eventHandler, priority, receiveCanceled);
             // input
             case INPUT_KEY_EVENT -> InputKeyEventManager.register(eventHandler, priority, receiveCanceled);
             case INTERACTION_MAPPING_EVENT -> InteractionMappingEventManager.register(eventHandler, priority, receiveCanceled);
@@ -48,6 +52,8 @@ public class ForgeClientEventRegister implements IEventRegister {
             // tick
             case PREPARE_CLIENT_TICK_EVENT -> PrepareClientTickEventManager.unregister(eventHandler, priority, receiveCanceled);
             case CLIENT_TICK_EVENT -> ClientTickEventManager.unregister(eventHandler, priority, receiveCanceled);
+            case PREPARE_CLIENT_PLAYER_TICK_EVENT -> PrepareClientPlayerTickEventManager.unregister(eventHandler, priority, receiveCanceled);
+            case CLIENT_PLAYER_TICK_EVENT -> ClientPlayerTickEventManager.unregister(eventHandler, priority, receiveCanceled);
             // input
             case INPUT_KEY_EVENT -> InputKeyEventManager.unregister(eventHandler, priority, receiveCanceled);
             case INTERACTION_MAPPING_EVENT -> InteractionMappingEventManager.unregister(eventHandler, priority, receiveCanceled);

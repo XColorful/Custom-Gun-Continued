@@ -85,6 +85,14 @@
 - ClientModParticles：客户端粒子注册
 - ClientTooltipRegistry：客户端提示框注册
 
+### 输入
+> _./client/input_
+
+按键类别：
+- config：配置按键
+- player：玩家按键
+- shooter：射手按键
+
 ### 物品
 > _./client/item_
 
@@ -245,6 +253,14 @@ Module division based on the `xiao.customgun.client` top-level package
 - ClientModEvent: Client events
 - ClientModParticles: Client particle registration
 - ClientTooltipRegistry: Client tooltip registration
+
+### Input
+> _./client/input_
+
+Key categories:
+- config: Config keys
+- player: Player keys
+- shooter: Shooter keys
 
 ### Item
 > _./client/item_

@@ -15,19 +15,26 @@
 package xiao.customgun.client;
 
 import xiao.customgun.CustomGun;
+import xiao.customgun.client.api.input.IKeyMapping;
 import xiao.customgun.client.event.custom.ClientEventHandlers;
 import xiao.customgun.client.init.ClientModConfig;
 
 public class CustomGunClient {
 
     protected static boolean initialized;
+    private static IKeyMapping.Creator keyMappingCreator;
 
-    public static void init() {
+    public static void init(IKeyMapping.Creator keyMappingCreator) {
         if (initialized) return;
+        CustomGunClient.keyMappingCreator = keyMappingCreator;
 
         ClientModConfig.init();
 
         ClientEventHandlers.registerAll(CustomGun.getEventRegister());
         initialized = true;
+    }
+
+    public static IKeyMapping.Creator getKeyMappingCreator() {
+        return keyMappingCreator;
     }
 }

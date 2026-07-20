@@ -763,7 +763,7 @@ Notation:
 |---|---|
 |`ClientSetupEvent`.onClientSetup(FMLClientSetupEvent)||
 |`ClientSetupEvent`.onClientSetup(RegisterClientTooltipComponentFactoriesEvent)|`ClientTooltipRegistry`.registerTooltips|
-|`ClientSetupEvent`.onClientSetup(RegisterKeyMappingsEvent)||
+|`ClientSetupEvent`.onClientSetup(RegisterKeyMappingsEvent)|`ClientKeyMappingRegistry`.registerKeyMappings|
 |`ClientSetupEvent`.onRegisterGuiOverlays||
 |`ModContainerScreen`|_Deprecated_|
 |`ModEntitiesRender`||
@@ -780,7 +780,17 @@ Notation:
 
 |com.tacz.guns.client.input| |
 |---|---|
-|`*Key`||
+|`AimKey`|shooter.`AimKey`|
+|`ConfigKey`|config.`ConfigKey`|
+|`CrawlKey`|shooter.`ProneKey`|
+|`FireSelectKey`|shooter.`SwitchFireModeKey`|
+|`InspectKey`|shooter.`InspectKey`|
+|`InteractKey`|player.`InteractKey`|
+|`MeleeKey`|shooter.`MeleeKey`|
+|`RefitKey`|player.`RefitKey`|
+|`ReloadKey`|shooter.`ReloadKey`|
+|`ShootKey`|shooter.`ShootKey`|
+|`ZoomKey`|shooter.`ZoomKey`|
 
 ### Mixin (Client)
 > ```java

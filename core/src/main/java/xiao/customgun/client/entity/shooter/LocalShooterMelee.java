@@ -8,7 +8,7 @@
 package xiao.customgun.client.entity.shooter;
 
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.CustomGun;
@@ -113,7 +113,7 @@ public final class LocalShooterMelee extends LocalShooterAspect {
         return !canceled;
     }
 
-    private static @Nullable _MeleeModifierData _getMeleeModifierData(ResourceLocation attachmentLocation) {
+    private static @Nullable _MeleeModifierData _getMeleeModifierData(Identifier attachmentLocation) {
         @Nullable var attachmentIndexInstance = ClientResourceApi.getClientAttachmentIndexInstance(attachmentLocation);
         if (attachmentIndexInstance == null) return null;
         AttachmentData attachmentData = attachmentIndexInstance.getAttachmentData();

@@ -29,9 +29,7 @@ public final class SwitchFireModeKey extends InputKey {
     private SwitchFireModeKey() {
         super(CustomInputKey.SWITCH_FIRE_MODE);
     }
-
-    @Override
-    protected IKeyMapping createKeyMapping(IKeyMapping.Creator creator) {
+    @Override protected IKeyMapping createKeyMapping(IKeyMapping.Creator creator) {
         return creator.create(this.key.getCategoryLang().getString(),
                 IKeyConflictContext.Type.IN_GAME,
                 IKeyModifier.Type.NONE,

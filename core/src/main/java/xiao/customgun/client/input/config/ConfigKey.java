@@ -29,9 +29,7 @@ public final class ConfigKey extends InputKey {
     private ConfigKey() {
         super(CustomInputKey.CONFIG);
     }
-
-    @Override
-    protected IKeyMapping createKeyMapping(IKeyMapping.Creator creator) {
+    @Override protected IKeyMapping createKeyMapping(IKeyMapping.Creator creator) {
         return creator.create(this.key.getCategoryLang().getString(),
                 IKeyConflictContext.Type.IN_GAME,
                 IKeyModifier.Type.ALT,

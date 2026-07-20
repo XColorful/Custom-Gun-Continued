@@ -29,9 +29,7 @@ public final class ZoomKey extends InputKey {
     private ZoomKey() {
         super(CustomInputKey.ZOOM);
     }
-
-    @Override
-    protected IKeyMapping createKeyMapping(IKeyMapping.Creator creator) {
+    @Override protected IKeyMapping createKeyMapping(IKeyMapping.Creator creator) {
         return creator.create(this.key.getCategoryLang().getString(),
                 IKeyConflictContext.Type.IN_GAME,
                 IKeyModifier.Type.NONE,

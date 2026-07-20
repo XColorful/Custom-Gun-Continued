@@ -28,8 +28,6 @@ public final class LivingShooterSpeedModifier extends LivingShooterAspect {
 
     public static final @NotNull ResourceLocation EXTRA_SPEED_MODIFIER = CustomGun.getMcRegistry().createResourceLocation(String.format("%s:extra_speed_modifier", CustomGun.MOD_ID));
     public static final @NotNull ResourceLocation WEIGHT_SPEED_MODIFIER = CustomGun.getMcRegistry().createResourceLocation(String.format("%s:weight_speed_modifier", CustomGun.MOD_ID));
-    private static final UUID EXTRA_SPEED_MODIFIER_UUID = UUID.nameUUIDFromBytes(EXTRA_SPEED_MODIFIER.toString().getBytes());
-    private static final UUID WEIGHT_SPEED_MODIFIER_UUID = UUID.nameUUIDFromBytes(WEIGHT_SPEED_MODIFIER.toString().getBytes());
 
     public LivingShooterSpeedModifier(LivingEntity livingShooter, ShooterProperty shooterProperty) {
         super(livingShooter, shooterProperty);
@@ -44,8 +42,8 @@ public final class LivingShooterSpeedModifier extends LivingShooterAspect {
 
         IGun iGun = IGunGetter.fromItemStack(stack);
         if (iGun == null) {
-            speedModifier.removeModifier(WEIGHT_SPEED_MODIFIER_UUID);
-            speedModifier.removeModifier(EXTRA_SPEED_MODIFIER_UUID);
+            speedModifier.removeModifier(WEIGHT_SPEED_MODIFIER);
+            speedModifier.removeModifier(EXTRA_SPEED_MODIFIER);
             return;
         }
 
@@ -57,24 +55,24 @@ public final class LivingShooterSpeedModifier extends LivingShooterAspect {
         if (weightFactor > 0) {
             float targetSpeed = 0; // TODO WeightModifier: GunPropertyCache.getCache(WeightModifier.ID)
             targetSpeed *= (float) -weightFactor;
-            AttributeModifier modifier = speedModifier.getModifier(WEIGHT_SPEED_MODIFIER_UUID);
+            AttributeModifier modifier = speedModifier.getModifier(WEIGHT_SPEED_MODIFIER);
             if (modifier == null) {
-                speedModifier.removeModifier(WEIGHT_SPEED_MODIFIER_UUID);
-                speedModifier.addTransientModifier(new AttributeModifier(WEIGHT_SPEED_MODIFIER_UUID, "Gun Speed Modifier",
+                speedModifier.removeModifier(WEIGHT_SPEED_MODIFIER);
+                speedModifier.addTransientModifier(new AttributeModifier(WEIGHT_SPEED_MODIFIER,
                         targetSpeed,
-                        AttributeModifier.Operation.MULTIPLY_BASE));
+                        AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
             }
         }
 
         Object speed = null; // TODO ExtraMovementModifier: GunPropertyCache.getCache(ExtraMovementModifier.ID)
         if (speed != null) {
             double targetSpeed = _getTargetSpeed(speed);
-            AttributeModifier modifier = speedModifier.getModifier(EXTRA_SPEED_MODIFIER_UUID);
+            AttributeModifier modifier = speedModifier.getModifier(EXTRA_SPEED_MODIFIER);
             if (modifier == null) {
-                speedModifier.removeModifier(EXTRA_SPEED_MODIFIER_UUID);
-                speedModifier.addTransientModifier(new AttributeModifier(EXTRA_SPEED_MODIFIER_UUID, "Extra Gun Speed Modifier",
+                speedModifier.removeModifier(EXTRA_SPEED_MODIFIER);
+                speedModifier.addTransientModifier(new AttributeModifier(EXTRA_SPEED_MODIFIER,
                         targetSpeed,
-                        AttributeModifier.Operation.MULTIPLY_TOTAL));
+                        AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
             }
         }
     }

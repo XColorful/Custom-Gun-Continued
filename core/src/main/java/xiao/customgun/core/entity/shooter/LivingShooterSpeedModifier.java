@@ -7,11 +7,14 @@
 
 package xiao.customgun.core.entity.shooter;
 
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import xiao.customgun.CustomGun;
 import xiao.customgun.core.api.entity.ShooterProperty;
 import xiao.customgun.core.api.entity.gun.GunPropertyCache;
 import xiao.customgun.core.api.entity.shooter.ILivingShooterGetter;
@@ -23,8 +26,10 @@ import java.util.UUID;
 
 public final class LivingShooterSpeedModifier extends LivingShooterAspect {
 
-    private static final UUID EXTRA_SPEED_MODIFIER_UUID = UUID.nameUUIDFromBytes("cgc$EXTRA_SPEED_MODIFIER_UUID".getBytes());
-    private static final UUID WEIGHT_SPEED_MODIFIER_UUID = UUID.nameUUIDFromBytes("cgc$WEIGHT_SPEED_MODIFIER_UUID".getBytes());
+    public static final @NotNull ResourceLocation EXTRA_SPEED_MODIFIER = CustomGun.getMcRegistry().createResourceLocation(String.format("%s:extra_speed_modifier", CustomGun.MOD_ID));
+    public static final @NotNull ResourceLocation WEIGHT_SPEED_MODIFIER = CustomGun.getMcRegistry().createResourceLocation(String.format("%s:weight_speed_modifier", CustomGun.MOD_ID));
+    private static final UUID EXTRA_SPEED_MODIFIER_UUID = UUID.nameUUIDFromBytes(EXTRA_SPEED_MODIFIER.toString().getBytes());
+    private static final UUID WEIGHT_SPEED_MODIFIER_UUID = UUID.nameUUIDFromBytes(WEIGHT_SPEED_MODIFIER.toString().getBytes());
 
     public LivingShooterSpeedModifier(LivingEntity livingShooter, ShooterProperty shooterProperty) {
         super(livingShooter, shooterProperty);
@@ -56,7 +61,8 @@ public final class LivingShooterSpeedModifier extends LivingShooterAspect {
             if (modifier == null) {
                 speedModifier.removeModifier(WEIGHT_SPEED_MODIFIER_UUID);
                 speedModifier.addTransientModifier(new AttributeModifier(WEIGHT_SPEED_MODIFIER_UUID, "Gun Speed Modifier",
-                        targetSpeed, AttributeModifier.Operation.MULTIPLY_BASE));
+                        targetSpeed,
+                        AttributeModifier.Operation.MULTIPLY_BASE));
             }
         }
 
@@ -67,7 +73,8 @@ public final class LivingShooterSpeedModifier extends LivingShooterAspect {
             if (modifier == null) {
                 speedModifier.removeModifier(EXTRA_SPEED_MODIFIER_UUID);
                 speedModifier.addTransientModifier(new AttributeModifier(EXTRA_SPEED_MODIFIER_UUID, "Extra Gun Speed Modifier",
-                        targetSpeed, AttributeModifier.Operation.MULTIPLY_TOTAL));
+                        targetSpeed,
+                        AttributeModifier.Operation.MULTIPLY_TOTAL));
             }
         }
     }

@@ -7,7 +7,7 @@
 
 package xiao.customgun.core.entity.shooter;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -26,8 +26,8 @@ import java.util.UUID;
 
 public final class LivingShooterSpeedModifier extends LivingShooterAspect {
 
-    public static final @NotNull ResourceLocation EXTRA_SPEED_MODIFIER = CustomGun.getMcRegistry().createResourceLocation(String.format("%s:extra_speed_modifier", CustomGun.MOD_ID));
-    public static final @NotNull ResourceLocation WEIGHT_SPEED_MODIFIER = CustomGun.getMcRegistry().createResourceLocation(String.format("%s:weight_speed_modifier", CustomGun.MOD_ID));
+    public static final @NotNull Identifier EXTRA_SPEED_MODIFIER = CustomGun.getMcRegistry().createResourceLocation(String.format("%s:extra_speed_modifier", CustomGun.MOD_ID));
+    public static final @NotNull Identifier WEIGHT_SPEED_MODIFIER = CustomGun.getMcRegistry().createResourceLocation(String.format("%s:weight_speed_modifier", CustomGun.MOD_ID));
 
     public LivingShooterSpeedModifier(LivingEntity livingShooter, ShooterProperty shooterProperty) {
         super(livingShooter, shooterProperty);

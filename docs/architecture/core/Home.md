@@ -51,7 +51,7 @@
 	- LivingShooterBolt：拉栓
 	- LivingShooterProne：趴下
 	- LivingShooterDrawGun：拔枪
-	- LivingShooterFireSelect：开火模式切换
+	- LivingShooterSwitchFireMode：切换开火模式
 	- LivingShooterHeat：热量
 	- LivingShooterMelee：近战
 	- LivingShooterReload：换弹
@@ -264,7 +264,7 @@ Module division based on the `xiao.customgun.core` top-level package
 	- LivingShooterBolt: Bolt
 	- LivingShooterProne: Prone
 	- LivingShooterDrawGun: Draw gun
-	- LivingShooterFireSelect: Fire select
+	- LivingShooterSwitchFireMode: Switch fire mode
 	- LivingShooterHeat: Heat
 	- LivingShooterMelee: Melee
 	- LivingShooterReload: Reload

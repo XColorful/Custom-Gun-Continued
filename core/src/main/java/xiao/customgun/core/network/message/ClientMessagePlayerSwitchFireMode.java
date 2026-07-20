@@ -15,21 +15,21 @@ import xiao.customgun.core.api.network.message.IMessage;
 
 import java.util.function.Consumer;
 
-public class ClientMessagePlayerFireSelect implements IMessage<ClientMessagePlayerFireSelect> {
+public class ClientMessagePlayerSwitchFireMode implements IMessage<ClientMessagePlayerSwitchFireMode> {
 
-    public ClientMessagePlayerFireSelect() {
+    public ClientMessagePlayerSwitchFireMode() {
     }
 
     @Override
-    public void encode(ClientMessagePlayerFireSelect message, FriendlyByteBuf buffer) {
+    public void encode(ClientMessagePlayerSwitchFireMode message, FriendlyByteBuf buffer) {
     }
 
-    public static ClientMessagePlayerFireSelect decode(FriendlyByteBuf buffer) {
-        return new ClientMessagePlayerFireSelect();
+    public static ClientMessagePlayerSwitchFireMode decode(FriendlyByteBuf buffer) {
+        return new ClientMessagePlayerSwitchFireMode();
     }
 
     @Override
-    public void handle(ClientMessagePlayerFireSelect message, Consumer<Runnable> handler, NetworkContext context) {
+    public void handle(ClientMessagePlayerSwitchFireMode message, Consumer<Runnable> handler, NetworkContext context) {
         if (CustomGun.getSideExecutor().getLogicalSide().isServer()) {
             handler.accept(() -> {
                 if (!(context.sender() instanceof ServerPlayer player)) {

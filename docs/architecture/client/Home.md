@@ -45,7 +45,7 @@
 	- LocalShooterBolt：拉栓
 	- LocalShooterProne：趴下
 	- LocalShooterDraw：拔枪
-	- LocalShooterFireSelect：开火模式切换
+	- LocalShooterSwitchFireMode：切换开火模式
 	- LocalShooterInspect：检视
 	- LocalShooterMelee：近战
 	- LocalShooterReload：换弹
@@ -206,7 +206,7 @@ Module division based on the `xiao.customgun.client` top-level package
 	- LocalShooterBolt: Bolt
 	- LocalShooterProne: Prone
 	- LocalShooterDraw: Draw
-	- LocalShooterFireSelect: Fire select
+	- LocalShooterSwitchFireMode: Switch fire mode
 	- LocalShooterInspect: Inspect
 	- LocalShooterMelee: Melee
 	- LocalShooterReload: Reload

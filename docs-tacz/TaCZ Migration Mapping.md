@@ -327,6 +327,9 @@ Notation:
 |net.minecraftforge.eventbus.api.`IEventBus`.register|`EventRegister`.register|
 
 ### Initialize
+> ```java
+> package com.tacz.guns.init;
+> ```
 
 |com.tacz.guns.init|xiao.customgun.core.init|
 |---|---|
@@ -543,6 +546,9 @@ Notation:
 |`SoundManager`|`SoundManager`|
 
 ### Utility
+> ```java
+> package com.tacz.guns.util;
+> ```
 
 |com.tacz.guns.util|xiao.customgun.core.util|
 |---|---|

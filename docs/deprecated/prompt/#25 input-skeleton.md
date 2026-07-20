@@ -7,6 +7,17 @@
 ```
 
 ```
+我进行了修改并提交了commit，刚才的事件类以我修改的最新版为准
+
+现在对照TaCZ com.tacz.guns.client.input下的每个类在我CGC \docs-tacz\TaCZ Migration Mapping.md里对应的类：
+- TaCZ里监听的事件，在xiao.customgun.client.event.custom里也逐个写
+- 对于TaCZ有多个@SubscribeEvent同一个事件的，不需要在ClientEventHandlers里重复监听
+- 在handleEvent的case里把TaCZ原名称的函数补充，只需要空实现即可
+- 对于重复监听事件的，在case里按TaCZ里代码的顺序调用
+- 注意在CGC里，ClientTickEven的Pre和Post对应两个EventType，不要搞错了
+```
+
+```
 完成新增的ServerPlayerTickEvent和ClientPlayerTickEvent
 - 这两个事件都监听PlayerTickEvent
 - 在Manager里获取logicalSide来过滤

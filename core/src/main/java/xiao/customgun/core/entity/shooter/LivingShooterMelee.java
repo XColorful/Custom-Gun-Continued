@@ -7,7 +7,7 @@
 
 package xiao.customgun.core.entity.shooter;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -143,7 +143,7 @@ public final class LivingShooterMelee extends LivingShooterAspect {
         return coolDown < WINDOW_TIME_MS ? 0 : coolDown;
     }
 
-    private static @Nullable _MeleeModifierData _getMeleeModifierData(ResourceLocation attachmentLocation) {
+    private static @Nullable _MeleeModifierData _getMeleeModifierData(Identifier attachmentLocation) {
         @Nullable AttachmentIndexInstance attachmentIndexInstance = ResourceApi.getAttachmentIndexInstance(attachmentLocation);
         if (attachmentIndexInstance == null) return null;
         return attachmentIndexInstance.getAttachmentData().getMeleeModifier();

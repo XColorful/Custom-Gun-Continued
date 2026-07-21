@@ -98,7 +98,7 @@ public class ShooterProperty {
     /**
      * 是否处于趴下状态
      */
-    public boolean isCrawling = false;
+    public boolean isProne = false;
     /**
      * TODO
      * 用于缓存 lua 脚本的数据

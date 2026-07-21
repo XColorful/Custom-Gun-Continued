@@ -6,6 +6,7 @@ package xiao.customgun.core.gun;
 
 import org.jetbrains.annotations.NotNull;
 import xiao.customgun.CustomGun;
+import xiao.customgun.core.api.common.McSide;
 import xiao.customgun.core.api.gun.GunManagerGroup;
 import xiao.customgun.core.api.gun.IGunManager;
 import xiao.customgun.core.gun.inventory.GunInventoryManager;
@@ -30,6 +31,10 @@ public class GunManager implements IGunManager {
         this.managerGroups = new HashMap<>();
         this.registerRuntimeGroup(defaultGroup);
     }
+
+    public static void init(McSide mcSide) {
+    }
+
     public static final String _MANAGER_NAME = String.format("%s:%s", CustomGun.MOD_ID, GunManager.class.getSimpleName());
     @Override public String getManagerName() {
         return _MANAGER_NAME;

@@ -26,7 +26,10 @@ public class ForgeEventRegister implements IEventRegister {
 
         return switch (eventType) {
             // tick
+            case PREPARE_SERVER_TICK_EVENT -> PrepareServerTickEventManager.register(eventHandler, priority, receiveCanceled);
             case SERVER_TICK_EVENT -> ServerTickEventManager.register(eventHandler, priority, receiveCanceled);
+            case PREPARE_SERVER_PLAYER_TICK_EVENT -> PrepareServerPlayerTickEventManager.register(eventHandler, priority, receiveCanceled);
+            case SERVER_PLAYER_TICK_EVENT -> ServerPlayerTickEventManager.register(eventHandler, priority, receiveCanceled);
             // entity
             case ENTITY_JOIN_LEVEL_EVENT -> EntityJoinLevelEventManager.register(eventHandler, priority, receiveCanceled);
             // living entity
@@ -53,7 +56,10 @@ public class ForgeEventRegister implements IEventRegister {
 
         return switch (eventType) {
             // tick
+            case PREPARE_SERVER_TICK_EVENT -> PrepareServerTickEventManager.unregister(eventHandler, priority, receiveCanceled);
             case SERVER_TICK_EVENT -> ServerTickEventManager.unregister(eventHandler, priority, receiveCanceled);
+            case PREPARE_SERVER_PLAYER_TICK_EVENT -> PrepareServerPlayerTickEventManager.unregister(eventHandler, priority, receiveCanceled);
+            case SERVER_PLAYER_TICK_EVENT -> ServerPlayerTickEventManager.unregister(eventHandler, priority, receiveCanceled);
             // entity
             case ENTITY_JOIN_LEVEL_EVENT -> EntityJoinLevelEventManager.unregister(eventHandler, priority, receiveCanceled);
             // living entity

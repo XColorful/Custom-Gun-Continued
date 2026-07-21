@@ -15,8 +15,8 @@ public class ClientModConfigTag {
     public static final String holdToAim_path = "HoldToAim";
     public static final String holdToAim_comment = "True if you want to hold the right mouse button to aim";
 
-    public static final String holdToCrawl_path = "HoldToCrawl";
-    public static final String holdToCrawl_comment = "True if you want to hold the crawl button to crawl";
+    public static final String holdToProne_path = "HoldToProne"; public static final String holdToProne_path_OLD1 = "HoldToCrawl";
+    public static final String holdToProne_comment = "True if you want to hold the prone button to prone";
 
     public static final String autoReload_path = "AutoReload";
     public static final String autoReload_comment = "Try to reload automatically when the gun is empty";

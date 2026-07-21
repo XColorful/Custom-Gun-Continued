@@ -17,7 +17,7 @@ import xiao.customgun.core.developer.PlannedRefactor;
 // TODO
 public class GunRefitScreen extends Screen {
 
-    protected GunRefitScreen() {
+    public GunRefitScreen() {
         super(Component.literal("Gun Refit Screen"));
         // TODO
     }

@@ -182,7 +182,7 @@ Notation:
 
 |com.tacz.guns.compat|xiao.customgun.core.compat|
 |---|---|
-|cloth||
+|cloth|_Deprecated_|
 |carryon||
 |controllable||
 |jei||
@@ -250,6 +250,7 @@ Notation:
 |com.tacz.guns.entity|xiao.customgun.core.entity|
 |---|---|
 |shooter.`LivingEntity*`|shooter.`LivingShooter*`|
+|shooter.`LivingEntityCrawl`|shooter.`LivingShooterProne`|
 |shooter.`LivingEntityDrawGun`|shooter.`LivingShooterDraw`|
 |shooter.`LivingEntityFireSelect`|shooter.`LivingShooterSwitchFireMode`|
 |sync.core|sync|
@@ -429,6 +430,7 @@ Notation:
 |message.event.`*`|message.event.`*`|
 |message.handshake.`*`|message.handshake.`*`|
 |message.`*Message*`|message.`*Message*`|
+|message.`ClientMessagePlayerCrawl`|message.`ClientMessagePlayerProne`|
 |`LoginIndexHolder`|`LoginIndexHolder`|
 |`NetworkHandler`|`NetworkHandler`|
 
@@ -586,7 +588,7 @@ Notation:
 
 |com.tacz.guns.util|xiao.customgun.client.util|
 |---|---|
-|`InputExtraCheck`||
+|`InputExtraCheck`|`ClientInputUtils`|
 |`RenderDistance`||
 |`RenderHelper`||
 
@@ -725,6 +727,7 @@ Notation:
 |com.tacz.guns.client.gameplay|xiao.customgun.client.entity|
 |---|---|
 |`LocalPlayer*`|shooter.`LocalShooter*`|
+|`LocalPlayerCrawl`|shooter.`LocalShooterProne`|
 |`LocalPlayerFireSelect`|shooter.`LocalShooterSwitchFireMode`|
 
 |com.tacz.guns.client.gameplay|xiao.customgun.client.api.entity|
@@ -749,7 +752,7 @@ Notation:
 
 |com.tacz.guns.client.gui|xiao.customgun.client.compat|
 |---|---|
-|compat.`ClothConfigScreen`||
+|compat.`ClothConfigScreen`|_Deprecated_|
 
 ### Initialize (Client)
 > ```java
@@ -760,7 +763,7 @@ Notation:
 |---|---|
 |`ClientSetupEvent`.onClientSetup(FMLClientSetupEvent)||
 |`ClientSetupEvent`.onClientSetup(RegisterClientTooltipComponentFactoriesEvent)|`ClientTooltipRegistry`.registerTooltips|
-|`ClientSetupEvent`.onClientSetup(RegisterKeyMappingsEvent)||
+|`ClientSetupEvent`.onClientSetup(RegisterKeyMappingsEvent)|`ClientKeyMappingRegistry`.registerKeyMappings|
 |`ClientSetupEvent`.onRegisterGuiOverlays||
 |`ModContainerScreen`|_Deprecated_|
 |`ModEntitiesRender`||
@@ -777,7 +780,17 @@ Notation:
 
 |com.tacz.guns.client.input| |
 |---|---|
-|`*Key`||
+|`AimKey`|shooter.`AimKey`|
+|`ConfigKey`|config.`ConfigKey`|
+|`CrawlKey`|shooter.`ProneKey`|
+|`FireSelectKey`|shooter.`SwitchFireModeKey`|
+|`InspectKey`|shooter.`InspectKey`|
+|`InteractKey`|player.`InteractKey`|
+|`MeleeKey`|shooter.`MeleeKey`|
+|`RefitKey`|player.`RefitKey`|
+|`ReloadKey`|shooter.`ReloadKey`|
+|`ShootKey`|shooter.`ShootKey`|
+|`ZoomKey`|shooter.`ZoomKey`|
 
 ### Mixin (Client)
 > ```java

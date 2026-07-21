@@ -30,6 +30,7 @@ import xiao.customgun.core.api.minecraft.ICapabilityProvider;
 import xiao.customgun.core.api.minecraft.IMcRegistry;
 import xiao.customgun.core.api.network.INetworkAdapter;
 import xiao.customgun.core.api.network.INetworkHook;
+import xiao.customgun.core.api.projectile.IProjectileManager;
 import xiao.customgun.core.event.EventPoster;
 import xiao.customgun.core.event.EventRegister;
 import xiao.customgun.core.event.custom.CoreEventHandlers;
@@ -37,6 +38,7 @@ import xiao.customgun.core.gun.GunManager;
 import xiao.customgun.core.init.ModConfig;
 import xiao.customgun.core.network.NetworkHandler;
 import xiao.customgun.core.network.NetworkHook;
+import xiao.customgun.core.projectile.ProjectileManager;
 
 import java.util.function.Supplier;
 
@@ -76,6 +78,7 @@ public class CustomGun {
         ModConfig.init();
 
         gunManager = GunManager.INSTANCE;
+        projectileManager = ProjectileManager.INSTANCE;
 
         CoreEventHandlers.registerAll(getEventRegister());
         initialized = true;
@@ -115,6 +118,7 @@ public class CustomGun {
     private final @NotNull static ICustomEventRegister eventRegister = EventRegister.get(); // 在模组加载前就能触发
     private final @NotNull static ICustomEventPoster eventPoster = EventPoster.get(); // 在模组加载前就能触发
     private static IGunManager gunManager;
+    private static IProjectileManager projectileManager;
     public @NotNull static ICustomEventRegister getEventRegister() {
         return CustomGun.eventRegister;
     }
@@ -124,11 +128,18 @@ public class CustomGun {
     public static IGunManager getGunManager() {
         return CustomGun.gunManager;
     }
+    public static IProjectileManager getProjectileManager() {
+        return CustomGun.projectileManager;
+    }
     /**
      * @deprecated 除非需要深度定制, 否则不应该调用
      */
     @Deprecated(forRemoval = false)
     public static void setGunManager(@NotNull IGunManager gunManager) {
         CustomGun.gunManager = gunManager;
+    }
+    @Deprecated(forRemoval = false)
+    public static void setProjectileManager(@NotNull IProjectileManager projectileManager) {
+        CustomGun.projectileManager = projectileManager;
     }
 }

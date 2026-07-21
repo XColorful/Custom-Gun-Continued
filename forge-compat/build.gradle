@@ -41,6 +41,9 @@ minecraft {
             args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
         }
     }
+
+    // Access Transformer
+    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 }
 
 tasks.withType(ProcessResources).configureEach {

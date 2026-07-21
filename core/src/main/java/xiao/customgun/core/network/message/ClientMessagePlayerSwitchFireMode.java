@@ -12,35 +12,31 @@ import net.minecraft.server.level.ServerPlayer;
 import xiao.customgun.CustomGun;
 import xiao.customgun.core.api.entity.shooter.ILivingShooterGetter;
 import xiao.customgun.core.api.network.message.IMessage;
-import xiao.customgun.core.config.SyncConfig;
 
 import java.util.function.Consumer;
 
-public record ClientMessagePlayerCrawl(boolean isCrawl)
-        implements IMessage<ClientMessagePlayerCrawl> {
+public class ClientMessagePlayerSwitchFireMode implements IMessage<ClientMessagePlayerSwitchFireMode> {
 
-    @Override
-    public void encode(ClientMessagePlayerCrawl message, FriendlyByteBuf buffer) {
-        buffer.writeBoolean(message.isCrawl);
-    }
-
-    public static ClientMessagePlayerCrawl decode(FriendlyByteBuf buffer) {
-        return new ClientMessagePlayerCrawl(buffer.readBoolean());
+    public ClientMessagePlayerSwitchFireMode() {
     }
 
     @Override
-    public void handle(ClientMessagePlayerCrawl message, Consumer<Runnable> handler, NetworkContext context) {
+    public void encode(ClientMessagePlayerSwitchFireMode message, FriendlyByteBuf buffer) {
+    }
+
+    public static ClientMessagePlayerSwitchFireMode decode(FriendlyByteBuf buffer) {
+        return new ClientMessagePlayerSwitchFireMode();
+    }
+
+    @Override
+    public void handle(ClientMessagePlayerSwitchFireMode message, Consumer<Runnable> handler, NetworkContext context) {
         if (CustomGun.getSideExecutor().getLogicalSide().isServer()) {
             handler.accept(() -> {
                 if (!(context.sender() instanceof ServerPlayer player)) {
                     return;
                 }
 
-                if (!SyncConfig.ENABLE_CRAWL.get()) {
-                    return;
-                }
-
-                ILivingShooterGetter.cgc$fromLivingEntity(player).cgc$crawl(message.isCrawl);
+                ILivingShooterGetter.cgc$fromLivingEntity(player).cgc$switchFireMode();
             });
         }
     }

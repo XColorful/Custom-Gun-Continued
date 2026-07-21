@@ -1,4 +1,19 @@
 {
+  "key.category.customgun.config": "Custom Gun Continued: Config",
+  "key.customgun.config": "Config",
+  "key.category.customgun.player": "Custom Gun Continued: Player",
+  "key.customgun.interact": "Interact",
+  "key.customgun.refit": "Refit",
+  "key.category.customgun.shooter": "Custom Gun Continued: Shooter",
+  "key.customgun.aim": "Aim",
+  "key.customgun.inspect": "Inspect",
+  "key.customgun.melee": "Melee",
+  "key.customgun.prone": "Prone",
+  "key.customgun.reload": "Reload",
+  "key.customgun.shoot": "Shoot",
+  "key.customgun.switch_fire_mode": "Switch fire mode",
+  "key.customgun.zoom": "Zoom",
+
   "customgun.unknown": "Unknown",
 
   "customgun.guncategory.shotgun": "Shotgun",

@@ -21,23 +21,28 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
+import xiao.customgun.core.api.minecraft.access.ICoreAccessTransformer;
 import xiao.customgun.core.api.common.ISideExecutor;
 import xiao.customgun.core.api.common.McSide;
 import xiao.customgun.core.api.config.IModConfigSpecBuilder;
 import xiao.customgun.core.api.event.ICustomEventPoster;
 import xiao.customgun.core.api.event.ICustomEventRegister;
 import xiao.customgun.core.api.event.IEventRegister;
+import xiao.customgun.core.api.gun.IGunManager;
 import xiao.customgun.core.api.init.registry.IRegistrarFactory;
 import xiao.customgun.core.api.minecraft.ICapabilityProvider;
 import xiao.customgun.core.api.minecraft.IMcRegistry;
 import xiao.customgun.core.api.network.INetworkAdapter;
 import xiao.customgun.core.api.network.INetworkHook;
+import xiao.customgun.core.api.projectile.IProjectileManager;
 import xiao.customgun.core.event.EventPoster;
 import xiao.customgun.core.event.EventRegister;
 import xiao.customgun.core.event.custom.CoreEventHandlers;
+import xiao.customgun.core.gun.GunManager;
 import xiao.customgun.core.init.ModConfig;
 import xiao.customgun.core.network.NetworkHandler;
 import xiao.customgun.core.network.NetworkHook;
+import xiao.customgun.core.projectile.ProjectileManager;
 
 import java.util.function.Supplier;
 
@@ -54,12 +59,14 @@ public class CustomGun {
     private static IMcRegistry mcRegistry;
     private static ICapabilityProvider capabilityProvider;
     private static Supplier<IModConfigSpecBuilder> modConfigSpecBuilderSupplier;
+    private static ICoreAccessTransformer accessTransformer;
 
     public static void init(McSide mcSide, ISideExecutor sideExecutor,
                             IRegistrarFactory factory, IMcRegistry mcRegistry, ICapabilityProvider capabilityProvider,
                             INetworkAdapter networkAdapter, INetworkHook networkHook,
                             IEventRegister eventRegister,
-                            Supplier<IModConfigSpecBuilder> modConfigSpecBuilderSupplier) {
+                            Supplier<IModConfigSpecBuilder> modConfigSpecBuilderSupplier,
+                            ICoreAccessTransformer accessTransformer) {
         if (initialized) return;
         CustomGun.mcSide = mcSide;
         CustomGun.sideExecutor = sideExecutor;
@@ -67,6 +74,7 @@ public class CustomGun {
         CustomGun.mcRegistry = mcRegistry;
         CustomGun.capabilityProvider = capabilityProvider;
         CustomGun.modConfigSpecBuilderSupplier = modConfigSpecBuilderSupplier;
+        CustomGun.accessTransformer = accessTransformer;
 
         // 最早的事件机制初始化
         EventRegister.initialize(eventRegister);
@@ -75,6 +83,11 @@ public class CustomGun {
         NetworkHook.initialize(networkHook);
 
         ModConfig.init();
+
+        gunManager = GunManager.INSTANCE;
+        GunManager.init(mcSide);
+        projectileManager = ProjectileManager.INSTANCE;
+        ProjectileManager.init(mcSide);
 
         CoreEventHandlers.registerAll(getEventRegister());
         initialized = true;
@@ -110,14 +123,36 @@ public class CustomGun {
     public static MinecraftServer getMinecraftServer() {
         return getMcRegistry().getMinecraftServer();
     }
+    public static ICoreAccessTransformer getAccessTransformer() {
+        return accessTransformer;
+    }
 
     private final @NotNull static ICustomEventRegister eventRegister = EventRegister.get(); // 在模组加载前就能触发
     private final @NotNull static ICustomEventPoster eventPoster = EventPoster.get(); // 在模组加载前就能触发
+    private static IGunManager gunManager;
+    private static IProjectileManager projectileManager;
     public @NotNull static ICustomEventRegister getEventRegister() {
         return CustomGun.eventRegister;
     }
     public @NotNull static ICustomEventPoster getEventPoster() {
         return CustomGun.eventPoster;
+    }
+    public static IGunManager getGunManager() {
+        return CustomGun.gunManager;
+    }
+    public static IProjectileManager getProjectileManager() {
+        return CustomGun.projectileManager;
+    }
+    /**
+     * @deprecated 除非需要深度定制, 否则不应该调用
+     */
+    @Deprecated(forRemoval = false)
+    public static void setGunManager(@NotNull IGunManager gunManager) {
+        CustomGun.gunManager = gunManager;
+    }
+    @Deprecated(forRemoval = false)
+    public static void setProjectileManager(@NotNull IProjectileManager projectileManager) {
+        CustomGun.projectileManager = projectileManager;
     }
     @ApiStatus.AvailableSince("1.21.1")
     public static @Nullable RegistryAccess getRegistryAccess() {

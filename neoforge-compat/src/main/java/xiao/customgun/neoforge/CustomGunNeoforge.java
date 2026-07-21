@@ -35,6 +35,7 @@ import xiao.customgun.neoforge.event.NeoEventRegister;
 import xiao.customgun.neoforge.init.registry.NeoRegistrarFactory;
 import xiao.customgun.neoforge.minecraft.NeoCapabilityProvider;
 import xiao.customgun.neoforge.minecraft.NeoRegistry;
+import xiao.customgun.neoforge.minecraft.access.NeoAccessTransformer;
 import xiao.customgun.neoforge.network.NeoNetworkAdapter;
 import xiao.customgun.neoforge.network.NeoNetworkHook;
 import xiao.customgun.neoforgeclient.CustomGunNeoforgeClient;
@@ -52,6 +53,7 @@ public class CustomGunNeoforge {
     public static INetworkHook networkHook;
     public static IEventRegister eventRegister;
     public static Supplier<IModConfigSpecBuilder> modConfigSpecBuilderSupplier;
+    public static NeoAccessTransformer accessTransformer;
 
     public CustomGunNeoforge(IEventBus modEventBus) {
         CustomGunNeoforge.sideExecutor = new NeoSideExecutor();
@@ -62,6 +64,7 @@ public class CustomGunNeoforge {
         CustomGunNeoforge.networkHook = new NeoNetworkHook();
         CustomGunNeoforge.eventRegister = new NeoEventRegister();
         CustomGunNeoforge.modConfigSpecBuilderSupplier = NeoModConfigSpecBuilder::new;
+        CustomGunNeoforge.accessTransformer = new NeoAccessTransformer();
         Dist dist = FMLLoader.getDist();
         McSide mcSide = dist.isClient() ? McSide.CLIENT : McSide.DEDICATED_SERVER;
 
@@ -69,7 +72,8 @@ public class CustomGunNeoforge {
                 CustomGunNeoforge.registrarFactory, CustomGunNeoforge.mcRegistry, CustomGunNeoforge.capabilityProvider,
                 CustomGunNeoforge.networkAdapter, CustomGunNeoforge.networkHook,
                 CustomGunNeoforge.eventRegister,
-                CustomGunNeoforge.modConfigSpecBuilderSupplier);
+                CustomGunNeoforge.modConfigSpecBuilderSupplier,
+                CustomGunNeoforge.accessTransformer);
 
         ModItems.ITEMS.registerAll(modEventBus);
         ModEntities.ENTITY_TYPES.registerAll(modEventBus);

@@ -8,7 +8,7 @@ import xiao.customgun.core.api.event.EventPriority;
 import xiao.customgun.core.api.event.EventType;
 import xiao.customgun.core.api.event.IEventHandler;
 import xiao.customgun.neoforge.event.NeoEvent;
-import xiao.customgun.neoforge.event.NeoServerTickEvent;
+import xiao.customgun.neoforge.event.NeoPrepareServerTickEvent;
 
 public class NeoPrepareServerTickEventManager {
 
@@ -47,7 +47,7 @@ public class NeoPrepareServerTickEventManager {
 
         @Override
         protected NeoEvent getNeoEventType(Event event) {
-            return new NeoServerTickEvent(event);
+            return new NeoPrepareServerTickEvent(event);
         }
 
         protected void handle(TickEvent.ServerTickEvent event) {

@@ -108,8 +108,8 @@ public class LocalPlayerMixin implements ILocalShooter {
         this.cgc$localReload.cancelReload();
         return this.cgc$localShoot.shoot();
     }
-    @Override public boolean cgc$chargeShoot(boolean isCharge) {
-        return this.cgc$localShoot.chargeShoot(isCharge);
+    @Override public boolean cgc$chargeAndGetResult(boolean doShoot) {
+        return this.cgc$localShoot.chargeAndGetResult(doShoot);
     }
 
     @Override

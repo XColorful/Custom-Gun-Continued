@@ -12,11 +12,11 @@ import xiao.customgun.forge.event.ForgeEvent;
 
 public class ForgePrepareClientTickEvent extends ForgeEvent implements IPrepareClientTickEvent {
 
-    protected TickEvent.ClientTickEvent clientTickEvent;
+    protected TickEvent.ClientTickEvent.Pre clientTickEvent;
 
     public ForgePrepareClientTickEvent(Event event) {
         super(event);
-        if (event instanceof TickEvent.ClientTickEvent eventIn) {
+        if (event instanceof TickEvent.ClientTickEvent.Pre eventIn) {
             this.clientTickEvent = eventIn;
         } else {
             throw new RuntimeException("Expected ClientTickEvent but received: " + event.getClass().getName());

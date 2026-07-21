@@ -56,11 +56,11 @@ public class MouseHandlerMixin {
         double denominator = MathUtil.zoomSensitivityRatio(currentFov, originalFov, coefficient) * sensitivityMultiplier;
         // 最终结果
         double finalYaw = yaw * denominator;
-        double finalPitch = cgc$calculateCrawlPitch(player, pitch, denominator);
+        double finalPitch = cgc$calculatePronePitch(player, pitch, denominator);
         original.call(player, finalYaw, finalPitch);
     }
 
-    private static double cgc$calculateCrawlPitch(LocalPlayer player, double pitch, double denominator) {
+    private static double cgc$calculatePronePitch(LocalPlayer player, double pitch, double denominator) {
         double finalPitch = pitch * denominator;
         // 对趴姿限制 pitch 范围
         if (!player.isSwimming() && player.getPose() == Pose.SWIMMING) {

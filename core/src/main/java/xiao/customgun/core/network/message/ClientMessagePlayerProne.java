@@ -12,31 +12,35 @@ import net.minecraft.server.level.ServerPlayer;
 import xiao.customgun.CustomGun;
 import xiao.customgun.core.api.entity.shooter.ILivingShooterGetter;
 import xiao.customgun.core.api.network.message.IMessage;
+import xiao.customgun.core.config.SyncConfig;
 
 import java.util.function.Consumer;
 
-public class ClientMessagePlayerFireSelect implements IMessage<ClientMessagePlayerFireSelect> {
+public record ClientMessagePlayerProne(boolean isProne)
+        implements IMessage<ClientMessagePlayerProne> {
 
-    public ClientMessagePlayerFireSelect() {
+    @Override
+    public void encode(ClientMessagePlayerProne message, FriendlyByteBuf buffer) {
+        buffer.writeBoolean(message.isProne);
+    }
+
+    public static ClientMessagePlayerProne decode(FriendlyByteBuf buffer) {
+        return new ClientMessagePlayerProne(buffer.readBoolean());
     }
 
     @Override
-    public void encode(ClientMessagePlayerFireSelect message, FriendlyByteBuf buffer) {
-    }
-
-    public static ClientMessagePlayerFireSelect decode(FriendlyByteBuf buffer) {
-        return new ClientMessagePlayerFireSelect();
-    }
-
-    @Override
-    public void handle(ClientMessagePlayerFireSelect message, Consumer<Runnable> handler, NetworkContext context) {
+    public void handle(ClientMessagePlayerProne message, Consumer<Runnable> handler, NetworkContext context) {
         if (CustomGun.getSideExecutor().getLogicalSide().isServer()) {
             handler.accept(() -> {
                 if (!(context.sender() instanceof ServerPlayer player)) {
                     return;
                 }
 
-                ILivingShooterGetter.cgc$fromLivingEntity(player).cgc$switchFireMode();
+                if (!SyncConfig.ENABLE_PRONE.get()) {
+                    return;
+                }
+
+                ILivingShooterGetter.cgc$fromLivingEntity(player).cgc$prone(message.isProne);
             });
         }
     }

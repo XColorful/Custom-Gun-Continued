@@ -17,7 +17,7 @@ public class GunDataTag {
     public static final String RPM = "rpm";
     public static final String INACCURACY_DATA = "inaccuracy_data"; public static final String INACCURACY_DATA_OLD1 = "inaccuracy";
     public static final String RECOIL_DATA = "recoil_data"; public static final String RECOIL_DATA_OLD1 = "recoil";
-    public static final String CRAWL_RECOIL_MULTIPLIER = "crawl_recoil_multiplier";
+    public static final String PRONE_RECOIL_MULTIPLIER = "prone_recoil_multiplier"; public static final String PRONE_RECOIL_MULTIPLIER_OLD1 = "crawl_recoil_multiplier";
 
     public static final String WEIGHT = "weight";
     public static final String MOVEMENT_DATA = "movement_data"; public static final String MOVEMENT_DATA_OLD1 = "movement_speed";
@@ -50,7 +50,7 @@ public class GunDataTag {
     public static final String BUILTIN_ATTACHMENTS = "builtin_attachments";
 
     // 举枪动作
-    public static final String ENABLE_CRAWL = "enable_crawl"; public static final String ENABLE_CRAWL_OLD1 = "can_crawl";
+    public static final String ENABLE_PRONE = "enable_prone"; public static final String ENABLE_PRONE_OLD1 = "can_crawl";
     public static final String ENABLE_SLIDE = "enable_slide"; public static final String ENABLE_SLIDE_OLD1 = "can_slide";
 
     // 操作枪械的时长

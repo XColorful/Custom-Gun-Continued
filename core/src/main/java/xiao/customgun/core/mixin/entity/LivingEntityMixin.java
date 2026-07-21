@@ -34,7 +34,7 @@ public abstract class LivingEntityMixin extends Entity implements ILivingShooter
     private final ShooterProperty cgc$shooterProperty = new ShooterProperty();
 
     // 行为动作
-    private final LivingShooterCrawl cgc$crawl = new LivingShooterCrawl(cgc$shooter, cgc$shooterProperty);
+    private final LivingShooterProne cgc$prone = new LivingShooterProne(cgc$shooter, cgc$shooterProperty);
     private final LivingShooterSprint cgc$sprint = new LivingShooterSprint(cgc$shooter, cgc$shooterProperty);
 
     // 枪械操作
@@ -71,7 +71,7 @@ public abstract class LivingEntityMixin extends Entity implements ILivingShooter
         ReloadState reloadState = this.cgc$reload.tickReloadState();
         this.cgc$aim.tickAimingProgress();
         this.cgc$aim.tickSprint();
-        this.cgc$crawl.tickCrawling();
+        this.cgc$prone.tickProne();
         this.cgc$bolt.tickBolt();
         this.cgc$melee.scheduleTickMelee();
         this.cgc$speed.updateSpeedModifier();
@@ -115,8 +115,8 @@ public abstract class LivingEntityMixin extends Entity implements ILivingShooter
     // --------IGunOperator--------
 
     @Override
-    public void cgc$crawl(boolean isCrawl) {
-        this.cgc$crawl.crawl(isCrawl);
+    public void cgc$prone(boolean isProne) {
+        this.cgc$prone.prone(isProne);
     }
 
     @Override public void cgc$draw(Supplier<ItemStack> gunItemSupplier) {

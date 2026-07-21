@@ -26,7 +26,10 @@ public class NeoEventRegister implements IEventRegister {
 
         return switch (eventType) {
             // tick
+            case PREPARE_SERVER_TICK_EVENT -> NeoPrepareServerTickEventManager.register(eventHandler, priority, receiveCanceled);
             case SERVER_TICK_EVENT -> NeoServerTickEventManager.register(eventHandler, priority, receiveCanceled);
+            case PREPARE_SERVER_PLAYER_TICK_EVENT -> NeoPrepareServerPlayerTickEventManager.register(eventHandler, priority, receiveCanceled);
+            case SERVER_PLAYER_TICK_EVENT -> NeoServerPlayerTickEventManager.register(eventHandler, priority, receiveCanceled);
             // entity
             case ENTITY_JOIN_LEVEL_EVENT -> NeoEntityJoinLevelEventManager.register(eventHandler, priority, receiveCanceled);
             // living entity
@@ -53,7 +56,10 @@ public class NeoEventRegister implements IEventRegister {
 
         return switch (eventType) {
             // tick
+            case PREPARE_SERVER_TICK_EVENT -> NeoPrepareServerTickEventManager.unregister(eventHandler, priority, receiveCanceled);
             case SERVER_TICK_EVENT -> NeoServerTickEventManager.unregister(eventHandler, priority, receiveCanceled);
+            case PREPARE_SERVER_PLAYER_TICK_EVENT -> NeoPrepareServerPlayerTickEventManager.unregister(eventHandler, priority, receiveCanceled);
+            case SERVER_PLAYER_TICK_EVENT -> NeoServerPlayerTickEventManager.unregister(eventHandler, priority, receiveCanceled);
             // entity
             case ENTITY_JOIN_LEVEL_EVENT -> NeoEntityJoinLevelEventManager.unregister(eventHandler, priority, receiveCanceled);
             // living entity

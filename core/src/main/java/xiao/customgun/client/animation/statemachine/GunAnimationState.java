@@ -15,24 +15,26 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum GunAnimationState implements ResourceTag.ConstantTag {
-    INPUT_BOLT(GunAnimationStateTag.INPUT_BOLT),
-    INPUT_DRAW(GunAnimationStateTag.INPUT_DRAW),
-    INPUT_PUT_AWAY(GunAnimationStateTag.INPUT_PUT_AWAY),
-    INPUT_FIRE_SELECT(GunAnimationStateTag.INPUT_FIRE_SELECT),
-    INPUT_INSPECT(GunAnimationStateTag.INPUT_INSPECT),
-    INPUT_BAYONET_MUZZLE(GunAnimationStateTag.INPUT_BAYONET_MUZZLE),
-    INPUT_BAYONET_STOCK(GunAnimationStateTag.INPUT_BAYONET_STOCK),
-    INPUT_BAYONET_PUSH(GunAnimationStateTag.INPUT_BAYONET_PUSH),
-    INPUT_RELOAD(GunAnimationStateTag.INPUT_RELOAD),
-    INPUT_CANCEL_RELOAD(GunAnimationStateTag.INPUT_CANCEL_RELOAD),
-    INPUT_SHOOT(GunAnimationStateTag.INPUT_SHOOT),
-    INPUT_WALK(GunAnimationStateTag.INPUT_WALK),
-    INPUT_RUN(GunAnimationStateTag.INPUT_RUN),
-    INPUT_IDLE(GunAnimationStateTag.INPUT_IDLE);
+    INPUT_BOLT(GunAnimationStateTag.INPUT_BOLT, null),
+    INPUT_DRAW(GunAnimationStateTag.INPUT_DRAW, null),
+    INPUT_PUT_AWAY(GunAnimationStateTag.INPUT_PUT_AWAY, null),
+    INPUT_SWITCH_FIRE_MODE(GunAnimationStateTag.INPUT_SWITCH_FIRE_MODE, GunAnimationStateTag.INPUT_SWITCH_FIRE_MODE_OLD1),
+    INPUT_INSPECT(GunAnimationStateTag.INPUT_INSPECT, null),
+    INPUT_BAYONET_MUZZLE(GunAnimationStateTag.INPUT_BAYONET_MUZZLE, null),
+    INPUT_BAYONET_STOCK(GunAnimationStateTag.INPUT_BAYONET_STOCK, null),
+    INPUT_BAYONET_PUSH(GunAnimationStateTag.INPUT_BAYONET_PUSH, null),
+    INPUT_RELOAD(GunAnimationStateTag.INPUT_RELOAD, null),
+    INPUT_CANCEL_RELOAD(GunAnimationStateTag.INPUT_CANCEL_RELOAD, null),
+    INPUT_SHOOT(GunAnimationStateTag.INPUT_SHOOT, null),
+    INPUT_WALK(GunAnimationStateTag.INPUT_WALK, null),
+    INPUT_RUN(GunAnimationStateTag.INPUT_RUN, null),
+    INPUT_IDLE(GunAnimationStateTag.INPUT_IDLE, null);
 
     public final String typeName;
-    GunAnimationState(String name) {
+    public final String typeNameOld;
+    GunAnimationState(String name, String nameOld) {
         this.typeName = name;
+        this.typeNameOld = nameOld;
     }
 
     @Override public String getTagName() {
@@ -47,6 +49,7 @@ public enum GunAnimationState implements ResourceTag.ConstantTag {
     static {
         for (GunAnimationState state : values()) {
             ANIMATION_STATES.put(state.typeName, state);
+            if (state.typeNameOld != null) ANIMATION_STATES.put(state.typeNameOld, state);
         }
     }
 

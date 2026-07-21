@@ -13,7 +13,14 @@ import xiao.customgun.core.api.event.EventType;
 import xiao.customgun.core.api.event.IEventHandler;
 import xiao.customgun.core.api.event.IEventRegister;
 import xiao.customgun.forgeclient.event.events.AddClientReloadListenerEventManager;
+import xiao.customgun.forgeclient.event.events.ClientPlayerTickEventManager;
 import xiao.customgun.forgeclient.event.events.ClientTickEventManager;
+import xiao.customgun.forgeclient.event.events.PrepareClientPlayerTickEventManager;
+import xiao.customgun.forgeclient.event.events.InputKeyEventManager;
+import xiao.customgun.forgeclient.event.events.InteractionMappingEventManager;
+import xiao.customgun.forgeclient.event.events.MouseButtonEventManager;
+import xiao.customgun.forgeclient.event.events.MouseScrollingEventManager;
+import xiao.customgun.forgeclient.event.events.PrepareClientTickEventManager;
 
 public class ForgeClientEventRegister implements IEventRegister {
 
@@ -21,7 +28,15 @@ public class ForgeClientEventRegister implements IEventRegister {
     public boolean register(IEventHandler eventHandler, EventType eventType, EventPriority priority, boolean receiveCanceled) {
         return switch (eventType) {
             // tick
+            case PREPARE_CLIENT_TICK_EVENT -> PrepareClientTickEventManager.register(eventHandler, priority, receiveCanceled);
             case CLIENT_TICK_EVENT -> ClientTickEventManager.register(eventHandler, priority, receiveCanceled);
+            case PREPARE_CLIENT_PLAYER_TICK_EVENT -> PrepareClientPlayerTickEventManager.register(eventHandler, priority, receiveCanceled);
+            case CLIENT_PLAYER_TICK_EVENT -> ClientPlayerTickEventManager.register(eventHandler, priority, receiveCanceled);
+            // input
+            case INPUT_KEY_EVENT -> InputKeyEventManager.register(eventHandler, priority, receiveCanceled);
+            case INTERACTION_MAPPING_EVENT -> InteractionMappingEventManager.register(eventHandler, priority, receiveCanceled);
+            case MOUSE_BUTTON_EVENT -> MouseButtonEventManager.register(eventHandler, priority, receiveCanceled);
+            case MOUSE_SCROLLING_EVENT -> MouseScrollingEventManager.register(eventHandler, priority, receiveCanceled);
             // resource
             case ADD_CLIENT_RELOAD_LISTENER_EVENT -> AddClientReloadListenerEventManager.register(eventHandler, priority, receiveCanceled);
             default -> {
@@ -35,7 +50,15 @@ public class ForgeClientEventRegister implements IEventRegister {
     public boolean unregister(IEventHandler eventHandler, EventType eventType, EventPriority priority, boolean receiveCanceled) {
         return switch (eventType) {
             // tick
+            case PREPARE_CLIENT_TICK_EVENT -> PrepareClientTickEventManager.unregister(eventHandler, priority, receiveCanceled);
             case CLIENT_TICK_EVENT -> ClientTickEventManager.unregister(eventHandler, priority, receiveCanceled);
+            case PREPARE_CLIENT_PLAYER_TICK_EVENT -> PrepareClientPlayerTickEventManager.unregister(eventHandler, priority, receiveCanceled);
+            case CLIENT_PLAYER_TICK_EVENT -> ClientPlayerTickEventManager.unregister(eventHandler, priority, receiveCanceled);
+            // input
+            case INPUT_KEY_EVENT -> InputKeyEventManager.unregister(eventHandler, priority, receiveCanceled);
+            case INTERACTION_MAPPING_EVENT -> InteractionMappingEventManager.unregister(eventHandler, priority, receiveCanceled);
+            case MOUSE_BUTTON_EVENT -> MouseButtonEventManager.unregister(eventHandler, priority, receiveCanceled);
+            case MOUSE_SCROLLING_EVENT -> MouseScrollingEventManager.unregister(eventHandler, priority, receiveCanceled);
             // resource
             case ADD_CLIENT_RELOAD_LISTENER_EVENT -> AddClientReloadListenerEventManager.unregister(eventHandler, priority, receiveCanceled);
             default -> {

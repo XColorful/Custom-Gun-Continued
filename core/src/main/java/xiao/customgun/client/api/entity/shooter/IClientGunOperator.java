@@ -18,7 +18,7 @@ public interface IClientGunOperator extends ICommonGunOperator {
     /**
      * 客户端爬行
      */
-    @Override void cgc$crawl(boolean isCrawl);
+    @Override void cgc$prone(boolean isProne);
 
 
     // --------枪械操作--------
@@ -49,7 +49,11 @@ public interface IClientGunOperator extends ICommonGunOperator {
      * @return 返回开火的结果
      */
     ShootResult cgc$localShoot();
-    boolean cgc$chargeShoot(boolean isCharge);
+    /**
+     * 尝试充能/尝试开火
+     * @return 本次是否应该射击 (充能进度满/不需要充能)
+     */
+    boolean cgc$chargeAndGetResult(boolean doShoot);
 
     /**
      * 客户端手动拉栓(换弹)
@@ -65,4 +69,10 @@ public interface IClientGunOperator extends ICommonGunOperator {
      * 客户端检视
      */
     void cgc$inspect();
+
+    // --------Deprecated--------
+
+    @Deprecated default boolean cgc$chargeShoot(boolean isCharging) {
+        return this.cgc$chargeAndGetResult(isCharging);
+    }
 }

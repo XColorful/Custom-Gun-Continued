@@ -14,8 +14,14 @@ import java.util.Map;
 
 public enum EventType {
     // tick
+    PREPARE_SERVER_TICK_EVENT(false),
     SERVER_TICK_EVENT(false),
+    PREPARE_CLIENT_TICK_EVENT(true),
     CLIENT_TICK_EVENT(true),
+    PREPARE_SERVER_PLAYER_TICK_EVENT(false),
+    SERVER_PLAYER_TICK_EVENT(false),
+    PREPARE_CLIENT_PLAYER_TICK_EVENT(true),
+    CLIENT_PLAYER_TICK_EVENT(true),
     // entity
     ENTITY_JOIN_LEVEL_EVENT(false),
     // living entity
@@ -23,6 +29,11 @@ public enum EventType {
     // player
     PLAYER_CLONE_EVENT(false),
     PLAYER_START_TRACKING_EVENT(false),
+    // input
+    INPUT_KEY_EVENT(true),
+    INTERACTION_MAPPING_EVENT(true),
+    MOUSE_BUTTON_EVENT(true),
+    MOUSE_SCROLLING_EVENT(true),
     // resource
     ADD_SERVER_RELOAD_LISTENER_EVENT(false),
     ADD_CLIENT_RELOAD_LISTENER_EVENT(true),

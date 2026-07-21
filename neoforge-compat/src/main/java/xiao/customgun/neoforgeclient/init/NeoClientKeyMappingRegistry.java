@@ -4,13 +4,14 @@
 
 package xiao.customgun.neoforgeclient.init;
 
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
-import net.neoforged.fml.common.Mod;
 import xiao.customgun.CustomGun;
 import xiao.customgun.client.init.ClientKeyMappingRegistry;
 
-@Mod.EventBusSubscriber(value = net.neoforged.api.distmarker.Dist.CLIENT, modid = CustomGun.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(value = Dist.CLIENT, modid = CustomGun.MOD_ID)
 public class NeoClientKeyMappingRegistry {
 
     private static final ClientKeyMappingRegistry CLIENT_KEY_MAPPING_REGISTRY = ClientKeyMappingRegistry.get();

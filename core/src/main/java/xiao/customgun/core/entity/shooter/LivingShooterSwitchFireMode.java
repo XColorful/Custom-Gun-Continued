@@ -18,7 +18,7 @@ import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.api.item.gun.IGunGetter;
 import xiao.customgun.core.event.EventPoster;
 import xiao.customgun.core.item.gun.GunPropertyManager;
-import xiao.customgun.core.network.message.event.ServerMessageGunFireSelect;
+import xiao.customgun.core.network.message.event.ServerMessageGunSwitchFireMode;
 import xiao.customgun.core.util.SendUtils;
 
 public final class LivingShooterSwitchFireMode extends LivingShooterAspect {
@@ -40,7 +40,7 @@ public final class LivingShooterSwitchFireMode extends LivingShooterAspect {
             return;
         }
         SendUtils.sendMessageToTrackingEntity(this.livingShooter,
-                new ServerMessageGunFireSelect(this.livingShooter.getId(), currentGunItem));
+                new ServerMessageGunSwitchFireMode(this.livingShooter.getId(), currentGunItem));
 
         iGun.switchFireMode(this.shooterProperty, currentGunItem);
         // 刷新配件缓存

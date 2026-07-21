@@ -26,7 +26,7 @@ public class LocalPlayerMixin implements ILocalShooter {
     private final LocalShooterProperty cgc$localShooterProperty = new LocalShooterProperty(cgc$localShooter);
 
     // 行为动作
-    private final LocalShooterCrawl cgc$localCrawl = new LocalShooterCrawl(cgc$localShooter, cgc$localShooterProperty);
+    private final LocalShooterProne cgc$localProne = new LocalShooterProne(cgc$localShooter, cgc$localShooterProperty);
     private final LocalShooterSprint cgc$localSprint = new LocalShooterSprint(cgc$localShooter, cgc$localShooterProperty);
 
     // 枪械操作
@@ -44,7 +44,7 @@ public class LocalPlayerMixin implements ILocalShooter {
     public void onLocalTick(CallbackInfo ci) {
         if (cgc$localShooter.level().isClientSide()) {
             this.cgc$localAim.tickAimingProgress();
-            this.cgc$localCrawl.tickCrawl();
+            this.cgc$localProne.tickProne();
             this.cgc$localShooterProperty.tickStateLock();
             this.cgc$localBolt.tickAutoBolt();
             cgc$localShooter.setSprinting(this.cgc$localSprint.getProcessedSprintStatus(cgc$localShooter.isSprinting()));
@@ -76,8 +76,8 @@ public class LocalPlayerMixin implements ILocalShooter {
     // --------行为动作--------
 
     @Override
-    public void cgc$crawl(boolean isCrawl) {
-        this.cgc$localCrawl.crawl(isCrawl);
+    public void cgc$prone(boolean isProne) {
+        this.cgc$localProne.prone(isProne);
     }
 
     // --------枪械操作--------
@@ -108,8 +108,8 @@ public class LocalPlayerMixin implements ILocalShooter {
         this.cgc$localReload.cancelReload();
         return this.cgc$localShoot.shoot();
     }
-    @Override public boolean cgc$chargeShoot(boolean isCharge) {
-        return this.cgc$localShoot.chargeShoot(isCharge);
+    @Override public boolean cgc$chargeAndGetResult(boolean doShoot) {
+        return this.cgc$localShoot.chargeAndGetResult(doShoot);
     }
 
     @Override
@@ -131,8 +131,8 @@ public class LocalPlayerMixin implements ILocalShooter {
     @Override public boolean cgc$isAim() {
         return this.cgc$localAim.isAim();
     }
-    @Override public boolean cgc$isCrawl() {
-        return this.cgc$localCrawl.isCrawling();
+    @Override public boolean cgc$isProne() {
+        return this.cgc$localProne.isProne();
     }
     @Override public boolean cgc$isReadyToDraw() {
         return this.cgc$localDraw.isReadyToDraw();

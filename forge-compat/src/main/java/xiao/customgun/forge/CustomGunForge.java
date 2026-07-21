@@ -36,6 +36,7 @@ import xiao.customgun.forge.event.ForgeEventRegister;
 import xiao.customgun.forge.init.registry.ForgeRegistrarFactory;
 import xiao.customgun.forge.minecraft.ForgeCapabilityProvider;
 import xiao.customgun.forge.minecraft.ForgeRegistry;
+import xiao.customgun.forge.minecraft.access.ForgeAccessTransformer;
 import xiao.customgun.forge.network.ForgeNetworkAdapter;
 import xiao.customgun.forge.network.ForgeNetworkHook;
 import xiao.customgun.forgeclient.CustomGunForgeClient;
@@ -53,6 +54,7 @@ public class CustomGunForge {
     public static INetworkHook networkHook;
     public static IEventRegister eventRegister;
     public static Supplier<IModConfigSpecBuilder> modConfigSpecBuilderSupplier;
+    public static ForgeAccessTransformer accessTransformer;
 
     public CustomGunForge() {
         CustomGunForge.sideExecutor = new ForgeSideExecutor();
@@ -63,6 +65,7 @@ public class CustomGunForge {
         CustomGunForge.networkHook = new ForgeNetworkHook();
         CustomGunForge.eventRegister = new ForgeEventRegister();
         CustomGunForge.modConfigSpecBuilderSupplier = ForgeModConfigSpecBuilder::new;
+        CustomGunForge.accessTransformer = new ForgeAccessTransformer();
         Dist dist = FMLLoader.getDist();
         McSide mcSide = dist.isClient() ? McSide.CLIENT : McSide.DEDICATED_SERVER;
 
@@ -70,7 +73,8 @@ public class CustomGunForge {
                 CustomGunForge.registrarFactory, CustomGunForge.mcRegistry, CustomGunForge.capabilityProvider,
                 CustomGunForge.networkAdapter, CustomGunForge.networkHook,
                 CustomGunForge.eventRegister,
-                CustomGunForge.modConfigSpecBuilderSupplier);
+                CustomGunForge.modConfigSpecBuilderSupplier,
+                CustomGunForge.accessTransformer);
 
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 

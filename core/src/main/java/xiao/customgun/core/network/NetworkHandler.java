@@ -54,9 +54,9 @@ public class NetworkHandler {
         adapter.registerMessage(ID_COUNT.getAndIncrement(), ClientMessagePlayerShoot.class, ClientMessagePlayerShoot::decode, MessageDirection.CLIENT_TO_SERVER);
         adapter.registerMessage(ID_COUNT.getAndIncrement(), ClientMessagePlayerReloadGun.class, ClientMessagePlayerReloadGun::decode, MessageDirection.CLIENT_TO_SERVER);
         adapter.registerMessage(ID_COUNT.getAndIncrement(), ClientMessagePlayerCancelReload.class, ClientMessagePlayerCancelReload::decode, MessageDirection.CLIENT_TO_SERVER);
-        adapter.registerMessage(ID_COUNT.getAndIncrement(), ClientMessagePlayerFireSelect.class, ClientMessagePlayerFireSelect::decode, MessageDirection.CLIENT_TO_SERVER);
+        adapter.registerMessage(ID_COUNT.getAndIncrement(), ClientMessagePlayerSwitchFireMode.class, ClientMessagePlayerSwitchFireMode::decode, MessageDirection.CLIENT_TO_SERVER);
         adapter.registerMessage(ID_COUNT.getAndIncrement(), ClientMessagePlayerAim.class, ClientMessagePlayerAim::decode, MessageDirection.CLIENT_TO_SERVER);
-        adapter.registerMessage(ID_COUNT.getAndIncrement(), ClientMessagePlayerCrawl.class, ClientMessagePlayerCrawl::decode, MessageDirection.CLIENT_TO_SERVER);
+        adapter.registerMessage(ID_COUNT.getAndIncrement(), ClientMessagePlayerProne.class, ClientMessagePlayerProne::decode, MessageDirection.CLIENT_TO_SERVER);
         adapter.registerMessage(ID_COUNT.getAndIncrement(), ClientMessagePlayerDrawGun.class, ClientMessagePlayerDrawGun::decode, MessageDirection.CLIENT_TO_SERVER);
 
         adapter.registerMessage(ID_COUNT.getAndIncrement(), ServerMessageSound.class, ServerMessageSound::decode, MessageDirection.SERVER_TO_CLIENT);
@@ -84,7 +84,7 @@ public class NetworkHandler {
 
         adapter.registerMessage(ID_COUNT.getAndIncrement(), ServerMessageGunDraw.class, ServerMessageGunDraw::decode, MessageDirection.SERVER_TO_CLIENT);
         adapter.registerMessage(ID_COUNT.getAndIncrement(), ServerMessageGunFire.class, ServerMessageGunFire::decode, MessageDirection.SERVER_TO_CLIENT);
-        adapter.registerMessage(ID_COUNT.getAndIncrement(), ServerMessageGunFireSelect.class, ServerMessageGunFireSelect::decode, MessageDirection.SERVER_TO_CLIENT);
+        adapter.registerMessage(ID_COUNT.getAndIncrement(), ServerMessageGunSwitchFireMode.class, ServerMessageGunSwitchFireMode::decode, MessageDirection.SERVER_TO_CLIENT);
         adapter.registerMessage(ID_COUNT.getAndIncrement(), ServerMessageGunMelee.class, ServerMessageGunMelee::decode, MessageDirection.SERVER_TO_CLIENT);
         adapter.registerMessage(ID_COUNT.getAndIncrement(), ServerMessageGunReload.class, ServerMessageGunReload::decode, MessageDirection.SERVER_TO_CLIENT);
         adapter.registerMessage(ID_COUNT.getAndIncrement(), ServerMessageGunShoot.class, ServerMessageGunShoot::decode, MessageDirection.SERVER_TO_CLIENT);

@@ -26,6 +26,11 @@ public class ForgeInputKeyEvent extends ForgeEvent implements IInputKeyEvent {
         return EventType.INPUT_KEY_EVENT;
     }
 
+    @Override
+    public KeyEvent getKeyEvent() {
+        return new KeyEvent(inputKeyEvent.getKey(), inputKeyEvent.getScanCode(), inputKeyEvent.getModifiers());
+    }
+
     @Override public int getKey() {
         return inputKeyEvent.getKey();
     }

@@ -26,6 +26,11 @@ public class ForgeMouseButtonEvent extends ForgeEvent implements IMouseButtonEve
         return EventType.MOUSE_BUTTON_EVENT;
     }
 
+    @Override
+    public MouseButtonInfo getMouseButtonInfo() {
+        return new MouseButtonInfo(mouseButtonEvent.getButton(), mouseButtonEvent.getModifiers());
+    }
+
     @Override public int getButton() {
         return mouseButtonEvent.getButton();
     }

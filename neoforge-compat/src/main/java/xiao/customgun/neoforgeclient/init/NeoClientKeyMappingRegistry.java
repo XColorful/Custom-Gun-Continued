@@ -18,7 +18,7 @@ public class NeoClientKeyMappingRegistry {
 
     @SubscribeEvent
     public static void onClientKeyMappingRegister(RegisterKeyMappingsEvent event) {
-        CLIENT_KEY_MAPPING_REGISTRY.registerInputCategories((category) -> {});
+        CLIENT_KEY_MAPPING_REGISTRY.registerInputCategories(event::registerCategory);
         CLIENT_KEY_MAPPING_REGISTRY.registerKeyMappings(event::register);
     }
 }

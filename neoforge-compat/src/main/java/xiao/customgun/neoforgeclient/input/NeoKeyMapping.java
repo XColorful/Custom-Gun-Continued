@@ -17,14 +17,14 @@ public class NeoKeyMapping implements IKeyMapping {
     private final IKeyModifier keyModifier;
     private final InputConstants.Type inputType;
     private final int keyCode;
-    private final String category;
+    private final KeyMapping.Category category;
 
     public NeoKeyMapping(String name,
                         IKeyConflictContext keyConflictContext,
                         IKeyModifier keyModifier,
                         InputConstants.Type inputType,
                         int keyCode,
-                        String category) {
+                         KeyMapping.Category category) {
         this.name = name;
         this.keyConflictContext = keyConflictContext;
         this.keyModifier = keyModifier;
@@ -56,7 +56,7 @@ public class NeoKeyMapping implements IKeyMapping {
     @Override public int getKeyCode() {
         return this.keyCode;
     }
-    @Override public String getCategory() {
+    @Override public KeyMapping.Category getCategory() {
         return this.category;
     }
 
@@ -66,7 +66,7 @@ public class NeoKeyMapping implements IKeyMapping {
         public NeoKeyMapping create(String name,
                                    IKeyConflictContext.Type contextType, IKeyModifier.Type modifierType,
                                    InputConstants.Type inputType, int keyCode,
-                                   String category) {
+                                    KeyMapping.Category category) {
             return new NeoKeyMapping(name,
                     NeoKeyConflictContext.convert(contextType), NeoKeyModifier.convert(modifierType),
                     inputType, keyCode,

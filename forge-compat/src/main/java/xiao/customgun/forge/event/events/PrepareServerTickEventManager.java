@@ -8,7 +8,7 @@ import xiao.customgun.core.api.event.EventPriority;
 import xiao.customgun.core.api.event.EventType;
 import xiao.customgun.core.api.event.IEventHandler;
 import xiao.customgun.forge.event.ForgeEvent;
-import xiao.customgun.forge.event.ForgeServerTickEvent;
+import xiao.customgun.forge.event.ForgePrepareServerTickEvent;
 
 public class PrepareServerTickEventManager {
 
@@ -47,7 +47,7 @@ public class PrepareServerTickEventManager {
 
         @Override
         protected ForgeEvent getForgeEventType(Event event) {
-            return new ForgeServerTickEvent(event);
+            return new ForgePrepareServerTickEvent(event);
         }
 
         protected void handle(TickEvent.ServerTickEvent event) {

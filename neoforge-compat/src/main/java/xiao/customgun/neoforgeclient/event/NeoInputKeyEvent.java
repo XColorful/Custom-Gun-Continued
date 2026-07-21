@@ -1,5 +1,6 @@
 package xiao.customgun.neoforgeclient.event;
 
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
@@ -28,7 +29,7 @@ public class NeoInputKeyEvent extends NeoEvent implements IInputKeyEvent {
 
     @Override
     public KeyEvent getKeyEvent() {
-        return new KeyEvent(inputKeyEvent.getKey(), inputKeyEvent.getScanCode(), inputKeyEvent.getModifiers());
+        return inputKeyEvent.getKeyEvent();
     }
 
     @Override public int getKey() {

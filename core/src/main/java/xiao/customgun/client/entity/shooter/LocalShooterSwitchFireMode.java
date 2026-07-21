@@ -23,7 +23,7 @@ import xiao.customgun.core.api.event.shooter.ShooterSwitchFireModeEvent;
 import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.api.item.gun.IGunGetter;
 import xiao.customgun.core.item.gun.GunPropertyManager;
-import xiao.customgun.core.network.message.ClientMessagePlayerFireSelect;
+import xiao.customgun.core.network.message.ClientMessagePlayerSwitchFireMode;
 import xiao.customgun.core.util.SendUtils;
 
 public final class LocalShooterSwitchFireMode extends LocalShooterAspect {
@@ -48,10 +48,10 @@ public final class LocalShooterSwitchFireMode extends LocalShooterAspect {
                 iLivingShooter, this.localShooter, iGun, gunItem))) {
             return;
         }
-        SendUtils.sendMessageToServer(new ClientMessagePlayerFireSelect());
+        SendUtils.sendMessageToServer(new ClientMessagePlayerSwitchFireMode());
 
         // 播放音效
-        SoundPlayManager.get().playGunSound(gunDisplayInstance.getGunSound(GunSoundType.FIRE_SELECT),
+        SoundPlayManager.get().playGunSound(gunDisplayInstance.getGunSound(GunSoundType.SWITCH_FIRE_MODE),
                 this.localShooter);
         // 客户端切换开火模式
         iGun.switchFireMode(null, gunItem);

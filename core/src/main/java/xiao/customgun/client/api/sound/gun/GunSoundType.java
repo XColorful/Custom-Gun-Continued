@@ -16,33 +16,35 @@ import java.util.Map;
 
 public enum GunSoundType implements ResourceTag.CategoryTag {
     // 射击
-    SHOOT_SOUND(GunSoundTypeTag.SHOOT_SOUND, true),
-    SHOOT_3P_SOUND(GunSoundTypeTag.SHOOT_3P_SOUND, true),
-    SILENCE_SOUND(GunSoundTypeTag.SILENCE_SOUND, true),
-    SILENCE_3P_SOUND(GunSoundTypeTag.SILENCE_3P_SOUND, true),
+    SHOOT_SOUND(GunSoundTypeTag.SHOOT_SOUND,null, true),
+    SHOOT_3P_SOUND(GunSoundTypeTag.SHOOT_3P_SOUND,null, true),
+    SILENCE_SOUND(GunSoundTypeTag.SILENCE_SOUND,null, true),
+    SILENCE_3P_SOUND(GunSoundTypeTag.SILENCE_3P_SOUND,null, true),
     // 近战
-    MELEE_BAYONET(GunSoundTypeTag.MELEE_BAYONET, false),
-    MELEE_PUSH(GunSoundTypeTag.MELEE_PUSH, false),
-    MELEE_STOCK(GunSoundTypeTag.MELEE_STOCK, false),
+    MELEE_BAYONET(GunSoundTypeTag.MELEE_BAYONET,null, false),
+    MELEE_PUSH(GunSoundTypeTag.MELEE_PUSH,null, false),
+    MELEE_STOCK(GunSoundTypeTag.MELEE_STOCK,null, false),
     // 动作
-    DRY_FIRE_SOUND(GunSoundTypeTag.DRY_FIRE_SOUND, true),
-    RELOAD_EMPTY_SOUND(GunSoundTypeTag.RELOAD_EMPTY_SOUND, true),
-    RELOAD_TACTICAL_SOUND(GunSoundTypeTag.RELOAD_TACTICAL_SOUND, true),
-    INSPECT_EMPTY_SOUND(GunSoundTypeTag.INSPECT_EMPTY_SOUND, true),
-    INSPECT_SOUND(GunSoundTypeTag.INSPECT_SOUND, true),
-    DRAW_SOUND(GunSoundTypeTag.DRAW_SOUND, true),
-    PUT_AWAY_SOUND(GunSoundTypeTag.PUT_AWAY_SOUND, true),
-    BOLT_SOUND(GunSoundTypeTag.BOLT_SOUND, true),
-    FIRE_SELECT(GunSoundTypeTag.FIRE_SELECT, true),
+    DRY_FIRE_SOUND(GunSoundTypeTag.DRY_FIRE_SOUND,null, true),
+    RELOAD_EMPTY_SOUND(GunSoundTypeTag.RELOAD_EMPTY_SOUND,null, true),
+    RELOAD_TACTICAL_SOUND(GunSoundTypeTag.RELOAD_TACTICAL_SOUND,null, true),
+    INSPECT_EMPTY_SOUND(GunSoundTypeTag.INSPECT_EMPTY_SOUND,null, true),
+    INSPECT_SOUND(GunSoundTypeTag.INSPECT_SOUND,null, true),
+    DRAW_SOUND(GunSoundTypeTag.DRAW_SOUND,null, true),
+    PUT_AWAY_SOUND(GunSoundTypeTag.PUT_AWAY_SOUND,null, true),
+    BOLT_SOUND(GunSoundTypeTag.BOLT_SOUND,null, true),
+    SWITCH_FIRE_MODE(GunSoundTypeTag.SWITCH_FIRE_MODE,GunSoundTypeTag.SWITCH_FIRE_MODE_OLD1, true),
     // 反馈
-    HEAD_HIT_SOUND(GunSoundTypeTag.HEAD_HIT_SOUND, false),
-    FLESH_HIT_SOUND(GunSoundTypeTag.FLESH_HIT_SOUND, false),
-    KILL_SOUND(GunSoundTypeTag.KILL_SOUND, false);
+    HEAD_HIT_SOUND(GunSoundTypeTag.HEAD_HIT_SOUND,null, false),
+    FLESH_HIT_SOUND(GunSoundTypeTag.FLESH_HIT_SOUND,null, false),
+    KILL_SOUND(GunSoundTypeTag.KILL_SOUND,null, false);
 
     public final String typeName;
+    public final String typeNameOld;
     public final boolean preload;
-    GunSoundType(String name, boolean preload) {
+    GunSoundType(String name, String nameOld, boolean preload) {
         this.typeName = name;
+        this.typeNameOld = nameOld;
         this.preload = preload;
     }
 
@@ -58,6 +60,7 @@ public enum GunSoundType implements ResourceTag.CategoryTag {
     static {
         for (GunSoundType type : values()) {
             SOUND_TYPES.put(type.typeName, type);
+            if (type.typeNameOld != null) SOUND_TYPES.put(type.typeNameOld, type);
         }
     }
 

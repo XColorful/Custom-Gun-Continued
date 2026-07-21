@@ -28,7 +28,7 @@ public class GunSoundTypeTag {
     public static final String DRAW_SOUND = "draw";
     public static final String PUT_AWAY_SOUND = "put_away";
     public static final String BOLT_SOUND = "bolt";
-    public static final String FIRE_SELECT = "fire_select";
+    public static final String SWITCH_FIRE_MODE = "switch_fire_mode"; public static final String SWITCH_FIRE_MODE_OLD1 = "fire_select";
 
     // 反馈相关
     public static final String HEAD_HIT_SOUND = "head_hit";

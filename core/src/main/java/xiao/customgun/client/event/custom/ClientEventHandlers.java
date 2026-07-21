@@ -1,6 +1,9 @@
 package xiao.customgun.client.event.custom;
 
 import xiao.customgun.client.api.event._CustomEventType;
+import xiao.customgun.client.input.shooter.AimKey;
+import xiao.customgun.client.input.shooter.ReloadKey;
+import xiao.customgun.client.input.shooter.ShootKey;
 import xiao.customgun.client.resource._AllAssetsManager;
 import xiao.customgun.client.sound.SoundPlayManager;
 import xiao.customgun.core.api.event.EventPriority;
@@ -16,5 +19,11 @@ public class ClientEventHandlers {
 
         CoreEventHandlers.register(customEventRegister, SoundPlayManager.get(), EventType.CLIENT_TICK_EVENT, EventPriority.NORMAL, false);
         CoreEventHandlers.register(customEventRegister, _AllAssetsManager.INSTANCE, EventType.ADD_CLIENT_RELOAD_LISTENER_EVENT, EventPriority.NORMAL, false);
+
+        // ----input----
+        CoreEventHandlers.register(customEventRegister, AimKey.get(), EventType.PREPARE_CLIENT_TICK_EVENT, EventPriority.NORMAL, false);
+        CoreEventHandlers.register(customEventRegister, AimKey.get(), EventType.CLIENT_TICK_EVENT, EventPriority.NORMAL, false);
+        CoreEventHandlers.register(customEventRegister, ReloadKey.get(), EventType.PREPARE_CLIENT_PLAYER_TICK_EVENT, EventPriority.NORMAL, false);
+        CoreEventHandlers.register(customEventRegister, ShootKey.get(), EventType.CLIENT_TICK_EVENT, EventPriority.NORMAL, false);
     }
 }

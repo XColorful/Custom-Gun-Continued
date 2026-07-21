@@ -19,7 +19,7 @@ public interface IGunOperator extends ICommonGunOperator {
     /**
      * 应用趴下 (服务端)
      */
-    @Override void cgc$crawl(boolean isCrawl);
+    @Override void cgc$prone(boolean isProne);
 
     // --------枪械操作--------
 

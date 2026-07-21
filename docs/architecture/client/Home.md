@@ -43,9 +43,9 @@
 - Local Shooter (aspect)：本地射手生物（切面）
 	- LocalShooterAim：瞄准
 	- LocalShooterBolt：拉栓
-	- LocalShooterCrawl：趴下
+	- LocalShooterProne：趴下
 	- LocalShooterDraw：拔枪
-	- LocalShooterFireSelect：开火模式切换
+	- LocalShooterSwitchFireMode：切换开火模式
 	- LocalShooterInspect：检视
 	- LocalShooterMelee：近战
 	- LocalShooterReload：换弹
@@ -84,6 +84,17 @@
 - ClientModEvent：客户端事件
 - ClientModParticles：客户端粒子注册
 - ClientTooltipRegistry：客户端提示框注册
+
+### 输入
+> _./client/input_
+
+[输入框架](./input/input-framework.md)
+- [InputKeyManager](./input/input-key-manager.md)：输入键管理器
+
+🤔深度定制输入键：[注册输入键](./input/register-input-key.md)
+- config：配置按键
+- player：玩家按键
+- shooter：射手按键
 
 ### 物品
 > _./client/item_
@@ -158,6 +169,7 @@
 ### 工具
 > _./client/util_
 
+- ClientGuiUtils：客户端 GUI 操作封装
 - ClientJsonUtils：客户端 JSON 序列化封装
 - ClientWorldUtils：客户端游戏内世界相关操作
 
@@ -204,9 +216,9 @@ Module division based on the `xiao.customgun.client` top-level package
 - Local Shooter (aspect):
 	- LocalShooterAim: Aim
 	- LocalShooterBolt: Bolt
-	- LocalShooterCrawl: Crawl
+	- LocalShooterProne: Prone
 	- LocalShooterDraw: Draw
-	- LocalShooterFireSelect: Fire select
+	- LocalShooterSwitchFireMode: Switch fire mode
 	- LocalShooterInspect: Inspect
 	- LocalShooterMelee: Melee
 	- LocalShooterReload: Reload
@@ -245,6 +257,17 @@ Module division based on the `xiao.customgun.client` top-level package
 - ClientModEvent: Client events
 - ClientModParticles: Client particle registration
 - ClientTooltipRegistry: Client tooltip registration
+
+### Input
+> _./client/input_
+
+[Input framework](./input/input-framework.md)
+- [InputKeyManager](./input/input-key-manager.md): Input key manager
+
+🤔Deeply customized input key: [Register input key](./input/register-input-key.md)
+- config: Config keys
+- player: Player keys
+- shooter: Shooter keys
 
 ### Item
 > _./client/item_
@@ -319,5 +342,6 @@ Module division based on the `xiao.customgun.client` top-level package
 ### Utility
 > _./client/util_
 
+- ClientGuiUtils: Client GUI operations wrapper
 - ClientJsonUtils: Client JSON serialization wrapper
 - ClientWorldUtils: Client in-game world related operations

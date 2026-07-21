@@ -2,6 +2,7 @@ package xiao.customgun.core.projectile;
 
 import org.jetbrains.annotations.NotNull;
 import xiao.customgun.CustomGun;
+import xiao.customgun.core.api.common.McSide;
 import xiao.customgun.core.api.projectile.IProjectileManager;
 import xiao.customgun.core.api.projectile.ProjectileManagerGroup;
 import xiao.customgun.core.projectile.effect.ProjectileEffectManager;
@@ -26,6 +27,10 @@ public class ProjectileManager implements IProjectileManager {
         this.managerGroups = new HashMap<>();
         this.registerRuntimeGroup(defaultGroup);
     }
+
+    public static void init(McSide mcSide) {
+    }
+
     public static final String _MANAGER_NAME = String.format("%s:%s", CustomGun.MOD_ID, ProjectileManager.class.getSimpleName());
     @Override public String getManagerName() {
         return _MANAGER_NAME;

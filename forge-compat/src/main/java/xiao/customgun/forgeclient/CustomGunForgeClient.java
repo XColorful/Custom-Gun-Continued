@@ -15,18 +15,28 @@
 package xiao.customgun.forgeclient;
 
 import xiao.customgun.client.CustomGunClient;
+import xiao.customgun.client.api.input.IKeyMapping;
+import xiao.customgun.client.api.minecraft.access.IClientAccessTransformer;
 import xiao.customgun.core.api.event.IEventRegister;
 import xiao.customgun.forgeclient.event.ForgeClientEventRegister;
+import xiao.customgun.forgeclient.input.ForgeKeyMapping;
+import xiao.customgun.forgeclient.minecraft.access.ForgeClientAccessTransformer;
 
 public class CustomGunForgeClient {
 
     protected static boolean initialized;
     public static IEventRegister eventRegister;
+    public static IKeyMapping.Creator keyMappingCreator;
+    public static IClientAccessTransformer accessTransformer;
 
     public static void init() {
         if (initialized) return;
         CustomGunForgeClient.eventRegister = new ForgeClientEventRegister();
-        CustomGunClient.init();
+        CustomGunForgeClient.keyMappingCreator = new ForgeKeyMapping.Creator();
+        CustomGunForgeClient.accessTransformer = new ForgeClientAccessTransformer();
+
+        CustomGunClient.init(CustomGunForgeClient.keyMappingCreator,
+                CustomGunForgeClient.accessTransformer);
         initialized = true;
     }
 }

@@ -17,6 +17,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import xiao.customgun.CustomGun;
 import xiao.customgun.core.api.entity.IGunProjectile;
 import xiao.customgun.core.api.entity.gun.GunPropertyCache;
 import xiao.customgun.core.api.entity.projectile.GunProjectileDataAccessor;
@@ -110,7 +111,7 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
     public void tick() {
         super.tick();
 
-        ProjectileManagerGroup group = ProjectileManager.INSTANCE.getProjectileManagerGroup(this.getManagerGroupTag(this));
+        ProjectileManagerGroup group = CustomGun.getProjectileManager().getProjectileManagerGroup(this.getManagerGroupTag(this));
         TickContext tickContext = new TickContext(group);
 
         if (PlannedRefactor.ON_PROJECTILE_TICK_EVENT) {

@@ -11,7 +11,7 @@ public interface ICommonGunOperator {
 
     // --------行为动作--------
 
-    void cgc$crawl(boolean isCrawl);
+    void cgc$prone(boolean isProne);
 
     // --------枪械操作--------
 

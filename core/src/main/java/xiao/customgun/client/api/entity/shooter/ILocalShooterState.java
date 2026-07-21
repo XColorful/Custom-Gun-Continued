@@ -17,7 +17,7 @@ public interface ILocalShooterState {
     /**
      * 是否爬行
      */
-    boolean cgc$isCrawl();
+    boolean cgc$isProne();
 
     boolean cgc$isReadyToDraw();
 

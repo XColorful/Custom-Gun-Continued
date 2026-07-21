@@ -20,6 +20,9 @@ config="customgunclient.mixins.json"
 [[mixins]]
 config="customgunneoforgeclient.mixins.json"
 
+[[accessTransformers]]
+file="META-INF/accesstransformer.cfg"
+
 [[dependencies.${mod_id}]]
 modId="${target_modloader}"
 type="required"

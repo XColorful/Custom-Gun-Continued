@@ -11,6 +11,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
 import org.jetbrains.annotations.ApiStatus;
+import xiao.customgun.client.util.ClientGuiUtils;
 
 @ApiStatus.Internal
 public class _ServerMessageCraft {
@@ -19,7 +20,7 @@ public class _ServerMessageCraft {
         Minecraft mc = Minecraft.getInstance();
         LocalPlayer player = mc.player;
         if (player != null && player.containerMenu.containerId == containerId) {
-            updateScreen(player, mc.gui.screen());
+            updateScreen(player, ClientGuiUtils.getCurrentScreen(mc));
         }
     }
 

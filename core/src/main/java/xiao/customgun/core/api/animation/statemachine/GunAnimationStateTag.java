@@ -15,7 +15,7 @@ public class GunAnimationStateTag {
     public static final String INPUT_BOLT = "blot";
     public static final String INPUT_DRAW = "draw";
     public static final String INPUT_PUT_AWAY = "put_away";
-    public static final String INPUT_FIRE_SELECT = "fire_select";
+    public static final String INPUT_SWITCH_FIRE_MODE = "switch_fire_mode"; public static final String INPUT_SWITCH_FIRE_MODE_OLD1 = "fire_select";
     public static final String INPUT_INSPECT = "inspect";
     public static final String INPUT_BAYONET_MUZZLE = "bayonet_muzzle";
     public static final String INPUT_BAYONET_STOCK = "bayonet_stock";

@@ -11,6 +11,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import org.jetbrains.annotations.ApiStatus;
 import xiao.customgun.client.gui.GunRefitScreen;
+import xiao.customgun.client.util.ClientGuiUtils;
 import xiao.customgun.core.item.gun.GunPropertyManager;
 
 @ApiStatus.Internal
@@ -19,7 +20,7 @@ public class _ServerMessageRefreshRefitScreen {
     public static void updateScreen() {
         Minecraft mc = Minecraft.getInstance();
         LocalPlayer player = mc.player;
-        if (player != null && mc.gui.screen() instanceof GunRefitScreen screen) {
+        if (player != null && ClientGuiUtils.getCurrentScreen(mc) instanceof GunRefitScreen screen) {
             // 刷新Screen
             screen.init();
 

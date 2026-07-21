@@ -36,7 +36,7 @@ public final class GunData extends ResourcePojo<GunData> {
     private int rpm = 300; // 射速
     private _InaccuracyData inaccuracyData; // 射击散布
     private _RecoilData recoilData; // 后坐力
-    private float crawlRecoilMultiplier = 0.5f; // 蹲后坐力
+    private float proneRecoilMultiplier = 0.5f; // 趴后坐力
 
     private float weight = 0f; // 基础移速影响
     private _MovementData movementData; // 移速数据
@@ -69,7 +69,7 @@ public final class GunData extends ResourcePojo<GunData> {
     private Map<AttachmentCategory, Identifier> builtinAttachments; // 默认配件外观
 
     // 举枪动作
-    private boolean enableCrawl = true;
+    private boolean enableProne = true;
     private boolean enableSlide = true; // 枪挡在视野中间
 
     // 操作枪械的时长
@@ -98,7 +98,7 @@ public final class GunData extends ResourcePojo<GunData> {
                     case GunDataTag.RPM -> pojo.rpm = JsonUtils.readInt(reader);
                     case GunDataTag.INACCURACY_DATA, GunDataTag.INACCURACY_DATA_OLD1 -> pojo.inaccuracyData = JsonUtils.read(reader, _InaccuracyData::fromJson);
                     case GunDataTag.RECOIL_DATA, GunDataTag.RECOIL_DATA_OLD1 -> pojo.recoilData = JsonUtils.read(reader, _RecoilData::fromJson);
-                    case GunDataTag.CRAWL_RECOIL_MULTIPLIER -> pojo.crawlRecoilMultiplier = JsonUtils.readFloat(reader);
+                    case GunDataTag.PRONE_RECOIL_MULTIPLIER, GunDataTag.PRONE_RECOIL_MULTIPLIER_OLD1 -> pojo.proneRecoilMultiplier = JsonUtils.readFloat(reader);
 
                     case GunDataTag.WEIGHT -> pojo.weight = JsonUtils.readFloat(reader);
                     case GunDataTag.MOVEMENT_DATA, GunDataTag.MOVEMENT_DATA_OLD1 -> pojo.movementData = JsonUtils.read(reader, _MovementData::fromJson);
@@ -126,7 +126,7 @@ public final class GunData extends ResourcePojo<GunData> {
                     case GunDataTag.EXTENDED_MAG_AMMO_SIZE, GunDataTag.EXTENDED_MAG_AMMO_SIZE_OLD1 -> pojo.extendedMagAmmoSize = JsonUtils.readIntArray(reader);
                     case GunDataTag.BUILTIN_ATTACHMENTS -> pojo.builtinAttachments = JsonUtils.readObject2ObjectMap(reader, AttachmentCategory::fromString, JsonUtils::readResourceLocation);
 
-                    case GunDataTag.ENABLE_CRAWL, GunDataTag.ENABLE_CRAWL_OLD1 -> pojo.enableCrawl = JsonUtils.readBoolean(reader);
+                    case GunDataTag.ENABLE_PRONE, GunDataTag.ENABLE_PRONE_OLD1 -> pojo.enableProne = JsonUtils.readBoolean(reader);
                     case GunDataTag.ENABLE_SLIDE, GunDataTag.ENABLE_SLIDE_OLD1 -> pojo.enableSlide = JsonUtils.readBoolean(reader);
 
                     case GunDataTag.DRAW_TIME -> pojo.drawTime = JsonUtils.readFloat(reader);
@@ -156,7 +156,7 @@ public final class GunData extends ResourcePojo<GunData> {
             JsonUtils.writeInt(writer, GunDataTag.RPM, rpm);
             JsonUtils.write(writer, GunDataTag.INACCURACY_DATA, inaccuracyData, _InaccuracyData::toJson);
             JsonUtils.write(writer, GunDataTag.RECOIL_DATA, recoilData, _RecoilData::toJson);
-            JsonUtils.writeFloat(writer, GunDataTag.CRAWL_RECOIL_MULTIPLIER, crawlRecoilMultiplier);
+            JsonUtils.writeFloat(writer, GunDataTag.PRONE_RECOIL_MULTIPLIER, proneRecoilMultiplier);
 
             JsonUtils.writeFloat(writer, GunDataTag.WEIGHT, weight);
             JsonUtils.write(writer, GunDataTag.MOVEMENT_DATA, movementData, _MovementData::toJson);
@@ -184,7 +184,7 @@ public final class GunData extends ResourcePojo<GunData> {
             JsonUtils.writeIntArray(writer, GunDataTag.EXTENDED_MAG_AMMO_SIZE, extendedMagAmmoSize);
             JsonUtils.writeObject2ObjectMap(writer, GunDataTag.BUILTIN_ATTACHMENTS, builtinAttachments, AttachmentCategory::toString, JsonUtils::writeResourceLocationValue);
 
-            JsonUtils.writeBoolean(writer, GunDataTag.ENABLE_CRAWL, enableCrawl);
+            JsonUtils.writeBoolean(writer, GunDataTag.ENABLE_PRONE, enableProne);
             JsonUtils.writeBoolean(writer, GunDataTag.ENABLE_SLIDE, enableSlide);
 
             JsonUtils.writeFloat(writer, GunDataTag.DRAW_TIME, drawTime);
@@ -272,8 +272,8 @@ public final class GunData extends ResourcePojo<GunData> {
     public _RecoilData getRecoilData() {
         return recoilData;
     }
-    public float getCrawlRecoilMultiplier() {
-        return crawlRecoilMultiplier;
+    public float getProneRecoilMultiplier() {
+        return proneRecoilMultiplier;
     }
     public float getWeight() {
         return weight;
@@ -332,8 +332,8 @@ public final class GunData extends ResourcePojo<GunData> {
     public Map<AttachmentCategory, Identifier> getBuiltinAttachments() {
         return builtinAttachments;
     }
-    public boolean getEnableCrawl() {
-        return enableCrawl;
+    public boolean getEnableProne() {
+        return enableProne;
     }
     public boolean getEnableSlide() {
         return enableSlide;
@@ -375,8 +375,8 @@ public final class GunData extends ResourcePojo<GunData> {
     public void setRecoilData(_RecoilData recoilData) {
         this.recoilData = recoilData;
     }
-    public void setCrawlRecoilMultiplier(float crawlRecoilMultiplier) {
-        this.crawlRecoilMultiplier = crawlRecoilMultiplier;
+    public void setProneRecoilMultiplier(float proneRecoilMultiplier) {
+        this.proneRecoilMultiplier = proneRecoilMultiplier;
     }
     public void setWeight(float weight) {
         this.weight = weight;
@@ -435,8 +435,8 @@ public final class GunData extends ResourcePojo<GunData> {
     public void setBuiltinAttachments(Map<AttachmentCategory, Identifier> builtinAttachments) {
         this.builtinAttachments = builtinAttachments;
     }
-    public void setEnableCrawl(boolean enableCrawl) {
-        this.enableCrawl = enableCrawl;
+    public void setEnableProne(boolean enableProne) {
+        this.enableProne = enableProne;
     }
     public void setEnableSlide(boolean enableSlide) {
         this.enableSlide = enableSlide;

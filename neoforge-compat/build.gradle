@@ -15,6 +15,11 @@ repositories {
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
+// Access Transformer
+accessTransformers {
+    file('src/main/resources/META-INF/accesstransformer.cfg')
+}
+
 runs {
     configureEach {
         systemProperty 'forge.logging.markers', 'REGISTRIES'

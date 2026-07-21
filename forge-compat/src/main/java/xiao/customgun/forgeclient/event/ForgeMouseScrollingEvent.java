@@ -27,10 +27,10 @@ public class ForgeMouseScrollingEvent extends ForgeEvent implements IMouseScroll
     }
 
     @Override public double getScrollDeltaX() {
-        return 0;
+        return scrollingEvent.getDeltaX();
     }
     @Override public double getScrollDeltaY() {
-        return scrollingEvent.getScrollDelta();
+        return scrollingEvent.getDeltaY();
     }
 
     @Override public boolean isLeftDown() {

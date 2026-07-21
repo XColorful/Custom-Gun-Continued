@@ -1,5 +1,6 @@
 package xiao.customgun.neoforgeclient.event;
 
+import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
@@ -28,7 +29,7 @@ public class NeoMouseButtonEvent extends NeoEvent implements IMouseButtonEvent {
 
     @Override
     public MouseButtonInfo getMouseButtonInfo() {
-        return new MouseButtonInfo(mouseButtonEvent.getButton(), mouseButtonEvent.getModifiers());
+        return mouseButtonEvent.getMouseButtonInfo();
     }
 
     @Override public int getButton() {

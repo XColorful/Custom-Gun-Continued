@@ -16,27 +16,27 @@ import xiao.customgun.client.api.resource.ClientResourceApi;
 import xiao.customgun.client.resource.instance.data.ClientGunIndexInstance;
 import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.api.item.gun.IGunGetter;
-import xiao.customgun.core.network.message.ClientMessagePlayerCrawl;
+import xiao.customgun.core.network.message.ClientMessagePlayerProne;
 import xiao.customgun.core.resource.data.data.GunData;
 import xiao.customgun.core.util.SendUtils;
 
-public final class LocalShooterCrawl extends LocalShooterAspect {
+public final class LocalShooterProne extends LocalShooterAspect {
 
     private static final int COOLDOWN_TICKS = 10;
-    private boolean isCrawling = false;
+    private boolean isProne = false;
     private int crawCooldownTicks = 0;
 
-    public LocalShooterCrawl(LocalPlayer localShooter, LocalShooterProperty localShooterProperty) {
+    public LocalShooterProne(LocalPlayer localShooter, LocalShooterProperty localShooterProperty) {
         super(localShooter, localShooterProperty);
     }
 
-    public boolean isCrawling() {
-        return this.isCrawling;
+    public boolean isProne() {
+        return this.isProne;
     }
 
-    public void crawl(boolean isCrawl) {
-        if (crawlNotAvailable()) {
-            this.isCrawling = false;
+    public void prone(boolean isProne) {
+        if (proneNotAvailable()) {
+            this.isProne = false;
             return;
         }
 
@@ -44,22 +44,22 @@ public final class LocalShooterCrawl extends LocalShooterAspect {
         if (this.crawCooldownTicks > 0) return;
         else this.crawCooldownTicks = COOLDOWN_TICKS;
 
-        this.isCrawling = isCrawl;
-        SendUtils.sendMessageToServer(new ClientMessagePlayerCrawl(isCrawl));
+        this.isProne = isProne;
+        SendUtils.sendMessageToServer(new ClientMessagePlayerProne(isProne));
     }
 
-    public void tickCrawl() {
+    public void tickProne() {
         if (this.crawCooldownTicks > 0) this.crawCooldownTicks--;
 
-        if (crawlNotAvailable()) {
-            this.isCrawling = false;
+        if (proneNotAvailable()) {
+            this.isProne = false;
             return;
         }
 
-        this.setCrawlPose();
+        this.setPronePose();
     }
 
-    private boolean crawlNotAvailable() {
+    private boolean proneNotAvailable() {
         ItemStack gunItem = this.localShooter.getMainHandItem();
         IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) {
@@ -74,7 +74,7 @@ public final class LocalShooterCrawl extends LocalShooterAspect {
 
         GunData gunData = clientGunIndexInstance.getGunData();
         if (gunData == null
-                || !gunData.getEnableCrawl() // 不允许趴下的武器
+                || !gunData.getEnableProne() // 不允许趴下的武器
                 || !this.localShooter.onGround() // 悬空
                 || this.localShooter.isSwimming() // 游泳
                 || this.localShooter.isSpectator() // 旁观模式
@@ -85,8 +85,8 @@ public final class LocalShooterCrawl extends LocalShooterAspect {
         return true;
     }
 
-    private void setCrawlPose() {
-        if (this.isCrawling) {
+    private void setPronePose() {
+        if (this.isProne) {
             this.localShooter.setForcedPose(Pose.SWIMMING);
         } else {
             this.localShooter.setForcedPose(null);

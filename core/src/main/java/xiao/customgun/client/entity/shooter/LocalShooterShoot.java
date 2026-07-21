@@ -52,7 +52,7 @@ public final class LocalShooterShoot extends LocalShooterAspect {
         super(localShooter, localShooterProperty);
     }
 
-    public boolean chargeShoot(boolean isCharging) {
+    public boolean chargeAndGetResult(boolean doShoot) {
         // 因为开火冷却检测用了特别定制的方法，所以不检查状态锁，而是手动检查是否换弹、切枪
         ItemStack gunItem = this.localShooter.getMainHandItem();
         IGun iGun = IGunGetter.fromItemStack(gunItem);
@@ -69,18 +69,18 @@ public final class LocalShooterShoot extends LocalShooterAspect {
         @Nullable GunData gunData = clientGunIndexInstance.getGunData();
         FireModeType fireModeType = iGun.getFireModeType(gunItem);
         @Nullable _ChargingData chargeData = gunData != null ? gunData.getChargingData().get(fireModeType) : null;
-        if (chargeData == null) return isCharging;
+        if (chargeData == null) return doShoot;
 
         boolean canChargeDuringCooldown = chargeData.getEnableChargeDuringCooldown()
                 || _getShootCooldown(iGun, gunItem, gunData) < SHOOT_COOLDOWN_MS;
         boolean canCharge = canChargeDuringCooldown
-                && preCheckError(iGun, gunItem, gunDisplayInstance, gunData, isCharging) == null;
+                && preCheckError(iGun, gunItem, gunDisplayInstance, gunData, doShoot) == null;
         float chargeProgress = this.localShooterProperty.chargeProgress;
         ChargeType type = chargeData.getChargeType();
 
         switch (type) {
             case AUTO -> {
-                if (isCharging && canCharge) {
+                if (doShoot && canCharge) {
                     this.localShooterProperty.isCharging = true;
                     this.localShooterProperty.chargeProgress = Math.min(chargeProgress + chargeData.getChargePerTick(), chargeData.getMaxCharge());
                     return this.localShooterProperty.chargeProgress >= chargeData.getMaxCharge();
@@ -90,7 +90,7 @@ public final class LocalShooterShoot extends LocalShooterAspect {
                 }
             }
             case HOLD -> {
-                if (isCharging && canCharge) {
+                if (doShoot && canCharge) {
                     this.localShooterProperty.isCharging = true;
                     this.localShooterProperty.chargeProgress = Math.min(chargeProgress + chargeData.getChargePerTick(), chargeData.getMaxCharge());
                 } else {
@@ -102,7 +102,7 @@ public final class LocalShooterShoot extends LocalShooterAspect {
                 }
             }
             case DELAY -> {
-                if ((isCharging || chargeProgress > 0) && canCharge) {
+                if ((doShoot || chargeProgress > 0) && canCharge) {
                     this.localShooterProperty.isCharging = true;
                     this.localShooterProperty.chargeProgress = Math.min(chargeProgress + chargeData.getChargePerTick(), chargeData.getMaxCharge());
                     return this.localShooterProperty.chargeProgress >= chargeData.getMaxCharge();

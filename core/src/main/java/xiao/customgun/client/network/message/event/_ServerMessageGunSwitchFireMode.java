@@ -12,12 +12,12 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.world.entity.LivingEntity;
 import org.jetbrains.annotations.ApiStatus;
 import xiao.customgun.client.util.ClientWorldUtils;
-import xiao.customgun.core.network.message.event.ServerMessageGunFireSelect;
+import xiao.customgun.core.network.message.event.ServerMessageGunSwitchFireMode;
 
 @ApiStatus.Internal
-public class _ServerMessageGunFireSelect {
+public class _ServerMessageGunSwitchFireMode {
 
-    public static void doClientEvent(ServerMessageGunFireSelect message) {
+    public static void doClientEvent(ServerMessageGunSwitchFireMode message) {
         ClientLevel level = Minecraft.getInstance().level;
         if (level == null) {
             return;

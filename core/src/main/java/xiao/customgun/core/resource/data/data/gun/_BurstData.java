@@ -75,7 +75,7 @@ public final class _BurstData extends ResourcePojo<_BurstData> {
     public float getShootIntervalSeconds() {
         return shootIntervalSeconds;
     }
-    public boolean isContinuousShoot() {
+    public boolean getContinuousShoot() {
         return continuousShoot;
     }
 

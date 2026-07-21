@@ -82,7 +82,7 @@ public class SoundManager {
     /**
      * 切换开关模式的声音
      */
-    public static final String FIRE_SELECT = GunSoundTypeTag.FIRE_SELECT;
+    public static final String FIRE_SELECT = GunSoundTypeTag.SWITCH_FIRE_MODE;
     /**
      * 爆头击中声音
      */

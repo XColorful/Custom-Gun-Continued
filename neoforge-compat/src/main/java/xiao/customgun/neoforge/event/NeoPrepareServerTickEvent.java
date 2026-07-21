@@ -7,7 +7,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.Event;
-import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.event.EventType;
@@ -16,14 +16,14 @@ import xiao.customgun.core.api.minecraft.CommandLevel;
 
 public class NeoPrepareServerTickEvent extends NeoEvent implements IServerTickEvent {
 
-    protected TickEvent.ServerTickEvent serverTickEvent;
+    protected ServerTickEvent.Pre serverTickEvent;
 
     public NeoPrepareServerTickEvent(Event event) {
         super(event);
-        if (event instanceof TickEvent.ServerTickEvent eventIn) {
+        if (event instanceof ServerTickEvent.Pre eventIn) {
             this.serverTickEvent = eventIn;
         } else {
-            throw new RuntimeException("Expected ServerTickEvent but received: " + event.getClass().getName());
+            throw new RuntimeException("Expected ServerTickEvent.Pre but received: " + event.getClass().getName());
         }
     }
     @Override public EventType getType() {

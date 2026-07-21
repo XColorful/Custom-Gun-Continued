@@ -3,7 +3,7 @@ package xiao.customgun.neoforge.event.events;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import xiao.customgun.core.api.event.EventPriority;
 import xiao.customgun.core.api.event.EventType;
 import xiao.customgun.core.api.event.IEventHandler;
@@ -50,40 +50,38 @@ public class NeoPrepareServerTickEventManager {
             return new NeoPrepareServerTickEvent(event);
         }
 
-        protected void handle(TickEvent.ServerTickEvent event) {
-            if (event.phase == TickEvent.Phase.START) {
-                super.onEvent(event);
-            }
+        protected void handle(ServerTickEvent.Pre event) {
+            super.onEvent(event);
         }
     }
 
     public static class PrepareServerTickProxyHighest extends ServerTickProxy {
         static final PrepareServerTickProxyHighest INSTANCE = new PrepareServerTickProxyHighest();
         @SubscribeEvent(priority = net.neoforged.bus.api.EventPriority.HIGHEST, receiveCanceled = true)
-        public void onEvent(TickEvent.ServerTickEvent e) { handle(e); }
+        public void onEvent(ServerTickEvent.Pre e) { handle(e); }
     }
 
     public static class PrepareServerTickProxyHigh extends ServerTickProxy {
         static final PrepareServerTickProxyHigh INSTANCE = new PrepareServerTickProxyHigh();
         @SubscribeEvent(priority = net.neoforged.bus.api.EventPriority.HIGH, receiveCanceled = true)
-        public void onEvent(TickEvent.ServerTickEvent e) { handle(e); }
+        public void onEvent(ServerTickEvent.Pre e) { handle(e); }
     }
 
     public static class PrepareServerTickProxyNormal extends ServerTickProxy {
         static final PrepareServerTickProxyNormal INSTANCE = new PrepareServerTickProxyNormal();
         @SubscribeEvent(priority = net.neoforged.bus.api.EventPriority.NORMAL, receiveCanceled = true)
-        public void onEvent(TickEvent.ServerTickEvent e) { handle(e); }
+        public void onEvent(ServerTickEvent.Pre e) { handle(e); }
     }
 
     public static class PrepareServerTickProxyLow extends ServerTickProxy {
         static final PrepareServerTickProxyLow INSTANCE = new PrepareServerTickProxyLow();
         @SubscribeEvent(priority = net.neoforged.bus.api.EventPriority.LOW, receiveCanceled = true)
-        public void onEvent(TickEvent.ServerTickEvent e) { handle(e); }
+        public void onEvent(ServerTickEvent.Pre e) { handle(e); }
     }
 
     public static class PrepareServerTickProxyLowest extends ServerTickProxy {
         static final PrepareServerTickProxyLowest INSTANCE = new PrepareServerTickProxyLowest();
         @SubscribeEvent(priority = net.neoforged.bus.api.EventPriority.LOWEST, receiveCanceled = true)
-        public void onEvent(TickEvent.ServerTickEvent e) { handle(e); }
+        public void onEvent(ServerTickEvent.Pre e) { handle(e); }
     }
 }

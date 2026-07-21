@@ -24,6 +24,7 @@ import xiao.customgun.core.api.config.IModConfigSpecBuilder;
 import xiao.customgun.core.api.event.ICustomEventPoster;
 import xiao.customgun.core.api.event.ICustomEventRegister;
 import xiao.customgun.core.api.event.IEventRegister;
+import xiao.customgun.core.api.gun.IGunManager;
 import xiao.customgun.core.api.init.registry.IRegistrarFactory;
 import xiao.customgun.core.api.minecraft.ICapabilityProvider;
 import xiao.customgun.core.api.minecraft.IMcRegistry;
@@ -32,6 +33,7 @@ import xiao.customgun.core.api.network.INetworkHook;
 import xiao.customgun.core.event.EventPoster;
 import xiao.customgun.core.event.EventRegister;
 import xiao.customgun.core.event.custom.CoreEventHandlers;
+import xiao.customgun.core.gun.GunManager;
 import xiao.customgun.core.init.ModConfig;
 import xiao.customgun.core.network.NetworkHandler;
 import xiao.customgun.core.network.NetworkHook;
@@ -73,6 +75,8 @@ public class CustomGun {
 
         ModConfig.init();
 
+        gunManager = GunManager.INSTANCE;
+
         CoreEventHandlers.registerAll(getEventRegister());
         initialized = true;
     }
@@ -110,10 +114,21 @@ public class CustomGun {
 
     private final @NotNull static ICustomEventRegister eventRegister = EventRegister.get(); // 在模组加载前就能触发
     private final @NotNull static ICustomEventPoster eventPoster = EventPoster.get(); // 在模组加载前就能触发
+    private static IGunManager gunManager;
     public @NotNull static ICustomEventRegister getEventRegister() {
         return CustomGun.eventRegister;
     }
     public @NotNull static ICustomEventPoster getEventPoster() {
         return CustomGun.eventPoster;
+    }
+    public static IGunManager getGunManager() {
+        return CustomGun.gunManager;
+    }
+    /**
+     * @deprecated 除非需要深度定制, 否则不应该调用
+     */
+    @Deprecated(forRemoval = false)
+    public static void setGunManager(@NotNull IGunManager gunManager) {
+        CustomGun.gunManager = gunManager;
     }
 }

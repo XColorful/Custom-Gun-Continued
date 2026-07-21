@@ -9,18 +9,18 @@ package xiao.customgun.client.input.shooter;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import org.lwjgl.glfw.GLFW;
+import xiao.customgun.CustomGun;
 import xiao.customgun.client.api.event.IInputKeyEvent;
+import xiao.customgun.client.api.event.IMouseButtonEvent;
+import xiao.customgun.client.api.input.IInputKeyManager;
 import xiao.customgun.client.api.input.IKeyConflictContext;
 import xiao.customgun.client.api.input.IKeyMapping;
 import xiao.customgun.client.api.input.IKeyModifier;
 import xiao.customgun.client.api.minecraft.input.CustomInputKey;
 import xiao.customgun.client.init.registry.ClientInputCategory;
 import xiao.customgun.client.input.InputKey;
-import xiao.customgun.core.api.event.EventType;
-import xiao.customgun.core.api.event.IEvent;
-import xiao.customgun.core.api.event.IEventHandler;
 
-public final class ProneKey extends InputKey implements IEventHandler {
+public final class ProneKey extends InputKey {
 
     private static final class ProneKeyHolder {
         private static final ProneKey INSTANCE = new ProneKey();
@@ -41,14 +41,30 @@ public final class ProneKey extends InputKey implements IEventHandler {
                 GLFW.GLFW_KEY_C,
                 ClientInputCategory.SHOOTER);
     }
-    @Override public String getEventHandlerName() {
-        return this.getClass().getName();
+
+    public static final String _MANAGER_NAME = String.format("%s:%s", CustomGun.MOD_ID, ProneKey.class.getSimpleName());
+    @Override public String getManagerName() {
+        return _MANAGER_NAME;
+    }
+
+    @Override
+    public boolean registerEventHandler() {
+        return true;
     }
     @Override
-    public void handleEvent(EventType eventType, IEvent event) {
-        switch (eventType) {
-            case INPUT_KEY_EVENT -> onPronePress((IInputKeyEvent) event);
-        }
+    public boolean unregisterEventHandler() {
+        return true;
+    }
+
+    // --------IInputHandler--------
+
+    @Override
+    public void onKeyInput(IInputKeyManager inputKeyManager, IInputKeyEvent event) {
+        this.onPronePress(event);
+    }
+
+    @Override
+    public void onMouseInput(IInputKeyManager inputKeyManager, IMouseButtonEvent event) {
     }
 
     private void onPronePress(IInputKeyEvent event) {

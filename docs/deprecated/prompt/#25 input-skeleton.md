@@ -29,3 +29,20 @@
 修改一下，像PrepareClientTickEvent那样，给这两事件都增加一个Prepare版本，用来区分Phase（我已经把刚才的修改改成Phase.END）
 ServerTickEvent也这样补一个版本
 ```
+
+```
+我修改了InputKey架构，引入了InputKeyManager，InputKey和MouseButton事件已经统一监听并执行按键过滤（这是为了避免原先模式下鼠标键改成键盘后就没法监听）
+
+现在需要以下修改，以我修改后的AimKey作为示范：
+- 把原先监听的key和mouse事件从ClientEventHandlers中移除
+- 将原先的监听处理函数移到onKeyInput或onMouseInput里，非key和mouse事件不受此影响
+- 没有监听key或input的留空，就像Aimkey里那样
+- 如果没有额外监听事件，移除IEventHandler接口
+
+需要修改的范围限制在input.config、input.player、input.shooter和ClientEventHandlers
+```
+
+```
+- 刚才修改的所有onKeyInput和onMouseInput里，调用方法前面都加上this.
+- 没有额外注册事件的，registerEventHandler和unregister都改成返回true
+```

@@ -14,10 +14,13 @@
 
 package xiao.customgun.client;
 
+import org.jetbrains.annotations.NotNull;
 import xiao.customgun.CustomGun;
+import xiao.customgun.client.api.input.IInputKeyManager;
 import xiao.customgun.client.api.input.IKeyMapping;
 import xiao.customgun.client.event.custom.ClientEventHandlers;
 import xiao.customgun.client.init.ClientModConfig;
+import xiao.customgun.client.input.InputKeyManager;
 
 public class CustomGunClient {
 
@@ -30,11 +33,33 @@ public class CustomGunClient {
 
         ClientModConfig.init();
 
+        setInputKeyManagerInternal(InputKeyManager.INSTANCE);
+        InputKeyManager.init(CustomGun.getMcSide());
+
         ClientEventHandlers.registerAll(CustomGun.getEventRegister());
         initialized = true;
     }
 
     public static IKeyMapping.Creator getKeyMappingCreator() {
         return keyMappingCreator;
+    }
+
+    private static IInputKeyManager inputKeyManager;
+    public static IInputKeyManager getInputKeyManager() {
+        return CustomGunClient.inputKeyManager;
+    }
+    /**
+     * @deprecated 除非需要深度定制, 否则不应该调用
+     */
+    @Deprecated(forRemoval = false)
+    public static void setInputKeyManager(IInputKeyManager inputKeyManager) {
+        setInputKeyManagerInternal(inputKeyManager);
+    }
+
+    // 跟IInpuKeySubManager同样的机制
+    private static void setInputKeyManagerInternal(@NotNull IInputKeyManager inputKeyManager) {
+        if (CustomGunClient.inputKeyManager != null) CustomGunClient.inputKeyManager.unregisterEventHandler();
+        CustomGunClient.inputKeyManager = inputKeyManager;
+        CustomGunClient.inputKeyManager.registerEventHandler();
     }
 }

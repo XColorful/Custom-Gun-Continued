@@ -88,7 +88,10 @@
 ### 输入
 > _./client/input_
 
-按键类别：
+[输入框架](./input/input-framework.md)
+- [InputKeyManager](./input/input-key-manager.md)：输入键管理器
+
+🤔深度定制输入键：[注册输入键](./input/register-input-key.md)
 - config：配置按键
 - player：玩家按键
 - shooter：射手按键
@@ -257,7 +260,10 @@ Module division based on the `xiao.customgun.client` top-level package
 ### Input
 > _./client/input_
 
-Key categories:
+[Input framework](./input/input-framework.md)
+- [InputKeyManager](./input/input-key-manager.md): Input key manager
+
+🤔Deeply customized input key: [Register input key](./input/register-input-key.md)
 - config: Config keys
 - player: Player keys
 - shooter: Shooter keys

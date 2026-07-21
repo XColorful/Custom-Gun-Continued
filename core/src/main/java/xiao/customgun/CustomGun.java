@@ -78,7 +78,9 @@ public class CustomGun {
         ModConfig.init();
 
         gunManager = GunManager.INSTANCE;
+        GunManager.init(mcSide);
         projectileManager = ProjectileManager.INSTANCE;
+        ProjectileManager.init(mcSide);
 
         CoreEventHandlers.registerAll(getEventRegister());
         initialized = true;

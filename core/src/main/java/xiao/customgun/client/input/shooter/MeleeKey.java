@@ -9,19 +9,18 @@ package xiao.customgun.client.input.shooter;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import org.lwjgl.glfw.GLFW;
+import xiao.customgun.CustomGun;
 import xiao.customgun.client.api.event.IInputKeyEvent;
 import xiao.customgun.client.api.event.IMouseButtonEvent;
+import xiao.customgun.client.api.input.IInputKeyManager;
 import xiao.customgun.client.api.input.IKeyConflictContext;
 import xiao.customgun.client.api.input.IKeyMapping;
 import xiao.customgun.client.api.input.IKeyModifier;
 import xiao.customgun.client.api.minecraft.input.CustomInputKey;
 import xiao.customgun.client.init.registry.ClientInputCategory;
 import xiao.customgun.client.input.InputKey;
-import xiao.customgun.core.api.event.EventType;
-import xiao.customgun.core.api.event.IEvent;
-import xiao.customgun.core.api.event.IEventHandler;
 
-public final class MeleeKey extends InputKey implements IEventHandler {
+public final class MeleeKey extends InputKey {
 
     private static final class MeleeKeyHolder {
         private static final MeleeKey INSTANCE = new MeleeKey();
@@ -42,15 +41,31 @@ public final class MeleeKey extends InputKey implements IEventHandler {
                 GLFW.GLFW_KEY_V,
                 ClientInputCategory.SHOOTER);
     }
-    @Override public String getEventHandlerName() {
-        return this.getClass().getName();
+
+    public static final String _MANAGER_NAME = String.format("%s:%s", CustomGun.MOD_ID, MeleeKey.class.getSimpleName());
+    @Override public String getManagerName() {
+        return _MANAGER_NAME;
+    }
+
+    @Override
+    public boolean registerEventHandler() {
+        return true;
     }
     @Override
-    public void handleEvent(EventType eventType, IEvent event) {
-        switch (eventType) {
-            case INPUT_KEY_EVENT -> onMeleeKeyPress((IInputKeyEvent) event);
-            case MOUSE_BUTTON_EVENT -> onMeleeMousePress((IMouseButtonEvent) event);
-        }
+    public boolean unregisterEventHandler() {
+        return true;
+    }
+
+    // --------IInputHandler--------
+
+    @Override
+    public void onKeyInput(IInputKeyManager inputKeyManager, IInputKeyEvent event) {
+        this.onMeleeKeyPress(event);
+    }
+
+    @Override
+    public void onMouseInput(IInputKeyManager inputKeyManager, IMouseButtonEvent event) {
+        this.onMeleeMousePress(event);
     }
 
     private void onMeleeKeyPress(IInputKeyEvent event) {

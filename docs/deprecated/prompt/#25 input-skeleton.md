@@ -1,4 +1,4 @@
-> #24 提示词
+> #25 提示词
 
 ```
 完成xiao.customgun.core.api.event.EventType新增的5个客户端类的相关代码
@@ -45,4 +45,11 @@ ServerTickEvent也这样补一个版本
 ```
 - 刚才修改的所有onKeyInput和onMouseInput里，调用方法前面都加上this.
 - 没有额外注册事件的，registerEventHandler和unregister都改成返回true
+```
+
+```
+按照我AimKey最新写的模式，把其他Key都按相同模式完成从TaCZ到CGC的迁移
+- 按键和鼠标输入都应该有统一的处理函数（即同时支持按键和鼠标绑定）
+- 写法风格和排版跟AimKey保持一致
+- onKeyInput和onMouseInput和统一处理函数像AimKey一样中间不要空行
 ```

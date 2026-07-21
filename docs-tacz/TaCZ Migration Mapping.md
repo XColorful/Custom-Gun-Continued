@@ -182,7 +182,7 @@ Notation:
 
 |com.tacz.guns.compat|xiao.customgun.core.compat|
 |---|---|
-|cloth||
+|cloth|_Deprecated_|
 |carryon||
 |controllable||
 |jei||
@@ -588,7 +588,7 @@ Notation:
 
 |com.tacz.guns.util|xiao.customgun.client.util|
 |---|---|
-|`InputExtraCheck`||
+|`InputExtraCheck`|`ClientInputUtils`|
 |`RenderDistance`||
 |`RenderHelper`||
 
@@ -752,7 +752,7 @@ Notation:
 
 |com.tacz.guns.client.gui|xiao.customgun.client.compat|
 |---|---|
-|compat.`ClothConfigScreen`||
+|compat.`ClothConfigScreen`|_Deprecated_|
 
 ### Initialize (Client)
 > ```java

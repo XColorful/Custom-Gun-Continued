@@ -8,8 +8,12 @@
 package xiao.customgun.client.input.shooter;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import org.lwjgl.glfw.GLFW;
 import xiao.customgun.CustomGun;
+import xiao.customgun.client.api.entity.ILocalShooter;
+import xiao.customgun.client.api.entity.shooter.ILocalShooterGetter;
 import xiao.customgun.client.api.event.IInputKeyEvent;
 import xiao.customgun.client.api.event.IMouseButtonEvent;
 import xiao.customgun.client.api.input.IInputKeyManager;
@@ -19,6 +23,7 @@ import xiao.customgun.client.api.input.IKeyModifier;
 import xiao.customgun.client.api.minecraft.input.CustomInputKey;
 import xiao.customgun.client.init.registry.ClientInputCategory;
 import xiao.customgun.client.input.InputKey;
+import xiao.customgun.client.util.ClientInputUtils;
 
 public final class MeleeKey extends InputKey {
 
@@ -60,19 +65,33 @@ public final class MeleeKey extends InputKey {
 
     @Override
     public void onKeyInput(IInputKeyManager inputKeyManager, IInputKeyEvent event) {
-        this.onMeleeKeyPress(event);
+        this.doMeleeLogic(event.getAction());
     }
-
     @Override
     public void onMouseInput(IInputKeyManager inputKeyManager, IMouseButtonEvent event) {
-        this.onMeleeMousePress(event);
+        this.doMeleeLogic(event.getAction());
+    }
+    private void doMeleeLogic(int action) {
+        if (action != GLFW.GLFW_PRESS) return;
+
+        if (!ClientInputUtils.isGameplayFocused()) return; // 不在焦点
+
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (player == null || player.isSpectator()) return; // 旁观模式
+
+        ILocalShooter localShooter = ILocalShooterGetter.fromLocalPlayer(player);
+        if (localShooter.cgc$isAim()) return; // 开镜时不能近战
+
+        localShooter.cgc$melee();
     }
 
-    private void onMeleeKeyPress(IInputKeyEvent event) {
-        // TODO: TaCZ MeleeKey.onMeleeKeyPress — InputEvent.Key
-    }
+    // --------Deprecated--------
 
-    private void onMeleeMousePress(IMouseButtonEvent event) {
-        // TODO: TaCZ MeleeKey.onMeleeMousePress — InputEvent.MouseButton.Post
+    /**
+     * Controllable联动的写法要改, 至少肯定不是写在这里
+     */
+    @Deprecated(forRemoval = true)
+    public static boolean onMeleeControllerPress(boolean isPress) {
+        return false;
     }
 }

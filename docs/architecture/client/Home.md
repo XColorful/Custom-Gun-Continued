@@ -169,6 +169,7 @@
 ### 工具
 > _./client/util_
 
+- ClientGuiUtils：客户端 GUI 操作封装
 - ClientJsonUtils：客户端 JSON 序列化封装
 - ClientWorldUtils：客户端游戏内世界相关操作
 
@@ -341,5 +342,6 @@ Module division based on the `xiao.customgun.client` top-level package
 ### Utility
 > _./client/util_
 
+- ClientGuiUtils: Client GUI operations wrapper
 - ClientJsonUtils: Client JSON serialization wrapper
 - ClientWorldUtils: Client in-game world related operations

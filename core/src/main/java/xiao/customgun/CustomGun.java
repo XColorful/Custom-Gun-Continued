@@ -18,6 +18,7 @@ import com.mojang.logging.LogUtils;
 import net.minecraft.server.MinecraftServer;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
+import xiao.customgun.core.api.minecraft.access.ICoreAccessTransformer;
 import xiao.customgun.core.api.common.ISideExecutor;
 import xiao.customgun.core.api.common.McSide;
 import xiao.customgun.core.api.config.IModConfigSpecBuilder;
@@ -55,12 +56,14 @@ public class CustomGun {
     private static IMcRegistry mcRegistry;
     private static ICapabilityProvider capabilityProvider;
     private static Supplier<IModConfigSpecBuilder> modConfigSpecBuilderSupplier;
+    private static ICoreAccessTransformer accessTransformer;
 
     public static void init(McSide mcSide, ISideExecutor sideExecutor,
                             IRegistrarFactory factory, IMcRegistry mcRegistry, ICapabilityProvider capabilityProvider,
                             INetworkAdapter networkAdapter, INetworkHook networkHook,
                             IEventRegister eventRegister,
-                            Supplier<IModConfigSpecBuilder> modConfigSpecBuilderSupplier) {
+                            Supplier<IModConfigSpecBuilder> modConfigSpecBuilderSupplier,
+                            ICoreAccessTransformer accessTransformer) {
         if (initialized) return;
         CustomGun.mcSide = mcSide;
         CustomGun.sideExecutor = sideExecutor;
@@ -68,6 +71,7 @@ public class CustomGun {
         CustomGun.mcRegistry = mcRegistry;
         CustomGun.capabilityProvider = capabilityProvider;
         CustomGun.modConfigSpecBuilderSupplier = modConfigSpecBuilderSupplier;
+        CustomGun.accessTransformer = accessTransformer;
 
         // 最早的事件机制初始化
         EventRegister.initialize(eventRegister);
@@ -115,6 +119,9 @@ public class CustomGun {
     }
     public static MinecraftServer getMinecraftServer() {
         return getMcRegistry().getMinecraftServer();
+    }
+    public static ICoreAccessTransformer getAccessTransformer() {
+        return accessTransformer;
     }
 
     private final @NotNull static ICustomEventRegister eventRegister = EventRegister.get(); // 在模组加载前就能触发

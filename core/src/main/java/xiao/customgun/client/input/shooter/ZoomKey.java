@@ -8,8 +8,12 @@
 package xiao.customgun.client.input.shooter;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import org.lwjgl.glfw.GLFW;
 import xiao.customgun.CustomGun;
+import xiao.customgun.client.api.entity.ILocalShooter;
+import xiao.customgun.client.api.entity.shooter.ILocalShooterGetter;
 import xiao.customgun.client.api.event.IInputKeyEvent;
 import xiao.customgun.client.api.event.IMouseButtonEvent;
 import xiao.customgun.client.api.input.IInputKeyManager;
@@ -19,6 +23,10 @@ import xiao.customgun.client.api.input.IKeyModifier;
 import xiao.customgun.client.api.minecraft.input.CustomInputKey;
 import xiao.customgun.client.init.registry.ClientInputCategory;
 import xiao.customgun.client.input.InputKey;
+import xiao.customgun.client.util.ClientInputUtils;
+import xiao.customgun.core.api.item.gun.IGunGetter;
+import xiao.customgun.core.network.message.ClientMessagePlayerZoom;
+import xiao.customgun.core.util.SendUtils;
 
 public final class ZoomKey extends InputKey {
 
@@ -60,19 +68,35 @@ public final class ZoomKey extends InputKey {
 
     @Override
     public void onKeyInput(IInputKeyManager inputKeyManager, IInputKeyEvent event) {
-        this.onZoomKeyPress(event);
+        this.onZoomKeyInput(event.getAction());
     }
-
     @Override
     public void onMouseInput(IInputKeyManager inputKeyManager, IMouseButtonEvent event) {
-        this.onZoomMousePress(event);
+        this.onZoomKeyInput(event.getAction());
+    }
+    private void onZoomKeyInput(int action) {
+        if (action != GLFW.GLFW_PRESS) return;
+
+        if (!ClientInputUtils.isGameplayFocused()) return; // 不在焦点
+
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (IGunGetter.fromMainHand(player) == null // 主手没枪
+                || player.isSpectator() // 旁观模式
+        ) return;
+
+        ILocalShooter localShooter = ILocalShooterGetter.fromLocalPlayer(player);
+        if (!localShooter.cgc$isAim()) return; // 不在瞄准
+
+        SendUtils.sendMessageToServer(new ClientMessagePlayerZoom());
     }
 
-    private void onZoomKeyPress(IInputKeyEvent event) {
-        // TODO: TaCZ ZoomKey.onZoomKeyPress — InputEvent.Key
-    }
+    // --------Deprecated--------
 
-    private void onZoomMousePress(IMouseButtonEvent event) {
-        // TODO: TaCZ ZoomKey.onZoomMousePress — InputEvent.MouseButton.Post
+    /**
+     * Controllable联动的写法要改, 至少肯定不是写在这里
+     */
+    @Deprecated(forRemoval = true)
+    public static boolean onZoomControllerPress(boolean isPress) {
+        return false;
     }
 }

@@ -8,8 +8,12 @@
 package xiao.customgun.client.input.shooter;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import org.lwjgl.glfw.GLFW;
 import xiao.customgun.CustomGun;
+import xiao.customgun.client.api.entity.ILocalShooter;
+import xiao.customgun.client.api.entity.shooter.ILocalShooterGetter;
 import xiao.customgun.client.api.event.IInputKeyEvent;
 import xiao.customgun.client.api.event.IMouseButtonEvent;
 import xiao.customgun.client.api.input.IInputKeyManager;
@@ -19,6 +23,8 @@ import xiao.customgun.client.api.input.IKeyModifier;
 import xiao.customgun.client.api.minecraft.input.CustomInputKey;
 import xiao.customgun.client.init.registry.ClientInputCategory;
 import xiao.customgun.client.input.InputKey;
+import xiao.customgun.client.util.ClientInputUtils;
+import xiao.customgun.core.api.item.gun.IGunGetter;
 
 public final class SwitchFireModeKey extends InputKey {
 
@@ -60,19 +66,32 @@ public final class SwitchFireModeKey extends InputKey {
 
     @Override
     public void onKeyInput(IInputKeyManager inputKeyManager, IInputKeyEvent event) {
-        this.onFireSelectKeyPress(event);
+        this.onFireSelectPress(event.getAction());
     }
-
     @Override
     public void onMouseInput(IInputKeyManager inputKeyManager, IMouseButtonEvent event) {
-        this.onFireSelectMousePress(event);
+        this.onFireSelectPress(event.getAction());
+    }
+    private void onFireSelectPress(int action) {
+        if (action != GLFW.GLFW_PRESS) return;
+
+        if (!ClientInputUtils.isGameplayFocused()) return; // 不在焦点
+
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (IGunGetter.fromMainHand(player) == null // 主手没枪
+                || player.isSpectator() // 旁观模式
+        ) return;
+
+        ILocalShooterGetter.fromLocalPlayer(player).cgc$switchFireMode();
     }
 
-    private void onFireSelectKeyPress(IInputKeyEvent event) {
-        // TODO: TaCZ FireSelectKey.onFireSelectKeyPress — InputEvent.Key
-    }
+    // --------Deprecated--------
 
-    private void onFireSelectMousePress(IMouseButtonEvent event) {
-        // TODO: TaCZ FireSelectKey.onFireSelectMousePress — InputEvent.MouseButton.Post
+    /**
+     * Controllable联动的写法要改, 至少肯定不是写在这里
+     */
+    @Deprecated(forRemoval = true)
+    public static boolean onFireSelectControllerPress(boolean isPress) {
+        return false;
     }
 }

@@ -8,6 +8,8 @@
 package xiao.customgun.client.input.config;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import org.lwjgl.glfw.GLFW;
 import xiao.customgun.CustomGun;
 import xiao.customgun.client.api.event.IInputKeyEvent;
@@ -19,6 +21,7 @@ import xiao.customgun.client.api.input.IKeyModifier;
 import xiao.customgun.client.api.minecraft.input.CustomInputKey;
 import xiao.customgun.client.init.registry.ClientInputCategory;
 import xiao.customgun.client.input.InputKey;
+import xiao.customgun.client.util.ClientInputUtils;
 
 public final class ConfigKey extends InputKey {
 
@@ -60,14 +63,25 @@ public final class ConfigKey extends InputKey {
 
     @Override
     public void onKeyInput(IInputKeyManager inputKeyManager, IInputKeyEvent event) {
-        this.onOpenConfig(event);
+        this.onConfigKeyInput(event.getAction());
     }
-
     @Override
     public void onMouseInput(IInputKeyManager inputKeyManager, IMouseButtonEvent event) {
+        this.onConfigKeyInput(event.getAction());
     }
+    private void onConfigKeyInput(int action) {
+        if (action != GLFW.GLFW_PRESS) return;
 
-    private void onOpenConfig(IInputKeyEvent event) {
-        // TODO: TaCZ ConfigKey.onOpenConfig — InputEvent.Key
+        if (!ClientInputUtils.isGameplayFocused()) return; // 不在焦点
+
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (player == null) return;
+
+        if (true) {
+            // TODO Cloth compat
+            // 做成事件钩子或mixin
+            // 事件钩子就支持不同config模组
+        } else {
+        }
     }
 }

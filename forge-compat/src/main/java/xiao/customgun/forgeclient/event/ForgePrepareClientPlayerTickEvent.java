@@ -15,14 +15,14 @@ import xiao.customgun.forge.event.ForgeEvent;
 
 public class ForgePrepareClientPlayerTickEvent extends ForgeEvent implements IClientPlayerTickEvent {
 
-    protected TickEvent.PlayerTickEvent playerTickEvent;
+    protected TickEvent.PlayerTickEvent.Pre playerTickEvent;
 
     public ForgePrepareClientPlayerTickEvent(Event event) {
         super(event);
-        if (event instanceof TickEvent.PlayerTickEvent eventIn) {
+        if (event instanceof TickEvent.PlayerTickEvent.Pre eventIn) {
             this.playerTickEvent = eventIn;
         } else {
-            throw new RuntimeException("Expected PlayerTickEvent but received: " + event.getClass().getName());
+            throw new RuntimeException("Expected PlayerTickEvent.Pre but received: " + event.getClass().getName());
         }
     }
     @Override public EventType getType() {

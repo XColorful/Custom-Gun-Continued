@@ -23,7 +23,7 @@ import xiao.customgun.core.api.minecraft.CommandLevel;
 
 public class ForgeServerTickEvent extends ForgeEvent implements IServerTickEvent {
 
-    protected TickEvent.ServerTickEvent serverTickEvent;
+    protected TickEvent.ServerTickEvent.Post serverTickEvent;
 
     public ForgeServerTickEvent(Event event) {
         super(event);

@@ -7,7 +7,6 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import xiao.customgun.core.api.event.EventPriority;
 import xiao.customgun.core.api.event.EventType;
 import xiao.customgun.core.api.event.IEventHandler;
-import xiao.customgun.forge.common.McSideHelper;
 import xiao.customgun.forge.event.ForgeEvent;
 import xiao.customgun.forge.event.ForgePrepareServerPlayerTickEvent;
 
@@ -23,11 +22,11 @@ public class PrepareServerPlayerTickEventManager {
 
     private static AbstractEventCommon getProxy(EventPriority priority) {
         return switch (priority) {
-            case HIGHEST -> ServerPlayerTickProxyHighest.INSTANCE;
-            case HIGH -> ServerPlayerTickProxyHigh.INSTANCE;
-            case NORMAL -> ServerPlayerTickProxyNormal.INSTANCE;
-            case LOW -> ServerPlayerTickProxyLow.INSTANCE;
-            case LOWEST -> ServerPlayerTickProxyLowest.INSTANCE;
+            case HIGHEST -> PrepareServerPlayerTickProxyHighest.INSTANCE;
+            case HIGH -> PrepareServerPlayerTickProxyHigh.INSTANCE;
+            case NORMAL -> PrepareServerPlayerTickProxyNormal.INSTANCE;
+            case LOW -> PrepareServerPlayerTickProxyLow.INSTANCE;
+            case LOWEST -> PrepareServerPlayerTickProxyLowest.INSTANCE;
         };
     }
 
@@ -61,32 +60,32 @@ public class PrepareServerPlayerTickEventManager {
         }
     }
 
-    public static class ServerPlayerTickProxyHighest extends ServerPlayerTickProxy {
-        static final ServerPlayerTickProxyHighest INSTANCE = new ServerPlayerTickProxyHighest();
+    public static class PrepareServerPlayerTickProxyHighest extends ServerPlayerTickProxy {
+        static final PrepareServerPlayerTickProxyHighest INSTANCE = new PrepareServerPlayerTickProxyHighest();
         @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.HIGHEST, receiveCanceled = true)
         public void onEvent(TickEvent.PlayerTickEvent e) { handle(e); }
     }
 
-    public static class ServerPlayerTickProxyHigh extends ServerPlayerTickProxy {
-        static final ServerPlayerTickProxyHigh INSTANCE = new ServerPlayerTickProxyHigh();
+    public static class PrepareServerPlayerTickProxyHigh extends ServerPlayerTickProxy {
+        static final PrepareServerPlayerTickProxyHigh INSTANCE = new PrepareServerPlayerTickProxyHigh();
         @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.HIGH, receiveCanceled = true)
         public void onEvent(TickEvent.PlayerTickEvent e) { handle(e); }
     }
 
-    public static class ServerPlayerTickProxyNormal extends ServerPlayerTickProxy {
-        static final ServerPlayerTickProxyNormal INSTANCE = new ServerPlayerTickProxyNormal();
+    public static class PrepareServerPlayerTickProxyNormal extends ServerPlayerTickProxy {
+        static final PrepareServerPlayerTickProxyNormal INSTANCE = new PrepareServerPlayerTickProxyNormal();
         @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.NORMAL, receiveCanceled = true)
         public void onEvent(TickEvent.PlayerTickEvent e) { handle(e); }
     }
 
-    public static class ServerPlayerTickProxyLow extends ServerPlayerTickProxy {
-        static final ServerPlayerTickProxyLow INSTANCE = new ServerPlayerTickProxyLow();
+    public static class PrepareServerPlayerTickProxyLow extends ServerPlayerTickProxy {
+        static final PrepareServerPlayerTickProxyLow INSTANCE = new PrepareServerPlayerTickProxyLow();
         @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.LOW, receiveCanceled = true)
         public void onEvent(TickEvent.PlayerTickEvent e) { handle(e); }
     }
 
-    public static class ServerPlayerTickProxyLowest extends ServerPlayerTickProxy {
-        static final ServerPlayerTickProxyLowest INSTANCE = new ServerPlayerTickProxyLowest();
+    public static class PrepareServerPlayerTickProxyLowest extends ServerPlayerTickProxy {
+        static final PrepareServerPlayerTickProxyLowest INSTANCE = new PrepareServerPlayerTickProxyLowest();
         @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.LOWEST, receiveCanceled = true)
         public void onEvent(TickEvent.PlayerTickEvent e) { handle(e); }
     }

@@ -18,7 +18,7 @@ public class ClientInputUtils {
     public static boolean isGameplayFocused() {
         Minecraft mc = Minecraft.getInstance();
         // 不能是加载界面
-        if (mc.getOverlay() != null) {
+        if (ClientGuiUtils.getOverlay(mc) != null) {
             return false;
         }
         // 不能打开任何 GUI

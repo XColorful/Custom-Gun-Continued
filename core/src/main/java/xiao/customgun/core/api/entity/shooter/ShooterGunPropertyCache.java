@@ -5,7 +5,7 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package xiao.customgun.core.api.entity.gun;
+package xiao.customgun.core.api.entity.shooter;
 
-public class GunPropertyCache {
+public class ShooterGunPropertyCache {
 }

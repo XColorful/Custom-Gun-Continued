@@ -22,7 +22,7 @@ import xiao.customgun.client.sound.SoundPlayManager;
 import xiao.customgun.core.api.common.McLogicalSide;
 import xiao.customgun.core.api.entity.ILivingShooter;
 import xiao.customgun.core.api.entity.ShootResult;
-import xiao.customgun.core.api.entity.gun.GunPropertyCache;
+import xiao.customgun.core.api.entity.shooter.ShooterGunPropertyCache;
 import xiao.customgun.core.api.entity.shooter.ILivingShooterGetter;
 import xiao.customgun.core.api.event.gun.GunFireEvent;
 import xiao.customgun.core.api.event.shooter.ShooterFireEvent;
@@ -334,8 +334,8 @@ public final class LocalShooterShoot extends LocalShooterAspect {
                 : 300; // 为避免非法运算，随意返回一个默认值
     }
     private boolean _useSilenceSound() {
-        GunPropertyCache gunPropertyCache = ILivingShooterGetter.cgc$fromLivingEntity(this.localShooter).cgc$getGunPropertyCache();
-        if (gunPropertyCache == null) return false;
+        ShooterGunPropertyCache shooterGunPropertyCache = ILivingShooterGetter.cgc$fromLivingEntity(this.localShooter).cgc$getGunPropertyCache();
+        if (shooterGunPropertyCache == null) return false;
 
         // TODO GunPropertyCache SilenceModifier.ID
         return false;

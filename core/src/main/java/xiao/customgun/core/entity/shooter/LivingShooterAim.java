@@ -90,7 +90,7 @@ public final class LivingShooterAim extends LivingShooterAspect {
 
         GunData gunData = gunIndexInstance.getGunData();
         float aimTime = gunData.getAimTime();
-        if (this.shooterProperty.gunPropertyCache != null) {
+        if (this.shooterProperty.shooterGunPropertyCache != null) {
             // TODO GunPropertyCache
         }
 

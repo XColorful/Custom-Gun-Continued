@@ -19,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import xiao.customgun.core.api.entity.*;
-import xiao.customgun.core.api.entity.gun.GunPropertyCache;
+import xiao.customgun.core.api.entity.shooter.ShooterGunPropertyCache;
 import xiao.customgun.core.api.projectile.physics.IProjectilePhysicsRuntime;
 import xiao.customgun.core.entity.LivingShooterSyncKey;
 import xiao.customgun.core.item.gun.GunPropertyManager;
@@ -210,11 +210,11 @@ public abstract class LivingEntityMixin extends Entity implements ILivingShooter
     
     // --------IGunCacheHolder--------
     
-    @Override public void cgc$updateGunPropertyCache(GunPropertyCache propertyCache) {
-        this.cgc$shooterProperty.gunPropertyCache = propertyCache;
+    @Override public void cgc$updateGunPropertyCache(ShooterGunPropertyCache propertyCache) {
+        this.cgc$shooterProperty.shooterGunPropertyCache = propertyCache;
     }
-    @Override public @Nullable GunPropertyCache cgc$getGunPropertyCache() {
-        return this.cgc$shooterProperty.gunPropertyCache;
+    @Override public @Nullable ShooterGunPropertyCache cgc$getGunPropertyCache() {
+        return this.cgc$shooterProperty.shooterGunPropertyCache;
     }
 
     // --------IBulletVictimImpact--------

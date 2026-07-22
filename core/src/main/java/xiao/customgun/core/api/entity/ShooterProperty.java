@@ -8,7 +8,7 @@
 package xiao.customgun.core.api.entity;
 
 import net.minecraft.world.item.ItemStack;
-import xiao.customgun.core.api.entity.gun.GunPropertyCache;
+import xiao.customgun.core.api.entity.shooter.ShooterGunPropertyCache;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -111,7 +111,7 @@ public class ShooterProperty {
      * 配件修改过的各种属性缓存
      */
     @Nullable
-    public GunPropertyCache gunPropertyCache = null;
+    public ShooterGunPropertyCache shooterGunPropertyCache = null;
 
     public void resetProperty() {
         // 重置各个状态

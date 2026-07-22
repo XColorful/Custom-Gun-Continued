@@ -25,7 +25,7 @@ Notation:
 |com.tacz.guns.api|xiao.customgun.core.api|
 |---|---|
 |`DefaultAssets`.\*|resource.`ResourceTag`.NULL_LOCATION|
-|`GunProperties`|projectile.`IProjectileRuntime`.`StateCache`.\*|
+|`GunProperties`|（待定）projectile.`IProjectileRuntime`.`StateCache`.\*|
 |`GunProperty`|item.`GunProperty`|
 
 #### Common API
@@ -55,7 +55,7 @@ Notation:
 
 |com.tacz.guns.api.event|xiao.customgun.core.api.event|
 |---|---|
-|common.`AttachmentPropertyEvent`|gun.`GunPropertyCacheEvent`|
+|common.`AttachmentPropertyEvent`|shooter.`ShooterGunPropertyCacheEvent`|
 |common.`EntityHurtByGunEvent`.`Pre`|projectile.`ProjectileHitEntityEvent`|
 |common.`EntityHurtByGunEvent`.`Post`|projectile.`ProjectileHitEntityFinishEvent`|
 |common.`EntityKillByGunEvent`|projectile.`ProjectileKillEntityEvent`|
@@ -299,7 +299,6 @@ Notation:
 
 |com.tacz.guns.event| |
 |---|---|
-|`ChangeGunPropertyEvent`||
 |`EntityDamageEvent`||
 |`HitboxHelperEvent`||
 |`LoadingConfigEvent`||
@@ -308,6 +307,10 @@ Notation:
 |`ServerTickEvent`||
 |`SyncBaseTimestamp`||
 |`TravelToDimensionEvent`||
+
+|com.tacz.guns.event|xiao.customgun.core.item|
+|---|---|
+|`ChangeGunPropertyEvent`.internalOnAttachmentPropertyEvent|`GunPropertyManager`.updateShooterGunPropertyCache|
 
 |com.tacz.guns.event|xiao.customgun.core.entity|
 |---|---|
@@ -505,7 +508,7 @@ Notation:
 
 |com.tacz.guns.resource|xiao.customgun.core.api.entity|
 |---|---|
-|modifier.`AttachmentCacheProperty`|gun.`GunPropertyCache`|
+|modifier.`AttachmentCacheProperty`|shooter.`ShooterGunPropertyCache`|
 
 |com.tacz.guns.resource|xiao.customgun.core.item|
 |---|---|

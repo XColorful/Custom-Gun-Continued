@@ -8,7 +8,6 @@
 package xiao.customgun.core.api.entity.shooter;
 
 import org.jetbrains.annotations.Nullable;
-import xiao.customgun.core.api.entity.gun.GunPropertyCache;
 
 public interface IGunCacheHolder {
 
@@ -19,12 +18,12 @@ public interface IGunCacheHolder {
      *
      * @param propertyCache 更新完的配件属性修改值
      */
-    void cgc$updateGunPropertyCache(GunPropertyCache propertyCache);
+    void cgc$updateGunPropertyCache(ShooterGunPropertyCache propertyCache);
 
     /**
      * 获取配件属性修改值缓存
      *
      * @return 绝大部分情况下，这个数值都不可能为 null
      */
-    @Nullable GunPropertyCache cgc$getGunPropertyCache();
+    @Nullable ShooterGunPropertyCache cgc$getGunPropertyCache();
 }

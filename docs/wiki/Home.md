@@ -1,18 +1,17 @@
 [English](#English)
 
 # 自定义枪械永续wiki
-> wiki 版本：`0.0.1`.2
+> wiki 版本：`0.0.1`.3
 
 > 推荐安装[Stylus](https://chromewebstore.google.com/detail/stylus/clngdbkpkpeebahjckkjfobafhncgmne)插件并使用配置[Stylus-Obsidian-Topaz-Nord.json](https://github.com/XColorful/XColorful.github.io/blob/main/stylus/Stylus-Obsidian-Topaz-Nord.json)
 
 ## 配置文件
 
-### 服务端配置
+### 双端配置
 
 - [子弹配置](https://github.com/XColorful/Custom-Gun-Continued/wiki/Ammo-config)
 - [枪械配置](https://github.com/XColorful/Custom-Gun-Continued/wiki/Gun-config)
 - [杂项配置](https://github.com/XColorful/Custom-Gun-Continued/wiki/Other-config)
-- [同步配置](https://github.com/XColorful/Custom-Gun-Continued/wiki/Sync-config)
 
 ### 客户端配置
 
@@ -21,6 +20,10 @@
 - [资源配置](https://github.com/XColorful/Custom-Gun-Continued/wiki/Resource-config)
 - [声音配置](https://github.com/XColorful/Custom-Gun-Continued/wiki/Sound-config)
 - [开镜配置](https://github.com/XColorful/Custom-Gun-Continued/wiki/Zoom-config)
+
+### 服务端配置
+
+- [同步配置](https://github.com/XColorful/Custom-Gun-Continued/wiki/Sync-config)
 
 ## 指令
 
@@ -40,18 +43,17 @@
 - [资源包](https://github.com/XColorful/Custom-Gun-Continued/wiki/Resource-introduction#资源包)
 
 # English
-> wiki verison: `0.0.1`.2
+> wiki verison: `0.0.1`.3
 
 > Recommend installing the [Stylus](https://chromewebstore.google.com/detail/stylus/clngdbkpkpeebahjckkjfobafhncgmne) extension and using the configuration [Stylus-Obsidian-Topaz-Nord.json](https://github.com/XColorful/XColorful.github.io/blob/main/stylus/Stylus-Obsidian-Topaz-Nord.json)
 
 ## Configuration
 
-### Server configuration
+### Common configuration
 
 - [Ammo config](https://github.com/XColorful/Custom-Gun-Continued/wiki/Ammo-config#English)
 - [Gun config](https://github.com/XColorful/Custom-Gun-Continued/wiki/Gun-config#English)
 - [Other config](https://github.com/XColorful/Custom-Gun-Continued/wiki/Other-config#English)
-- [Sync config](https://github.com/XColorful/Custom-Gun-Continued/wiki/Sync-config#English)
 
 ### Client configuration
 
@@ -60,6 +62,10 @@
 - [Resource config](https://github.com/XColorful/Custom-Gun-Continued/wiki/Resource-config#English)
 - [Sound config](https://github.com/XColorful/Custom-Gun-Continued/wiki/Sound-config#English)
 - [Zoom config](https://github.com/XColorful/Custom-Gun-Continued/wiki/Zoom-config#English)
+
+### Server configuration
+
+- [Sync config](https://github.com/XColorful/Custom-Gun-Continued/wiki/Sync-config#English)
 
 ## Command
 

@@ -1,7 +1,7 @@
 package xiao.customgun.client.api.minecraft.input;
 
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.CustomGun;
 import xiao.customgun.core.api.minecraft.input.CustomInputCategoryTag;
@@ -18,7 +18,7 @@ public enum CustomInputCategory implements ResourceTag.CategoryTag, ResourceTag.
     public final String tagName;
     public final String categoryName;
     public final String registryName;
-    public final ResourceLocation registryLocation;
+    public final Identifier registryLocation;
     public final Component categoryLang;
     CustomInputCategory(String category) {
         this(CustomInputCategoryTag.PREFIX, category);
@@ -39,7 +39,7 @@ public enum CustomInputCategory implements ResourceTag.CategoryTag, ResourceTag.
     @Override public String getRegistryName() {
         return this.registryName;
     }
-    @Override public ResourceLocation getRegistryLocation() {
+    @Override public Identifier getRegistryLocation() {
         return this.registryLocation;
     }
 

@@ -344,7 +344,7 @@ Notation:
 |`ModBlocks`|_Deprecated_|
 |`ModContainer`|_Deprecated_|
 |`ModCreativeTabs`|registry.`ModCreativeTabs`|
-|`ModDamageTypes`||
+|`ModDamageTypes`|registry.`ModDamageTypes`|
 |`ModEntities`.BULLET|registry.`ModEntities`.GUN_PROJECTILE|
 |`ModEntities`.TARGET_MINECART|_Deprecated_|
 |`ModItems`|registry.`ModItems`|
@@ -567,7 +567,7 @@ Notation:
 |`ExplodeUtil`||
 |`GetJarResources`|_Deprecated_|
 |`HitboxHelper`||
-|`Md5Utils|_Deprecated_|
+|`Md5Utils`|_Deprecated_|
 |`PathHandler`|_Deprecated_|
 |`ResourceScanner`|_Deprecated_|
 |`TacPathVisitor`|_Deprecated_|
@@ -747,7 +747,7 @@ Notation:
 |overlay.`*Overlay`||
 |toast.`GunLevelUpToast`|_Deprecated_|
 |`GunPackProgressScreen`|_Deprecated_|
-|`GunRefitScreen`||
+|`GunRefitScreen`|`GunRefitScreen`|
 |`GunSmithTableScreen`|_Deprecated_|
 
 |com.tacz.guns.client.gui|xiao.customgun.client.compat|

@@ -71,6 +71,7 @@ public enum AttachmentModifierType implements ResourceTag.CategoryTag {
             MagazineCategory.class, AttachmentData::getMagazineCategory);
 
 
+    // TODO ? 构造函数参数改成接口类，接口类负责定义泛型、getter/setter、::new
     public final String typeName;
     public final Class<?> dataType;
     public final Function<AttachmentData, ?> getter;

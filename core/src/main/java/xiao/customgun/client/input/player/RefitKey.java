@@ -88,7 +88,7 @@ public final class RefitKey extends InputKey {
             if (iGun == null || ClientGuiUtils.getCurrentScreen(mc) == null) return;
             if (iGun.hasAttachmentLock(gunItem)) return;
 
-            mc.setScreen(new GunRefitScreen());
+            ClientGuiUtils.setCurrentScreen(mc, new GunRefitScreen());
         } else if (ClientGuiUtils.getCurrentScreen(mc) instanceof GunRefitScreen screen) {
             screen.onClose();
         }

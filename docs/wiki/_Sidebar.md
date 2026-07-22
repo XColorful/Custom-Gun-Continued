@@ -4,17 +4,18 @@
 ---
 - [主页](https://github.com/XColorful/Custom-Gun-Continued/wiki)
 	- 配置文件
-		- 服务端配置
+		- 双端配置
 			- [子弹配置](https://github.com/XColorful/Custom-Gun-Continued/wiki/Ammo-config)
 			- [枪械配置](https://github.com/XColorful/Custom-Gun-Continued/wiki/Gun-config)
 			- [杂项配置](https://github.com/XColorful/Custom-Gun-Continued/wiki/Other-config)
-			- [同步配置](https://github.com/XColorful/Custom-Gun-Continued/wiki/Sync-config)
 		- 客户端配置
 			- [按键配置](https://github.com/XColorful/Custom-Gun-Continued/wiki/Key-config)
 			- [渲染配置](https://github.com/XColorful/Custom-Gun-Continued/wiki/Render-config)
 			- [资源配置](https://github.com/XColorful/Custom-Gun-Continued/wiki/Resource-config)
 			- [声音配置](https://github.com/XColorful/Custom-Gun-Continued/wiki/Sound-config)
 			- [开镜配置](https://github.com/XColorful/Custom-Gun-Continued/wiki/Zoom-config)
+		- 服务端配置
+			- [同步配置](https://github.com/XColorful/Custom-Gun-Continued/wiki/Sync-config)
 	- 指令
 		- [配件锁定指令](https://github.com/XColorful/Custom-Gun-Continued/wiki/Attachment-lock-command)
 		- [配置指令](https://github.com/XColorful/Custom-Gun-Continued/wiki/Config-command)
@@ -83,17 +84,18 @@
 
 - [Home](https://github.com/XColorful/Custom-Gun-Continued/wiki#English)
 	- Configuration
-		- Server configuration
+		- Common configuration
 			- [Ammo config](https://github.com/XColorful/Custom-Gun-Continued/wiki/Ammo-config#English)
 			- [Gun config](https://github.com/XColorful/Custom-Gun-Continued/wiki/Gun-config#English)
 			- [Other config](https://github.com/XColorful/Custom-Gun-Continued/wiki/Other-config#English)
-			- [Sync config](https://github.com/XColorful/Custom-Gun-Continued/wiki/Sync-config#English)
 		- Client configuration
 			- [Key config](https://github.com/XColorful/Custom-Gun-Continued/wiki/Key-config#English)
 			- [Render config](https://github.com/XColorful/Custom-Gun-Continued/wiki/Render-config#English)
 			- [Resource config](https://github.com/XColorful/Custom-Gun-Continued/wiki/Resource-config#English)
 			- [Sound config](https://github.com/XColorful/Custom-Gun-Continued/wiki/Sound-config#English)
 			- [Zoom config](https://github.com/XColorful/Custom-Gun-Continued/wiki/Zoom-config#English)
+		- Server configuration
+			- [Sync config](https://github.com/XColorful/Custom-Gun-Continued/wiki/Sync-config#English)
 	- Command
 		- [Attachment lock command](https://github.com/XColorful/Custom-Gun-Continued/wiki/Attachment-lock-command#English)
 		- [Config command](https://github.com/XColorful/Custom-Gun-Continued/wiki/Config-command#English)

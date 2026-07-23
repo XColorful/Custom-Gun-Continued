@@ -172,7 +172,7 @@ public final class AttachmentData extends ResourcePojo<AttachmentData> {
     private @Nullable _SimpleModifierData rpmModifier;
     private @Nullable _RecoilDataModifierData recoilDataModifier;
     private @Nullable _SimpleModifierData effectiveRangeModifier;
-    private float weight = 0.0F;
+    private float weightModifier = 0.0F;
     private @Nullable _MuzzleModifierData muzzleModifier;
     private @Nullable _SimpleModifierData aimInaccuracyModifier;
     private @Nullable _SimpleModifierData sneakInaccuracyModifier;

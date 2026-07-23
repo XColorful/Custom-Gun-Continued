@@ -48,7 +48,7 @@ public enum AttachmentModifierType implements ResourceTag.CategoryTag {
     EFFECTIVE_RANGE(AttachmentModifierTypeTag.EFFECTIVE_RANGE,
             _SimpleModifierData.class, AttachmentData::getEffectiveRangeModifier),
     WEIGHT(AttachmentModifierTypeTag.WEIGHT,
-            Float.class, AttachmentData::getWeight),
+            Float.class, AttachmentData::getWeightModifier),
     MUZZLE(AttachmentModifierTypeTag.MUZZLE,
             _MuzzleModifierData.class, AttachmentData::getMuzzleModifier),
     /**

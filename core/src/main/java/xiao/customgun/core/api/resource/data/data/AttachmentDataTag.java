@@ -29,7 +29,7 @@ public class AttachmentDataTag {
     public static final String RPM = AttachmentModifierTypeTag.RPM;
     public static final String RECOIL_DATA = AttachmentModifierTypeTag.RECOIL_DATA; public static final String RECOIL_DATA_OLD1 = "recoil";
     public static final String EFFECTIVE_RANGE = AttachmentModifierTypeTag.EFFECTIVE_RANGE;
-    public static final String WEIGHT = AttachmentModifierTypeTag.WEIGHT;
+    public static final String WEIGHT = AttachmentModifierTypeTag.WEIGHT; public static final String WEIGHT_OLD1 = "weight_modifier";
     public static final String MUZZLE = AttachmentModifierTypeTag.MUZZLE; public static final String MUZZLE_OLD1 = "silence";
     /**
      * 不准确度Modifier {@link _InaccuracyData}

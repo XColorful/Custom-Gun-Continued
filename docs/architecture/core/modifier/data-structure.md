@@ -196,10 +196,10 @@ protected AttachmentData fromJsonReader(JsonReader reader) throws IOException {
     while (reader.hasNext()) {
         String key = reader.nextName();
         switch (key) {
-            case AttachmentDataTag.ADS -> pojo.adsModifier = _SimpleModifierData.fromJson(reader);
+            case AttachmentDataTag.ADS -> pojo.adsModifier = JsonUtils.read(reader, _SimpleModifierData::fromJson);
             case AttachmentDataTag.ARMOR_IGNORE_PERCENT,
                  AttachmentDataTag.ARMOR_IGNORE_PERCENT_OLD1 ->
-                     pojo.armorIgnorePercentModifier = _SimpleModifierData.fromJson(reader);
+                     pojo.armorIgnorePercentModifier = JsonUtils.read(reader, _SimpleModifierData::fromJson);
             // ... 其他字段类似处理
             default -> reader.skipValue();
         }

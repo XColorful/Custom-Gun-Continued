@@ -64,29 +64,29 @@ public final class AttachmentData extends ResourcePojo<AttachmentData> {
             while (reader.hasNext()) {
                 String key = reader.nextName();
                 switch (key) {
-                    case AttachmentDataTag.ADS -> pojo.adsModifier = _SimpleModifierData.fromJson(reader);
+                    case AttachmentDataTag.ADS -> pojo.adsModifier = JsonUtils.read(reader, _SimpleModifierData::fromJson);
 
-                    case AttachmentDataTag.ARMOR_IGNORE_PERCENT, AttachmentDataTag.ARMOR_IGNORE_PERCENT_OLD1 -> pojo.armorIgnorePercentModifier = _SimpleModifierData.fromJson(reader);
-                    case AttachmentDataTag.HEADSHOT_MULTIPLIER, AttachmentDataTag.HEADSHOT_MULTIPLIER_OLD1 -> pojo.headshotMultiplierModifier = _SimpleModifierData.fromJson(reader);
-                    case AttachmentDataTag.DAMAGE_CALCULATION, AttachmentDataTag.DAMAGE_CALCULATION_OLD1 -> pojo.damageCalculationModifier = _SimpleModifierData.fromJson(reader);
-                    case AttachmentDataTag.BULLET_SPEED, AttachmentDataTag.BULLET_SPEED_OLD1 -> pojo.bulletSpeedModifier = _SimpleModifierData.fromJson(reader);
-                    case AttachmentDataTag.PIERCE_COUNT, AttachmentDataTag.PIERCE_COUNT_OLD1 -> pojo.pierceCountModifier = _SimpleModifierData.fromJson(reader);
-                    case AttachmentDataTag.FIRE_ASPECT, AttachmentDataTag.FIRE_ASPECT_OLD1 -> pojo.fireAspectModifier = _FireAspectModifierData.fromJson(reader);
-                    case AttachmentDataTag.KNOCKBACK_STRENGTH, AttachmentDataTag.KNOCKBACK_STRENGTH_OLD1 -> pojo.knockbackStrengthModifier = _SimpleModifierData.fromJson(reader);
-                    case AttachmentDataTag.BULLET_EXPLOSION, AttachmentDataTag.BULLET_EXPLOSION_OLD1 -> pojo.bulletExplosionModifier = _BulletExplosionModifierData.fromJson(reader);
+                    case AttachmentDataTag.ARMOR_IGNORE_PERCENT, AttachmentDataTag.ARMOR_IGNORE_PERCENT_OLD1 -> pojo.armorIgnorePercentModifier = JsonUtils.read(reader, _SimpleModifierData::fromJson);
+                    case AttachmentDataTag.HEADSHOT_MULTIPLIER, AttachmentDataTag.HEADSHOT_MULTIPLIER_OLD1 -> pojo.headshotMultiplierModifier = JsonUtils.read(reader, _SimpleModifierData::fromJson);
+                    case AttachmentDataTag.DAMAGE_CALCULATION, AttachmentDataTag.DAMAGE_CALCULATION_OLD1 -> pojo.damageCalculationModifier = JsonUtils.read(reader, _SimpleModifierData::fromJson);
+                    case AttachmentDataTag.BULLET_SPEED, AttachmentDataTag.BULLET_SPEED_OLD1 -> pojo.bulletSpeedModifier = JsonUtils.read(reader, _SimpleModifierData::fromJson);
+                    case AttachmentDataTag.PIERCE_COUNT, AttachmentDataTag.PIERCE_COUNT_OLD1 -> pojo.pierceCountModifier = JsonUtils.read(reader, _SimpleModifierData::fromJson);
+                    case AttachmentDataTag.FIRE_ASPECT, AttachmentDataTag.FIRE_ASPECT_OLD1 -> pojo.fireAspectModifier = JsonUtils.read(reader, _FireAspectModifierData::fromJson);
+                    case AttachmentDataTag.KNOCKBACK_STRENGTH, AttachmentDataTag.KNOCKBACK_STRENGTH_OLD1 -> pojo.knockbackStrengthModifier = JsonUtils.read(reader, _SimpleModifierData::fromJson);
+                    case AttachmentDataTag.BULLET_EXPLOSION, AttachmentDataTag.BULLET_EXPLOSION_OLD1 -> pojo.bulletExplosionModifier = JsonUtils.read(reader, _BulletExplosionModifierData::fromJson);
 
-                    case AttachmentDataTag.RPM -> pojo.rpmModifier = _SimpleModifierData.fromJson(reader);
-                    case AttachmentDataTag.RECOIL_DATA, AttachmentDataTag.RECOIL_DATA_OLD1 -> pojo.recoilDataModifier = _RecoilDataModifierData.fromJson(reader);
-                    case AttachmentDataTag.EFFECTIVE_RANGE -> pojo.effectiveRangeModifier = _SimpleModifierData.fromJson(reader);
-                    case AttachmentDataTag.WEIGHT, AttachmentDataTag.WEIGHT_OLD1 -> pojo.weightModifier = _SimpleModifierData.fromJson(reader);
-                    case AttachmentDataTag.MUZZLE, AttachmentDataTag.MUZZLE_OLD1 -> pojo.muzzleModifier = _MuzzleModifierData.fromJson(reader);
+                    case AttachmentDataTag.RPM -> pojo.rpmModifier = JsonUtils.read(reader, _SimpleModifierData::fromJson);
+                    case AttachmentDataTag.RECOIL_DATA, AttachmentDataTag.RECOIL_DATA_OLD1 -> pojo.recoilDataModifier = JsonUtils.read(reader, _RecoilDataModifierData::fromJson);
+                    case AttachmentDataTag.EFFECTIVE_RANGE -> pojo.effectiveRangeModifier = JsonUtils.read(reader, _SimpleModifierData::fromJson);
+                    case AttachmentDataTag.WEIGHT, AttachmentDataTag.WEIGHT_OLD1 -> pojo.weightModifier = JsonUtils.read(reader, _SimpleModifierData::fromJson);
+                    case AttachmentDataTag.MUZZLE, AttachmentDataTag.MUZZLE_OLD1 -> pojo.muzzleModifier = JsonUtils.read(reader, _MuzzleModifierData::fromJson);
 
-                    case AttachmentDataTag.AIM_INACCURACY -> pojo.aimInaccuracyModifier = _SimpleModifierData.fromJson(reader);
-                    case AttachmentDataTag.SNEAK_INACCURACY -> pojo.sneakInaccuracyModifier = _SimpleModifierData.fromJson(reader);
-                    case AttachmentDataTag.PRONE_INACCURACY, AttachmentDataTag.PRONE_INACCURACY_OLD1 -> pojo.proneInaccuracyModifier = _SimpleModifierData.fromJson(reader);
-                    case AttachmentDataTag.OTHER_INACCURACY, AttachmentDataTag.OTHER_INACCURACY_OLD1 -> pojo.otherInaccuracyModifier = _SimpleModifierData.fromJson(reader);
+                    case AttachmentDataTag.AIM_INACCURACY -> pojo.aimInaccuracyModifier = JsonUtils.read(reader, _SimpleModifierData::fromJson);
+                    case AttachmentDataTag.SNEAK_INACCURACY -> pojo.sneakInaccuracyModifier = JsonUtils.read(reader, _SimpleModifierData::fromJson);
+                    case AttachmentDataTag.PRONE_INACCURACY, AttachmentDataTag.PRONE_INACCURACY_OLD1 -> pojo.proneInaccuracyModifier = JsonUtils.read(reader, _SimpleModifierData::fromJson);
+                    case AttachmentDataTag.OTHER_INACCURACY, AttachmentDataTag.OTHER_INACCURACY_OLD1 -> pojo.otherInaccuracyModifier = JsonUtils.read(reader, _SimpleModifierData::fromJson);
 
-                    case AttachmentDataTag.MELEE -> pojo.meleeModifier = _MeleeModifierData.fromJson(reader);
+                    case AttachmentDataTag.MELEE -> pojo.meleeModifier = JsonUtils.read(reader, _MeleeModifierData::fromJson);
 
                     case AttachmentDataTag.MAGAZINE_CATEGORY -> pojo.magazineCategory = JsonUtils.readFromString(reader, MagazineCategory::fromString); case AttachmentDataTag.MAGAZINE_CATEGORY_OLD1 -> pojo.magazineCategory = MagazineCategory.fromIndex(JsonUtils.readInt(reader));
                     default -> reader.skipValue();

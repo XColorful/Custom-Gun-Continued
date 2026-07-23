@@ -5,9 +5,10 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package xiao.customgun.core.api.item.attachment;
+package xiao.customgun.core.api.item.attachment.modifier;
 
 import org.jetbrains.annotations.Nullable;
+import xiao.customgun.core.api.item.attachment.MagazineCategory;
 import xiao.customgun.core.api.resource.ResourceTag;
 import xiao.customgun.core.resource.data.data.AttachmentData;
 import xiao.customgun.core.resource.data.data.attachment.*;

@@ -234,7 +234,7 @@ protected void validatePojo() {
 
 ## AttachmentModifierTypeTag — 标签层级
 
-`xiao.customgun.core.api.item.attachment.AttachmentModifierTypeTag`
+`xiao.customgun.core.api.item.attachment.modifier.AttachmentModifierTypeTag`
 
 标签常量的体系结构：
 

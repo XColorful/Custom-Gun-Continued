@@ -5,7 +5,7 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package xiao.customgun.core.api.item.attachment;
+package xiao.customgun.core.api.item.attachment.modifier;
 
 import xiao.customgun.core.api.resource.data.data.GunDataTag;
 import xiao.customgun.core.api.resource.data.data.gun._BulletDataTag;

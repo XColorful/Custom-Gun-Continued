@@ -36,7 +36,7 @@ public static void registerModifier() {
 
 ### 计算引擎
 
-`AttachmentPropertyManager.eval(List<Modifier>, double)` 和 `eval(List<Boolean>, boolean)` 是两个核心计算重载，详见 [缓存系统](./cache-system.md)。
+`AttachmentPropertyManager.eval(List<Modifier>, double)` 和 `eval(List<Boolean>, boolean)` 是两个核心计算重载，详见 [缓存系统](docs-tacz/architecture/resource/modifier/cache-system.md)。
 
 ### LuaJ 脚本引擎
 

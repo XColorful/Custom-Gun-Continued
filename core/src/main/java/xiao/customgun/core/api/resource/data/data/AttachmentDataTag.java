@@ -7,7 +7,7 @@
 
 package xiao.customgun.core.api.resource.data.data;
 
-import xiao.customgun.core.api.item.attachment.AttachmentModifierTypeTag;
+import xiao.customgun.core.api.item.attachment.modifier.AttachmentModifierTypeTag;
 import xiao.customgun.core.resource.data.data.gun._InaccuracyData;
 
 public class AttachmentDataTag {

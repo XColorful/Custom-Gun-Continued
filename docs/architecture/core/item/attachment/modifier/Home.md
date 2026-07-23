@@ -130,9 +130,9 @@ CGC 对 TaCZ 原版体系的重构围绕以下核心原则：
 
 | 文档 | 内容 |
 |---|---|
-| [JSON 数据结构](./data-structure.md) | `__ModifierData<T>` 基类与子类，`AttachmentData` 强类型字段设计，JSON 标签常量体系 |
-| [AttachmentModifierType 枚举](./modifier-type.md) | 枚举设计、typeName/dataType/getter 三元组、与 TaCZ 字符串键体系的对比 |
-| [缓存系统](./cache-system.md) | `ShooterGunPropertyCache` 生命周期、`GunPropertyManager` 管线、`IGunCacheHolder` 接口 |
-| [事件与通知](./event-and-notification.md) | `ShooterGunPropertyCacheEvent` 事件设计、自定义事件派发流 |
-| [消费方汇总](./consumer-sites.md) | 所有 `cgc$getGunPropertyCache()` 调用位置、消费模式、当前 TODO 状态 |
-| [迁移对照](./migration-mapping.md) | TaCZ → CGC 逐类迁移映射与兼容说明 |
+| [JSON 数据结构](docs/architecture/core/item/attachment/modifier/data-structure.md) | `__ModifierData<T>` 基类与子类，`AttachmentData` 强类型字段设计，JSON 标签常量体系 |
+| [AttachmentModifierType 枚举](modifier-type.md) | 枚举设计、typeName/dataType/getter 三元组、与 TaCZ 字符串键体系的对比 |
+| [缓存系统](docs/architecture/core/item/attachment/modifier/cache-system.md) | `ShooterGunPropertyCache` 生命周期、`GunPropertyManager` 管线、`IGunCacheHolder` 接口 |
+| [事件与通知](event-and-notification.md) | `ShooterGunPropertyCacheEvent` 事件设计、自定义事件派发流 |
+| [消费方汇总](docs/architecture/core/item/attachment/modifier/consumer-sites.md) | 所有 `cgc$getGunPropertyCache()` 调用位置、消费模式、当前 TODO 状态 |
+| [迁移对照](migration-mapping.md) | TaCZ → CGC 逐类迁移映射与兼容说明 |

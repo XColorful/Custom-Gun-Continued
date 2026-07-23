@@ -102,8 +102,8 @@ graph TB
 
 | 文档 | 内容 |
 |---|---|
-| [JSON 数据结构与格式要求](./data-structure.md) | `Modifier`、`AttachmentData` 的 JSON schema，向后兼容规则 |
-| [IAttachmentModifier 接口](./modifier-interface.md) | 接口契约、17 个具体修改器详解 |
-| [缓存系统](./cache-system.md) | `AttachmentCacheProperty` 生命周期、计算流水线、LuaJ 集成 |
-| [管理器与事件系统](./manager-and-event.md) | `AttachmentPropertyManager` 注册/计算引擎，事件流，实体绑定 |
-| [消费方汇总](./consumer-sites.md) | 所有读取缓存值的调用位置和场景 |
+| [JSON 数据结构与格式要求](docs-tacz/architecture/resource/modifier/data-structure.md) | `Modifier`、`AttachmentData` 的 JSON schema，向后兼容规则 |
+| [IAttachmentModifier 接口](modifier-interface.md) | 接口契约、17 个具体修改器详解 |
+| [缓存系统](docs-tacz/architecture/resource/modifier/cache-system.md) | `AttachmentCacheProperty` 生命周期、计算流水线、LuaJ 集成 |
+| [管理器与事件系统](manager-and-event.md) | `AttachmentPropertyManager` 注册/计算引擎，事件流，实体绑定 |
+| [消费方汇总](docs-tacz/architecture/resource/modifier/consumer-sites.md) | 所有读取缓存值的调用位置和场景 |

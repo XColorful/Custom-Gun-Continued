@@ -44,7 +44,7 @@ public abstract class __ModifierData<T extends __ModifierData<T>> extends Resour
 ```java
 public class __ModifierDataTag {
     public static final String SHARED_BASE_ADD = "shared_base_add";
-    public static final String ADD_OLD1 = "addend";          // 旧版兼容
+    public static final String SHARED_BASE_ADD_OLD1 = "addend";          // 旧版兼容
 
     public static final String SHARED_PERCENT_ADD = "shared_percent_add";
     public static final String SHARED_PERCENT_ADD_OLD1 = "percent";  // 旧版兼容

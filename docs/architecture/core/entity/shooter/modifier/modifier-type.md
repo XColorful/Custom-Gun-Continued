@@ -88,7 +88,7 @@ public enum AttachmentModifierType implements ResourceTag.CategoryTag {
 | `RPM` | (tag) | `_SimpleModifierData` | `getRpmModifier` |
 | `RECOIL_DATA` | (tag) | `_RecoilDataModifierData` | `getRecoilDataModifier` |
 | `EFFECTIVE_RANGE` | (tag) | `_SimpleModifierData` | `getEffectiveRangeModifier` |
-| `WEIGHT` | (tag) | **`Float.class`** | `getWeight` |
+| `WEIGHT` | (tag) | `_SimpleModifierData` | `getWeightModifier` |
 | `MUZZLE` | (tag) | `_MuzzleModifierData` | `getMuzzleModifier` |
 | `AIM_INACCURACY` | (tag) | `_SimpleModifierData` | `getAimInaccuracyModifier` |
 | `SNEAK_INACCURACY` | (tag) | `_SimpleModifierData` | `getSneakInaccuracyModifier` |
@@ -97,7 +97,7 @@ public enum AttachmentModifierType implements ResourceTag.CategoryTag {
 | `MELEE` | (tag) | `_MeleeModifierData` | `getMeleeModifier` |
 | `MAGAZINE_CATEGORY` | (tag) | `MagazineCategory.class` | `getMagazineCategory` |
 
-注意 `WEIGHT` 的 `dataType` 是 `Float.class`（普通 Java 类型），而非 `__ModifierData` 子类。这是唯一不使用独立 Modifier 数据类的字段。**含义：** 重量是一个简单附加值，不参与 sharedBaseAdd/sharedPercentAdd/uniqueMultiplier 的组合计算。
+注意 `WEIGHT` 的 `dataType` 已从 `Float.class` 改为 `_SimpleModifierData`（与大多数数值型 modifier 统一），getter 对应 `AttachmentData.getWeightModifier()`。
 
 ### 类型安全取值方法
 

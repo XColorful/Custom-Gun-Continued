@@ -1,23 +1,23 @@
 
 # 事件与通知系统 — CGC 重构版
 
-> `ShooterGunPropertyCacheEvent` 事件设计，自定义事件派发流，与 TaCZ Forge 事件系统的对比。
+> `ShooterGunModifierCacheEvent` 事件设计，自定义事件派发流，与 TaCZ Forge 事件系统的对比。
 
 ## 事件定义
 
 `xiao.customgun.core.api.event.shooter.ShooterGunModifierCacheEvent`
 
 ```java
-public final class ShooterGunPropertyCacheEvent extends LivingShooterEvent implements IGunEvent {
+public final class ShooterGunModifierCacheEvent extends LivingShooterEvent implements IGunEvent {
     private final @NotNull IGun iGun;
     private final @NotNull ItemStack gunItem;
-    private final @NotNull ShooterGunPropertyCache cache;  // 监听器可修改
+    private final @NotNull ShooterGunModifierCache cache;  // 监听器可修改
 
-    public ShooterGunPropertyCacheEvent(
+    public ShooterGunModifierCacheEvent(
         McLogicalSide logicalSide,
         @NotNull ILivingShooter iLivingShooter, @NotNull LivingEntity livingShooter,
         @NotNull IGun iGun, @NotNull ItemStack gunItem,
-        @NotNull ShooterGunPropertyCache cache);
+        @NotNull ShooterGunModifierCache cache);
 }
 ```
 
@@ -26,7 +26,7 @@ public final class ShooterGunPropertyCacheEvent extends LivingShooterEvent imple
 在 `CustomEventType` 枚举中注册：
 
 ```java
-SHOOTER_GUN_PROPERTY_CACHE_EVENT(ShooterGunPropertyCacheEvent.class)
+SHOOTER_GUN_MODIFIER_CACHE_EVENT(ShooterGunModifierCacheEvent.class)
 ```
 
 ### 继承层次
@@ -34,7 +34,7 @@ SHOOTER_GUN_PROPERTY_CACHE_EVENT(ShooterGunPropertyCacheEvent.class)
 ```
 CustomEvent
   └── LivingShooterEvent (ILogicalSideOnly, ILivingShooterEvent)
-        └── ShooterGunPropertyCacheEvent (IGunEvent)
+        └── ShooterGunModifierCacheEvent (IGunEvent)
 ```
 
 - `ILogicalSideOnly` — 标记事件的逻辑端（服务端/客户端）
@@ -45,36 +45,36 @@ CustomEvent
 
 ```java
 private static final EventDispatcher<...> _EVENT_DISPATCHER =
-    CustomGun.getEventPoster().getEventDispatcher(ShooterGunPropertyCacheEvent.class);
+    CustomGun.getEventPoster().getEventDispatcher(ShooterGunModifierCacheEvent.class);
 ```
 
-事件分发器在类加载时初始化，之后复用。监听器通过 `_EVENT_DISPATCHER` 注册/取消。
+事件分发器在类加载时初始化，之后复用。
 
 ## 事件触发时机
 
 ```mermaid
 sequenceDiagram
     participant Draw as LivingShooterDraw.draw()
-    participant GPM as GunPropertyManager
-    participant SGPC as ShooterGunPropertyCache (new)
-    participant Event as ShooterGunPropertyCacheEvent
+    participant SGMM as ShooterGunModifierManager
+    participant SGMC as ShooterGunModifierCache (new)
+    participant Event as ShooterGunModifierCacheEvent
     participant Dispatcher as EventDispatcher
     participant Listener as 事件监听器
     participant SP as ShooterProperty
 
-    Draw->>GPM: postChangeEvent(shooter, gunItem)
-    GPM->>SGPC: new ShooterGunPropertyCache()
-    GPM->>GPM: updateShooterGunPropertyCache()
+    Draw->>SGMM: postChangeEvent(shooter, gunItem)
+    SGMM->>SGMC: new ShooterGunModifierCache()
+    SGMM->>SGMM: updateShooterGunModifierCache()
 
-    Note over GPM: 缓存计算完成后
+    Note over SGMM: 缓存计算完成后
 
-    GPM->>Event: new ShooterGunPropertyCacheEvent(...)
-    GPM->>Dispatcher: postCustomEvent(event)
+    SGMM->>Event: new ShooterGunModifierCacheEvent(...)
+    SGMM->>Dispatcher: postCustomEvent(event)
     
     Dispatcher->>Listener: handleEvent(event)
     Note over Listener: 监听器可调用:<br/>event.getCache() 获取缓存<br/>event.getIGun() 获取枪械<br/>event.getGunItem() 获取物品
 
-    GPM->>SP: cgc$updateGunPropertyCache(cache)
+    SGMM->>SP: cgc$updateGunModifierCache(cache)
     Note over SP: 缓存写入实体
 ```
 
@@ -87,12 +87,12 @@ sequenceDiagram
 
 | 维度 | TaCZ | CGC |
 |---|---|---|
-| 事件类 | `AttachmentPropertyEvent extends Forge Event` | `ShooterGunPropertyCacheEvent extends CustomEvent` |
+| 事件类 | `AttachmentPropertyEvent extends Forge Event` | `ShooterGunModifierCacheEvent extends CustomEvent` |
 | 事件总线 | Forge `MinecraftForge.EVENT_BUS` | CGC `EventPoster` + `EventDispatcher` |
 | 事件注册 | `@SubscribeEvent` 注解 | `ICustomEventHandler` 接口实现 |
 | KubeJS 支持 | 通过 `KubeJSGunEventPoster` 接口 | 通过 CGC 事件系统的脚本桥接 |
 | LogicSide 过滤 | 监听器中手动检查 | `McLogicalSide` 传递给事件，由 Dispatcher 过滤 |
-| 内部处理 | `ChangeGunPropertyEvent.internalOnAttachmentPropertyEvent`（在 Forge 事件前） | `updateShooterGunPropertyCache()` 在事件前完成 |
+| 内部处理 | `ChangeGunPropertyEvent.internalOnAttachmentPropertyEvent`（在 Forge 事件前） | `updateShooterGunModifierCache()` 在事件前完成 |
 
 ### CGC 事件系统的优势
 
@@ -103,7 +103,7 @@ sequenceDiagram
 
 ## 事件使用的 TODO 项
 
-`GunPropertyManager.postChangeEvent()` 中第 48-51 行：
+`ShooterGunModifierManager.postChangeEvent()` 中第 48-51 行：
 
 ```java
 {

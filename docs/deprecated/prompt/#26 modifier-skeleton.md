@@ -50,3 +50,17 @@
 
 现在开始调查，全部完成后通知我检查。
 ```
+
+```
+检查我最近6个commit的变动后的最终状态，更新的内容可能需要修改之前写的文档。
+- CGC的部分移到了docs\architecture\core\entity\shooter\modifier
+- TacZ的部分移到了\docs-tacz\resource\modifier
+- 修改后的文档应仍保持在以上目录
+
+几个设计要点：
+- 现在明确了shooter modifier体系
+- tacz的IAttachmentModifier（即AttachmentModifierType里的todo）已明确会移植成item/attachment/modifier下的类
+- 目前shooter gun modifier只有一个attachment modifier参与，但明确了作用于shooter的gun属性，modifier构成是属于attachment物品下的
+- AttachmentModifierType会设计成持有接口，具体类为item/attachment下的（作为枚举的非final字段）
+- 目前shooter没有别的modifier，但是这个体系本身就更正了语义和架构清晰度
+```

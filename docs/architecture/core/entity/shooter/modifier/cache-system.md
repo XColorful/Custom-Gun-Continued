@@ -1,16 +1,19 @@
 
 # 缓存系统 — CGC 重构版
 
-> `ShooterGunPropertyCache` 的架构设计、生命周期、与 `GunPropertyManager` 的配合关系。
+> `ShooterGunModifierCache` 的架构设计、生命周期、与 `ShooterGunModifierManager` 的配合关系。
 
 ## 命名语义
 
-`ShooterGunPropertyCache` 的名称明确了三个事实：
+`ShooterGunModifierCache` 的名称明确了三个事实：
 - **Shooter** — 绑定在射手（`ILivingShooter`）上
-- **Gun** — 缓存的是枪械属性
-- **Property** — 缓存内容是被配件修改过的属性值（不仅仅是配件的原始数据）
+- **Gun** — 缓存作用的是枪械属性
+- **Modifier** — 缓存内容是被修饰器（modifier）修改过的属性值
+- **Cache** — 这是一个计算缓存（临时值），区别于持久化保存的属性。保留 Cache 后缀以区分持久化属性和临时计算值
 
-与 TaCZ 的 `AttachmentCacheProperty` 相比，消除了 "Attachment" 引起的歧义（TaCZ 的缓存是枪械属性缓存，不是配件数据本身的缓存）。
+与 TaCZ 的 `AttachmentCacheProperty` 相比：
+- 消除了 "Attachment" 引起的歧义——cache 存的是 gun 属性的计算结果，不是 attachment 数据本身
+- 保留了 "Cache" 后缀——说明这是计算结果的临时缓存，不是权威数据源
 
 ## 实体接口架构
 
@@ -19,35 +22,37 @@
                     ├── IGunOperator (枪械操作: draw/shoot/aim...)
                     ├── IShooterState (弹药检查/冲刺状态)
                     ├── ISynGunState (同步状态查询)
-                    └── IGunCacheHolder (缓存存取) ← 本体系关注
-                            ├── cgc$updateGunPropertyCache(ShooterGunPropertyCache)
-                            └── cgc$getGunPropertyCache() → @Nullable ShooterGunPropertyCache
+                    └── IShooterModifierCacheHolder (修饰缓存存取) ← 本体系关注
+                            ├── cgc$updateGunModifierCache(ShooterGunModifierCache)
+                            └── cgc$getGunModifierCache() → @Nullable ShooterGunModifierCache
 ```
 
-### IGunCacheHolder
+### IShooterModifierCacheHolder
+
+`xiao.customgun.core.api.entity.shooter.IShooterModifierCacheHolder`
 
 ```java
-public interface IGunCacheHolder {
-    void cgc$updateGunPropertyCache(ShooterGunPropertyCache propertyCache);
-    @Nullable ShooterGunPropertyCache cgc$getGunPropertyCache();
+public interface IShooterModifierCacheHolder {
+    void cgc$updateGunModifierCache(ShooterGunModifierCache modifierCache);
+    @Nullable ShooterGunModifierCache cgc$getGunModifierCache();
 }
 ```
 
-**接口隔离原则**：缓存存取被独立在 `IGunCacheHolder` 接口中。消费缓存值的代码只需依赖此接口，不需要知道 `IGunOperator` 的全部方法。
+**接口隔离原则**：修饰缓存的存取被独立在 `IShooterModifierCacheHolder` 接口中。消费缓存值的代码只需依赖此接口，不需要知道 `IGunOperator` 的全部方法。
 
 ### 实现：LivingEntityMixin
 
 ```java
 // LivingEntityMixin 实现
-@Override public void cgc$updateGunPropertyCache(ShooterGunPropertyCache propertyCache) {
-    this.cgc$shooterProperty.shooterGunModifierCache = propertyCache;
+@Override public void cgc$updateGunModifierCache(ShooterGunModifierCache modifierCache) {
+    this.cgc$shooterProperty.shooterGunModifierCache = modifierCache;
 }
-@Override public @Nullable ShooterGunPropertyCache cgc$getGunPropertyCache() {
+@Override public @Nullable ShooterGunModifierCache cgc$getGunModifierCache() {
     return this.cgc$shooterProperty.shooterGunModifierCache;
 }
 ```
 
-缓存在 `ShooterProperty.shooterGunModifierCache` 字段中按实体存储。
+缓存存储在 `ShooterProperty.shooterGunModifierCache` 字段中。
 
 ## ShooterProperty 的缓存字段
 
@@ -59,22 +64,22 @@ public class ShooterProperty {
      * 配件修改过的各种属性缓存
      */
     @Nullable
-    public ShooterGunPropertyCache shooterGunModifierCache = null;
+    public ShooterGunModifierCache shooterGunModifierCache = null;
 }
 ```
 
-注意 `resetProperty()` 方法**不会**清除 `shooterGunModifierCache`，这意味着缓存可以跨状态重置保留。缓存只在明确更新时被替换。
+注意 `resetProperty()` 方法**不会**清除 `shooterGunModifierCache`——缓存在切枪时才更新，不受射击状态重置的影响。
 
-## GunPropertyManager — 缓存编排
+## ShooterGunModifierManager — 缓存编排
 
 `xiao.customgun.core.entity.shooter.modifier.ShooterGunModifierManager`
 
-这是 CGC 缓存体系的管理器（对应 TaCZ 的 `AttachmentPropertyManager`）。
+这是 CGC 修饰缓存体系的管理器（对应 TaCZ 的 `AttachmentPropertyManager`）。
 
 ### 当前实现
 
 ```java
-public class GunPropertyManager {
+public class ShooterGunModifierManager {
     public static void postChangeEvent(LivingEntity livingShooter) {
         postChangeEvent(livingShooter, livingShooter.getMainHandItem());
     }
@@ -89,25 +94,31 @@ public class GunPropertyManager {
 
         // 1. 计算缓存值
         ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(livingShooter);
-        ShooterGunPropertyCache gunPropertyCache = updateShooterGunPropertyCache(gunIndexInstance, iGun, gunItem);
+        ShooterGunModifierCache gunModifierCache = updateShooterGunModifierCache(gunIndexInstance, iGun, gunItem);
 
         // 2. 触发事件
-        CustomGun.getEventPoster().postCustomEvent(new ShooterGunPropertyCacheEvent(
+        CustomGun.getEventPoster().postCustomEvent(new ShooterGunModifierCacheEvent(
             CustomGun.getSideExecutor().getLogicalSide(),
             iLivingShooter, livingShooter,
             iGun, gunItem,
-            gunPropertyCache));
+            gunModifierCache));
 
-        // 3. 写入缓存
-        iLivingShooter.cgc$updateGunPropertyCache(gunPropertyCache);
+        // 3. TODO: 脚本修改缓存值（对应 TaCZ GunProperties）
+        {
+            ShooterProperty shooterProperty = iLivingShooter.cgc$getShooterProperty();
+            // TODO GunProperties移植
+        }
+
+        // 4. 写入缓存
+        iLivingShooter.cgc$updateGunModifierCache(gunModifierCache);
     }
 
-    private static ShooterGunPropertyCache updateShooterGunPropertyCache(
+    private static ShooterGunModifierCache updateShooterGunModifierCache(
             GunIndexInstance gunIndexInstance, IGun iGun, ItemStack gunItem) {
-        ShooterGunPropertyCache gunPropertyCache = new ShooterGunPropertyCache();
+        ShooterGunModifierCache cache = new ShooterGunModifierCache();
         GunData gunData = gunIndexInstance.getGunData();
         // TODO 原 ChangeGunPropertyEvent — 计算逻辑待实现
-        return gunPropertyCache;
+        return cache;
     }
 }
 ```
@@ -117,49 +128,48 @@ public class GunPropertyManager {
 ```mermaid
 sequenceDiagram
     participant Draw as LivingShooterDraw
-    participant GPM as GunPropertyManager
-    participant SGPC as ShooterGunPropertyCache
-    participant Event as ShooterGunPropertyCacheEvent
+    participant SGMM as ShooterGunModifierManager
+    participant SGMC as ShooterGunModifierCache (new)
+    participant Event as ShooterGunModifierCacheEvent
     participant SP as ShooterProperty
 
-    Draw->>GPM: postChangeEvent(shooter, gunItem)
+    Draw->>SGMM: postChangeEvent(shooter, gunItem)
 
-    Note over GPM: 1. 验证枪械有效性
-    GPM->>GPM: IGunGetter.fromItemStack()
-    GPM->>GPM: ResourceApi.getGunIndexInstance()
+    Note over SGMM: 1. 验证枪械有效性
+    SGMM->>SGMM: IGunGetter.fromItemStack()
+    SGMM->>SGMM: ResourceApi.getGunIndexInstance()
 
-    Note over GPM: 2. 计算缓存
-    GPM->>SGPC: new ShooterGunPropertyCache()
-    GPM->>GPM: updateShooterGunPropertyCache(...)
-    Note over GPM: TODO: 遍历 AttachmentModifierType<br/>读取 AttachmentData + GunData<br/>计算最终缓存值
+    Note over SGMM: 2. 计算缓存
+    SGMM->>SGMC: new ShooterGunModifierCache()
+    SGMM->>SGMM: updateShooterGunModifierCache(...)
+    Note over SGMM: TODO: 遍历 AttachmentModifierType<br/>读取 AttachmentData + GunData<br/>计算最终缓存值
 
-    Note over GPM: 3. 触发事件
-    GPM->>Event: new ShooterGunPropertyCacheEvent(...)
-    GPM->>Event: CustomGun.getEventPoster().postCustomEvent()
+    Note over SGMM: 3. 触发事件
+    SGMM->>Event: new ShooterGunModifierCacheEvent(...)
+    SGMM->>Event: CustomGun.getEventPoster().postCustomEvent()
     Note over Event: 监听器可在此修改 cache
 
-    Note over GPM: 4. 写入缓存
-    GPM->>SP: cgc$updateGunPropertyCache()
-    SP-->>GPM: shooterProperty.shooterGunModifierCache = cache
+    Note over SGMM: 4. 写入缓存
+    SGMM->>SP: cgc$updateGunModifierCache()
+    SP-->>SGMM: shooterProperty.shooterGunModifierCache = cache
 ```
 
 ### 待实现的 TODO
 
-`updateShooterGunPropertyCache()` 中标注了 `// TODO 原 ChangeGunPropertyEvent`。需要实现的内容对应 TaCZ 的：
+`updateShooterGunModifierCache()` 中标注了 `// TODO 原 ChangeGunPropertyEvent`。需要实现的内容对应 TaCZ 的：
 
 1. **初始化**：遍历所有 `AttachmentModifierType`，从 `GunData` 读取枪械的默认属性值创建初始缓存
 2. **收集配件数据**：遍历枪上安装的所有配件，收集每个 `AttachmentModifierType` 对应的修改数据
 3. **计算**：对每个 modifier，将默认值 + 所有配件的修改值组合计算写入最终缓存
-4. **Lua 脚本更新**：对 `allCacheModifiableByScript()` 中的属性，调用脚本引擎更新
-5. **脚本数据管理**：`ShooterProperty.scriptData` 字段用于缓存 Lua 脚本的数据
+4. **Lua 脚本更新**：在事件触发后、写入实体前调用脚本修改
 
 ## 缓存的生命周期
 
 ### 创建/更新时机
 
 缓存在以下时机创建或更新：
-1. **实体初始化**：`LivingEntityMixin.cgc$initLivingShooter()` → `GunPropertyManager.postChangeEvent()`
-2. **切枪**：`LivingShooterDraw.draw()` → `GunPropertyManager.postChangeEvent()`
+1. **实体初始化**：`LivingEntityMixin.cgc$initLivingShooter()` → `ShooterGunModifierManager.postChangeEvent()`
+2. **切枪**：`LivingShooterDraw.draw()` → `ShooterGunModifierManager.postChangeEvent()`
 3. **脚本触发**：Lua 脚本调用的更新路径
 
 ### 不更新时机
@@ -169,23 +179,20 @@ sequenceDiagram
 - 重置射击状态（如换弹后）不需要重新计算配件属性
 - 只有在切枪/换枪时才需要刷新缓存
 
-## ShooterGunPropertyCache 类设计（待实现）
+## ShooterGunModifierCache 类设计（待实现）
 
-当前 `ShooterGunPropertyCache.java` 是一个空类。根据 TaCZ 原版分析和 CGC 架构，待实现的字段应包含：
+当前 `ShooterGunModifierCache.java` 是一个空类，位于 `xiao.customgun.core.api.entity.shooter.modifier` 包：
 
 ```java
-// 预期设计（示意）
-public class ShooterGunPropertyCache {
-    // 每个 AttachmentModifierType 对应的缓存值
-    // 不是简单的 Map<String, CacheValue>，而是强类型字段：
-    // - 简单数值型（_SimpleModifierData）：共享加数/百分比/唯一乘数 + 脚本函数
-    // - 复合型：各自处理（如爆炸有多个子属性、后坐力有 pitch/yaw）
-    
-    // 值类型不限于 Float — 见 AttachmentModifierType.dataType
+/*
+文档译名: 射手枪械修饰缓存 (XiaoColorful译)
+- Cache后缀还是决定保留，以区分持久化保存的属性和临时计算值
+ */
+public class ShooterGunModifierCache {
 }
 ```
 
 **设计约束**：
 1. 不能是简单的 `Map<String, Float>` — 不是所有缓存值都是 `Float` 类型
-2. 需要能存储各乘区的中间结果（用于后坐力的 `ParameterizedCache` 等价物）
-3. 需要支持 Lua 脚本的 `function` 字段执行
+2. 缓存值类型多样：`_SimpleModifierData` 结果（float）、`_FireAspectModifierData` 结果（boolean）、`_BulletExplosionModifierData` 结果（复合）、`_RecoilDataModifierData` 结果（pitch/yaw pair）等
+3. 需要支持 Lua 脚本的 `scriptFunction` 字段执行

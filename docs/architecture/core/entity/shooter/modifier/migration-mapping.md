@@ -7,11 +7,12 @@
 
 | TaCZ | CGC | 变更说明 |
 |---|---|---|
-| `com.tacz.guns.resource.modifier.AttachmentCacheProperty` | `xiao.customgun.core.api.entity.shooter.modifier.ShooterGunModifierCache` | 重命名：明确绑定 `ILivingShooter` 生命周期 |
-| `com.tacz.guns.resource.modifier.AttachmentPropertyManager` | `xiao.customgun.core.entity.shooter.modifier.ShooterGunModifierManager` | 重命名：强调是枪械属性管理，移到 `item.gun` 包 |
+| `com.tacz.guns.resource.modifier.AttachmentCacheProperty` | `xiao.customgun.core.api.entity.shooter.modifier.ShooterGunModifierCache` | 重命名：明确绑定 `ILivingShooter` 生命周期；移到 `api.entity.shooter.modifier` 包 |
+| `com.tacz.guns.resource.modifier.AttachmentPropertyManager` | `xiao.customgun.core.entity.shooter.modifier.ShooterGunModifierManager` | 重命名：强调是射手枪械修饰缓存管理器 |
 | `com.tacz.guns.entity.shooter.ShooterDataHolder` | `xiao.customgun.core.api.entity.ShooterProperty` | 重命名：精简名称 |
-| `com.tacz.guns.api.entity.IGunOperator` | `xiao.customgun.core.api.entity.ILivingShooter` (+ `IGunCacheHolder` 等) | 拆分为多个细粒度接口 |
+| `com.tacz.guns.api.entity.IGunOperator` | `xiao.customgun.core.api.entity.ILivingShooter` (+ `IShooterModifierCacheHolder` 等) | 拆分为多个细粒度接口 |
 | `com.tacz.guns.api.event.common.AttachmentPropertyEvent` | `xiao.customgun.core.api.event.shooter.ShooterGunModifierCacheEvent` | 重命名 + 从 Forge Event 迁移到 CGC CustomEvent |
+| `com.tacz.guns.api.modifier.IAttachmentModifier` | `xiao.customgun.core.api.item.attachment.modifier.AttachmentModifierType` (枚举) + item.attachment.modifier 包下的接口（计划中） | 接口 → 枚举 + 接口（枚举持有接口引用） |
 
 ## 数据类迁移
 
@@ -31,6 +32,7 @@
 | `String` key + `IAttachmentModifier<T,K>` 接口 | `AttachmentModifierType` 枚举 | 字符串 → 编译期安全的枚举 |
 | 注册在 `AttachmentPropertyManager.MODIFIERS` Map | 枚举常量 + `MODIFIER_TYPES` 查找表 | 集中定义 |
 | 各 Modifier 内部 `Data` 类的 `@SerializedName` | `AttachmentModifierTypeTag` 常量类 | 标签集中管理 |
+| `AttachmentModifierType` 的 TODO | 枚举将持有接口（在 `item.attachment.modifier` 包下），具体类实现该接口 | 枚举不直接定义行为，委托给接口 |
 
 ## 具体 Modifier 类型迁移
 
@@ -51,7 +53,11 @@
 | `RecoilModifier (ID="recoil")` | `AttachmentModifierType.RECOIL_DATA` + `_RecoilDataModifierData` | 已迁移数据类，pitch/yaw 拆分为两个 `_SimpleModifierData` |
 | `RpmModifier (ID="rpm")` | `AttachmentModifierType.RPM` + `_SimpleModifierData` | 已迁移数据类 |
 | `SilenceModifier (ID="silence")` | `AttachmentModifierType.MUZZLE` + `_MuzzleModifierData` | 已迁移数据类，从 pair 简化为 `FireSoundType` 枚举 |
-| `WeightModifier (ID="weight_modifier")` | `AttachmentModifierType.WEIGHT` + `Float.class` | 已迁移，不使用 `__ModifierData`（简单 float） |
+| `WeightModifier (ID="weight_modifier")` | `AttachmentModifierType.WEIGHT` + `_SimpleModifierData` | **已迁移：从 `Float.class` 改为 `_SimpleModifierData`** |
+
+### 重要变更：WEIGHT
+
+TaCZ 的 `WeightModifier` 直接使用 `Modifier` 格式（和大多数数值型 modifier 一样）。CGC 最初将 `AttachmentModifierType.WEIGHT` 的 `dataType` 设为 `Float.class`（简单浮点），但在最新重构中将其统一为 `_SimpleModifierData.class`，getter 对应 `AttachmentData.getWeightModifier()`。
 
 ### 重要拆分：Inaccuracy
 
@@ -65,8 +71,8 @@ TaCZ 的 `InaccuracyModifier` 处理 5 种散布类型（STAND, MOVE, SNEAK, LIE
 
 | TaCZ | CGC | 变更说明 |
 |---|---|---|
-| `AttachmentPropertyEvent` (Forge Event) | `ShooterGunPropertyCacheEvent` (CustomEvent) | 事件总线变更 |
-| `ChangeGunPropertyEvent` (内部处理器) | `GunPropertyManager.updateShooterGunPropertyCache()` (TODO) | 内部逻辑从事件移到管理器 |
+| `AttachmentPropertyEvent` (Forge Event) | `ShooterGunModifierCacheEvent` (CustomEvent) | 事件总线变更 |
+| `ChangeGunPropertyEvent` (内部处理器) | `ShooterGunModifierManager.updateShooterGunModifierCache()` (TODO) | 内部逻辑从事件移到管理器 |
 | Forge `@SubscribeEvent` | CGC `ICustomEventHandler` 接口 | 监听注册方式变更 |
 | `MinecraftForge.EVENT_BUS.post(event)` | `CustomGun.getEventPoster().postCustomEvent(event)` | 事件派发方式变更 |
 | KubeJS 桥接 (`KubeJSGunEventPoster`) | CGC 脚本桥接 | 脚本系统变更 |
@@ -75,10 +81,10 @@ TaCZ 的 `InaccuracyModifier` 处理 5 种散布类型（STAND, MOVE, SNEAK, LIE
 
 | TaCZ | CGC | 变更说明 |
 |---|---|---|
-| `IGunOperator.getCacheProperty()` | `IGunCacheHolder.cgc$getGunPropertyCache()` | 接口分离 |
-| `IGunOperator.updateCacheProperty()` | `IGunCacheHolder.cgc$updateGunPropertyCache()` | 接口分离 |
+| `IGunOperator.getCacheProperty()` | `IShooterModifierCacheHolder.cgc$getGunModifierCache()` | 接口分离 + 重命名 |
+| `IGunOperator.updateCacheProperty()` | `IShooterModifierCacheHolder.cgc$updateGunModifierCache()` | 接口分离 + 重命名 |
 | `ShooterDataHolder.cacheProperty` | `ShooterProperty.shooterGunModifierCache` | 字段重命名 |
-| `LivingEntityMixin` 实现 `IGunOperator` | `LivingEntityMixin` 实现 `ILivingShooter` (含 `IGunCacheHolder`) | 接口层次变更 |
+| `LivingEntityMixin` 实现 `IGunOperator` | `LivingEntityMixin` 实现 `ILivingShooter` (含 `IShooterModifierCacheHolder`) | 接口层次变更 |
 
 ## 脚本体系迁移
 
@@ -103,8 +109,9 @@ TaCZ 的 `InaccuracyModifier` 处理 5 种散布类型（STAND, MOVE, SNEAK, LIE
 
 ## 下一个重构步骤
 
-1. **填充 `ShooterGunPropertyCache`**：定义字段结构，实现类型安全的缓存存取
-2. **实现 `GunPropertyManager.updateShooterGunPropertyCache()`**：替换 `// TODO 原 ChangeGunPropertyEvent`
+1. **填充 `ShooterGunModifierCache`**：定义字段结构，实现类型安全的缓存存取
+2. **实现 `ShooterGunModifierManager.updateShooterGunModifierCache()`**：替换 `// TODO 原 ChangeGunPropertyEvent`
 3. **解 TODO 所有消费方**：逐个实现从缓存读取具体值的逻辑
-4. **迁移脚本 API**：确定 Lua 脚本如何读取/修改缓存值
-5. **迁移改装台 GUI**：实现 `DiagramsData` 的等价物
+4. **接口化 `AttachmentModifierType`**：将构造函数参数改为接口类（`item.attachment.modifier` 包下）
+5. **迁移脚本 API**：确定 Lua 脚本如何读取/修改缓存值
+6. **迁移改装台 GUI**：实现 `DiagramsData` 的等价物

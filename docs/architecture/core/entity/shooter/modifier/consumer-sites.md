@@ -1,13 +1,13 @@
 
 # 消费方汇总 — CGC 重构版
 
-> 所有从 `ShooterGunPropertyCache` 读取缓存值的位置，当前实现状态，以及每个消费方的 TODO 项。
+> 所有从 `ShooterGunModifierCache` 读取缓存值的位置，当前实现状态，以及每个消费方的 TODO 项。
 
 ## 消费方总览
 
 ```mermaid
 graph TB
-    IGC["IGunCacheHolder<br/>cgc$getGunPropertyCache() → ShooterGunPropertyCache"]
+    ISMC["IShooterModifierCacheHolder<br/>cgc$getGunModifierCache() → ShooterGunModifierCache"]
 
     subgraph "服务端"
         LSS["LivingShooterShoot<br/>_getShootInterval()"]
@@ -20,13 +20,13 @@ graph TB
         LSS_C["LocalShooterShoot<br/>_useSilenceSound()"]
     end
 
-    IGC --> LSS
-    IGC --> LSSM
-    IGC --> GP
-    IGC --> LSA
-    IGC --> LSS_C
+    ISMC --> LSS
+    ISMC --> LSSM
+    ISMC --> GP
+    ISMC --> LSA
+    ISMC --> LSS_C
 
-    style IGC fill:#e8f5e9
+    style ISMC fill:#e8f5e9
     style LSS fill:#fff9c4
     style LSSM fill:#fff9c4
     style GP fill:#fff9c4
@@ -43,7 +43,7 @@ graph TB
 ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(livingEntity);
 
 // 2. 获取缓存（可能为 null）
-@Nullable ShooterGunPropertyCache cache = iLivingShooter.cgc$getGunPropertyCache();
+@Nullable ShooterGunModifierCache cache = iLivingShooter.cgc$getGunModifierCache();
 
 // 3. 读取具体缓存值（当前为 TODO 存根）
 if (cache != null) {
@@ -51,134 +51,116 @@ if (cache != null) {
 }
 ```
 
-**关键变更**：在 TaCZ 中，消费者用字符串从缓存读取（`cacheProperty.getCache("ads")`）。在 CGC 中，消费者将用 `AttachmentModifierType` 枚举从缓存读取——但目前 `ShooterGunPropertyCache` 是空类，所有读取点为 TODO 存根。
+**关键变更**：在 TaCZ 中消费者用字符串从缓存读取（`cacheProperty.getCache("ads")`）。在 CGC 中消费者将用 `AttachmentModifierType` 枚举从 `ShooterGunModifierCache` 读取——但目前 `ShooterGunModifierCache` 是空类，所有读取点为 TODO 存根。
 
 ## 服务端消费方
 
 ### 1. LivingShooterShoot._getShootInterval()
 
-`xiao.customgun.core.entity.shooter.LivingShooterShoot`（第 280-303 行）
+`xiao.customgun.core.entity.shooter.LivingShooterShoot`
 
-**当前代码**：
 ```java
-ShooterGunPropertyCache shooterGunModifierCache =
-    ILivingShooterGetter.cgc$fromLivingEntity(livingShooter).cgc$getGunPropertyCache();
+ShooterGunModifierCache shooterGunModifierCache =
+    ILivingShooterGetter.cgc$fromLivingEntity(livingShooter).cgc$getGunModifierCache();
 if (shooterGunModifierCache != null) {
     // TODO GunPropertyCache
 }
 ```
 
-**预期的 TaCZ 行为**：从缓存读取 `RpmModifier` 的修改值来调整射速。
-
-**需要的动作**：
-1. 在 `ShooterGunPropertyCache` 上提供获取 RPM 修改值的方法
-2. 当前 RPM 计算已经硬编码（TODO 注释标注），需要改为从缓存读取
+**预期的 TaCZ 行为**：从缓存读取 `AttachmentModifierType.RPM` 的修改值来调整射速。
 
 ### 2. LivingShooterSpeedModifier.updateSpeedModifier()
 
-`xiao.customgun.core.entity.shooter.LivingShooterSpeedModifier`（第 38-88 行）
+`xiao.customgun.core.entity.shooter.LivingShooterSpeedModifier`
 
-**当前代码**：
 ```java
-@Nullable ShooterGunPropertyCache shooterGunModifierCache =
-    ILivingShooterGetter.cgc$fromLivingEntity(this.livingShooter).cgc$getGunPropertyCache();
+@Nullable ShooterGunModifierCache shooterGunModifierCache =
+    ILivingShooterGetter.cgc$fromLivingEntity(this.livingShooter).cgc$getGunModifierCache();
 if (shooterGunModifierCache == null) return;
 
-// TODO WeightModifier: GunPropertyCache.getCache(WeightModifier.ID)
+// TODO WeightModifier
 float targetSpeed = 0;
 
-// TODO ExtraMovementModifier: GunPropertyCache.getCache(ExtraMovementModifier.ID)
+// TODO ExtraMovementModifier
 Object speed = null;
 ```
 
 **预期的 TaCZ 行为**：
-- 从缓存读取 `WeightModifier` → `float`（重量）
-- 从缓存读取 `ExtraMovementModifier` → `MoveSpeed`（移动速度乘数）
-- 按当前状态（换弹/瞄准/基���）选择正确的乘数
-
-**需要的动作**：
-1. 在 `ShooterGunPropertyCache` 上提供获取重量和移动速度的方法
-2. `_getTargetSpeed()` 方法（第 81 行）当前始终返回 0，需要实现状态选择逻辑
+- 从缓存读取 `AttachmentModifierType.WEIGHT` → 重量修改值
+- 从缓存读取移动速度修改值
+- 按当前状态（换弹/瞄准/基础）选择正确的乘数
 
 ### 3. GunProjectile 构造函数
 
-`xiao.customgun.core.entity.projectile.GunProjectile`（第 70 行）
+`xiao.customgun.core.entity.projectile.GunProjectile`
 
-**当前代码**：
 ```java
-@Nullable ShooterGunPropertyCache shooterGunModifierCache =
+@Nullable ShooterGunModifierCache shooterGunModifierCache =
     livingShooter != null
-        ? ILivingShooterGetter.cgc$fromLivingEntity(livingShooter).cgc$getGunPropertyCache()
+        ? ILivingShooterGetter.cgc$fromLivingEntity(livingShooter).cgc$getGunModifierCache()
         : null;
 ```
 
-缓存被获取但未在构造函数主体中使用。已废弃的方法 `distanceAmount`、`pierce`、`armorIgnore` 接受 `ShooterGunPropertyCache` 参数但都硬编码返回 0。
-
-**预期的 TaCZ 行为**：从缓存读取 ~10 个属性（伤害、穿甲、爆头倍率、有效射程等）写入子弹的状态缓存。
+缓存被获取但未在构造函数主体中使用。**预期的 TaCZ 行为**：从缓存读取伤害、穿甲、爆头倍率、有效射程等属性写入子弹的状态缓存。
 
 ## 客户端消费方
 
 ### 4. LocalShooterAim._getAlphaProgress()
 
-`xiao.customgun.client.entity.shooter.LocalShooterAim`（第 84-86 行）
+`xiao.customgun.client.entity.shooter.LocalShooterAim`
 
-**当前代码**：
 ```java
-if (iLivingShooter.cgc$getGunPropertyCache() != null) {
+if (iLivingShooter.cgc$getGunModifierCache() != null) {
     // TODO GunPropertyCache AdsModifier
 }
 ```
 
-**预期的 TaCZ 行为**：从缓存读取 `AdsModifier` → `float`（瞄准时间修改值），用于计算瞄准动画的 alpha 进度，实现配件修改瞄准速度的效果。
+**预期的 TaCZ 行为**：从缓存读取 `AttachmentModifierType.ADS` 修改值，影响瞄准动画速度。
 
 ### 5. LocalShooterShoot._useSilenceSound()
 
-`xiao.customgun.client.entity.shooter.LocalShooterShoot`（第 337-341 行）
+`xiao.customgun.client.entity.shooter.LocalShooterShoot`
 
-**当前代码**：
 ```java
-ShooterGunPropertyCache shooterGunModifierCache =
-    ILivingShooterGetter.cgc$fromLivingEntity(this.localShooter).cgc$getGunPropertyCache();
+ShooterGunModifierCache shooterGunModifierCache =
+    ILivingShooterGetter.cgc$fromLivingEntity(this.localShooter).cgc$getGunModifierCache();
 if (shooterGunModifierCache == null) return false;
 // TODO GunPropertyCache SilenceModifier.ID
 return false;  // 当前硬编码 false
 ```
 
-**预期的 TaCZ 行为**：从缓存读取 `SilenceModifier` → 消音音效标志（boolean），决定开火时播放消音还是正常音效。
+**预期的 TaCZ 行为**：从缓存读取 `AttachmentModifierType.MUZZLE` 值，决定消音音效。
 
-### 6. LivingShooterAim.tickAimingProgress()
+### 6. LivingShooterAim.tickAimingProgress()（服务端）
 
-`xiao.customgun.core.entity.shooter.LivingShooterAim`（服务端瞄准）
+`xiao.customgun.core.entity.shooter.LivingShooterAim`
 
-**当前代码**（第 93-95 行）：
 ```java
 if (this.shooterProperty.shooterGunModifierCache != null) {
     // TODO GunPropertyCache
 }
 ```
 
-**预期的 TaCZ 行为**：服务端的瞄准进度计算也需要 ADS 修改值。
-
 ## 消费方实现清单
 
 | 优先级 | 消费方 | 读取的 Modifier | 类型 | 状态 |
 |---|---|---|---|---|
-| P0 | `LivingShooterShoot` | RPM | `int` | TODO |
-| P0 | `GunProjectile` 构造函数 | Damage, Pierce, ArmorIgnore, EffectiveRange, HeadShot, Knockback, Explosion, Ignite | 混合 | TODO（已废弃方法中有接口定义） |
-| P1 | `LivingShooterSpeedModifier` | Weight, ExtraMovement | `float`, `MoveSpeed` | TODO |
-| P1 | `LocalShooterAim` | ADS | `float` | TODO |
-| P1 | `LivingShooterAim` | ADS | `float` | TODO |
-| P2 | `LocalShooterShoot` | Silence | `boolean` | TODO |
+| P0 | `LivingShooterShoot` | `RPM` | int | TODO |
+| P0 | `GunProjectile` 构造函数 | `DAMAGE_CALCULATION`, `PIERCE_COUNT`, `ARMOR_IGNORE_PERCENT`, `EFFECTIVE_RANGE`, `HEADSHOT_MULTIPLIER`, `KNOCKBACK_STRENGTH`, `BULLET_EXPLOSION`, `FIRE_ASPECT` | 混合 | TODO |
+| P1 | `LivingShooterSpeedModifier` | `WEIGHT`, 移动速度 | float, MoveSpeed | TODO |
+| P1 | `LocalShooterAim` | `ADS` | float | TODO |
+| P1 | `LivingShooterAim` | `ADS` | float | TODO |
+| P2 | `LocalShooterShoot` | `MUZZLE` | boolean | TODO |
 
 ## 消费模式总结
 
-| 调用频率 | 消费方 | Modifier 端 |
+| 调用频率 | 消费方 | Modifier |
 |---|---|---|
-| 每 tick（服务端） | `LivingShooterSpeedModifier` | Weight, MoveSpeed |
-| 每 tick（服务端） | `LivingShooterAim` | ADS |
-| 每 tick（客户端） | `LocalShooterAim` | ADS |
-| 每次射击（服务端） | `LivingShooterShoot` | RPM |
-| 每次射击（客户端） | `LocalShooterShoot` | Silence |
-| 每颗子弹创建 | `GunProjectile` | Damage, Pierce, ArmorIgnore, EffectiveRange, HeadShot, Knockback, Explosion, Ignite |
+| 每 tick（服务端） | `LivingShooterSpeedModifier` | `WEIGHT`, 移动速度 |
+| 每 tick（服务端） | `LivingShooterAim` | `ADS` |
+| 每 tick（客户端） | `LocalShooterAim` | `ADS` |
+| 每次射击（服务端） | `LivingShooterShoot` | `RPM` |
+| 每次射击（客户端） | `LocalShooterShoot` | `MUZZLE` |
+| 每颗子弹创建 | `GunProjectile` | `DAMAGE_CALCULATION`, `PIERCE_COUNT`, `ARMOR_IGNORE_PERCENT`, `EFFECTIVE_RANGE`, `HEADSHOT_MULTIPLIER`, `KNOCKBACK_STRENGTH`, `BULLET_EXPLOSION`, `FIRE_ASPECT` |
 
-所有消费方都**已经连接好**——它们能正确获取 `ShooterGunPropertyCache` 引用。阻塞点是 `ShooterGunPropertyCache` 类本身为空，需要定义其字段和方法。
+所有消费方都**已经连接好**——它们能正确获取 `ShooterGunModifierCache` 引用。阻塞点是 `ShooterGunModifierCache` 类本身为空，需要定义其字段和方法。

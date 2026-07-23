@@ -40,14 +40,14 @@ public interface IGunCacheHolder {
 ```java
 // LivingEntityMixin 实现
 @Override public void cgc$updateGunPropertyCache(ShooterGunPropertyCache propertyCache) {
-    this.cgc$shooterProperty.shooterGunPropertyCache = propertyCache;
+    this.cgc$shooterProperty.shooterGunModifierCache = propertyCache;
 }
 @Override public @Nullable ShooterGunPropertyCache cgc$getGunPropertyCache() {
-    return this.cgc$shooterProperty.shooterGunPropertyCache;
+    return this.cgc$shooterProperty.shooterGunModifierCache;
 }
 ```
 
-缓存在 `ShooterProperty.shooterGunPropertyCache` 字段中按实体存储。
+缓存在 `ShooterProperty.shooterGunModifierCache` 字段中按实体存储。
 
 ## ShooterProperty 的缓存字段
 
@@ -59,15 +59,15 @@ public class ShooterProperty {
      * 配件修改过的各种属性缓存
      */
     @Nullable
-    public ShooterGunPropertyCache shooterGunPropertyCache = null;
+    public ShooterGunPropertyCache shooterGunModifierCache = null;
 }
 ```
 
-注意 `resetProperty()` 方法**不会**清除 `shooterGunPropertyCache`，这意味着缓存可以跨状态重置保留。缓存只在明确更新时被替换。
+注意 `resetProperty()` 方法**不会**清除 `shooterGunModifierCache`，这意味着缓存可以跨状态重置保留。缓存只在明确更新时被替换。
 
 ## GunPropertyManager — 缓存编排
 
-`xiao.customgun.core.item.gun.GunPropertyManager`
+`xiao.customgun.core.entity.shooter.modifier.ShooterGunModifierManager`
 
 这是 CGC 缓存体系的管理器（对应 TaCZ 的 `AttachmentPropertyManager`）。
 
@@ -140,7 +140,7 @@ sequenceDiagram
 
     Note over GPM: 4. 写入缓存
     GPM->>SP: cgc$updateGunPropertyCache()
-    SP-->>GPM: shooterProperty.shooterGunPropertyCache = cache
+    SP-->>GPM: shooterProperty.shooterGunModifierCache = cache
 ```
 
 ### 待实现的 TODO
@@ -164,7 +164,7 @@ sequenceDiagram
 
 ### 不更新时机
 
-`ShooterProperty.resetProperty()` **不重置** `shooterGunPropertyCache`，理由：
+`ShooterProperty.resetProperty()` **不重置** `shooterGunModifierCache`，理由：
 - 缓存与枪械物品相关，不是射击状态相关
 - 重置射击状态（如换弹后）不需要重新计算配件属性
 - 只有在切枪/换枪时才需要刷新缓存

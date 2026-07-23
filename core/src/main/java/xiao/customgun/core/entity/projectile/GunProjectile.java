@@ -19,7 +19,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.CustomGun;
 import xiao.customgun.core.api.entity.IGunProjectile;
-import xiao.customgun.core.api.entity.shooter.ShooterGunPropertyCache;
+import xiao.customgun.core.api.entity.shooter.modifier.ShooterGunModifierCache;
 import xiao.customgun.core.api.entity.projectile.GunProjectileDataAccessor;
 import xiao.customgun.core.api.entity.shooter.ILivingShooterGetter;
 import xiao.customgun.core.api.projectile.ProjectileManagerGroup;
@@ -67,7 +67,7 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
         this.setAmmoLocation(this, ammoLocation);
         this.spawnPos = this.position();
 
-        @Nullable ShooterGunPropertyCache shooterGunPropertyCache = livingShooter != null ? ILivingShooterGetter.cgc$fromLivingEntity(livingShooter).cgc$getGunPropertyCache() : null;
+        @Nullable ShooterGunModifierCache shooterGunModifierCache = livingShooter != null ? ILivingShooterGetter.cgc$fromLivingEntity(livingShooter).cgc$getGunModifierCache() : null;
 
         this.rebuildCache();
         this.constructInitData();
@@ -364,8 +364,8 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
         if (this.gunIndexInstanceCache == null) return 0;
         return this.gunIndexInstanceCache.getGunData().getBulletData().getKnockbackStrength();
     }
-    @Deprecated public float distanceAmount(@Nullable ShooterGunPropertyCache shooterGunPropertyCache) {
-        if (shooterGunPropertyCache == null) return 0;
+    @Deprecated public float distanceAmount(@Nullable ShooterGunModifierCache shooterGunModifierCache) {
+        if (shooterGunModifierCache == null) return 0;
 //        return gunPropertyCache.getCache("effective_range");
         return 0;
     }
@@ -409,8 +409,8 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
         if (this.gunIndexInstanceCache == null) return 0;
         return 1f / this.gunIndexInstanceCache.getGunData().getBulletData().getBulletAmount();
     }
-    @Deprecated public int pierce(@Nullable ShooterGunPropertyCache shooterGunPropertyCache) {
-        if (shooterGunPropertyCache == null) return 0;
+    @Deprecated public int pierce(@Nullable ShooterGunModifierCache shooterGunModifierCache) {
+        if (shooterGunModifierCache == null) return 0;
 //        return gunPropertyCache.getCache("pierce");
         return 0;
     }
@@ -423,7 +423,7 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
     @Deprecated public ResourceLocation gunDisplayId() {
         return this.getGunDisplayLocation(this);
     }
-    @Deprecated public float getArmorIgnore(@Nullable ShooterGunPropertyCache shooterGunPropertyCache) {
+    @Deprecated public float getArmorIgnore(@Nullable ShooterGunModifierCache shooterGunModifierCache) {
         if (this.gunIndexInstanceCache == null) return 0;
 //        return this.gunIndexInstanceCache.getGunData().getBulletData().getBulletSkillData().getArmorIgnorePercent();
 //        return gunPropertyCache.getCache("armor_ignore");

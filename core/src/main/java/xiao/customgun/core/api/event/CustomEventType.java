@@ -14,7 +14,7 @@ package xiao.customgun.core.api.event;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.event.gun.GunFireEvent;
-import xiao.customgun.core.api.event.shooter.ShooterGunPropertyCacheEvent;
+import xiao.customgun.core.api.event.shooter.ShooterGunModifierCacheEvent;
 import xiao.customgun.core.api.event.projectile.ProjectileHitBlockEvent;
 import xiao.customgun.core.api.event.projectile.ProjectileHitEntityFinishEvent;
 import xiao.customgun.core.api.event.projectile.GunProjectileEvent;
@@ -35,7 +35,7 @@ public enum CustomEventType {
     // shooter
     SHOOTER_DRAW_EVENT(ShooterDrawEvent.class),
     SHOOTER_FIRE_EVENT(ShooterFireEvent.class),
-    SHOOTER_GUN_PROPERTY_CACHE_EVENT(ShooterGunPropertyCacheEvent.class),
+    SHOOTER_GUN_MODIFIER_CACHE_EVENT(ShooterGunModifierCacheEvent.class),
     SHOOTER_MELEE_EVENT(ShooterMeleeEvent.class),
     SHOOTER_RELOAD_EVENT(ShooterReloadEvent.class),
     SHOOTER_RELOAD_FINISH_EVENT(ShooterReloadFinishEvent.class),

@@ -19,10 +19,10 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import xiao.customgun.core.api.entity.*;
-import xiao.customgun.core.api.entity.shooter.ShooterGunPropertyCache;
+import xiao.customgun.core.api.entity.shooter.modifier.ShooterGunModifierCache;
 import xiao.customgun.core.api.projectile.physics.IProjectilePhysicsRuntime;
 import xiao.customgun.core.entity.LivingShooterSyncKey;
-import xiao.customgun.core.item.gun.GunPropertyManager;
+import xiao.customgun.core.entity.shooter.modifier.ShooterGunModifierManager;
 import xiao.customgun.core.entity.shooter.*;
 import xiao.customgun.core.projectile.impact.ProjectileImpactManager;
 
@@ -97,7 +97,7 @@ public abstract class LivingEntityMixin extends Entity implements ILivingShooter
         // 主手武器
         this.cgc$shooterProperty.currentGunItem = this.cgc$shooter::getMainHandItem;
         // 刷新属性缓存
-        GunPropertyManager.postChangeEvent(cgc$shooter);
+        ShooterGunModifierManager.postChangeEvent(cgc$shooter);
     }
 
     @Override public ShooterProperty cgc$getShooterProperty() {
@@ -210,11 +210,11 @@ public abstract class LivingEntityMixin extends Entity implements ILivingShooter
     
     // --------IGunCacheHolder--------
     
-    @Override public void cgc$updateGunPropertyCache(ShooterGunPropertyCache propertyCache) {
-        this.cgc$shooterProperty.shooterGunPropertyCache = propertyCache;
+    @Override public void cgc$updateGunModifierCache(ShooterGunModifierCache propertyCache) {
+        this.cgc$shooterProperty.shooterGunModifierCache = propertyCache;
     }
-    @Override public @Nullable ShooterGunPropertyCache cgc$getGunPropertyCache() {
-        return this.cgc$shooterProperty.shooterGunPropertyCache;
+    @Override public @Nullable ShooterGunModifierCache cgc$getGunModifierCache() {
+        return this.cgc$shooterProperty.shooterGunModifierCache;
     }
 
     // --------IBulletVictimImpact--------

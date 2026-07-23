@@ -7,11 +7,11 @@
 
 | TaCZ | CGC | 变更说明 |
 |---|---|---|
-| `com.tacz.guns.resource.modifier.AttachmentCacheProperty` | `xiao.customgun.core.api.entity.shooter.ShooterGunPropertyCache` | 重命名：明确绑定 `ILivingShooter` 生命周期 |
-| `com.tacz.guns.resource.modifier.AttachmentPropertyManager` | `xiao.customgun.core.item.gun.GunPropertyManager` | 重命名：强调是枪械属性管理，移到 `item.gun` 包 |
+| `com.tacz.guns.resource.modifier.AttachmentCacheProperty` | `xiao.customgun.core.api.entity.shooter.modifier.ShooterGunModifierCache` | 重命名：明确绑定 `ILivingShooter` 生命周期 |
+| `com.tacz.guns.resource.modifier.AttachmentPropertyManager` | `xiao.customgun.core.entity.shooter.modifier.ShooterGunModifierManager` | 重命名：强调是枪械属性管理，移到 `item.gun` 包 |
 | `com.tacz.guns.entity.shooter.ShooterDataHolder` | `xiao.customgun.core.api.entity.ShooterProperty` | 重命名：精简名称 |
 | `com.tacz.guns.api.entity.IGunOperator` | `xiao.customgun.core.api.entity.ILivingShooter` (+ `IGunCacheHolder` 等) | 拆分为多个细粒度接口 |
-| `com.tacz.guns.api.event.common.AttachmentPropertyEvent` | `xiao.customgun.core.api.event.shooter.ShooterGunPropertyCacheEvent` | 重命名 + 从 Forge Event 迁移到 CGC CustomEvent |
+| `com.tacz.guns.api.event.common.AttachmentPropertyEvent` | `xiao.customgun.core.api.event.shooter.ShooterGunModifierCacheEvent` | 重命名 + 从 Forge Event 迁移到 CGC CustomEvent |
 
 ## 数据类迁移
 
@@ -77,7 +77,7 @@ TaCZ 的 `InaccuracyModifier` 处理 5 种散布类型（STAND, MOVE, SNEAK, LIE
 |---|---|---|
 | `IGunOperator.getCacheProperty()` | `IGunCacheHolder.cgc$getGunPropertyCache()` | 接口分离 |
 | `IGunOperator.updateCacheProperty()` | `IGunCacheHolder.cgc$updateGunPropertyCache()` | 接口分离 |
-| `ShooterDataHolder.cacheProperty` | `ShooterProperty.shooterGunPropertyCache` | 字段重命名 |
+| `ShooterDataHolder.cacheProperty` | `ShooterProperty.shooterGunModifierCache` | 字段重命名 |
 | `LivingEntityMixin` 实现 `IGunOperator` | `LivingEntityMixin` 实现 `ILivingShooter` (含 `IGunCacheHolder`) | 接口层次变更 |
 
 ## 脚本体系迁移

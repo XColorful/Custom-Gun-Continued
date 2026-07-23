@@ -61,9 +61,9 @@ if (cache != null) {
 
 **当前代码**：
 ```java
-ShooterGunPropertyCache shooterGunPropertyCache =
+ShooterGunPropertyCache shooterGunModifierCache =
     ILivingShooterGetter.cgc$fromLivingEntity(livingShooter).cgc$getGunPropertyCache();
-if (shooterGunPropertyCache != null) {
+if (shooterGunModifierCache != null) {
     // TODO GunPropertyCache
 }
 ```
@@ -80,9 +80,9 @@ if (shooterGunPropertyCache != null) {
 
 **当前代码**：
 ```java
-@Nullable ShooterGunPropertyCache shooterGunPropertyCache =
+@Nullable ShooterGunPropertyCache shooterGunModifierCache =
     ILivingShooterGetter.cgc$fromLivingEntity(this.livingShooter).cgc$getGunPropertyCache();
-if (shooterGunPropertyCache == null) return;
+if (shooterGunModifierCache == null) return;
 
 // TODO WeightModifier: GunPropertyCache.getCache(WeightModifier.ID)
 float targetSpeed = 0;
@@ -106,7 +106,7 @@ Object speed = null;
 
 **当前代码**：
 ```java
-@Nullable ShooterGunPropertyCache shooterGunPropertyCache =
+@Nullable ShooterGunPropertyCache shooterGunModifierCache =
     livingShooter != null
         ? ILivingShooterGetter.cgc$fromLivingEntity(livingShooter).cgc$getGunPropertyCache()
         : null;
@@ -137,9 +137,9 @@ if (iLivingShooter.cgc$getGunPropertyCache() != null) {
 
 **当前代码**：
 ```java
-ShooterGunPropertyCache shooterGunPropertyCache =
+ShooterGunPropertyCache shooterGunModifierCache =
     ILivingShooterGetter.cgc$fromLivingEntity(this.localShooter).cgc$getGunPropertyCache();
-if (shooterGunPropertyCache == null) return false;
+if (shooterGunModifierCache == null) return false;
 // TODO GunPropertyCache SilenceModifier.ID
 return false;  // 当前硬编码 false
 ```
@@ -152,7 +152,7 @@ return false;  // 当前硬编码 false
 
 **当前代码**（第 93-95 行）：
 ```java
-if (this.shooterProperty.shooterGunPropertyCache != null) {
+if (this.shooterProperty.shooterGunModifierCache != null) {
     // TODO GunPropertyCache
 }
 ```

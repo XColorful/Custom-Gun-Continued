@@ -5,7 +5,7 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package xiao.customgun.core.item.gun;
+package xiao.customgun.core.entity.shooter.modifier;
 
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
@@ -15,15 +15,15 @@ import xiao.customgun.CustomGun;
 import xiao.customgun.core.api.entity.ILivingShooter;
 import xiao.customgun.core.api.entity.ShooterProperty;
 import xiao.customgun.core.api.entity.shooter.ILivingShooterGetter;
-import xiao.customgun.core.api.entity.shooter.ShooterGunPropertyCache;
-import xiao.customgun.core.api.event.shooter.ShooterGunPropertyCacheEvent;
+import xiao.customgun.core.api.entity.shooter.modifier.ShooterGunModifierCache;
+import xiao.customgun.core.api.event.shooter.ShooterGunModifierCacheEvent;
 import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.api.item.gun.IGunGetter;
 import xiao.customgun.core.api.resource.ResourceApi;
 import xiao.customgun.core.resource.data.data.GunData;
 import xiao.customgun.core.resource.instance.data.GunIndexInstance;
 
-public class GunPropertyManager {
+public class ShooterGunModifierManager {
 
     public static void postChangeEvent(LivingEntity livingShooter) {
         postChangeEvent(livingShooter, livingShooter.getMainHandItem());
@@ -38,9 +38,9 @@ public class GunPropertyManager {
 
         // 更新缓存逻辑 (重新计算缓存值)
         ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(livingShooter);
-        ShooterGunPropertyCache gunPropertyCache = updateShooterGunPropertyCache(gunIndexInstance, iGun, gunItem);
+        ShooterGunModifierCache gunPropertyCache = updateShooterGunPropertyCache(gunIndexInstance, iGun, gunItem);
 
-        CustomGun.getEventPoster().postCustomEvent(new ShooterGunPropertyCacheEvent(CustomGun.getSideExecutor().getLogicalSide(),
+        CustomGun.getEventPoster().postCustomEvent(new ShooterGunModifierCacheEvent(CustomGun.getSideExecutor().getLogicalSide(),
                 iLivingShooter, livingShooter,
                 iGun, gunItem,
                 gunPropertyCache));
@@ -51,14 +51,14 @@ public class GunPropertyManager {
         }
 
         // 写入缓存
-        iLivingShooter.cgc$updateGunPropertyCache(gunPropertyCache);
+        iLivingShooter.cgc$updateGunModifierCache(gunPropertyCache);
     }
     /**
      * 计算缓存值
      */
-    private static ShooterGunPropertyCache updateShooterGunPropertyCache(@NotNull GunIndexInstance gunIndexInstance,
+    private static ShooterGunModifierCache updateShooterGunPropertyCache(@NotNull GunIndexInstance gunIndexInstance,
                                                                          @NotNull IGun iGun, @NotNull ItemStack gunItem) {
-        ShooterGunPropertyCache gunPropertyCache = new ShooterGunPropertyCache();
+        ShooterGunModifierCache gunPropertyCache = new ShooterGunModifierCache();
         GunData gunData = gunIndexInstance.getGunData();
         // TODO 原 ChangeGunPropertyEvent
         return gunPropertyCache;

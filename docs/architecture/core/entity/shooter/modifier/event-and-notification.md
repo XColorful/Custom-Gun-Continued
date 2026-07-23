@@ -5,7 +5,7 @@
 
 ## 事件定义
 
-`xiao.customgun.core.api.event.shooter.ShooterGunPropertyCacheEvent`
+`xiao.customgun.core.api.event.shooter.ShooterGunModifierCacheEvent`
 
 ```java
 public final class ShooterGunPropertyCacheEvent extends LivingShooterEvent implements IGunEvent {

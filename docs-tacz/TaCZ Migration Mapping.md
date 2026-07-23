@@ -508,11 +508,11 @@ Notation:
 
 |com.tacz.guns.resource|xiao.customgun.core.api.entity|
 |---|---|
-|modifier.`AttachmentCacheProperty`|shooter.`ShooterGunPropertyCache`|
+|modifier.`AttachmentCacheProperty`|shooter.modifier.`ShooterGunModifierCache`|
 
-|com.tacz.guns.resource|xiao.customgun.core.item|
+|com.tacz.guns.resource|xiao.customgun.core.entity|
 |---|---|
-|modifier.`AttachmentPropertyManager`|gun.`GunPropertyManager`|
+|modifier.`AttachmentPropertyManager`|shooter.modifier.`ShooterGunModifierManager`|
 
 |com.tacz.guns.resource|xiao.customgun.client.resource|
 |---|---|

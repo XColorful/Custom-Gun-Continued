@@ -22,11 +22,25 @@ Notation:
 > package com.tacz.guns.api;
 > ```
 
-|com.tacz.guns.api|xiao.customgun.core.api|
+|com.tacz.guns.api| |
 |---|---|
-|`DefaultAssets`.\*|resource.`ResourceTag`.NULL_LOCATION|
-|`GunProperties`|（待定）projectile.`IProjectileRuntime`.`StateCache`.\*|
-|`GunProperty`|item.`GunProperty`|
+|`@CacheModifiableByScript`|_Deprecated_|
+|`@ValueModifiableAtRuntime`|_Deprecated_|
+
+|com.tacz.guns.api|xiao.customgun.core.api.resource|
+|---|---|
+|`DefaultAssets`.\*|`ResourceTag`.NULL_LOCATION|
+|`TimelessAPI`|`ResourceApi`|
+
+|com.tacz.guns.api|xiao.customgun.client.api.resource|
+|---|---|
+|`TimelessAPI`|`ClientResourceApi`|
+
+|com.tacz.guns.api|xiao.customgun.core.api.item|
+|---|---|
+|`GunProperties`.\*|attachment.modifier.`AttachmentModifierType`.\*|
+|`GunProperty`.name|attachment.modifier.`AttachmentModifierType`.typeName|
+|`GunProperty`.type|gun.modifier.`IGunModifier`\<V>|
 
 #### Common API
 
@@ -55,7 +69,7 @@ Notation:
 
 |com.tacz.guns.api.event|xiao.customgun.core.api.event|
 |---|---|
-|common.`AttachmentPropertyEvent`|shooter.`ShooterGunPropertyCacheEvent`|
+|common.`AttachmentPropertyEvent`|shooter.`ShooterGunModifierCacheEvent`|
 |common.`EntityHurtByGunEvent`.`Pre`|projectile.`ProjectileHitEntityEvent`|
 |common.`EntityHurtByGunEvent`.`Post`|projectile.`ProjectileHitEntityFinishEvent`|
 |common.`EntityKillByGunEvent`|projectile.`ProjectileKillEntityEvent`|
@@ -111,11 +125,21 @@ Notation:
 
 |com.tacz.guns.api.modifier| |
 |---|---|
-|`JsonProperty`||
+|`CacheValue`|_Deprecated_|
+|`ParameterizedCache`|_Deprecated_|
+|`ParameterizedCachePair`|_Deprecated_|
 
 |com.tacz.guns.api.modifier|xiao.customgun.core.api.item|
 |---|---|
 |`IAttachmentModifier`|attachment.modifier.`IAttachmentModifier`|
+
+|com.tacz.guns.api.modifier| |
+|---|---|
+|`IAttachmentModifier`.`DiagramsData`||
+
+|com.tacz.guns.api.modifier|xiao.customgun.core.resource|
+|---|---|
+|`JsonProperty`|data.data.`AttachmentData`.\*|
 
 #### Resource API
 > ```java
@@ -310,7 +334,7 @@ Notation:
 
 |com.tacz.guns.event|xiao.customgun.core.item|
 |---|---|
-|`ChangeGunPropertyEvent`.internalOnAttachmentPropertyEvent|`GunPropertyManager`.updateShooterGunPropertyCache|
+|`ChangeGunPropertyEvent`.internalOnAttachmentPropertyEvent|`ShooterGunModifierManager`.updateShooterGunModifierCache|
 
 |com.tacz.guns.event|xiao.customgun.core.entity|
 |---|---|
@@ -506,6 +530,11 @@ Notation:
 |manager.`INetworkCacheReloadListener`|`INetworkCacheReloadListener`|
 |`ICommonResourceProvider`|`ResourceApi`|
 
+|com.tacz.guns.resource|xiao.customgun.core.item|
+|---|---|
+|modifier.custom.`*Modifier`|attachment.modifier.`*Modifier`|
+|modifier.`AttachmentPropertyManager`.eval|attachment.modifier.`AttachmentModifier`.evalSimpleModifierData|
+
 |com.tacz.guns.resource|xiao.customgun.core.api.entity|
 |---|---|
 |modifier.`AttachmentCacheProperty`|shooter.modifier.`ShooterGunModifierCache`|
@@ -518,10 +547,6 @@ Notation:
 |---|---|
 |modifier.`AttachmentPropertyManager`.MODIFIERS|attachment.modifier.`AttachmentModifierType`|
 
-|com.tacz.guns.resource|xiao.customgun.core.item|
-|---|---|
-|modifier.`AttachmentPropertyManager`.eval|attachment.modifier.`AttachmentModifier`.evalSimpleModifierData|
-
 |com.tacz.guns.resource|xiao.customgun.core.util|
 |---|---|
 |modifier.`AttachmentPropertyManager`.functionEval|`ScriptUtils`.eval|
@@ -532,7 +557,6 @@ Notation:
 
 |com.tacz.guns.resource|xiao.customgun.core.api.item|
 |---|---|
-|modifier.custom.`*Modifier`|attachment.`AttachmentModifierType`.modifier|
 |pojo.data.gun.`Bolt`|gun.`BoltType`|
 |pojo.data.gun.`ChargeType`|gun.`ChargeType`|
 |pojo.data.gun.`FeedType`|gun.`AmmoFeedType`|
@@ -611,9 +635,9 @@ Notation:
 |---|---|
 |`LaserColorUtil`|`IAttachment`.getLaserColor|
 
-|com.tacz.guns.util|xiao.customgun.core.api|
+|com.tacz.guns.util|xiao.customgun.core.api.projectile|
 |---|---|
-|`TacHitResult`|projectile.physics.`IProjectilePhysicsRuntime`.`EntityHitResult`|
+|`TacHitResult`|physics.`IProjectilePhysicsRuntime`.`EntityHitResult`|
 
 ## Client
 

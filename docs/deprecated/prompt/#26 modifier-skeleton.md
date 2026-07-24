@@ -148,3 +148,14 @@ IItemModifier -> IGunModifier -> IAdsModifier -> AttachmentModifier -> AdsModifi
 Damage的问题我了解了，改成对每个伤害都应用修改。并且，所有的getBase都需要是copy的，如果getter没自动包含复制则需要手动构建一个。
 完成对Damage的getBase的修改，以及对getBase是否有复制的检查（否则后续modifier eval污染pojo原始数据）
 ```
+
+```
+TaCZ Migration Mapping.md里的GunProperty和GunProperties应该已经不对应了，根据最近的commit最终的修改，帮我检查对应的，或着标记_Deprecated_
+- 能根据字段拆分的就写`GunProperty`.name和`GunProperty`.type这种形式，参考文档里已有的模式
+```
+
+```
+你的格式不规范，不得出现Notation以外的说明，不得擅自添加实现说明
+成员列表有统一对应的地方就直接*即可，不得全部逐个列出检查
+如果有移到别的地方，显然就不属于Deprecated，你写的部分有问题
+```

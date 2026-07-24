@@ -12,7 +12,7 @@
 | `com.tacz.guns.entity.shooter.ShooterDataHolder` | `xiao.customgun.core.api.entity.ShooterProperty` | 重命名：精简名称 |
 | `com.tacz.guns.api.entity.IGunOperator` | `xiao.customgun.core.api.entity.ILivingShooter` (+ `IShooterModifierCacheHolder` 等) | 拆分为多个细粒度接口 |
 | `com.tacz.guns.api.event.common.AttachmentPropertyEvent` | `xiao.customgun.core.api.event.shooter.ShooterGunModifierCacheEvent` | 重命名 + 从 Forge Event 迁移到 CGC CustomEvent |
-| `com.tacz.guns.api.modifier.IAttachmentModifier` | `xiao.customgun.core.api.item.attachment.modifier.AttachmentModifierType` (枚举) + item.attachment.modifier 包下的接口（计划中） | 接口 → 枚举 + 接口（枚举持有接口引用） |
+| `com.tacz.guns.api.modifier.IAttachmentModifier` | `xiao.customgun.core.api.item.attachment.modifier.AttachmentModifierType` (枚举) + `IAttachmentModifier<K,V>`（门面接口） | 接口 → 枚举持有接口引用 |
 
 ## 数据类迁移
 
@@ -29,35 +29,35 @@
 
 | TaCZ | CGC | 变更说明 |
 |---|---|---|
-| `String` key + `IAttachmentModifier<T,K>` 接口 | `AttachmentModifierType` 枚举 | 字符串 → 编译期安全的枚举 |
-| 注册在 `AttachmentPropertyManager.MODIFIERS` Map | 枚举常量 + `MODIFIER_TYPES` 查找表 | 集中定义 |
-| 各 Modifier 内部 `Data` 类的 `@SerializedName` | `AttachmentModifierTypeTag` 常量类 | 标签集中管理 |
-| `AttachmentModifierType` 的 TODO | 枚举将持有接口（在 `item.attachment.modifier` 包下），具体类实现该接口 | 枚举不直接定义行为，委托给接口 |
+| `String` key + `IAttachmentModifier<T,K>` 接口 | `GunModifierType` 枚举（类型标识） + `AttachmentModifierType` 枚举（计算实例） | 字符串 → 编译期安全的枚举 |
+| 注册在 `AttachmentPropertyManager.MODIFIERS` Map | `AttachmentModifierType` 枚举常量（附属于 `GunModifierType`） | 集中定义；当前 gun modifiers 被 attachment modifiers 一一对应实现，未来可增加非 attachment 来源（如 ammo modifier） |
+| 各 Modifier 内部 `Data` 类的 `@SerializedName` | `GunModifierTypeTag` 常量类 | 标签集中管理 |
+| `AttachmentDataTag` | 引用 `GunModifierTypeTag`，OLD1 变体保留于此 | 计划移除，OLD1 迁移至 `AttachmentData.fromJsonReader` 内部 |
 
 ## 具体 Modifier 类型迁移
 
 | TaCZ Modifier 类 | CGC 对应类型 | 状态 |
 |---|---|---|
-| `AdsModifier (ID="ads")` | `AttachmentModifierType.ADS` + `_SimpleModifierData` | 已迁移数据类，计算逻辑 TODO |
-| `AmmoSpeedModifier (ID="ammo_speed")` | `AttachmentModifierType.BULLET_SPEED` + `_SimpleModifierData` | 已迁移数据类 |
-| `ArmorIgnoreModifier (ID="armor_ignore")` | `AttachmentModifierType.ARMOR_IGNORE_PERCENT` + `_SimpleModifierData` | 已迁移数据类 |
-| `DamageModifier (ID="damage")` | `AttachmentModifierType.DAMAGE_CALCULATION` + `_SimpleModifierData` | 已迁移数据类 |
-| `EffectiveRangeModifier (ID="effective_range")` | `AttachmentModifierType.EFFECTIVE_RANGE` + `_SimpleModifierData` | 已迁移数据类 |
-| `ExplosionModifier (ID="explosion")` | `AttachmentModifierType.BULLET_EXPLOSION` + `_BulletExplosionModifierData` | 已迁移数据类，拆分为子属性 |
+| `AdsModifier (ID="ads")` | `AttachmentModifierType.ADS` + `AdsModifier.INSTANCE` | 已迁移（`AdsModifier` + `IAdsModifier`） |
+| `AmmoSpeedModifier (ID="ammo_speed")` | `AttachmentModifierType.BULLET_SPEED` + `BulletSpeedModifier.INSTANCE` | 已迁移（`BulletSpeedModifier` + `IAmmoSpeedModifier`） |
+| `ArmorIgnoreModifier (ID="armor_ignore")` | `AttachmentModifierType.ARMOR_IGNORE_PERCENT` + `ArmorIgnoreModifier.INSTANCE` | 已迁移（`ArmorIgnoreModifier` + `IArmorIgnoreModifier`） |
+| `DamageModifier (ID="damage")` | `AttachmentModifierType.DAMAGE_CALCULATION` + `DamageCalculationModifier.INSTANCE` | 已迁移（`DamageCalculationModifier` + `IDamageCalculationModifier`） |
+| `EffectiveRangeModifier (ID="effective_range")` | `AttachmentModifierType.EFFECTIVE_RANGE` + `EffectiveRangeModifier.INSTANCE` | 已迁移（`EffectiveRangeModifier` + `IEffectiveRangeModifier`） |
+| `ExplosionModifier (ID="explosion")` | `AttachmentModifierType.BULLET_EXPLOSION` + `BulletExplosionModifier.INSTANCE` | 已迁移（`BulletExplosionModifier` + `IBulletExplosionModifier`，拆分子属性） |
 | `ExtraMovementModifier (ID="movement_speed")` | 待定 | 尚未在 CGC 中明确对应 |
-| `HeadShotModifier (ID="head_shot")` | `AttachmentModifierType.HEADSHOT_MULTIPLIER` + `_SimpleModifierData` | 已迁移数据类 |
-| `IgniteModifier (ID="ignite")` | `AttachmentModifierType.FIRE_ASPECT` + `_FireAspectModifierData` | 已迁移数据类 |
-| `InaccuracyModifier (ID="inaccuracy")` | `AttachmentModifierType.{AIM,SNEAK,PRONE,OTHER}_INACCURACY` + `_SimpleModifierData` | **拆分为 4 个独立 modifier** |
-| `KnockbackModifier (ID="knockback")` | `AttachmentModifierType.KNOCKBACK_STRENGTH` + `_SimpleModifierData` | 已迁移数据类 |
-| `PierceModifier (ID="pierce")` | `AttachmentModifierType.PIERCE_COUNT` + `_SimpleModifierData` | 已迁移数据类 |
-| `RecoilModifier (ID="recoil")` | `AttachmentModifierType.RECOIL_DATA` + `_RecoilDataModifierData` | 已迁移数据类，pitch/yaw 拆分为两个 `_SimpleModifierData` |
-| `RpmModifier (ID="rpm")` | `AttachmentModifierType.RPM` + `_SimpleModifierData` | 已迁移数据类 |
-| `SilenceModifier (ID="silence")` | `AttachmentModifierType.MUZZLE` + `_MuzzleModifierData` | 已迁移数据类，从 pair 简化为 `FireSoundType` 枚举 |
-| `WeightModifier (ID="weight_modifier")` | `AttachmentModifierType.WEIGHT` + `_SimpleModifierData` | **已迁移：从 `Float.class` 改为 `_SimpleModifierData`** |
+| `HeadShotModifier (ID="head_shot")` | `AttachmentModifierType.HEADSHOT_MULTIPLIER` + `HeadshotMultiplierModifier.INSTANCE` | 已迁移（`HeadshotMultiplierModifier` + `IHeadshotMultiplierModifier`） |
+| `IgniteModifier (ID="ignite")` | `AttachmentModifierType.FIRE_ASPECT` + `FireAspectModifier.INSTANCE` | 已迁移（`FireAspectModifier` + `IFireAspectModifier`） |
+| `InaccuracyModifier (ID="inaccuracy")` | `AttachmentModifierType.{AIM,SNEAK,PRONE,OTHER}_INACCURACY` + 各自 INSTANCE | **拆分为 4 个独立 modifier** |
+| `KnockbackModifier (ID="knockback")` | `AttachmentModifierType.KNOCKBACK_STRENGTH` + `KnockbackStrengthModifier.INSTANCE` | 已迁移（`KnockbackStrengthModifier` + `IKnockbackStrengthModifier`） |
+| `PierceModifier (ID="pierce")` | `AttachmentModifierType.PIERCE_COUNT` + `PierceCountModifier.INSTANCE` | 已迁移（`PierceCountModifier` + `IPierceCountModifier`） |
+| `RecoilModifier (ID="recoil")` | `AttachmentModifierType.RECOIL_DATA` + `RecoilDataModifier.INSTANCE` | 已迁移（`RecoilDataModifier` + `IRecoilDataModifier`，pitch/yaw 拆分） |
+| `RpmModifier (ID="rpm")` | `AttachmentModifierType.RPM` + `RpmModifier.INSTANCE` | 已迁移（`RpmModifier` + `IRpmModifier`） |
+| `SilenceModifier (ID="silence")` | `AttachmentModifierType.MUZZLE` + `MuzzleModifier.INSTANCE` | 已迁移（`MuzzleModifier` + `IMuzzleModifier`） |
+| `WeightModifier (ID="weight_modifier")` | `AttachmentModifierType.WEIGHT` + `WeightModifier.INSTANCE` | 已迁移（`WeightModifier` + `IWeightModifier`） |
 
 ### 重要变更：WEIGHT
 
-TaCZ 的 `WeightModifier` 直接使用 `Modifier` 格式（和大多数数值型 modifier 一样）。CGC 最初将 `AttachmentModifierType.WEIGHT` 的 `dataType` 设为 `Float.class`（简单浮点），但在最新重构中将其统一为 `_SimpleModifierData.class`，getter 对应 `AttachmentData.getWeightModifier()`。
+`WeightModifier` 已迁移完成——`AttachmentModifierType.WEIGHT` 持有 `WeightModifier.INSTANCE`，实现 `IWeightModifier<AttachmentData>`。`getBase` 由 `IWeightModifier` 的 default 方法提供（`gunData.getWeight()`）。
 
 ### 重要拆分：Inaccuracy
 
@@ -112,6 +112,6 @@ TaCZ 的 `InaccuracyModifier` 处理 5 种散布类型（STAND, MOVE, SNEAK, LIE
 1. **填充 `ShooterGunModifierCache`**：定义字段结构，实现类型安全的缓存存取
 2. **实现 `ShooterGunModifierManager.updateShooterGunModifierCache()`**：替换 `// TODO 原 ChangeGunPropertyEvent`
 3. **解 TODO 所有消费方**：逐个实现从缓存读取具体值的逻辑
-4. **接口化 `AttachmentModifierType`**：将构造函数参数改为接口类（`item.attachment.modifier` 包下）
+4. **移除 `AttachmentDataTag`**：OLD1 变体迁移到 `AttachmentData.fromJsonReader` 内部，标签值来源统一为 `GunModifierTypeTag`
 5. **迁移脚本 API**：确定 Lua 脚本如何读取/修改缓存值
 6. **迁移改装台 GUI**：实现 `DiagramsData` 的等价物

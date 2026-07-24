@@ -7,9 +7,13 @@
 
 ```mermaid
 graph TB
+    subgraph "枪械 modifier 类型 — gun.modifier"
+        GMT["GunModifierType (enum)<br/>api.item.gun.modifier<br/>枪械属性类型标识"]
+        GMTT["GunModifierTypeTag<br/>标签常量"]
+    end
+
     subgraph "配件物品层 — item.attachment.modifier"
-        AMT["AttachmentModifierType (enum)<br/>package: api.item.attachment.modifier<br/>typeName + dataType + getter"]
-        AMTT["AttachmentModifierTypeTag<br/>字符串常量"]
+        AMT["AttachmentModifierType (enum)<br/>附属于 GunModifierType<br/>持有 IAttachmentModifier 实例"]
     end
 
     subgraph "数据包层 — JSON 定义"
@@ -42,7 +46,8 @@ graph TB
 
     JSON -->|"fromJson"| AD
     AD -->|"getter 引用"| AMT
-    AMT -->|"typeName"| AMTT
+    AMT -->|"modifierType"| GMT
+    GMT -->|"typeName"| GMTT
     MODDATA -->|"基类"| AD
 
     AMT -->|"ShooterGunModifierManager"| SGMM
@@ -60,8 +65,9 @@ graph TB
     style JSON fill:#e1f5fe
     style AD fill:#e1f5fe
     style MODDATA fill:#e1f5fe
+    style GMT fill:#fff3e0
+    style GMTT fill:#fff3e0
     style AMT fill:#fff3e0
-    style AMTT fill:#fff3e0
     style SGMC fill:#f3e5f5
     style SGMM fill:#e8f5e9
     style SGMCE fill:#fce4ec
@@ -78,16 +84,16 @@ graph TB
 
 | 层 | 包路径 | 职责 | 关键类 |
 |---|---|---|---|
-| **数据定义层** | `api.item.attachment.modifier` | 定义 modifier 的类型标识和从 `AttachmentData` 的读取方式 | `AttachmentModifierType` 枚举 |
+| **数据定义层** | `api.item.gun.modifier` | 定义 gun modifier 的类型标识（typeName） | `GunModifierType` 枚举, `GunModifierTypeTag` |
+| **配件实现层** | `api.item.attachment.modifier` | 附属于 GunModifierType，持有 `IAttachmentModifier` 计算实例 | `AttachmentModifierType` 枚举 |
 | **缓存计算层** | `entity.shooter.modifier` | 缓存生命周期管理、计算编排、事件触发 | `ShooterGunModifierManager` |
 | **缓存存储层** | `api.entity.shooter` | 缓存在实体上的存取接口 | `IShooterModifierCacheHolder`, `ShooterGunModifierCache` |
 
 ### 架构要点
 
-- **Shooter gun modifier** 目前只有一个来源（attachment modifier 即配件修改器），但体系已明确其作用于 shooter 的 gun 属性
-- **modifier 构成**属于 `item.attachment` 包下（`AttachmentModifierType`），表示 modifier 数据来源于物品配件
-- `AttachmentModifierType` 枚举会持有接口（当前为 TODO），具体实现类在 `item.attachment.modifier` 包下
-- 目前 shooter 没有别的 modifier 来源，但这个体系的语义和架构清晰度优于 TaCZ
+- `GunModifierType` 是枪械 modifier 的**权威类型标识**——定义 typeName，未来任何来源（attachment/ammo/其他）的 gun modifier 都指向它
+- `AttachmentModifierType` **附属于** `GunModifierType`——每个常量持有对应的 `GunModifierType` 引用和 `IAttachmentModifier` 计算实例
+- TaCZ 的 `AttachmentPropertyManager.MODIFIERS` 对应此体系的 `AttachmentModifierType` 枚举——当前所有 gun modifier 都被 attachment modifier 一一对应实现，但未来新增 gun modifier 不一定有对应的 attachment modifier
 
 ## 重构设计哲学
 
@@ -97,10 +103,10 @@ CGC 对 TaCZ 原版体系的重构围绕以下核心原则：
 
 | 维度 | TaCZ（原版） | CGC（重构） |
 |---|---|---|
-| Modifier 标识 | `String` ID（如 `"ads"`, `"damage"`） | `AttachmentModifierType` 枚举常量 |
-| JSON 字段名 | 散落在各 Modifier 的 `@SerializedName` | 集中在 `AttachmentModifierTypeTag` 常量类 |
+| Modifier 标识 | `String` ID（如 `"ads"`, `"damage"`） | `GunModifierType` 枚举（类型标识）+ `AttachmentModifierType` 枚举（计算实例） |
+| JSON 字段名 | 散落在各 Modifier 的 `@SerializedName` | 集中在 `GunModifierTypeTag` 常量类 |
 | AttachmentData 修改器存储 | `Map<String, JsonProperty<?>>` | 强类型 nullable 字段，每个枚举有一个 getter |
-| 从 AttachmentData 取值 | `data.getModifier().get(id).getValue()` + 强制转换 | `type.get(data, _SimpleModifierData.class)` + 编译期类型检查 |
+| 从 AttachmentData 取值 | `data.getModifier().get(id).getValue()` + 强制转换 | `type.modifier.getModifier(data)` + 编译期类型检查 |
 
 ### 2. 语义化重命名
 
@@ -116,14 +122,14 @@ CGC 对 TaCZ 原版体系的重构围绕以下核心原则：
 
 ### 3. 接口替代枚举字段（可扩展性）
 
-`AttachmentModifierType` 枚举的 TODO（第 75 行）计划将构造函数参数改为接口类。详见 [AttachmentModifierType 枚举](./modifier-type.md)。
+`AttachmentModifierType` 枚举已全部迁移完成，每个常量持有 `IAttachmentModifier` 实例。计算逻辑通过接口层次（`IItemModifier` → `IGunModifier` → `I*Modifier` → `IAttachmentModifier` → `AttachmentModifier` → 具体类）分离。详见 [AttachmentModifierType 枚举](./modifier-type.md)。
 
 ## 文档导航
 
 | 文档 | 内容 |
 |---|---|
 | [JSON 数据结构](./data-structure.md) | `__ModifierData<T>` 基类与子类, `AttachmentData` 强类型字段设计, JSON 标签常量体系 |
-| [AttachmentModifierType 枚举](./modifier-type.md) | 枚举设计、typeName/dataType/getter 三元组、与 TaCZ 字符串键体系的对比 |
+| [AttachmentModifierType 枚举](./modifier-type.md) | 枚举设计、附属于 GunModifierType、持有 IAttachmentModifier 实例、与 TaCZ 字符串键体系的对比 |
 | [缓存系统](./cache-system.md) | `ShooterGunModifierCache` 生命周期、`ShooterGunModifierManager` 管线、`IShooterModifierCacheHolder` 接口 |
 | [事件与通知](./event-and-notification.md) | `ShooterGunModifierCacheEvent` 事件设计、自定义事件派发流 |
 | [Modifier 计算流程](./calculation-flow.md) | CGC 重构后 `IItemModifier`→`IAttachmentModifier`→`AttachmentModifier` 计算管线、与 TaCZ 的差异 |

@@ -167,16 +167,16 @@ public static Float evalSimpleModifierData(Collection<_SimpleModifierData> modif
 
 ## AttachmentModifierType 枚举的角色变化
 
-重构后，`AttachmentModifierType` 枚举**直接持有 `IAttachmentModifier` 实例**：
+重构后，`AttachmentModifierType` 枚举**直接持有 `IAttachmentModifier` 实例**，并且每个常量**附属于**一个 `GunModifierType`：
 
 ```java
-public enum AttachmentModifierType implements ResourceTag.CategoryTag {
-    ADS(AttachmentModifierTypeTag.ADS, AdsModifier.INSTANCE),
-    // ... 其他常量类似，最终都会持有对应的 IAttachmentModifier 实例
+public enum AttachmentModifierType implements ResourceTag.CategoryTag, IGunModifierType {
+    ADS(GunModifierType.ADS, AdsModifier.INSTANCE),
+    // ... 全部 20 个常量均已迁移完成
 }
 ```
 
-`ADS` 是第一已迁移完成的常量——构造函数直接引用 `AdsModifier.INSTANCE`，不再使用 `dataType` + `getter` 的组合。其他常量仍使用旧的 `(dataType, getter)` 形式，待后续迁移。
+`ADS` 是第一已迁移完成的常量——构造函数直接引用 `AdsModifier.INSTANCE` 和 `GunModifierType.ADS`。所有常量均已迁移完毕。
 
 ## 计算的完整路径（重构后）
 

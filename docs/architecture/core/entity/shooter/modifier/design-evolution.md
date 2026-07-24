@@ -22,7 +22,7 @@ graph TB
 
 **四个职责混在一个接口里**：JSON 解析（`readJson`）、base 值获取（`initCache` 依赖 GunData）、计算（`eval` 消费 AttachmentData 的数据）、UI。核心问题是 `initCache` 和 `eval` 的数据源不同（GunData vs AttachmentData），但都耦合在同一个接口中。
 
-**关于 GunProperties**：TaCZ 的 `GunProperties` 类定义了一系列 `GunProperty<T>` record 常量（如 `ADS_TIME`、`DAMAGE`、`RECOIL` 等），本质上是类型安全的缓存 key。它们有两个作用：(1) 在 `AttachmentPropertyManager` 中作为字符串 ID 的对应引用；(2) 为 `AttachmentCacheProperty` 提供 `getCache(GunProperty)` 的类型安全存取方式。同时 `@CacheModifiableByScript` 和 `@ValueModifiableAtRuntime` 注解标记了可被 Lua 脚本修改的属性。在 CGC 重构中，`GunProperties` 的功能被拆分到 `AttachmentModifierType` 枚举和 `I*Modifier` 接口的泛型参数 `<K, V>` （编译期确定类型）。
+**关于 GunProperties**：TaCZ 的 `GunProperties` 类定义了一系列 `GunProperty<T>` record 常量（如 `ADS_TIME`、`DAMAGE`、`RECOIL` 等），本质上是类型安全的缓存 key。在 CGC 重构中，其功能被拆分：属性标识对应 `GunModifierType.typeName`，缓存类型对应 `I*Modifier` 的泛型参数 `<K, V>`（编译期确定类型）。`@CacheModifiableByScript` 和 `@ValueModifiableAtRuntime` 注解标记了可被 Lua 脚本修改的属性。
 
 ---
 
@@ -201,7 +201,7 @@ TaCZ 的 `GunProperties`（`GunProperty<T>` record + 常量列表）在 CGC 中�
 
 | TaCZ | CGC |
 |---|---|
-| 属性标识 `name` | `AttachmentModifierType.typeName` |
+| 属性标识 `name` | `GunModifierType.typeName` |
 | 类型 `type` | `I*Modifier` 的 `V` 泛型参数 |
-| `@CacheModifiableByScript` | `AttachmentModifierType` 枚举 + `ShooterGunModifierManager` 逻辑 |
+| `@CacheModifiableByScript` | `GunModifierType` 枚举 + `ShooterGunModifierManager` 逻辑 |
 | `RuntimeOnly` | `GunData` getter / 运行时脚本接口 |

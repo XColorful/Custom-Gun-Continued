@@ -9,7 +9,7 @@
 |---|---|---|
 | 数据存储 | `Map<String, JsonProperty<?>>` + 运行时类型检查 | 每个 modifier 有独立的强类型 nullable 字段 |
 | JSON 读取 | Gson `@SerializedName` + 每个 Modifier 的 `readJson()` | `ResourcePojo` 框架的 `fromJsonReader()` + `switch-case` |
-| 标签管理 | 散落在各 Modifier 内部 Data 类的 `@SerializedName` | 集中在 `__ModifierDataTag`、`AttachmentDataTag`、`AttachmentModifierTypeTag` 体系 |
+| 标签管理 | 散落在各 Modifier 内部 Data 类的 `@SerializedName` | 集中在 `__ModifierDataTag`、`GunModifierTypeTag`、`AttachmentDataTag`（OLD1兼容） |
 | 向后兼容 | 各 Modifier 在 `readJson()` 中自行处理 | 在 `fromJsonReader()` 中用 OLD1 标签变体和 `applyBackCompatibility()` 统一处理 |
 | 验证 | 无统一机制 | `ResourcePojo.validatePojo()` + `isValid()` 标志 |
 
@@ -232,14 +232,14 @@ protected void validatePojo() {
 
 `applyBackCompatibility()` 在验证前执行，使用 `ENABLE_BACK_COMPATIBILITY` 开关控制旧包兼容处理。
 
-## AttachmentModifierTypeTag — 标签层级
+## GunModifierTypeTag — 标签层级
 
-`xiao.customgun.core.api.item.attachment.modifier.AttachmentModifierTypeTag`
+`xiao.customgun.core.api.item.gun.modifier.GunModifierTypeTag`
 
 标签常量的体系结构：
 
 ```
-AttachmentModifierTypeTag
+GunModifierTypeTag
 ├── ADS = "ads"
 ├── HEADSHOT_MULTIPLIER  → _BulletSkillDataTag.HEADSHOT_MULTIPLIER
 ├── ARMOR_IGNORE_PERCENT → _BulletSkillDataTag.ARMOR_IGNORE_PERCENT
@@ -264,9 +264,9 @@ AttachmentModifierTypeTag
 
 **设计特点**：
 - 标签定义可以引用其他数据类的标签常量（如 `_BulletSkillDataTag`），减少重复定义
-- 只有此体系特有的标签才在 `AttachmentModifierTypeTag` 中直接定义
-- `AttachmentDataTag` 中的 OLD1 变体也引用了此体系中的常量
+- `GunModifierTypeTag` 是标签值的**权威来源**——`AttachmentDataTag` 的所有新格式标签直接引用 `GunModifierTypeTag` 同名字段
+- `AttachmentDataTag` 中的 OLD1 变体是 JSON 向后兼容的唯一职责保留，计划在后续重构中移除
 
 ### 与 TaCZ 的区别
 
-在 TaCZ 中，每个标签同时是 Modifier 的注册 ID（存储在 `AttachmentPropertyManager.MODIFIERS` Map 的 key 中）。在 CGC 中，标签是纯数据标识符，Modifier 的类型标识由 `AttachmentModifierType` 枚举提供。两者解耦，标签只关心 JSON 序列化/反序列化。
+在 TaCZ 中，每个标签同时是 Modifier 的注册 ID（存储在 `AttachmentPropertyManager.MODIFIERS` Map 的 key 中）。在 CGC 中，标签是纯数据标识符：Modifier 的类型标识由 `GunModifierType` 枚举提供（作者，标签值与 typeName 复用），计算实例由 `AttachmentModifierType` 枚举持有。三者解耦。

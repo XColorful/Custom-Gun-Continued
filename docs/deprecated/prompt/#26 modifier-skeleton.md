@@ -159,3 +159,14 @@ TaCZ Migration Mapping.md里的GunProperty和GunProperties应该已经不对应�
 成员列表有统一对应的地方就直接*即可，不得全部逐个列出检查
 如果有移到别的地方，显然就不属于Deprecated，你写的部分有问题
 ```
+
+```
+我增加了内容，见最新commit
+- AttachmentDataTag已经决定移除
+- AttachmentModifierType附属于GunModifierType
+- 即视为tacz原本AttachmentPropertyManager.MODIFIERS视为ATTACHMENT_MODIFIERS，刚好gun modifiers全被attachment modifiers一一对应实现，但未来增加其他gun modifier不一定会在attachment modifier里
+
+\docs\文档相应部分需要更新
+```
+
+> token大概在1M上下文的30%开始就指数级加速消耗，幻觉也很厉害

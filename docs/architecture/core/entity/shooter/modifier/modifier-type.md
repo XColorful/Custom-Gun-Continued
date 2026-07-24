@@ -1,127 +1,111 @@
 
 # AttachmentModifierType 枚举
 
-> CGC 用编译期类型安全的枚举替代 TaCZ 运行时字符串键来标识和访问配件修改器。枚举直接持有 `IAttachmentModifier` 实例。
+> CGC 用编译期类型安全的枚举替代 TaCZ 运行时字符串键来标识和访问配件修改器。`AttachmentModifierType` 附属于 `GunModifierType`——每个附件 modifier 对应到一个枪械 modifier 类型。
 
-## 设计动机
+## 与 GunModifierType 的关系
 
-### TaCZ 的问题
+```mermaid
+graph LR
+    GMT["GunModifierType (enum)<br/>api.item.gun.modifier<br/>枪械 modifier 类型标识<br/>20 个常量"]
+    AMT["AttachmentModifierType (enum)<br/>api.item.attachment.modifier<br/>附件 modifier 类型<br/>持有 IAttachmentModifier 实例"]
+    
+    AMT -->|"modifierType 字段"| GMT
+    AMT -.->|"一一对应<br/>未来可能不等"| GMT
 
-```java
-// TaCZ 原版：字符串键 + 运行时类型转换
-Map<String, IAttachmentModifier<?, ?>> MODIFIERS = Maps.newLinkedHashMap();
-MODIFIERS.put("ads", new AdsModifier());
-// ...
-cacheProperty.<Float>getCache("ads");  // 字符串拼写错误直到运行时才发现
+    style GMT fill:#fff3e0
+    style AMT fill:#e1f5fe
 ```
 
-问题：
-1. **无编译期检查**：`"ads"` 拼错为 `"asd"` 不会报错
-2. **类型不安全**：`getCache("ads")` 返回 `Object`，需要手动 `<Float>` 强制转换
-3. **注册分散**：每个 Modifier 的注册散落在 `AttachmentPropertyManager.registerModifier()` 中
-4. **元数据散落**：修改器的数据类型（T、K）只在接口实现中定义，无法集中查询
+`AttachmentModifierType` 的每个常量对应一个 `GunModifierType`：
+- `GunModifierType` 定义**枪械属性**的类型标识（typeName）
+- `AttachmentModifierType` 继承该标识，并持有对应的 `IAttachmentModifier` 计算实例
 
-### CGC 的方案
-
-```java
-// CGC：枚举直接持有 IAttachmentModifier 实例
-public enum AttachmentModifierType implements ResourceTag.CategoryTag {
-    ADS(AttachmentModifierTypeTag.ADS, AdsModifier.INSTANCE),
-    // ... 其他常量类似
-}
-```
-
-优势：
-1. **编译期检查**：枚举常量禁止拼写错误
-2. **集中定义**：所有 modifier 的 typeName、modifier 实例在一个位置
-3. **自文档化**：枚举本身就是完整的 modifier 目录
-4. **IDE 友好**：Find Usages、Rename Refactoring 等 IDE 功能都能正常工作
-5. **枚举持有接口**：`ADS` 已迁移完成——枚举直接持有 `IAttachmentModifier` 实例，计算逻辑委托给该实例
+TaCZ 原版的 `AttachmentPropertyManager.MODIFIERS` Map 在此体系中对应 `AttachmentModifierType` 枚举——当前所有 gun modifier 都被 attachment modifier 一一对应实现，但未来新增的 gun modifier 不一定有对应的 attachment modifier。
 
 ## 枚举结构
 
 ```java
-public enum AttachmentModifierType implements ResourceTag.CategoryTag {
-    // 已迁移：枚举持有 IAttachmentModifier 实例
-    ADS(AttachmentModifierTypeTag.ADS, AdsModifier.INSTANCE),
-
-    // 未迁移：仍使用 (dataType, getter) 形式（待后续迁移）
-    DAMAGE_CALCULATION(AttachmentModifierTypeTag.DAMAGE_CALCULATION,
-            _SimpleModifierData.class, AttachmentData::getDamageCalculationModifier),
+public enum AttachmentModifierType implements ResourceTag.CategoryTag, IGunModifierType {
+    ADS(GunModifierType.ADS, AdsModifier.INSTANCE),
+    DAMAGE_CALCULATION(GunModifierType.DAMAGE_CALCULATION, DamageCalculationModifier.INSTANCE),
     // ...
+
+    public final GunModifierType modifierType;     // 对应的枪械 modifier 类型
+    public final String typeName;                   // 从 modifierType 继承
+    public final IAttachmentModifier<?, ?> modifier; // 计算实例
 }
 ```
 
-### 两个核心成员
+每个枚举常量的构造函数接受两个参数：
 
-当前枚举有两种构造函数：
-
-| 形式 | 构造函数 | 使用常量 |
+| 参数 | 类型 | 含义 |
 |---|---|---|
-| **接口实例**（新） | `(String name, IAttachmentModifier<T, V> modifier)` | `ADS` |
-| **字段组合**（旧，待迁移） | `(String name, Class<T> dataType, Function<AttachmentData, T> getter)` | 其余 19 个常量 |
+| `type` | `GunModifierType` | 此附件 modifier 对应的枪械属性类型 |
+| `modifier` | `IAttachmentModifier<K, V>` | 实现 getModifier / getBase / eval 的计算实例 |
 
-```java
-// 新形式
-public final String typeName;
-public final IAttachmentModifier<?, ?> modifier;
+`IGunModifierType` 接口提供 `getGunModifierType()` 方法，使得 `AttachmentModifierType` 可以被统一查询其服务的枪械属性。
 
-// 旧形式（待迁移）
-public final String typeName;
-public final Class<?> dataType;
-public final Function<AttachmentData, ?> getter;
-```
+## 枚举常量完整列表
 
-```java
-public IAttachmentModifier<?, ?> getModifier() {
-    return this.modifier;
-}
-```
+所有 20 个常量均已迁移完成，全部持有 `INSTANCE` 单例：
 
-### 枚举常量完整列表
-
-| 枚举常量 | typeName | 数据来源 | 迁移状态 |
-|---|---|---|---|
-| `ADS` | `"ads"` | `AdsModifier.INSTANCE` | **已迁移** |
-| `DAMAGE_CALCULATION` | (tag) | `_SimpleModifierData` | `getDamageCalculationModifier` | **已迁移**（`DamageCalculationModifier` + `IDamageCalculationModifier`） |
-| `HEADSHOT_MULTIPLIER` | (tag) | `_SimpleModifierData` + getter | 待迁移 |
-| `ARMOR_IGNORE_PERCENT` | (tag) | `_SimpleModifierData` + getter | 待迁移 |
-| `BULLET_SPEED` | (tag) | `_SimpleModifierData` + getter | 待迁移 |
-| `PIERCE_COUNT` | (tag) | `_SimpleModifierData` + getter | 待迁移 |
-| `FIRE_ASPECT` | (tag) | `_FireAspectModifierData` + getter | 待迁移 |
-| `KNOCKBACK_STRENGTH` | (tag) | `_SimpleModifierData` + getter | 待迁移 |
-| `BULLET_EXPLOSION` | (tag) | `_BulletExplosionModifierData` + getter | 待迁移 |
-| `RPM` | (tag) | `_SimpleModifierData` + getter | 待迁移 |
-| `RECOIL_DATA` | (tag) | `_RecoilDataModifierData` + getter | 待迁移 |
-| `EFFECTIVE_RANGE` | (tag) | `_SimpleModifierData` + getter | 待迁移 |
-| `WEIGHT` | (tag) | `_SimpleModifierData` + getter | 待迁移 |
-| `MUZZLE` | (tag) | `_MuzzleModifierData` + getter | 待迁移 |
-| `AIM_INACCURACY` | (tag) | `_SimpleModifierData` + getter | 待迁移 |
-| `SNEAK_INACCURACY` | (tag) | `_SimpleModifierData` + getter | 待迁移 |
-| `PRONE_INACCURACY` | (tag) | `_SimpleModifierData` + getter | 待迁移 |
-| `OTHER_INACCURACY` | (tag) | `_SimpleModifierData` + getter | 待迁移 |
-| `MELEE` | (tag) | `_MeleeModifierData` + getter | 待迁移 |
-| `MAGAZINE_CATEGORY` | (tag) | `MagazineCategory.class` + getter | 待迁移 |
+| 枚举常量 | GunModifierType | modifier INSTANCE |
+|---|---|---|
+| `ADS` | `GunModifierType.ADS` | `AdsModifier` |
+| `DAMAGE_CALCULATION` | `GunModifierType.DAMAGE_CALCULATION` | `DamageCalculationModifier` |
+| `HEADSHOT_MULTIPLIER` | `GunModifierType.HEADSHOT_MULTIPLIER` | `HeadshotMultiplierModifier` |
+| `ARMOR_IGNORE_PERCENT` | `GunModifierType.ARMOR_IGNORE_PERCENT` | `ArmorIgnoreModifier` |
+| `BULLET_SPEED` | `GunModifierType.BULLET_SPEED` | `BulletSpeedModifier` |
+| `PIERCE_COUNT` | `GunModifierType.PIERCE_COUNT` | `PierceCountModifier` |
+| `FIRE_ASPECT` | `GunModifierType.FIRE_ASPECT` | `FireAspectModifier` |
+| `KNOCKBACK_STRENGTH` | `GunModifierType.KNOCKBACK_STRENGTH` | `KnockbackStrengthModifier` |
+| `BULLET_EXPLOSION` | `GunModifierType.BULLET_EXPLOSION` | `BulletExplosionModifier` |
+| `RPM` | `GunModifierType.RPM` | `RpmModifier` |
+| `RECOIL_DATA` | `GunModifierType.RECOIL_DATA` | `RecoilDataModifier` |
+| `EFFECTIVE_RANGE` | `GunModifierType.EFFECTIVE_RANGE` | `EffectiveRangeModifier` |
+| `WEIGHT` | `GunModifierType.WEIGHT` | `WeightModifier` |
+| `MUZZLE` | `GunModifierType.MUZZLE` | `MuzzleModifier` |
+| `AIM_INACCURACY` | `GunModifierType.AIM_INACCURACY` | `AimInaccuracyModifier` |
+| `SNEAK_INACCURACY` | `GunModifierType.SNEAK_INACCURACY` | `SneakInaccuracyModifier` |
+| `PRONE_INACCURACY` | `GunModifierType.PRONE_INACCURACY` | `ProneInaccuracyModifier` |
+| `OTHER_INACCURACY` | `GunModifierType.OTHER_INACCURACY` | `OtherInaccuracyModifier` |
+| `MELEE` | `GunModifierType.MELEE` | `MeleeModifier` |
+| `MAGAZINE_CATEGORY` | `GunModifierType.MAGAZINE_CATEGORY` | `MagazineCategoryModifier` |
 
 ## 接口层次
 
 ```
-IItemModifier<T, K, V>                    泛型修饰接口
-    ├── getModifier(T pojo) → K          从数据源获取修改值
-    └── eval(Collection<K>, V base) → V   计算
+IItemModifier<T, K, V>                        无状态修饰工具
+    ├── getModifier(T pojo) → K
+    └── eval(Collection<K>, V base) → V
           ↑
-IAttachmentModifier<K, V>                 绑定 T=AttachmentData
+IGunModifier<T, K, V>                         枪械修饰（声明 getBase）
+    └── getBase(IGun, ItemStack, GunData) → V
           ↑
-AttachmentModifier<K, V> (abstract)       通用计算实现（evalSimpleModifierData）
+I*Modifier<T> (如 IAdsModifier)               getBase 的 default 实现
           ↑
-AdsModifier                               具体类
+IAttachmentModifier<K, V>                     配件修饰门面（T=AttachmentData）
+          ⬆
+AttachmentModifier<K, V>                      抽象基类（evalSimpleModifierData）
+          ↑
+*Modifier (如 AdsModifier)                    具体类（getModifier + eval）
 ```
 
-## ResourceTag.CategoryTag 实现
+## IGunModifierType 接口
 
 ```java
-@Override public String getTagName() { return this.typeName; }
-@Override public String getCategoryName() { return this.typeName; }
+public interface IGunModifierType {
+    GunModifierType getGunModifierType();
+}
 ```
 
-这使得枚举可以与 `ResourceTag` 体系集成，用于配件标签的分类管理。
+`GunModifierType` 枚举和 `AttachmentModifierType` 枚举都实现了此接口。这使得：
+- `GunModifierType.ADS.getGunModifierType()` → 返回自身
+- `AttachmentModifierType.ADS.getGunModifierType()` → 返回 `GunModifierType.ADS`
+
+未来如果出现非 attachment 来源的 gun modifier（如 ammo modifier），也可以实现 `IGunModifierType` 来声明它服务于哪个枪械属性。
+
+## AttachmentDataTag — 即将移除
+
+`AttachmentDataTag` 中的所有常量现在都直接引用 `GunModifierTypeTag` 的同名字段。OLD1 变体仍保留在 `AttachmentDataTag` 中用于 JSON 向后兼容，但标签值的权威来源已转移到 `GunModifierTypeTag`。`AttachmentDataTag` 计划在后续重构中移除，OLD1 变体将迁移到 `AttachmentData.fromJsonReader` 内部。

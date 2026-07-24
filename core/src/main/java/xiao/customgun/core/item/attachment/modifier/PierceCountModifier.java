@@ -7,16 +7,15 @@
 
 package xiao.customgun.core.item.attachment.modifier;
 
-import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import xiao.customgun.core.api.item.IGun;
+import xiao.customgun.core.api.item.gun.modifier.IPierceCountModifier;
 import xiao.customgun.core.resource.data.data.AttachmentData;
-import xiao.customgun.core.resource.data.data.GunData;
 import xiao.customgun.core.resource.data.data.attachment._SimpleModifierData;
 
 import java.util.Collection;
 
-public final class PierceCountModifier extends AttachmentModifier<_SimpleModifierData, Integer> {
+public final class PierceCountModifier extends AttachmentModifier<_SimpleModifierData, Integer>
+        implements IPierceCountModifier<AttachmentData> {
     public static final PierceCountModifier INSTANCE = new PierceCountModifier();
 
     // --------IAttachmentModifier--------
@@ -30,12 +29,5 @@ public final class PierceCountModifier extends AttachmentModifier<_SimpleModifie
     public Integer eval(Collection<_SimpleModifierData> modifiers, Integer base) {
         Float result = evalSimpleModifierData(modifiers, base.floatValue());
         return result != null ? Math.round(result) : base;
-    }
-
-    // --------IGunModifier--------
-
-    @Override
-    public Integer getBase(@NotNull IGun iGun, @NotNull ItemStack gunItem, @NotNull GunData gunData) {
-        return gunData.getBulletData().getPierceCount();
     }
 }

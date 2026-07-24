@@ -7,18 +7,15 @@
 
 package xiao.customgun.core.item.attachment.modifier;
 
-import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import xiao.customgun.core.api.item.IGun;
+import xiao.customgun.core.api.item.gun.modifier.IKnockbackStrengthModifier;
 import xiao.customgun.core.resource.data.data.AttachmentData;
-import xiao.customgun.core.resource.data.data.GunData;
 import xiao.customgun.core.resource.data.data.attachment._SimpleModifierData;
-import xiao.customgun.core.resource.data.data.gun._BulletData;
-import xiao.customgun.core.resource.data.data.gun._FireModeAdjustData;
 
 import java.util.Collection;
 
-public final class KnockbackStrengthModifier extends AttachmentModifier<_SimpleModifierData, Float> {
+public final class KnockbackStrengthModifier extends AttachmentModifier<_SimpleModifierData, Float>
+        implements IKnockbackStrengthModifier<AttachmentData> {
     public static final KnockbackStrengthModifier INSTANCE = new KnockbackStrengthModifier();
 
     // --------IAttachmentModifier--------
@@ -31,16 +28,5 @@ public final class KnockbackStrengthModifier extends AttachmentModifier<_SimpleM
     @Override
     public Float eval(Collection<_SimpleModifierData> modifiers, Float base) {
         return evalSimpleModifierData(modifiers, base);
-    }
-
-    // --------IGunModifier--------
-
-    @Override
-    public Float getBase(@NotNull IGun iGun, @NotNull ItemStack gunItem, @NotNull GunData gunData) {
-        _BulletData bulletData = gunData.getBulletData();
-        _FireModeAdjustData fireModeAdjust = gunData.getFireModeAdjustData().get(iGun.getFireModeType(gunItem));
-        float base = bulletData.getKnockbackStrength();
-        if (fireModeAdjust != null) base += fireModeAdjust.getKnockbackStrength();
-        return base;
     }
 }

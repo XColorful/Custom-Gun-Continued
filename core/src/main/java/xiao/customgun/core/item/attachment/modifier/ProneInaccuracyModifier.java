@@ -7,17 +7,15 @@
 
 package xiao.customgun.core.item.attachment.modifier;
 
-import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import xiao.customgun.core.api.item.IGun;
+import xiao.customgun.core.api.item.gun.modifier.IProneInaccuracyModifier;
 import xiao.customgun.core.resource.data.data.AttachmentData;
-import xiao.customgun.core.resource.data.data.GunData;
 import xiao.customgun.core.resource.data.data.attachment._SimpleModifierData;
-import xiao.customgun.core.resource.data.data.gun._FireModeAdjustData;
 
 import java.util.Collection;
 
-public final class ProneInaccuracyModifier extends AttachmentModifier<_SimpleModifierData, Float> {
+public final class ProneInaccuracyModifier extends AttachmentModifier<_SimpleModifierData, Float>
+        implements IProneInaccuracyModifier<AttachmentData> {
     public static final ProneInaccuracyModifier INSTANCE = new ProneInaccuracyModifier();
 
     // --------IAttachmentModifier--------
@@ -30,17 +28,5 @@ public final class ProneInaccuracyModifier extends AttachmentModifier<_SimpleMod
     @Override
     public Float eval(Collection<_SimpleModifierData> modifiers, Float base) {
         return evalSimpleModifierData(modifiers, base);
-    }
-
-    // --------IGunModifier--------
-
-    @Override
-    public Float getBase(@NotNull IGun iGun, @NotNull ItemStack gunItem, @NotNull GunData gunData) {
-        var inaccuracy = gunData.getInaccuracyData();
-        if (inaccuracy == null) return 2.5F;
-        float base = inaccuracy.getProne();
-        _FireModeAdjustData fireModeAdjust = gunData.getFireModeAdjustData().get(iGun.getFireModeType(gunItem));
-        if (fireModeAdjust != null) base += fireModeAdjust.getOtherInaccuracy();
-        return Math.max(base, 0);
     }
 }

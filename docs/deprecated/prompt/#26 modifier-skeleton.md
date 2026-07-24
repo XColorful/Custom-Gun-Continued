@@ -110,3 +110,41 @@
 1. 把目前的研究过程和分析再单独写一个文档到\docs\里，每个方案都要有Mermaid图来直观地看
 2. 模仿现在最新的AdsModifier的模式，把其他Modifier也补充。对于eval不能复用父类函数的就先todo留空。AttachmentModifierType枚举的参数也改成相应的类。
 ```
+
+```
+刚才我修改的这个方案，本质上跟原来的IAttachmentModifier是一样的，手法出处可以引用已有的重构：
+- tacz的IGunOperator胖接口被分类拆成ILivingShooter extends一堆接口，对外不变（仅重命名）
+- IGun被拆分成一堆接口，对外不变（仅重命名），对内则由GunDataAccessor接口统一实现（用注释分隔）
+- Gun/Projectile manager是内部实现分离的方案，对外接口有重命名以外的改动
+
+我的内部实现可以分离的意思是既可以让AdsModifier类代理实现GunData的base值获取，也可以像我现在暂存区里实现的xiao.customgun.core.api.item.gun.modifier.IAdsModifier这样来转移。
+
+1. 更新文档说明，明确跟原来的IAttachmentModifier的区别，胖接口拆分的手法和已有实现的餐卡，以及实现分离是代理或接口default代理的意思（不匹配就接口clash从而强制类型匹配），使得AdsModifier这样的具体类里没有了base值的职责；对这个强类型匹配也需要Mermaid图来明确接口和继承关系
+2. 把AdsModifier等类的get base写成IAdsModifier这样的接口
+```
+
+```
+1. IAdsModifier同类别的漏了GPL3说明，并且IAdsModifier同类的extends IGunModifier不要换行写
+
+2. 文档里没看到
+IItemModifier -> IItemModifier -> AttachmentModifier -> AdsModifier
+IItemModifier -> IGunModifier -> AttachmentModifier -> AdsModifier
+IItemModifier -> IGunModifier -> IAdsModifier -> AttachmentModifier -> AdsModifier
+这样的菱形继承，以及在IAdsModifier和AdsModifier（流程中间和末尾）必须完成匹配泛型
+
+3. 关于DamageCalculationModifier的问题在聊天栏跟我说明
+```
+
+```
+1.文档讲述的顺序有问题，先讲tacz原设计/问题，然后ABCD方案，最后再是胖接口拆分和菱形继承的接口图
+- 菱形图里也缺少IAdsModifier指向getbase实现的箭头
+- 菱形继承图改成flowchart LR的方向，可以跟当前图里已有的拿来用，而不用专门单独每个接口重新造一个方块
+2. DamageCalculationModifier的问题你还没在聊天栏跟我报告
+```
+
+```
+我修改了零星接口图的顺序，使得线路没有交叉，你不要再修改。
+
+Damage的问题我了解了，改成对每个伤害都应用修改。并且，所有的getBase都需要是copy的，如果getter没自动包含复制则需要手动构建一个。
+完成对Damage的getBase的修改，以及对getBase是否有复制的检查（否则后续modifier eval污染pojo原始数据）
+```

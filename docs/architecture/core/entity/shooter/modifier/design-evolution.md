@@ -1,26 +1,28 @@
 
 # Modifier 接口设计演进
 
-> 从 TaCZ `IAttachmentModifier<T, K>` 到 CGC `IItemModifier<T,K,V>` → `IGunModifier` → `IAttachmentModifier` 的设计推演过程。记录每种候选方案及其被否决的原因。
+> 从 TaCZ `IAttachmentModifier<T, K>` 到 CGC 最终方案的设计推演过程。记录每种候选方案及其被否决的原因。
 
 ---
 
-## 起点：TaCZ 原版
+## 起点：TaCZ 原版 IAttachmentModifier 的问题
 
 ```mermaid
 graph TB
-    subgraph "TaCZ IAttachmentModifier&lt;T, K&gt;"
-        READ["readJson(String) → JsonProperty&lt;T&gt;"]
-        INIT["initCache(ItemStack, GunData) → CacheValue&lt;K&gt;"]
-        EVAL["eval(List&lt;T&gt;, CacheValue&lt;K&gt;)"]
-        UI["getPropertyDiagramsData(...)"]
+    subgraph "TaCZ IAttachmentModifier&lt;T, K&gt;（胖接口）"
+        READ["readJson(String) → JsonProperty&lt;T&gt;<br/>JSON 解析"]
+        INIT["initCache(ItemStack, GunData) → CacheValue&lt;K&gt;<br/>从 GunData 获取 base 值"]
+        EVAL_T["eval(List&lt;T&gt;, CacheValue&lt;K&gt;)<br/>计算"]
+        UI["getPropertyDiagramsData(...)<br/>UI 数据"]
     end
 
     GD["GunData"] -->|"initCache 入参"| INIT
-    AD["AttachmentData"] -->|"modifier.get(id).getValue()"| EVAL
+    AD["AttachmentData"] -->|"modifier.get(id).getValue()"| EVAL_T
 ```
 
-**四个职责混在一个接口里**：JSON 解析（`readJson`）、base 值获取（`initCache` 依赖 GunData）、计算（`eval` 消费 AttachmentData 的数据）、UI。且 `initCache` 和 `eval` 的数据源不同（GunData vs AttachmentData），但都耦合在同一个接口中。
+**四个职责混在一个接口里**：JSON 解析（`readJson`）、base 值获取（`initCache` 依赖 GunData）、计算（`eval` 消费 AttachmentData 的数据）、UI。核心问题是 `initCache` 和 `eval` 的数据源不同（GunData vs AttachmentData），但都耦合在同一个接口中。
+
+**关于 GunProperties**：TaCZ 的 `GunProperties` 类定义了一系列 `GunProperty<T>` record 常量（如 `ADS_TIME`、`DAMAGE`、`RECOIL` 等），本质上是类型安全的缓存 key。它们有两个作用：(1) 在 `AttachmentPropertyManager` 中作为字符串 ID 的对应引用；(2) 为 `AttachmentCacheProperty` 提供 `getCache(GunProperty)` 的类型安全存取方式。同时 `@CacheModifiableByScript` 和 `@ValueModifiableAtRuntime` 注解标记了可被 Lua 脚本修改的属性。在 CGC 重构中，`GunProperties` 的功能被拆分到 `AttachmentModifierType` 枚举和 `I*Modifier` 接口的泛型参数 `<K, V>` （编译期确定类型）。
 
 ---
 
@@ -34,7 +36,7 @@ graph TB
     end
 
     subgraph "ShooterGunModifierManager"
-        BASE["从 GunData 获取 base 值"]
+        BASE["switch-case 对每个枚举赋 base 值:<br/>ADS → gunData.getAimTime()<br/>RPM → gunData.getRpm()<br/>..."]
     end
 
     GD["GunData"] -->|"管理器直接读"| BASE
@@ -44,9 +46,7 @@ graph TB
 
 **优点**：接口干净——`getModifier` 只依赖 AttachmentData，`eval` 是纯计算。
 
-**问题**：modifier 不再知道 GunData，那么 base 值从哪里来？需要管理器为每个 modifier 类型单独硬编码 "从 GunData 的哪个字段获取 base 值"。这要么通过 switch-case（丢失类型安全），要么通过另一个接口。
-
-这个方案实际上是**最终方案的前半部分**——但它缺少 base 值获取的类型安全保证。
+**否决原因**：管理器需要 switch-case 硬编码 "每个 modifier → GunData 的哪个字段"。编译器无法检查 "ADS modifier 对应 `gunData.getAimTime()`" 是否正确——丢失了类型安全。
 
 ---
 
@@ -55,9 +55,9 @@ graph TB
 ```mermaid
 graph TB
     subgraph "IGunModifier&lt;T, K, V&gt;"
-        GM["getModifier(T) → K"]
+        GM_B["getModifier(T) → K"]
         GB["getBase(IGun, ItemStack, GunData) → V"]
-        EV["eval(Collection&lt;K&gt;, V base) → V"]
+        EV_B["eval(Collection&lt;K&gt;, V base) → V"]
     end
 
     subgraph "IAttachmentModifier&lt;K, V&gt;"
@@ -65,49 +65,16 @@ graph TB
     end
 
     GD["GunData"] -->|"getBase"| GB
-    AD["AttachmentData"] -->|"getModifier"| GM
+    AD["AttachmentData"] -->|"getModifier"| GM_B
 ```
 
-**思路**：`IGunModifier` 同时承担三个职责（getModifier、getBase、eval），`IAttachmentModifier` 直接继承 `IGunModifier<AttachmentData, K, V>`。
+**思路**：`IGunModifier` 同时承担三个职责，`IAttachmentModifier` 直接继承。
 
-**问题**：`getModifier`（从 AttachmentData 读取）和 `getBase`（从 GunData 读取）在语义上服务于不同场景，却耦合在同一个接口里。且 "IItemModifier 限制在 Item 没有必要"——如果以后 Ammo 也有 modifier，`getBase` 涉及到的是 GunData（枪的属性），但 modifier 来源是 Ammo 物品数据，继承 `IGunModifier<AmmoData, K, V>` 显得很奇怪。
+**否决原因**：`getModifier`（从 AttachmentData 取）和 `getBase`（从 GunData 取）语义上服务于不同场景却耦合在同一个接口中。具体类仍然要写所有三个方法，没有实现职责分离。
 
 ---
 
-## 方案 C：IItemModifier 改为 IGunModificationModifier，明确子接口服务的对象
-
-```mermaid
-graph TB
-    subgraph "IGunModificationModifier&lt;T, K, V&gt;"
-        GM["getModifier(T) → K"]
-        EV["eval(Collection&lt;K&gt;, V base) → V"]
-    end
-
-    subgraph "IAttachmentModifier&lt;K, V&gt;"
-        NOTE["extends IGunModificationModifier&lt;AttachmentData, K, V&gt;"]
-    end
-
-    subgraph "IAmmoModifier&lt;K, V&gt;"
-        NOTE2["extends IGunModificationModifier&lt;AmmoData, K, V&gt;"]
-    end
-
-    subgraph "ShooterGunModifierCache"
-        SWITCH["switch-case 对每个枚举赋初值"]
-    end
-
-    GD["GunData"] -->|"switch-case 读"| SWITCH
-```
-
-**思路**：重命名 `IItemModifier` → `IGunModificationModifier` 表明服务于 Gun 的 modification。base 值获取在 `ShooterGunModifierCache` 里通过 switch-case 实现。
-
-**问题**：
-- "AttachmentModifierType 构造函数里指定服务的 GunModification，但 GunModification 不能是枚举"——如果 GunModification 不是枚举，无法保证类型安全
-- switch-case 丢失了强类型对应关系——编译器无法检查 "ADS modifier 对应 gunData.getAimTime()" 是否正确
-- "把初值处理在 ShooterGunModifierCache 里做 switch case 实现原解耦目标"——解耦了，但丢失了类型安全
-
----
-
-## 方案 D：枚举指向具体类，具体类之间做泛型匹配
+## 方案 C：枚举指向具体类，具体类之间做泛型匹配
 
 ```mermaid
 graph TB
@@ -117,100 +84,124 @@ graph TB
     end
 
     subgraph "IAttachmentModifier&lt;K, V&gt; extends IGunModifier&lt;AttachmentData, K, V&gt;"
-        GM["getModifier(AttachmentData) → K"]
-        GB["getBase(IGun, ItemStack, GunData) → V"]
-        EV["eval(Collection&lt;K&gt;, V base) → V"]
-    end
-
-    ADS --> GM
-    ADS --> GB
-    ADS --> EV
-```
-
-**思路**：枚举持有具体类实例，具体类的泛型参数 `<K, V>` 在编译期确定——`AdsModifier` 是 `IAttachmentModifier<_SimpleModifierData, Float>`，`FireAspectModifier` 是 `IAttachmentModifier<_FireAspectModifierData, Boolean>`（举例）。`getBase` 从 GunData 获取初值的逻辑在具体类中实现，保证类型安全。
-
-**问题**："想把 initCache 分离掉，但是会丢掉强类型"——`getBase` 放在 `IGunModifier` 接口里意味着每个实现此接口的类都需要知道 GunData，但 `IAttachmentModifier` 的核心语义是 "从 AttachmentData 获取修改值并计算"，`getBase` 的职责其实不属于它。
-
----
-
-## 最终方案：IAttachmentModifier 额外 implements IGunModifier，作为全能易用门面
-
-```mermaid
-graph TB
-    subgraph "IItemModifier&lt;T, K, V&gt;（无状态修饰工具）"
-        GM["getModifier(T pojo) → K"]
-        EV["eval(Collection&lt;K&gt;, V base) → V"]
-    end
-
-    subgraph "IGunModifier&lt;T, K, V&gt;（枪械修饰工具）"
-        GB["getBase(IGun, ItemStack, GunData) → V"]
-    end
-
-    subgraph "IAttachmentModifier&lt;K, V&gt;（配件修饰工具 = 全能门面）"
-        ALL["extends IItemModifier&lt;AttachmentData, K, V&gt;<br/>extends IGunModifier&lt;AttachmentData, K, V&gt;"]
-    end
-
-    subgraph "AttachmentModifier&lt;K, V&gt;（抽象基类）"
-        ES["evalSimpleModifierData(...) 通用计算"]
+        ALL["三个方法都在一个接口上"]
     end
 
     subgraph "AdsModifier"
-        AD_GM["getModifier → pojo.getAdsModifier()"]
-        AD_GB["getBase → gunData.getAimTime()"]
-        AD_EV["eval → evalSimpleModifierData(modifiers, base)"]
+        AM_GM["getModifier → pojo.getAdsModifier()"]
+        AM_GB["getBase → gunData.getAimTime()"]
+        AM_EV["eval → evalSimpleModifierData"]
     end
 
-    IItemModifier --> IGunModifier
-    IGunModifier --> IAttachmentModifier
-    IAttachmentModifier -.->|"不直接实现"| AttachmentModifier
-    AttachmentModifier --> AdsModifier
+    ADS --> AM_GM
+    ADS --> AM_GB
+    ADS --> AM_EV
 ```
 
-### 接口层次
+**思路**：枚举持有具体类实例。`AdsModifier` 自己实现 `getBase`。
+
+**否决原因**：接口是拆分了（`IItemModifier` + `IGunModifier`），但**具体实现类还是承担了所有职责**——`getBase` 的代码仍然写在 `AdsModifier` 里。分离只发生在接口声明层，没有发生在实现层。
+
+---
+
+## 方案 D：ShooterGunModifierCache 内 switch-case 赋初值
+
+**思路**：base 值获取全在 `ShooterGunModifierCache` 里用 switch-case 实现，modifier 接口只保留 `getModifier` + `eval`。
+
+**否决原因**：switch-case 丢失了强类型对应——"ADS modifier 对应 `gunData.getAimTime()`" 的正确性完全由程序员保证，编译器无法参与。这个方案的解耦力度最大，但类型安全损失也最大。
+
+---
+
+## 最终方案：胖接口拆分 + 接口 default 代理
+
+### 设计来源：已有重构手法
+
+CGC 项目中已有三处使用相同的胖接口拆分手法：
+
+| 已有重构 | 拆分方式 |
+|---|---|
+| **IGunOperator → ILivingShooter** | TaCZ 的 `IGunOperator` 拆成 `IGunOperator`、`IShooterState`、`ISynGunState`、`IShooterModifierCacheHolder`。`ILivingShooter extends` 所有子接口，对外不变 |
+| **IGun → IGunDataAccess 族** | TaCZ 的 `IGun` 拆成 `IGunStateAccess`、`IGunAmmoDataAccess`、`IGunAttachmentDataAccess` 等。`GunDataAccessor` 用 `default` 方法统一实现，用注释分隔各接口 |
+| **Gun/Projectile Manager 组** | `GunManager` 对外提供 `IGunManager` 门面，内部由四个子 Manager 实现，属于内部实现分离 |
+
+Modifier 体系的拆分方式与此一脉相承：
+- `readJson` → 移到 `ResourcePojo.fromJsonReader`
+- `initCache` → 变成 `IGunModifier.getBase`（独立接口）
+- UI → 客户端单独处理
+- `eval` + 新增 `getModifier` → 组成 `IItemModifier` 核心
+
+### 菱形继承链与泛型匹配
+
+```mermaid
+graph LR
+    IIM["IItemModifier&lt;T, K, V&gt;<br/>getModifier + eval"] --> IGM["IGunModifier&lt;T, K, V&gt;<br/>+ getBase"]
+    IGM --> IAds["IAdsModifier&lt;T&gt;<br/>K=_SimpleModifierData<br/>V=Float<br/>default getBase → gunData.getAimTime()"]
+    IAds --> IAM
+    IGM --> IAM["IAttachmentModifier&lt;K, V&gt;<br/>全能门面<br/>T=AttachmentData"]
+    IIM --> IAM
+    IAM -.->|"implements"| AM["AttachmentModifier&lt;K, V&gt;<br/>evalSimpleModifierData"]
+    IAds -.->|"implements<br/>provides getBase"| AdM
+    AM --> AdM["AdsModifier<br/>extends AttachmentModifier<br/>&lt;_SimpleModifierData, Float&gt;<br/>implements IAdsModifier<br/>&lt;AttachmentData&gt;<br/><br/>getModifier: pojo.getAdsModifier()<br/>eval: evalSimpleModifierData<br/>getBase: 由 IAdsModifier default 提供"]
+
+    style IAds fill:#fff9c4
+    style AdM fill:#e1f5fe
+```
+
+**三条菱形路径**：
 
 ```
-IItemModifier<T, K, V>              无状态修饰工具基接口
-    ├── getModifier(T pojo) → K      从数据源获取修改值
-    └── eval(Collection<K>, V base) → V  纯计算
-          ↑
-IGunModifier<T, K, V>                枪械修饰（增加 GunData 初值获取）
-    └── getBase(IGun, ItemStack, GunData) → V
-          ↑
-IAttachmentModifier<K, V>            配件修饰（T 绑定 AttachmentData）
-    (extends IItemModifier<AttachmentData, K, V> 和
-     IGunModifier<AttachmentData, K, V>)
-          ⬆ (implements)
-AttachmentModifier<K, V>            抽象基类（提供 evalSimpleModifierData 等通用实现）
-          ↑
-AdsModifier (K=_SimpleModifierData, V=Float)
+路径1: AdsModifier → AttachmentModifier → IAttachmentModifier → IItemModifier
+路径2: AdsModifier → AttachmentModifier → IAttachmentModifier → IGunModifier → IItemModifier
+路径3: AdsModifier → IAdsModifier → IGunModifier → IItemModifier
 ```
 
-### 设计决策
+**路径3是新增的**——`AdsModifier implements IAdsModifier<AttachmentData>`。`IAdsModifier` 通过 `default getBase` 提供了 base 值获取的实现，`AdsModifier` 类中完全不写 `getBase`。`IAdsModifier` 虚线箭头的 `implements` 关系标注了 `provides getBase`，明确这个职责的来源。
 
-**"把非 attachment 职责移到别的接口，IAttachmentModifier 作为全能易用门面"**
+### 接口 clash 强制泛型匹配
 
-- `IItemModifier` → 基接口，只有 `getModifier` + `eval`，不指定数据源类型
-- `IGunModifier` → 增加 `getBase`（从 GunData 获取初值），独立于 `IItemModifier`
-- `IAttachmentModifier` → 同时继承两个接口，作为 "全能易用门面"——调用者拿到一个 `IAttachmentModifier` 实例就能完成全部操作
-- 但 `IAttachmentModifier` 内部实现可以**分离**——例如对于简单数值型 modifier，`getModifier` 从 AttachmentData 取值、`getBase` 从 GunData 取值、`eval` 用通用的 `evalSimpleModifierData`，三者各自独立实现
+```
+IAdsModifier<T> extends IGunModifier<T, _SimpleModifierData, Float>
+    → K = _SimpleModifierData（固定）
+    → V = Float（固定）
 
-**"内部实现可以分离"** 的含义：
-- `getModifier` 和 `getBase` 虽然都在 `IAttachmentModifier` 上，但它们的**实现来源不同**——一个是 `IItemModifier`，一个是 `IGunModifier`
-- 同一个具体类（如 `AdsModifier`）实现了两个接口的所有方法，这保证了**编译期的类型安全**：`AdsModifier` 的 `K=_SimpleModifierData` 约束了 `getModifier` 的返回值类型和 `eval` 的输入类型，`V=Float` 约束了 `getBase` 和 `eval` 的值类型
+AdsModifier extends AttachmentModifier<_SimpleModifierData, Float>
+            implements IAdsModifier<AttachmentData>
+    → T = AttachmentData（固定）
+    → K = _SimpleModifierData（两条路径都必须满足）
+    → V = Float（两条路径都必须满足）
+```
 
-### 为什么不把 IItemModifier 去掉？
+如果 `IAdsModifier` 的 `V` 是 `Integer` 而 `AttachmentModifier` 的 `V` 是 `Float`，Java 编译器直接拒绝。"接口 clash 强制类型匹配"——编译期保证所有路径上泛型一致。
 
-IItemModifier 作为最底层的 "无状态修饰工具" 接口保留。它不绑定 Item、不绑定 GunData，是最纯粹的抽象。未来如果出现不是 Item 也不是 Gun 的 modifier 场景（虽然现在没有），可以复用此接口。
+### "内部实现分离"的含义
+
+`IAttachmentModifier` 是对外的全能门面（调用者拿到它就够了）。但内部实现被分离到不同层级：
+
+- `IAdsModifier.default getBase` → base 值从 GunData 取（接口层）
+- `AttachmentModifier.evalSimpleModifierData` → 通用数值计算（抽象基类层）
+- `AdsModifier.getModifier` → 从 AttachmentData 取值（具体类层）
+
+具体类里没有 base 值获取的代码——这个职责通过接口 default 方法**代理**给了 `IAdsModifier`。
+
+---
+
+## 与 TaCZ 的逐项对比
+
+| 维度 | TaCZ | CGC 最终方案 |
+|---|---|---|
+| 接口数 | 1 个胖接口（4 方法） | 4 层接口（每层 1-2 方法） |
+| base 值获取 | 具体类实现 `initCache(gunItem, gunData)` | `I*Modifier` 接口 `default getBase`（一次定义，所有实现类继承） |
+| 类型安全 | 字符串 ID → 运行时 cast | 泛型 `<K,V>` → 编译期检查 + 接口 clash 强制匹配 |
+| 具体类职责 | 4 方法全部自己写 | 只写 `getModifier` + `eval`（`getBase` 由接口 default 代理） |
+| 新增 modifier | 实现完整接口 | 继承 `AttachmentModifier<K,V>` + 实现对应 `I*Modifier<AttachmentData>` |
 
 ### GunProperties 的对应
 
-TaCZ 的 `GunProperties` 类（`GunProperty<T>` record + 常量列表）在 CGC 中没有直接对应。它的功能被拆分到：
+TaCZ 的 `GunProperties`（`GunProperty<T>` record + 常量列表）在 CGC 中被拆分：
 
-| TaCZ GunProperties 职责 | CGC 对应 |
+| TaCZ | CGC |
 |---|---|
-| 属性标识（`name` 字段） | `AttachmentModifierType.typeName` |
-| 缓存值类型（`type` 字段） | `IAttachmentModifier<K, V>` 的 `V` 泛型参数（编译期确定） |
-| `@CacheModifiableByScript` 标记 | `AttachmentModifierType` 枚举 + `ShooterGunModifierManager` 中的逻辑 |
-| `RuntimeOnly` 属性（`String` 常量） | `GunData` 本身的 getter / 或运行时脚本接口 |
-
-这种映射使类型信息从字符串 record 移到了 Java 泛型，获得编译期类型安全。
+| 属性标识 `name` | `AttachmentModifierType.typeName` |
+| 类型 `type` | `I*Modifier` 的 `V` 泛型参数 |
+| `@CacheModifiableByScript` | `AttachmentModifierType` 枚举 + `ShooterGunModifierManager` 逻辑 |
+| `RuntimeOnly` | `GunData` getter / 运行时脚本接口 |

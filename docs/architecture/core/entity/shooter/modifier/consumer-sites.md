@@ -3,6 +3,22 @@
 
 > 所有从 `ShooterGunModifierCache` 读取缓存值的位置，当前实现状态，以及每个消费方的 TODO 项。
 
+## 关于 DamageCalculationModifier
+
+`DamageCalculationModifier` 是目前唯一未匹配 `I*Modifier` 接口的 modifier。原因如下：
+
+**TaCZ 中的 DamageModifier** 的缓存类型 `K` 是 `LinkedList<DistanceDamagePair>`——伤害不是一个简单浮点，而是一个**距离→伤害的衰减曲线**。枪械数据中 `BulletSkillData.damageCalculation` 是一个 `List<_DistanceDamageData>`（每个条目 = 距离 + 伤害值），配件修改器对这个列表中每个条目的伤害值分别应用修改。
+
+**当前问题**：
+- CGC 数据层已有 `_DistanceDamageData`（distance + damage 两个 float）
+- `_BulletSkillData.getDamageCalculation()` 返回 `List<_DistanceDamageData>`
+- 但当前 `AttachmentModifierType.DAMAGE_CALCULATION` 的数据类型是 `_SimpleModifierData`（单个数值），不匹配 TaCZ 的 `LinkedList<DistanceDamagePair>` 语义
+- 现有的 `_SimpleModifierData` 只表达 "对一个浮点值的修改"（sharedBaseAdd/sharedPercentAdd/uniqueMultiplier），无法表达 "距离衰减曲线" 这个数据结构
+
+**已解决**：`DamageCalculationModifier` 的 `V` 改为 `List<_DistanceDamageData>`。`IDamageCalculationModifier.getBase` 从 `_BulletSkillData.getDamageCalculation()` **拷贝**每个条目并应用 `FireModeAdjust` + `SyncConfig` 乘子。`eval` 对每个距离条目独立应用 `_SimpleModifierData` 修改并返回新列表。getBase 始终构建全新列表（不污染原始 POJO 数据）。
+
+---
+
 ## 消费方总览
 
 ```mermaid

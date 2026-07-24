@@ -7,19 +7,15 @@
 
 package xiao.customgun.core.item.attachment.modifier;
 
-import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import xiao.customgun.core.api.item.IGun;
-import xiao.customgun.core.config.SyncConfig;
+import xiao.customgun.core.api.item.gun.modifier.IHeadshotMultiplierModifier;
 import xiao.customgun.core.resource.data.data.AttachmentData;
-import xiao.customgun.core.resource.data.data.GunData;
 import xiao.customgun.core.resource.data.data.attachment._SimpleModifierData;
-import xiao.customgun.core.resource.data.data.gun._BulletData;
-import xiao.customgun.core.resource.data.data.gun._FireModeAdjustData;
 
 import java.util.Collection;
 
-public final class HeadshotMultiplierModifier extends AttachmentModifier<_SimpleModifierData, Float> {
+public final class HeadshotMultiplierModifier extends AttachmentModifier<_SimpleModifierData, Float>
+        implements IHeadshotMultiplierModifier<AttachmentData> {
     public static final HeadshotMultiplierModifier INSTANCE = new HeadshotMultiplierModifier();
 
     // --------IAttachmentModifier--------
@@ -32,18 +28,5 @@ public final class HeadshotMultiplierModifier extends AttachmentModifier<_Simple
     @Override
     public Float eval(Collection<_SimpleModifierData> modifiers, Float base) {
         return evalSimpleModifierData(modifiers, base);
-    }
-
-    // --------IGunModifier--------
-
-    @Override
-    public Float getBase(@NotNull IGun iGun, @NotNull ItemStack gunItem, @NotNull GunData gunData) {
-        _BulletData bulletData = gunData.getBulletData();
-        _FireModeAdjustData fireModeAdjust = gunData.getFireModeAdjustData().get(iGun.getFireModeType(gunItem));
-        float base = 0;
-        if (fireModeAdjust != null) base += fireModeAdjust.getHeadshotMultiplier();
-        // TODO ExtraDamage
-        base *= SyncConfig.HEAD_SHOT_BASE_MULTIPLIER.get();
-        return base;
     }
 }

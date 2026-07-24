@@ -7,16 +7,15 @@
 
 package xiao.customgun.core.item.attachment.modifier;
 
-import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import xiao.customgun.core.api.item.IGun;
+import xiao.customgun.core.api.item.gun.modifier.IRpmModifier;
 import xiao.customgun.core.resource.data.data.AttachmentData;
-import xiao.customgun.core.resource.data.data.GunData;
 import xiao.customgun.core.resource.data.data.attachment._SimpleModifierData;
 
 import java.util.Collection;
 
-public final class RpmModifier extends AttachmentModifier<_SimpleModifierData, Integer> {
+public final class RpmModifier extends AttachmentModifier<_SimpleModifierData, Integer>
+        implements IRpmModifier<AttachmentData> {
     public static final RpmModifier INSTANCE = new RpmModifier();
 
     // --------IAttachmentModifier--------
@@ -30,16 +29,5 @@ public final class RpmModifier extends AttachmentModifier<_SimpleModifierData, I
     public Integer eval(Collection<_SimpleModifierData> modifiers, Integer base) {
         Float result = evalSimpleModifierData(modifiers, base.floatValue());
         return result != null ? Math.round(result) : base;
-    }
-
-    // --------IGunModifier--------
-
-    @Override
-    public Integer getBase(@NotNull IGun iGun, @NotNull ItemStack gunItem, @NotNull GunData gunData) {
-        int rpm = gunData.getRpm();
-        var fireModeAdjust = gunData.getFireModeAdjustData().get(iGun.getFireModeType(gunItem));
-        if (fireModeAdjust != null) rpm += fireModeAdjust.getRpm();
-        if (rpm <= 0) rpm = 300;
-        return rpm;
     }
 }

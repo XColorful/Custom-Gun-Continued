@@ -7,16 +7,15 @@
 
 package xiao.customgun.core.item.attachment.modifier;
 
-import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import xiao.customgun.core.api.item.IGun;
+import xiao.customgun.core.api.item.gun.modifier.IEffectiveRangeModifier;
 import xiao.customgun.core.resource.data.data.AttachmentData;
-import xiao.customgun.core.resource.data.data.GunData;
 import xiao.customgun.core.resource.data.data.attachment._SimpleModifierData;
 
 import java.util.Collection;
 
-public final class EffectiveRangeModifier extends AttachmentModifier<_SimpleModifierData, Float> {
+public final class EffectiveRangeModifier extends AttachmentModifier<_SimpleModifierData, Float>
+        implements IEffectiveRangeModifier<AttachmentData> {
     public static final EffectiveRangeModifier INSTANCE = new EffectiveRangeModifier();
 
     // --------IAttachmentModifier--------
@@ -29,13 +28,5 @@ public final class EffectiveRangeModifier extends AttachmentModifier<_SimpleModi
     @Override
     public Float eval(Collection<_SimpleModifierData> modifiers, Float base) {
         return evalSimpleModifierData(modifiers, base);
-    }
-
-    // --------IGunModifier--------
-
-    @Override
-    public Float getBase(@NotNull IGun iGun, @NotNull ItemStack gunItem, @NotNull GunData gunData) {
-        // TODO ExtraDamage 第一段距离
-        return (float) Integer.MAX_VALUE;
     }
 }

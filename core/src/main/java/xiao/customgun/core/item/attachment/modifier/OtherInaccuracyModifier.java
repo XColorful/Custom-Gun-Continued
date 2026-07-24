@@ -7,17 +7,15 @@
 
 package xiao.customgun.core.item.attachment.modifier;
 
-import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import xiao.customgun.core.api.item.IGun;
+import xiao.customgun.core.api.item.gun.modifier.IOtherInaccuracyModifier;
 import xiao.customgun.core.resource.data.data.AttachmentData;
-import xiao.customgun.core.resource.data.data.GunData;
 import xiao.customgun.core.resource.data.data.attachment._SimpleModifierData;
-import xiao.customgun.core.resource.data.data.gun._FireModeAdjustData;
 
 import java.util.Collection;
 
-public final class OtherInaccuracyModifier extends AttachmentModifier<_SimpleModifierData, Float> {
+public final class OtherInaccuracyModifier extends AttachmentModifier<_SimpleModifierData, Float>
+        implements IOtherInaccuracyModifier<AttachmentData> {
     public static final OtherInaccuracyModifier INSTANCE = new OtherInaccuracyModifier();
 
     // --------IAttachmentModifier--------
@@ -30,18 +28,5 @@ public final class OtherInaccuracyModifier extends AttachmentModifier<_SimpleMod
     @Override
     public Float eval(Collection<_SimpleModifierData> modifiers, Float base) {
         return evalSimpleModifierData(modifiers, base);
-    }
-
-    // --------IGunModifier--------
-
-    @Override
-    public Float getBase(@NotNull IGun iGun, @NotNull ItemStack gunItem, @NotNull GunData gunData) {
-        var inaccuracy = gunData.getInaccuracyData();
-        if (inaccuracy == null) return 5.0F;
-        // OTHER_INACCURACY covers STAND + MOVE: use stand as the base reference
-        float base = inaccuracy.getStand();
-        _FireModeAdjustData fireModeAdjust = gunData.getFireModeAdjustData().get(iGun.getFireModeType(gunItem));
-        if (fireModeAdjust != null) base += fireModeAdjust.getOtherInaccuracy();
-        return Math.max(base, 0);
     }
 }

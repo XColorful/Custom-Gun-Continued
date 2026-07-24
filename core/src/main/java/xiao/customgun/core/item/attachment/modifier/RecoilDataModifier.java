@@ -7,16 +7,15 @@
 
 package xiao.customgun.core.item.attachment.modifier;
 
-import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import xiao.customgun.core.api.item.IGun;
+import xiao.customgun.core.api.item.gun.modifier.IRecoilDataModifier;
 import xiao.customgun.core.resource.data.data.AttachmentData;
-import xiao.customgun.core.resource.data.data.GunData;
 import xiao.customgun.core.resource.data.data.attachment._RecoilDataModifierData;
 
 import java.util.Collection;
 
-public final class RecoilDataModifier extends AttachmentModifier<_RecoilDataModifierData, _RecoilDataModifierData> {
+public final class RecoilDataModifier extends AttachmentModifier<_RecoilDataModifierData, _RecoilDataModifierData>
+        implements IRecoilDataModifier<AttachmentData> {
     public static final RecoilDataModifier INSTANCE = new RecoilDataModifier();
 
     // --------IAttachmentModifier--------
@@ -30,13 +29,5 @@ public final class RecoilDataModifier extends AttachmentModifier<_RecoilDataModi
     public _RecoilDataModifierData eval(Collection<_RecoilDataModifierData> modifiers, _RecoilDataModifierData base) {
         // TODO: eval 不能复用父类函数 — Pitch/Yaw 各有独立的 _SimpleModifierData，需要分别计算
         return base;
-    }
-
-    // --------IGunModifier--------
-
-    @Override
-    public _RecoilDataModifierData getBase(@NotNull IGun iGun, @NotNull ItemStack gunItem, @NotNull GunData gunData) {
-        // TODO: 从 gunData.getRecoilData() 构建 base _RecoilDataModifierData
-        return new _RecoilDataModifierData();
     }
 }

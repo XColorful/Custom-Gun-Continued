@@ -7,19 +7,18 @@
 
 package xiao.customgun.core.item.attachment.modifier;
 
-import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import xiao.customgun.core.api.item.IGun;
-import xiao.customgun.core.config.SyncConfig;
+import xiao.customgun.core.api.item.gun.modifier.IDamageCalculationModifier;
 import xiao.customgun.core.resource.data.data.AttachmentData;
-import xiao.customgun.core.resource.data.data.GunData;
 import xiao.customgun.core.resource.data.data.attachment._SimpleModifierData;
-import xiao.customgun.core.resource.data.data.gun._BulletData;
-import xiao.customgun.core.resource.data.data.gun._FireModeAdjustData;
+import xiao.customgun.core.resource.data.data.gun.bullet.damage._DistanceDamageData;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
-public final class DamageCalculationModifier extends AttachmentModifier<_SimpleModifierData, Float> {
+public final class DamageCalculationModifier extends AttachmentModifier<_SimpleModifierData, List<_DistanceDamageData>>
+        implements IDamageCalculationModifier<AttachmentData> {
     public static final DamageCalculationModifier INSTANCE = new DamageCalculationModifier();
 
     // --------IAttachmentModifier--------
@@ -30,20 +29,16 @@ public final class DamageCalculationModifier extends AttachmentModifier<_SimpleM
     }
 
     @Override
-    public Float eval(Collection<_SimpleModifierData> modifiers, Float base) {
-        return evalSimpleModifierData(modifiers, base);
-    }
-
-    // --------IGunModifier--------
-
-    @Override
-    public Float getBase(@NotNull IGun iGun, @NotNull ItemStack gunItem, @NotNull GunData gunData) {
-        _BulletData bulletData = gunData.getBulletData();
-        _FireModeAdjustData fireModeAdjust = gunData.getFireModeAdjustData().get(iGun.getFireModeType(gunItem));
-        float base = 0;
-        if (fireModeAdjust != null) base += fireModeAdjust.getDamage();
-        // TODO ExtraDamage
-        base *= SyncConfig.DAMAGE_BASE_MULTIPLIER.get();
-        return base;
+    public List<_DistanceDamageData> eval(Collection<_SimpleModifierData> modifiers, List<_DistanceDamageData> base) {
+        // Clone the list so we don't mutate the original base
+        List<_DistanceDamageData> result = new ArrayList<>(base.size());
+        for (_DistanceDamageData entry : base) {
+            _DistanceDamageData copy = new _DistanceDamageData();
+            copy.setDistance(entry.getDistance());
+            Float modified = evalSimpleModifierData(modifiers, entry.getDamage());
+            copy.setDamage(modified);
+            result.add(copy);
+        }
+        return result;
     }
 }

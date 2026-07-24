@@ -7,16 +7,15 @@
 
 package xiao.customgun.core.item.attachment.modifier;
 
-import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import xiao.customgun.core.api.item.IGun;
+import xiao.customgun.core.api.item.gun.modifier.IAdsModifier;
 import xiao.customgun.core.resource.data.data.AttachmentData;
-import xiao.customgun.core.resource.data.data.GunData;
 import xiao.customgun.core.resource.data.data.attachment._SimpleModifierData;
 
 import java.util.Collection;
 
-public final class AdsModifier extends AttachmentModifier<_SimpleModifierData, Float> {
+public final class AdsModifier extends AttachmentModifier<_SimpleModifierData, Float>
+        implements IAdsModifier<AttachmentData> {
     public static final AdsModifier INSTANCE = new AdsModifier();
 
     // --------IAttachmentModifier--------
@@ -29,12 +28,5 @@ public final class AdsModifier extends AttachmentModifier<_SimpleModifierData, F
     @Override
     public Float eval(Collection<_SimpleModifierData> modifiers, Float base) {
         return evalSimpleModifierData(modifiers, base);
-    }
-
-    // --------IGunModifier--------
-
-    @Override
-    public Float getBase(@NotNull IGun iGun, @NotNull ItemStack gunItem, @NotNull GunData gunData) {
-        return gunData.getAimTime();
     }
 }

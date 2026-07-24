@@ -83,7 +83,7 @@ public IAttachmentModifier<?, ?> getModifier() {
 | 枚举常量 | typeName | 数据来源 | 迁移状态 |
 |---|---|---|---|
 | `ADS` | `"ads"` | `AdsModifier.INSTANCE` | **已迁移** |
-| `DAMAGE_CALCULATION` | (tag) | `_SimpleModifierData` + getter | 待迁移 |
+| `DAMAGE_CALCULATION` | (tag) | `_SimpleModifierData` | `getDamageCalculationModifier` | **已迁移**（`DamageCalculationModifier` + `IDamageCalculationModifier`） |
 | `HEADSHOT_MULTIPLIER` | (tag) | `_SimpleModifierData` + getter | 待迁移 |
 | `ARMOR_IGNORE_PERCENT` | (tag) | `_SimpleModifierData` + getter | 待迁移 |
 | `BULLET_SPEED` | (tag) | `_SimpleModifierData` + getter | 待迁移 |

@@ -332,12 +332,9 @@ Notation:
 |`SyncBaseTimestamp`||
 |`TravelToDimensionEvent`||
 
-|com.tacz.guns.event|xiao.customgun.core.item|
-|---|---|
-|`ChangeGunPropertyEvent`.internalOnAttachmentPropertyEvent|`ShooterGunModifierManager`.updateShooterGunModifierCache|
-
 |com.tacz.guns.event|xiao.customgun.core.entity|
 |---|---|
+|`ChangeGunPropertyEvent`.internalOnAttachmentPropertyEvent|shooter.modifier.`ShooterGunModifierCache`.initAttachmentModifiers|
 |`KnockbackChange`.onKnockback|victim.`BulletVictimKnockback`.onLivingKnockback|
 
 |com.tacz.guns.event|xiao.customgun.core.entity|

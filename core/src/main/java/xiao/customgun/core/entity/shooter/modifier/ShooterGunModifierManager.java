@@ -20,7 +20,6 @@ import xiao.customgun.core.api.event.shooter.ShooterGunModifierCacheEvent;
 import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.api.item.gun.IGunGetter;
 import xiao.customgun.core.api.resource.ResourceApi;
-import xiao.customgun.core.resource.data.data.GunData;
 import xiao.customgun.core.resource.instance.data.GunIndexInstance;
 
 public class ShooterGunModifierManager {
@@ -38,7 +37,7 @@ public class ShooterGunModifierManager {
 
         // 更新缓存逻辑 (重新计算缓存值)
         ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(livingShooter);
-        ShooterGunModifierCache gunPropertyCache = updateShooterGunPropertyCache(gunIndexInstance, iGun, gunItem);
+        ShooterGunModifierCache gunPropertyCache = ShooterGunModifierCache.of(gunIndexInstance, iGun, gunItem);
 
         CustomGun.getEventPoster().postCustomEvent(new ShooterGunModifierCacheEvent(CustomGun.getSideExecutor().getLogicalSide(),
                 iLivingShooter, livingShooter,
@@ -47,20 +46,10 @@ public class ShooterGunModifierManager {
 
         {
             ShooterProperty shooterProperty = iLivingShooter.cgc$getShooterProperty();
-            // TODO GunProperties移植 (待定, 目前迁移映射里为 xiao.customgun.core.api.projectile.IProjectileRuntime.StateCache.*)
+            // TODO 是否可被脚本修改，写到IGunModifier default空实现，并让IGunModifier同包子接口提供default重载
         }
 
         // 写入缓存
         iLivingShooter.cgc$updateGunModifierCache(gunPropertyCache);
-    }
-    /**
-     * 计算缓存值
-     */
-    private static ShooterGunModifierCache updateShooterGunPropertyCache(@NotNull GunIndexInstance gunIndexInstance,
-                                                                         @NotNull IGun iGun, @NotNull ItemStack gunItem) {
-        ShooterGunModifierCache gunPropertyCache = new ShooterGunModifierCache();
-        GunData gunData = gunIndexInstance.getGunData();
-        // TODO 原 ChangeGunPropertyEvent
-        return gunPropertyCache;
     }
 }

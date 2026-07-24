@@ -7,19 +7,20 @@
 
 package xiao.customgun.core.api.item.attachment.modifier;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.item.gun.modifier.GunModifierType;
-import xiao.customgun.core.api.item.gun.modifier.IGunModifierType;
+import xiao.customgun.core.api.item.gun.modifier.IGunModifier;
+import xiao.customgun.core.api.item.gun.modifier.IGunModifierHolder;
 import xiao.customgun.core.api.resource.ResourceTag;
 import xiao.customgun.core.item.attachment.modifier.AdsModifier;
 import xiao.customgun.core.item.attachment.modifier.*;
-import xiao.customgun.core.resource.data.data.attachment.*;
 import xiao.customgun.core.resource.data.data.gun._InaccuracyData;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public enum AttachmentModifierType implements ResourceTag.CategoryTag, IGunModifierType {
+public enum AttachmentModifierType implements ResourceTag.CategoryTag, IGunModifierHolder {
     // 瞄准速度
     ADS(GunModifierType.ADS,
             AdsModifier.INSTANCE),
@@ -88,8 +89,12 @@ public enum AttachmentModifierType implements ResourceTag.CategoryTag, IGunModif
     }
 
     @Override
-    public GunModifierType getGunModifierType() {
+    public @NotNull  GunModifierType getGunModifierType() {
         return this.modifierType;
+    }
+    @Override
+    public @NotNull IGunModifier<?, ?, ?> getGunModifier() {
+        return this.modifier;
     }
 
     public IAttachmentModifier<?, ?> getModifier() {

@@ -1,6 +1,8 @@
 package xiao.customgun.core.api.item.gun.modifier;
 
+import org.jetbrains.annotations.NotNull;
+
 public interface IGunModifierType {
 
-    GunModifierType getGunModifierType();
+    @NotNull GunModifierType getGunModifierType();
 }

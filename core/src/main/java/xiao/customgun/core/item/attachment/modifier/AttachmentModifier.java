@@ -25,6 +25,7 @@ public abstract class AttachmentModifier<K, V> implements IAttachmentModifier<K,
             uniqueMultiplier *= modifier.getUniqueMultiplier();
         }
         float value = (base + sharedBaseAdd) * (1 + sharedPercentAdd) * uniqueMultiplier;
+        // TODO 这个通用的部分可以考虑提到IGunModifier级别，做成接受单个string处理，然后此处仍保持遍历
         for (_SimpleModifierData modifier : modifiers) {
             String scriptFunction = modifier.getScriptFunction();
             if (scriptFunction == null || scriptFunction.isEmpty()) continue;

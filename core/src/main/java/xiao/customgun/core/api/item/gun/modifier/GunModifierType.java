@@ -7,6 +7,7 @@
 
 package xiao.customgun.core.api.item.gun.modifier;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.resource.ResourceTag;
 import xiao.customgun.core.resource.data.data.gun._InaccuracyData;
@@ -59,7 +60,7 @@ public enum GunModifierType implements ResourceTag.CategoryTag, IGunModifierType
     }
 
     @Override
-    public GunModifierType getGunModifierType() {
+    public @NotNull GunModifierType getGunModifierType() {
         return this;
     }
 

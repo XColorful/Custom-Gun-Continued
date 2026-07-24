@@ -106,4 +106,5 @@ graph TB
 | [IAttachmentModifier 接口](./modifier-interface.md) | 接口契约、17 个具体修改器详解 |
 | [缓存系统](./cache-system.md) | `AttachmentCacheProperty` 生命周期、计算流水线、LuaJ 集成 |
 | [管理器与事件系统](./manager-and-event.md) | `AttachmentPropertyManager` 注册/计算引擎，事件流，实体绑定 |
+| [Modifier 计算流程](./calculation-flow.md) | `GunData`、`AttachmentData`、`IAttachmentModifier` 三者间的数据流与计算过程 |
 | [消费方汇总](./consumer-sites.md) | 所有读取缓存值的调用位置和场景 |

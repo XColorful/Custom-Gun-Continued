@@ -115,7 +115,7 @@ Notation:
 
 |com.tacz.guns.api.modifier|xiao.customgun.core.api.item|
 |---|---|
-|`IAttachmentModifier`|attachment.`AttachmentModifierType`|
+|`IAttachmentModifier`|attachment.modifier.`IAttachmentModifier`|
 
 #### Resource API
 > ```java
@@ -514,13 +514,25 @@ Notation:
 |---|---|
 |modifier.`AttachmentPropertyManager`|shooter.modifier.`ShooterGunModifierManager`|
 
+|com.tacz.guns.resource|xiao.customgun.core.api.item|
+|---|---|
+|modifier.`AttachmentPropertyManager`.MODIFIERS|attachment.modifier.`AttachmentModifierType`|
+
+|com.tacz.guns.resource|xiao.customgun.core.item|
+|---|---|
+|modifier.`AttachmentPropertyManager`.eval|attachment.modifier.`AttachmentModifier`.evalSimpleModifierData|
+
+|com.tacz.guns.resource|xiao.customgun.core.util|
+|---|---|
+|modifier.`AttachmentPropertyManager`.functionEval|`ScriptUtils`.eval|
+
 |com.tacz.guns.resource|xiao.customgun.client.resource|
 |---|---|
 |network.`CommonNetworkCache`|network.`SyncDataCache`|
 
 |com.tacz.guns.resource|xiao.customgun.core.api.item|
 |---|---|
-|modifier.custom.`*`|attachment.`AttachmentModifierType`|
+|modifier.custom.`*Modifier`|attachment.`AttachmentModifierType`.modifier|
 |pojo.data.gun.`Bolt`|gun.`BoltType`|
 |pojo.data.gun.`ChargeType`|gun.`ChargeType`|
 |pojo.data.gun.`FeedType`|gun.`AmmoFeedType`|

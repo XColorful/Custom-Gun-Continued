@@ -8,78 +8,73 @@
 package xiao.customgun.core.api.item.attachment.modifier;
 
 import org.jetbrains.annotations.Nullable;
-import xiao.customgun.core.api.item.attachment.MagazineCategory;
 import xiao.customgun.core.api.resource.ResourceTag;
-import xiao.customgun.core.resource.data.data.AttachmentData;
+import xiao.customgun.core.item.attachment.modifier.AdsModifier;
+import xiao.customgun.core.item.attachment.modifier.*;
 import xiao.customgun.core.resource.data.data.attachment.*;
 import xiao.customgun.core.resource.data.data.gun._InaccuracyData;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
 
 public enum AttachmentModifierType implements ResourceTag.CategoryTag {
     // 瞄准速度
     ADS(AttachmentModifierTypeTag.ADS,
-            _SimpleModifierData.class, AttachmentData::getAdsModifier),
+            AdsModifier.INSTANCE),
 
     // 子弹属性
     DAMAGE_CALCULATION(AttachmentModifierTypeTag.DAMAGE_CALCULATION,
-            _SimpleModifierData.class, AttachmentData::getDamageCalculationModifier),
+            DamageCalculationModifier.INSTANCE),
     HEADSHOT_MULTIPLIER(AttachmentModifierTypeTag.HEADSHOT_MULTIPLIER,
-            _SimpleModifierData.class, AttachmentData::getHeadshotMultiplierModifier),
+            HeadshotMultiplierModifier.INSTANCE),
     ARMOR_IGNORE_PERCENT(AttachmentModifierTypeTag.ARMOR_IGNORE_PERCENT,
-            _SimpleModifierData.class, AttachmentData::getArmorIgnorePercentModifier),
+            ArmorIgnoreModifier.INSTANCE),
     BULLET_SPEED(AttachmentModifierTypeTag.BULLET_SPEED,
-            _SimpleModifierData.class, AttachmentData::getBulletSpeedModifier),
+            BulletSpeedModifier.INSTANCE),
     PIERCE_COUNT(AttachmentModifierTypeTag.PIERCE_COUNT,
-            _SimpleModifierData.class, AttachmentData::getPierceCountModifier),
+            PierceCountModifier.INSTANCE),
     FIRE_ASPECT(AttachmentModifierTypeTag.FIRE_ASPECT,
-            _FireAspectModifierData.class, AttachmentData::getFireAspectModifier),
+            FireAspectModifier.INSTANCE),
     KNOCKBACK_STRENGTH(AttachmentModifierTypeTag.KNOCKBACK_STRENGTH,
-            _SimpleModifierData.class, AttachmentData::getKnockbackStrengthModifier),
+            KnockbackStrengthModifier.INSTANCE),
     BULLET_EXPLOSION(AttachmentModifierTypeTag.BULLET_EXPLOSION,
-            _BulletExplosionModifierData.class, AttachmentData::getBulletExplosionModifier),
+            BulletExplosionModifier.INSTANCE),
 
     // 枪械属性
     RPM(AttachmentModifierTypeTag.RPM,
-            _SimpleModifierData.class, AttachmentData::getRpmModifier),
+            RpmModifier.INSTANCE),
     RECOIL_DATA(AttachmentModifierTypeTag.RECOIL_DATA,
-            _RecoilDataModifierData.class, AttachmentData::getRecoilDataModifier),
+            RecoilDataModifier.INSTANCE),
     EFFECTIVE_RANGE(AttachmentModifierTypeTag.EFFECTIVE_RANGE,
-            _SimpleModifierData.class, AttachmentData::getEffectiveRangeModifier),
+            EffectiveRangeModifier.INSTANCE),
     WEIGHT(AttachmentModifierTypeTag.WEIGHT,
-            _SimpleModifierData.class, AttachmentData::getWeightModifier),
+            WeightModifier.INSTANCE),
     MUZZLE(AttachmentModifierTypeTag.MUZZLE,
-            _MuzzleModifierData.class, AttachmentData::getMuzzleModifier),
+            MuzzleModifier.INSTANCE),
     /**
      * 不准确度Modifier {@link _InaccuracyData}
      */
     AIM_INACCURACY(AttachmentModifierTypeTag.AIM_INACCURACY,
-            _SimpleModifierData.class, AttachmentData::getAimInaccuracyModifier),
+            AimInaccuracyModifier.INSTANCE),
     SNEAK_INACCURACY(AttachmentModifierTypeTag.SNEAK_INACCURACY,
-            _SimpleModifierData.class, AttachmentData::getSneakInaccuracyModifier),
+            SneakInaccuracyModifier.INSTANCE),
     PRONE_INACCURACY(AttachmentModifierTypeTag.PRONE_INACCURACY,
-            _SimpleModifierData.class, AttachmentData::getProneInaccuracyModifier),
+            ProneInaccuracyModifier.INSTANCE),
     OTHER_INACCURACY(AttachmentModifierTypeTag.OTHER_INACCURACY,
-            _SimpleModifierData.class, AttachmentData::getOtherInaccuracyModifier),
+            OtherInaccuracyModifier.INSTANCE),
     // 近战
     MELEE(AttachmentModifierTypeTag.MELEE,
-            _MeleeModifierData.class, AttachmentData::getMeleeModifier),
+            MeleeModifier.INSTANCE),
 
     // 弹匣
     MAGAZINE_CATEGORY(AttachmentModifierTypeTag.MAGAZINE_CATEGORY,
-            MagazineCategory.class, AttachmentData::getMagazineCategory);
+            MagazineCategoryModifier.INSTANCE);
 
-
-    // TODO ? 构造函数参数改成接口类，接口类负责定义泛型、getter/setter、::new
     public final String typeName;
-    public final Class<?> dataType;
-    public final Function<AttachmentData, ?> getter;
-    <T> AttachmentModifierType(String name, Class<T> dataType, Function<AttachmentData, T> getter) {
+    public final IAttachmentModifier<?, ?> modifier;
+    <K, V> AttachmentModifierType(String name, IAttachmentModifier<K, V> modifier) {
         this.typeName = name;
-        this.dataType = dataType;
-        this.getter = getter;
+        this.modifier = modifier;
     }
 
     @Override public String getTagName() {
@@ -87,6 +82,10 @@ public enum AttachmentModifierType implements ResourceTag.CategoryTag {
     }
     @Override public String getCategoryName() {
         return this.typeName;
+    }
+
+    public IAttachmentModifier<?, ?> getModifier() {
+        return this.modifier;
     }
 
     private static final Map<String, AttachmentModifierType> MODIFIER_TYPES = new HashMap<>();
@@ -104,14 +103,5 @@ public enum AttachmentModifierType implements ResourceTag.CategoryTag {
     @Override
     public String toString() {
         return this.typeName;
-    }
-
-    public @Nullable <T> T get(AttachmentData data, Class<T> clazz) {
-        if (!clazz.isAssignableFrom(this.dataType)) {
-            throw new IllegalArgumentException("Invalid modifier data type: " + clazz.getName());
-        }
-
-        Object value = getter.apply(data);
-        return value != null ? clazz.cast(value) : null;
     }
 }

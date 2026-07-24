@@ -105,11 +105,13 @@
 ## 物品
 > _./core/api/item_
 
+- IItemModifier：物品修饰接口
 - [IGun](/docs/api/core/item/IGun.md)：枪械接口
 - [IAttachment](/docs/api/core/item/IAttachment.md)：配件接口
+	- [IAttachmentModifier](docs/api/core/item/attachment/modifier/IAttachmentModifier.md)：配件修饰接口
 - [IAmmo](/docs/api/core/item/IAmmo.md)：子弹接口
 	- [IAmmoBox](/docs/api/core/item/IAmmoBox.md)：子弹盒接口
-- [IBlock](/docs/api/core/item/IBlock.md)：方块物品接口
+- IBlock：方块物品接口
 
 ### 枪械
 > _./core/api/item/gun_
@@ -300,11 +302,13 @@ Post Event:
 ## Item
 > _./core/api/item_
 
+- IItemModifier: Item modifier interface
 - [IGun](/docs/api/core/item/IGun.md): Gun interface
 - [IAttachment](/docs/api/core/item/IAttachment.md): Attachment interface
+	- [IAttachmentModifier](/docs/api/core/item/attachment/modifier/IAttachmentModifier.md): Attachment modifier interface
 - [IAmmo](/docs/api/core/item/IAmmo.md): Ammo interface
 	- [IAmmoBox](/docs/api/core/item/IAmmoBox.md): Ammo box interface
-- [IBlock](/docs/api/core/item/IBlock.md): Block item interface
+- IBlock: Block item interface
 
 ### Gun
 > _./core/api/item/gun_

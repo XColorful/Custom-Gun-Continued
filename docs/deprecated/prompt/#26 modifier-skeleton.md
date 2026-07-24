@@ -64,3 +64,49 @@
 - AttachmentModifierType会设计成持有接口，具体类为item/attachment下的（作为枚举的非final字段）
 - 目前shooter没有别的modifier，但是这个体系本身就更正了语义和架构清晰度
 ```
+
+```
+我新提交了两个commit，又更正了一些命名和确定了一些重构的方向，你需要浏览。
+
+我现在还完成了一些修改，还未提交：
+- 你可以读IDEA当前打开的文件来快速获取这些文件列表
+
+现在有几个问题在之前写的文档里没有写清晰，可能需要添加额外的文件或修改Mermaid图来说明：
+- tacz的IAttachmentModifier接口里函数有GunData作为参数，我认为这个可能属于读取base值，可能需要放在api/item/gun/modifier下或别的设计
+- 重构后的IAttachmentModifier里eval接口负责计算，因为GunData拿的是base值，modifier实际上是从AttachmentData里读的，计算时的场景大概就是遍历iGun身上的配件然后逐个获取AttachmentData计算，所以IAttachmentModifier应该只有AttachmentData相关的参数
+- 以上只是我比较模糊的认知，tacz原本的计算流程在文档里还不清晰
+
+现在需要阅读并修改文档：
+- 本次任务不准修改代码文件，我之后了解清楚了再继续重构
+- 只准修改\docs\和\docs-tacz\
+
+增加的内容可能需要包括：
+- 专门针对缓存计算画个图（强调计算），而不是整个系统运作（例如不需要列出详细的调用方）
+- 在tacz的文档里，GunData、AttachmentData、IAttachmentModifier这些已知的类是一定要出现的，只是我目前不知道整个计算系统
+```
+
+```
+目前待定设计如下：
+- 准备加一个跟xiao.customgun.core.resource.network._AttachmentInstallabilityCache同级的_AttachmentModifierCache，用来在reload后存一个attachment对应的xiao.customgun.core.util.ClassUtils.ArrayMap<AttachmentModifierType, K>，对标tacz原设计里AttachmentData里只有写了的Modifier的Map（通常一个配件就几个属性），解决快速遍历的问题；从而Manager只需要跟modifier cache层交互，只有在构造Cache的时候才调用modifier里从AttachmentData get modifier的接口
+- 在ResourceApi级别加一个刷新缓存值的函数，ResourceApi负责调用xiao.customgun.core.resource.network以及client下持有的实例的缓存刷新，给这些类都加一个接口（原先的resetCache保持private）；这一点可能不太需要，目前不准备添加
+- 如果默认AttachmentModifier服务于Gun的Property，应该像把IItemModifier改成IGunModificationModifier这样明确子接口服务的对象，AttachmentModifierType构造函数里指定服务的GunModification，但是GunModification不能是枚举，否则无法保证类型安全
+- ShooterGunModifierCache或者新增的Gun的类/接口应该是需要全部modifier value默认值的，GunData的处理一定会放在这里
+- 不指定gun和attachment的modifier唯一对应的话，以后可以引入ammo的modifier并集中在shooter/gun的modifier里；或者gun/attachment/ammo的modifier集中在shooter的modifier里
+- 无论服务于item/gun/modifier还是shooter的，各种modifier最好都在构造函数里引入一个统一的服务对象的类，来保证类型安全
+- IItemModifier限制在Item没有必要，这也不是MC原版的modifier，可以考虑去掉，从而直接指定modifier服务于shooter，但是要考虑绑在item/gun/modifier还是直接ShooterGunModifier
+- 直接在IAttachmentModifier里加上GunData的初值获取最省事，但是不如AttachmentModifierType直接指定服务于某个ShooterGun具体类型（使attachment构造函数里两种具体类达成强类型匹配）
+
+所以考虑直接把AttachmentModifierType枚举移到GunModifierType，让Modifier接口里含GunData的初值获取，而没有modifier，从而使得Gun的modifier可以被attachment和ammo修改
+- AttachmentModifierType指定作用的GunModifierType
+- 如果Ammo有modifier作用，就不方便做多弹种实时切换增益
+- 但是可以把初值处理直接在ShooterGunModifierCache里做一层switch case对枚举对应的modifier赋上初值（实现原解耦目标）
+- tacz原版还有GunProperty，这个似乎也没在之前的文档里
+
+又想到让枚举指向具体类，具体类之间做泛型匹配
+- 但主要矛盾在于想把initCache给分离掉，但是会丢掉强类型
+
+所以目前最终的方案是让IAttachmentModifier额外implements IGunModifier，把非attachment职责移到别的接口，IAttachmentModifier作为全能易用门面，但是内部实现可以分离
+
+1. 把目前的研究过程和分析再单独写一个文档到\docs\里，每个方案都要有Mermaid图来直观地看
+2. 模仿现在最新的AdsModifier的模式，把其他Modifier也补充。对于eval不能复用父类函数的就先todo留空。AttachmentModifierType枚举的参数也改成相应的类。
+```

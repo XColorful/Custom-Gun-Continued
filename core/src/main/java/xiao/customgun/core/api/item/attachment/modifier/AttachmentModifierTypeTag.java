@@ -7,44 +7,43 @@
 
 package xiao.customgun.core.api.item.attachment.modifier;
 
-import xiao.customgun.core.api.resource.data.data.GunDataTag;
-import xiao.customgun.core.api.resource.data.data.gun._BulletDataTag;
-import xiao.customgun.core.api.resource.data.data.gun.bullet._BulletSkillDataTag;
+import xiao.customgun.core.api.item.gun.modifier.GunModifierTypeTag;
 import xiao.customgun.core.resource.data.data.gun._InaccuracyData;
 
+@Deprecated(forRemoval = true)
 public class AttachmentModifierTypeTag {
 
     // 瞄准速度
-    public static final String ADS = "ads";
+    public static final String ADS = GunModifierTypeTag.ADS;
 
     // 子弹属性
-    public static final String HEADSHOT_MULTIPLIER = _BulletSkillDataTag.HEADSHOT_MULTIPLIER;
-    public static final String ARMOR_IGNORE_PERCENT = _BulletSkillDataTag.ARMOR_IGNORE_PERCENT;
-    public static final String DAMAGE_CALCULATION = _BulletSkillDataTag.DAMAGE_CALCULATION;
-    public static final String BULLET_SPEED = _BulletDataTag.BULLET_SPEED;
-    public static final String PIERCE_COUNT = _BulletDataTag.PIERCE_COUNT;
-    public static final String FIRE_ASPECT = _BulletDataTag.FIRE_ASPECT;
-    public static final String KNOCKBACK_STRENGTH = _BulletDataTag.KNOCKBACK_STRENGTH;
-    public static final String BULLET_EXPLOSION = _BulletDataTag.BULLET_EXPLOSION;
+    public static final String HEADSHOT_MULTIPLIER = GunModifierTypeTag.HEADSHOT_MULTIPLIER;
+    public static final String ARMOR_IGNORE_PERCENT = GunModifierTypeTag.ARMOR_IGNORE_PERCENT;
+    public static final String DAMAGE_CALCULATION = GunModifierTypeTag.DAMAGE_CALCULATION;
+    public static final String BULLET_SPEED = GunModifierTypeTag.BULLET_SPEED;
+    public static final String PIERCE_COUNT = GunModifierTypeTag.PIERCE_COUNT;
+    public static final String FIRE_ASPECT = GunModifierTypeTag.FIRE_ASPECT;
+    public static final String KNOCKBACK_STRENGTH = GunModifierTypeTag.KNOCKBACK_STRENGTH;
+    public static final String BULLET_EXPLOSION = GunModifierTypeTag.BULLET_EXPLOSION;
 
     // 枪械属性
-    public static final String RPM = GunDataTag.RPM;
-    public static final String RECOIL_DATA = GunDataTag.RECOIL_DATA;
-    public static final String EFFECTIVE_RANGE = "effect_range";
-    public static final String WEIGHT = "weight";
-    public static final String MUZZLE = "muzzle";
+    public static final String RPM = GunModifierTypeTag.RPM;
+    public static final String RECOIL_DATA = GunModifierTypeTag.RECOIL_DATA;
+    public static final String EFFECTIVE_RANGE = GunModifierTypeTag.EFFECTIVE_RANGE;
+    public static final String WEIGHT = GunModifierTypeTag.WEIGHT;
+    public static final String MUZZLE = GunModifierTypeTag.MUZZLE;
     /**
      * 不准确度Modifier {@link _InaccuracyData}
      */
-    public static final String AIM_INACCURACY = "aim_inaccuracy";
-    public static final String SNEAK_INACCURACY = "sneak_inaccuracy";
-    public static final String PRONE_INACCURACY = "prone_inaccuracy";
-    public static final String OTHER_INACCURACY = "other_inaccuracy";
+    public static final String AIM_INACCURACY = GunModifierTypeTag.AIM_INACCURACY;
+    public static final String SNEAK_INACCURACY = GunModifierTypeTag.SNEAK_INACCURACY;
+    public static final String PRONE_INACCURACY = GunModifierTypeTag.PRONE_INACCURACY;
+    public static final String OTHER_INACCURACY = GunModifierTypeTag.OTHER_INACCURACY;
     // 近战
-    public static final String MELEE = "melee";
+    public static final String MELEE = GunModifierTypeTag.MELEE;
 
     // 弹匣
-    public static final String MAGAZINE_CATEGORY = "magazine_category";
+    public static final String MAGAZINE_CATEGORY = GunModifierTypeTag.MAGAZINE_CATEGORY;
 
     private AttachmentModifierTypeTag() {}
 }

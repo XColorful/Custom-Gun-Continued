@@ -38,8 +38,8 @@ Notation:
 
 |com.tacz.guns.api|xiao.customgun.core.api.item|
 |---|---|
-|`GunProperties`.\*|attachment.modifier.`AttachmentModifierType`.\*|
-|`GunProperty`.name|attachment.modifier.`AttachmentModifierType`.typeName|
+|`GunProperties`.\*|gun.modifier.`GunModifierType`.\*|
+|`GunProperty`.name|gun.modifier.`GunModifierType`.typeName|
 |`GunProperty`.type|gun.modifier.`IGunModifier`\<V>|
 
 #### Common API

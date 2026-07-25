@@ -9,7 +9,7 @@ flowchart RL
 				IGunManager
 				GunManagerGroup@{ shape: st-rect }
 			end
-			IGunActionManager & IGunAttackManager & IGunInventoryManager & IGunStateManager <--> GunManagerGroup
+			IGunActionManager & IGunAttackManager & IGunInventoryManager & IGunScriptManager & IGunStateManager <--> GunManagerGroup
 			GunManagerGroup <--> IGunManager
 		end
 		
@@ -18,6 +18,7 @@ flowchart RL
 		GunActionManager ==> IGunActionManager@{ shape: div-rect }
 		GunAttackManager ==> IGunAttackManager@{ shape: div-rect }
 		GunInventoryManager ==> IGunInventoryManager@{ shape: div-rect }
+		GunScriptManager ==> IGunScriptManager@{ shape: div-rect }
 		GunStateManager ==> IGunStateManager@{ shape: div-rect }
 		
 		%% --------切面父类（可选）--------
@@ -37,6 +38,7 @@ flowchart RL
 |枪械动作管理器|`IGunActionManager`||
 |枪械攻击管理器|`IGunAttackManager`||
 |枪械背包管理器|`IGunInventoryManager`||
+|枪械脚本管理器|`IGunScriptManager`|
 |枪械状态管理器|`IGunStateManager`||
 
 ### 枪械子管理器
@@ -63,6 +65,9 @@ flowchart RL
 ## 枪械背包管理器
 > 前往[枪械背包管理器](./inventory/gun-inventory-manager.md)
 
+## 枪械脚本管理器
+> 前往[枪械脚本管理器](./script/gun-script-manager.md)
+
 ## 枪械状态管理器
 > 前往[枪械状态管理器](./state/gun-state-manager.md)
 
@@ -76,6 +81,7 @@ The gun framework is designed with a **Main Manager** orchestrating various **Su
 |Gun Action Manager|`IGunActionManager`||
 |Gun Attack Manager|`IGunAttackManager`||
 |Gun Inventory Manager|`IGunInventoryManager`||
+|Gun Script Manager|`IGunScriptManager`|
 |Gun State Manager|`IGunStateManager`||
 
 ### Gun Sub-Manager
@@ -101,6 +107,9 @@ A combination of sub-managers that the Main Manager can hold, identified by `man
 
 ## Gun Inventory Manager
 > Go to [Gun Inventory Manager](./inventory/gun-inventory-manager.md#English)
+
+## Gun Script Manager
+> Go to [Gun Script Manager](./script/gun-script-manager.md#English)
 
 ## Gun State Manager
 > Go to [Gun State Manager](./state/gun-state-manager.md#English)

@@ -1,12 +1,7 @@
 [English](#English)
 
 # 配件数据
-> wiki 版本：`0.0.0`.0
-
-[English](#English)
-
-# 配件数据
-> wiki 版本：`0.0.0`.0
+> wiki 版本：`0.0.1`.1
 
 - `ads`（\_SimpleModifierData）：
 	- `shared_base_add`/`addend`（float）：
@@ -88,7 +83,10 @@
 	- `shared_percent_add`/`percent`（float）：
 	- `unique_multiplier`/`multiplier`（float）：
 	- `script_function`/`function`（String）：
-- `weight`（float）：
+- `weight`/`weight_modifier`（\_SimpleModifierData）：
+	- `shared_base_add`/`addend`（float）：
+	- `shared_percent_add`/`percent`（float）：
+	- `unique_multiplier`/`multiplier`（float）：
 - `muzzle`/`silence`（\_MuzzleModifierData）：
 	- `fire_sound_type`/`use_silence_sound`（FireSoundType）：
 - `aim_inaccuracy`（\_SimpleModifierData）：
@@ -226,7 +224,11 @@
 		"unique_multiplier": 1.0,
 		"script_function": ""
 	},
-	"weight": 0.0,
+	"weight": {
+		"shared_base_add": 0.0,
+		"shared_percent_add": 0.0,
+		"unique_multiplier": 1.0
+	},
 	"muzzle": {
 		"fire_sound_type": ""
 	},
@@ -277,7 +279,7 @@
 ```
 
 # English
-> wiki verison: `0.0.0`.0
+> wiki verison: `0.0.1`.1
 
 - `ads`(\_SimpleModifierData):
 	- `shared_base_add`/`addend`(float):
@@ -359,7 +361,10 @@
 	- `shared_percent_add`/`percent`(float):
 	- `unique_multiplier`/`multiplier`(float):
 	- `script_function`/`function`(String):
-- `weight`(float):
+- `weight`/`weight_modifier`(\_SimpleModifierData):
+	- `shared_base_add`/`addend`(float):
+	- `shared_percent_add`/`percent`(float):
+	- `unique_multiplier`/`multiplier`(float):
 - `muzzle`/`silence`(\_MuzzleModifierData):
 	- `fire_sound_type`/`use_silence_sound`(FireSoundType):
 - `aim_inaccuracy`(\_SimpleModifierData):
@@ -497,7 +502,11 @@
 		"unique_multiplier": 1.0,
 		"script_function": ""
 	},
-	"weight": 0.0,
+	"weight": {
+		"shared_base_add": 0.0,
+		"shared_percent_add": 0.0,
+		"unique_multiplier": 1.0
+	},
 	"muzzle": {
 		"fire_sound_type": ""
 	},

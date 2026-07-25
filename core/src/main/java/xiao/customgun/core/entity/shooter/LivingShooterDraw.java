@@ -19,7 +19,7 @@ import xiao.customgun.core.api.event.shooter.ShooterDrawEvent;
 import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.api.item.gun.IGunGetter;
 import xiao.customgun.core.api.resource.ResourceApi;
-import xiao.customgun.core.item.gun.GunPropertyManager;
+import xiao.customgun.core.entity.shooter.modifier.ShooterGunModifierManager;
 import xiao.customgun.core.network.message.event.ServerMessageGunDraw;
 import xiao.customgun.core.resource.instance.data.GunIndexInstance;
 import xiao.customgun.core.util.SendUtils;
@@ -65,7 +65,7 @@ public final class LivingShooterDraw extends LivingShooterAspect {
         this.shooterProperty.currentGunItem = gunItemSupplier;
 
         // 刷新配件数据
-        GunPropertyManager.postChangeEvent(this.livingShooter, gunItemSupplier.get());
+        ShooterGunModifierManager.postChangeEvent(this.livingShooter, gunItemSupplier.get());
         updatePutAwayTime();
     }
 

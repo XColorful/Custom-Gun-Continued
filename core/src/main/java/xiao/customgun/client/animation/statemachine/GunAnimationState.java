@@ -36,7 +36,6 @@ public enum GunAnimationState implements ResourceTag.ConstantTag {
         this.typeName = name;
         this.typeNameOld = nameOld;
     }
-
     @Override public String getTagName() {
         return this.typeName;
     }

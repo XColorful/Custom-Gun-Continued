@@ -49,7 +49,7 @@ public final class AmmoDisplay extends _AssetsDisplay<AmmoDisplay> {
                     case AmmoDisplayTag.AMMO_ENTITY_DISPLAY, AmmoDisplayTag.AMMO_ENTITY_DISPLAY_OLD1 -> pojo.ammoEntityDisplay = JsonUtils.read(reader, _AmmoEntityDisplay::fromJson);
                     case AmmoDisplayTag.SHELL_DISPLAY, AmmoDisplayTag.SHELL_DISPLAY_OLD1 -> pojo.shellDisplay = JsonUtils.read(reader, _ShellDisplay::fromJson);
 
-                    case AmmoDisplayTag.AMMO_PARTICLE, AmmoDisplayTag.AMMO_PARTICLE_OLD1 -> pojo.ammoParticle = _AmmoParticle.fromJson(reader);
+                    case AmmoDisplayTag.AMMO_PARTICLE, AmmoDisplayTag.AMMO_PARTICLE_OLD1 -> pojo.ammoParticle = JsonUtils.read(reader, _AmmoParticle::fromJson);
                     case AmmoDisplayTag.TRACER_COLOR -> pojo.tracerColor = JsonUtils.readColor(reader);
                     default -> reader.skipValue();
                 }

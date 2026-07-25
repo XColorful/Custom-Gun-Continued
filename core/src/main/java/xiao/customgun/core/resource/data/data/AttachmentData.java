@@ -38,7 +38,7 @@ public final class AttachmentData extends ResourcePojo<AttachmentData> {
     private @Nullable _SimpleModifierData rpmModifier;
     private @Nullable _RecoilDataModifierData recoilDataModifier;
     private @Nullable _SimpleModifierData effectiveRangeModifier;
-    private float weight = 0.0F;
+    private @Nullable _SimpleModifierData weightModifier;
     private @Nullable _MuzzleModifierData muzzleModifier;
     /**
      * 不准确度Modifier {@link _InaccuracyData}
@@ -64,29 +64,29 @@ public final class AttachmentData extends ResourcePojo<AttachmentData> {
             while (reader.hasNext()) {
                 String key = reader.nextName();
                 switch (key) {
-                    case AttachmentDataTag.ADS -> pojo.adsModifier = _SimpleModifierData.fromJson(reader);
+                    case AttachmentDataTag.ADS -> pojo.adsModifier = JsonUtils.read(reader, _SimpleModifierData::fromJson);
 
-                    case AttachmentDataTag.ARMOR_IGNORE_PERCENT, AttachmentDataTag.ARMOR_IGNORE_PERCENT_OLD1 -> pojo.armorIgnorePercentModifier = _SimpleModifierData.fromJson(reader);
-                    case AttachmentDataTag.HEADSHOT_MULTIPLIER, AttachmentDataTag.HEADSHOT_MULTIPLIER_OLD1 -> pojo.headshotMultiplierModifier = _SimpleModifierData.fromJson(reader);
-                    case AttachmentDataTag.DAMAGE_CALCULATION, AttachmentDataTag.DAMAGE_CALCULATION_OLD1 -> pojo.damageCalculationModifier = _SimpleModifierData.fromJson(reader);
-                    case AttachmentDataTag.BULLET_SPEED, AttachmentDataTag.BULLET_SPEED_OLD1 -> pojo.bulletSpeedModifier = _SimpleModifierData.fromJson(reader);
-                    case AttachmentDataTag.PIERCE_COUNT, AttachmentDataTag.PIERCE_COUNT_OLD1 -> pojo.pierceCountModifier = _SimpleModifierData.fromJson(reader);
-                    case AttachmentDataTag.FIRE_ASPECT, AttachmentDataTag.FIRE_ASPECT_OLD1 -> pojo.fireAspectModifier = _FireAspectModifierData.fromJson(reader);
-                    case AttachmentDataTag.KNOCKBACK_STRENGTH, AttachmentDataTag.KNOCKBACK_STRENGTH_OLD1 -> pojo.knockbackStrengthModifier = _SimpleModifierData.fromJson(reader);
-                    case AttachmentDataTag.BULLET_EXPLOSION, AttachmentDataTag.BULLET_EXPLOSION_OLD1 -> pojo.bulletExplosionModifier = _BulletExplosionModifierData.fromJson(reader);
+                    case AttachmentDataTag.ARMOR_IGNORE_PERCENT, AttachmentDataTag.ARMOR_IGNORE_PERCENT_OLD1 -> pojo.armorIgnorePercentModifier = JsonUtils.read(reader, _SimpleModifierData::fromJson);
+                    case AttachmentDataTag.HEADSHOT_MULTIPLIER, AttachmentDataTag.HEADSHOT_MULTIPLIER_OLD1 -> pojo.headshotMultiplierModifier = JsonUtils.read(reader, _SimpleModifierData::fromJson);
+                    case AttachmentDataTag.DAMAGE_CALCULATION, AttachmentDataTag.DAMAGE_CALCULATION_OLD1 -> pojo.damageCalculationModifier = JsonUtils.read(reader, _SimpleModifierData::fromJson);
+                    case AttachmentDataTag.BULLET_SPEED, AttachmentDataTag.BULLET_SPEED_OLD1 -> pojo.bulletSpeedModifier = JsonUtils.read(reader, _SimpleModifierData::fromJson);
+                    case AttachmentDataTag.PIERCE_COUNT, AttachmentDataTag.PIERCE_COUNT_OLD1 -> pojo.pierceCountModifier = JsonUtils.read(reader, _SimpleModifierData::fromJson);
+                    case AttachmentDataTag.FIRE_ASPECT, AttachmentDataTag.FIRE_ASPECT_OLD1 -> pojo.fireAspectModifier = JsonUtils.read(reader, _FireAspectModifierData::fromJson);
+                    case AttachmentDataTag.KNOCKBACK_STRENGTH, AttachmentDataTag.KNOCKBACK_STRENGTH_OLD1 -> pojo.knockbackStrengthModifier = JsonUtils.read(reader, _SimpleModifierData::fromJson);
+                    case AttachmentDataTag.BULLET_EXPLOSION, AttachmentDataTag.BULLET_EXPLOSION_OLD1 -> pojo.bulletExplosionModifier = JsonUtils.read(reader, _BulletExplosionModifierData::fromJson);
 
-                    case AttachmentDataTag.RPM -> pojo.rpmModifier = _SimpleModifierData.fromJson(reader);
-                    case AttachmentDataTag.RECOIL_DATA, AttachmentDataTag.RECOIL_DATA_OLD1 -> pojo.recoilDataModifier = _RecoilDataModifierData.fromJson(reader);
-                    case AttachmentDataTag.EFFECTIVE_RANGE -> pojo.effectiveRangeModifier = _SimpleModifierData.fromJson(reader);
-                    case AttachmentDataTag.WEIGHT -> pojo.weight = JsonUtils.readFloat(reader);
-                    case AttachmentDataTag.MUZZLE, AttachmentDataTag.MUZZLE_OLD1 -> pojo.muzzleModifier = _MuzzleModifierData.fromJson(reader);
+                    case AttachmentDataTag.RPM -> pojo.rpmModifier = JsonUtils.read(reader, _SimpleModifierData::fromJson);
+                    case AttachmentDataTag.RECOIL_DATA, AttachmentDataTag.RECOIL_DATA_OLD1 -> pojo.recoilDataModifier = JsonUtils.read(reader, _RecoilDataModifierData::fromJson);
+                    case AttachmentDataTag.EFFECTIVE_RANGE -> pojo.effectiveRangeModifier = JsonUtils.read(reader, _SimpleModifierData::fromJson);
+                    case AttachmentDataTag.WEIGHT, AttachmentDataTag.WEIGHT_OLD1 -> pojo.weightModifier = JsonUtils.read(reader, _SimpleModifierData::fromJson);
+                    case AttachmentDataTag.MUZZLE, AttachmentDataTag.MUZZLE_OLD1 -> pojo.muzzleModifier = JsonUtils.read(reader, _MuzzleModifierData::fromJson);
 
-                    case AttachmentDataTag.AIM_INACCURACY -> pojo.aimInaccuracyModifier = _SimpleModifierData.fromJson(reader);
-                    case AttachmentDataTag.SNEAK_INACCURACY -> pojo.sneakInaccuracyModifier = _SimpleModifierData.fromJson(reader);
-                    case AttachmentDataTag.PRONE_INACCURACY, AttachmentDataTag.PRONE_INACCURACY_OLD1 -> pojo.proneInaccuracyModifier = _SimpleModifierData.fromJson(reader);
-                    case AttachmentDataTag.OTHER_INACCURACY, AttachmentDataTag.OTHER_INACCURACY_OLD1 -> pojo.otherInaccuracyModifier = _SimpleModifierData.fromJson(reader);
+                    case AttachmentDataTag.AIM_INACCURACY -> pojo.aimInaccuracyModifier = JsonUtils.read(reader, _SimpleModifierData::fromJson);
+                    case AttachmentDataTag.SNEAK_INACCURACY -> pojo.sneakInaccuracyModifier = JsonUtils.read(reader, _SimpleModifierData::fromJson);
+                    case AttachmentDataTag.PRONE_INACCURACY, AttachmentDataTag.PRONE_INACCURACY_OLD1 -> pojo.proneInaccuracyModifier = JsonUtils.read(reader, _SimpleModifierData::fromJson);
+                    case AttachmentDataTag.OTHER_INACCURACY, AttachmentDataTag.OTHER_INACCURACY_OLD1 -> pojo.otherInaccuracyModifier = JsonUtils.read(reader, _SimpleModifierData::fromJson);
 
-                    case AttachmentDataTag.MELEE -> pojo.meleeModifier = _MeleeModifierData.fromJson(reader);
+                    case AttachmentDataTag.MELEE -> pojo.meleeModifier = JsonUtils.read(reader, _MeleeModifierData::fromJson);
 
                     case AttachmentDataTag.MAGAZINE_CATEGORY -> pojo.magazineCategory = JsonUtils.readFromString(reader, MagazineCategory::fromString); case AttachmentDataTag.MAGAZINE_CATEGORY_OLD1 -> pojo.magazineCategory = MagazineCategory.fromIndex(JsonUtils.readInt(reader));
                     default -> reader.skipValue();
@@ -117,7 +117,7 @@ public final class AttachmentData extends ResourcePojo<AttachmentData> {
             JsonUtils.write(writer, AttachmentDataTag.RPM, this.rpmModifier, _SimpleModifierData::toJson);
             JsonUtils.write(writer, AttachmentDataTag.RECOIL_DATA, this.recoilDataModifier, _RecoilDataModifierData::toJson);
             JsonUtils.write(writer, AttachmentDataTag.EFFECTIVE_RANGE, this.effectiveRangeModifier, _SimpleModifierData::toJson);
-            JsonUtils.writeFloat(writer, AttachmentDataTag.WEIGHT, this.weight);
+            JsonUtils.write(writer, AttachmentDataTag.WEIGHT, this.weightModifier,  _SimpleModifierData::toJson);
             JsonUtils.write(writer, AttachmentDataTag.MUZZLE, this.muzzleModifier, _MuzzleModifierData::toJson);
 
             JsonUtils.write(writer, AttachmentDataTag.AIM_INACCURACY, this.aimInaccuracyModifier, _SimpleModifierData::toJson);
@@ -139,10 +139,11 @@ public final class AttachmentData extends ResourcePojo<AttachmentData> {
         if (this.fireAspectModifier != null) this.fireAspectModifier.validate();
         if (this.bulletExplosionModifier != null) this.bulletExplosionModifier.validate();
         if (this.recoilDataModifier != null) this.recoilDataModifier.validate();
+        if (this.weightModifier != null) this.weightModifier.validate();
         if (this.muzzleModifier != null) this.muzzleModifier.validate();
         if (this.meleeModifier != null) this.meleeModifier.validate();
         boolean v1 = ((this.fireAspectModifier == null || this.fireAspectModifier.isValid()) & (this.bulletExplosionModifier == null || this.bulletExplosionModifier.isValid()) & (this.recoilDataModifier == null || this.recoilDataModifier.isValid()));
-        boolean v2 = ((this.muzzleModifier == null || this.muzzleModifier.isValid()) & (this.meleeModifier == null || this.meleeModifier.isValid()));
+        boolean v2 = ((this.weightModifier == null || this.weightModifier.isValid()) & (this.muzzleModifier == null || this.muzzleModifier.isValid()) & (this.meleeModifier == null || this.meleeModifier.isValid()));
         if (!(v1 & v2)) {
             this.setValid(false);
             return;
@@ -189,8 +190,8 @@ public final class AttachmentData extends ResourcePojo<AttachmentData> {
     public @Nullable _SimpleModifierData getEffectiveRangeModifier() {
         return effectiveRangeModifier;
     }
-    public float getWeight() {
-        return weight;
+    public @Nullable _SimpleModifierData getWeightModifier() {
+        return weightModifier;
     }
     public @Nullable _MuzzleModifierData getMuzzleModifier() {
         return muzzleModifier;
@@ -250,8 +251,8 @@ public final class AttachmentData extends ResourcePojo<AttachmentData> {
     public void setEffectiveRangeModifier(_SimpleModifierData effectiveRangeModifier) {
         this.effectiveRangeModifier = effectiveRangeModifier;
     }
-    public void setWeight(float weight) {
-        this.weight = weight;
+    public void setWeightModifier(_SimpleModifierData weightModifier) {
+        this.weightModifier = weightModifier;
     }
     public void setMuzzleModifier(_MuzzleModifierData muzzleModifier) {
         this.muzzleModifier = muzzleModifier;
@@ -293,6 +294,7 @@ public final class AttachmentData extends ResourcePojo<AttachmentData> {
         if (this.rpmModifier != null) this.rpmModifier.applyBackCompatibility();
         if (this.recoilDataModifier != null) this.recoilDataModifier.applyBackCompatibility();
         if (this.effectiveRangeModifier != null) this.effectiveRangeModifier.applyBackCompatibility();
+        if (this.weightModifier != null) this.weightModifier.applyBackCompatibility();
         if (this.muzzleModifier != null) this.muzzleModifier.applyBackCompatibility();
 
         if (this.aimInaccuracyModifier != null) this.aimInaccuracyModifier.applyBackCompatibility();

@@ -64,39 +64,51 @@ public class GunItem extends Item implements IGun, GunDataAccessor {
         return name != null ? name : super.getName(gunItem);
     }
 
-    // --------IGunInventoryRuntime--------
+    // --------IGunRuntime--------
 
-    @Override
-    public void dropAllAmmo(ItemStack gunItem, LivingEntity livingShooter) {
+    // ----IGunActionRuntime----
+    @Override public boolean startBolt(ShooterProperty shooterProperty, ItemStack gunItem, LivingEntity livingShooter) {
+        return CustomGun.getGunManager().getManagerGroup(this.getManagerGroupTag(gunItem))
+                .gunActionManager()
+                .startBolt(shooterProperty, gunItem, livingShooter);
+    }
+    @Override public boolean tickBolt(ShooterProperty shooterProperty, ItemStack gunItem, LivingEntity livingShooter) {
+        return CustomGun.getGunManager().getManagerGroup(this.getManagerGroupTag(gunItem))
+                .gunActionManager()
+                .tickBolt(shooterProperty, gunItem, livingShooter);
+    }
+    @Override public boolean canReload(ItemStack gunItem, LivingEntity livingShooter) {
+        return CustomGun.getGunManager().getManagerGroup(this.getManagerGroupTag(gunItem))
+                .gunActionManager()
+                .canReload(gunItem, livingShooter);
+    }
+    @Override public boolean startReload(ShooterProperty shooterProperty, ItemStack gunItem, LivingEntity livingShooter) {
+        return CustomGun.getGunManager().getManagerGroup(this.getManagerGroupTag(gunItem))
+                .gunActionManager()
+                .startReload(shooterProperty, gunItem, livingShooter);
+    }
+    @Override public ReloadState tickReload(ShooterProperty shooterProperty, ItemStack gunItem, LivingEntity livingShooter) {
+        return CustomGun.getGunManager().getManagerGroup(this.getManagerGroupTag(gunItem))
+                .gunActionManager()
+                .tickReload(shooterProperty, gunItem, livingShooter);
+    }
+    @Override public void interruptReload(ShooterProperty shooterProperty, ItemStack gunItem, LivingEntity livingShooter) {
         CustomGun.getGunManager().getManagerGroup(this.getManagerGroupTag(gunItem))
-                .gunInventoryManager()
-                .dropAllAmmo(gunItem, livingShooter);
+                .gunActionManager()
+                .interruptReload(shooterProperty, gunItem, livingShooter);
     }
-
-    @Override
-    public int findAndExtractInventoryAmmo(IInventoryCapability inventoryCapability, ItemStack gunItem, int needAmmoCount) {
-        return CustomGun.getGunManager().getManagerGroup(this.getManagerGroupTag(gunItem))
-                .gunInventoryManager()
-                .findAndExtractInventoryAmmo(inventoryCapability, gunItem, needAmmoCount);
+    @Override public void switchFireMode(ShooterProperty shooterProperty, ItemStack gunItem) {
+        CustomGun.getGunManager().getManagerGroup(this.getManagerGroupTag(gunItem))
+                .gunActionManager()
+                .switchFireMode(shooterProperty, gunItem);
     }
-
-    @Override
-    public int findAndExtractDummyAmmo(ItemStack gunItem, int needAmmoCount) {
-        return CustomGun.getGunManager().getManagerGroup(this.getManagerGroupTag(gunItem))
-                .gunInventoryManager()
-                .findAndExtractDummyAmmo(gunItem, needAmmoCount);
-    }
-
-    // --------IGunAttackRuntime--------
-
-    @Override
-    public void shoot(ShooterProperty shooterProperty, ItemStack gunItem, LivingEntity livingShooter, Supplier<Float> pitch, Supplier<Float> yaw) {
+    // ----IGunAttackRuntime----
+    @Override public void shoot(ShooterProperty shooterProperty, ItemStack gunItem, LivingEntity livingShooter, Supplier<Float> pitch, Supplier<Float> yaw) {
         CustomGun.getGunManager().getManagerGroup(this.getManagerGroupTag(gunItem))
                 .gunAttackManager()
                 .shoot(shooterProperty, gunItem, livingShooter, pitch, yaw);
     }
-    @Override
-    public void doBulletSpread(ShooterProperty shooterProperty, ItemStack gunItem, LivingEntity livingShooter,
+    @Override public void doBulletSpread(ShooterProperty shooterProperty, ItemStack gunItem, LivingEntity livingShooter,
                                Projectile projectile, int bulletId, float processedSpeed,
                                float inaccuracy, float pitch, float yaw) {
         CustomGun.getGunManager().getManagerGroup(this.getManagerGroupTag(gunItem))
@@ -105,65 +117,30 @@ public class GunItem extends Item implements IGun, GunDataAccessor {
                         projectile, bulletId, processedSpeed,
                         inaccuracy, pitch, yaw);
     }
-
-    @Override
-    public void melee(ShooterProperty shooterProperty, ItemStack gunItem, LivingEntity livingShooter) {
+    @Override public void melee(ShooterProperty shooterProperty, ItemStack gunItem, LivingEntity livingShooter) {
         CustomGun.getGunManager().getManagerGroup(this.getManagerGroupTag(gunItem))
                 .gunAttackManager()
                 .melee(shooterProperty, gunItem, livingShooter);
     }
-
-    // --------IGunActionRuntime--------
-
-    @Override
-    public boolean startBolt(ShooterProperty shooterProperty, ItemStack gunItem, LivingEntity livingShooter) {
-        return CustomGun.getGunManager().getManagerGroup(this.getManagerGroupTag(gunItem))
-                .gunActionManager()
-                .startBolt(shooterProperty, gunItem, livingShooter);
-    }
-    @Override
-    public boolean tickBolt(ShooterProperty shooterProperty, ItemStack gunItem, LivingEntity livingShooter) {
-        return CustomGun.getGunManager().getManagerGroup(this.getManagerGroupTag(gunItem))
-                .gunActionManager()
-                .tickBolt(shooterProperty, gunItem, livingShooter);
-    }
-
-    @Override
-    public boolean canReload(ItemStack gunItem, LivingEntity livingShooter) {
-        return CustomGun.getGunManager().getManagerGroup(this.getManagerGroupTag(gunItem))
-                .gunActionManager()
-                .canReload(gunItem, livingShooter);
-    }
-    @Override
-    public boolean startReload(ShooterProperty shooterProperty, ItemStack gunItem, LivingEntity livingShooter) {
-        return CustomGun.getGunManager().getManagerGroup(this.getManagerGroupTag(gunItem))
-                .gunActionManager()
-                .startReload(shooterProperty, gunItem, livingShooter);
-    }
-    @Override
-    public ReloadState tickReload(ShooterProperty shooterProperty, ItemStack gunItem, LivingEntity livingShooter) {
-        return CustomGun.getGunManager().getManagerGroup(this.getManagerGroupTag(gunItem))
-                .gunActionManager()
-                .tickReload(shooterProperty, gunItem, livingShooter);
-    }
-    @Override
-    public void interruptReload(ShooterProperty shooterProperty, ItemStack gunItem, LivingEntity livingShooter) {
+    // ----IGunInventoryRuntime----
+    @Override public void dropAllAmmo(ItemStack gunItem, LivingEntity livingShooter) {
         CustomGun.getGunManager().getManagerGroup(this.getManagerGroupTag(gunItem))
-                .gunActionManager()
-                .interruptReload(shooterProperty, gunItem, livingShooter);
+                .gunInventoryManager()
+                .dropAllAmmo(gunItem, livingShooter);
     }
-
-    @Override
-    public void switchFireMode(ShooterProperty shooterProperty, ItemStack gunItem) {
-        CustomGun.getGunManager().getManagerGroup(this.getManagerGroupTag(gunItem))
-                .gunActionManager()
-                .switchFireMode(shooterProperty, gunItem);
+    @Override public int findAndExtractInventoryAmmo(IInventoryCapability inventoryCapability, ItemStack gunItem, int needAmmoCount) {
+        return CustomGun.getGunManager().getManagerGroup(this.getManagerGroupTag(gunItem))
+                .gunInventoryManager()
+                .findAndExtractInventoryAmmo(inventoryCapability, gunItem, needAmmoCount);
     }
-
-    // --------IGunStateRuntime--------
-
-    @Override
-    public void tickHeat(ShooterProperty shooterProperty, ItemStack gunItem, LivingEntity livingShooter) {
+    @Override public int findAndExtractDummyAmmo(ItemStack gunItem, int needAmmoCount) {
+        return CustomGun.getGunManager().getManagerGroup(this.getManagerGroupTag(gunItem))
+                .gunInventoryManager()
+                .findAndExtractDummyAmmo(gunItem, needAmmoCount);
+    }
+    // ----IGunScriptRuntime----
+    // ----IGunStateRuntime----
+    @Override public void tickHeat(ShooterProperty shooterProperty, ItemStack gunItem, LivingEntity livingShooter) {
         CustomGun.getGunManager().getManagerGroup(this.getManagerGroupTag(gunItem))
                 .gunStateManager()
                 .tickHeat(shooterProperty, gunItem, livingShooter);

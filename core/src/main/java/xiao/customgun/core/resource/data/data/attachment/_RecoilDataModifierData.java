@@ -32,8 +32,8 @@ public final class _RecoilDataModifierData extends ResourcePojo<_RecoilDataModif
             while (reader.hasNext()) {
                 String key = reader.nextName();
                 switch (key) {
-                    case _RecoilDataModifierDataTag.PITCH_RECOIL, _RecoilDataModifierDataTag.PITCH_RECOIL_OLD1 -> pojo.pitchRecoilModifier = _SimpleModifierData.fromJson(reader);
-                    case _RecoilDataModifierDataTag.YAW_RECOIL, _RecoilDataModifierDataTag.YAW_RECOIL_OLD1 -> pojo.yawRecoilModifier = _SimpleModifierData.fromJson(reader);
+                    case _RecoilDataModifierDataTag.PITCH_RECOIL, _RecoilDataModifierDataTag.PITCH_RECOIL_OLD1 -> pojo.pitchRecoilModifier = JsonUtils.read(reader, _SimpleModifierData::fromJson);
+                    case _RecoilDataModifierDataTag.YAW_RECOIL, _RecoilDataModifierDataTag.YAW_RECOIL_OLD1 -> pojo.yawRecoilModifier = JsonUtils.read(reader, _SimpleModifierData::fromJson);
                     default -> reader.skipValue();
                 }
             }

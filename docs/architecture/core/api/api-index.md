@@ -30,6 +30,7 @@
 > _./core/api/entity_
 
 - [ILivingShooter](/docs/api/core/entity/ILivingShooter.md)：射手生物
+	- modifier：射手修饰
 - [IGunProjectile](/docs/api/core/entity/IGunProjectile.md)：枪射物
 	- [GunProjectileProperty](/docs/api/core/entity/GunProjectileProperty.md)：枪射物属性
 - [IBulletVictimEntity](/docs/api/core/entity/IBulletVictimEntity.md)：受弹实体
@@ -85,6 +86,8 @@
 		- [IGunAttackManager](/docs/api/core/gun/attack/IGunAttackManager.md)：枪械攻击管理器
 	- Inventory：枪械背包
 		- [IGunInventoryManager](/docs/api/core/gun/inventory/IGunInventoryManager.md)：枪械背包管理器
+	- Script：枪械脚本
+		- [IGunScriptManager](/docs/api/core/gun/script/IGunScriptManager.md)：枪械脚本管理器
 	- State：枪械状态
 		- [IGunStateManager](/docs/api/core/gun/state/IGunStateManager.md)：枪械状态管理器
 - [IGunRuntime](/docs/api/core/gun/IGunRuntime.md)：枪械运行时接口，聚合枪械子管理器 Runtime 接口
@@ -104,11 +107,13 @@
 ## 物品
 > _./core/api/item_
 
+- IItemModifier：物品修饰接口
 - [IGun](/docs/api/core/item/IGun.md)：枪械接口
 - [IAttachment](/docs/api/core/item/IAttachment.md)：配件接口
+	- [IAttachmentModifier](docs/api/core/item/attachment/modifier/IAttachmentModifier.md)：配件修饰接口
 - [IAmmo](/docs/api/core/item/IAmmo.md)：子弹接口
 	- [IAmmoBox](/docs/api/core/item/IAmmoBox.md)：子弹盒接口
-- [IBlock](/docs/api/core/item/IBlock.md)：方块物品接口
+- IBlock：方块物品接口
 
 ### 枪械
 > _./core/api/item/gun_
@@ -225,6 +230,7 @@
 > _./core/api/entity_
 
 - [ILivingShooter](/docs/api/core/entity/ILivingShooter.md): Living shooter
+	- modifier: Shooter modifier
 - [IGunProjectile](/docs/api/core/entity/IGunProjectile.md): Gun projectile
 	- [GunProjectileProperty](/docs/api/core/entity/GunProjectileProperty.md): Gun projectile property
 - [IBulletVictimEntity](/docs/api/core/entity/IBulletVictimEntity.md): Bullet victim entity
@@ -279,6 +285,8 @@ Post Event:
 		- [IGunAttackManager](/docs/api/core/gun/attack/IGunAttackManager.md): Gun attack manager
 	- Inventory:
 		- [IGunInventoryManager](/docs/api/core/gun/inventory/IGunInventoryManager.md): Gun inventory manager
+    - Script:
+	    - [IGunScriptManager](/docs/api/core/gun/script/IGunScriptManager.md): Gun script manager
 	- State:
 		- [IGunStateManager](/docs/api/core/gun/state/IGunStateManager.md): Gun state manager
 - [IGunRuntime](/docs/api/core/gun/IGunRuntime.md): Gun runtime interface, aggregating Gun sub-manager Runtime interfaces
@@ -298,11 +306,13 @@ Post Event:
 ## Item
 > _./core/api/item_
 
+- IItemModifier: Item modifier interface
 - [IGun](/docs/api/core/item/IGun.md): Gun interface
 - [IAttachment](/docs/api/core/item/IAttachment.md): Attachment interface
+	- [IAttachmentModifier](/docs/api/core/item/attachment/modifier/IAttachmentModifier.md): Attachment modifier interface
 - [IAmmo](/docs/api/core/item/IAmmo.md): Ammo interface
 	- [IAmmoBox](/docs/api/core/item/IAmmoBox.md): Ammo box interface
-- [IBlock](/docs/api/core/item/IBlock.md): Block item interface
+- IBlock: Block item interface
 
 ### Gun
 > _./core/api/item/gun_

@@ -44,7 +44,7 @@ public final class _TableResultData extends ResourcePojo<_TableResultData> {
                 switch (key) {
                     case _TableResultDataTag.RESULT_TYPE, _TableResultDataTag.RESULT_TYPE_OLD1 -> pojo.resultType = JsonUtils.readFromString(reader, RecipeResultType::fromString);
                     case _TableResultDataTag.RESULT_COUNT, _TableResultDataTag.RESULT_COUNT_OLD1 -> pojo.resultCount = JsonUtils.readInt(reader);
-                    case _TableResultDataTag.RESULT_ITEM, _TableResultDataTag.RESULT_ITEM_OLD1 -> pojo.resultItem = _ResultItemData.fromJson(reader);
+                    case _TableResultDataTag.RESULT_ITEM, _TableResultDataTag.RESULT_ITEM_OLD1 -> pojo.resultItem = JsonUtils.read(reader, _ResultItemData::fromJson);
                     case _TableResultDataTag.TAB_GROUP_LOCATION, _TableResultDataTag.TAB_GROUP_LOCATION_OLD1 -> pojo.tabGroupLocation = JsonUtils.readResourceLocation(reader);
                     case _TableResultDataTag.POJO_LOCATION, _TableResultDataTag.POJO_LOCATION_OLD1 -> pojo.pojoLocation = JsonUtils.readResourceLocation(reader);
                     default -> reader.skipValue();

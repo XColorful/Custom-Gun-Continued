@@ -22,7 +22,7 @@ import xiao.customgun.core.api.entity.shooter.ILivingShooterGetter;
 import xiao.customgun.core.api.event.shooter.ShooterSwitchFireModeEvent;
 import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.api.item.gun.IGunGetter;
-import xiao.customgun.core.item.gun.GunPropertyManager;
+import xiao.customgun.core.entity.shooter.modifier.ShooterGunModifierManager;
 import xiao.customgun.core.network.message.ClientMessagePlayerSwitchFireMode;
 import xiao.customgun.core.util.SendUtils;
 
@@ -55,7 +55,7 @@ public final class LocalShooterSwitchFireMode extends LocalShooterAspect {
                 this.localShooter);
         // 客户端切换开火模式
         iGun.switchFireMode(null, gunItem);
-        GunPropertyManager.postChangeEvent(this.localShooter, gunItem);
+        ShooterGunModifierManager.postChangeEvent(this.localShooter, gunItem);
         // TODO AnimationStateMachine
     }
 }

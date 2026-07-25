@@ -22,9 +22,9 @@ flowchart LR
     B --> C[阶段三<br/>对每个属性调用 eval<br/>计算最终值并清除中间数据]
 ```
 
-- **阶段一**：遍历所有已注册 modifier，从 `GunData` 读取每个属性的默认值作为缓存初始值
-- **阶段二**：遍历枪上安装的所有配件（按槽位），将各配件的 Modifier 数据按 ID 分类收集
-- **阶段三**：对每个有修改的属性，将默认值加所有收集的修改值传入 `eval` 计算最终结果
+- 阶段一：遍历所有已注册 modifier，从 GunData 读取每个属性的默认值作为缓存初始值
+- 阶段二：遍历枪上安装的所有配件（按槽位），将各配件的 Modifier 数据按 ID 分类收集
+- 阶段三：对每个有修改的属性，将默认值加所有收集的修改值传入 eval 计算最终结果
 
 ## 缓存的生命周期
 
@@ -52,3 +52,52 @@ sequenceDiagram
 触发时机：实体初始化和切枪时，由管理器统一编排。缓存写入实体后，消费方通过实体接口获取缓存对象，再按 ID 读取具体属性值。
 
 # English
+
+> Runtime cache for attachment property modifiers, bound to entity data and refreshed on gun draw events.
+
+## Data Model
+
+Each modifier's cached value has a different type: `Float` (e.g. aim speed, weight), `Integer` (e.g. fire rate, pierce count), `LinkedList` (damage falloff curve), `Map` (inaccuracy values), custom objects (explosion parameters), etc., wrapped in a generic holder class.
+
+The cache object internally uses two Maps: one for final computation results (keyed by modifier ID), and one for intermediate modifier data lists (cleared after computation).
+
+## Computation Pipeline
+
+The arithmetic engine follows a fixed formula: `(defaultValue + Σaddend) × max(Σ(1+percent), 0) × Π(max(multiplier, 0))`, then executes each attachment's Lua expression for secondary processing.
+
+The cache refresh proceeds in three phases:
+
+```mermaid
+flowchart LR
+    A[Phase 1<br/>Initialize defaults<br/>from GunData] --> B[Phase 2<br/>Iterate all attachments<br/>collect modifier data<br/>by modifier ID]
+    B --> C[Phase 3<br/>Call eval per property<br/>compute final value<br/>clear intermediate data]
+```
+
+- Phase 1: Iterate all registered modifiers, read each property's default value from GunData as the initial cache value
+- Phase 2: Iterate all attachments on the gun (by slot), collect each attachment's modifier data classified by ID
+- Phase 3: For each modified property, pass the default value plus all collected modifier values to eval for final computation
+
+## Cache Lifecycle
+
+The cache is created and refreshed on gun draw. The event flow:
+
+```mermaid
+sequenceDiagram
+    participant Draw as Gun Draw Logic
+    participant APM as Manager
+    participant ACP as Cache Object
+    participant Event as Event
+    participant Script as Lua Script
+    participant Mixin as Entity Mixin
+
+    Draw->>APM: postChangeEvent(shooter, gunItem)
+    APM->>ACP: Create cache object
+    APM->>Event: Create and dispatch event
+    Event->>Event: KubeJS event dispatch
+    Event->>ACP: eval(gunItem, gunData)
+    Event->>Event: Forge event bus dispatch (third-party can modify cache)
+    APM->>Script: Lua script modification (limited property subset)
+    APM->>Mixin: Write cache to entity field
+```
+
+Trigger timing: entity initialization and gun draw, both orchestrated by the manager. After the cache is written, consumers access the cache object through the entity interface and read specific property values by modifier ID.

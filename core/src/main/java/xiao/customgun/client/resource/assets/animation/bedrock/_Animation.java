@@ -39,7 +39,7 @@ public final class _Animation extends ResourcePojo<_Animation> {
                     case _AnimationTag.LOOP -> pojo.loop = JsonUtils.readBoolean(reader);
                     case _AnimationTag.ANIMATION_LENGTH -> pojo.animationLength = JsonUtils.readFloat(reader);
                     case _AnimationTag.BONES -> pojo.bones = JsonUtils.readString2ObjectMap(reader, _Bone::fromJson);
-                    case _AnimationTag.SOUND_EFFECTS -> pojo.soundEffects = _SoundEffects.fromJson(reader);
+                    case _AnimationTag.SOUND_EFFECTS -> pojo.soundEffects = JsonUtils.read(reader, _SoundEffects::fromJson);
                     default -> reader.skipValue();
                 }
             }

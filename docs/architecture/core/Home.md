@@ -58,6 +58,8 @@
 	- LivingShooterShoot：射击
 	- LivingShooterSpeedModifier：速度修改
 	- LivingShooterSprint：冲刺
+	- modifier：[射手修饰框架](./entity/shooter/modifier/Home.md)
+		- ShooterGunModifierManager：射手枪械修饰管理器
 - Bullet Victim：受弹实体
 	- BulletVictimKnockback：击退处理
 - LivingShooterSyncHandler：同步射手生物数据
@@ -88,6 +90,8 @@
 	- [GunAttackManager](./gun/attack/gun-attack-manager.md)：枪械攻击管理器
 - Inventory：枪械背包
 	- [GunInventoryManager](./gun/inventory/gun-inventory-manager.md)：枪械背包管理器
+- Script：枪械脚本
+	- [GunScriptManager](./gun/script/gun-script-manager.md)：枪械脚本管理器
 - State：枪械状态
 	- [GunStateManager](./gun/state/gun-state-manager.md)：枪械状态管理器
 
@@ -124,6 +128,7 @@
 	- [AmmoBoxItem](./item/ammobox/ammo-box-item.md)：子弹盒物品
 - Attachment：配件
 	- [AttachmentItem](./item/attachment/attachment-item.md)：配件物品
+	- modifier：配件属性修改器
 - Gun：枪械
 	- [GunItem](./item/gun/gun-item.md)：枪械物品
 
@@ -209,6 +214,7 @@
 	- 对于已封装的 `FriendlyByteBuf` 操作，必须使用此处
 	- 未封装的方法直接调用 `FriendlyByteBuf` 即可
 - RayTraceUtils：射线追踪工具
+- ScriptUtils：LuaJ工具
 - SendUtils：网络消息统一发送入口
 	- 所有消息发送均通过此处，与网络实现（`NetworkHandler`）解耦
 - WorldUtils：游戏内世界相关操作
@@ -271,6 +277,8 @@ Module division based on the `xiao.customgun.core` top-level package
 	- LivingShooterShoot: Shoot
 	- LivingShooterSpeedModifier: Speed modifier
 	- LivingShooterSprint: Sprint
+	- modifier: [Shooter modifier framework](./entity/shooter/modifier/Home.md)
+		- ShooterGunModifierManager: Shooter gun modifier manager
 - Bullet Victim:
 	- BulletVictimKnockback: Knockback handling
 - LivingShooterSyncHandler: Sync Living Shooter data
@@ -299,6 +307,8 @@ Module division based on the `xiao.customgun.core` top-level package
 	- [GunAttackManager](./gun/attack/gun-attack-manager.md#English): Gun attack manager
 - Inventory:
 	- [GunInventoryManager](./gun/inventory/gun-inventory-manager.md#English): Gun inventory manager
+- Script:
+	- [GunScriptManager](./gun/script/gun-script-manager.md#English): Gun script manager
 - State:
 	- [GunStateManager](./gun/state/gun-state-manager.md#English): Gun state manager
 
@@ -335,6 +345,7 @@ Module division based on the `xiao.customgun.core` top-level package
 	- [AmmoBoxItem](./item/ammobox/ammo-box-item.md#English): Ammo box item
 - Attachment:
 	- [AttachmentItem](./item/attachment/attachment-item.md#English): Attachment item
+	- modifier: Attachment property modifier
 - Gun:
 	- [GunItem](./item/gun/gun-item.md#English): Gun item
 
@@ -420,6 +431,7 @@ Module division based on the `xiao.customgun.core` top-level package
 	- Wrapped `FriendlyByteBuf` operations must use this utility
 	- Operations without wrappers should call `FriendlyByteBuf` directly
 - RayTraceUtils: Ray trace utilities
+- ScriptUtils: LuaJ utilities
 - SendUtils: Unified entry point for sending network messages
 	- All network messages must be sent through this utility, decoupling callers from the underlying `NetworkHandler`
 - WorldUtils: In-game world related operations

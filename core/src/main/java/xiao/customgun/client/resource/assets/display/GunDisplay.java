@@ -83,32 +83,32 @@ public final class GunDisplay extends _AssetsDisplay<GunDisplay> {
                     case GunDisplayTag.HUD_EMPTY_TEXTURE_LOCATION, GunDisplayTag.HUD_EMPTY_TEXTURE_LOCATION_OLD1 -> pojo.hudEmptyTextureLocation = JsonUtils.readResourceLocation(reader);
 
                     case GunDisplayTag.GUN_MODEL_TYPE, GunDisplayTag.GUN_MODEL_TYPE_OLD1 -> pojo.gunModelType = JsonUtils.readFromString(reader, GunModelType::fromString);
-                    case GunDisplayTag.LOD_DISPLAY, GunDisplayTag.LOD_DISPLAY_OLD1 -> pojo.lodDisplay = _LodDisplay.fromJson(reader);
+                    case GunDisplayTag.LOD_DISPLAY, GunDisplayTag.LOD_DISPLAY_OLD1 -> pojo.lodDisplay = JsonUtils.read(reader, _LodDisplay::fromJson);
                     case GunDisplayTag.ENABLE_TRANSPARENCY -> pojo.enableTransparency = JsonUtils.readBoolean(reader);
 
                     case GunDisplayTag.IRON_ZOOM_SCALE, GunDisplayTag.IRON_ZOOM_SCALE_OLD1 -> pojo.ironZoomScale = JsonUtils.readFloat(reader);
                     case GunDisplayTag.IRON_VIEW_FOV, GunDisplayTag.IRON_VIEW_FOV_OLD1 -> pojo.ironViewFov = JsonUtils.readFloat(reader);
                     case GunDisplayTag.ENABLE_CROSSHAIR, GunDisplayTag.ENABLE_CROSSHAIR_OLD1 -> pojo.enableCrosshair = JsonUtils.readBoolean(reader);
-                    case GunDisplayTag.MUZZLE_FLASH_DISPLAY, GunDisplayTag.MUZZLE_FLASH_DISPLAY_OLD1 -> pojo.muzzleFlashDisplay = _MuzzleFlashDisplay.fromJson(reader);
+                    case GunDisplayTag.MUZZLE_FLASH_DISPLAY, GunDisplayTag.MUZZLE_FLASH_DISPLAY_OLD1 -> pojo.muzzleFlashDisplay = JsonUtils.read(reader, _MuzzleFlashDisplay::fromJson);
                     case GunDisplayTag.MODEL_NODE_TEXT_DISPLAY, GunDisplayTag.MODEL_NODE_TEXT_DISPLAY_OLD1 -> pojo.modelNodeTextDisplay = JsonUtils.readString2ObjectMap(reader, _ModelNodeTextDisplay::fromJson);
-                    case GunDisplayTag.LASER_DISPLAY, GunDisplayTag.LASER_DISPLAY_OLD1 -> pojo.laserDisplay = _LaserDisplay.fromJson(reader);
+                    case GunDisplayTag.LASER_DISPLAY, GunDisplayTag.LASER_DISPLAY_OLD1 -> pojo.laserDisplay = JsonUtils.read(reader, _LaserDisplay::fromJson);
                     case GunDisplayTag.SURROUND_DISPLAY_BY_HOTBAR, GunDisplayTag.SURROUND_DISPLAY_BY_HOTBAR_OLD1 -> pojo.surroundDisplayByHotbar = JsonUtils.readString2ObjectMap(reader, _SurroundDisplay::fromJson);
-                    case GunDisplayTag.SURROUND_DISPLAY_BY_OFFHAND, GunDisplayTag.SURROUND_DISPLAY_BY_OFFHAND_OLD1 -> pojo.surroundDisplayByOffhand = _SurroundDisplay.fromJson(reader);
+                    case GunDisplayTag.SURROUND_DISPLAY_BY_OFFHAND, GunDisplayTag.SURROUND_DISPLAY_BY_OFFHAND_OLD1 -> pojo.surroundDisplayByOffhand = JsonUtils.read(reader, _SurroundDisplay::fromJson);
                     case GunDisplayTag.DAMAGE_DISPLAY_TYPE, GunDisplayTag.DAMAGE_DISPLAY_TYPE_OLD1 -> pojo.damageDisplayType = JsonUtils.readFromString(reader, DamageDisplayType::fromString);
                     case GunDisplayTag.AMMO_COUNT_TYPE, GunDisplayTag.AMMO_COUNT_TYPE_OLD1 -> pojo.ammoCountType = JsonUtils.readFromString(reader, AmmoCountType::fromString);
-                    case GunDisplayTag.AMMO_DISPLAY_OVERRIDE, GunDisplayTag.AMMO_DISPLAY_OVERRIDE_OLD1 -> pojo.ammoDisplayOverride = _AmmoDisplayOverride.fromJson(reader);
+                    case GunDisplayTag.AMMO_DISPLAY_OVERRIDE, GunDisplayTag.AMMO_DISPLAY_OVERRIDE_OLD1 -> pojo.ammoDisplayOverride = JsonUtils.read(reader, _AmmoDisplayOverride::fromJson);
 
                     case GunDisplayTag.GUN_ANIMATION_LOCATION, GunDisplayTag.GUN_ANIMATION_LOCATION_OLD1 -> pojo.gunAnimationLocation = JsonUtils.readResourceLocation(reader);
                     case GunDisplayTag.SCRIPT_LOCATION, GunDisplayTag.SCRIPT_LOCATION_OLD1 -> pojo.scriptLocation = JsonUtils.readResourceLocation(reader);
                     case GunDisplayTag.SCRIPT_PARAM, GunDisplayTag.SCRIPT_PARAM_OLD1 -> pojo.scriptParam = JsonUtils.readString2ObjectMap(reader, JsonUtils::readObject);
-                    case GunDisplayTag.SHELL_EJECTION_PARAM, GunDisplayTag.SHELL_EJECTION_PARAM_OLD1 -> pojo.shellEjectionParam = _ShellEjectionParam.fromJson(reader);
+                    case GunDisplayTag.SHELL_EJECTION_PARAM, GunDisplayTag.SHELL_EJECTION_PARAM_OLD1 -> pojo.shellEjectionParam = JsonUtils.read(reader, _ShellEjectionParam::fromJson);
                     case GunDisplayTag.THIRD_PERSON_ANIMATION_TYPE, GunDisplayTag.THIRD_PERSON_ANIMATION_TYPE_OLD1 -> pojo.thirdPersonAnimationType = JsonUtils.readFromString(reader, ThirdPersonAnimationType::fromString);
                     case GunDisplayTag.PLAYER_ANIMATOR_LOCATION, GunDisplayTag.PLAYER_ANIMATOR_LOCATION_OLD1 -> pojo.playerAnimatorLocation = JsonUtils.readResourceLocation(reader);
                     case GunDisplayTag.PLAYER_ANIMATOR_FIXED_HAND, GunDisplayTag.PLAYER_ANIMATOR_FIXED_HAND_OLD1 -> pojo.playerAnimatorFixedHand = JsonUtils.readBoolean(reader);
                     case GunDisplayTag.GUN_SOUNDS, GunDisplayTag.GUN_SOUNDS_OLD1 -> pojo.gunSounds = JsonUtils.readObject2ObjectMap(reader, GunSoundType::fromString, JsonUtils::readResourceLocation);
                     case GunDisplayTag.PRELOAD_SOUND_LOCATION, GunDisplayTag.PRELOAD_SOUND_LOCATION_OLD1 -> pojo.preloadSoundLocation = JsonUtils.readList(reader, JsonUtils::readResourceLocation);
 
-                    case GunDisplayTag.CONTROLLABLE_DATA, GunDisplayTag.CONTROLLABLE_DATA_OLD1 -> pojo.controllableData = _ControllableData.fromJson(reader);
+                    case GunDisplayTag.CONTROLLABLE_DATA, GunDisplayTag.CONTROLLABLE_DATA_OLD1 -> pojo.controllableData = JsonUtils.read(reader, _ControllableData::fromJson);
                     default -> reader.skipValue();
                 }
             }

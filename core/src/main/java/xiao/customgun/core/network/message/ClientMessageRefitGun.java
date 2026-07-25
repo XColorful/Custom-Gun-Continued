@@ -19,7 +19,7 @@ import xiao.customgun.core.api.item.attachment.IAttachmentGetter;
 import xiao.customgun.core.api.item.gun.IGunGetter;
 import xiao.customgun.core.api.network.message.IMessage;
 import xiao.customgun.core.developer.PlannedRefactor;
-import xiao.customgun.core.item.gun.GunPropertyManager;
+import xiao.customgun.core.entity.shooter.modifier.ShooterGunModifierManager;
 import xiao.customgun.core.util.SendUtils;
 
 import java.util.function.Consumer;
@@ -94,7 +94,7 @@ public record ClientMessageRefitGun(int attachmentSlotIndex,
                 }
 
                 // 刷新配件数据
-                GunPropertyManager.postChangeEvent(player, gunItem);
+                ShooterGunModifierManager.postChangeEvent(player, gunItem);
 
                 player.inventoryMenu.broadcastChanges();
                 SendUtils.sendMessageToPlayer(player, new ServerMessageRefreshRefitScreen());

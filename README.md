@@ -52,7 +52,7 @@
 |`TimelessAPI`|`ResourceApi`+`ClientResourceApi`|
 |`CommonAssetsManager`、`CommonNetworkCache`|`_AllDataManager`+`_DataInstanceManager`、`SyncDataCache`|
 |`ClientAssetsManager`+`ClientIndexManager`|`_AllAssetsManager`+`_AssetsInstanceManager`|
-|`IGunOperator`|`ILivingShooter`（extends _IGunOperator_, _IShooterState_, _ISynGunState_, _IGunCacheHolder_）|
+|`IGunOperator`|`ILivingShooter`（extends _IGunOperator_, _IShooterState_, _ISynGunState_, _IShooterModifierCacheHolder_）|
 |`KnockBackModifier`、`ITargetEntity`|`IBulletVictimEntity` (extends _IBulletVictimEntityImpact_, _IBulletVictimKnockback_)|
 
 ### 主Manager-子Manager体系重构
@@ -78,7 +78,7 @@
 
 |旧接口|新接口|
 |---|---|
-|`IGunOperator`|`ILivingShooter`（extends _IGunOperator_, _IShooterState_, _ISynGunState_, _IGunCacheHolder_）|
+|`IGunOperator`|`ILivingShooter`（extends _IGunOperator_, _IShooterState_, _ISynGunState_, _IShooterModifierCacheHolder_）|
 ||_IGunOperator_（extends _ICommonGunOperator_）|
 ||_IClientGunOperator_（extends _ICommonGunOperator_）|
 |`IGun`|`IGun`（extends _IGunRuntime_, _IAnimationItem_, _IGunDataAccess_, _IGunGetter_）|
@@ -138,7 +138,7 @@ Everything completed so far supports synchronization across **Minecraft 1.20.1 -
 |`TimelessAPI`|`ResourceApi` + `ClientResourceApi`|
 |`CommonAssetsManager`, `CommonNetworkCache`|`_AllDataManager` + `_DataInstanceManager`, `SyncDataCache`|
 |`ClientAssetsManager` + `ClientIndexManager`|`_AllAssetsManager` + `_AssetsInstanceManager`|
-|`IGunOperator`|`ILivingShooter` (extends _IGunOperator_, _IShooterState_, _ISynGunState_, _IGunCacheHolder_)|
+|`IGunOperator`|`ILivingShooter` (extends _IGunOperator_, _IShooterState_, _ISynGunState_, _IShooterModifierCacheHolder_)|
 |`KnockBackModifier`, `ITargetEntity`|`IBulletVictimEntity` (extends _IBulletVictimEntityImpact_, _IBulletVictimKnockback_)|
 
 ### Main Manager / Sub Manager Refactor
@@ -164,7 +164,7 @@ Everything completed so far supports synchronization across **Minecraft 1.20.1 -
 
 |Old Interface|New Interface|
 |---|---|
-|`IGunOperator`|`ILivingShooter` (extends _IGunOperator_, _IShooterState_, _ISynGunState_, _IGunCacheHolder_)|
+|`IGunOperator`|`ILivingShooter` (extends _IGunOperator_, _IShooterState_, _ISynGunState_, _IShooterModifierCacheHolder_)|
 ||_IGunOperator_ (extends _ICommonGunOperator_)|
 ||_IClientGunOperator_ (extends _ICommonGunOperator_)|
 |`IGun`|`IGun` (extends _IGunRuntime_, _IAnimationItem_, _IGunDataAccess_, _IGunGetter_)|

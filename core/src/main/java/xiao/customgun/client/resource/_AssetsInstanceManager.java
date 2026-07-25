@@ -21,7 +21,7 @@ import xiao.customgun.client.resource.instance.data.ClientBlockIndexInstance;
 import xiao.customgun.client.resource.instance.data.ClientGunIndexInstance;
 import xiao.customgun.core.api.item.gun.IGunGetter;
 import xiao.customgun.core.api.resource.ResourceApi;
-import xiao.customgun.core.item.gun.GunPropertyManager;
+import xiao.customgun.core.entity.shooter.modifier.ShooterGunModifierManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -72,7 +72,7 @@ public class _AssetsInstanceManager {
 
         LocalPlayer player = Minecraft.getInstance().player;
         if (player != null && IGunGetter.fromMainHand(player) != null) {
-            GunPropertyManager.postChangeEvent(player);
+            ShooterGunModifierManager.postChangeEvent(player);
 
             // 自动切一次枪，以便刷新状态机
             ILocalShooterGetter.fromLocalPlayer(player).cgc$clientDraw(ItemStack.EMPTY);

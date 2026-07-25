@@ -39,6 +39,12 @@
  * {@link xiao.customgun.client.api.entity.IClientGunProjectile}
  */
 ```
+- Shooter Gun Modifier cache：射手枪械修饰
+```java
+/**  
+ * {@link xiao.customgun.core.api.entity.shooter.modifier.ShooterGunModifierCache}  
+ */
+```
 
 ### Gun
 

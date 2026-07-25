@@ -27,7 +27,7 @@ public final class _SimpleModifierData extends __ModifierData<_SimpleModifierDat
             while (reader.hasNext()) {
                 String key = reader.nextName();
                 switch (key) {
-                    case __ModifierDataTag.SHARED_BASE_ADD, __ModifierDataTag.ADD_OLD1 -> pojo.setSharedBaseAdd(JsonUtils.readFloat(reader));
+                    case __ModifierDataTag.SHARED_BASE_ADD, __ModifierDataTag.SHARED_BASE_ADD_OLD1 -> pojo.setSharedBaseAdd(JsonUtils.readFloat(reader));
                     case __ModifierDataTag.SHARED_PERCENT_ADD, __ModifierDataTag.SHARED_PERCENT_ADD_OLD1 -> pojo.setSharedPercentAdd(JsonUtils.readFloat(reader));
                     case __ModifierDataTag.UNIQUE_MULTIPLIER, __ModifierDataTag.UNIQUE_MULTIPLIER_OLD1 -> pojo.setUniqueMultiplier(JsonUtils.readFloat(reader));
                     case __ModifierDataTag.SCRIPT_FUNCTION, __ModifierDataTag.SCRIPT_FUNCTION_OLD1 -> pojo.setScriptFunction(JsonUtils.readString(reader));

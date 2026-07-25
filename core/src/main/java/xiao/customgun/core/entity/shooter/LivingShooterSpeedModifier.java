@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.CustomGun;
 import xiao.customgun.core.api.entity.ShooterProperty;
-import xiao.customgun.core.api.entity.gun.GunPropertyCache;
+import xiao.customgun.core.api.entity.shooter.modifier.ShooterGunModifierCache;
 import xiao.customgun.core.api.entity.shooter.ILivingShooterGetter;
 import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.api.item.gun.IGunGetter;
@@ -48,8 +48,8 @@ public final class LivingShooterSpeedModifier extends LivingShooterAspect {
         }
 
         // 处理重量带来的修正
-        @Nullable GunPropertyCache gunPropertyCache = ILivingShooterGetter.cgc$fromLivingEntity(this.livingShooter).cgc$getGunPropertyCache();
-        if (gunPropertyCache == null) return;
+        @Nullable ShooterGunModifierCache shooterGunModifierCache = ILivingShooterGetter.cgc$fromLivingEntity(this.livingShooter).cgc$getGunModifierCache();
+        if (shooterGunModifierCache == null) return;
 
         double weightFactor = SyncConfig.WEIGHT_SPEED_MULTIPLIER.get();
         if (weightFactor > 0) {

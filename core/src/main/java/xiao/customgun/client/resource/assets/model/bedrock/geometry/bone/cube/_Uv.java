@@ -37,12 +37,12 @@ public class _Uv extends ResourcePojo<_Uv> {
             while (reader.hasNext()) {
                 String key = reader.nextName();
                 switch (key) {
-                    case _UvTag.NORTH -> pojo.north = _FaceUv.fromJson(reader);
-                    case _UvTag.SOUTH -> pojo.south = _FaceUv.fromJson(reader);
-                    case _UvTag.EAST -> pojo.east = _FaceUv.fromJson(reader);
-                    case _UvTag.WEST -> pojo.west = _FaceUv.fromJson(reader);
-                    case _UvTag.UP -> pojo.up = _FaceUv.fromJson(reader);
-                    case _UvTag.DOWN -> pojo.down = _FaceUv.fromJson(reader);
+                    case _UvTag.NORTH -> pojo.north = JsonUtils.read(reader, _FaceUv::fromJson);
+                    case _UvTag.SOUTH -> pojo.south = JsonUtils.read(reader, _FaceUv::fromJson);
+                    case _UvTag.EAST -> pojo.east = JsonUtils.read(reader, _FaceUv::fromJson);
+                    case _UvTag.WEST -> pojo.west = JsonUtils.read(reader, _FaceUv::fromJson);
+                    case _UvTag.UP -> pojo.up = JsonUtils.read(reader, _FaceUv::fromJson);
+                    case _UvTag.DOWN -> pojo.down = JsonUtils.read(reader, _FaceUv::fromJson);
                     default -> reader.skipValue();
                 }
             }

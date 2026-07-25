@@ -404,7 +404,6 @@ Notation:
 |`DefaultTableItem`|_Deprecated_|
 |`GunSmithTableItem`|_Deprecated_|
 |`ModernKineticGunItem`|gun.`GunItem`|
-|`ModernKineticGunScriptAPI`||
 |`TargetMinecartItem`|_Deprecated_|
 
 |com.tacz.guns.item|xiao.customgun.client.api.item|
@@ -414,6 +413,7 @@ Notation:
 |com.tacz.guns.item|xiao.customgun.core.api.gun|
 |---|---|
 |`ModernKineticGunItem`|`IGunManager`|
+|`ModernKineticGunScriptAPI`|script.`GunScriptApi`|
 
 |com.tacz.guns.item.`ModernKineticGunItem`|xiao.customgun.core.gun|
 |---|---|

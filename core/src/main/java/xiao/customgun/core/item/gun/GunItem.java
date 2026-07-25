@@ -138,6 +138,7 @@ public class GunItem extends Item implements IGun, GunDataAccessor {
                 .gunInventoryManager()
                 .findAndExtractDummyAmmo(gunItem, needAmmoCount);
     }
+    // ----IGunScriptRuntime----
     // ----IGunStateRuntime----
     @Override public void tickHeat(ShooterProperty shooterProperty, ItemStack gunItem, LivingEntity livingShooter) {
         CustomGun.getGunManager().getManagerGroup(this.getManagerGroupTag(gunItem))

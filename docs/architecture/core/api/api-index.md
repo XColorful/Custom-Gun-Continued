@@ -86,6 +86,8 @@
 		- [IGunAttackManager](/docs/api/core/gun/attack/IGunAttackManager.md)：枪械攻击管理器
 	- Inventory：枪械背包
 		- [IGunInventoryManager](/docs/api/core/gun/inventory/IGunInventoryManager.md)：枪械背包管理器
+	- Script：枪械脚本
+		- [IGunScriptManager](/docs/api/core/gun/script/IGunScriptManager.md)：枪械脚本管理器
 	- State：枪械状态
 		- [IGunStateManager](/docs/api/core/gun/state/IGunStateManager.md)：枪械状态管理器
 - [IGunRuntime](/docs/api/core/gun/IGunRuntime.md)：枪械运行时接口，聚合枪械子管理器 Runtime 接口
@@ -283,6 +285,8 @@ Post Event:
 		- [IGunAttackManager](/docs/api/core/gun/attack/IGunAttackManager.md): Gun attack manager
 	- Inventory:
 		- [IGunInventoryManager](/docs/api/core/gun/inventory/IGunInventoryManager.md): Gun inventory manager
+    - Script:
+	    - [IGunScriptManager](/docs/api/core/gun/script/IGunScriptManager.md): Gun script manager
 	- State:
 		- [IGunStateManager](/docs/api/core/gun/state/IGunStateManager.md): Gun state manager
 - [IGunRuntime](/docs/api/core/gun/IGunRuntime.md): Gun runtime interface, aggregating Gun sub-manager Runtime interfaces

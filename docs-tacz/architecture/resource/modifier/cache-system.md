@@ -1,3 +1,4 @@
+[English](#English)
 
 # 缓存系统
 
@@ -5,7 +6,7 @@
 
 ## 数据模型
 
-### CacheValue<T>
+### CacheValue
 
 `com.tacz.guns.api.modifier.CacheValue`
 
@@ -135,71 +136,6 @@ cacheValues.forEach((id, value) -> {
 
 最后清除 `cacheModifiers` 释放内存。
 
-## AttachmentPropertyManager 的计算引擎
-
-### 数值型 eval（适用大部分 Modifier）
-
-```java
-public static double eval(List<Modifier> modifiers, double defaultValue) {
-    double addend = defaultValue;
-    double percent = 1;
-    double multiplier = 1;
-
-    // 第一步：聚合所有配件的加数、百分比、乘数
-    for (Modifier modifier : modifiers) {
-        addend += modifier.getAddend();
-        percent += modifier.getPercent();
-        multiplier *= Math.max(modifier.getMultiplier(), 0f);
-    }
-
-    // 第二步：计算基础值
-    percent = Math.max(percent, 0f);
-    double value = addend * percent * multiplier;
-
-    // 第三步：逐一执行 Lua function
-    for (Modifier modifier : modifiers) {
-        String function = modifier.getFunction();
-        if (StringUtils.isEmpty(function)) continue;
-        value = functionEval(value, defaultValue, function);
-    }
-
-    return value;
-}
-```
-
-### 布尔型 eval（适用于 Ignite、Explosion 等 OR 语义）
-
-```java
-public static boolean eval(List<Boolean> modified, boolean defaultValue) {
-    if (defaultValue) {
-        // 默认 true → 需要所有配件都为 true (AND)
-        return modified.stream().allMatch(s -> s);
-    } else {
-        // 默认 false → 任意一个配件为 true 即可 (OR)
-        return modified.stream().anyMatch(s -> s);
-    }
-}
-```
-
-### LuaJ Script 执行
-
-```java
-public static double functionEval(double value, double defaultValue, String script) {
-    script = script.toLowerCase(Locale.ENGLISH);
-    LUAJ_ENGINE.put("x", value);       // x = 当前计算值
-    LUAJ_ENGINE.put("r", defaultValue); // r = 原始默认值
-    LUAJ_ENGINE.eval(script);           // 执行脚本
-    if (LUAJ_ENGINE.get("y") instanceof Number number) {
-        return number.doubleValue();    // y = 脚本输出结果
-    }
-    return value;  // 脚本无输出则保持原值
-}
-```
-
-脚本中通过变量 `x` 获取当前（addend/percent/multiplier 计算后）的值、变量 `r` 获取原始默认值，计算结果必须赋值给变量 `y`。
-
-LuaJ 引擎实例是 static final 的，全局共享一个 `ScriptEngine` 实例。
-
 ## 缓存的生命周期
 
 ### 创建时机
@@ -248,15 +184,7 @@ sequenceDiagram
 
 ### 可被脚本修改的缓存属性
 
-`GunProperties.allCacheModifiableByScript()` 返回一个限定列表，这些属性在缓存计算完成后可通过 Lua 脚本再次修改：
-
-- `AMMO_SPEED`
-- `ARMOR_IGNORE`
-- `EFFECTIVE_RANGE`
-- `HEADSHOT_MULTIPLIER`
-- `KNOCKBACK`
-- `PIERCE`
-- `WEIGHT`
+`GunProperties.allCacheModifiableByScript()` 返回一个限定列表，这些属性在缓存计算完成后可通过 Lua 脚本再次修改
 
 ### 消费时机
 
@@ -271,25 +199,4 @@ sequenceDiagram
 - **子弹创建**：`EntityKineticBullet` 构造器 — 读取多种属性写入子弹
 - **GUI**：`GunPropertyDiagrams` — 读取所有属性绘制属性条
 
-## 离线计算：AttachmentDataUtils
-
-`com.tacz.guns.util.AttachmentDataUtils`
-
-提供不依赖实体缓存的直接计算方式。用于不需要缓存的场景（如工具提示中的单次计算）：
-
-```java
-// 遍历所有配件获取某个 modifier 的列表，直接计算
-private static List<Modifier> getModifiers(ItemStack gunItem, GunData gunData, String id)
-
-// 高层的便捷方法
-public static double getWightWithAttachment(ItemStack gunItem, GunData gunData)
-public static double getArmorIgnoreWithAttachment(ItemStack gunItem, GunData gunData)
-public static double getHeadshotMultiplier(ItemStack gunItem, GunData gunData)
-public static double getDamageWithAttachment(ItemStack gunItem, GunData gunData)
-```
-
-这些方法都遵循相似的模式：
-1. 遍历所有 `AttachmentType` 槽位
-2. 获取每个槽位上安装的配件的 `AttachmentData`
-3. 收集目标 id 的 `Modifier` 值
-4. 调用 `AttachmentPropertyManager.eval(modifiers, defaultValue)` 计算
+# English

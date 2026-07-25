@@ -1,5 +1,6 @@
+[English](#English)
 
-# Shooter Gun Modifier 体系
+# 射手修饰框架
 
 > CGC 对 TaCZ 配件属性修改器体系的重构版本。覆盖从 `AttachmentModifierType` 枚举 → `ShooterGunModifierCache` 缓存 → `ShooterGunModifierManager` 管理器 → 事件 → 消费方的完整链路。
 
@@ -57,10 +58,10 @@ graph TB
     ISMC -.->|"实现"| ILS
     SP -->|"持有"| SGMC
 
-    ISMC -->|"cgc$getGunModifierCache"| LSS
-    ISMC -->|"cgc$getGunModifierCache"| LSSM
-    ISMC -->|"cgc$getGunModifierCache"| LSA
-    ISMC -->|"cgc$getGunModifierCache"| GP
+    ISMC --->|"cgc$getGunModifierCache"| LSS
+    ISMC --->|"cgc$getGunModifierCache"| LSSM
+    ISMC --->|"cgc$getGunModifierCache"| LSA
+    ISMC --->|"cgc$getGunModifierCache"| GP
 
     style JSON fill:#e1f5fe
     style AD fill:#e1f5fe
@@ -74,6 +75,10 @@ graph TB
     style ILS fill:#e8f5e9
     style SP fill:#e8f5e9
     style ISMC fill:#e8f5e9
+    
+    %% ----调整Mermaid外观（与体系无关）----
+    GMTT ~~~ ISMC
+    SGMCE ~~~ SGMC
 ```
 
 ## 体系架构
@@ -129,8 +134,7 @@ graph TB
 | [JSON 数据结构](./data-structure.md) | `__ModifierData<T>` 基类与子类, `AttachmentData` 强类型字段设计, JSON 标签常量体系 |
 | [AttachmentModifierType 枚举](./modifier-type.md) | 枚举设计、附属于 GunModifierType、持有 IAttachmentModifier 实例、与 TaCZ 字符串键体系的对比 |
 | [缓存系统](./cache-system.md) | `ShooterGunModifierCache` 生命周期、`ShooterGunModifierManager` 管线、`IShooterModifierCacheHolder` 接口 |
-| [事件与通知](./event-and-notification.md) | `ShooterGunModifierCacheEvent` 事件设计、自定义事件派发流 |
 | [Modifier 计算流程](./calculation-flow.md) | CGC 重构后 `IItemModifier`→`IAttachmentModifier`→`AttachmentModifier` 计算管线、与 TaCZ 的差异 |
-| [消费方汇总](./consumer-sites.md) | 所有 `cgc$getGunModifierCache()` 调用位置、消费模式、当前 TODO 状态 |
-| [迁移对照](./migration-mapping.md) | TaCZ → CGC 逐类迁移映射与兼容说明 |
 | [接口设计演进](./design-evolution.md) | 从 TaCZ 到 CGC 最终方案的设计推演，含各候选方案的 Mermaid 图和否决原因 |
+
+# English

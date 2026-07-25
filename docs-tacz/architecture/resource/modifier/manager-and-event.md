@@ -1,3 +1,4 @@
+[English](#English)
 
 # 管理器与事件系统
 
@@ -33,18 +34,6 @@ public static void registerModifier() {
 ```
 
 使用 `LinkedHashMap` 保持插入顺序，共注册 16 个修改器。
-
-### 计算引擎
-
-`AttachmentPropertyManager.eval(List<Modifier>, double)` 和 `eval(List<Boolean>, boolean)` 是两个核心计算重载，详见 [缓存系统](./cache-system.md)。
-
-### LuaJ 脚本引擎
-
-```java
-private static final ScriptEngine LUAJ_ENGINE = new LuaScriptEngineFactory().getScriptEngine();
-```
-
-全局共享的 LuaJ `ScriptEngine` 实例，用于执行修饰器的 `function` 脚本表达式。`functionEval(value, defaultValue, script)` 方法使用此引擎。
 
 ## 事件流详解
 
@@ -221,3 +210,5 @@ IGNITE_ENTITY, IGNITE_ENTITY_TIME, IGNITE_BLOCK,
 EXPLODE_ENABLED, EXPLOSION_DAMAGE, EXPLOSION_RADIUS,
 EXPLOSION_KNOCKBACK, EXPLOSION_DESTROYS_BLOCK, EXPLOSION_DELAY
 ```
+
+# English

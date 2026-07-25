@@ -1,9 +1,10 @@
+[English](#English)
 
 # Modifier 计算流程
 
 > TaCZ 原版中 `IAttachmentModifier` 与 `GunData`、`AttachmentData` 之间的数据流。本文专注于缓存计算过程本身，不涉及消费方。
 
-## 核心数据关系
+### 核心数据关系
 
 ```mermaid
 graph LR
@@ -26,7 +27,7 @@ graph LR
 
 **关键点**：`IAttachmentModifier` 的 `initCache` 方法签名包含 `GunData`，因为枪械的 **base 值**（配件修改前的默认值）来自 `GunData`。`eval` 方法则消费从各配件 `AttachmentData` 收集来的修改值列表。
 
-## 计算两步走
+### 计算两步走
 
 TaCZ 的 `IAttachmentModifier<T, K>` 把计算拆成两步：
 
@@ -37,7 +38,7 @@ TaCZ 的 `IAttachmentModifier<T, K>` 把计算拆成两步：
 
 **为什么需要两步？** 因为枪械自身的 base 值（来自 `GunData`）和配件修改值（来自 `AttachmentData`）来自不同的数据源，且 base 值只需要读一次。
 
-## 完整计算序列
+### 完整计算序列
 
 ```mermaid
 sequenceDiagram
@@ -64,54 +65,7 @@ sequenceDiagram
     Note over MOD: base=0.2, 配件1 addend=-0.05<br/>配件2 percent=-0.1, 配件3 multiplier=0.9<br/>→ (0.2-0.05)*(1-0.1)*0.9 = 0.1215
 ```
 
-## 具体例子：AdsModifier 的完整计算
-
-下面是 TaCZ 中 `AdsModifier` 从数据到缓存的完整路径：
-
-### 数据准备阶段（数据包加载时）
-
-```
-配件JSON文件 (data/<ns>/attachments/data/red_dot.json)
-  → CommonAttachmentIndexSerializer 解析
-  → 遍历 AttachmentPropertyManager.MODIFIERS 找 key "ads"
-  → 找到 AdsModifier，调用 readJson(json)
-  → 返回 AdsJsonProperty{Modifier(addend=-0.05, percent=0, multiplier=1)}
-  → 存入 AttachmentData.modifier["ads"] = AdsJsonProperty
-```
-
-### 计算阶段（缓存刷新时）
-
-```
-1. initCache(gunItem, gunData)
-   → gunData.getAimTime() 返回 0.2 (秒)
-   → CacheValue<Float>(0.2)
-   → 存入 cacheValues["ads"]
-
-2. 遍历枪身上的所有配件:
-   → 对配件 red_dot: AttachmentData.modifier["ads"].getValue() → Modifier(addend=-0.05)
-   → 对配件 grip:    AttachmentData.modifier["ads"].getValue() → Modifier(percent=-0.1)
-   → 对配件 stock:   AttachmentData.modifier["ads"].getValue() → Modifier(multiplier=0.8)
-   → 收集到 cacheModifiers["ads"] = [M₁, M₂, M₃]
-
-3. eval(List<Modifier>, CacheValue<Float>)
-   → AttachmentPropertyManager.eval(modifiers, 0.2)
-     → addend = 0.2 + (-0.05) + 0 + 0 = 0.15
-     → percent = 1 + 0 + (-0.1) + 0 = 0.9
-     → multiplier = 1 * 1 * 1 * 0.8 = 0.8
-     → value = 0.15 * 0.9 * 0.8 = 0.108
-     → (如有 Lua function 再执行)
-   → CacheValue<Float>(0.108)  ← 最终缓存值
-```
-
-### 消费阶段
-
-```java
-// LocalPlayerAim 读取
-float aimTime = cacheProperty.<Float>getCache("ads");
-// aimTime = 0.108 → 瞄准动画比默认快约46%
-```
-
-## GunData 的角色：base 值提供者
+### GunData 的角色：base 值提供者
 
 `GunData` 在计算管线中只扮演一个角色：**提供每个属性的 base 值（默认值）**。
 
@@ -129,7 +83,7 @@ float aimTime = cacheProperty.<Float>getCache("ads");
 
 可以看到 **base 值并不总是来自 GunData 本身**——有些来自 `BulletData`（GunData 的子数据），有些来自 `GunConfig`（全局配置文件）。`initCache` 方法签名的 `GunData gunData` 参数实际上是一个**获取所有枪械静态数据的入口点**。
 
-## 设计中存在的问题
+### 设计中存在的问题
 
 在 TaCZ 原版中，`IAttachmentModifier` 接口承担了过多职责：
 
@@ -145,4 +99,4 @@ float aimTime = cacheProperty.<Float>getCache("ads");
 - 管理器遍历配件、调用 `IAttachmentModifier.getModifier(AttachmentData)` 获取修改数据
 - 管理器调用 `IAttachmentModifier.eval(modifiers, base)` 完成计算
 
-这正是 CGC 重构版中新 `IItemModifier<T, K, V>` 接口的设计方向——`getModifier(T pojo)` 只关心从数据源提取修改值，`eval(Collection<K> modifiers, V base)` 只做计算。
+# English

@@ -1,3 +1,4 @@
+[English](#English)
 
 # Modifier 接口设计演进
 
@@ -5,7 +6,7 @@
 
 ---
 
-## 起点：TaCZ 原版 IAttachmentModifier 的问题
+### 起点：TaCZ 原版 IAttachmentModifier 的问题
 
 ```mermaid
 graph TB
@@ -26,7 +27,7 @@ graph TB
 
 ---
 
-## 方案 A：把 initCache 分离，让 IAttachmentModifier 只依赖 AttachmentData
+#### 方案 A：把 initCache 分离，让 IAttachmentModifier 只依赖 AttachmentData
 
 ```mermaid
 graph TB
@@ -50,7 +51,7 @@ graph TB
 
 ---
 
-## 方案 B：IGunModifier 含 GunData 初值获取，IItemModifier 去掉
+#### 方案 B：IGunModifier 含 GunData 初值获取，IItemModifier 去掉
 
 ```mermaid
 graph TB
@@ -74,7 +75,7 @@ graph TB
 
 ---
 
-## 方案 C：枚举指向具体类，具体类之间做泛型匹配
+#### 方案 C：枚举指向具体类，具体类之间做泛型匹配
 
 ```mermaid
 graph TB
@@ -104,7 +105,7 @@ graph TB
 
 ---
 
-## 方案 D：ShooterGunModifierCache 内 switch-case 赋初值
+#### 方案 D：ShooterGunModifierCache 内 switch-case 赋初值
 
 **思路**：base 值获取全在 `ShooterGunModifierCache` 里用 switch-case 实现，modifier 接口只保留 `getModifier` + `eval`。
 
@@ -112,9 +113,9 @@ graph TB
 
 ---
 
-## 最终方案：胖接口拆分 + 接口 default 代理
+### 最终方案：胖接口拆分 + 接口 default 代理
 
-### 设计来源：已有重构手法
+#### 设计来源：已有重构手法
 
 CGC 项目中已有三处使用相同的胖接口拆分手法：
 
@@ -130,7 +131,7 @@ Modifier 体系的拆分方式与此一脉相承：
 - UI → 客户端单独处理
 - `eval` + 新增 `getModifier` → 组成 `IItemModifier` 核心
 
-### 菱形继承链与泛型匹配
+#### 菱形继承链与泛型匹配
 
 ```mermaid
 graph LR
@@ -157,7 +158,7 @@ graph LR
 
 **路径3是新增的**——`AdsModifier implements IAdsModifier<AttachmentData>`。`IAdsModifier` 通过 `default getBase` 提供了 base 值获取的实现，`AdsModifier` 类中完全不写 `getBase`。`IAdsModifier` 虚线箭头的 `implements` 关系标注了 `provides getBase`，明确这个职责的来源。
 
-### 接口 clash 强制泛型匹配 — 在 ShooterGunModifierCache 中的应用
+#### 接口 clash 强制泛型匹配 — 在 ShooterGunModifierCache 中的应用
 
 `ShooterGunModifierCache.getValue(IGunModifierHolder, Class<? extends IGunModifier<T,K,V>>)` 方法利用菱形继承的泛型约束来保证类型安全：
 
@@ -181,7 +182,7 @@ AdsModifier extends AttachmentModifier<_SimpleModifierData, Float>
 
 如果 `IAdsModifier` 的 `V` 是 `Integer` 而 `AttachmentModifier` 的 `V` 是 `Float`，Java 编译器直接拒绝。"接口 clash 强制类型匹配"——编译期保证所有路径上泛型一致。
 
-### "内部实现分离"的含义
+#### "内部实现分离"的含义
 
 `IAttachmentModifier` 是对外的全能门面（调用者拿到它就够了）。但内部实现被分离到不同层级：
 
@@ -193,7 +194,7 @@ AdsModifier extends AttachmentModifier<_SimpleModifierData, Float>
 
 ---
 
-## 与 TaCZ 的逐项对比
+### 与 TaCZ 的逐项对比
 
 | 维度 | TaCZ | CGC 最终方案 |
 |---|---|---|
@@ -203,7 +204,7 @@ AdsModifier extends AttachmentModifier<_SimpleModifierData, Float>
 | 具体类职责 | 4 方法全部自己写 | 只写 `getModifier` + `eval`（`getBase` 由接口 default 代理） |
 | 新增 modifier | 实现完整接口 | 继承 `AttachmentModifier<K,V>` + 实现对应 `I*Modifier<AttachmentData>` |
 
-### GunProperties 的对应
+#### GunProperties 的对应
 
 TaCZ 的 `GunProperties`（`GunProperty<T>` record + 常量列表）在 CGC 中被拆分：
 
@@ -213,3 +214,5 @@ TaCZ 的 `GunProperties`（`GunProperty<T>` record + 常量列表）在 CGC 中�
 | 类型 `type` | `I*Modifier` 的 `V` 泛型参数 |
 | `@CacheModifiableByScript` | `GunModifierType` 枚举 + `ShooterGunModifierManager` 逻辑 |
 | `RuntimeOnly` | `GunData` getter / 运行时脚本接口 |
+
+# English

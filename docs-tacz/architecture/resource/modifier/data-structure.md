@@ -1,13 +1,14 @@
+[English](#English)
 
 # JSON 数据结构与格式要求
 
 > 配件 JSON 文件的完整格式规范，包含 `Modifier`、`AttachmentData` 和各类具体修改器数据格式。
 
-## 文件位置
+### 文件位置
 
 配件数据定义在数据包的 `data/<namespace>/attachments/data/` 目录下，文件名既是配件 ID。
 
-## Modifier — 通用修饰器 POJO
+## 通用修饰器 POJO
 
 `com.tacz.guns.resource.pojo.data.attachment.Modifier`
 
@@ -51,7 +52,7 @@ r = defaultValue  // 默认值
 y = 计算结果      // 输出必须赋值给 y
 ```
 
-## AttachmentData — 配件总数据 POJO
+## 配件总数据 POJO
 
 `com.tacz.guns.resource.pojo.data.attachment.AttachmentData`
 
@@ -80,7 +81,7 @@ public class AttachmentData {
 5. 存入 `AttachmentData.modifier` Map（key = modifier id, value = JsonProperty）
 6. 同时处理 `getOptionalFields()` 返回的旧版本字段名
 
-### JsonProperty<T> — 中间类型
+### 中间类型
 
 `com.tacz.guns.api.modifier.JsonProperty`
 
@@ -106,13 +107,6 @@ public abstract class JsonProperty<T> {
 | AdsModifier | `ads` | `{"ads": {"addend": -0.1}}` |
 | AmmoSpeedModifier | `ammo_speed` | `{"ammo_speed": {"percent": 0.15}}` |
 | ArmorIgnoreModifier | `armor_ignore` | `{"armor_ignore": {"addend": 0.2}}` |
-| DamageModifier | `damage` | `{"damage": {"multiplier": 1.2}}` |
-| EffectiveRangeModifier | `effective_range` | `{"effective_range": {"percent": 0.3}}` |
-| HeadShotModifier | `head_shot` | `{"head_shot": {"multiplier": 1.5}}` |
-| KnockbackModifier | `knockback` | `{"knockback": {"addend": 0.5}}` |
-| PierceModifier | `pierce` | `{"pierce": {"addend": 1}}` |
-| RpmModifier | `rpm` | `{"rpm": {"percent": 0.1}}` |
-
 ### 复合型修改器
 
 部分修改器需要不止一个 `Modifier`，使用自定义的数据类：
@@ -143,17 +137,6 @@ public abstract class JsonProperty<T> {
 }
 ```
 
-#### IgniteModifier（点燃）
-
-```jsonc
-{
-  "ignite": {
-    "ignite_entity": true,        // boolean
-    "ignite_block": false         // boolean
-  }
-}
-```
-
 #### InaccuracyModifier（散布）
 
 ```jsonc
@@ -168,27 +151,6 @@ public abstract class JsonProperty<T> {
 Inaccuracy 有 5 种类型（`InaccuracyType` 枚举）：`STAND`, `MOVE`, `SNEAK`, `LIE`, `AIM`。
 - `inaccuracy` 覆盖除 AIM、SNEAK、LIE 之外的所有类型
 - 各特定字段覆盖对应类型
-
-#### RecoilModifier（后坐力）
-
-```jsonc
-{
-  "recoil": {
-    "pitch": {"percent": -0.2},   // Modifier — 垂直后坐力 (Pitch)
-    "yaw": {"percent": -0.15}     // Modifier — 水平后坐力 (Yaw)
-  }
-}
-```
-
-注意：后坐力使用 `ParameterizedCachePair` 而非直接计算，以保留各乘区原始值用于后续动态计算。
-
-#### WeightModifier（重量）
-
-```jsonc
-{
-  "weight_modifier": {"addend": 0.5}   // Modifier
-}
-```
 
 #### ExtraMovementModifier（移动速度修正）
 
@@ -228,3 +190,5 @@ Inaccuracy 有 5 种类型（`InaccuracyType` 枚举）：`STAND`, `MOVE`, `SNEA
 | `recoil_modifier.pitch/yaw` (float) | `recoil.pitch/yaw` (Modifier) | 简单百分比升级为 Modifier |
 
 `AttachmentData` 不再包含旧版字段的直接反序列化逻辑（这部分由各 Modifier 处理），但保留 `weight` 和 `extended_mag_level` 的直接读取以兼容未迁移的旧包。
+
+# English

@@ -118,4 +118,12 @@ public final class ShooterGunModifierCache {
     public static ShooterGunModifierCache empty() {
         return new ShooterGunModifierCache();
     }
+
+    /**
+     * 用于迁移提示用途，防止不认识IGunModifierHolder
+     */
+    @Deprecated(forRemoval = true)
+    public @Nullable <K, V> V getCache(AttachmentModifierType modifierType, Class<? extends IAttachmentModifier<K, V>> modifierClass) {
+        return this.getValue((IGunModifierHolder) modifierType, modifierClass);
+    }
 }

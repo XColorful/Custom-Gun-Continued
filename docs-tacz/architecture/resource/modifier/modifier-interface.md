@@ -1,9 +1,10 @@
+[English](#English)
 
 # IAttachmentModifier 接口与具体实现
 
 > `IAttachmentModifier<T, K>` 接口是 Modifier 体系的核心契约，包含 JSON 解析、缓存初始化、计算和 UI 数据四个职责。
 
-## 接口定义
+### 接口定义
 
 `com.tacz.guns.api.modifier.IAttachmentModifier`
 
@@ -23,12 +24,12 @@ public interface IAttachmentModifier<T, K> {
 }
 ```
 
-### 泛型参数
+#### 泛型参数
 
 - **T** — JSON 读取后的中间数据类型。大部分为 `Modifier`，少数为自定义类型（如 `Pair<Modifier, Boolean>`）
 - **K** — 最终缓存值的类型。可以是 `Float`, `Integer`, `LinkedList<DistanceDamagePair>`, `Map<InaccuracyType, Float>` 等任意类型
 
-### 四个核心方法
+#### 四个核心方法
 
 | 方法 | 调用时机 | 职责 |
 |---|---|---|
@@ -143,3 +144,5 @@ record DiagramsData(
 ```
 
 每个修改器可以返回多个 `DiagramsData`（例如 InaccuracyModifier 返回 4 条，RecoilModifier 返回 2 条）。
+
+# English

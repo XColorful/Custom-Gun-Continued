@@ -18,7 +18,7 @@ import xiao.customgun.core.api.common.McLogicalSide;
 import xiao.customgun.core.api.entity.ILivingShooter;
 import xiao.customgun.core.api.entity.ShootResult;
 import xiao.customgun.core.api.entity.ShooterProperty;
-import xiao.customgun.core.api.entity.gun.GunPropertyCache;
+import xiao.customgun.core.api.entity.shooter.modifier.ShooterGunModifierCache;
 import xiao.customgun.core.api.entity.shooter.ILivingShooterGetter;
 import xiao.customgun.core.api.event.shooter.ShooterFireEvent;
 import xiao.customgun.core.api.item.IGun;
@@ -289,8 +289,8 @@ public final class LivingShooterShoot extends LivingShooterAspect {
         if (rpm <= 0) rpm = 300;
         // ----
 
-        GunPropertyCache gunPropertyCache = ILivingShooterGetter.cgc$fromLivingEntity(livingShooter).cgc$getGunPropertyCache();
-        if (gunPropertyCache != null) {
+        ShooterGunModifierCache shooterGunModifierCache = ILivingShooterGetter.cgc$fromLivingEntity(livingShooter).cgc$getGunModifierCache();
+        if (shooterGunModifierCache != null) {
             // TODO GunPropertyCache
         }
         _HeatData heatData = gunData.getHeatData();

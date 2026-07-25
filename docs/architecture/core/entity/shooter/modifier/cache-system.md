@@ -2,94 +2,74 @@
 
 # 缓存系统
 
-> `ShooterGunModifierCache` 的实现、与菱形继承的泛型约束配合、生命周期。
+> `ShooterGunModifierCache` 的存储模型、与菱形继承泛型约束的配合、以及生命周期。
 
 ## 数据模型
 
-`ShooterGunModifierCache` 内部使用 `Map<GunModifierType, Object>` 存储所有 modifier 的缓存值：
-
-```java
-public final class ShooterGunModifierCache {
-    private final Map<GunModifierType, Object> modifierType_values;
-}
-```
-
-Key 是 `GunModifierType`（枪械属性的类型标识），Value 是每个 modifier 的计算结果（类型各异：`Float`、`Integer`、`List<_DistanceDamageData>` 等）。
+`ShooterGunModifierCache` 内部以 `GunModifierType` 为键存储所有 modifier 的缓存值。值类型各异（`Float`、`Integer`、`List` 等），取决于该属性对应的 modifier 接口的泛型参数 `V`。
 
 ### 类型安全的读写
 
-`getValue` 和 `setValue` 方法利用了菱形继承链的泛型约束来提供类型安全：
+`getValue` 和 `setValue` 利用菱形继承链的泛型约束来保证编译期类型安全：
 
-```java
-public <T extends ResourcePojo<T>, K, V> @Nullable V getValue(
-    IGunModifierHolder modifierType,
-    Class<? extends IGunModifier<T, K, V>> modifierClass
-)
+```mermaid
+flowchart TD
+    CALL["cache.getValue(AttachmentModifierType.ADS, IAdsModifier.class)"]
+    CHECK["modifierClass.isInstance(modifierType.getGunModifier())"]
+    INFER["返回类型 V 由 IAdsModifier 的泛型参数推断为 Float"]
+    ERROR["打 error 日志，返回 null"]
+
+    CALL --> CHECK
+    CHECK -->|true| INFER
+    CHECK -->|false| ERROR
 ```
 
-**参数含义**：
-- `modifierType` — `AttachmentModifierType` 枚举常量（实现了 `IGunModifierHolder`），提供 `GunModifierType` 和 `IGunModifier` 实例
-- `modifierClass` — `IGunModifier` 的子接口类型（如 `IAdsModifier.class`），其泛型 `<T, K, V>` 已在 API 层固定
+调用方需传两个参数：
+- `modifierType`：提供 `GunModifierType` 和 `IGunModifier` 实例
+- `modifierClass`：`IGunModifier` 的子接口类型（如 `IAdsModifier.class`），其泛型 `<T, K, V>` 已在 API 层固定
 
-**运行时验证**：`modifierClass.isInstance(modifierType.getGunModifier())` 检查 modifier 实例是否实现了指定的子接口。如果实现不匹配（例如对 ADS 传入了 `IKnockbackStrengthModifier.class`），则打 error 日志并返回 null。
+运行时通过 `modifierClass.isInstance` 验证 modifier 实例是否实现了指定子接口——对 ADS 传入其他 modifier 的 class 会打 error 日志并返回 null。
 
-**与菱形继承的关系**：
-
-```
-IAdsModifier<T> extends IGunModifier<T, _SimpleModifierData, Float>
-    → K = _SimpleModifierData, V = Float（在 IAdsModifier 层面固定）
-
-AdsModifier extends AttachmentModifier<_SimpleModifierData, Float>
-            implements IAdsModifier<AttachmentData>
-    → 菱形两条路径都要求 K=_SimpleModifierData, V=Float
-```
-
-`getValue(AttachmentModifierType.ADS, IAdsModifier.class)` 的调用链路中：
-- `AttachmentModifierType.ADS.getGunModifier()` 返回 `AdsModifier.INSTANCE`
-- `IAdsModifier.class.isInstance(AdsModifier.INSTANCE)` → true（编译器保证，因为 `AdsModifier implements IAdsModifier<AttachmentData>`）
-- 返回值的类型由 `IAdsModifier` 的 `V` 参数推断为 `Float`，编译期安全
+菱形继承链在编译期强制两条路径上 `K` 和 `V` 类型一致。`IAdsModifier<T> extends IGunModifier<T, _SimpleModifierData, Float>` 在接口层固定了 `K` 和 `V`，`AdsModifier extends AttachmentModifier<_SimpleModifierData, Float> implements IAdsModifier<AttachmentData>` 必须满足相同约束，否则 Java 编译器直接拒绝。
 
 ### 实体接口架构
 
-```
-ILivingShooter
-    ├── IGunOperator (枪械操作: draw/shoot/aim...)
-    ├── IShooterState (弹药检查/冲刺状态)
-    ├── ISynGunState (同步状态查询)
-    └── IShooterModifierCacheHolder (修饰缓存存取)
-            ├── cgc$updateGunModifierCache(ShooterGunModifierCache)
-            └── cgc$getGunModifierCache() → @Nullable ShooterGunModifierCache
+`ILivingShooter` 拆分为多个子接口，其中与缓存相关的是 `IShooterModifierCacheHolder`：
+
+```mermaid
+flowchart LR
+    ILS["ILivingShooter"]
+    ILS --> IGO["IGunOperator<br/>枪械操作"]
+    ILS --> ISS["IShooterState<br/>弹药/冲刺状态"]
+    ILS --> ISGS["ISynGunState<br/>同步状态查询"]
+    ILS --> ISMCH["IShooterModifierCacheHolder<br/>缓存存取"]
 ```
 
-缓存存储在 `ShooterProperty.shooterGunModifierCache`，由 `LivingEntityMixin` 实现 `IShooterModifierCacheHolder`。`resetProperty()` 不会清除缓存。
+缓存存储在 `ShooterProperty` 的字段中，由 `LivingEntityMixin` 实现该缓存存取接口。`resetProperty()` 不会清除缓存。
 
 ## 缓存编排
-
-### 管线
 
 ```mermaid
 sequenceDiagram
     participant Draw as LivingShooterDraw
-    participant SGMM as ShooterGunModifierManager
-    participant SGMC as ShooterGunModifierCache
-    participant Event as ShooterGunModifierCacheEvent
+    participant SGMM as 管理器
+    participant SGMC as 缓存
+    participant Event as 事件
     participant SP as ShooterProperty
 
     Draw->>SGMM: postChangeEvent(shooter, gunItem)
     SGMM->>SGMM: 验证枪械有效性
-    SGMM->>SGMC: ShooterGunModifierCache.of(gunIndexInstance, iGun, gunItem)
-    Note over SGMC: 遍历 AttachmentModifierType<br/>调用 getBase 获取 base 值<br/>存入 Map<GunModifierType, Object>
-    SGMM->>Event: postCustomEvent(ShooterGunModifierCacheEvent)
-    Note over Event: 监听器可在此修改 cache
-    SGMM->>SP: cgc$updateGunModifierCache(cache)
+    SGMM->>SGMC: 创建缓存并填充 base 值
+    Note over SGMC: 遍历所有类型，调用 getBase
+    SGMM->>Event: 派发自定义事件
+    Note over Event: 监听器可修改缓存
+    SGMM->>SP: 写入缓存
 ```
 
-### 缓存的生命周期
+缓存创建/更新时机：
+- 实体初始化时
+- 切枪时
 
-**创建/更新**：
-1. 实体初始化：`LivingEntityMixin.cgc$initLivingShooter()` → `ShooterGunModifierManager.postChangeEvent()`
-2. 切枪：`LivingShooterDraw.draw()` → `ShooterGunModifierManager.postChangeEvent()`
-
-**不更新时机**：`ShooterProperty.resetProperty()` 不重置 `shooterGunModifierCache`。
+均由 `ShooterGunModifierManager.postChangeEvent()` 统一编排。
 
 # English

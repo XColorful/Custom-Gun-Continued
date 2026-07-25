@@ -180,3 +180,56 @@ TaCZ Migration Mapping.md里的GunProperty和GunProperties应该已经不对应�
 - modifier文档里有滥用二级标题的现象，需要考虑降级
 - 文档叙述的内容不要重复TaCZ Migration Mapping.md已有的内容
 ```
+
+# 
+
+```
+现在需要更正和简化文档。
+
+上下文快速交代：
+- \docs-tacz\TaCZ Migration Mapping.md有迁移映射
+- \docs\下是CGC的文档
+- 可以用IDEA提供的MCP访问CGC和tacz的源码
+
+现在需要对\docs\architecture\core\entity\shooter\modifier和\docs-tacz\architecture\resource\modifier两个目录下的文档进行修改：
+- 需要精简文档，不得再专门增加新篇幅讲新模块，文档文件数量不得增加
+- 可以调整板块顺序和标题层级
+- 浏览已有文档，对比源码，跟源码不一致的则更正
+- 两个文档目录下Home.md的Mermaid图不需要修改，已经手动调整过外观
+- 我在最新一次commit删除了大量内容，这些内容明确不需要也没必要写进文档，注意不要把已经删掉的内容又添加回来
+- 这两个文档目录以外的地方不准修改
+
+完成后向我报告
+```
+
+```
+- 出现代码的地方可以考虑去掉，接口关系可以考虑改成直观的Mermaid图一眼看懂
+- 应该去读代码才了解的，则不需要写在文档里
+- 文档只需要解释modifier体系，不相关的都可以精简或去掉
+- 文档里不需要也不应该直接复制代码或者列举所有实现类别等，出现大段代码代替文档的地方应考虑重写
+- 这是体系文档，不需要写当前TODO和进展，这跟系统没有关系
+- 标题不得使用数字或列表，如有则应该改成别的叙述方式
+- 以上几点在\docs-tacz\的modifier文档体系很严重，对\docs\的modifier文档体系也需要检查
+
+继续修改文档，完成后向我报告
+```
+
+```
+- 列举需要用Markdown的列表语法
+- 用Mermadid写java的结构，跟直接用java代码展示结构没有区别，这是不应该出现也不应该在文档里叙述的
+- 标题不准用类名，也不准出现破折号
+- _OLD1属于tag体系，不需要提及向后兼容
+- 设计演进里每个方案需要有Mermaid图示
+```
+
+```
+1. 第二个方案需要说明将IItemModifier改成IGunModifier作为上界
+2. 更正一下枚举持有具体类的方案，我详细描述如下，你按跟文档里其他方案已有的风格和篇幅量来写：
+- attachment和gun modifier的枚举分别持有modifier类
+- attachment持有的modifier类跟gun持有的modifier类完成接口对应
+- 即Mermaid图应该是两个枚举，然后两个枚举分别指向各自的modifier类，两种modifier类再连起来
+- attachment和gun的枚举可以建立联系，即Mermaid图至少有一个正方形三条边或者正方形四条边的形状（接口方法不算在内）
+- 问题在于枚举本身不存泛型，不能靠枚举来保证类型安全（区别于最终方案强制get/set的时候进行接口泛型匹配）
+
+其他文档不要改
+```

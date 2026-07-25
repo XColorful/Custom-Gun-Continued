@@ -1,58 +1,58 @@
 [English](#English)
 
-# AttachmentModifierType 枚举
+# 枚举类型设计
 
-> CGC 用编译期类型安全的枚举替代运行时字符串键来标识和访问配件修改器。`AttachmentModifierType` 附属于 `GunModifierType`——每个附件 modifier 对应到一个枪械 modifier 类型。
+> CGC 用编译期类型安全的枚举替代运行时字符串键来标识和访问配件修改器。附件 modifier 枚举附属于枪械 modifier 枚举，每个附件 modifier 对应到一个枪械 modifier 类型。
 
-### 与 GunModifierType 的关系
+## 两个枚举的关系
 
 ```mermaid
-graph LR
-    GMT["GunModifierType (enum)<br/>api.item.gun.modifier<br/>枪械 modifier 类型标识<br/>20 个常量"]
-    AMT["AttachmentModifierType (enum)<br/>api.item.attachment.modifier<br/>附件 modifier 类型<br/>持有 IAttachmentModifier 实例"]
-    
+flowchart LR
+    GMT["枪械 modifier 类型标识<br/>定义枪械属性的 typeName<br/>是权威类型来源"]
+    AMT["附件 modifier 类型<br/>每个常量持有对应枪械类型引用<br/>和计算实例"]
+
     AMT -->|"modifierType 字段"| GMT
-    AMT -.->|"一一对应<br/>未来可能不等"| GMT
-
-    style GMT fill:#fff3e0
-    style AMT fill:#e1f5fe
+    AMT -.->|"一一对应，未来可扩展非 attachment 来源"| GMT
 ```
 
-`AttachmentModifierType` 的每个常量对应一个 `GunModifierType`：
-- `GunModifierType` 定义**枪械属性**的类型标识（typeName）
-- `AttachmentModifierType` 继承该标识，并持有对应的 `IAttachmentModifier` 计算实例
+`GunModifierType` 定义枪械属性的类型标识（`typeName`），是 gun modifier 的权威类型来源。未来任何来源（attachment、ammo 等）的 gun modifier 都指向它。
 
-### 接口层次
+`AttachmentModifierType` 继承该标识——每个常量持有对应的 `GunModifierType` 引用和 `IAttachmentModifier` 计算实例。当前两者一一对应（各 21 个常量）。
 
-```
-IItemModifier<T, K, V>                        无状态修饰工具
-    ├── getModifier(T pojo) → K
-    └── eval(Collection<K>, V base) → V
-          ↑
-IGunModifier<T, K, V>                         枪械修饰（声明 getBase）
-    └── getBase(IGun, ItemStack, GunData) → V
-          ↑
-I*Modifier<T> (如 IAdsModifier)               getBase 的 default 实现
-          ↑
-IAttachmentModifier<K, V>                     配件修饰门面（T=AttachmentData）
-          ↑
-AttachmentModifier<K, V>                      抽象基类（evalSimpleModifierData）
-          ↑
-*Modifier (如 AdsModifier)                    具体类（getModifier + eval）
-```
+## 接口层次
 
-### IGunModifierType 接口
+modifier 的计算职责通过多层接口分离：
 
-```java
-public interface IGunModifierType {
-    GunModifierType getGunModifierType();
-}
+```mermaid
+flowchart TD
+    IIM["IItemModifier<br/>getModifier：从数据源提取修改值<br/>eval：纯计算"]
+    IGM["IGunModifier<br/>getBase：从 GunData 获取 base 值<br/>evalByScript：脚本二次处理"]
+    I_STAR["I*Modifier<br/>（如 IAdsModifier）<br/>default getBase 提供具体实现<br/>K 和 V 在此层固定"]
+    IAM["IAttachmentModifier<br/>对外全能门面<br/>T 固定为 AttachmentData"]
+    AM["AttachmentModifier 抽象基类<br/>提供 evalSimpleModifierData"]
+    CONCRETE["*Modifier 具体类<br/>（如 AdsModifier）<br/>只写 getModifier 和 eval<br/>getBase 由 default 继承"]
+
+    IIM --> IGM
+    IGM --> I_STAR
+    I_STAR --> IAM
+    IGM --> IAM
+    IIM --> IAM
+    IAM -.-> AM
+    I_STAR -.-> CONCRETE
+    AM --> CONCRETE
 ```
 
-`GunModifierType` 枚举和 `AttachmentModifierType` 枚举都实现了此接口。这使得：
-- `GunModifierType.ADS.getGunModifierType()` → 返回自身
-- `AttachmentModifierType.ADS.getGunModifierType()` → 返回 `GunModifierType.ADS`
+`IAdsModifier` 通过 `default getBase` 提供 base 值获取的实现，一次定义，所有实现类继承——具体类 `AdsModifier` 中完全不写 `getBase` 代码。这个职责通过接口 default 方法代理给了 `IAdsModifier`，具体类只写 `getModifier` 和 `eval`。
 
-未来如果出现非 attachment 来源的 gun modifier（如 ammo modifier），也可以实现 `IGunModifierType` 来声明它服务于哪个枪械属性。
+`IAttachmentModifier` 是对外的全能门面，但内部实现被分离到不同层级（接口 default、抽象基类、具体类）。
+
+## 类型标识接口
+
+`GunModifierType` 枚举和 `AttachmentModifierType` 枚举都实现了 `IGunModifierType`（`AttachmentModifierType` 通过 `IGunModifierHolder` 间接实现）：
+
+- `GunModifierType.ADS.getGunModifierType()` 返回自身
+- `AttachmentModifierType.ADS.getGunModifierType()` 返回 `GunModifierType.ADS`
+
+未来非 attachment 来源的 modifier 也可实现此接口来声明服务于哪个枪械属性。
 
 # English

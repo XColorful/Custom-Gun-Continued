@@ -93,20 +93,19 @@ graph TB
 
 ### 关键设计特征
 
-1. **字符串键 + 泛型接口**：每个 Modifier 由字符串 ID 标识（如 `"ads"`, `"damage"`），通过 `IAttachmentModifier<T, K>` 接口统一 JSON 读取、初始化和计算行为
-2. **实体绑定缓存**：计算结果缓存在 `ShooterDataHolder` 上（每个 LivingEntity 一个实例），仅在切枪时重新计算
-3. **Forge 事件扩展**：通过 `AttachmentPropertyEvent` 事件允许外部模组修改缓存值
-4. **LuaJ 脚本集成**：缓存值可在 Lua 脚本中被读取和修改
-5. **离线计算路径**：`AttachmentDataUtils` 提供不依赖实体缓存的直接计算方式（用于工具提示等场景）
+- **字符串键和泛型接口**：每个 Modifier 由字符串 ID 标识，通过接口统一 JSON 读取、初始化和计算行为
+- **实体绑定缓存**：计算结果缓存在实体数据对象上（每个实体一个实例），仅在切枪时重新计算
+- **Forge 事件扩展**：通过事件允许外部模组修改缓存值
+- **Lua 脚本集成**：缓存值可在 Lua 脚本中被读取和修改
 
 ### 文档导航
 
 | 文档 | 内容 |
 |---|---|
-| [JSON 数据结构与格式要求](./data-structure.md) | `Modifier`、`AttachmentData` 的 JSON schema，向后兼容规则 |
-| [IAttachmentModifier 接口](./modifier-interface.md) | 接口契约、17 个具体修改器详解 |
-| [缓存系统](./cache-system.md) | `AttachmentCacheProperty` 生命周期、计算流水线、LuaJ 集成 |
-| [管理器与事件系统](./manager-and-event.md) | `AttachmentPropertyManager` 注册/计算引擎，事件流，实体绑定 |
-| [Modifier 计算流程](./calculation-flow.md) | `GunData`、`AttachmentData`、`IAttachmentModifier` 三者间的数据流与计算过程 |
+| [JSON 数据结构与格式要求](./data-structure.md) | 通用修改值结构、配件总数据、复合型修改器格式 |
+| [Modifier 接口](./modifier-interface.md) | 接口契约、数值型和复合型修改器设计 |
+| [缓存系统](./cache-system.md) | 缓存生命周期、计算流水线 |
+| [管理器与事件系统](./manager-and-event.md) | 管理器注册/计算引擎，事件流，实体绑定 |
+| [Modifier 计算流程](./calculation-flow.md) | `GunData`、`AttachmentData` 与 modifier 接口三者间的数据流与计算过程 |
 
 # English

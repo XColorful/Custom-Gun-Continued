@@ -7,7 +7,7 @@
 
 package xiao.customgun.core.api.entity;
 
-import xiao.customgun.core.api.entity.shooter.IGunCacheHolder;
+import xiao.customgun.core.api.entity.shooter.IShooterModifierCacheHolder;
 import xiao.customgun.core.api.entity.shooter.IGunOperator;
 import xiao.customgun.core.api.entity.shooter.IShooterState;
 import xiao.customgun.core.api.entity.shooter.ISynGunState;
@@ -15,7 +15,7 @@ import xiao.customgun.core.api.entity.shooter.ISynGunState;
 /*
 文档译名: 射手生物 (XiaoColorful译); 否决译名: 射击生物(跟动词混淆), 射击者(范围超出了接口默认的LivingEntity)
  */
-public interface ILivingShooter extends IGunOperator, IShooterState, ISynGunState, IGunCacheHolder {
+public interface ILivingShooter extends IGunOperator, IShooterState, ISynGunState, IShooterModifierCacheHolder {
 
     /**
      * 初始化枪械操作的各个数据，如换弹冷却、开火冷却等。

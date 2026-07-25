@@ -5,14 +5,14 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package xiao.customgun.core.api.item.attachment;
+package xiao.customgun.core.api.item.gun.modifier;
 
 import xiao.customgun.core.api.resource.data.data.GunDataTag;
 import xiao.customgun.core.api.resource.data.data.gun._BulletDataTag;
 import xiao.customgun.core.api.resource.data.data.gun.bullet._BulletSkillDataTag;
 import xiao.customgun.core.resource.data.data.gun._InaccuracyData;
 
-public class AttachmentModifierTypeTag {
+public class GunModifierTypeTag {
 
     // 瞄准速度
     public static final String ADS = "ads";
@@ -46,5 +46,5 @@ public class AttachmentModifierTypeTag {
     // 弹匣
     public static final String MAGAZINE_CATEGORY = "magazine_category";
 
-    private AttachmentModifierTypeTag() {}
+    private GunModifierTypeTag() {}
 }

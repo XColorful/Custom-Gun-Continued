@@ -361,6 +361,7 @@
 - index：数据索引
 - manager：数据管理器
 - modifier：属性修改器
+	> [配件属性修改器框架](./resource/modifier/Home.md)
 	- AttachmentCacheProperty：配件缓存属性
 - network：资源网络同步
 - pojo：数据 POJO
@@ -758,6 +759,7 @@ Datapack loading and management:
 - index: Data indices
 - manager: Data managers
 - modifier: Property modifiers
+	> [Attachment modifier framework](./resource/modifier/Home.md)
 	- AttachmentCacheProperty: Attachment cache property
 - network: Resource network sync
 - pojo: Data POJOs

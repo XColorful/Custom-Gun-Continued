@@ -53,7 +53,7 @@ public final class AttachmentDisplay extends _AssetsDisplay<AttachmentDisplay> {
                     case AttachmentDisplayTag.TEXTURE_LOCATION, AttachmentDisplayTag.TEXTURE_LOCATION_OLD1 -> pojo.setTextureLocation(JsonUtils.readResourceLocation(reader));
                     case AttachmentDisplayTag.SLOT_TEXTURE_LOCATION, AttachmentDisplayTag.SLOT_TEXTURE_LOCATION_OLD1 -> pojo.setSlotTextureLocation(JsonUtils.readResourceLocation(reader));
 
-                    case AttachmentDisplayTag.LOD_DISPLAY, AttachmentDisplayTag.LOD_DISPLAY_OLD1 -> pojo.lodDisplay = _LodDisplay.fromJson(reader);
+                    case AttachmentDisplayTag.LOD_DISPLAY, AttachmentDisplayTag.LOD_DISPLAY_OLD1 -> pojo.lodDisplay = JsonUtils.read(reader, _LodDisplay::fromJson);
                     case AttachmentDisplayTag.ADAPTER_NODE_NAME, AttachmentDisplayTag.ADAPTER_NODE_NAME_OLD1 -> pojo.adapterNodeName = JsonUtils.readString(reader);
 
                     case AttachmentDisplayTag.ENABLE_SIGHT -> pojo.enableSight = JsonUtils.readBoolean(reader);
@@ -64,7 +64,7 @@ public final class AttachmentDisplay extends _AssetsDisplay<AttachmentDisplay> {
                     case AttachmentDisplayTag.SHOW_MUZZLE -> pojo.showMuzzle = JsonUtils.readBoolean(reader);
                     case AttachmentDisplayTag.SHOW_MOUNT -> pojo.showMount = JsonUtils.readBoolean(reader);
                     case AttachmentDisplayTag.MODEL_NODE_TEXT_DISPLAY, AttachmentDisplayTag.MODEL_NODE_TEXT_DISPLAY_OLD1 -> pojo.modelNodeTextDisplay = JsonUtils.readString2ObjectMap(reader, _ModelNodeTextDisplay::fromJson);
-                    case AttachmentDisplayTag.LASER_DISPLAY, AttachmentDisplayTag.LASER_DISPLAY_OLD1 -> pojo.laserDisplay = _LaserDisplay.fromJson(reader);
+                    case AttachmentDisplayTag.LASER_DISPLAY, AttachmentDisplayTag.LASER_DISPLAY_OLD1 -> pojo.laserDisplay = JsonUtils.read(reader, _LaserDisplay::fromJson);
                     case AttachmentDisplayTag.ATTACHMENT_SOUNDS, AttachmentDisplayTag.ATTACHMENT_SOUNDS_OLD1 -> pojo.attachmentSounds = JsonUtils.readObject2ObjectMap(reader, AttachmentSoundType::fromString, JsonUtils::readResourceLocation);
                     default -> reader.skipValue();
                 }

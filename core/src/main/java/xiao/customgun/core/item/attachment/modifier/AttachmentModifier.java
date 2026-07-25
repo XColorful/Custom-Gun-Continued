@@ -8,8 +8,8 @@
 package xiao.customgun.core.item.attachment.modifier;
 
 import xiao.customgun.core.api.item.attachment.modifier.IAttachmentModifier;
+import xiao.customgun.core.api.item.gun.modifier.IGunModifier;
 import xiao.customgun.core.resource.data.data.attachment._SimpleModifierData;
-import xiao.customgun.core.util.ScriptUtils;
 
 import java.util.Collection;
 
@@ -25,12 +25,8 @@ public abstract class AttachmentModifier<K, V> implements IAttachmentModifier<K,
             uniqueMultiplier *= modifier.getUniqueMultiplier();
         }
         float value = (base + sharedBaseAdd) * (1 + sharedPercentAdd) * uniqueMultiplier;
-        // TODO 这个通用的部分可以考虑提到IGunModifier级别，做成接受单个string处理，然后此处仍保持遍历
         for (_SimpleModifierData modifier : modifiers) {
-            String scriptFunction = modifier.getScriptFunction();
-            if (scriptFunction == null || scriptFunction.isEmpty()) continue;
-
-            value = ScriptUtils.eval(base, value, scriptFunction);
+            value = IGunModifier.evalSimpleModifierDataByScript(base, value, modifier.getScriptFunction());
         }
         return value;
     }

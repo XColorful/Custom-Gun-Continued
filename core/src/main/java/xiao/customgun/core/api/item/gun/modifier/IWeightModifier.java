@@ -22,4 +22,9 @@ public interface IWeightModifier<T extends ResourcePojo<T>> extends IGunModifier
                                     @NotNull GunData gunData) {
         return gunData.getWeight();
     }
+
+    @Override
+    default Float evalByScript(Float base, Float value, String scriptFunction) {
+        return IGunModifier.evalSimpleModifierDataByScript(base, value, scriptFunction);
+    }
 }

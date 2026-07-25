@@ -23,4 +23,9 @@ public interface IEffectiveRangeModifier<T extends ResourcePojo<T>> extends IGun
         // TODO ExtraDamage distance
         return (float) Integer.MAX_VALUE;
     }
+
+    @Override
+    default Float evalByScript(Float base, Float value, String scriptFunction) {
+        return IGunModifier.evalSimpleModifierDataByScript(base, value, scriptFunction);
+    }
 }

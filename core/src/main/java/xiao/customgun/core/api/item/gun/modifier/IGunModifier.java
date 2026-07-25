@@ -14,6 +14,7 @@ import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.api.item.IItemModifier;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.resource.data.data.GunData;
+import xiao.customgun.core.util.ScriptUtils;
 
 /**
  * 枪械修饰工具
@@ -22,4 +23,19 @@ public interface IGunModifier<T extends ResourcePojo<T>, K, V> extends IItemModi
 
     @Nullable V getBase(@NotNull IGun iGun, @NotNull ItemStack gunItem,
                         @NotNull GunData gunData);
+
+    /**
+     * @param base 初值
+     * @param value 输入变量/当前计算值
+     * @param scriptFunction 脚本
+     * @return 脚本修改后的值
+     */
+    default V evalByScript(V base, V value, String scriptFunction) {
+        return value;
+    }
+
+    static Float evalSimpleModifierDataByScript(Float base, Float value, @Nullable String scriptFunction) {
+        if (scriptFunction == null || scriptFunction.isEmpty()) return value;
+        return ScriptUtils.eval(base, value, scriptFunction);
+    }
 }

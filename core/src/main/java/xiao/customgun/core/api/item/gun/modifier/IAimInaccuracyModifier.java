@@ -28,4 +28,9 @@ public interface IAimInaccuracyModifier<T extends ResourcePojo<T>> extends IGunM
         if (fireModeAdjust != null) base += fireModeAdjust.getAimInaccuracy();
         return Math.max(base, 0);
     }
+
+    @Override
+    default Float evalByScript(Float base, Float value, String scriptFunction) {
+        return IGunModifier.evalSimpleModifierDataByScript(base, value, scriptFunction);
+    }
 }

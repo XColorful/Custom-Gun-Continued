@@ -26,4 +26,9 @@ public interface IKnockbackStrengthModifier<T extends ResourcePojo<T>> extends I
         if (fireModeAdjust != null) base += fireModeAdjust.getKnockbackStrength();
         return base;
     }
+
+    @Override
+    default Float evalByScript(Float base, Float value, String scriptFunction) {
+        return IGunModifier.evalSimpleModifierDataByScript(base, value, scriptFunction);
+    }
 }

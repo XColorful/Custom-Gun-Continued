@@ -28,4 +28,9 @@ public interface IOtherInaccuracyModifier<T extends ResourcePojo<T>> extends IGu
         if (fireModeAdjust != null) base += fireModeAdjust.getOtherInaccuracy();
         return Math.max(base, 0);
     }
+
+    @Override
+    default Float evalByScript(Float base, Float value, String scriptFunction) {
+        return IGunModifier.evalSimpleModifierDataByScript(base, value, scriptFunction);
+    }
 }

@@ -29,4 +29,9 @@ public interface IArmorIgnoreModifier<T extends ResourcePojo<T>> extends IGunMod
         base *= SyncConfig.ARMOR_IGNORE_BASE_MULTIPLIER.get();
         return base;
     }
+
+    @Override
+    default Float evalByScript(Float base, Float value, String scriptFunction) {
+        return IGunModifier.evalSimpleModifierDataByScript(base, value, scriptFunction);
+    }
 }

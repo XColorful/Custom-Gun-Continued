@@ -22,4 +22,9 @@ public interface IAdsModifier<T extends ResourcePojo<T>> extends IGunModifier<T,
                                     @NotNull GunData gunData) {
         return gunData.getAimTime();
     }
+
+    @Override
+    default Float evalByScript(Float base, Float value, String scriptFunction) {
+        return IGunModifier.evalSimpleModifierDataByScript(base, value, scriptFunction);
+    }
 }

@@ -29,4 +29,9 @@ public interface IHeadshotMultiplierModifier<T extends ResourcePojo<T>> extends 
         base *= SyncConfig.HEAD_SHOT_BASE_MULTIPLIER.get();
         return base;
     }
+
+    @Override
+    default Float evalByScript(Float base, Float value, String scriptFunction) {
+        return IGunModifier.evalSimpleModifierDataByScript(base, value, scriptFunction);
+    }
 }

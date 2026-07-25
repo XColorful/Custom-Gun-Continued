@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import xiao.customgun.core.api.gun.inventory.IGunInventoryManager;
 import xiao.customgun.core.api.gun.attack.IGunAttackManager;
 import xiao.customgun.core.api.gun.action.IGunActionManager;
+import xiao.customgun.core.api.gun.script.IGunScriptManager;
 import xiao.customgun.core.api.gun.state.IGunStateManager;
 import xiao.customgun.core.api.item.IGun;
 
@@ -32,6 +33,9 @@ public interface IGunMainManager extends IGunSubManager {
     }
     default IGunInventoryManager getGunInventoryManager(IGun iGun, ItemStack gunItem) {
         return this.getManagerGroup(iGun.getManagerGroupTag(gunItem)).gunInventoryManager();
+    }
+    default IGunScriptManager getGunScriptManager(IGun iGun, ItemStack gunItem) {
+        return this.getManagerGroup(iGun.getManagerGroupTag(gunItem)).gunScriptManager();
     }
     default IGunStateManager getGunStateManager(IGun iGun, ItemStack gunItem) {
         return this.getManagerGroup(iGun.getManagerGroupTag(gunItem)).gunStateManager();

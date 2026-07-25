@@ -81,7 +81,7 @@ public final class LocalShooterAim extends LocalShooterAspect {
     private float _getAlphaProgress(GunData gunData, long currentTimeMillis) {
         float aimTime = gunData.getAimTime();
         ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(this.localShooter);
-        if (iLivingShooter.cgc$getGunPropertyCache() != null) {
+        if (iLivingShooter.cgc$getGunModifierCache() != null) {
             // TODO GunPropertyCache AdsModifier
         }
         aimTime = Math.max(0, aimTime);

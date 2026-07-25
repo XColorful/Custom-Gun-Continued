@@ -41,7 +41,7 @@ public final class _Cube extends ResourcePojo<_Cube> {
                     case _CubeTag.INFLATE -> pojo.inflate = JsonUtils.readFloat(reader);
                     case _CubeTag.PIVOT -> pojo.pivot = JsonUtils.readFloatArrayFast(reader, 3);
                     case _CubeTag.ROTATION -> pojo.rotation = JsonUtils.readFloatArrayFast(reader, 3);
-                    case _CubeTag.UV -> pojo.uv = _Uv.fromJson(reader);
+                    case _CubeTag.UV -> pojo.uv = JsonUtils.read(reader, _Uv::fromJson);
                     default -> reader.skipValue();
                 }
             }

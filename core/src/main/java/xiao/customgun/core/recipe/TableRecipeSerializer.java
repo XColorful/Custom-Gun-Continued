@@ -40,7 +40,7 @@ public class TableRecipeSerializer implements RecipeSerializer<TableRecipe> {
     // 1.20.2+
     public static @NotNull TableRecipe _fromJson(@NotNull Identifier recipeLocation, @NotNull JsonObject jsonObject) {
         try (JsonReader reader = JsonUtils.getAsReader(jsonObject)) {
-            RecipeData pojo = RecipeData.fromJson(reader);
+            RecipeData pojo = JsonUtils.read(reader, RecipeData::fromJson);
             if (pojo != null) {
                 pojo.validate();
                 if (pojo.isValid()) return TableRecipe.fromPojo(recipeLocation, pojo);

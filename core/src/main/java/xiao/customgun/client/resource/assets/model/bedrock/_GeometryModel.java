@@ -34,7 +34,7 @@ public class _GeometryModel extends ResourcePojo<_GeometryModel> {
             while (reader.hasNext()) {
                 String key = reader.nextName();
                 switch (key) {
-                    case _GeometryModelTag.DESCRIPTION -> pojo.description = _Description.fromJson(reader);
+                    case _GeometryModelTag.DESCRIPTION -> pojo.description = JsonUtils.read(reader, _Description::fromJson);
                     case _GeometryModelTag.BONES -> pojo.bones = JsonUtils.readList(reader, _Bone::fromJson);
                     default -> reader.skipValue();
                 }

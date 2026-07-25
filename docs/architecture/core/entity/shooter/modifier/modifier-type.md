@@ -1,7 +1,7 @@
 
 # AttachmentModifierType 枚举
 
-> CGC 用编译期类型安全的枚举替代 TaCZ 运行时字符串键来标识和访问配件修改器。`AttachmentModifierType` 附属于 `GunModifierType`——每个附件 modifier 对应到一个枪械 modifier 类型。
+> CGC 用编译期类型安全的枚举替代运行时字符串键来标识和访问配件修改器。`AttachmentModifierType` 附属于 `GunModifierType`——每个附件 modifier 对应到一个枪械 modifier 类型。
 
 ## 与 GunModifierType 的关系
 
@@ -20,8 +20,6 @@ graph LR
 `AttachmentModifierType` 的每个常量对应一个 `GunModifierType`：
 - `GunModifierType` 定义**枪械属性**的类型标识（typeName）
 - `AttachmentModifierType` 继承该标识，并持有对应的 `IAttachmentModifier` 计算实例
-
-TaCZ 原版的 `AttachmentPropertyManager.MODIFIERS` Map 在此体系中对应 `AttachmentModifierType` 枚举——当前所有 gun modifier 都被 attachment modifier 一一对应实现，但未来新增的 gun modifier 不一定有对应的 attachment modifier。
 
 ## 枚举结构
 

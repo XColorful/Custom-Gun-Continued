@@ -1,7 +1,7 @@
 
 # 事件与通知系统 — CGC 重构版
 
-> `ShooterGunModifierCacheEvent` 事件设计，自定义事件派发流，与 TaCZ Forge 事件系统的对比。
+> `ShooterGunModifierCacheEvent` 事件设计与自定义事件派发流。
 
 ## 事件定义
 
@@ -83,7 +83,7 @@ sequenceDiagram
 - 监听器可以修改 `event.getCache()` 来覆盖默认计算结果
 - 修改后的缓存最终写入实体
 
-## 与 TaCZ 事件系统的对比
+## 事件系统的变化
 
 | 维度 | TaCZ | CGC |
 |---|---|---|
@@ -103,7 +103,7 @@ sequenceDiagram
 
 ## 事件使用的 TODO 项
 
-`ShooterGunModifierManager.postChangeEvent()` 中第 48-51 行：
+`ShooterGunModifierManager.postChangeEvent()` 中的脚本修改位：
 
 ```java
 {
@@ -113,7 +113,4 @@ sequenceDiagram
 }
 ```
 
-这对应 TaCZ 中 `AttachmentPropertyManager.postChangeEvent()` 的步骤 4（脚本修改缓存值）。CGC 需要：
-1. 确定哪些属性支持脚本修改（对应 TaCZ 的 `@CacheModifiableByScript`）
-2. 确定脚本修改的 API（对应 TaCZ 的 `iGun.modifyProperty()`）
-3. 实现在事件触发后、写入实体前的脚本修改逻辑
+`AttachmentPropertyManager.postChangeEvent()` 中的脚本修改步骤。`IGunModifier.evalByScript` 和 `evalSimpleModifierDataByScript` 已提供了脚本修改接口，`ShooterGunModifierManager` 中的 TODO 是批量调用这些接口的位置。

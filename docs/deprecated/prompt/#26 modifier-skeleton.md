@@ -170,3 +170,13 @@ TaCZ Migration Mapping.md里的GunProperty和GunProperties应该已经不对应�
 ```
 
 > token大概在1M上下文的30%开始就指数级加速消耗，幻觉也很厉害
+
+```
+我增加了内容，见最新5个commit
+- TaCZ Migration Mapping.md已经确定，不得再修改
+
+更新\docs\architecture\core\entity\shooter\modifier的文档，该目录以外的部分不得修改
+- ShooterGunModifierCache的机制需要补充到文档里说明，跟菱形继承相关
+- modifier文档里有滥用二级标题的现象，需要考虑降级
+- 文档叙述的内容不要重复TaCZ Migration Mapping.md已有的内容
+```

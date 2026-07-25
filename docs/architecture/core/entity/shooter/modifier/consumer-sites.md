@@ -1,5 +1,5 @@
 
-# 消费方汇总 — CGC 重构版
+# 消费方汇总 — 重构版
 
 > 所有从 `ShooterGunModifierCache` 读取缓存值的位置，当前实现状态，以及每个消费方的 TODO 项。
 
@@ -7,7 +7,7 @@
 
 `DamageCalculationModifier` 是目前唯一未匹配 `I*Modifier` 接口的 modifier。原因如下：
 
-**TaCZ 中的 DamageModifier** 的缓存类型 `K` 是 `LinkedList<DistanceDamagePair>`——伤害不是一个简单浮点，而是一个**距离→伤害的衰减曲线**。枪械数据中 `BulletSkillData.damageCalculation` 是一个 `List<_DistanceDamageData>`（每个条目 = 距离 + 伤害值），配件修改器对这个列表中每个条目的伤害值分别应用修改。
+**DamageModifier** 的缓存类型 `K` 是 `LinkedList<DistanceDamagePair>`——伤害不是一个简单浮点，而是一个**距离→伤害的衰减曲线**。枪械数据中 `BulletSkillData.damageCalculation` 是一个 `List<_DistanceDamageData>`（每个条目 = 距离 + 伤害值），配件修改器对这个列表中每个条目的伤害值分别应用修改。
 
 **当前问题**：
 - CGC 数据层已有 `_DistanceDamageData`（distance + damage 两个 float）
@@ -61,17 +61,17 @@ ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(living
 // 2. 获取缓存（可能为 null）
 @Nullable ShooterGunModifierCache cache = iLivingShooter.cgc$getGunModifierCache();
 
-// 3. 读取具体缓存值（当前为 TODO 存根）
+// 3. 类型安全读取
 if (cache != null) {
-    // TODO: cache.get(modifierType) → 类型安全的值
+    Float adsValue = cache.getValue(AttachmentModifierType.ADS, IAdsModifier.class);
 }
 ```
 
-**关键变更**：在 TaCZ 中消费者用字符串从缓存读取（`cacheProperty.getCache("ads")`）。在 CGC 中消费者将用 `AttachmentModifierType` 枚举从 `ShooterGunModifierCache` 读取——但目前 `ShooterGunModifierCache` 是空类，所有读取点为 TODO 存根。
+**关键变更**：原版用字符串从缓存读取（`cacheProperty.getCache("ads")`），现通过 `cache.getValue(modifierType, IAdsModifier.class)` 类型安全读取——值类型由 `IAdsModifier` 的泛型参数 `V` 推断。
 
 ## 服务端消费方
 
-### 1. LivingShooterShoot._getShootInterval()
+### LivingShooterShoot._getShootInterval()
 
 `xiao.customgun.core.entity.shooter.LivingShooterShoot`
 
@@ -85,7 +85,7 @@ if (shooterGunModifierCache != null) {
 
 **预期的 TaCZ 行为**：从缓存读取 `AttachmentModifierType.RPM` 的修改值来调整射速。
 
-### 2. LivingShooterSpeedModifier.updateSpeedModifier()
+### LivingShooterSpeedModifier.updateSpeedModifier()
 
 `xiao.customgun.core.entity.shooter.LivingShooterSpeedModifier`
 
@@ -106,7 +106,7 @@ Object speed = null;
 - 从缓存读取移动速度修改值
 - 按当前状态（换弹/瞄准/基础）选择正确的乘数
 
-### 3. GunProjectile 构造函数
+### GunProjectile 构造函数
 
 `xiao.customgun.core.entity.projectile.GunProjectile`
 
@@ -121,7 +121,7 @@ Object speed = null;
 
 ## 客户端消费方
 
-### 4. LocalShooterAim._getAlphaProgress()
+### LocalShooterAim._getAlphaProgress()
 
 `xiao.customgun.client.entity.shooter.LocalShooterAim`
 
@@ -133,7 +133,7 @@ if (iLivingShooter.cgc$getGunModifierCache() != null) {
 
 **预期的 TaCZ 行为**：从缓存读取 `AttachmentModifierType.ADS` 修改值，影响瞄准动画速度。
 
-### 5. LocalShooterShoot._useSilenceSound()
+### LocalShooterShoot._useSilenceSound()
 
 `xiao.customgun.client.entity.shooter.LocalShooterShoot`
 
@@ -147,7 +147,7 @@ return false;  // 当前硬编码 false
 
 **预期的 TaCZ 行为**：从缓存读取 `AttachmentModifierType.MUZZLE` 值，决定消音音效。
 
-### 6. LivingShooterAim.tickAimingProgress()（服务端）
+### LivingShooterAim.tickAimingProgress()（服务端）
 
 `xiao.customgun.core.entity.shooter.LivingShooterAim`
 
@@ -179,4 +179,4 @@ if (this.shooterProperty.shooterGunModifierCache != null) {
 | 每次射击（客户端） | `LocalShooterShoot` | `MUZZLE` |
 | 每颗子弹创建 | `GunProjectile` | `DAMAGE_CALCULATION`, `PIERCE_COUNT`, `ARMOR_IGNORE_PERCENT`, `EFFECTIVE_RANGE`, `HEADSHOT_MULTIPLIER`, `KNOCKBACK_STRENGTH`, `BULLET_EXPLOSION`, `FIRE_ASPECT` |
 
-所有消费方都**已经连接好**——它们能正确获取 `ShooterGunModifierCache` 引用。阻塞点是 `ShooterGunModifierCache` 类本身为空，需要定义其字段和方法。
+所有消费方都**已经连接好**——它们能正确获取 `ShooterGunModifierCache` 引用，并通过 `cache.getValue(modifierType, I*Modifier.class)` 获取类型安全的缓存值。消费方代码中的 TODO 是待接入实际 modifier 读取的标记。

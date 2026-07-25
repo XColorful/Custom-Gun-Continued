@@ -93,13 +93,11 @@ graph TB
 
 - `GunModifierType` 是枪械 modifier 的**权威类型标识**——定义 typeName，未来任何来源（attachment/ammo/其他）的 gun modifier 都指向它
 - `AttachmentModifierType` **附属于** `GunModifierType`——每个常量持有对应的 `GunModifierType` 引用和 `IAttachmentModifier` 计算实例
-- TaCZ 的 `AttachmentPropertyManager.MODIFIERS` 对应此体系的 `AttachmentModifierType` 枚举——当前所有 gun modifier 都被 attachment modifier 一一对应实现，但未来新增 gun modifier 不一定有对应的 attachment modifier
+- 所有 gun modifier 类型的权威来源在 `GunModifierType`，`AttachmentModifierType` 为当前唯一的实现来源（一一对应，未来可扩展非 attachment 来源）
 
 ## 重构设计哲学
 
-CGC 对 TaCZ 原版体系的重构围绕以下核心原则：
-
-### 1. 枚举替代字符串（类型安全）
+### 枚举替代字符串（类型安全）
 
 | 维度 | TaCZ（原版） | CGC（重构） |
 |---|---|---|
@@ -108,7 +106,7 @@ CGC 对 TaCZ 原版体系的重构围绕以下核心原则：
 | AttachmentData 修改器存储 | `Map<String, JsonProperty<?>>` | 强类型 nullable 字段，每个枚举有一个 getter |
 | 从 AttachmentData 取值 | `data.getModifier().get(id).getValue()` + 强制转换 | `type.modifier.getModifier(data)` + 编译期类型检查 |
 
-### 2. 语义化重命名
+### 语义化重命名
 
 | TaCZ 名称 | CGC 名称 | 含义变更 |
 |---|---|---|
@@ -120,7 +118,7 @@ CGC 对 TaCZ 原版体系的重构围绕以下核心原则：
 | `IGunOperator.updateCacheProperty` | `IShooterModifierCacheHolder.cgc$updateGunModifierCache` | 明确修饰缓存概念 |
 | `addend` / `percent` / `multiplier` | `sharedBaseAdd` / `sharedPercentAdd` / `uniqueMultiplier` | 明确共享/唯一的语义 |
 
-### 3. 接口替代枚举字段（可扩展性）
+### 接口替代枚举字段（可扩展性）
 
 `AttachmentModifierType` 枚举已全部迁移完成，每个常量持有 `IAttachmentModifier` 实例。计算逻辑通过接口层次（`IItemModifier` → `IGunModifier` → `I*Modifier` → `IAttachmentModifier` → `AttachmentModifier` → 具体类）分离。详见 [AttachmentModifierType 枚举](./modifier-type.md)。
 

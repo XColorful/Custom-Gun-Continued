@@ -55,11 +55,11 @@
 | `SilenceModifier (ID="silence")` | `AttachmentModifierType.MUZZLE` + `MuzzleModifier.INSTANCE` | 已迁移（`MuzzleModifier` + `IMuzzleModifier`） |
 | `WeightModifier (ID="weight_modifier")` | `AttachmentModifierType.WEIGHT` + `WeightModifier.INSTANCE` | 已迁移（`WeightModifier` + `IWeightModifier`） |
 
-### 重要变更：WEIGHT
+#### WEIGHT
 
 `WeightModifier` 已迁移完成——`AttachmentModifierType.WEIGHT` 持有 `WeightModifier.INSTANCE`，实现 `IWeightModifier<AttachmentData>`。`getBase` 由 `IWeightModifier` 的 default 方法提供（`gunData.getWeight()`）。
 
-### 重要拆分：Inaccuracy
+#### Inaccuracy
 
 TaCZ 的 `InaccuracyModifier` 处理 5 种散布类型（STAND, MOVE, SNEAK, LIE, AIM）。CGC 将其拆分为 4 个独立的 modifier：
 - `AIM_INACCURACY` — 瞄准散布
@@ -72,7 +72,7 @@ TaCZ 的 `InaccuracyModifier` 处理 5 种散布类型（STAND, MOVE, SNEAK, LIE
 | TaCZ | CGC | 变更说明 |
 |---|---|---|
 | `AttachmentPropertyEvent` (Forge Event) | `ShooterGunModifierCacheEvent` (CustomEvent) | 事件总线变更 |
-| `ChangeGunPropertyEvent` (内部处理器) | `ShooterGunModifierManager.updateShooterGunModifierCache()` (TODO) | 内部逻辑从事件移到管理器 |
+| `ChangeGunPropertyEvent` (内部处理器) | `ShooterGunModifierManager.updateShooterGunModifierCache()` | 内部逻辑从事件移到管理器 |
 | Forge `@SubscribeEvent` | CGC `ICustomEventHandler` 接口 | 监听注册方式变更 |
 | `MinecraftForge.EVENT_BUS.post(event)` | `CustomGun.getEventPoster().postCustomEvent(event)` | 事件派发方式变更 |
 | KubeJS 桥接 (`KubeJSGunEventPoster`) | CGC 脚本桥接 | 脚本系统变更 |
@@ -92,9 +92,9 @@ TaCZ 的 `InaccuracyModifier` 处理 5 种散布类型（STAND, MOVE, SNEAK, LIE
 |---|---|
 | `ModernKineticGunScriptAPI.getCachedProperty(String id)` | 待定（脚本 API 尚未迁移） |
 | `iGun.modifyProperty(dataHolder, ...)` | 待定 |
-| LuaJ `ScriptEngine` 共享实例 | 待定 |
-| `@CacheModifiableByScript` (SOURCE 注解) | 待定 |
-| `@ValueModifiableAtRuntime` (SOURCE 注解) | 待定 |
+| LuaJ `ScriptEngine` 共享实例 | `ThreadLocal<ScriptEngine>`（通过 `ScriptUtils`） |
+| `@CacheModifiableByScript` | `IGunModifier.evalByScript`（接口 default 方法） |
+| `@ValueModifiableAtRuntime` | 待定 |
 
 ## 消费方迁移
 
@@ -109,9 +109,8 @@ TaCZ 的 `InaccuracyModifier` 处理 5 种散布类型（STAND, MOVE, SNEAK, LIE
 
 ## 下一个重构步骤
 
-1. **填充 `ShooterGunModifierCache`**：定义字段结构，实现类型安全的缓存存取
-2. **实现 `ShooterGunModifierManager.updateShooterGunModifierCache()`**：替换 `// TODO 原 ChangeGunPropertyEvent`
-3. **解 TODO 所有消费方**：逐个实现从缓存读取具体值的逻辑
-4. **移除 `AttachmentDataTag`**：OLD1 变体迁移到 `AttachmentData.fromJsonReader` 内部，标签值来源统一为 `GunModifierTypeTag`
-5. **迁移脚本 API**：确定 Lua 脚本如何读取/修改缓存值
-6. **迁移改装台 GUI**：实现 `DiagramsData` 的等价物
+1. **实现 `ShooterGunModifierCache.initAttachmentModifiers()` 的配件遍历**：每个 `AttachmentCategory` 遍历，收集 modifier 数据并计算
+2. **解 TODO 所有消费方**：逐个实现从缓存读取具体值的逻辑（通过 `cache.getValue(type, I*Modifier.class)`）
+3. **移除 `AttachmentDataTag`**：OLD1 变体迁移到 `AttachmentData.fromJsonReader` 内部
+4. **迁移脚本 API**：通过 `IGunModifier.evalByScript` 实现批量脚本修改
+5. **迁移改装台 GUI**：实现 `DiagramsData` 的等价物

@@ -157,7 +157,15 @@ graph LR
 
 **路径3是新增的**——`AdsModifier implements IAdsModifier<AttachmentData>`。`IAdsModifier` 通过 `default getBase` 提供了 base 值获取的实现，`AdsModifier` 类中完全不写 `getBase`。`IAdsModifier` 虚线箭头的 `implements` 关系标注了 `provides getBase`，明确这个职责的来源。
 
-### 接口 clash 强制泛型匹配
+### 接口 clash 强制泛型匹配 — 在 ShooterGunModifierCache 中的应用
+
+`ShooterGunModifierCache.getValue(IGunModifierHolder, Class<? extends IGunModifier<T,K,V>>)` 方法利用菱形继承的泛型约束来保证类型安全：
+
+- `modifierType.getGunModifier()` 返回 `IGunModifier` 实例
+- `modifierClass.isInstance(...)` 运行时验证实例是否实现了指定的子接口
+- 返回值的类型 `V` 由 `modifierClass` 的泛型参数推断
+
+这要求调用者传入正确的子接口类型——例如对 ADS 必须传 `IAdsModifier.class`，传错则运行时日志报错。
 
 ```
 IAdsModifier<T> extends IGunModifier<T, _SimpleModifierData, Float>

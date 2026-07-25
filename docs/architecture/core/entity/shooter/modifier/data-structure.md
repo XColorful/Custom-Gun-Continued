@@ -1,11 +1,11 @@
 
-# JSON 数据结构 — CGC 重构版
+# JSON 数据结构
 
 > CGC 对配件 JSON 数据格式的重构设计：`__ModifierData<T>` 基类体系、`AttachmentData` 强类型字段、JSON 标签常量层级。
 
 ## 设计变更概述
 
-| 维度 | TaCZ（原版） | CGC（重构） |
+| 维度 | 原版 | 重构版 |
 |---|---|---|
 | 数据存储 | `Map<String, JsonProperty<?>>` + 运行时类型检查 | 每个 modifier 有独立的强类型 nullable 字段 |
 | JSON 读取 | Gson `@SerializedName` + 每个 Modifier 的 `readJson()` | `ResourcePojo` 框架的 `fromJsonReader()` + `switch-case` |
@@ -28,7 +28,7 @@ public abstract class __ModifierData<T extends __ModifierData<T>> extends Resour
 
 ### 字段语义对比
 
-| CGC 字段名 | TaCZ 对应字段 | 语义说明 |
+| CGC 字段名 | 原版对应字段 | 语义说明 |
 |---|---|---|
 | `sharedBaseAdd` | `Modifier.addend` | **共享加数**：同一属性上所有配件的此值累加。语义与 TaCZ 一致 |
 | `sharedPercentAdd` | `Modifier.percent` | **共享百分比加成**：同一属性上所有配件的此值累加。语义与 TaCZ 一致 |
@@ -267,6 +267,6 @@ GunModifierTypeTag
 - `GunModifierTypeTag` 是标签值的**权威来源**——`AttachmentDataTag` 的所有新格式标签直接引用 `GunModifierTypeTag` 同名字段
 - `AttachmentDataTag` 中的 OLD1 变体是 JSON 向后兼容的唯一职责保留，计划在后续重构中移除
 
-### 与 TaCZ 的区别
+### 标签管理与 Modifier 标识的解耦
 
-在 TaCZ 中，每个标签同时是 Modifier 的注册 ID（存储在 `AttachmentPropertyManager.MODIFIERS` Map 的 key 中）。在 CGC 中，标签是纯数据标识符：Modifier 的类型标识由 `GunModifierType` 枚举提供（作者，标签值与 typeName 复用），计算实例由 `AttachmentModifierType` 枚举持有。三者解耦。
+标签是纯数据标识符：Modifier 的类型标识由 `GunModifierType` 枚举提供，计算实例由 `AttachmentModifierType` 枚举持有。三者解耦。

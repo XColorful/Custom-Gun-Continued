@@ -18,6 +18,7 @@ import com.mojang.math.Transformation;
 import it.unimi.dsi.fastutil.doubles.Double2ObjectRBTreeMap;
 import xiao.customgun.CustomGun;
 import xiao.customgun.client.resource.assets.animation.bedrock.animation.bone._KeyFrame;
+import xiao.customgun.core.util.JsonUtils;
 
 import java.io.IOException;
 import java.util.Map;
@@ -70,7 +71,7 @@ public class ClientJsonUtils {
                 try {
                     // 原模组如果键不支持 Molang 会直接退出的逻辑，这里跳过或收尾
                     double time = Double.parseDouble(timeStr);
-                    _KeyFrame frame = _KeyFrame.fromJson(reader);
+                    _KeyFrame frame = JsonUtils.read(reader, _KeyFrame::fromJson);
                     if (frame != null) {
                         treeMap.put(time, frame);
                     }

@@ -12,6 +12,7 @@ import xiao.customgun.core.api.gun.IGunManager;
 import xiao.customgun.core.gun.inventory.GunInventoryManager;
 import xiao.customgun.core.gun.attack.GunAttackManager;
 import xiao.customgun.core.gun.action.GunActionManager;
+import xiao.customgun.core.gun.script.GunScriptManager;
 import xiao.customgun.core.gun.state.GunStateManager;
 
 import java.util.HashMap;
@@ -24,6 +25,7 @@ public class GunManager implements IGunManager {
             GunActionManager.INSTANCE,
             GunAttackManager.INSTANCE,
             GunInventoryManager.INSTANCE,
+            GunScriptManager.INSTANCE,
             GunStateManager.INSTANCE);
     private final Map<String, GunManagerGroup> managerGroups;
 

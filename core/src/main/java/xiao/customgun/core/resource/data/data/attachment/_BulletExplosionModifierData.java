@@ -43,9 +43,9 @@ public final class _BulletExplosionModifierData extends ResourcePojo<_BulletExpl
                 switch (key) {
                     case _BulletExplosionModifierDataTag.ENABLE_EXPLODE, _BulletExplosionModifierDataTag.ENABLE_EXPLODE_OLD1 -> pojo.enableExplode = JsonUtils.readBoolean(reader);
 
-                    case _BulletExplosionModifierDataTag.EXPLODE_DAMAGE, _BulletExplosionModifierDataTag.EXPLODE_DAMAGE_OLD1 -> pojo.explodeDamageModifier = _SimpleModifierData.fromJson(reader);
-                    case _BulletExplosionModifierDataTag.EXPLODE_SCALE, _BulletExplosionModifierDataTag.EXPLODE_SCALE_OLD1 -> pojo.explodeScaleModifier = _SimpleModifierData.fromJson(reader);
-                    case _BulletExplosionModifierDataTag.MAX_DELAY_SECONDS, _BulletExplosionModifierDataTag.MAX_DELAY_SECONDS_OLD1 -> pojo.maxDelaySecondsModifier = _SimpleModifierData.fromJson(reader);
+                    case _BulletExplosionModifierDataTag.EXPLODE_DAMAGE, _BulletExplosionModifierDataTag.EXPLODE_DAMAGE_OLD1 -> pojo.explodeDamageModifier = JsonUtils.read(reader, _SimpleModifierData::fromJson);
+                    case _BulletExplosionModifierDataTag.EXPLODE_SCALE, _BulletExplosionModifierDataTag.EXPLODE_SCALE_OLD1 -> pojo.explodeScaleModifier = JsonUtils.read(reader, _SimpleModifierData::fromJson);
+                    case _BulletExplosionModifierDataTag.MAX_DELAY_SECONDS, _BulletExplosionModifierDataTag.MAX_DELAY_SECONDS_OLD1 -> pojo.maxDelaySecondsModifier = JsonUtils.read(reader, _SimpleModifierData::fromJson);
 
                     case _BulletExplosionModifierDataTag.ENABLE_KNOCKBACK, _BulletExplosionModifierDataTag.ENABLE_KNOCKBACK_OLD1 -> pojo.enableKnockback = JsonUtils.readBoolean(reader);
                     case _BulletExplosionModifierDataTag.ENABLE_WORLD_DESTRUCTION, _BulletExplosionModifierDataTag.ENABLE_WORLD_DESTRUCTION_OLD1 -> pojo.enableWorldDestruction = JsonUtils.readBoolean(reader);

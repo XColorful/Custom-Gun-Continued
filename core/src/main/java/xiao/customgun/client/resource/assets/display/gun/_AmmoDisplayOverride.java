@@ -34,7 +34,7 @@ public final class _AmmoDisplayOverride extends ResourcePojo<_AmmoDisplayOverrid
             while (reader.hasNext()) {
                 String key = reader.nextName();
                 switch (key) {
-                    case _AmmoDisplayOverrideTag.AMMO_PARTICLE, _AmmoDisplayOverrideTag.AMMO_PARTICLE_OLD1 -> pojo.ammoParticle = _AmmoParticle.fromJson(reader);
+                    case _AmmoDisplayOverrideTag.AMMO_PARTICLE, _AmmoDisplayOverrideTag.AMMO_PARTICLE_OLD1 -> pojo.ammoParticle = JsonUtils.read(reader, _AmmoParticle::fromJson);
                     case _AmmoDisplayOverrideTag.TRACER_COLOR -> pojo.tracerColor = JsonUtils.readColor(reader);
                     default -> reader.skipValue();
                 }

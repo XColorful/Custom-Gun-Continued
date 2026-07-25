@@ -12,7 +12,7 @@ import net.minecraft.client.player.LocalPlayer;
 import org.jetbrains.annotations.ApiStatus;
 import xiao.customgun.client.gui.GunRefitScreen;
 import xiao.customgun.client.util.ClientGuiUtils;
-import xiao.customgun.core.item.gun.GunPropertyManager;
+import xiao.customgun.core.entity.shooter.modifier.ShooterGunModifierManager;
 
 @ApiStatus.Internal
 public class _ServerMessageRefreshRefitScreen {
@@ -25,7 +25,7 @@ public class _ServerMessageRefreshRefitScreen {
             screen.init();
 
             // 刷新客户端配件数据
-            GunPropertyManager.postChangeEvent(player);
+            ShooterGunModifierManager.postChangeEvent(player);
         }
     }
 }

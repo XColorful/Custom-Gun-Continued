@@ -15,7 +15,7 @@ import xiao.customgun.core.resource.data.data.gun._InaccuracyData;
 import java.util.HashMap;
 import java.util.Map;
 
-public enum GunModifierType implements ResourceTag.CategoryTag, IGunModifierType {
+public enum GunModifierType implements ResourceTag.CategoryTag, ResourceTag.ConstantTag, IGunModifierType {
     // 瞄准速度
     ADS(GunModifierTypeTag.ADS),
 
@@ -56,6 +56,9 @@ public enum GunModifierType implements ResourceTag.CategoryTag, IGunModifierType
         return this.typeName;
     }
     @Override public String getCategoryName() {
+        return this.typeName;
+    }
+    @Override public String getConstantName() {
         return this.typeName;
     }
 

@@ -28,8 +28,6 @@ import xiao.customgun.core.api.resource.ResourceTag;
 import xiao.customgun.core.config.AmmoConfig;
 import xiao.customgun.core.config.SyncConfig;
 import xiao.customgun.core.developer.PlannedRefactor;
-import xiao.customgun.core.resource.data.data.GunData;
-import xiao.customgun.core.resource.data.data.gun._BulletData;
 import xiao.customgun.core.resource.data.data.gun.bullet._ExplosionData;
 import xiao.customgun.core.resource.data.data.gun.bullet.damage._DistanceDamageData;
 import xiao.customgun.core.resource.instance.data.AmmoIndexInstance;
@@ -67,43 +65,28 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
         this.setAmmoLocation(this, ammoLocation);
         this.spawnPos = this.position();
 
-        @Nullable ShooterGunModifierCache shooterGunModifierCache = livingShooter != null ? ILivingShooterGetter.cgc$fromLivingEntity(livingShooter).cgc$getGunModifierCache() : null;
-
         this.rebuildCache();
-        this.constructInitData();
+
+        @Nullable ShooterGunModifierCache shooterGunModifierCache = livingShooter != null ? ILivingShooterGetter.cgc$fromLivingEntity(livingShooter).cgc$getGunModifierCache() : null;
+        this.constructInitData(shooterGunModifierCache);
     }
 
     @Override
     protected void defineSynchedData() {
     }
 
-    protected void constructInitData() {
-        if (this.gunIndexInstanceCache == null) {
-            return;
-        }
-
-        GunData gunData = this.gunIndexInstanceCache.getGunData();
-        _BulletData bulletData = gunData.getBulletData();
-        this.stateCache.lifetimeTicks = (int) (bulletData.getLifetimeSeconds() * 20);
-        this.stateCache.bulletSpeed = bulletData.getBulletSpeed();
-        this.stateCache.gravity = bulletData.getGravity();
-        this.stateCache.friction = bulletData.getFriction();
-        this.stateCache.pierce = bulletData.getPierceCount();
-        int tracerInterval = bulletData.getTracerInterval();
-        if (tracerInterval >= 0) {
-            Entity owner = this.getOwner();
-            if (owner instanceof LivingEntity livingEntity) {
-                this.stateCache.isTracer = ILivingShooterGetter.cgc$fromLivingEntity(livingEntity).cgc$nextBulletIsTracer(tracerInterval);
-            }
-        }
-        this.stateCache.fireAspect = bulletData.isFireAspect();
-        this.stateCache.knockbackStrength = bulletData.getKnockbackStrength();
-    }
-
     public void rebuildCache() {
         this.gunIndexInstanceCache = ResourceApi.getGunIndexInstance(this.getGunLocation(this));
         this.ammoIndexInstanceCache = ResourceApi.getAmmoIndexInstance(this.getAmmoLocation(this));
         // --------Mixin--------
+    }
+
+    /**
+     * 构造各成员变量初值
+     * @param shooterGunModifierCache 射手枪械修饰缓存，直接生成的枪射物可不带此缓存
+     */
+    protected void constructInitData(@Nullable ShooterGunModifierCache shooterGunModifierCache) {
+        _GunProjectileConstructor.constructInitData(this, shooterGunModifierCache);
     }
 
     @Override

@@ -11,6 +11,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import xiao.customgun.core.api.entity.ShooterProperty;
+import xiao.customgun.core.entity.shooter.LivingShooterShoot;
 
 import java.util.function.Supplier;
 
@@ -18,6 +19,7 @@ public interface IGunAttackRuntime {
 
     /**
      * 射击时触发
+     * TODO 把{@link LivingShooterShoot}里枪械本身的判断移到IGunAttackRuntime里，把这个shoot改成boolean，避免像原版ScriptAPI里又检查一次
      */
     void shoot(ShooterProperty shooterProperty, ItemStack gunItem, LivingEntity livingShooter,
                Supplier<Float> pitch, Supplier<Float> yaw);

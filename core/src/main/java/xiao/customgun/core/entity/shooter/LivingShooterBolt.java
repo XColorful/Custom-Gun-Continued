@@ -11,6 +11,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.entity.ShooterProperty;
+import xiao.customgun.core.api.entity.shooter.ILivingShooterGetter;
 import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.api.item.gun.BoltType;
 import xiao.customgun.core.api.item.gun.IGunGetter;
@@ -66,7 +67,7 @@ public final class LivingShooterBolt extends LivingShooterAspect {
         if (!hasAmmo) return;
 
         this.shooterProperty.boltTimestamp = System.currentTimeMillis();
-        this.shooterProperty.isBolting = iGun.startBolt(this.shooterProperty, currentGunItem, this.livingShooter);
+        this.shooterProperty.isBolting = iGun.startBolt(this.shooterProperty, iGun, currentGunItem, ILivingShooterGetter.cgc$fromLivingEntity(this.livingShooter), this.livingShooter);
     }
 
     public void tickBolt() {
@@ -87,6 +88,6 @@ public final class LivingShooterBolt extends LivingShooterAspect {
         var gunLocation = iGun.getGunLocation(currentGunItem);
         @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(gunLocation);
         this.shooterProperty.isBolting = gunIndexInstance != null
-                && iGun.tickBolt(this.shooterProperty, currentGunItem, this.livingShooter);
+                && iGun.tickBolt(this.shooterProperty, iGun, currentGunItem, ILivingShooterGetter.cgc$fromLivingEntity(this.livingShooter), this.livingShooter);
     }
 }

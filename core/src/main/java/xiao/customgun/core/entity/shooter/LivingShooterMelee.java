@@ -102,7 +102,7 @@ public final class LivingShooterMelee extends LivingShooterAspect {
             IGun iGun = IGunGetter.fromItemStack(currentGunItem);
             if (iGun == null) return;
 
-            iGun.melee(this.shooterProperty, currentGunItem, this.livingShooter);
+            iGun.melee(this.shooterProperty, iGun, currentGunItem, ILivingShooterGetter.cgc$fromLivingEntity(this.livingShooter), this.livingShooter);
         }
     }
 

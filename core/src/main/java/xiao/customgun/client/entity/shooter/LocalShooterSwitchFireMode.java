@@ -54,7 +54,7 @@ public final class LocalShooterSwitchFireMode extends LocalShooterAspect {
         SoundPlayManager.get().playGunSound(gunDisplayInstance.getGunSound(GunSoundType.SWITCH_FIRE_MODE),
                 this.localShooter);
         // 客户端切换开火模式
-        iGun.switchFireMode(null, gunItem);
+        iGun.switchFireMode(null, iGun, gunItem);
         ShooterGunModifierManager.postChangeEvent(this.localShooter, gunItem);
         // TODO AnimationStateMachine
     }

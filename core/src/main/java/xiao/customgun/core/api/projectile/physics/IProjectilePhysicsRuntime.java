@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import xiao.customgun.core.api.entity.IGunProjectile;
 import xiao.customgun.core.api.projectile.process.IProjectileProcessRuntime;
 
-public interface IProjectilePhysicsRuntime {
+public interface IProjectilePhysicsRuntime extends IProjectilePhysicsExtension {
 
     void physicTick(IProjectileProcessRuntime.TickContext tickContext,
                     IGunProjectile iGunProjectile, Entity gunProjectile);

@@ -10,6 +10,7 @@ package xiao.customgun.core.entity.shooter;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import xiao.customgun.core.api.entity.ShooterProperty;
+import xiao.customgun.core.api.entity.shooter.ILivingShooterGetter;
 import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.api.item.gun.IGunGetter;
 
@@ -26,6 +27,6 @@ public final class LivingShooterHeat extends LivingShooterAspect {
         IGun iGun = IGunGetter.fromItemStack(currentGunItem);
         if (iGun == null) return;
 
-        iGun.tickHeat(this.shooterProperty, currentGunItem, this.livingShooter);
+        iGun.tickHeat(this.shooterProperty, iGun, currentGunItem, ILivingShooterGetter.cgc$fromLivingEntity(this.livingShooter), this.livingShooter);
     }
 }

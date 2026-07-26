@@ -31,6 +31,6 @@ public class Vec3Utils {
     }
 
     public static Vec3 getCenter(BlockPos blockPos) {
-        return blockPos.getCenter();
+        return Vec3.atCenterOf(blockPos);
     }
 }

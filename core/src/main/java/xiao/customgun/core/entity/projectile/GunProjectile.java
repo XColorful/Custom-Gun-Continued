@@ -125,6 +125,7 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
     }
 
     /**
+     * // TODO 以后考虑不同步一些数据或直接取消写入存档，不然发包压力会越来越大
      * 优化：原版机制在创建实体后，会先调用 {@link #addAdditionalSaveData}，再调用 {@link #readAdditionalSaveData}
      * 扩展模组如要手动调用，则先使用 {@link #addAdditionalSaveData} 刷新NBT数据
      */
@@ -151,7 +152,10 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
         this.setFireAspect(compoundTag, this.getFireAspect(this));
         this.setFireAspectSeconds(compoundTag, this.getFireAspectSeconds(this));
         this.setKnockbackStrength(compoundTag, this.getKnockbackStrength(this));
-        if (this.hasExtraStateTag(this)) this.setExtraStateTag(compoundTag, this.getExtraStateTag(this));
+        if (this.hasExtraStateTag(this)) {
+            this.setExtraStateTag(compoundTag, this.getExtraStateTag(this));
+            this.setExplosionData(compoundTag, this.getExplosionData(this));
+        }
     }
     /**
      * 手动调用前请用 {@link #addAdditionalSaveData} 刷新NBT数据，并向返回的NBT里修改数据，再调用该方法
@@ -179,7 +183,10 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
         this.setFireAspect(this, this.getFireAspect(compoundTag));
         this.setFireAspectSeconds(this, this.getFireAspectSeconds(compoundTag));
         this.setKnockbackStrength(this, this.getKnockbackStrength(compoundTag));
-        @Nullable CompoundTag extraStateTag = this.getExtraStateTag(compoundTag); if (extraStateTag != null) this.setExtraStateTag(this, extraStateTag);
+        @Nullable CompoundTag extraStateTag = this.getExtraStateTag(compoundTag); if (extraStateTag != null) {
+            this.setExtraStateTag(this, extraStateTag);
+            this.setExplosionData(this, this.getExplosionData(extraStateTag));
+        }
 
         this.rebuildCache();
     }
@@ -335,6 +342,12 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
     }
     @Override public void setExtraStateTag(Entity entity, CompoundTag extraStateTag) {
         this.stateCache.extraStateTag = extraStateTag;
+    }
+    @Override public @Nullable _ExplosionData getExplosionData(Entity gunProjectile) {
+        return this.stateCache.explosionData;
+    }
+    @Override public void setExplosionData(Entity gunProjectile, _ExplosionData explosionData) {
+        this.stateCache.explosionData = explosionData;
     }
 
     // --------IProjectileRuntime--------

@@ -507,6 +507,42 @@ public class NBTUtils {
             else output.store(key, CompoundTag.CODEC, value);
         }
 
+        public static @Nullable Vec3 getVec3(@Nullable ValueInput input, String key) {
+            return Vec3Utils.fromString(getString(input, key));
+        }
+        public static void setVec3(@Nullable ValueOutput output, String key, @Nullable Vec3 value) {
+            setString(output, key, Vec3Utils.toString(value));
+        }
+
+        public static @Nullable <T> T getStringJson(@Nullable ValueInput input, String key, JsonUtils.ReadFunction<T> function) {
+            String jsonString = getString(input, key);
+            if (jsonString == null) return null;
+            else {
+                try {
+                    JsonReader reader = new JsonReader(new StringReader(jsonString));
+                    return function.apply(reader);
+                } catch (Exception e) {
+                    return null;
+                }
+            }
+        }
+        public static <T> void setStringJson(@Nullable ValueOutput output, String key, @Nullable T value, JsonUtils.WriteAction<T> function) {
+            if (output == null) return;
+            else if (value == null) removeKey(output, key);
+            else {
+                try {
+                    StringWriter stringWriter = new StringWriter();
+                    JsonWriter writer = new JsonWriter(stringWriter);
+                    function.accept(writer, value);
+                    writer.close();
+
+                    setString(output, key, stringWriter.toString());
+                } catch (Exception e) {
+                    removeKey(output, key);
+                }
+            }
+        }
+
         public static @Nullable ValueInput getChildInput(@Nullable ValueInput input, String key) {
             if (input == null) return null;
             return input.child(key).orElse(null);

@@ -4,12 +4,18 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.entity.GunProjectileProperty;
 import xiao.customgun.core.api.resource.ResourceTag;
+import xiao.customgun.core.resource.data.data.gun.bullet._ExplosionData;
+import xiao.customgun.core.resource.data.data.gun.bullet.damage._DistanceDamageData;
+import xiao.customgun.core.util.JsonUtils;
 import xiao.customgun.core.util.NBTUtils;
+
+import java.util.List;
 
 @ApiStatus.AvailableSince("1.21.6")
 public interface GunProjectileValueAccessor extends IGunProjectileValueAccess {
@@ -69,6 +75,44 @@ public interface GunProjectileValueAccessor extends IGunProjectileValueAccess {
     }
 
     // --------IGunProjectileStateAccess--------
+
+    @Override
+    default @Nullable Vec3 getShootPos(ValueInput input) {
+        return NBTUtils.Value.getVec3(input, GunProjectileProperty.SHOOT_POS.getTagName());
+    }
+    @Override
+    default void setShootPos(ValueOutput output, Vec3 shootPos) {
+        NBTUtils.Value.setVec3(output, GunProjectileProperty.SHOOT_POS.getTagName(), shootPos);
+    }
+
+    @Override
+    default @Nullable List<_DistanceDamageData> getDamageCalculation(ValueInput input) {
+        return NBTUtils.Value.getStringJson(input, GunProjectileProperty.DAMAGE_CALCULATION.getTagName(),
+                (reader) -> JsonUtils.readList(reader, _DistanceDamageData::fromJson));
+    }
+    @Override
+    default void setDamageCalculation(ValueOutput output, List<_DistanceDamageData> damageCalculation) {
+        NBTUtils.Value.setStringJson(output, GunProjectileProperty.DAMAGE_CALCULATION.getTagName(), damageCalculation,
+                (writer, value) -> JsonUtils.writeListValue(writer, value, _DistanceDamageData::toJson));
+    }
+
+    @Override
+    default float getArmorIgnorePercent(ValueInput input) {
+        return NBTUtils.Value.getFloat(input, GunProjectileProperty.ARMOR_IGNORE_PERCENT.getTagName());
+    }
+    @Override
+    default void setArmorIgnorePercent(ValueOutput output, float armorIgnorePercent) {
+        NBTUtils.Value.setFloat(output, GunProjectileProperty.ARMOR_IGNORE_PERCENT.getTagName(), armorIgnorePercent);
+    }
+
+    @Override
+    default float getHeadshotMultiplier(ValueInput input) {
+        return NBTUtils.Value.getFloat(input, GunProjectileProperty.HEADSHOT_MULTIPLIER.getTagName());
+    }
+    @Override
+    default void setHeadshotMultiplier(ValueOutput output, float headshotMultiplier) {
+        NBTUtils.Value.setFloat(output, GunProjectileProperty.HEADSHOT_MULTIPLIER.getTagName(), headshotMultiplier);
+    }
 
     @Override
     default int getLifetimeTicks(ValueInput input) {
@@ -134,6 +178,15 @@ public interface GunProjectileValueAccessor extends IGunProjectileValueAccess {
     }
 
     @Override
+    default int getFireAspectSeconds(ValueInput input) {
+        return NBTUtils.Value.getInt(input, GunProjectileProperty.FIRE_ASPECT_SECONDS.getTagName());
+    }
+    @Override
+    default void setFireAspectSeconds(ValueOutput output, int fireAspectSeconds) {
+        NBTUtils.Value.setInt(output, GunProjectileProperty.FIRE_ASPECT_SECONDS.getTagName(), fireAspectSeconds);
+    }
+
+    @Override
     default float getKnockbackStrength(ValueInput input) {
         return NBTUtils.Value.getFloat(input, GunProjectileProperty.KNOCKBACK_STRENGTH.getTagName());
     }
@@ -153,5 +206,21 @@ public interface GunProjectileValueAccessor extends IGunProjectileValueAccess {
     @Override
     default void setExtraStateTag(ValueOutput output, CompoundTag extraStateTag) {
         NBTUtils.Value.setCompoundTag(output, GunProjectileProperty.EXTRA_STATE.getTagName(), extraStateTag);
+    }
+
+    @Override
+    default @Nullable _ExplosionData getExplosionData(ValueInput input) {
+        @Nullable CompoundTag extraDataTag = this.getExtraDataTag(input);
+        if (extraDataTag == null) return null;
+        return NBTUtils.getStringJson(extraDataTag, GunProjectileProperty.EXPLOSION_DATA.getTagName(),
+                _ExplosionData::fromJson);
+    }
+    @Override
+    default void setExplosionData(ValueOutput output, _ExplosionData explosionData) {
+        if (explosionData == null) return;
+        CompoundTag extraDataTag = new CompoundTag();
+        NBTUtils.setStringJson(extraDataTag, GunProjectileProperty.EXPLOSION_DATA.getTagName(), explosionData,
+                _ExplosionData::toJson);
+        this.setExtraDataTag(output, extraDataTag);
     }
 }

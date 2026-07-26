@@ -119,7 +119,7 @@ public final class LivingShooterShoot extends LivingShooterAspect {
         this.shooterProperty.chargeProgress = validateChargeProgress(chargeData, chargeProgress, hasChargeContext);
 
         // 执行枪械射击逻辑
-        iGun.shoot(this.shooterProperty, currentGunItem, this.livingShooter, pitch, yaw);
+        iGun.shoot(this.shooterProperty, iGun, currentGunItem, iLivingShooter, this.livingShooter, pitch, yaw);
         return ShootResult.SUCCESS;
     }
     @Nullable

@@ -29,7 +29,7 @@ public class GunIndexInstance extends PojoInstance<GunIndex> {
 
     private GunData gunDataCache;
 
-    private @Nullable LuaTable script = null;
+    private @Nullable LuaTable scriptCache = null;
     private @Nullable LuaTable scriptParamCache = null;
 
     private GunIndexInstance(@NotNull GunIndex pojo) {
@@ -58,7 +58,7 @@ public class GunIndexInstance extends PojoInstance<GunIndex> {
             DataScript dataScript = ResourceApi.getDataScript(scriptLocation);
             if (dataScript == null) CustomGun.LOGGER.debug("GunIndexInstance: DataScript {} not found", scriptLocation);
             else if (!dataScript.isValid()) CustomGun.LOGGER.debug("GunIndexInstance: DataScript {} not valid", scriptLocation);
-            else this.script = dataScript.getResultTable();
+            else this.scriptCache = dataScript.getResultTable();
         }
         Map<String, Object> scriptParams = this.gunDataCache.getScriptParam();
         if (scriptParams != null) {
@@ -149,7 +149,7 @@ public class GunIndexInstance extends PojoInstance<GunIndex> {
         return this.gunDataCache;
     }
     public @Nullable LuaTable getScript() {
-        return this.script;
+        return this.scriptCache;
     }
     public @Nullable LuaTable getScriptParams() {
         return this.scriptParamCache;

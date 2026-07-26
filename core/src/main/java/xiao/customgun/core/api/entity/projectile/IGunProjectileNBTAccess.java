@@ -2,9 +2,14 @@ package xiao.customgun.core.api.entity.projectile;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.resource.ResourceTag;
+import xiao.customgun.core.resource.data.data.gun.bullet._ExplosionData;
+import xiao.customgun.core.resource.data.data.gun.bullet.damage._DistanceDamageData;
+
+import java.util.List;
 
 public interface IGunProjectileNBTAccess extends IGunProjectileValueAccess {
 
@@ -33,6 +38,18 @@ public interface IGunProjectileNBTAccess extends IGunProjectileValueAccess {
 
     // --------IGunProjectileStateAccess--------
 
+    @Nullable Vec3 getShootPos(CompoundTag gunProjectileCustomDataTag);
+    void setShootPos(CompoundTag gunProjectileCustomDataTag, Vec3 shootPos);
+
+    @Nullable List<_DistanceDamageData> getDamageCalculation(CompoundTag gunProjectileCustomDataTag);
+    void setDamageCalculation(CompoundTag gunProjectileCustomDataTag, List<_DistanceDamageData> damageCalculation);
+
+    float getArmorIgnorePercent(CompoundTag gunProjectileCustomDataTag);
+    void setArmorIgnorePercent(CompoundTag gunProjectileCustomDataTag, float armorIgnorePercent);
+
+    float getHeadshotMultiplier(CompoundTag gunProjectileCustomDataTag);
+    void setHeadshotMultiplier(CompoundTag gunProjectileCustomDataTag, float headshotMultiplier);
+
     int getLifetimeTicks(CompoundTag gunProjectileCustomDataTag);
     void setLifetimeTicks(CompoundTag gunProjectileCustomDataTag, int lifetimeTicks);
 
@@ -54,10 +71,16 @@ public interface IGunProjectileNBTAccess extends IGunProjectileValueAccess {
     boolean getFireAspect(CompoundTag gunProjectileCustomDataTag);
     void setFireAspect(CompoundTag gunProjectileCustomDataTag, boolean fireAspect);
 
+    int getFireAspectSeconds(CompoundTag gunProjectileCustomDataTag);
+    void setFireAspectSeconds(CompoundTag gunProjectileCustomDataTag, int fireAspectSeconds);
+
     float getKnockbackStrength(CompoundTag gunProjectileCustomDataTag);
     void setKnockbackStrength(CompoundTag gunProjectileCustomDataTag, float knockbackStrength);
 
     boolean hasExtraStateTag(CompoundTag gunProjectileCustomDataTag);
     @Nullable CompoundTag getExtraStateTag(CompoundTag gunProjectileCustomDataTag);
     void setExtraStateTag(CompoundTag gunProjectileCustomDataTag, CompoundTag extraStateTag);
+
+    @Nullable _ExplosionData getExplosionData(CompoundTag gunProjectileCustomDataTag);
+    void setExplosionData(CompoundTag gunProjectileCustomDataTag, _ExplosionData explosionData);
 }

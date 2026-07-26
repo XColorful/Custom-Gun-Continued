@@ -13,6 +13,8 @@ import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.resource.data.data.GunData;
+import xiao.customgun.core.api.entity.shooter.modifier.ShooterGunModifierCache;
+import xiao.customgun.core.api.gun.script.GunScriptApi;
 import xiao.customgun.core.resource.data.data.attachment._SimpleModifierData;
 import xiao.customgun.core.resource.data.data.gun._FireModeAdjustData;
 
@@ -32,5 +34,15 @@ public interface IProneInaccuracyModifier<T extends ResourcePojo<T>> extends IGu
     @Override
     default Float evalByScript(Float base, Float value, String scriptFunction) {
         return IGunModifier.evalSimpleModifierDataByScript(base, value, scriptFunction);
+    }
+
+    static @Nullable Float getValue(ShooterGunModifierCache cache, IGunModifierHolder modifierType) {
+        return cache.getValue(modifierType, IProneInaccuracyModifier.class);
+    }
+    static void setValue(ShooterGunModifierCache cache, IGunModifierHolder modifierHolder, Float value) {
+        cache.setValue(modifierHolder, IProneInaccuracyModifier.class, value);
+    }
+    static @NotNull Float evalByScript(GunScriptApi scriptApi, @NotNull Float value) {
+        return scriptApi.getIGun().evalByScript(scriptApi.getGunItem(), scriptApi, GunModifierType.PRONE_INACCURACY, value);
     }
 }

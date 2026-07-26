@@ -138,6 +138,10 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
         this.setAmmoLocation(compoundTag, this.getAmmoLocation(this));
         if (this.hasExtraDataTag(this)) this.setExtraDataTag(compoundTag, this.getExtraDataTag(this));
         // ----IGunProjectileStateAccess----
+        this.setShootPos(this, this.getShootPos(this));
+        this.setDamageCalculation(this, this.getDamageCalculation(this));
+        this.setArmorIgnorePercent(compoundTag, this.getArmorIgnorePercent(this));
+        this.setHeadshotMultiplier(compoundTag, this.getHeadshotMultiplier(this));
         this.setLifetimeTicks(compoundTag, this.getLifetimeTicks(this));
         this.setBulletSpeed(compoundTag, this.getBulletSpeed(this));
         this.setGravity(compoundTag, this.getGravity(this));
@@ -145,6 +149,7 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
         this.setPierce(compoundTag, this.getPierce(this));
         this.setIsTracer(compoundTag, this.getIsTracer(this));
         this.setFireAspect(compoundTag, this.getFireAspect(this));
+        this.setFireAspectSeconds(compoundTag, this.getFireAspectSeconds(this));
         this.setKnockbackStrength(compoundTag, this.getKnockbackStrength(this));
         if (this.hasExtraStateTag(this)) this.setExtraStateTag(compoundTag, this.getExtraStateTag(this));
     }
@@ -161,6 +166,10 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
         this.setAmmoLocation(this, this.getAmmoLocation(compoundTag));
         @Nullable CompoundTag extraDataTag = this.getExtraDataTag(compoundTag); if (extraDataTag != null) this.setExtraDataTag(this, extraDataTag);
         // ----IGunProjectileStateAccess----
+        this.setShootPos(this, this.getShootPos(compoundTag));
+        this.setDamageCalculation(this, this.getDamageCalculation(compoundTag));
+        this.setArmorIgnorePercent(this, this.getArmorIgnorePercent(compoundTag));
+        this.setHeadshotMultiplier(this, this.getHeadshotMultiplier(compoundTag));
         this.setLifetimeTicks(this, this.getLifetimeTicks(compoundTag));
         this.setBulletSpeed(this, this.getBulletSpeed(compoundTag));
         this.setGravity(this, this.getGravity(compoundTag));
@@ -168,6 +177,7 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
         this.setPierce(this, this.getPierce(compoundTag));
         this.setIsTracer(this, this.getIsTracer(compoundTag));
         this.setFireAspect(this, this.getFireAspect(compoundTag));
+        this.setFireAspectSeconds(this, this.getFireAspectSeconds(compoundTag));
         this.setKnockbackStrength(this, this.getKnockbackStrength(compoundTag));
         @Nullable CompoundTag extraStateTag = this.getExtraStateTag(compoundTag); if (extraStateTag != null) this.setExtraStateTag(this, extraStateTag);
 
@@ -239,6 +249,30 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
     // 对实体的字段操作改为内存操作
     // 但保留写入指定NBT的操作 (IGunProjectileNBTAccess)
 
+    @Override public @Nullable Vec3 getShootPos(Entity gunProjectile) {
+        return this.stateCache.shootPos;
+    }
+    @Override public void setShootPos(Entity entity, Vec3 shootPos) {
+        this.stateCache.shootPos = shootPos;
+    }
+    @Override public @Nullable List<_DistanceDamageData> getDamageCalculation(Entity gunProjectile) {
+        return this.stateCache.damageCalculation;
+    }
+    @Override public void setDamageCalculation(Entity entity, List<_DistanceDamageData> damageCalculation) {
+        this.stateCache.damageCalculation = damageCalculation;
+    }
+    @Override public float getArmorIgnorePercent(Entity gunProjectile) {
+        return this.stateCache.armorIgnorePercent;
+    }
+    @Override public void setArmorIgnorePercent(Entity entity, float armorIgnorePercent) {
+        this.stateCache.armorIgnorePercent = armorIgnorePercent;
+    }
+    @Override public float getHeadshotMultiplier(Entity gunProjectile) {
+        return this.stateCache.headshotMultiplier;
+    }
+    @Override public void setHeadshotMultiplier(Entity entity, float headshotMultiplier) {
+        this.stateCache.headshotMultiplier = headshotMultiplier;
+    }
     @Override public int getLifetimeTicks(Entity gunProjectile) {
         return this.stateCache.lifetimeTicks;
     }
@@ -286,6 +320,12 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
     }
     @Override public void setKnockbackStrength(Entity entity, float knockbackStrength) {
         this.stateCache.knockbackStrength = knockbackStrength;
+    }
+    @Override public int getFireAspectSeconds(Entity gunProjectile) {
+        return this.stateCache.fireAspectSeconds;
+    }
+    @Override public void setFireAspectSeconds(Entity entity, int fireAspectSeconds) {
+        this.stateCache.fireAspectSeconds = fireAspectSeconds;
     }
     @Override public boolean hasExtraStateTag(Entity gunProjectile) {
         return this.stateCache.extraStateTag != null;

@@ -37,3 +37,32 @@
 ```
 帮我把IFireAspectModifier同包的接口都像IFireAspectModifier那样补上getValue和setValue
 ```
+
+# 
+
+```
+浏览以下文件：
+- xiao.customgun.core.api.projectile.IProjectileRuntime的StateCache
+- xiao.customgun.core.api.entity.GunProjectileProperty
+- xiao.customgun.core.api.entity.projectile.IGunProjectileStateAccess
+- xiao.customgun.core.api.entity.projectile.GunProjectileDataAccessor
+- xiao.customgun.core.api.entity.GunProjectilePropertyTag
+- xiao.customgun.core.entity.projectile.GunProjectile
+
+1. 你只需要看以上文件，不需要过多思考
+2. 把StateCache里对于GunProjectileProperty新增的属性，补到以上文件相应位置，模仿已有的模式即可
+```
+
+```
+- xiao.customgun.core.api.entity.projectile.GunProjectileNBTAccessor
+- xiao.customgun.core.api.entity.projectile.IGunProjectileNBTAccess
+- GunProjectile的addAdditionalSaveData
+
+以上几处也在补充的范围，漏掉的属性补上
+```
+
+```
+GunProjectileProperty仍然没有完成，GunProjectileProperty里的属性需要补到以上文件相应位置
+```
+
+> 小鲸鱼实在太傻了，烧钱的废物

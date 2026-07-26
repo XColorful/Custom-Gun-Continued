@@ -3,11 +3,16 @@ package xiao.customgun.core.api.entity.projectile;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.entity.GunProjectileProperty;
 import xiao.customgun.core.api.resource.ResourceTag;
+import xiao.customgun.core.resource.data.data.gun.bullet.damage._DistanceDamageData;
+import xiao.customgun.core.util.JsonUtils;
 import xiao.customgun.core.util.NBTUtils;
+
+import java.util.List;
 
 public interface GunProjectileDataAccessor extends GunProjectileNBTAccessor, IGunProjectileDataAccess {
 
@@ -64,6 +69,44 @@ public interface GunProjectileDataAccessor extends GunProjectileNBTAccessor, IGu
     }
 
     // --------IGunProjectileStateAccess--------
+
+    @Override
+    default @Nullable Vec3 getShootPos(Entity gunProjectile) {
+        return NBTUtils.getVec3(gunProjectile, GunProjectileProperty.SHOOT_POS.getTagName());
+    }
+    @Override
+    default void setShootPos(Entity gunProjectile, Vec3 shootPos) {
+        NBTUtils.setVec3(gunProjectile, GunProjectileProperty.SHOOT_POS.getTagName(), shootPos);
+    }
+
+    @Override
+    default @Nullable List<_DistanceDamageData> getDamageCalculation(Entity gunProjectile) {
+        return NBTUtils.getStringJson(gunProjectile, GunProjectileProperty.DAMAGE_CALCULATION.getTagName(),
+                (reader) -> JsonUtils.readList(reader, _DistanceDamageData::fromJson));
+    }
+    @Override
+    default void setDamageCalculation(Entity gunProjectile, List<_DistanceDamageData> damageCalculation) {
+        NBTUtils.setStringJson(gunProjectile, GunProjectileProperty.DAMAGE_CALCULATION.getTagName(), damageCalculation,
+                (writer, value) -> JsonUtils.writeListValue(writer, value, _DistanceDamageData::toJson));
+    }
+
+    @Override
+    default float getArmorIgnorePercent(Entity gunProjectile) {
+        return NBTUtils.getFloat(gunProjectile, GunProjectileProperty.ARMOR_IGNORE_PERCENT.getTagName());
+    }
+    @Override
+    default void setArmorIgnorePercent(Entity gunProjectile, float armorIgnorePercent) {
+        NBTUtils.setFloat(gunProjectile, GunProjectileProperty.ARMOR_IGNORE_PERCENT.getTagName(), armorIgnorePercent);
+    }
+
+    @Override
+    default float getHeadshotMultiplier(Entity gunProjectile) {
+        return NBTUtils.getFloat(gunProjectile, GunProjectileProperty.HEADSHOT_MULTIPLIER.getTagName());
+    }
+    @Override
+    default void setHeadshotMultiplier(Entity gunProjectile, float headshotMultiplier) {
+        NBTUtils.setFloat(gunProjectile, GunProjectileProperty.HEADSHOT_MULTIPLIER.getTagName(), headshotMultiplier);
+    }
 
     @Override
     default int getLifetimeTicks(Entity gunProjectile) {
@@ -126,6 +169,15 @@ public interface GunProjectileDataAccessor extends GunProjectileNBTAccessor, IGu
     @Override
     default void setFireAspect(Entity gunProjectile, boolean fireAspect) {
         NBTUtils.setBoolean(gunProjectile, GunProjectileProperty.FIRE_ASPECT.getTagName(), fireAspect);
+    }
+
+    @Override
+    default int getFireAspectSeconds(Entity gunProjectile) {
+        return NBTUtils.getInt(gunProjectile, GunProjectileProperty.FIRE_ASPECT_SECONDS.getTagName());
+    }
+    @Override
+    default void setFireAspectSeconds(Entity gunProjectile, int fireAspectSeconds) {
+        NBTUtils.setInt(gunProjectile, GunProjectileProperty.FIRE_ASPECT_SECONDS.getTagName(), fireAspectSeconds);
     }
 
     @Override

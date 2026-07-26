@@ -2,9 +2,25 @@ package xiao.customgun.core.api.entity.projectile;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
+import xiao.customgun.core.resource.data.data.gun.bullet.damage._DistanceDamageData;
+
+import java.util.List;
 
 public interface IGunProjectileStateAccess {
+
+    @Nullable Vec3 getShootPos(Entity gunProjectile);
+    void setShootPos(Entity gunProjectile, Vec3 shootPos);
+
+    float getArmorIgnorePercent(Entity gunProjectile);
+    void setArmorIgnorePercent(Entity gunProjectile, float armorIgnorePercent);
+
+    float getHeadshotMultiplier(Entity gunProjectile);
+    void setHeadshotMultiplier(Entity gunProjectile, float headshotMultiplier);
+
+    @Nullable List<_DistanceDamageData> getDamageCalculation(Entity gunProjectile);
+    void setDamageCalculation(Entity gunProjectile, List<_DistanceDamageData> damageCalculation);
 
     int getLifetimeTicks(Entity gunProjectile);
     void setLifetimeTicks(Entity gunProjectile, int lifetimeTicks);
@@ -26,6 +42,9 @@ public interface IGunProjectileStateAccess {
 
     boolean getFireAspect(Entity gunProjectile);
     void setFireAspect(Entity gunProjectile, boolean fireAspect);
+
+    int getFireAspectSeconds(Entity gunProjectile);
+    void setFireAspectSeconds(Entity gunProjectile, int fireAspectSeconds);
 
     float getKnockbackStrength(Entity gunProjectile);
     void setKnockbackStrength(Entity gunProjectile, float knockbackStrength);

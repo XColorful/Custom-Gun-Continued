@@ -3,6 +3,7 @@ package xiao.customgun.core.api.entity;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.entity.projectile.IGunProjectileDataAccess;
+import xiao.customgun.core.api.entity.projectile.IGunProjectileStateAccess;
 import xiao.customgun.core.api.entity.projectile._IGunProjectilePropertyAccess;
 import xiao.customgun.core.api.resource.ResourceTag;
 
@@ -29,6 +30,18 @@ public enum GunProjectileProperty implements ResourceTag {
             IGunProjectileDataAccess::setExtraDataTag),
 
     // IGunProjectileStateAccess
+    SHOOT_POS(GunProjectilePropertyTag.SHOOT_POS,
+            IGunProjectileDataAccess::getShootPos,
+            IGunProjectileDataAccess::setShootPos),
+    ARMOR_IGNORE_PERCENT(GunProjectilePropertyTag.ARMOR_IGNORE_PERCENT,
+            IGunProjectileDataAccess::getArmorIgnorePercent,
+            IGunProjectileDataAccess::setArmorIgnorePercent),
+    HEADSHOT_MULTIPLIER(GunProjectilePropertyTag.HEADSHOT_MULTIPLIER,
+            IGunProjectileDataAccess::getHeadshotMultiplier,
+            IGunProjectileDataAccess::setHeadshotMultiplier),
+    DAMAGE_CALCULATION(GunProjectilePropertyTag.DAMAGE_CALCULATION,
+            IGunProjectileStateAccess::getDamageCalculation,
+            IGunProjectileDataAccess::setDamageCalculation),
     LIFETIME_TICKS(GunProjectilePropertyTag.LIFETIME_TICKS,
             IGunProjectileDataAccess::getLifetimeTicks,
             IGunProjectileDataAccess::setLifetimeTicks),
@@ -50,6 +63,9 @@ public enum GunProjectileProperty implements ResourceTag {
     FIRE_ASPECT(GunProjectilePropertyTag.FIRE_ASPECT,
             IGunProjectileDataAccess::getFireAspect,
             IGunProjectileDataAccess::setFireAspect),
+    FIRE_ASPECT_SECONDS(GunProjectilePropertyTag.FIRE_ASPECT_SECONDS,
+            IGunProjectileDataAccess::getFireAspectSeconds,
+            IGunProjectileDataAccess::setFireAspectSeconds),
     KNOCKBACK_STRENGTH(GunProjectilePropertyTag.KNOCKBACK_STRENGTH,
             IGunProjectileDataAccess::getKnockbackStrength,
             IGunProjectileDataAccess::setKnockbackStrength),

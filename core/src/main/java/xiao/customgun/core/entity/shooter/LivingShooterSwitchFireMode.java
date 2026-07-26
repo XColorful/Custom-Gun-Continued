@@ -42,7 +42,7 @@ public final class LivingShooterSwitchFireMode extends LivingShooterAspect {
         SendUtils.sendMessageToTrackingEntity(this.livingShooter,
                 new ServerMessageGunSwitchFireMode(this.livingShooter.getId(), currentGunItem));
 
-        iGun.switchFireMode(this.shooterProperty, currentGunItem);
+        iGun.switchFireMode(this.shooterProperty, iGun, currentGunItem);
         // 刷新配件缓存
         ShooterGunModifierManager.postChangeEvent(this.livingShooter, currentGunItem);
     }

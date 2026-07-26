@@ -80,7 +80,7 @@ public final class LocalShooterReload extends LocalShooterAspect {
 
         // 检查弹药
         ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(this.localShooter);
-        if (iLivingShooter.cgc$needCheckAmmo() && !iGun.canReload(gunItem, this.localShooter)) return;
+        if (iLivingShooter.cgc$needCheckAmmo() && !iGun.canReload(iGun, gunItem, iLivingShooter, this.localShooter)) return;
 
         // 锁上状态锁
         this.localShooterProperty.lockState(operator -> operator.cgc$getSynReloadState().getStateType().isReloading());

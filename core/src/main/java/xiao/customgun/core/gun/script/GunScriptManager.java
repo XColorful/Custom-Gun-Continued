@@ -9,7 +9,8 @@ package xiao.customgun.core.gun.script;
 
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import org.luaj.vm2.LuaTable;
+import org.jetbrains.annotations.Nullable;
+import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 import org.luaj.vm2.lib.jse.CoerceLuaToJava;
@@ -34,11 +35,8 @@ public class GunScriptManager implements IGunScriptManager {
     @Override
     public @NotNull <V> V evalByScript(ItemStack gunItem, GunScriptApi scriptApi, GunModifierType modifierType, @NotNull V value) {
         try {
-            LuaTable script = scriptApi.getScript();
-            if (script == null) return value;
-
-            LuaValue function = script.get(ScriptMethodType.UPDATE_MODIFIER_CACHE.getConstantName());
-            if (!function.isfunction()) { // 检查是否是函数
+            @Nullable LuaFunction function = scriptApi.getFunction(ScriptMethodType.UPDATE_MODIFIER_CACHE);
+            if (function == null) { // 检查是否是函数
                 CustomGun.LOGGER.warn("GunScriptManager: Missing function {}", ScriptMethodType.UPDATE_MODIFIER_CACHE.getConstantName());
                 return value;
             }

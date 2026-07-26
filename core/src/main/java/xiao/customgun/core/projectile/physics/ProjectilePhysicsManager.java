@@ -20,6 +20,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector2d;
 import xiao.customgun.CustomGun;
 import xiao.customgun.core.api.entity.IGunProjectile;
 import xiao.customgun.core.api.minecraft.IMcRegistry;
@@ -154,6 +155,13 @@ public class ProjectilePhysicsManager implements IProjectilePhysicsManager {
         // ----照搬原版结束----
 
         tickContext.group.projectileEffectManager().moveEffect(tickContext, iGunProjectile, gunProjectile);
+    }
+
+    // --------IProjectilePhysicsExtension--------
+
+    @Override
+    public void shootFromRotation(Entity source, float xRot, float yRot, float yOffset, float pow, Vector2d spreadOffset) {
+        // TODO
     }
 
     // --------便利方法--------

@@ -11,10 +11,15 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaTable;
+import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 import xiao.customgun.core.api.entity.ILivingShooter;
 import xiao.customgun.core.api.item.IGun;
+import xiao.customgun.core.api.minecraft.TriBool;
 import xiao.customgun.core.api.resource.ResourceApi;
+import xiao.customgun.core.api.script.ScriptMethodType;
 import xiao.customgun.core.resource.instance.data.GunIndexInstance;
 
 public class GunScriptApi {
@@ -56,6 +61,29 @@ public class GunScriptApi {
         if (this.scriptCache == null || this.scriptParamsCache == null) return false;
 
         return true;
+    }
+
+    public @Nullable LuaFunction getFunction(ScriptMethodType scriptMethodType) {
+        if (this.scriptCache == null) return null;
+        LuaValue function = this.scriptCache.get(scriptMethodType.getConstantName());
+        if (function.isfunction()) return function.checkfunction();
+        else return null;
+    }
+
+    /**
+     * 执行函数，参数为{@link GunScriptApi}
+     * @return 是否执行成功
+     */
+    public @NotNull TriBool simpleCall(ScriptMethodType scriptMethod) {
+        @Nullable LuaFunction function = this.getFunction(scriptMethod);
+        if (function == null) return TriBool.UNKNOWN;
+
+        LuaValue result = function.call(
+                CoerceJavaToLua.coerce(this)
+        );
+
+        if (!result.isboolean()) return TriBool.UNKNOWN;
+        else return result.checkboolean() ? TriBool.TRUE : TriBool.FALSE;
     }
 
     // --------Getter & Setter--------

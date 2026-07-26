@@ -16,6 +16,8 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import xiao.customgun.CustomGun;
 import xiao.customgun.client.item.gun._GunItem;
+import xiao.customgun.core.api.entity.IGunProjectile;
+import xiao.customgun.core.api.entity.ILivingShooter;
 import xiao.customgun.core.api.entity.ReloadState;
 import xiao.customgun.core.api.entity.ShooterProperty;
 import xiao.customgun.core.api.gun.script.GunScriptApi;
@@ -69,60 +71,56 @@ public class GunItem extends Item implements IGun, GunDataAccessor {
     // --------IGunRuntime--------
 
     // ----IGunActionRuntime----
-    @Override public boolean startBolt(ShooterProperty shooterProperty, ItemStack gunItem, LivingEntity livingShooter) {
+    @Override public boolean startBolt(ShooterProperty shooterProperty, @NotNull IGun iGun, @NotNull ItemStack gunItem, ILivingShooter iLivingShooter, LivingEntity livingShooter) {
         return CustomGun.getGunManager().getManagerGroup(this.getManagerGroupTag(gunItem))
                 .gunActionManager()
-                .startBolt(shooterProperty, gunItem, livingShooter);
+                .startBolt(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter);
     }
-    @Override public boolean tickBolt(ShooterProperty shooterProperty, ItemStack gunItem, LivingEntity livingShooter) {
+    @Override public boolean tickBolt(ShooterProperty shooterProperty, @NotNull IGun iGun, @NotNull ItemStack gunItem, ILivingShooter iLivingShooter, LivingEntity livingShooter) {
         return CustomGun.getGunManager().getManagerGroup(this.getManagerGroupTag(gunItem))
                 .gunActionManager()
-                .tickBolt(shooterProperty, gunItem, livingShooter);
+                .tickBolt(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter);
     }
-    @Override public boolean canReload(ItemStack gunItem, LivingEntity livingShooter) {
+    @Override public boolean canReload(@NotNull IGun iGun, @NotNull ItemStack gunItem, ILivingShooter iLivingShooter, LivingEntity livingShooter) {
         return CustomGun.getGunManager().getManagerGroup(this.getManagerGroupTag(gunItem))
                 .gunActionManager()
-                .canReload(gunItem, livingShooter);
+                .canReload(iGun, gunItem, iLivingShooter, livingShooter);
     }
-    @Override public boolean startReload(ShooterProperty shooterProperty, ItemStack gunItem, LivingEntity livingShooter) {
+    @Override public boolean startReload(ShooterProperty shooterProperty, @NotNull IGun iGun, @NotNull ItemStack gunItem, ILivingShooter iLivingShooter, LivingEntity livingShooter) {
         return CustomGun.getGunManager().getManagerGroup(this.getManagerGroupTag(gunItem))
                 .gunActionManager()
-                .startReload(shooterProperty, gunItem, livingShooter);
+                .startReload(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter);
     }
-    @Override public ReloadState tickReload(ShooterProperty shooterProperty, ItemStack gunItem, LivingEntity livingShooter) {
+    @Override public ReloadState tickReload(ShooterProperty shooterProperty, @NotNull IGun iGun, @NotNull ItemStack gunItem, ILivingShooter iLivingShooter, LivingEntity livingShooter) {
         return CustomGun.getGunManager().getManagerGroup(this.getManagerGroupTag(gunItem))
                 .gunActionManager()
-                .tickReload(shooterProperty, gunItem, livingShooter);
+                .tickReload(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter);
     }
-    @Override public void interruptReload(ShooterProperty shooterProperty, ItemStack gunItem, LivingEntity livingShooter) {
+    @Override public void interruptReload(ShooterProperty shooterProperty, @NotNull IGun iGun, @NotNull ItemStack gunItem, ILivingShooter iLivingShooter, LivingEntity livingShooter) {
         CustomGun.getGunManager().getManagerGroup(this.getManagerGroupTag(gunItem))
                 .gunActionManager()
-                .interruptReload(shooterProperty, gunItem, livingShooter);
+                .interruptReload(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter);
     }
-    @Override public void switchFireMode(ShooterProperty shooterProperty, ItemStack gunItem) {
+    @Override public void switchFireMode(ShooterProperty shooterProperty, @NotNull IGun iGun, @NotNull ItemStack gunItem) {
         CustomGun.getGunManager().getManagerGroup(this.getManagerGroupTag(gunItem))
                 .gunActionManager()
-                .switchFireMode(shooterProperty, gunItem);
+                .switchFireMode(shooterProperty, iGun, gunItem);
     }
     // ----IGunAttackRuntime----
-    @Override public void shoot(ShooterProperty shooterProperty, ItemStack gunItem, LivingEntity livingShooter, Supplier<Float> pitch, Supplier<Float> yaw) {
+    @Override public void shoot(ShooterProperty shooterProperty, @NotNull IGun iGun, @NotNull ItemStack gunItem, ILivingShooter iLivingShooter, LivingEntity livingShooter, Supplier<Float> pitch, Supplier<Float> yaw) {
         CustomGun.getGunManager().getManagerGroup(this.getManagerGroupTag(gunItem))
                 .gunAttackManager()
-                .shoot(shooterProperty, gunItem, livingShooter, pitch, yaw);
+                .shoot(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter, pitch, yaw);
     }
-    @Override public void doBulletSpread(ShooterProperty shooterProperty, ItemStack gunItem, LivingEntity livingShooter,
-                               Projectile projectile, int bulletId, float processedSpeed,
-                               float inaccuracy, float pitch, float yaw) {
+    @Override public void doBulletSpread(ShooterProperty shooterProperty, @NotNull IGun iGun, @NotNull ItemStack gunItem, ILivingShooter iLivingShooter, LivingEntity livingShooter, @NotNull IGunProjectile iGunProjectile, @NotNull Projectile projectile, int bulletId, float xRot, float yRot, float pow, float uncertainty) {
         CustomGun.getGunManager().getManagerGroup(this.getManagerGroupTag(gunItem))
                 .gunAttackManager()
-                .doBulletSpread(shooterProperty, gunItem, livingShooter,
-                        projectile, bulletId, processedSpeed,
-                        inaccuracy, pitch, yaw);
+                .doBulletSpread(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter, iGunProjectile, projectile, bulletId, xRot, yRot, pow, uncertainty);
     }
-    @Override public void melee(ShooterProperty shooterProperty, ItemStack gunItem, LivingEntity livingShooter) {
+    @Override public void melee(ShooterProperty shooterProperty, @NotNull IGun iGun, @NotNull ItemStack gunItem, ILivingShooter iLivingShooter, LivingEntity livingShooter) {
         CustomGun.getGunManager().getManagerGroup(this.getManagerGroupTag(gunItem))
                 .gunAttackManager()
-                .melee(shooterProperty, gunItem, livingShooter);
+                .melee(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter);
     }
     // ----IGunInventoryRuntime----
     @Override public void dropAllAmmo(ItemStack gunItem, LivingEntity livingShooter) {
@@ -147,10 +145,10 @@ public class GunItem extends Item implements IGun, GunDataAccessor {
                 .evalByScript(gunItem, scriptApi, modifierType, value);
     }
     // ----IGunStateRuntime----
-    @Override public void tickHeat(ShooterProperty shooterProperty, ItemStack gunItem, LivingEntity livingShooter) {
+    @Override public void tickHeat(ShooterProperty shooterProperty, @NotNull IGun iGun, @NotNull ItemStack gunItem, ILivingShooter iLivingShooter, LivingEntity livingShooter) {
         CustomGun.getGunManager().getManagerGroup(this.getManagerGroupTag(gunItem))
                 .gunStateManager()
-                .tickHeat(shooterProperty, gunItem, livingShooter);
+                .tickHeat(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter);
     }
 
     // --------IAnimationItem--------

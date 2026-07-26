@@ -14,6 +14,7 @@ import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.api.item.attachment.MagazineCategory;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.resource.data.data.GunData;
+import xiao.customgun.core.api.entity.shooter.modifier.ShooterGunModifierCache;
 
 public interface IMagazineCategoryModifier<T extends ResourcePojo<T>> extends IGunModifier<T, MagazineCategory, MagazineCategory> {
 
@@ -21,5 +22,12 @@ public interface IMagazineCategoryModifier<T extends ResourcePojo<T>> extends IG
     default @Nullable MagazineCategory getBase(@NotNull IGun iGun, @NotNull ItemStack gunItem,
                                                 @NotNull GunData gunData) {
         return MagazineCategory.NONE;
+    }
+
+    static @Nullable MagazineCategory getValue(ShooterGunModifierCache cache, IGunModifierHolder modifierType) {
+        return cache.getValue(modifierType, IMagazineCategoryModifier.class);
+    }
+    static void setValue(ShooterGunModifierCache cache, IGunModifierHolder modifierHolder, MagazineCategory value) {
+        cache.setValue(modifierHolder, IMagazineCategoryModifier.class, value);
     }
 }

@@ -10,6 +10,7 @@ package xiao.customgun.core.api.item.gun.modifier;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import xiao.customgun.core.api.entity.shooter.modifier.ShooterGunModifierCache;
 import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.resource.data.data.GunData;
@@ -24,5 +25,12 @@ public interface IFireAspectModifier<T extends ResourcePojo<T>> extends IGunModi
         base.setIgniteEntity(gunData.getBulletData().isFireAspect());
         // TODO igniteBlock
         return base;
+    }
+
+    static @Nullable _FireAspectModifierData getValue(ShooterGunModifierCache cache, IGunModifierHolder modifierType) {
+        return cache.getValue(modifierType, IFireAspectModifier.class);
+    }
+    static void setValue(ShooterGunModifierCache cache, IGunModifierHolder modifierHolder, _FireAspectModifierData value) {
+        cache.setValue(modifierHolder, IFireAspectModifier.class, value);
     }
 }

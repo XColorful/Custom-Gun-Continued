@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.resource.data.data.GunData;
+import xiao.customgun.core.api.entity.shooter.modifier.ShooterGunModifierCache;
 import xiao.customgun.core.resource.data.data.attachment._SimpleModifierData;
 
 public interface IEffectiveRangeModifier<T extends ResourcePojo<T>> extends IGunModifier<T, _SimpleModifierData, Float> {
@@ -27,5 +28,12 @@ public interface IEffectiveRangeModifier<T extends ResourcePojo<T>> extends IGun
     @Override
     default Float evalByScript(Float base, Float value, String scriptFunction) {
         return IGunModifier.evalSimpleModifierDataByScript(base, value, scriptFunction);
+    }
+
+    static @Nullable Float getValue(ShooterGunModifierCache cache, IGunModifierHolder modifierType) {
+        return cache.getValue(modifierType, IEffectiveRangeModifier.class);
+    }
+    static void setValue(ShooterGunModifierCache cache, IGunModifierHolder modifierHolder, Float value) {
+        cache.setValue(modifierHolder, IEffectiveRangeModifier.class, value);
     }
 }

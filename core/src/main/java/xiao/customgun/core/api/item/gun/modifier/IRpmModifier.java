@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.resource.data.data.GunData;
+import xiao.customgun.core.api.entity.shooter.modifier.ShooterGunModifierCache;
 import xiao.customgun.core.resource.data.data.attachment._SimpleModifierData;
 
 public interface IRpmModifier<T extends ResourcePojo<T>> extends IGunModifier<T, _SimpleModifierData, Integer> {
@@ -25,5 +26,12 @@ public interface IRpmModifier<T extends ResourcePojo<T>> extends IGunModifier<T,
         if (fireModeAdjust != null) rpm += fireModeAdjust.getRpm();
         if (rpm <= 0) rpm = 300;
         return rpm;
+    }
+
+    static @Nullable Integer getValue(ShooterGunModifierCache cache, IGunModifierHolder modifierType) {
+        return cache.getValue(modifierType, IRpmModifier.class);
+    }
+    static void setValue(ShooterGunModifierCache cache, IGunModifierHolder modifierHolder, Integer value) {
+        cache.setValue(modifierHolder, IRpmModifier.class, value);
     }
 }

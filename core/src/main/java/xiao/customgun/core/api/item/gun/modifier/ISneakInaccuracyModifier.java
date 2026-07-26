@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.resource.data.data.GunData;
+import xiao.customgun.core.api.entity.shooter.modifier.ShooterGunModifierCache;
 import xiao.customgun.core.resource.data.data.attachment._SimpleModifierData;
 import xiao.customgun.core.resource.data.data.gun._FireModeAdjustData;
 
@@ -32,5 +33,12 @@ public interface ISneakInaccuracyModifier<T extends ResourcePojo<T>> extends IGu
     @Override
     default Float evalByScript(Float base, Float value, String scriptFunction) {
         return IGunModifier.evalSimpleModifierDataByScript(base, value, scriptFunction);
+    }
+
+    static @Nullable Float getValue(ShooterGunModifierCache cache, IGunModifierHolder modifierType) {
+        return cache.getValue(modifierType, ISneakInaccuracyModifier.class);
+    }
+    static void setValue(ShooterGunModifierCache cache, IGunModifierHolder modifierHolder, Float value) {
+        cache.setValue(modifierHolder, ISneakInaccuracyModifier.class, value);
     }
 }

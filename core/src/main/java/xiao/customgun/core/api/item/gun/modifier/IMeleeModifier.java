@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.resource.data.data.GunData;
+import xiao.customgun.core.api.entity.shooter.modifier.ShooterGunModifierCache;
 import xiao.customgun.core.resource.data.data.attachment._MeleeModifierData;
 
 public interface IMeleeModifier<T extends ResourcePojo<T>> extends IGunModifier<T, _MeleeModifierData, _MeleeModifierData> {
@@ -22,5 +23,12 @@ public interface IMeleeModifier<T extends ResourcePojo<T>> extends IGunModifier<
                                                   @NotNull GunData gunData) {
         // TODO: from gunData.getMeleeData() — build a copy
         return new _MeleeModifierData();
+    }
+
+    static @Nullable _MeleeModifierData getValue(ShooterGunModifierCache cache, IGunModifierHolder modifierType) {
+        return cache.getValue(modifierType, IMeleeModifier.class);
+    }
+    static void setValue(ShooterGunModifierCache cache, IGunModifierHolder modifierHolder, _MeleeModifierData value) {
+        cache.setValue(modifierHolder, IMeleeModifier.class, value);
     }
 }

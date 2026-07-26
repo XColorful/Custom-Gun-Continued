@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.resource.data.data.GunData;
+import xiao.customgun.core.api.entity.shooter.modifier.ShooterGunModifierCache;
 import xiao.customgun.core.resource.data.data.attachment._BulletExplosionModifierData;
 
 public interface IBulletExplosionModifier<T extends ResourcePojo<T>> extends IGunModifier<T, _BulletExplosionModifierData, _BulletExplosionModifierData> {
@@ -29,5 +30,12 @@ public interface IBulletExplosionModifier<T extends ResourcePojo<T>> extends IGu
         base.setEnableWorldDestruction(explosion.getEnableWorldDestruction());
         // TODO: explodeDamage/explodeScale/maxDelaySeconds → _SimpleModifierData
         return base;
+    }
+
+    static @Nullable _BulletExplosionModifierData getValue(ShooterGunModifierCache cache, IGunModifierHolder modifierType) {
+        return cache.getValue(modifierType, IBulletExplosionModifier.class);
+    }
+    static void setValue(ShooterGunModifierCache cache, IGunModifierHolder modifierHolder, _BulletExplosionModifierData value) {
+        cache.setValue(modifierHolder, IBulletExplosionModifier.class, value);
     }
 }

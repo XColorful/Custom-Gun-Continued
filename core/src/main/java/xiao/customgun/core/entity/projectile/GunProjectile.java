@@ -126,8 +126,8 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
         this.setAmmoLocation(compoundTag, this.getAmmoLocation(this));
         if (this.hasExtraDataTag(this)) this.setExtraDataTag(compoundTag, this.getExtraDataTag(this));
         // ----IGunProjectileStateAccess----
-        this.setShootPos(this, this.getShootPos(this));
-        this.setDamageCalculation(this, this.getDamageCalculation(this));
+        this.setShootPos(compoundTag, this.getShootPos(this));
+        this.setDamageCalculation(compoundTag, this.getDamageCalculation(this));
         this.setArmorIgnorePercent(compoundTag, this.getArmorIgnorePercent(this));
         this.setHeadshotMultiplier(compoundTag, this.getHeadshotMultiplier(this));
         this.setLifetimeTicks(compoundTag, this.getLifetimeTicks(this));
@@ -205,28 +205,28 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
     @Override public @Nullable String getManagerGroupTag(Entity gunProjectile) {
         return this.dataCache.managerGroupTag;
     }
-    @Override public void setManagerGroupTag(Entity entity, String managerGroupTag) {
+    @Override public void setManagerGroupTag(Entity gunProjectile, String managerGroupTag) {
         this.dataCache.managerGroupTag = managerGroupTag;
     }
     @Override public @NotNull ResourceLocation getGunLocation(Entity gunProjectile) {
         var gunLocation = this.dataCache.gunLocation;
         return gunLocation != null ? gunLocation : ResourceTag.NULL_LOCATION;
     }
-    @Override public void setGunLocation(Entity entity, ResourceLocation gunLocation) {
+    @Override public void setGunLocation(Entity gunProjectile, ResourceLocation gunLocation) {
         this.dataCache.gunLocation = gunLocation;
     }
     @Override public @NotNull ResourceLocation getGunDisplayLocation(Entity gunProjectile) {
         var gunDisplayLocation = this.dataCache.gunDisplayLocation;
         return gunDisplayLocation != null ? gunDisplayLocation : ResourceTag.NULL_LOCATION;
     }
-    @Override public void setGunDisplayLocation(Entity entity, ResourceLocation gunDisplayLocation) {
+    @Override public void setGunDisplayLocation(Entity gunProjectile, ResourceLocation gunDisplayLocation) {
         this.dataCache.gunDisplayLocation = gunDisplayLocation;
     }
     @Override public @NotNull ResourceLocation getAmmoLocation(Entity gunProjectile) {
         var ammoLocation = this.dataCache.ammoLocation;
         return ammoLocation != null ? ammoLocation : ResourceTag.NULL_LOCATION;
     }
-    @Override public void setAmmoLocation(Entity entity, ResourceLocation ammoLocation) {
+    @Override public void setAmmoLocation(Entity gunProjectile, ResourceLocation ammoLocation) {
         this.dataCache.ammoLocation = ammoLocation;
     }
     @Override public boolean hasExtraDataTag(Entity gunProjectile) {
@@ -235,7 +235,7 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
     @Override public @Nullable CompoundTag getExtraDataTag(Entity gunProjectile) {
         return this.dataCache.extraDataTag;
     }
-    @Override public void setExtraDataTag(Entity entity, CompoundTag extraDataTag) {
+    @Override public void setExtraDataTag(Entity gunProjectile, CompoundTag extraDataTag) {
         this.dataCache.extraDataTag = extraDataTag;
     }
 
@@ -246,49 +246,49 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
     @Override public @Nullable Vec3 getShootPos(Entity gunProjectile) {
         return this.stateCache.shootPos;
     }
-    @Override public void setShootPos(Entity entity, Vec3 shootPos) {
+    @Override public void setShootPos(Entity gunProjectile, Vec3 shootPos) {
         this.stateCache.shootPos = shootPos;
     }
     @Override public @Nullable List<_DistanceDamageData> getDamageCalculation(Entity gunProjectile) {
         return this.stateCache.damageCalculation;
     }
-    @Override public void setDamageCalculation(Entity entity, List<_DistanceDamageData> damageCalculation) {
+    @Override public void setDamageCalculation(Entity gunProjectile, List<_DistanceDamageData> damageCalculation) {
         this.stateCache.damageCalculation = damageCalculation;
     }
     @Override public float getArmorIgnorePercent(Entity gunProjectile) {
         return this.stateCache.armorIgnorePercent;
     }
-    @Override public void setArmorIgnorePercent(Entity entity, float armorIgnorePercent) {
+    @Override public void setArmorIgnorePercent(Entity gunProjectile, float armorIgnorePercent) {
         this.stateCache.armorIgnorePercent = armorIgnorePercent;
     }
     @Override public float getHeadshotMultiplier(Entity gunProjectile) {
         return this.stateCache.headshotMultiplier;
     }
-    @Override public void setHeadshotMultiplier(Entity entity, float headshotMultiplier) {
+    @Override public void setHeadshotMultiplier(Entity gunProjectile, float headshotMultiplier) {
         this.stateCache.headshotMultiplier = headshotMultiplier;
     }
     @Override public int getLifetimeTicks(Entity gunProjectile) {
         return this.stateCache.lifetimeTicks;
     }
-    @Override public void setLifetimeTicks(Entity entity, int lifetimeTicks) {
+    @Override public void setLifetimeTicks(Entity gunProjectile, int lifetimeTicks) {
         this.stateCache.lifetimeTicks = lifetimeTicks;
     }
     @Override public float getBulletSpeed(Entity gunProjectile) {
         return this.stateCache.bulletSpeed;
     }
-    @Override public void setBulletSpeed(Entity entity, float bulletSpeed) {
+    @Override public void setBulletSpeed(Entity gunProjectile, float bulletSpeed) {
         this.stateCache.bulletSpeed = bulletSpeed;
     }
     @Override public float getGravity(Entity gunProjectile) {
         return this.stateCache.gravity;
     }
-    @Override public void setGravity(Entity entity, float gravity) {
+    @Override public void setGravity(Entity gunProjectile, float gravity) {
         this.stateCache.gravity = gravity;
     }
     @Override public float getFriction(Entity gunProjectile) {
         return this.stateCache.friction;
     }
-    @Override public void setFriction(Entity entity, float friction) {
+    @Override public void setFriction(Entity gunProjectile, float friction) {
         this.stateCache.friction = friction;
     }
     @Override public int getPierce(Entity gunProjectile) {
@@ -300,25 +300,25 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
     @Override public boolean getIsTracer(Entity gunProjectile) {
         return this.stateCache.isTracer;
     }
-    @Override public void setIsTracer(Entity entity, boolean isTracer) {
+    @Override public void setIsTracer(Entity gunProjectile, boolean isTracer) {
         this.stateCache.isTracer = isTracer;
     }
     @Override public boolean getFireAspect(Entity gunProjectile) {
         return this.stateCache.fireAspect;
     }
-    @Override public void setFireAspect(Entity entity, boolean fireAspect) {
+    @Override public void setFireAspect(Entity gunProjectile, boolean fireAspect) {
         this.stateCache.fireAspect = fireAspect;
     }
     @Override public float getKnockbackStrength(Entity gunProjectile) {
         return this.stateCache.knockbackStrength;
     }
-    @Override public void setKnockbackStrength(Entity entity, float knockbackStrength) {
+    @Override public void setKnockbackStrength(Entity gunProjectile, float knockbackStrength) {
         this.stateCache.knockbackStrength = knockbackStrength;
     }
     @Override public int getFireAspectSeconds(Entity gunProjectile) {
         return this.stateCache.fireAspectSeconds;
     }
-    @Override public void setFireAspectSeconds(Entity entity, int fireAspectSeconds) {
+    @Override public void setFireAspectSeconds(Entity gunProjectile, int fireAspectSeconds) {
         this.stateCache.fireAspectSeconds = fireAspectSeconds;
     }
     @Override public boolean hasExtraStateTag(Entity gunProjectile) {
@@ -327,7 +327,7 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
     @Override public @Nullable CompoundTag getExtraStateTag(Entity gunProjectile) {
         return this.stateCache.extraStateTag;
     }
-    @Override public void setExtraStateTag(Entity entity, CompoundTag extraStateTag) {
+    @Override public void setExtraStateTag(Entity gunProjectile, CompoundTag extraStateTag) {
         this.stateCache.extraStateTag = extraStateTag;
     }
     @Override public @Nullable _ExplosionData getExplosionData(Entity gunProjectile) {

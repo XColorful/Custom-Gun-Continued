@@ -153,3 +153,11 @@ static @NotNull V evalByScript(GunScriptApi scriptApi, @NotNull V value) {
 ```
 对xiao.customgun.core.api.item.gun.modifier包下的每一个IGunModifier子类的evalByScript方法，像IAdsModifier里一样补充GunModifierType参数
 ```
+
+# 
+
+```
+浏览我最新的一次commit的变动，\docs\architecture\core\gun\script下的文档是否跟我最新的实现/体系有出入，如没有则向我报告即可，如有则修改：
+- 格式和语法使用规范跟已有文档保持一致
+- 英文部分也一并修改
+```

@@ -10,19 +10,28 @@ package xiao.customgun.core.api.item.gun.modifier;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import xiao.customgun.core.api.entity.shooter.modifier.ShooterGunModifierCache;
+import xiao.customgun.core.api.gun.script.GunScriptApi;
 import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.resource.data.data.GunData;
 import xiao.customgun.core.resource.data.data.attachment._FireAspectModifierData;
 
-public interface IFireAspectModifier<T extends ResourcePojo<T>> extends IGunModifier<T, _FireAspectModifierData, _FireAspectModifierData> {
+public interface IFireAspectModifier<T extends ResourcePojo<T>> extends IGunModifier<T, _FireAspectModifierData, Boolean> {
 
     @Override
-    default @Nullable _FireAspectModifierData getBase(@NotNull IGun iGun, @NotNull ItemStack gunItem,
+    default @Nullable Boolean getBase(@NotNull IGun iGun, @NotNull ItemStack gunItem,
                                                        @NotNull GunData gunData) {
-        var base = new _FireAspectModifierData();
-        base.setIgniteEntity(gunData.getBulletData().isFireAspect());
-        // TODO igniteBlock
-        return base;
+        return gunData.getBulletData().isFireAspect();
+    }
+
+    static @Nullable Boolean getValue(ShooterGunModifierCache cache, IGunModifierHolder modifierType) {
+        return cache.getValue(modifierType, IFireAspectModifier.class);
+    }
+    static void setValue(ShooterGunModifierCache cache, IGunModifierHolder modifierHolder, _FireAspectModifierData value) {
+        cache.setValue(modifierHolder, IFireAspectModifier.class, value);
+    }
+    static @NotNull Boolean evalByScript(GunScriptApi scriptApi, @NotNull Boolean value) {
+        return scriptApi.getIGun().evalByScript(scriptApi.getGunItem(), scriptApi, GunModifierType.FIRE_ASPECT, value);
     }
 }

@@ -315,6 +315,7 @@
 - ModernKineticGunItem：现代动能枪械物品（核心枪械实现）
 > 迁移映射为 [枪械](/docs/architecture/core/Home.md#枪械)
 - ModernKineticGunScriptAPI：枪械脚本 API
+	- [枪械脚本框架](./item/script/Home.md)
 - GunSmithTableItem：合成台物品
 - DefaultTableItem：默认台物品
 - TargetMinecartItem：标靶矿车物品
@@ -713,6 +714,7 @@ Handle server events:
 - ModernKineticGunItem: Modern kinetic gun item (core gun implementation)
 > Migration mapped to [Gun](/docs/architecture/core/Home.md#Gun)
 - ModernKineticGunScriptAPI: Gun script API
+	- [Gun script framework](./item/script/Home.md#English)
 - GunSmithTableItem: Smith table item
 - DefaultTableItem: Default table item
 - TargetMinecartItem: Target minecart item

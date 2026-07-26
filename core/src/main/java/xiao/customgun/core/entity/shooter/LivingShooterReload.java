@@ -56,7 +56,7 @@ public final class LivingShooterReload extends LivingShooterAspect {
 
         // 检查弹药
         ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(this.livingShooter);
-        if (iLivingShooter.cgc$needCheckAmmo() && !iGun.canReload(currentGunItem, this.livingShooter)) return;
+        if (iLivingShooter.cgc$needCheckAmmo() && !iGun.canReload(iGun, currentGunItem, iLivingShooter, this.livingShooter)) return;
 
         // 触发装弹事件
         if (EventPoster.get().postCustomEvent(new ShooterReloadEvent(McLogicalSide.SERVER,
@@ -77,7 +77,7 @@ public final class LivingShooterReload extends LivingShooterAspect {
         this.shooterProperty.reloadTimestamp = System.currentTimeMillis();
 
         // 调用枪械逻辑
-        if (!iGun.startReload(this.shooterProperty, currentGunItem, this.livingShooter)) {
+        if (!iGun.startReload(this.shooterProperty, iGun, currentGunItem, iLivingShooter, this.livingShooter)) {
             this.shooterProperty.reloadStateType = ReloadState.StateType.NOT_RELOADING;
             this.shooterProperty.reloadTimestamp = -1;
         }
@@ -93,7 +93,7 @@ public final class LivingShooterReload extends LivingShooterAspect {
         // 检查是否在换弹
         if (!this.shooterProperty.reloadStateType.isReloading()) return;
 
-        iGun.interruptReload(this.shooterProperty, currentGunItem, this.livingShooter);
+        iGun.interruptReload(this.shooterProperty, iGun, currentGunItem, ILivingShooterGetter.cgc$fromLivingEntity(this.livingShooter), this.livingShooter);
     }
 
     public ReloadState tickReloadState() {
@@ -110,7 +110,7 @@ public final class LivingShooterReload extends LivingShooterAspect {
             if (currentGunItem != null) {
                 IGun iGun = IGunGetter.fromItemStack(currentGunItem);
                 if (iGun != null) {
-                    result = iGun.tickReload(this.shooterProperty, currentGunItem, this.livingShooter);
+                    result = iGun.tickReload(this.shooterProperty, iGun, currentGunItem, ILivingShooterGetter.cgc$fromLivingEntity(this.livingShooter), this.livingShooter);
                 }
             }
         }

@@ -18,6 +18,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector2d;
 import xiao.customgun.CustomGun;
 import xiao.customgun.core.api.entity.IGunProjectile;
 import xiao.customgun.core.api.entity.shooter.modifier.ShooterGunModifierCache;
@@ -29,8 +30,6 @@ import xiao.customgun.core.api.resource.ResourceTag;
 import xiao.customgun.core.config.AmmoConfig;
 import xiao.customgun.core.config.SyncConfig;
 import xiao.customgun.core.developer.PlannedRefactor;
-import xiao.customgun.core.resource.data.data.GunData;
-import xiao.customgun.core.resource.data.data.gun._BulletData;
 import xiao.customgun.core.resource.data.data.gun.bullet._ExplosionData;
 import xiao.customgun.core.resource.data.data.gun.bullet.damage._DistanceDamageData;
 import xiao.customgun.core.resource.instance.data.AmmoIndexInstance;
@@ -68,43 +67,28 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
         this.setAmmoLocation(this, ammoLocation);
         this.spawnPos = this.position();
 
-        @Nullable ShooterGunModifierCache shooterGunModifierCache = livingShooter != null ? ILivingShooterGetter.cgc$fromLivingEntity(livingShooter).cgc$getGunModifierCache() : null;
-
         this.rebuildCache();
-        this.constructInitData();
+
+        @Nullable ShooterGunModifierCache shooterGunModifierCache = livingShooter != null ? ILivingShooterGetter.cgc$fromLivingEntity(livingShooter).cgc$getGunModifierCache() : null;
+        this.constructInitData(shooterGunModifierCache);
     }
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder entityData) {
     }
 
-    protected void constructInitData() {
-        if (this.gunIndexInstanceCache == null) {
-            return;
-        }
-
-        GunData gunData = this.gunIndexInstanceCache.getGunData();
-        _BulletData bulletData = gunData.getBulletData();
-        this.stateCache.lifetimeTicks = (int) (bulletData.getLifetimeSeconds() * 20);
-        this.stateCache.bulletSpeed = bulletData.getBulletSpeed();
-        this.stateCache.gravity = bulletData.getGravity();
-        this.stateCache.friction = bulletData.getFriction();
-        this.stateCache.pierce = bulletData.getPierceCount();
-        int tracerInterval = bulletData.getTracerInterval();
-        if (tracerInterval >= 0) {
-            Entity owner = this.getOwner();
-            if (owner instanceof LivingEntity livingEntity) {
-                this.stateCache.isTracer = ILivingShooterGetter.cgc$fromLivingEntity(livingEntity).cgc$nextBulletIsTracer(tracerInterval);
-            }
-        }
-        this.stateCache.fireAspect = bulletData.isFireAspect();
-        this.stateCache.knockbackStrength = bulletData.getKnockbackStrength();
-    }
-
     public void rebuildCache() {
         this.gunIndexInstanceCache = ResourceApi.getGunIndexInstance(this.getGunLocation(this));
         this.ammoIndexInstanceCache = ResourceApi.getAmmoIndexInstance(this.getAmmoLocation(this));
         // --------Mixin--------
+    }
+
+    /**
+     * 构造各成员变量初值
+     * @param shooterGunModifierCache 射手枪械修饰缓存，直接生成的枪射物可不带此缓存
+     */
+    protected void constructInitData(@Nullable ShooterGunModifierCache shooterGunModifierCache) {
+        _GunProjectileConstructor.constructInitData(this, shooterGunModifierCache);
     }
 
     @Override
@@ -126,6 +110,7 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
     }
 
     /**
+     * // TODO 以后考虑不同步一些数据或直接取消写入存档，不然发包压力会越来越大
      * 优化：原版机制在创建实体后，会先调用 {@link #addAdditionalSaveData}，再调用 {@link #readAdditionalSaveData}
      * 扩展模组如要手动调用，则先使用 {@link #addAdditionalSaveData} 刷新NBT数据
      */
@@ -139,6 +124,10 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
         this.setAmmoLocation(compoundTag, this.getAmmoLocation(this));
         if (this.hasExtraDataTag(this)) this.setExtraDataTag(compoundTag, this.getExtraDataTag(this));
         // ----IGunProjectileStateAccess----
+        this.setShootPos(this, this.getShootPos(this));
+        this.setDamageCalculation(this, this.getDamageCalculation(this));
+        this.setArmorIgnorePercent(compoundTag, this.getArmorIgnorePercent(this));
+        this.setHeadshotMultiplier(compoundTag, this.getHeadshotMultiplier(this));
         this.setLifetimeTicks(compoundTag, this.getLifetimeTicks(this));
         this.setBulletSpeed(compoundTag, this.getBulletSpeed(this));
         this.setGravity(compoundTag, this.getGravity(this));
@@ -146,8 +135,12 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
         this.setPierce(compoundTag, this.getPierce(this));
         this.setIsTracer(compoundTag, this.getIsTracer(this));
         this.setFireAspect(compoundTag, this.getFireAspect(this));
+        this.setFireAspectSeconds(compoundTag, this.getFireAspectSeconds(this));
         this.setKnockbackStrength(compoundTag, this.getKnockbackStrength(this));
-        if (this.hasExtraStateTag(this)) this.setExtraStateTag(compoundTag, this.getExtraStateTag(this));
+        if (this.hasExtraStateTag(this)) {
+            this.setExtraStateTag(compoundTag, this.getExtraStateTag(this));
+            this.setExplosionData(compoundTag, this.getExplosionData(this));
+        }
     }
     /**
      * 手动调用前请用 {@link #addAdditionalSaveData} 刷新NBT数据，并向返回的NBT里修改数据，再调用该方法
@@ -162,6 +155,10 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
         this.setAmmoLocation(this, this.getAmmoLocation(compoundTag));
         @Nullable CompoundTag extraDataTag = this.getExtraDataTag(compoundTag); if (extraDataTag != null) this.setExtraDataTag(this, extraDataTag);
         // ----IGunProjectileStateAccess----
+        this.setShootPos(this, this.getShootPos(compoundTag));
+        this.setDamageCalculation(this, this.getDamageCalculation(compoundTag));
+        this.setArmorIgnorePercent(this, this.getArmorIgnorePercent(compoundTag));
+        this.setHeadshotMultiplier(this, this.getHeadshotMultiplier(compoundTag));
         this.setLifetimeTicks(this, this.getLifetimeTicks(compoundTag));
         this.setBulletSpeed(this, this.getBulletSpeed(compoundTag));
         this.setGravity(this, this.getGravity(compoundTag));
@@ -169,8 +166,12 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
         this.setPierce(this, this.getPierce(compoundTag));
         this.setIsTracer(this, this.getIsTracer(compoundTag));
         this.setFireAspect(this, this.getFireAspect(compoundTag));
+        this.setFireAspectSeconds(this, this.getFireAspectSeconds(compoundTag));
         this.setKnockbackStrength(this, this.getKnockbackStrength(compoundTag));
-        @Nullable CompoundTag extraStateTag = this.getExtraStateTag(compoundTag); if (extraStateTag != null) this.setExtraStateTag(this, extraStateTag);
+        @Nullable CompoundTag extraStateTag = this.getExtraStateTag(compoundTag); if (extraStateTag != null) {
+            this.setExtraStateTag(this, extraStateTag);
+            this.setExplosionData(this, this.getExplosionData(extraStateTag));
+        }
 
         this.rebuildCache();
     }
@@ -240,6 +241,30 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
     // 对实体的字段操作改为内存操作
     // 但保留写入指定NBT的操作 (IGunProjectileNBTAccess)
 
+    @Override public @Nullable Vec3 getShootPos(Entity gunProjectile) {
+        return this.stateCache.shootPos;
+    }
+    @Override public void setShootPos(Entity entity, Vec3 shootPos) {
+        this.stateCache.shootPos = shootPos;
+    }
+    @Override public @Nullable List<_DistanceDamageData> getDamageCalculation(Entity gunProjectile) {
+        return this.stateCache.damageCalculation;
+    }
+    @Override public void setDamageCalculation(Entity entity, List<_DistanceDamageData> damageCalculation) {
+        this.stateCache.damageCalculation = damageCalculation;
+    }
+    @Override public float getArmorIgnorePercent(Entity gunProjectile) {
+        return this.stateCache.armorIgnorePercent;
+    }
+    @Override public void setArmorIgnorePercent(Entity entity, float armorIgnorePercent) {
+        this.stateCache.armorIgnorePercent = armorIgnorePercent;
+    }
+    @Override public float getHeadshotMultiplier(Entity gunProjectile) {
+        return this.stateCache.headshotMultiplier;
+    }
+    @Override public void setHeadshotMultiplier(Entity entity, float headshotMultiplier) {
+        this.stateCache.headshotMultiplier = headshotMultiplier;
+    }
     @Override public int getLifetimeTicks(Entity gunProjectile) {
         return this.stateCache.lifetimeTicks;
     }
@@ -288,6 +313,12 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
     @Override public void setKnockbackStrength(Entity entity, float knockbackStrength) {
         this.stateCache.knockbackStrength = knockbackStrength;
     }
+    @Override public int getFireAspectSeconds(Entity gunProjectile) {
+        return this.stateCache.fireAspectSeconds;
+    }
+    @Override public void setFireAspectSeconds(Entity entity, int fireAspectSeconds) {
+        this.stateCache.fireAspectSeconds = fireAspectSeconds;
+    }
     @Override public boolean hasExtraStateTag(Entity gunProjectile) {
         return this.stateCache.extraStateTag != null;
     }
@@ -296,6 +327,12 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
     }
     @Override public void setExtraStateTag(Entity entity, CompoundTag extraStateTag) {
         this.stateCache.extraStateTag = extraStateTag;
+    }
+    @Override public @Nullable _ExplosionData getExplosionData(Entity gunProjectile) {
+        return this.stateCache.explosionData;
+    }
+    @Override public void setExplosionData(Entity gunProjectile, _ExplosionData explosionData) {
+        this.stateCache.explosionData = explosionData;
     }
 
     // --------IProjectileRuntime--------
@@ -325,6 +362,10 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
     }
     @Override public void physicMove(TickContext tickContext, IGunProjectile iGunProjectile, Entity gunProjectile) {
         tickContext.group.projectilePhysicsManager().physicMove(tickContext, iGunProjectile, gunProjectile);
+    }
+    // ----IProjectilePhysicsExtension----
+    @Override public void shootFromRotation(Entity source, float xRot, float yRot, float yOffset, float pow, Vector2d spreadOffset) {
+        _GunProjectileShoot.shootFromRotation(this, source, xRot, yRot, yOffset, pow, spreadOffset);
     }
 
     // --------IProjectileProcessRuntime--------

@@ -14,6 +14,7 @@ import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.resource.data.data.GunData;
 import xiao.customgun.core.api.entity.shooter.modifier.ShooterGunModifierCache;
+import xiao.customgun.core.api.gun.script.GunScriptApi;
 import xiao.customgun.core.resource.data.data.attachment._RecoilDataModifierData;
 
 public interface IRecoilDataModifier<T extends ResourcePojo<T>> extends IGunModifier<T, _RecoilDataModifierData, _RecoilDataModifierData> {
@@ -30,5 +31,8 @@ public interface IRecoilDataModifier<T extends ResourcePojo<T>> extends IGunModi
     }
     static void setValue(ShooterGunModifierCache cache, IGunModifierHolder modifierHolder, _RecoilDataModifierData value) {
         cache.setValue(modifierHolder, IRecoilDataModifier.class, value);
+    }
+    static @NotNull _RecoilDataModifierData evalByScript(GunScriptApi scriptApi, @NotNull _RecoilDataModifierData value) {
+        return scriptApi.getIGun().evalByScript(scriptApi.getGunItem(), scriptApi, GunModifierType.RECOIL_DATA, value);
     }
 }

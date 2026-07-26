@@ -14,6 +14,7 @@ import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.resource.data.data.GunData;
 import xiao.customgun.core.api.entity.shooter.modifier.ShooterGunModifierCache;
+import xiao.customgun.core.api.gun.script.GunScriptApi;
 import xiao.customgun.core.resource.data.data.attachment._SimpleModifierData;
 
 public interface IWeightModifier<T extends ResourcePojo<T>> extends IGunModifier<T, _SimpleModifierData, Float> {
@@ -34,5 +35,8 @@ public interface IWeightModifier<T extends ResourcePojo<T>> extends IGunModifier
     }
     static void setValue(ShooterGunModifierCache cache, IGunModifierHolder modifierHolder, Float value) {
         cache.setValue(modifierHolder, IWeightModifier.class, value);
+    }
+    static @NotNull Float evalByScript(GunScriptApi scriptApi, @NotNull Float value) {
+        return scriptApi.getIGun().evalByScript(scriptApi.getGunItem(), scriptApi, GunModifierType.WEIGHT, value);
     }
 }

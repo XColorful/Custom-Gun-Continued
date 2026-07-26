@@ -19,8 +19,8 @@ import xiao.customgun.core.resource.instance.data.GunIndexInstance;
 
 public class GunScriptApi {
 
-    public ILivingShooter iLivingShooter;
-    public LivingEntity livingShooter;
+    public @Nullable ILivingShooter iLivingShooter;
+    public @Nullable LivingEntity livingShooter;
     public IGun iGun;
     public ItemStack gunItem;
     // ----Cache----
@@ -60,10 +60,10 @@ public class GunScriptApi {
 
     // --------Getter & Setter--------
 
-    public ILivingShooter getILivingShooter() {
+    public @Nullable ILivingShooter getILivingShooter() {
         return this.iLivingShooter;
     }
-    public LivingEntity getLivingShooter() {
+    public @Nullable LivingEntity getLivingShooter() {
         return this.livingShooter;
     }
     public IGun getIGun() {

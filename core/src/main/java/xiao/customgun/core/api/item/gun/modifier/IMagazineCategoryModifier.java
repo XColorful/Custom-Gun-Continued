@@ -15,6 +15,7 @@ import xiao.customgun.core.api.item.attachment.MagazineCategory;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.resource.data.data.GunData;
 import xiao.customgun.core.api.entity.shooter.modifier.ShooterGunModifierCache;
+import xiao.customgun.core.api.gun.script.GunScriptApi;
 
 public interface IMagazineCategoryModifier<T extends ResourcePojo<T>> extends IGunModifier<T, MagazineCategory, MagazineCategory> {
 
@@ -29,5 +30,8 @@ public interface IMagazineCategoryModifier<T extends ResourcePojo<T>> extends IG
     }
     static void setValue(ShooterGunModifierCache cache, IGunModifierHolder modifierHolder, MagazineCategory value) {
         cache.setValue(modifierHolder, IMagazineCategoryModifier.class, value);
+    }
+    static @NotNull MagazineCategory evalByScript(GunScriptApi scriptApi, @NotNull MagazineCategory value) {
+        return scriptApi.getIGun().evalByScript(scriptApi.getGunItem(), scriptApi, GunModifierType.MAGAZINE_CATEGORY, value);
     }
 }

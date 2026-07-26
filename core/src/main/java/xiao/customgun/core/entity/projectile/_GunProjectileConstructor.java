@@ -101,6 +101,10 @@ public class _GunProjectileConstructor {
         GunScriptApi scriptApi = GunScriptApi.of(iLivingShooter, livingShooter, iGun, gunItem);
         if (!scriptApi.resetCache()) return;
 
-        // TODO
+        _this.stateCache.armorIgnorePercent = IArmorIgnoreModifier.evalByScript(scriptApi, _this.stateCache.armorIgnorePercent);
+        _this.stateCache.headshotMultiplier = IHeadshotMultiplierModifier.evalByScript(scriptApi, _this.stateCache.headshotMultiplier);
+        _this.stateCache.damageCalculation = IDamageCalculationModifier.evalByScript(scriptApi, _this.stateCache.damageCalculation);
+        _this.stateCache.pierce = IPierceCountModifier.evalByScript(scriptApi, _this.stateCache.pierce);
+        _this.stateCache.knockbackStrength = IKnockbackStrengthModifier.evalByScript(scriptApi, _this.stateCache.knockbackStrength);
     }
 }

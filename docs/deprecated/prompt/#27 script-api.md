@@ -138,3 +138,18 @@ GunProjectileProperty仍然没有完成，GunProjectileProperty里的属性需�
 - 英文使用的markdown语法跟中文版对齐，例如中文使用加粗或``或表格的，英文也使用
 - 英文只需要一个# English标题，不需要额外的一级标题，不需要标题重复文件名
 ```
+
+# 
+
+```
+对xiao.customgun.core.api.item.gun.modifier包下的每一个IGunModifier子类，像IArmorIgnoreModifier一样补充evalByScript，格式如下：
+static @NotNull V evalByScript(GunScriptApi scriptApi, @NotNull V value) {  
+    return scriptApi.getIGun().evalByScript(scriptApi.getGunItem(), scriptApi, value);  
+}
+```
+
+# 
+
+```
+对xiao.customgun.core.api.item.gun.modifier包下的每一个IGunModifier子类的evalByScript方法，像IAdsModifier里一样补充GunModifierType参数
+```

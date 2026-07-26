@@ -11,6 +11,7 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.entity.shooter.modifier.ShooterGunModifierCache;
+import xiao.customgun.core.api.gun.script.GunScriptApi;
 import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.resource.data.data.GunData;
@@ -29,5 +30,8 @@ public interface IFireAspectModifier<T extends ResourcePojo<T>> extends IGunModi
     }
     static void setValue(ShooterGunModifierCache cache, IGunModifierHolder modifierHolder, _FireAspectModifierData value) {
         cache.setValue(modifierHolder, IFireAspectModifier.class, value);
+    }
+    static @NotNull Boolean evalByScript(GunScriptApi scriptApi, @NotNull Boolean value) {
+        return scriptApi.getIGun().evalByScript(scriptApi.getGunItem(), scriptApi, GunModifierType.FIRE_ASPECT, value);
     }
 }

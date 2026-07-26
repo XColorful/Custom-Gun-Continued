@@ -14,6 +14,7 @@ import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.resource.data.data.GunData;
 import xiao.customgun.core.api.entity.shooter.modifier.ShooterGunModifierCache;
+import xiao.customgun.core.api.gun.script.GunScriptApi;
 import xiao.customgun.core.resource.data.data.attachment._SimpleModifierData;
 import xiao.customgun.core.resource.data.data.gun._FireModeAdjustData;
 
@@ -40,5 +41,8 @@ public interface IOtherInaccuracyModifier<T extends ResourcePojo<T>> extends IGu
     }
     static void setValue(ShooterGunModifierCache cache, IGunModifierHolder modifierHolder, Float value) {
         cache.setValue(modifierHolder, IOtherInaccuracyModifier.class, value);
+    }
+    static @NotNull Float evalByScript(GunScriptApi scriptApi, @NotNull Float value) {
+        return scriptApi.getIGun().evalByScript(scriptApi.getGunItem(), scriptApi, GunModifierType.OTHER_INACCURACY, value);
     }
 }

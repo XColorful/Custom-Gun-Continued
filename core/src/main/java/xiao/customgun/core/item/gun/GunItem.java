@@ -18,9 +18,11 @@ import xiao.customgun.CustomGun;
 import xiao.customgun.client.item.gun._GunItem;
 import xiao.customgun.core.api.entity.ReloadState;
 import xiao.customgun.core.api.entity.ShooterProperty;
+import xiao.customgun.core.api.gun.script.GunScriptApi;
 import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.api.item.gun.GunDataAccessor;
 import xiao.customgun.core.api.item.gun.IGunGetter;
+import xiao.customgun.core.api.item.gun.modifier.GunModifierType;
 import xiao.customgun.core.api.minecraft.capability.IInventoryCapability;
 import xiao.customgun.core.api.minecraft.item.ItemType;
 import xiao.customgun.core.gui.tooltip.gun.GunTooltip;
@@ -139,6 +141,11 @@ public class GunItem extends Item implements IGun, GunDataAccessor {
                 .findAndExtractDummyAmmo(gunItem, needAmmoCount);
     }
     // ----IGunScriptRuntime----
+    @Override public @NotNull <V> V evalByScript(ItemStack gunItem, GunScriptApi scriptApi, GunModifierType modifierType, @NotNull V value) {
+        return CustomGun.getGunManager().getManagerGroup(this.getManagerGroupTag(gunItem))
+                .gunScriptManager()
+                .evalByScript(gunItem, scriptApi, modifierType, value);
+    }
     // ----IGunStateRuntime----
     @Override public void tickHeat(ShooterProperty shooterProperty, ItemStack gunItem, LivingEntity livingShooter) {
         CustomGun.getGunManager().getManagerGroup(this.getManagerGroupTag(gunItem))

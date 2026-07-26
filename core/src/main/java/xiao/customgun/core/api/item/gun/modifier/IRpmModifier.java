@@ -14,6 +14,7 @@ import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.resource.data.data.GunData;
 import xiao.customgun.core.api.entity.shooter.modifier.ShooterGunModifierCache;
+import xiao.customgun.core.api.gun.script.GunScriptApi;
 import xiao.customgun.core.resource.data.data.attachment._SimpleModifierData;
 
 public interface IRpmModifier<T extends ResourcePojo<T>> extends IGunModifier<T, _SimpleModifierData, Integer> {
@@ -33,5 +34,8 @@ public interface IRpmModifier<T extends ResourcePojo<T>> extends IGunModifier<T,
     }
     static void setValue(ShooterGunModifierCache cache, IGunModifierHolder modifierHolder, Integer value) {
         cache.setValue(modifierHolder, IRpmModifier.class, value);
+    }
+    static @NotNull Integer evalByScript(GunScriptApi scriptApi, @NotNull Integer value) {
+        return scriptApi.getIGun().evalByScript(scriptApi.getGunItem(), scriptApi, GunModifierType.RPM, value);
     }
 }

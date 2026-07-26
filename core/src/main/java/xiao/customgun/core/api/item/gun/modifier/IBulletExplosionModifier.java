@@ -14,6 +14,7 @@ import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.resource.data.data.GunData;
 import xiao.customgun.core.api.entity.shooter.modifier.ShooterGunModifierCache;
+import xiao.customgun.core.api.gun.script.GunScriptApi;
 import xiao.customgun.core.resource.data.data.attachment._BulletExplosionModifierData;
 import xiao.customgun.core.resource.data.data.gun.bullet._ExplosionData;
 
@@ -37,5 +38,8 @@ public interface IBulletExplosionModifier<T extends ResourcePojo<T>> extends IGu
     }
     static void setValue(ShooterGunModifierCache cache, IGunModifierHolder modifierHolder, _ExplosionData value) {
         cache.setValue(modifierHolder, IBulletExplosionModifier.class, value);
+    }
+    static @NotNull _ExplosionData evalByScript(GunScriptApi scriptApi, @NotNull _ExplosionData value) {
+        return scriptApi.getIGun().evalByScript(scriptApi.getGunItem(), scriptApi, GunModifierType.BULLET_EXPLOSION, value);
     }
 }

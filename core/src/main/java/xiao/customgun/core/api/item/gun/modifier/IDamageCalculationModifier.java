@@ -15,6 +15,7 @@ import xiao.customgun.core.config.SyncConfig;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.resource.data.data.GunData;
 import xiao.customgun.core.api.entity.shooter.modifier.ShooterGunModifierCache;
+import xiao.customgun.core.api.gun.script.GunScriptApi;
 import xiao.customgun.core.resource.data.data.attachment._SimpleModifierData;
 import xiao.customgun.core.resource.data.data.gun._FireModeAdjustData;
 import xiao.customgun.core.resource.data.data.gun.bullet.damage._DistanceDamageData;
@@ -60,5 +61,8 @@ public interface IDamageCalculationModifier<T extends ResourcePojo<T>> extends I
     }
     static void setValue(ShooterGunModifierCache cache, IGunModifierHolder modifierHolder, List<_DistanceDamageData> value) {
         cache.setValue(modifierHolder, IDamageCalculationModifier.class, value);
+    }
+    static @NotNull List<_DistanceDamageData> evalByScript(GunScriptApi scriptApi, @NotNull List<_DistanceDamageData> value) {
+        return scriptApi.getIGun().evalByScript(scriptApi.getGunItem(), scriptApi, GunModifierType.DAMAGE_CALCULATION, value);
     }
 }

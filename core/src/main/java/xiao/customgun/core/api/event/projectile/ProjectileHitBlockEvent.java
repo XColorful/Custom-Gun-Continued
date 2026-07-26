@@ -18,6 +18,7 @@ import xiao.customgun.core.api.event.ICustomEvent;
 import xiao.customgun.core.api.event.ICustomEventHandler;
 import xiao.customgun.core.api.minecraft.CommandLevel;
 import xiao.customgun.core.event.EventDispatcher;
+import xiao.customgun.core.util.Vec3Utils;
 
 /**
  * 枪射物{@link IGunProjectile} 命中 方块{@link Block} 事件
@@ -56,7 +57,7 @@ public final class ProjectileHitBlockEvent extends GunProjectileEvent implements
         if (!(this.gunProjectile.level() instanceof ServerLevel serverLevel)) return null;
         return new CommandSourceStack(
                 source != null ? source : CommandSource.NULL,
-                blockHitResult.getBlockPos().getCenter(),
+                Vec3Utils.getCenter(blockHitResult.getBlockPos()),
                 Vec2.ZERO,
                 serverLevel,
                 CommandLevel.permission(4),

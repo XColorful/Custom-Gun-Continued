@@ -14,7 +14,7 @@ import xiao.customgun.core.resource.data.data.attachment._FireAspectModifierData
 
 import java.util.Collection;
 
-public final class FireAspectModifier extends AttachmentModifier<_FireAspectModifierData, _FireAspectModifierData>
+public final class FireAspectModifier extends AttachmentModifier<_FireAspectModifierData, Boolean>
         implements IFireAspectModifier<AttachmentData> {
     public static final FireAspectModifier INSTANCE = new FireAspectModifier();
 
@@ -26,7 +26,7 @@ public final class FireAspectModifier extends AttachmentModifier<_FireAspectModi
     }
 
     @Override
-    public _FireAspectModifierData eval(Collection<_FireAspectModifierData> modifiers, _FireAspectModifierData base) {
+    public Boolean eval(Collection<_FireAspectModifierData> modifiers, Boolean base) {
         // TODO: eval 不能复用父类函数 — _FireAspectModifierData 有 boolean 语义（OR/AND），非数值计算
         return base;
     }

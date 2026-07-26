@@ -14,6 +14,8 @@ import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.api.item.gun.FireSoundType;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.resource.data.data.GunData;
+import xiao.customgun.core.api.entity.shooter.modifier.ShooterGunModifierCache;
+import xiao.customgun.core.api.gun.script.GunScriptApi;
 import xiao.customgun.core.resource.data.data.attachment._MuzzleModifierData;
 
 public interface IMuzzleModifier<T extends ResourcePojo<T>> extends IGunModifier<T, _MuzzleModifierData, FireSoundType> {
@@ -23,5 +25,15 @@ public interface IMuzzleModifier<T extends ResourcePojo<T>> extends IGunModifier
                                             @NotNull GunData gunData) {
         // TODO: FireSoundData → FireSoundType mapping
         return FireSoundType.NORMAL;
+    }
+
+    static @Nullable FireSoundType getValue(ShooterGunModifierCache cache, IGunModifierHolder modifierType) {
+        return cache.getValue(modifierType, IMuzzleModifier.class);
+    }
+    static void setValue(ShooterGunModifierCache cache, IGunModifierHolder modifierHolder, FireSoundType value) {
+        cache.setValue(modifierHolder, IMuzzleModifier.class, value);
+    }
+    static @NotNull FireSoundType evalByScript(GunScriptApi scriptApi, @NotNull FireSoundType value) {
+        return scriptApi.getIGun().evalByScript(scriptApi.getGunItem(), scriptApi, GunModifierType.MUZZLE, value);
     }
 }

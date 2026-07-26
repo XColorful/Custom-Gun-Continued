@@ -13,6 +13,8 @@ import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.resource.data.data.GunData;
+import xiao.customgun.core.api.entity.shooter.modifier.ShooterGunModifierCache;
+import xiao.customgun.core.api.gun.script.GunScriptApi;
 import xiao.customgun.core.resource.data.data.attachment._SimpleModifierData;
 
 public interface IPierceCountModifier<T extends ResourcePojo<T>> extends IGunModifier<T, _SimpleModifierData, Integer> {
@@ -21,5 +23,15 @@ public interface IPierceCountModifier<T extends ResourcePojo<T>> extends IGunMod
     default @Nullable Integer getBase(@NotNull IGun iGun, @NotNull ItemStack gunItem,
                                       @NotNull GunData gunData) {
         return gunData.getBulletData().getPierceCount();
+    }
+
+    static @Nullable Integer getValue(ShooterGunModifierCache cache, IGunModifierHolder modifierType) {
+        return cache.getValue(modifierType, IPierceCountModifier.class);
+    }
+    static void setValue(ShooterGunModifierCache cache, IGunModifierHolder modifierHolder, Integer value) {
+        cache.setValue(modifierHolder, IPierceCountModifier.class, value);
+    }
+    static @NotNull Integer evalByScript(GunScriptApi scriptApi, @NotNull Integer value) {
+        return scriptApi.getIGun().evalByScript(scriptApi.getGunItem(), scriptApi, GunModifierType.PIERCE_COUNT, value);
     }
 }

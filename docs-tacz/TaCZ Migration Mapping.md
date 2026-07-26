@@ -39,6 +39,7 @@ Notation:
 |com.tacz.guns.api|xiao.customgun.core.api.item|
 |---|---|
 |`GunProperties`.\*|gun.modifier.`GunModifierType`.\*|
+|`GunProperties`.`RumtimeOnly`.\*|gun.modifier.`GunModifierType`.\*|
 |`GunProperty`.name|gun.modifier.`GunModifierType`.typeName|
 |`GunProperty`.type|gun.modifier.`IGunModifier`\<V>|
 
@@ -404,6 +405,7 @@ Notation:
 |`DefaultTableItem`|_Deprecated_|
 |`GunSmithTableItem`|_Deprecated_|
 |`ModernKineticGunItem`|gun.`GunItem`|
+|`ModernKineticGunItem`.`DefaultPropertyModification`|_Deprecated_|
 |`TargetMinecartItem`|_Deprecated_|
 
 |com.tacz.guns.item|xiao.customgun.client.api.item|

@@ -6,6 +6,7 @@ import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.resource.ResourceTag;
+import xiao.customgun.core.resource.data.data.gun.bullet._ExplosionData;
 
 public interface IGunProjectileDataAccess extends IGunProjectileNBTAccess, IGunProjectileStateAccess {
 
@@ -31,4 +32,7 @@ public interface IGunProjectileDataAccess extends IGunProjectileNBTAccess, IGunP
     boolean hasExtraDataTag(Entity gunProjectile);
     @Nullable CompoundTag getExtraDataTag(Entity gunProjectile);
     void setExtraDataTag(Entity gunProjectile, CompoundTag extraDataTag);
+
+    @Nullable _ExplosionData getExplosionData(Entity gunProjectile);
+    void setExplosionData(Entity gunProjectile, _ExplosionData explosionData);
 }

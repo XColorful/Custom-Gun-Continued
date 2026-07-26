@@ -94,17 +94,20 @@ base 值获取全在缓存里用 switch-case 实现，modifier 接口只保留`g
 
 否决原因：解耦力度最大，但类型安全损失也最大——编译器完全无法参与验证每个 modifier 与`GunData`字段的对应关系。
 
-## 最终方案：胖接口拆分加接口 default 代理
+### 缓存 Class 参数验证：运行时检查 modifier 类型
 
-CGC 项目中已有三处使用同样的拆分手法：
+```mermaid
+flowchart LR
+    CACHE["ShooterGunModifierCache"]
+    CLASS["IGunModifier Class<br/>运行时类型标识"]
+    TYPE["IGunModifierHolder<br/>提供 modifier 实例"]
 
-- `IGunOperator` → `ILivingShooter`组合多个子接口
-- `IGun` → `IGunDataAccess`族，用 default 方法统一实现
-- `GunManager`对外提供门面，内部由子 Manager 实现
+    TYPE --> CACHE
+    CLASS -->|"isInstance 检查"| CACHE
+    CACHE -->|"Object → 强转"| VALUE["缓存值"]
+```
 
-Modifier 体系与此一脉相承：`readJson`移到`ResourcePojo.fromJsonReader`，`initCache`变成`getBase`（独立接口），UI 由客户端单独处理，`eval`加新增`getModifier`组成`IItemModifier`核心。
-
-### 菱形继承链与泛型匹配
+该方案建立在前置拆分之上：`readJson`移到`ResourcePojo.fromJsonReader`，`initCache`变成独立接口方法，UI 由客户端单独处理，`eval`加`getModifier`组成核心。接口通过菱形继承链强制泛型一致性——`I*Modifier`固定`K`和`V`，`IAttachmentModifier`固定`T`为`AttachmentData`，具体类只写`getModifier`和`eval`。
 
 ```mermaid
 flowchart LR
@@ -125,7 +128,43 @@ flowchart LR
     BASE --> CONCRETE
 ```
 
-菱形三条路径在 Java 编译器层面强制泛型一致性——如果`IAdsModifier`的`V`是`Float`而`AttachmentModifier`的`V`是`Integer`，编译器直接拒绝。具体类只写`getModifier`和`eval`，`getBase`的职责通过接口 default 方法代理给了`IAdsModifier`。新增 modifier 只需继承抽象基类并实现对应的子接口即可。
+缓存通过`Class`参数指定期望的 modifier 接口，用`isInstance`在运行时检查类型。菱形继承链保证了实现类内部`T`、`K`、`V`的泛型一致性，但当子接口被当作`Class<? extends IGunModifier<T, K, V>>`参数传入时，Java 类型擦除导致`I*Modifier`上已固定的泛型不保留——`Class<IAdsModifier>`只是一个裸`Class`，编译器无法从中恢复`V`的类型来验证缓存值类型是否正确。
+
+否决原因：这是 Java 语言边界——编译器只能验证`Class`本身是否匹配，无法通过`Class`参数推导左值类型，类型错误留到运行时 cast 才能发现。
+
+## 最终方案
+
+胖接口拆分加接口 default 代理，Modifier 体系各职责分离：`readJson`移到`ResourcePojo.fromJsonReader`，`initCache`变成`getBase`（独立接口），UI 由客户端单独处理，`eval`加`getModifier`组成`IItemModifier`核心。
+
+与缓存 Class 参数方案不同，最终方案不再把子接口当作`Class`参数传入缓存，而是让子接口自身提供`static getValue/setValue`：
+
+```mermaid
+flowchart LR
+    subgraph "API 层（编译期检查）"
+        MOD["I*Modifier<br/>固定 K 和 V"]
+        HELPER["static getValue/setValue<br/>传 I*Modifier.class"]
+    end
+    subgraph "实现层（运行时）"
+        CACHE["ShooterGunModifierCache"]
+        HOLDER["IGunModifierHolder"]
+    end
+
+    MOD -->|"getValue 签名的返回类型<br/>即 V"| HELPER
+    HELPER -->|"调用 CACHE<br/>传入 Class<?>"| CACHE
+    HOLDER --> CACHE
+    CACHE -->|"isInstance 验证"| HOLDER
+    CACHE --> VALUE["V 类型值"]
+```
+
+类型约束职责拆分：
+- `I*Modifier`子接口固定该属性对应的`K`和`V`，定义公开 API 的泛型契约；
+- 子接口内的`static getValue/setValue`将已固定泛型的`I*Modifier.class`传给缓存，调用方无需手动传`Class`；
+- `ShooterGunModifierCache`只保存运行时计算值并验证 modifier 实例匹配，不再参与泛型推导。
+
+编译器检查与 API 兼容性：
+- 各`I*Modifier`子接口已固定`K`与`V`，其`static getValue`签名保证类型安全——编译器通过子接口的返回类型验证左值`V`，类型错误在编译期即可发现；
+- 直接调用`ShooterGunModifierCache#getValue`相当于绕过编译期检查，类型错误会推迟到运行时`ClassCastException`；
+- 使用子接口`static getValue`时，若本 API 更新导致签名变化，外部模组只需重新编译即可发现所有不兼容调用点——无需等到运行时从日志排查。
 
 ## 与 TaCZ 的逐项对比
 
@@ -232,17 +271,20 @@ All base value retrieval is implemented with switch-case in the cache, and the m
 
 Rejection reason: achieves the greatest decoupling but also loses the most type safety—the compiler cannot participate in verifying the correspondence between each modifier and `GunData` field.
 
-## Final Solution: Fat Interface Split plus Interface default Delegation
+### Cache Class parameter validation: runtime modifier type checking
 
-Three places in the CGC project already use the same splitting technique:
+```mermaid
+flowchart LR
+    CACHE["ShooterGunModifierCache"]
+    CLASS["IGunModifier Class<br/>Runtime type identifier"]
+    TYPE["IGunModifierHolder<br/>Provides modifier instance"]
 
-- `IGunOperator` → `ILivingShooter` composing multiple sub-interfaces
-- `IGun` → `IGunDataAccess` family, unified implementation via default methods
-- `GunManager` providing a facade externally, internally implemented by sub-Managers
+    TYPE --> CACHE
+    CLASS -->|"isInstance check"| CACHE
+    CACHE -->|"Object → cast"| VALUE["Cached value"]
+```
 
-The modifier system follows the same approach: `readJson` moved to `ResourcePojo.fromJsonReader`, `initCache` became `getBase` (separate interface), UI handled separately by the client, and `eval` plus the new `getModifier` form the core of `IItemModifier`.
-
-### Diamond Inheritance and Generic Matching
+This solution builds on the prior separation: `readJson` moved to `ResourcePojo.fromJsonReader`, `initCache` became a separate interface method, UI handled by the client, with `eval` and `getModifier` forming the core. The diamond inheritance hierarchy enforces generic consistency—`I*Modifier` fixes `K` and `V`, `IAttachmentModifier` fixes `T` to `AttachmentData`, concrete classes only write `getModifier` and `eval`.
 
 ```mermaid
 flowchart LR
@@ -263,7 +305,43 @@ flowchart LR
     BASE --> CONCRETE
 ```
 
-The three diamond paths enforce generic consistency at the Java compiler level—if one path has `V` as `Float` and another has `V` as `Integer`, the compiler rejects the code. Concrete classes only write `getModifier` and `eval`; the `getBase` responsibility is delegated through interface default methods. Adding a new modifier only requires extending the abstract base class and implementing the corresponding sub-interface.
+The cache accepts a `Class` parameter to identify the expected modifier interface and uses `isInstance` for runtime type checking. The diamond hierarchy guarantees generic consistency within each implementation class. However, when a sub-interface is passed as `Class<? extends IGunModifier<T, K, V>>`, Java's type erasure means the fixed generics on `I*Modifier` are not preserved—`Class<IAdsModifier>` is a bare `Class` with no generic information, so the compiler cannot recover `V`'s type to verify the cached value type.
+
+Rejection reason: this is a Java language boundary—the compiler can only verify the `Class` itself, not derive the left-hand value type from a `Class` parameter. Type mismatches are only discovered at runtime via casting.
+
+## Final Solution
+
+Fat interface split plus interface default delegation, separating modifier responsibilities: `readJson` moved to `ResourcePojo.fromJsonReader`, `initCache` became `getBase` (separate interface), UI handled by the client, `eval` and `getModifier` form the `IItemModifier` core.
+
+Unlike the Class-parameter approach, the final solution no longer passes sub-interfaces as `Class` arguments to the cache. Instead, sub-interfaces provide their own `static getValue/setValue`:
+
+```mermaid
+flowchart LR
+    subgraph "API layer (compile-time checking)"
+        MOD["I*Modifier<br/>Fixes K and V"]
+        HELPER["static getValue/setValue<br/>Passes I*Modifier.class"]
+    end
+    subgraph "Implementation layer (runtime)"
+        CACHE["ShooterGunModifierCache"]
+        HOLDER["IGunModifierHolder"]
+    end
+
+    MOD -->|"getValue return type = V"| HELPER
+    HELPER -->|"Calls CACHE<br/>with Class<?>"| CACHE
+    HOLDER --> CACHE
+    CACHE -->|"isInstance check"| HOLDER
+    CACHE --> VALUE["V-typed value"]
+```
+
+Type constraint responsibility is split:
+- `I*Modifier` sub-interfaces fix `K` and `V` for each property, defining the public API's generic contract;
+- `static getValue/setValue` within each sub-interface passes the already-fixed `I*Modifier.class` to the cache—callers don't pass `Class` manually;
+- `ShooterGunModifierCache` only stores runtime computed values and validates modifier instance matching, no longer involved in generic inference.
+
+Compiler checking and API compatibility:
+- Each `I*Modifier` sub-interface already fixes `K` and `V`—its `static getValue` signature guarantees type safety; the compiler verifies the left-hand `V` type through the sub-interface's return type, catching type errors at compile time;
+- Calling `ShooterGunModifierCache#getValue` directly bypasses compile-time checking, deferring type errors to runtime `ClassCastException`;
+- When using the sub-interface `static getValue`, if an API update changes the signature, external mods only need to recompile to locate all incompatible call sites—no need to dig through runtime logs.
 
 ## Side-by-Side Comparison with TaCZ
 

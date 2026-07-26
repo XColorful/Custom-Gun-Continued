@@ -92,6 +92,7 @@
 	- [GunInventoryManager](./gun/inventory/gun-inventory-manager.md)：枪械背包管理器
 - Script：枪械脚本
 	- [GunScriptManager](./gun/script/gun-script-manager.md)：枪械脚本管理器
+	> [枪械脚本框架](./gun/script/gun-script-framework.md)
 - State：枪械状态
 	- [GunStateManager](./gun/state/gun-state-manager.md)：枪械状态管理器
 
@@ -309,6 +310,7 @@ Module division based on the `xiao.customgun.core` top-level package
 	- [GunInventoryManager](./gun/inventory/gun-inventory-manager.md#English): Gun inventory manager
 - Script:
 	- [GunScriptManager](./gun/script/gun-script-manager.md#English): Gun script manager
+	> [Gun script framework](./gun/script/gun-script-framework.md#English)
 - State:
 	- [GunStateManager](./gun/state/gun-state-manager.md#English): Gun state manager
 

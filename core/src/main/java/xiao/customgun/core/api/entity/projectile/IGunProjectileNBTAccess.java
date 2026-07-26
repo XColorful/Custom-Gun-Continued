@@ -7,6 +7,7 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.resource.ResourceTag;
+import xiao.customgun.core.resource.data.data.gun.bullet._ExplosionData;
 import xiao.customgun.core.resource.data.data.gun.bullet.damage._DistanceDamageData;
 
 import java.util.List;
@@ -80,4 +81,7 @@ public interface IGunProjectileNBTAccess extends IGunProjectileValueAccess {
     boolean hasExtraStateTag(CompoundTag gunProjectileCustomDataTag);
     @Nullable CompoundTag getExtraStateTag(CompoundTag gunProjectileCustomDataTag);
     void setExtraStateTag(CompoundTag gunProjectileCustomDataTag, CompoundTag extraStateTag);
+
+    @Nullable _ExplosionData getExplosionData(CompoundTag gunProjectileCustomDataTag);
+    void setExplosionData(CompoundTag gunProjectileCustomDataTag, _ExplosionData explosionData);
 }

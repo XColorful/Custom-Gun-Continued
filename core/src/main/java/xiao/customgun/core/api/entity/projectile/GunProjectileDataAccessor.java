@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.entity.GunProjectileProperty;
 import xiao.customgun.core.api.resource.ResourceTag;
+import xiao.customgun.core.resource.data.data.gun.bullet._ExplosionData;
 import xiao.customgun.core.resource.data.data.gun.bullet.damage._DistanceDamageData;
 import xiao.customgun.core.util.JsonUtils;
 import xiao.customgun.core.util.NBTUtils;
@@ -66,6 +67,23 @@ public interface GunProjectileDataAccessor extends GunProjectileNBTAccessor, IGu
     @Override
     default void setExtraDataTag(Entity gunProjectile, CompoundTag extraDataTag) {
         NBTUtils.setCompoundTag(gunProjectile, GunProjectileProperty.EXTRA_DATA.getTagName(), extraDataTag);
+    }
+
+    @Override
+    default @Nullable _ExplosionData getExplosionData(Entity gunProjectile) {
+        @Nullable CompoundTag extraDataTag = this.getExtraDataTag(gunProjectile);
+        if (extraDataTag == null) return null;
+        return NBTUtils.getStringJson(extraDataTag, GunProjectileProperty.EXPLOSION_DATA.getTagName(),
+                _ExplosionData::fromJson);
+    }
+    @Override
+    default void setExplosionData(Entity gunProjectile, _ExplosionData explosionData) {
+        if (explosionData == null) return;
+        @Nullable CompoundTag extraDataTag = this.getExtraStateTag(gunProjectile);
+        if (extraDataTag == null) extraDataTag = new CompoundTag();
+        NBTUtils.setStringJson(extraDataTag, GunProjectileProperty.EXPLOSION_DATA.getTagName(), explosionData,
+                _ExplosionData::toJson);
+        this.setExtraDataTag(gunProjectile, extraDataTag);
     }
 
     // --------IGunProjectileStateAccess--------

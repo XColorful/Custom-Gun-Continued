@@ -11,6 +11,7 @@ import xiao.customgun.core.api.projectile.effect.IProjectileEffectRuntime;
 import xiao.customgun.core.api.projectile.impact.IProjectileImpactRuntime;
 import xiao.customgun.core.api.projectile.physics.IProjectilePhysicsRuntime;
 import xiao.customgun.core.api.projectile.process.IProjectileProcessRuntime;
+import xiao.customgun.core.resource.data.data.gun.bullet._ExplosionData;
 import xiao.customgun.core.resource.data.data.gun.bullet.damage._DistanceDamageData;
 
 import java.util.List;
@@ -51,6 +52,7 @@ public interface IProjectileRuntime extends
         public int fireAspectSeconds = 1;
         public float knockbackStrength = 0;
         public @Nullable CompoundTag extraStateTag;
+        public @Nullable _ExplosionData explosionData;
         public StateCache() {
         }
     }

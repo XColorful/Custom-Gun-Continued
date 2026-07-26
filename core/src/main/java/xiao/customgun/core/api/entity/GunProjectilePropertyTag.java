@@ -24,6 +24,7 @@ public final class GunProjectilePropertyTag {
     public static final String FIRE_ASPECT_SECONDS = "fire_aspect_seconds";
     public static final String KNOCKBACK_STRENGTH = "knockback_strength";
     public static final String EXTRA_STATE = "extra_state";
+    public static final String EXPLOSION_DATA = "explosion_data";
 
     private GunProjectilePropertyTag() {}
 }

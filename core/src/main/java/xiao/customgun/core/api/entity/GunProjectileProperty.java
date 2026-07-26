@@ -71,7 +71,10 @@ public enum GunProjectileProperty implements ResourceTag {
             IGunProjectileDataAccess::setKnockbackStrength),
     EXTRA_STATE(GunProjectilePropertyTag.EXTRA_STATE,
             IGunProjectileDataAccess::getExtraStateTag,
-            IGunProjectileDataAccess::setExtraStateTag);
+            IGunProjectileDataAccess::setExtraStateTag),
+    EXPLOSION_DATA(GunProjectilePropertyTag.EXPLOSION_DATA,
+            IGunProjectileDataAccess::getExplosionData,
+            IGunProjectileDataAccess::setExplosionData);
 
     public final String propertyName;
     private final BiFunction<IGunProjectileDataAccess, Entity, ?> getter;

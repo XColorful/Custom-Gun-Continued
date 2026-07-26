@@ -8,6 +8,7 @@
 package xiao.customgun.core.api.entity.shooter.modifier;
 
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.CustomGun;
@@ -66,23 +67,22 @@ public final class ShooterGunModifierCache {
     // --------Getter & Setter--------
 
     /**
-     * <ol>
-     *     <li>{@link IGunModifier}{@code <T, K, V>}继承{@link IItemModifier}{@code <T, K, V>}</li>
-     *     <li>
-     *         {@link IGunModifierHolder#getGunModifier()}返回的Modifier实例，与对应的{@link IGunModifier}子接口共同满足同一泛型约束，
-     *         Java编译器会检查继承路径上的泛型参数一致性
-     *     </li>
-     *     <li>
-     *         在满足API约束时，{@link Class#isInstance(Object)}可验证Modifier实例类型，并由{@link IGunModifier}子接口约束{@code V}
-     *     </li>
-     * </ol>
-     *
+     * <font color="red">内部方法</font>，外部应使用{@link xiao.customgun.core.api.item.gun.modifier}包中各{@code I*Modifier}接口的{@code static getValue}作为入口
+     * <ul>
+     *     <li>各{@code I*Modifier}子接口已固定{@code K}与{@code V}，其{@code static getValue}签名保证类型安全——编译器通过子接口的返回类型验证左值{@code V}，错误类型在编译期即可发现</li>
+     *     <li>直接调用本方法相当于绕过编译期检查，类型错误会推迟到运行时{@code ClassCastException}</li>
+     *     <li>使用子接口{@code static getValue}时，若本API更新导致签名变化，外部模组只需重新编译即可发现所有不兼容调用点——无需等到运行时从日志排查</li>
+     * </ul>
      * @param modifierType 提供Modifier实例的类型标识
-     * @param modifierClass {@link IGunModifier}子接口类型，API层已固定其{@code K}与{@code V}泛型参数
-     * @return 对应Modifier缓存值
+     * @param modifierClass {@link IGunModifier}子接口类型，API层已通过子接口固定其{@code K}与{@code V}
+     * @param <T> 资源数据源类型
+     * @param <K> modifier数据源类型，由{@code modifierClass}决定
+     * @param <V> 缓存值类型，由{@code modifierClass}决定
+     * @return 对应Modifier缓存值，不匹配时返回{@code null}
      */
+    @ApiStatus.Internal
     @SuppressWarnings("unchecked")
-    public @Nullable <T extends ResourcePojo<T>, K, V> V getValue(IGunModifierHolder modifierType, Class<? extends IGunModifier<T, K, V>> modifierClass) {
+    public @Nullable <T extends ResourcePojo<T>, K, V> V getValue(IGunModifierHolder modifierType, Class<? extends IGunModifier> modifierClass) {
         if (!modifierClass.isInstance(modifierType.getGunModifier())) {
             CustomGun.LOGGER.error("ShooterGunModifierCache: Failed to get modifier value, modifier type {} with modifier {} does not implement {}",
                     modifierType,
@@ -97,7 +97,8 @@ public final class ShooterGunModifierCache {
     /**
      * 设计同{@link #getValue}
      */
-    public <T extends ResourcePojo<T>, K, V> void setValue(IGunModifierHolder modifierType, Class<? extends IGunModifier<T, K, V>> modifierClass, V value) {
+    @ApiStatus.Internal
+    public <T extends ResourcePojo<T>, K, V> void setValue(IGunModifierHolder modifierType, Class<? extends IGunModifier> modifierClass, V value) {
         if (!modifierClass.isInstance(modifierType.getGunModifier())) {
             CustomGun.LOGGER.error("ShooterGunModifierCache: Failed to set modifier value, modifier type {} with modifier {} does not implement {}",
                     modifierType,

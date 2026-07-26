@@ -320,6 +320,15 @@ public class JsonUtils {
         }
         writer.endArray();
     }
+    public static <T> void writeListValue(JsonWriter writer, List<T> value, WriteAction<T> action) throws IOException {
+        if (value == null) return;
+        writer.beginArray(); {
+            for (T t : value) {
+                if (t != null) action.accept(writer, t);
+            }
+        }
+        writer.endArray();
+    }
 
     public static <T> ClassUtils.ArraySet<T> readArraySet(JsonReader reader, ReadFunction<T> function) throws IOException {
         if (reader.peek() == JsonToken.NULL) {

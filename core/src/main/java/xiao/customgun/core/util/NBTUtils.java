@@ -6,6 +6,9 @@
 package xiao.customgun.core.util;
 
 import net.minecraft.core.component.DataComponents;
+import com.google.gson.JsonElement;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
@@ -13,13 +16,16 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
-import com.google.gson.JsonElement;
 import net.minecraft.nbt.TagParser;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.CustomGun;
 import xiao.customgun.core.api.minecraft.IMcRegistry;
+
+import java.io.StringReader;
+import java.io.StringWriter;
 
 public class NBTUtils {
 
@@ -161,6 +167,28 @@ public class NBTUtils {
         setCustomDataTag(itemStack, customDataTag);
     }
 
+    public static @Nullable Vec3 getVec3(@Nullable ItemStack itemStack, String key) {
+        @Nullable var customData = getCustomData(itemStack);
+        return customData != null ? getVec3(getCustomDataTag(customData), key) : null;
+    }
+    public static void setVec3(@NotNull ItemStack itemStack, String key, @Nullable Vec3 value) {
+        var customData = getOrCreateCustomData(itemStack);
+        @NotNull CompoundTag customDataTag = getCustomDataTag(customData);
+        setVec3(customDataTag, key, value);
+        setCustomDataTag(itemStack, customDataTag);
+    }
+
+    public static @Nullable <T> T getStringJson(@Nullable ItemStack itemStack, String key, JsonUtils.ReadFunction<T> function) {
+        @Nullable var customData = getCustomData(itemStack);
+        return customData != null ? getStringJson(getCustomDataTag(customData), key, function) : null;
+    }
+    public static <T> void setStringJson(@NotNull ItemStack itemStack, String key, T value, JsonUtils.WriteAction<T> function) {
+        var customData = getOrCreateCustomData(itemStack);
+        @NotNull CompoundTag customDataTag = getCustomDataTag(customData);
+        setStringJson(customDataTag, key, value, function);
+        setCustomDataTag(itemStack, customDataTag);
+    }
+
     public static boolean hasKey(@NotNull ItemStack itemStack, String key) {
         var customData = getCustomData(itemStack);
         if (customData == null) return false;
@@ -238,6 +266,18 @@ public class NBTUtils {
 //        setCustomDataTag(entity, customDataTag);
     }
 
+    public static @Nullable Vec3 getVec3(@Nullable Entity entity, String key) {
+        @Nullable CompoundTag customDataTag =
+                getCustomData(entity);
+        return customDataTag != null ? getVec3(customDataTag, key) : null;
+    }
+    public static void setVec3(@NotNull Entity entity, String key, @Nullable Vec3 value) {
+        @NotNull CompoundTag customDataTag =
+                getOrCreateCustomData(entity);
+        setVec3(customDataTag, key, value);
+//        setCustomDataTag(entity, customDataTag);
+    }
+
     public static @Nullable CompoundTag getCompoundTag(@Nullable Entity entity, String key) {
         @Nullable CompoundTag customDataTag =
                 getCustomData(entity);
@@ -248,6 +288,17 @@ public class NBTUtils {
                 getOrCreateCustomData(entity);
         setCompoundTag(customDataTag, key, value);
 //        setCustomDataTag(entity, customDataTag);
+    }
+
+    public static @Nullable <T> T getStringJson(@Nullable Entity entity, String key, JsonUtils.ReadFunction<T> function) {
+        @Nullable CompoundTag customDataTag =
+                getCustomData(entity);
+        return customDataTag != null ? getStringJson(customDataTag, key, function) : null;
+    }
+    public static <T> void setStringJson(@NotNull Entity entity, String key, T value, JsonUtils.WriteAction<T> function) {
+        @NotNull CompoundTag customDataTag =
+                getOrCreateCustomData(entity);
+        setStringJson(customDataTag, key, value, function);
     }
 
     public static boolean hasKey(@NotNull Entity entity, String key) {
@@ -328,6 +379,42 @@ public class NBTUtils {
         if (nbt == null) return;
         else if (value == null) removeKey(nbt, key);
         else nbt.put(key, value);
+    }
+
+    public static @Nullable Vec3 getVec3(@Nullable CompoundTag nbt, String key) {
+        return Vec3Utils.fromString(getString(nbt, key));
+    }
+    public static void setVec3(@Nullable CompoundTag nbt, String key, @Nullable Vec3 value) {
+        setString(nbt, key, Vec3Utils.toString(value));
+    }
+
+    public static @Nullable <T> T getStringJson(@Nullable CompoundTag nbt, String key, JsonUtils.ReadFunction<T> function) {
+        String jsonString = getString(nbt, key);
+        if (jsonString == null) return null;
+        else {
+            try {
+                JsonReader reader = new JsonReader(new StringReader(jsonString));
+                return function.apply(reader);
+            } catch (Exception e) {
+                return null;
+            }
+        }
+    }
+    public static <T> void setStringJson(@Nullable CompoundTag nbt, String key, @Nullable T value, JsonUtils.WriteAction<T> function) {
+        if (nbt == null) return;
+        else if (value == null) removeKey(nbt, key);
+        else {
+            try {
+                StringWriter stringWriter = new StringWriter();
+                JsonWriter writer = new JsonWriter(stringWriter);
+                function.accept(writer, value);
+                writer.close();
+
+                setString(nbt, key, stringWriter.toString());
+            } catch (Exception e) {
+                removeKey(nbt, key);
+            }
+        }
     }
 
     public static boolean hasKey(@Nullable CompoundTag nbt, String key) {

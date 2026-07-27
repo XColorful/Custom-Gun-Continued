@@ -327,7 +327,6 @@ Notation:
 |---|---|
 |`CommonLoadPack`|_Deprecated_|
 |`HitboxHelperEvent`||
-|`ServerTickEvent`||
 |`SyncBaseTimestamp`||
 |`TravelToDimensionEvent`||
 
@@ -343,6 +342,10 @@ Notation:
 |---|---|
 |`PlayerRespawnEvent`.onPlayerRespawn|shooter.player.`_PlayerShooterHandler`.autoReload|
 |`PreventGunClick`.onLeftClickBlock|shooter.player.`_PlayerShooterHandler`.preventShootInteraction|
+
+|com.tacz.guns.event|xiao.customgun.core.api.event|
+|---|---|
+|`ServerTickEvent`.onServerTick|`CycledEvent`.`Handler`.static|
 
 |com.tacz.guns.event|xiao.customgun.core.entity|
 |---|---|
@@ -611,7 +614,6 @@ Notation:
 |math.`PerlinNoise`||
 |math.`SecondOrderDynamics`||
 |`ColorHex`|`ColorUtils`|
-|`CycleTaskHelper`||
 |`EntityUtil`|`RayTraceUtils`|
 |`ExplodeUtil`||
 |`GetJarResources`|_Deprecated_|
@@ -624,6 +626,10 @@ Notation:
 |com.tacz.guns.util|xiao.customgun.core.api.resource|
 |---|---|
 |`AttachmentDataUtils`.getAllAttachmentData|`ResourceApi`.getAllAttachmentIndexInstance|
+
+|com.tacz.guns.util|xiao.customgun.core.api.event|
+|---|---|
+|`CycleTaskHelper`|`CycledEvent`|
 
 |com.tacz.guns.util|xiao.customgun.core.resource|
 |---|---|

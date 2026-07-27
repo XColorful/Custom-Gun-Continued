@@ -28,7 +28,7 @@ public class _WorldShooterHandler implements IEventHandler {
     }
     @Override
     public void handleEvent(EventType eventType, IEvent event) {
-        if (eventType == EventType.ENTITY_JOIN_LEVEL_EVENT) {
+        if (eventType == EventType.ENTITY_TRAVEL_DIMENSION_EVENT) {
             onTravelDimension((IEntityTravelDimensionEvent) event);
         } else {
             onReceiveWrongEvent(eventType);

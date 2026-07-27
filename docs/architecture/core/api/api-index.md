@@ -34,6 +34,7 @@
 - [IGunProjectile](/docs/api/core/entity/IGunProjectile.md)：枪射物
 	- [GunProjectileProperty](/docs/api/core/entity/GunProjectileProperty.md)：枪射物属性
 - [IBulletVictimEntity](/docs/api/core/entity/IBulletVictimEntity.md)：受弹实体
+- [IEntityHitboxHistory](/docs/api/core/entity/IEntityHitboxHistory.md)：实体碰撞箱史
 
 ## 事件
 > _./core/api/event_
@@ -234,6 +235,7 @@
 - [IGunProjectile](/docs/api/core/entity/IGunProjectile.md): Gun projectile
 	- [GunProjectileProperty](/docs/api/core/entity/GunProjectileProperty.md): Gun projectile property
 - [IBulletVictimEntity](/docs/api/core/entity/IBulletVictimEntity.md): Bullet victim entity
+- [IEntityHitboxHistory](/docs/api/core/entity/IEntityHitboxHistory.md): Entity hitbox history
 
 ## Event
 

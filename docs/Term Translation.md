@@ -45,6 +45,12 @@
  * {@link xiao.customgun.core.api.entity.shooter.modifier.ShooterGunModifierCache}  
  */
 ```
+- Entity hitbox history：实体碰撞箱史
+```java
+/**  
+ * {@link xiao.customgun.core.api.entity.IEntityHitboxHistory}  
+ */
+```
 
 ### Gun
 

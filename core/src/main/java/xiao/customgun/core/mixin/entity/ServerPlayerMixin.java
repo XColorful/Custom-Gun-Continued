@@ -18,7 +18,7 @@ import xiao.customgun.core.api.entity.shooter.ILivingShooterGetter;
 public class ServerPlayerMixin {
 
     @Inject(method = "restoreFrom", at = @At("RETURN"))
-    public void initLivingShooter(ServerPlayer pThat, boolean pKeepEverything, CallbackInfo ci) {
+    public void cgc$initLivingShooter(ServerPlayer pThat, boolean pKeepEverything, CallbackInfo ci) {
         ServerPlayer player = (ServerPlayer) (Object) this;
         ILivingShooterGetter.cgc$fromLivingEntity(player).cgc$initLivingShooter();
     }

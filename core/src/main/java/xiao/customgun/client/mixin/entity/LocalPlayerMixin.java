@@ -41,7 +41,7 @@ public class LocalPlayerMixin implements ILocalShooter {
     private final LocalShooterInspect cgc$localInspect = new LocalShooterInspect(cgc$localShooter, cgc$localShooterProperty);
 
     @Inject(method = "tick", at = @At("HEAD"))
-    public void onLocalTick(CallbackInfo ci) {
+    public void cgc$onLocalTick(CallbackInfo ci) {
         if (cgc$localShooter.level().isClientSide()) {
             this.cgc$localAim.tickAimingProgress();
             this.cgc$localProne.tickProne();
@@ -52,7 +52,7 @@ public class LocalPlayerMixin implements ILocalShooter {
     }
 
     @WrapOperation(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;setSprinting(Z)V"))
-    public void swapSprintStatus(LocalPlayer player, boolean sprinting, Operation<Void> original) {
+    public void cgc$swapSprintStatus(LocalPlayer player, boolean sprinting, Operation<Void> original) {
         if (sprinting) {
             this.cgc$localReload.cancelReload();
         }
@@ -60,7 +60,7 @@ public class LocalPlayerMixin implements ILocalShooter {
     }
 
     @Inject(method = "respawn", at = @At("RETURN"))
-    public void onRespawn(CallbackInfo ci) {
+    public void cgc$onRespawn(CallbackInfo ci) {
         this.cgc$localShooterProperty.resetProperty();
         this.cgc$clientDraw(ItemStack.EMPTY);
     }

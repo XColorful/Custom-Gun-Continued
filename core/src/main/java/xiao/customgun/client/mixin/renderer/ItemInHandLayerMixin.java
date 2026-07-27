@@ -30,7 +30,7 @@ public class ItemInHandLayerMixin {
 
     @Inject(method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/LivingEntity;FFFFFF)V",
             at = @At(value = "TAIL"))
-    private void render(PoseStack poseStack,
+    private void cgc$render(PoseStack poseStack,
                         MultiBufferSource buffer,
                         int lightCoords,
                         LivingEntity livingEntity, float limbSwing, float limbSwingAmount,
@@ -44,7 +44,7 @@ public class ItemInHandLayerMixin {
 
     @Inject(method = "renderArmWithItem(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemDisplayContext;Lnet/minecraft/world/entity/HumanoidArm;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
             at = @At(value = "HEAD"), cancellable = true)
-    private void renderArmWithItemHead(LivingEntity livingEntity,
+    private void cgc$renderArmWithItemHead(LivingEntity livingEntity,
                                        ItemStack itemStack, ItemDisplayContext pDisplayContext,
                                        HumanoidArm arm, PoseStack poseStack, MultiBufferSource buffer, int packedLight,
                                        CallbackInfo ci) {
@@ -60,7 +60,7 @@ public class ItemInHandLayerMixin {
 
     @Inject(method = "renderArmWithItem(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemDisplayContext;Lnet/minecraft/world/entity/HumanoidArm;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
             at = @At(value = "TAIL"))
-    private void renderArmWithItemTail(LivingEntity livingEntity,
+    private void cgc$renderArmWithItemTail(LivingEntity livingEntity,
                                        ItemStack itemStack,
                                        ItemDisplayContext pDisplayContext,
                                        HumanoidArm arm, PoseStack poseStack,

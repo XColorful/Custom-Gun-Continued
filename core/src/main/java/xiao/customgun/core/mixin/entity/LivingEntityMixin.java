@@ -63,7 +63,7 @@ public abstract class LivingEntityMixin extends Entity implements ILivingShooter
     }
 
     @Inject(method = "tick", at = @At(value = "RETURN"))
-    private void onLivingTick(CallbackInfo ci) {
+    private void cgc$onLivingTick(CallbackInfo ci) {
         if (level().isClientSide()) {
             return;
         }

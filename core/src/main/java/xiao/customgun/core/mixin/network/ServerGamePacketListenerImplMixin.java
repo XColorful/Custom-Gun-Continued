@@ -29,13 +29,13 @@ public class ServerGamePacketListenerImplMixin {
     public ServerPlayer player;
 
     @Inject(method = "handlePlayerAction", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerPlayer;stopUsingItem()V"))
-    public void handleSwapOffhandDraw(ServerboundPlayerActionPacket packetIn, CallbackInfo ci) {
+    public void cgc$handleSwapOffhandDraw(ServerboundPlayerActionPacket packetIn, CallbackInfo ci) {
         player.inventoryMenu.broadcastChanges();
         SendUtils.sendMessageToPlayer(player, new ServerMessageSwapItem());
     }
 
     @WrapOperation(method = "handlePlayerCommand", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerPlayer;setSprinting(Z)V"))
-    public void handleSprintCommand(ServerPlayer player, boolean sprint, Operation<Void> original) {
+    public void cgc$handleSprintCommand(ServerPlayer player, boolean sprint, Operation<Void> original) {
         ILivingShooter livingShooter = ILivingShooterGetter.cgc$fromLivingEntity(player);
         original.call(player, livingShooter.cgc$getProcessedSprintStatus(sprint));
     }

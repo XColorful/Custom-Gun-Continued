@@ -326,7 +326,11 @@ Notation:
 |com.tacz.guns.event| |
 |---|---|
 |`CommonLoadPack`|_Deprecated_|
-|`HitboxHelperEvent`||
+
+|com.tacz.guns.event|xiao.customgun.core.mixin|
+|---|---|
+|`HitboxHelperEvent`.onPlayerTick|entity.`ServerPlayerMixin`.cgc$tickHitboxHistory|
+|`HitboxHelperEvent`.onPlayerLoggedOut|_Deprecated_|
 
 |com.tacz.guns.event|xiao.customgun.core.init|
 |---|---|
@@ -617,7 +621,8 @@ Notation:
 |`EntityUtil`|`RayTraceUtils`|
 |`ExplodeUtil`||
 |`GetJarResources`|_Deprecated_|
-|`HitboxHelper`||
+|`HitboxHelper`.onPlayerLoggedOut|_Deprecated_|
+|`HitboxHelper`.getFixedBoundingBox|`EntityHitboxUtils`.getTracedHitbox|
 |`Md5Utils`|_Deprecated_|
 |`PathHandler`|_Deprecated_|
 |`ResourceScanner`|_Deprecated_|
@@ -640,6 +645,16 @@ Notation:
 |com.tacz.guns.util|xiao.customgun.client.api.event|
 |---|---|
 |`DelayedTask`|`ClientDelayedEvent`|
+
+|com.tacz.guns.util|xiao.customgun.core.mixin|
+|---|---|
+|`HitboxHelper`.onPlayerTick|entity.`ServerPlayerMixin`.cgc$tickHitboxHistory|
+
+|com.tacz.guns.util|xiao.customgun.core.api.entity|
+|---|---|
+|`HitboxHelper`.getPlayerVelocity|_Deprecated_|
+|`HitboxHelper`.getBoundingBox|hitbox.`IEntityHitboxAccess`.cgc$getHistoryHitbox|
+|`HitboxHelper`.getVelocity|hitbox.`IEntityHitboxAccess`.cgc$getHistoryVelocity|
 
 |com.tacz.guns.util|xiao.customgun.client.util|
 |---|---|

@@ -7,7 +7,7 @@
 
 package xiao.customgun.core.api.entity.shooter;
 
-public interface IShooterState {
+public interface IShooterState extends IShooterLatency {
 
     /**
      * 服务端，该操作者是否受弹药数影响

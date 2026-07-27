@@ -12,17 +12,22 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import xiao.customgun.core.api.entity.IEntityHitboxHistory;
 import xiao.customgun.core.api.entity.shooter.ILivingShooterGetter;
+import xiao.customgun.core.api.entity.shooter.IShooterLatency;
 import xiao.customgun.core.config.OtherConfig;
 
 import java.util.ArrayDeque;
 
 @Mixin(ServerPlayer.class)
-public class ServerPlayerMixin implements IEntityHitboxHistory {
+public class ServerPlayerMixin implements IEntityHitboxHistory, IShooterLatency {
+
+    @Shadow
+    public int latency;
 
     @Inject(method = "restoreFrom", at = @At("RETURN"))
     public void cgc$initLivingShooter(ServerPlayer pThat, boolean pKeepEverything, CallbackInfo ci) {
@@ -32,14 +37,18 @@ public class ServerPlayerMixin implements IEntityHitboxHistory {
 
     // --------IEntityHitboxHistory--------
 
+    // --------IEntityHitboxAccess--------
+
     private final ArrayDeque<AABB> cgc$hitboxHistory = new ArrayDeque<>(5); // 配置 [250ms ~ 1000ms] 对应 [ (5+0.5=5) ~ (20+0.5=20) ]
 
     @Inject(method = "tick", at = @At(value = "RETURN"))
     private void cgc$onServerPlayerTick(CallbackInfo ci) {
         ServerPlayer player = (ServerPlayer) (Object) this;
-        cgc$recordHitbox(player);
+        cgc$tickHitboxHistory(player);
     }
-    private void cgc$recordHitbox(ServerPlayer player) {
+    private void cgc$tickHitboxHistory(ServerPlayer player) {
+        if (!OtherConfig.SERVER_HITBOX_LATENCY_FIX.get()) return;
+
         if (player.isSpectator()) {
             this.cgc$hitboxHistory.clear();
             return;
@@ -72,5 +81,12 @@ public class ServerPlayerMixin implements IEntityHitboxHistory {
     @Override
     public void cgc$resetHistoryHitbox() {
         this.cgc$hitboxHistory.clear();
+    }
+
+    // --------IShooterLatency--------
+
+    @Override
+    public int cgc$getShooterLatencyMs() {
+        return this.latency;
     }
 }

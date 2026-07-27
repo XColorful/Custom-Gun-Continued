@@ -37,6 +37,7 @@ public class EntityUtils {
     public static @NotNull List<IProjectilePhysicsRuntime.EntityHitResult> findEntitiesOnPath(Projectile bulletEntity, Vec3 startVec, Vec3 endVec) {
         return RayTraceUtils.EntityTrace.rayTraceEntities(
                 bulletEntity,
+                bulletEntity.getOwner(),
                 startVec,
                 endVec,
                 1.0,

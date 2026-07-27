@@ -3,8 +3,9 @@ package xiao.customgun.core.api.event;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
 import org.jetbrains.annotations.Nullable;
+import xiao.customgun.core.api.common.ILogicalSideOnly;
 
-public interface ITagsUpdatedEvent extends IEvent {
+public interface ITagsUpdatedEvent extends IEvent, ILogicalSideOnly {
 
     /**
      * [1.20.1, 1.21.1] 为 RegistryAccess

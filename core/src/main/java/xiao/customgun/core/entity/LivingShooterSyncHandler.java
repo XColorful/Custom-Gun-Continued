@@ -99,6 +99,7 @@ public class LivingShooterSyncHandler implements IEventHandler {
     }
 
     private void onPlayerJoinWorld(IEntityJoinLevelEvent event) {
+//        if (!event.getLogicalSide().isServer()) return;
         Entity entity = event.getEntity();
         if (!(entity instanceof ServerPlayer serverPlayer)) {
             return;

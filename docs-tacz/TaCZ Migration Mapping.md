@@ -620,9 +620,9 @@ Notation:
 |`AttachmentDataUtils`.getMagExtendLevel|data.data.`AttachmentData`.getMagazineCategory|
 |`AttachmentDataUtils`.\*||
 
-|com.tacz.guns.util|xiao.customgun.core.api.event|
+|com.tacz.guns.util|xiao.customgun.client.api.event|
 |---|---|
-|`DelayedTask`|`DelayedEvent`|
+|`DelayedTask`|`ClientDelayedEvent`|
 
 |com.tacz.guns.util|xiao.customgun.client.util|
 |---|---|

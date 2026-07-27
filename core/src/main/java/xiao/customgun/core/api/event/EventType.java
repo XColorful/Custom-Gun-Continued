@@ -36,6 +36,12 @@ public enum EventType {
     PLAYER_CLONE_EVENT(false),
     PLAYER_START_TRACKING_EVENT(false),
     PLAYER_RESPAWN_EVENT(false),
+    // interact
+    ENTITY_INTERACT_EVENT(false),
+    ENTITY_INTERACT_SPECIFIC_EVENT(false),
+    LEFT_CLICK_BLOCK_EVENT(false),
+    RIGHT_CLICK_BLOCK_EVENT(false),
+    RIGHT_CLICK_ITEM_EVENT(false),
     // input
     INPUT_KEY_EVENT(true),
     INTERACTION_MAPPING_EVENT(true),

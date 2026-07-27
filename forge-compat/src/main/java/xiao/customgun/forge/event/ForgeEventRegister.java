@@ -45,6 +45,12 @@ public final class ForgeEventRegister implements IEventRegister {
             case PLAYER_CLONE_EVENT -> PlayerCloneEventManager.register(eventHandler, priority, receiveCanceled);
             case PLAYER_START_TRACKING_EVENT -> PlayerStartTrackingEventManager.register(eventHandler, priority, receiveCanceled);
             case PLAYER_RESPAWN_EVENT -> PlayerRespawnEventManager.register(eventHandler, priority, receiveCanceled);
+            // interact
+            case ENTITY_INTERACT_EVENT -> EntityInteractEventManager.register(eventHandler, priority, receiveCanceled);
+            case ENTITY_INTERACT_SPECIFIC_EVENT -> EntityInteractSpecificEventManager.register(eventHandler, priority, receiveCanceled);
+            case LEFT_CLICK_BLOCK_EVENT -> LeftClickBlockEventManager.register(eventHandler, priority, receiveCanceled);
+            case RIGHT_CLICK_BLOCK_EVENT -> RightClickBlockEventManager.register(eventHandler, priority, receiveCanceled);
+            case RIGHT_CLICK_ITEM_EVENT -> RightClickItemEventManager.register(eventHandler, priority, receiveCanceled);
             // resource
             case ADD_SERVER_RELOAD_LISTENER_EVENT -> AddServerReloadListenerEventManager.register(eventHandler, priority, receiveCanceled);
             case TAGS_UPDATED_EVENT -> TagsUpdatedEventManager.register(eventHandler, priority, receiveCanceled);
@@ -82,6 +88,12 @@ public final class ForgeEventRegister implements IEventRegister {
             case PLAYER_CLONE_EVENT -> PlayerCloneEventManager.unregister(eventHandler, priority, receiveCanceled);
             case PLAYER_START_TRACKING_EVENT -> PlayerStartTrackingEventManager.unregister(eventHandler, priority, receiveCanceled);
             case PLAYER_RESPAWN_EVENT -> PlayerRespawnEventManager.unregister(eventHandler, priority, receiveCanceled);
+            // interact
+            case ENTITY_INTERACT_EVENT -> EntityInteractEventManager.unregister(eventHandler, priority, receiveCanceled);
+            case ENTITY_INTERACT_SPECIFIC_EVENT -> EntityInteractSpecificEventManager.unregister(eventHandler, priority, receiveCanceled);
+            case LEFT_CLICK_BLOCK_EVENT -> LeftClickBlockEventManager.unregister(eventHandler, priority, receiveCanceled);
+            case RIGHT_CLICK_BLOCK_EVENT -> RightClickBlockEventManager.unregister(eventHandler, priority, receiveCanceled);
+            case RIGHT_CLICK_ITEM_EVENT -> RightClickItemEventManager.unregister(eventHandler, priority, receiveCanceled);
             // resource
             case ADD_SERVER_RELOAD_LISTENER_EVENT -> AddServerReloadListenerEventManager.unregister(eventHandler, priority, receiveCanceled);
             case TAGS_UPDATED_EVENT -> TagsUpdatedEventManager.unregister(eventHandler, priority, receiveCanceled);

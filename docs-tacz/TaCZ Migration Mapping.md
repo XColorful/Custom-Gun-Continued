@@ -581,6 +581,7 @@ Notation:
 |com.tacz.guns.resource|xiao.customgun.core.api.entity|
 |---|---|
 |pojo.data.gun.`InaccuracyType`|`ShootState`|
+|pojo.data.gun.`InaccuracyType`.getInaccuracyType|shooter.`IShooterState`.cgc$getShootState|
 
 |com.tacz.guns.resource|xiao.customgun.core.util|
 |---|---|

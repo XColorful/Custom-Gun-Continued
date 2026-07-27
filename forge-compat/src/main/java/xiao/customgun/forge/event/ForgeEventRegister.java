@@ -33,6 +33,12 @@ public class ForgeEventRegister implements IEventRegister {
             // entity
             case ENTITY_JOIN_LEVEL_EVENT -> EntityJoinLevelEventManager.register(eventHandler, priority, receiveCanceled);
             // living entity
+            case LIVING_ATTACK_EVENT -> LivingAttackEventManager.register(eventHandler, priority, receiveCanceled);
+            case LIVING_HURT_EVENT -> LivingHurtEventManager.register(eventHandler, priority, receiveCanceled);
+            case LIVING_DAMAGE_EVENT -> LivingDamageEventManager.register(eventHandler, priority, receiveCanceled);
+            case LIVING_DEATH_EVENT -> LivingDeathEventManager.register(eventHandler, priority, receiveCanceled);
+            case LIVING_HEAL_EVENT -> LivingHealEventManager.register(eventHandler, priority, receiveCanceled);
+            case LIVING_USE_TOTEM_EVENT -> LivingUseTotemEventManager.register(eventHandler, priority, receiveCanceled);
             case LIVING_KNOCKBACK_EVENT -> LivingKnockbackEventManager.register(eventHandler, priority, receiveCanceled);
             // player
             case PLAYER_CLONE_EVENT -> PlayerCloneEventManager.register(eventHandler, priority, receiveCanceled);
@@ -63,6 +69,12 @@ public class ForgeEventRegister implements IEventRegister {
             // entity
             case ENTITY_JOIN_LEVEL_EVENT -> EntityJoinLevelEventManager.unregister(eventHandler, priority, receiveCanceled);
             // living entity
+            case LIVING_ATTACK_EVENT -> LivingAttackEventManager.unregister(eventHandler, priority, receiveCanceled);
+            case LIVING_HURT_EVENT -> LivingHurtEventManager.unregister(eventHandler, priority, receiveCanceled);
+            case LIVING_DAMAGE_EVENT -> LivingDamageEventManager.unregister(eventHandler, priority, receiveCanceled);
+            case LIVING_DEATH_EVENT -> LivingDeathEventManager.unregister(eventHandler, priority, receiveCanceled);
+            case LIVING_HEAL_EVENT -> LivingHealEventManager.unregister(eventHandler, priority, receiveCanceled);
+            case LIVING_USE_TOTEM_EVENT -> LivingUseTotemEventManager.unregister(eventHandler, priority, receiveCanceled);
             case LIVING_KNOCKBACK_EVENT -> LivingKnockbackEventManager.unregister(eventHandler, priority, receiveCanceled);
             // player
             case PLAYER_CLONE_EVENT -> PlayerCloneEventManager.unregister(eventHandler, priority, receiveCanceled);

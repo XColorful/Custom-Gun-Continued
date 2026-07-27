@@ -25,6 +25,12 @@ public enum EventType {
     // entity
     ENTITY_JOIN_LEVEL_EVENT(false),
     // living entity
+    LIVING_ATTACK_EVENT(false),
+    LIVING_HURT_EVENT(false),
+    LIVING_DAMAGE_EVENT(false),
+    LIVING_DEATH_EVENT(false),
+    LIVING_HEAL_EVENT(false),
+    LIVING_USE_TOTEM_EVENT(false),
     LIVING_KNOCKBACK_EVENT(false),
     // player
     PLAYER_CLONE_EVENT(false),

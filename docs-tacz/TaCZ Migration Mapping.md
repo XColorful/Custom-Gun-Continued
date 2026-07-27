@@ -321,10 +321,11 @@ Notation:
 |---|---|
 |ammo.`BellRing`.onAmmoHitBlock|impact.`_WorldImpactHandler`.onHitBell|
 |ammo.`DestroyGlassBlock`.onAmmoHitBlock|impact.`_WorldImpactHandler`.onHitGlass|
+|`EntityDamageEvent`.onLivingHurt|impact.`_EntityImpactHandler`.onLivingHurt|
 
 |com.tacz.guns.event| |
 |---|---|
-|`EntityDamageEvent`||
+|`CommonLoadPack`|_Deprecated_|
 |`HitboxHelperEvent`||
 |`LoadingConfigEvent`||
 |`PlayerRespawnEvent`||

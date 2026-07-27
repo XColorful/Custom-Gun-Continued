@@ -317,10 +317,10 @@ Notation:
 > package com.tacz.guns.event;
 > ```
 
-|com.tacz.guns.event| |
+|com.tacz.guns.event|xiao.customgun.core.projectile|
 |---|---|
-|ammo.`BellRing`.onAmmoHitBlock||
-|ammo.`DestroyGlassBlock`.onAmmoHitBlock||
+|ammo.`BellRing`.onAmmoHitBlock|impact.`_WorldImpactHandler`.onHitBell|
+|ammo.`DestroyGlassBlock`.onAmmoHitBlock|impact.`_WorldImpactHandler`.onHitGlass|
 
 |com.tacz.guns.event| |
 |---|---|
@@ -365,7 +365,7 @@ Notation:
 |`CommonRegistry`.registerAttributes||
 |`CommonRegistry`.onAddPackFinders|_Deprecated_|
 |`CompatRegistry`||
-|`ModAttributes`||
+|`ModAttributes`|_Deprecated_|
 |`ModBlocks`|_Deprecated_|
 |`ModContainer`|_Deprecated_|
 |`ModCreativeTabs`|registry.`ModCreativeTabs`|

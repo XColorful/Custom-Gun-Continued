@@ -14,8 +14,8 @@ package xiao.customgun.core.event.custom;
 import xiao.customgun.CustomGun;
 import xiao.customgun.core.api.event.*;
 import xiao.customgun.core.entity.LivingShooterSyncHandler;
+import xiao.customgun.core.entity.shooter.player._PlayerShooterHandler;
 import xiao.customgun.core.entity.victim.BulletVictimKnockback;
-import xiao.customgun.core.projectile.impact._EntityImpactHandler;
 import xiao.customgun.core.projectile.impact._WorldImpactHandler;
 import xiao.customgun.core.resource._AllDataManager;
 
@@ -31,6 +31,7 @@ public class CoreEventHandlers {
         register(customEventRegister, LivingShooterSyncHandler.get(), EventType.PLAYER_START_TRACKING_EVENT, EventPriority.NORMAL, false);
         register(customEventRegister, BulletVictimKnockback.get(), EventType.LIVING_KNOCKBACK_EVENT, EventPriority.NORMAL, false);
 //        register(customEventRegister, _EntityImpactHandler.get(), EventType.LIVING_HURT_EVENT, EventPriority.LOW, false);
+        register(customEventRegister, _PlayerShooterHandler.get(), EventType.PLAYER_RESPAWN_EVENT, EventPriority.NORMAL, false);
 
         // ----custom event type----
         register(customEventRegister, _WorldImpactHandler.get(), CustomEventType.PROJECTILE_HIT_BLOCK_EVENT, EventPriority.NORMAL, false);

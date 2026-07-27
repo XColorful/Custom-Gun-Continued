@@ -327,7 +327,6 @@ Notation:
 |---|---|
 |`CommonLoadPack`|_Deprecated_|
 |`HitboxHelperEvent`||
-|`PlayerRespawnEvent`||
 |`PreventGunClick`||
 |`ServerTickEvent`||
 |`SyncBaseTimestamp`||
@@ -340,6 +339,10 @@ Notation:
 |com.tacz.guns.event|xiao.customgun.client.init|
 |---|---|
 |`LoadingConfigEvent`.\*|`ClientModConfig`.`Event`.\*|
+
+|com.tacz.guns.event|xiao.customgun.core.entity|
+|---|---|
+|`PlayerRespawnEvent`.onPlayerRespawn|shooter.player.`_PlayerShooterHandler`.onPlayerRespawn|
 
 |com.tacz.guns.event|xiao.customgun.core.entity|
 |---|---|

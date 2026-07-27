@@ -16,7 +16,8 @@ import xiao.customgun.core.api.event.IEventRegister;
 import xiao.customgun.forge.event.events.*;
 import xiao.customgun.forgeclient.CustomGunForgeClient;
 
-public class ForgeEventRegister implements IEventRegister {
+// ↓加个final只是为了在IDEA左边显眼一点, 枚举写死了也没啥好继承的
+public final class ForgeEventRegister implements IEventRegister {
 
     @Override
     public boolean register(IEventHandler eventHandler, EventType eventType, EventPriority priority, boolean receiveCanceled) {
@@ -43,6 +44,7 @@ public class ForgeEventRegister implements IEventRegister {
             // player
             case PLAYER_CLONE_EVENT -> PlayerCloneEventManager.register(eventHandler, priority, receiveCanceled);
             case PLAYER_START_TRACKING_EVENT -> PlayerStartTrackingEventManager.register(eventHandler, priority, receiveCanceled);
+            case PLAYER_RESPAWN_EVENT -> PlayerRespawnEventManager.register(eventHandler, priority, receiveCanceled);
             // resource
             case ADD_SERVER_RELOAD_LISTENER_EVENT -> AddServerReloadListenerEventManager.register(eventHandler, priority, receiveCanceled);
             case TAGS_UPDATED_EVENT -> TagsUpdatedEventManager.register(eventHandler, priority, receiveCanceled);
@@ -79,6 +81,7 @@ public class ForgeEventRegister implements IEventRegister {
             // player
             case PLAYER_CLONE_EVENT -> PlayerCloneEventManager.unregister(eventHandler, priority, receiveCanceled);
             case PLAYER_START_TRACKING_EVENT -> PlayerStartTrackingEventManager.unregister(eventHandler, priority, receiveCanceled);
+            case PLAYER_RESPAWN_EVENT -> PlayerRespawnEventManager.unregister(eventHandler, priority, receiveCanceled);
             // resource
             case ADD_SERVER_RELOAD_LISTENER_EVENT -> AddServerReloadListenerEventManager.unregister(eventHandler, priority, receiveCanceled);
             case TAGS_UPDATED_EVENT -> TagsUpdatedEventManager.unregister(eventHandler, priority, receiveCanceled);

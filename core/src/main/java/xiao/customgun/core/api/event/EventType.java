@@ -35,6 +35,7 @@ public enum EventType {
     // player
     PLAYER_CLONE_EVENT(false),
     PLAYER_START_TRACKING_EVENT(false),
+    PLAYER_RESPAWN_EVENT(false),
     // input
     INPUT_KEY_EVENT(true),
     INTERACTION_MAPPING_EVENT(true),

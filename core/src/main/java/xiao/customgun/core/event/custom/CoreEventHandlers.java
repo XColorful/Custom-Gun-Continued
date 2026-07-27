@@ -32,6 +32,7 @@ public class CoreEventHandlers {
         register(customEventRegister, BulletVictimKnockback.get(), EventType.LIVING_KNOCKBACK_EVENT, EventPriority.NORMAL, false);
 //        register(customEventRegister, _EntityImpactHandler.get(), EventType.LIVING_HURT_EVENT, EventPriority.LOW, false);
         register(customEventRegister, _PlayerShooterHandler.get(), EventType.PLAYER_RESPAWN_EVENT, EventPriority.NORMAL, false);
+        register(customEventRegister, _PlayerShooterHandler.get(), EventType.LEFT_CLICK_BLOCK_EVENT, EventPriority.NORMAL, false);
 
         // ----custom event type----
         register(customEventRegister, _WorldImpactHandler.get(), CustomEventType.PROJECTILE_HIT_BLOCK_EVENT, EventPriority.NORMAL, false);

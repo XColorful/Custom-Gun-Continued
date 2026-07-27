@@ -327,7 +327,6 @@ Notation:
 |---|---|
 |`CommonLoadPack`|_Deprecated_|
 |`HitboxHelperEvent`||
-|`PreventGunClick`||
 |`ServerTickEvent`||
 |`SyncBaseTimestamp`||
 |`TravelToDimensionEvent`||
@@ -342,7 +341,8 @@ Notation:
 
 |com.tacz.guns.event|xiao.customgun.core.entity|
 |---|---|
-|`PlayerRespawnEvent`.onPlayerRespawn|shooter.player.`_PlayerShooterHandler`.onPlayerRespawn|
+|`PlayerRespawnEvent`.onPlayerRespawn|shooter.player.`_PlayerShooterHandler`.autoReload|
+|`PreventGunClick`.onLeftClickBlock|shooter.player.`_PlayerShooterHandler`.preventShootInteraction|
 
 |com.tacz.guns.event|xiao.customgun.core.entity|
 |---|---|

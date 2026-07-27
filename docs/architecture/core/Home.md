@@ -61,6 +61,7 @@
 	- modifier：[射手修饰框架](./entity/shooter/modifier/Home.md)
 		- ShooterGunModifierManager：射手枪械修饰管理器
 	- player：射手玩家
+	- world：游戏内世界相关操作
 - Bullet Victim：受弹实体
 	- BulletVictimKnockback：击退处理
 - LivingShooterSyncHandler：同步射手生物数据
@@ -282,6 +283,7 @@ Module division based on the `xiao.customgun.core` top-level package
 	- modifier: [Shooter modifier framework](./entity/shooter/modifier/Home.md)
 		- ShooterGunModifierManager: Shooter gun modifier manager
 	- player: Player shooter
+	- world: In-game world related operations
 - Bullet Victim:
 	- BulletVictimKnockback: Knockback handling
 - LivingShooterSyncHandler: Sync Living Shooter data

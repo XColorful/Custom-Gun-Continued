@@ -24,6 +24,7 @@ public enum EventType {
     CLIENT_PLAYER_TICK_EVENT(true),
     // entity
     ENTITY_JOIN_LEVEL_EVENT(false),
+    ENTITY_TRAVEL_DIMENSION_EVENT(false),
     // living entity
     LIVING_ATTACK_EVENT(false),
     LIVING_HURT_EVENT(false),

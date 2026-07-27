@@ -33,6 +33,7 @@ public final class ForgeEventRegister implements IEventRegister {
             case SERVER_PLAYER_TICK_EVENT -> ServerPlayerTickEventManager.register(eventHandler, priority, receiveCanceled);
             // entity
             case ENTITY_JOIN_LEVEL_EVENT -> EntityJoinLevelEventManager.register(eventHandler, priority, receiveCanceled);
+            case ENTITY_TRAVEL_DIMENSION_EVENT -> EntityTravelDimensionEventManager.register(eventHandler, priority, receiveCanceled);
             // living entity
             case LIVING_ATTACK_EVENT -> LivingAttackEventManager.register(eventHandler, priority, receiveCanceled);
             case LIVING_HURT_EVENT -> LivingHurtEventManager.register(eventHandler, priority, receiveCanceled);
@@ -76,6 +77,7 @@ public final class ForgeEventRegister implements IEventRegister {
             case SERVER_PLAYER_TICK_EVENT -> ServerPlayerTickEventManager.unregister(eventHandler, priority, receiveCanceled);
             // entity
             case ENTITY_JOIN_LEVEL_EVENT -> EntityJoinLevelEventManager.unregister(eventHandler, priority, receiveCanceled);
+            case ENTITY_TRAVEL_DIMENSION_EVENT -> EntityTravelDimensionEventManager.unregister(eventHandler, priority, receiveCanceled);
             // living entity
             case LIVING_ATTACK_EVENT -> LivingAttackEventManager.unregister(eventHandler, priority, receiveCanceled);
             case LIVING_HURT_EVENT -> LivingHurtEventManager.unregister(eventHandler, priority, receiveCanceled);

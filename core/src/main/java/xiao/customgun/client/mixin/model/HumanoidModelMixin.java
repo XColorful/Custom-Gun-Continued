@@ -33,7 +33,7 @@ public class HumanoidModelMixin<T extends HumanoidRenderState> {
     @Final public ModelPart rightArm;
 
     @Inject(method = "setupAnim(Lnet/minecraft/client/renderer/entity/state/HumanoidRenderState;)V", at = @At(value = "TAIL"))
-    private void setRotationAnglesHead(T renderState,
+    private void cgc$setRotationAnglesHead(T renderState,
                                        CallbackInfo ci) {
 //        if (ageInTicks == 0) {
 //            return;

@@ -295,8 +295,11 @@ public final class LocalShooterShoot extends LocalShooterAspect {
 //            // todo需要检查
             // TODO ↑tmd原模组这么乱一坨屎山检查个毛线 :(
             Minecraft.getInstance().submitAsync(() -> {
+                LocalPlayer localPlayer = Minecraft.getInstance().player;
+                if (localPlayer == null) return;
 
-                if (CustomGun.getEventPoster().postCustomEvent(new GunFireEvent(McLogicalSide.CLIENT, iGun, gunItem))) {
+                ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(localPlayer);
+                if (CustomGun.getEventPoster().postCustomEvent(new GunFireEvent(McLogicalSide.CLIENT, iGun, gunItem, iLivingShooter, localPlayer))) {
                     return;
                 }
 

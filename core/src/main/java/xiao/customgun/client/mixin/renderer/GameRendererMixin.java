@@ -32,7 +32,7 @@ public abstract class GameRendererMixin {
                                 boolean pRenderLevel);
 
     @Inject(method = "bobHurt", at = @At("HEAD"), cancellable = true)
-    public void onBobHurt(CameraRenderState cameraState,
+    public void cgc$onBobHurt(CameraRenderState cameraState,
                           PoseStack poseStack,
                           CallbackInfo ci) {
         // 取消受伤导致的视角摇晃
@@ -55,7 +55,7 @@ public abstract class GameRendererMixin {
     }
 
     @Inject(method = "bobView", at = @At("HEAD"), cancellable = true)
-    public void onBobView(CameraRenderState cameraState,
+    public void cgc$onBobView(CameraRenderState cameraState,
                           PoseStack poseStack,
                           CallbackInfo ci) {
         boolean cancel = false;

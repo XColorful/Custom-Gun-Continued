@@ -10,6 +10,7 @@ package xiao.customgun.core.api.event.gun;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
@@ -18,9 +19,11 @@ import org.jetbrains.annotations.Nullable;
 import xiao.customgun.CustomGun;
 import xiao.customgun.core.api.common.ILogicalSideOnly;
 import xiao.customgun.core.api.common.McLogicalSide;
+import xiao.customgun.core.api.entity.ILivingShooter;
 import xiao.customgun.core.api.event.CustomEventType;
 import xiao.customgun.core.api.event.ICustomEvent;
 import xiao.customgun.core.api.event.ICustomEventHandler;
+import xiao.customgun.core.api.event.shooter.ILivingShooterEvent;
 import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.api.minecraft.CommandLevel;
 import xiao.customgun.core.event.EventDispatcher;
@@ -28,14 +31,20 @@ import xiao.customgun.core.event.EventDispatcher;
 /**
  * 枪械{@link IGun} 射击一次 的事件
  */
-public final class GunFireEvent extends GunEvent implements ILogicalSideOnly {
+public final class GunFireEvent extends GunEvent implements ILivingShooterEvent, ILogicalSideOnly {
 
-    protected final McLogicalSide logicalSide;
+    private final McLogicalSide logicalSide;
+
+    private final @Nullable ILivingShooter iLivingShooter;
+    private final @Nullable LivingEntity livingShooter;
 
     public GunFireEvent(McLogicalSide logicalSide,
-                           @Nullable IGun iGun, @NotNull ItemStack gunItem) {
+                        @Nullable IGun iGun, @NotNull ItemStack gunItem,
+                        @Nullable ILivingShooter iLivingShooter, @Nullable LivingEntity livingShooter) {
         super(iGun, gunItem);
         this.logicalSide = logicalSide;
+        this.iLivingShooter = iLivingShooter;
+        this.livingShooter = livingShooter;
     }
     @Override public CustomEventType getEventType() {
         return CustomEventType.GUN_FIRE_EVENT;
@@ -44,6 +53,15 @@ public final class GunFireEvent extends GunEvent implements ILogicalSideOnly {
     @Override
     public McLogicalSide getLogicalSide() {
         return this.logicalSide;
+    }
+
+    @Override
+    public @Nullable ILivingShooter getILivingShooter() {
+        return this.iLivingShooter;
+    }
+    @Override
+    public @Nullable LivingEntity getLivingShooter() {
+        return this.livingShooter;
     }
 
     @Override

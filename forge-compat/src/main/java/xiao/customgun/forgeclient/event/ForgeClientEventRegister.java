@@ -12,17 +12,10 @@ import xiao.customgun.core.api.event.EventPriority;
 import xiao.customgun.core.api.event.EventType;
 import xiao.customgun.core.api.event.IEventHandler;
 import xiao.customgun.core.api.event.IEventRegister;
-import xiao.customgun.forgeclient.event.events.AddClientReloadListenerEventManager;
-import xiao.customgun.forgeclient.event.events.ClientPlayerTickEventManager;
-import xiao.customgun.forgeclient.event.events.ClientTickEventManager;
-import xiao.customgun.forgeclient.event.events.PrepareClientPlayerTickEventManager;
-import xiao.customgun.forgeclient.event.events.InputKeyEventManager;
-import xiao.customgun.forgeclient.event.events.InteractionMappingEventManager;
-import xiao.customgun.forgeclient.event.events.MouseButtonEventManager;
-import xiao.customgun.forgeclient.event.events.MouseScrollingEventManager;
-import xiao.customgun.forgeclient.event.events.PrepareClientTickEventManager;
+import xiao.customgun.forgeclient.event.events.*;
 
-public class ForgeClientEventRegister implements IEventRegister {
+// ↓加个final只是为了在IDEA左边显眼一点, 枚举写死了也没啥好继承的
+public final class ForgeClientEventRegister implements IEventRegister {
 
     @Override
     public boolean register(IEventHandler eventHandler, EventType eventType, EventPriority priority, boolean receiveCanceled) {
@@ -39,6 +32,13 @@ public class ForgeClientEventRegister implements IEventRegister {
             case MOUSE_SCROLLING_EVENT -> MouseScrollingEventManager.register(eventHandler, priority, receiveCanceled);
             // resource
             case ADD_CLIENT_RELOAD_LISTENER_EVENT -> AddClientReloadListenerEventManager.register(eventHandler, priority, receiveCanceled);
+            // render
+            case RENDER_LEVEL_STAGE_EVENT -> RenderLevelStageEventManager.register(eventHandler, priority, receiveCanceled);
+            case RENDER_TRANSLUCENT_EVENT -> RenderTranslucentEventManager.register(eventHandler, priority, receiveCanceled);
+            case SUBMIT_CUSTOM_GEOMETRY_EVENT -> SubmitCustomGeometryEventManager.register(eventHandler, priority, receiveCanceled);
+            case RENDER_GUI_EVENT -> RenderGuiEventManager.register(eventHandler, priority, receiveCanceled);
+            // display
+            case ITEM_TOOLTIP_EVENT -> ItemTooltipEventManager.register(eventHandler, priority, receiveCanceled);
             default -> {
                 CustomGun.LOGGER.warn("Attempted to register handler for unassigned EventType: {}. Registration aborted.", eventType);
                 yield false;
@@ -61,6 +61,13 @@ public class ForgeClientEventRegister implements IEventRegister {
             case MOUSE_SCROLLING_EVENT -> MouseScrollingEventManager.unregister(eventHandler, priority, receiveCanceled);
             // resource
             case ADD_CLIENT_RELOAD_LISTENER_EVENT -> AddClientReloadListenerEventManager.unregister(eventHandler, priority, receiveCanceled);
+            // render
+            case RENDER_LEVEL_STAGE_EVENT -> RenderLevelStageEventManager.unregister(eventHandler, priority, receiveCanceled);
+            case RENDER_TRANSLUCENT_EVENT -> RenderTranslucentEventManager.unregister(eventHandler, priority, receiveCanceled);
+            case SUBMIT_CUSTOM_GEOMETRY_EVENT -> SubmitCustomGeometryEventManager.unregister(eventHandler, priority, receiveCanceled);
+            case RENDER_GUI_EVENT -> RenderGuiEventManager.unregister(eventHandler, priority, receiveCanceled);
+            // display
+            case ITEM_TOOLTIP_EVENT -> ItemTooltipEventManager.unregister(eventHandler, priority, receiveCanceled);
             default -> {
                 CustomGun.LOGGER.warn("Attempted to unregister handler for unassigned EventType: {}. Registration aborted.", eventType);
                 yield false;

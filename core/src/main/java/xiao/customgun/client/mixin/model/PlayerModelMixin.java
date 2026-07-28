@@ -37,7 +37,7 @@ public class PlayerModelMixin extends HumanoidModel<PlayerRenderState> {
      */
     @Inject(method = "setupAnim(Lnet/minecraft/client/renderer/entity/state/PlayerRenderState;)V",
             at = @At(value = "TAIL"))
-    private void setRotationAnglesTail(PlayerRenderState renderState,
+    private void cgc$setRotationAnglesTail(PlayerRenderState renderState,
                                        CallbackInfo ci) {
 //        if (!(entityIn instanceof Player player)) {
 //            return;

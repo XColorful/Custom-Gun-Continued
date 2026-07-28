@@ -17,19 +17,19 @@ import xiao.customgun.core.util.NetworkUtils;
 import java.util.function.Consumer;
 
 public record ServerMessageGunShoot(int shooterId,
-                                    ItemStack gunItemStack)
+                                    ItemStack gunItem)
         implements IMessage<ServerMessageGunShoot> {
 
     @Override
     public void encode(ServerMessageGunShoot message, FriendlyByteBuf buffer) {
         buffer.writeVarInt(message.shooterId);
-        NetworkUtils.writeItem(buffer, message.gunItemStack);
+        NetworkUtils.writeItem(buffer, message.gunItem);
     }
 
     public static ServerMessageGunShoot decode(FriendlyByteBuf buffer) {
         int shooterId = buffer.readVarInt();
-        ItemStack gunItemStack = NetworkUtils.readItem(buffer);
-        return new ServerMessageGunShoot(shooterId, gunItemStack);
+        ItemStack gunItem = NetworkUtils.readItem(buffer);
+        return new ServerMessageGunShoot(shooterId, gunItem);
     }
 
     @Override

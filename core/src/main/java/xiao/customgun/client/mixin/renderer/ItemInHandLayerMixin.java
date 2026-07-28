@@ -30,7 +30,7 @@ public class ItemInHandLayerMixin<S extends ArmedEntityRenderState, M extends En
 
     @Inject(method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/client/renderer/entity/state/ArmedEntityRenderState;FF)V",
             at = @At(value = "TAIL"))
-    private void render(PoseStack poseStack,
+    private void cgc$render(PoseStack poseStack,
                         MultiBufferSource buffer,
                         int lightCoords,
                         S renderState,
@@ -43,7 +43,7 @@ public class ItemInHandLayerMixin<S extends ArmedEntityRenderState, M extends En
 
     @Inject(method = "renderArmWithItem(Lnet/minecraft/client/renderer/entity/state/ArmedEntityRenderState;Lnet/minecraft/client/renderer/item/ItemStackRenderState;Lnet/minecraft/world/entity/HumanoidArm;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
             at = @At(value = "HEAD"), cancellable = true)
-    private void renderArmWithItemHead(S renderState,
+    private void cgc$renderArmWithItemHead(S renderState,
                                        ItemStackRenderState itemStackRenderState,
                                        HumanoidArm arm, PoseStack poseStack, MultiBufferSource buffer, int packedLight,
                                        CallbackInfo ci) {
@@ -59,8 +59,7 @@ public class ItemInHandLayerMixin<S extends ArmedEntityRenderState, M extends En
 
     @Inject(method = "renderArmWithItem(Lnet/minecraft/client/renderer/entity/state/ArmedEntityRenderState;Lnet/minecraft/client/renderer/item/ItemStackRenderState;Lnet/minecraft/world/entity/HumanoidArm;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
             at = @At(value = "TAIL"))
-    private void renderArmWithItemTail(S renderState,
-                                       ItemStackRenderState itemStackRenderState,
+    private void cgc$renderArmWithItemTail(S renderState,
                                        HumanoidArm arm, PoseStack poseStack,
                                        MultiBufferSource buffer,
                                        int lightCoords, CallbackInfo ci) {

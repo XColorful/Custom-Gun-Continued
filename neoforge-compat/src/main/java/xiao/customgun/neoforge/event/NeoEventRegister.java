@@ -32,11 +32,25 @@ public class NeoEventRegister implements IEventRegister {
             case SERVER_PLAYER_TICK_EVENT -> NeoServerPlayerTickEventManager.register(eventHandler, priority, receiveCanceled);
             // entity
             case ENTITY_JOIN_LEVEL_EVENT -> NeoEntityJoinLevelEventManager.register(eventHandler, priority, receiveCanceled);
+            case ENTITY_TRAVEL_DIMENSION_EVENT -> NeoEntityTravelDimensionEventManager.register(eventHandler, priority, receiveCanceled);
             // living entity
+            case LIVING_ATTACK_EVENT -> NeoLivingAttackEventManager.register(eventHandler, priority, receiveCanceled);
+            case LIVING_HURT_EVENT -> NeoLivingHurtEventManager.register(eventHandler, priority, receiveCanceled);
+            case LIVING_DAMAGE_EVENT -> NeoLivingDamageEventManager.register(eventHandler, priority, receiveCanceled);
+            case LIVING_DEATH_EVENT -> NeoLivingDeathEventManager.register(eventHandler, priority, receiveCanceled);
+            case LIVING_HEAL_EVENT -> NeoLivingHealEventManager.register(eventHandler, priority, receiveCanceled);
+            case LIVING_USE_TOTEM_EVENT -> NeoLivingUseTotemEventManager.register(eventHandler, priority, receiveCanceled);
             case LIVING_KNOCKBACK_EVENT -> NeoLivingKnockbackEventManager.register(eventHandler, priority, receiveCanceled);
             // player
             case PLAYER_CLONE_EVENT -> NeoPlayerCloneEventManager.register(eventHandler, priority, receiveCanceled);
             case PLAYER_START_TRACKING_EVENT -> NeoPlayerStartTrackingEventManager.register(eventHandler, priority, receiveCanceled);
+            case PLAYER_RESPAWN_EVENT -> NeoPlayerRespawnEventManager.register(eventHandler, priority, receiveCanceled);
+            // interact
+            case ENTITY_INTERACT_EVENT -> NeoEntityInteractEventManager.register(eventHandler, priority, receiveCanceled);
+            case ENTITY_INTERACT_SPECIFIC_EVENT -> NeoEntityInteractSpecificEventManager.register(eventHandler, priority, receiveCanceled);
+            case LEFT_CLICK_BLOCK_EVENT -> NeoLeftClickBlockEventManager.register(eventHandler, priority, receiveCanceled);
+            case RIGHT_CLICK_BLOCK_EVENT -> NeoRightClickBlockEventManager.register(eventHandler, priority, receiveCanceled);
+            case RIGHT_CLICK_ITEM_EVENT -> NeoRightClickItemEventManager.register(eventHandler, priority, receiveCanceled);
             // resource
             case ADD_SERVER_RELOAD_LISTENER_EVENT -> NeoAddServerReloadListenerEventManager.register(eventHandler, priority, receiveCanceled);
             case TAGS_UPDATED_EVENT -> NeoTagsUpdatedEventManager.register(eventHandler, priority, receiveCanceled);
@@ -62,11 +76,25 @@ public class NeoEventRegister implements IEventRegister {
             case SERVER_PLAYER_TICK_EVENT -> NeoServerPlayerTickEventManager.unregister(eventHandler, priority, receiveCanceled);
             // entity
             case ENTITY_JOIN_LEVEL_EVENT -> NeoEntityJoinLevelEventManager.unregister(eventHandler, priority, receiveCanceled);
+            case ENTITY_TRAVEL_DIMENSION_EVENT -> NeoEntityTravelDimensionEventManager.unregister(eventHandler, priority, receiveCanceled);
             // living entity
+            case LIVING_ATTACK_EVENT -> NeoLivingAttackEventManager.unregister(eventHandler, priority, receiveCanceled);
+            case LIVING_HURT_EVENT -> NeoLivingHurtEventManager.unregister(eventHandler, priority, receiveCanceled);
+            case LIVING_DAMAGE_EVENT -> NeoLivingDamageEventManager.unregister(eventHandler, priority, receiveCanceled);
+            case LIVING_DEATH_EVENT -> NeoLivingDeathEventManager.unregister(eventHandler, priority, receiveCanceled);
+            case LIVING_HEAL_EVENT -> NeoLivingHealEventManager.unregister(eventHandler, priority, receiveCanceled);
+            case LIVING_USE_TOTEM_EVENT -> NeoLivingUseTotemEventManager.unregister(eventHandler, priority, receiveCanceled);
             case LIVING_KNOCKBACK_EVENT -> NeoLivingKnockbackEventManager.unregister(eventHandler, priority, receiveCanceled);
             // player
             case PLAYER_CLONE_EVENT -> NeoPlayerCloneEventManager.unregister(eventHandler, priority, receiveCanceled);
             case PLAYER_START_TRACKING_EVENT -> NeoPlayerStartTrackingEventManager.unregister(eventHandler, priority, receiveCanceled);
+            case PLAYER_RESPAWN_EVENT -> NeoPlayerRespawnEventManager.unregister(eventHandler, priority, receiveCanceled);
+            // interact
+            case ENTITY_INTERACT_EVENT -> NeoEntityInteractEventManager.unregister(eventHandler, priority, receiveCanceled);
+            case ENTITY_INTERACT_SPECIFIC_EVENT -> NeoEntityInteractSpecificEventManager.unregister(eventHandler, priority, receiveCanceled);
+            case LEFT_CLICK_BLOCK_EVENT -> NeoLeftClickBlockEventManager.unregister(eventHandler, priority, receiveCanceled);
+            case RIGHT_CLICK_BLOCK_EVENT -> NeoRightClickBlockEventManager.unregister(eventHandler, priority, receiveCanceled);
+            case RIGHT_CLICK_ITEM_EVENT -> NeoRightClickItemEventManager.unregister(eventHandler, priority, receiveCanceled);
             // resource
             case ADD_SERVER_RELOAD_LISTENER_EVENT -> NeoAddServerReloadListenerEventManager.unregister(eventHandler, priority, receiveCanceled);
             case TAGS_UPDATED_EVENT -> NeoTagsUpdatedEventManager.unregister(eventHandler, priority, receiveCanceled);

@@ -24,6 +24,7 @@ import xiao.customgun.core.api.common.McLogicalSide;
 import xiao.customgun.core.api.event.EventType;
 import xiao.customgun.core.api.event.IRightClickItemEvent;
 import xiao.customgun.core.api.minecraft.CommandLevel;
+import xiao.customgun.core.util.Vec3Utils;
 import xiao.customgun.neoforge.common.McSideHelper;
 
 public class NeoRightClickItemEvent extends NeoEvent implements IRightClickItemEvent {
@@ -86,7 +87,7 @@ public class NeoRightClickItemEvent extends NeoEvent implements IRightClickItemE
         Player player = this.getEntity();
         return new CommandSourceStack(
                 source != null ? source : CommandSource.NULL,
-                this.getBlockPos().getCenter(),
+                Vec3Utils.getCenter(this.getBlockPos()),
                 player.getRotationVector(),
                 (ServerLevel) level,
                 CommandLevel.permission(4),

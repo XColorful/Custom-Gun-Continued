@@ -7,7 +7,7 @@
 
 package xiao.customgun.neoforge.minecraft;
 
-import net.neoforged.neoforge.common.util.TriState;
+import net.minecraft.util.TriState;
 import xiao.customgun.core.api.minecraft.TriResult;
 
 public class TriResultHelper {

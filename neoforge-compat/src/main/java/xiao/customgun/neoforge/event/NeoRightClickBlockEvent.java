@@ -28,7 +28,7 @@ import xiao.customgun.core.api.event.IRightClickBlockEvent;
 import xiao.customgun.core.api.minecraft.CommandLevel;
 import xiao.customgun.core.api.minecraft.TriResult;
 import xiao.customgun.neoforge.common.McSideHelper;
-import xiao.customgun.neoforge.minecraft.NeoTriResultHelper;
+import xiao.customgun.neoforge.minecraft.TriResultHelper;
 
 public class NeoRightClickBlockEvent extends NeoEvent implements IRightClickBlockEvent {
 
@@ -83,12 +83,12 @@ public class NeoRightClickBlockEvent extends NeoEvent implements IRightClickBloc
 
     @Override
     public TriResult getUseBlock() {
-        return NeoTriResultHelper.convert(rightClickBlockEvent.getUseBlock());
+        return TriResultHelper.convert(rightClickBlockEvent.getUseBlock());
     }
 
     @Override
     public TriResult getUseItem() {
-        return NeoTriResultHelper.convert(rightClickBlockEvent.getUseItem());
+        return TriResultHelper.convert(rightClickBlockEvent.getUseItem());
     }
 
     @Override
@@ -98,12 +98,12 @@ public class NeoRightClickBlockEvent extends NeoEvent implements IRightClickBloc
 
     @Override
     public void setUseBlock(TriResult triggerBlock) {
-        rightClickBlockEvent.setUseBlock(NeoTriResultHelper.convert(triggerBlock));
+        rightClickBlockEvent.setUseBlock(TriResultHelper.convert(triggerBlock));
     }
 
     @Override
     public void setUseItem(TriResult triggerItem) {
-        rightClickBlockEvent.setUseItem(NeoTriResultHelper.convert(triggerItem));
+        rightClickBlockEvent.setUseItem(TriResultHelper.convert(triggerItem));
     }
 
     @Override

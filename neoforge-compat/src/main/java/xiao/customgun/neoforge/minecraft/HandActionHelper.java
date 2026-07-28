@@ -10,7 +10,7 @@ package xiao.customgun.neoforge.minecraft;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.LeftClickBlock.Action;
 import xiao.customgun.core.api.minecraft.HandAction;
 
-public class NeoHandActionHelper {
+public class HandActionHelper {
 
     public static HandAction convert(Action action) {
         return switch (action) {

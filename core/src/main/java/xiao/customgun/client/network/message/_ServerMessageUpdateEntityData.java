@@ -20,9 +20,8 @@ public class _ServerMessageUpdateEntityData {
 
     public static void onHandle(ServerMessageUpdateEntityData message) {
         ClientLevel level = Minecraft.getInstance().level;
-        if (level == null) {
-            return;
-        }
+        if (level == null) return;
+
         Entity entity = ClientWorldUtils.getEntityById(level, message.entityId());
         if (entity == null) {
             return;

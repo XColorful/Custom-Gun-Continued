@@ -34,7 +34,7 @@ public class ItemInHandRendererMixin implements KeepingItemRenderer {
     private long cgc$keepTimestamp;
 
     @Inject(method = "renderHandsWithItems", at = @At("HEAD"))
-    public void onBeforeRenderHand(float frameInterp, PoseStack poseStack,
+    public void cgc$onBeforeRenderHand(float frameInterp, PoseStack poseStack,
                                    SubmitNodeCollector nodeCollector,
                                    LocalPlayer player, int lightCoords,
                                    CallbackInfo ci) {

@@ -23,11 +23,14 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.CustomGun;
 import xiao.customgun.client.api.entity.IClientGunProjectile;
 import xiao.customgun.client.resource._AllAssetsManager;
+import xiao.customgun.core.api.entity.IEntityHitboxHistory;
 import xiao.customgun.core.api.entity.ILivingShooter;
+import xiao.customgun.core.api.entity.hitbox.IEntityHitboxHistoryGetter;
 import xiao.customgun.core.entity.projectile.GunProjectile;
 import xiao.customgun.core.init.registry.ModEntities;
 import xiao.customgun.core.init.registry.ModItems;
@@ -70,7 +73,9 @@ public class DebugCommand {
                         .then(Commands.literal("ILivingShooter")
                                 .executes(DebugCommand::testLivingShooterMixin))
                         .then(Commands.literal("GunProjectile")
-                                .executes(DebugCommand::testGunProjectileMixin)))
+                                .executes(DebugCommand::testGunProjectileMixin))
+                        .then(Commands.literal("IEntityHitboxHistory")
+                                .executes(DebugCommand::testEntityHitboxHistory)))
                 .then(Commands.argument(ENABLE, BoolArgumentType.bool())
                         .executes(DebugCommand::setValue));
     }
@@ -255,6 +260,21 @@ public class DebugCommand {
             source.sendSuccess(() -> Component.literal("GunProjectile is IClientGunProjectile"), false);
         } else {
             source.sendFailure(Component.literal("GunProjectile is not IClientGunProjectile"));
+        }
+        return Command.SINGLE_SUCCESS;
+    }
+    private static int testEntityHitboxHistory(CommandContext<CommandSourceStack> context) {
+        CommandSourceStack source = context.getSource();
+        Player player = source.getPlayer();
+        IEntityHitboxHistory entityHitboxHistory = IEntityHitboxHistoryGetter.cgc$fromEntity(player);
+        if (entityHitboxHistory != null) {
+            source.sendSuccess(() -> Component.literal("GunProjectile is IEntityHitboxHistory"), false);
+            for (int i = 0; i < 20; i++) {
+                @Nullable AABB aabb = entityHitboxHistory.cgc$getHistoryHitbox(i);
+                CustomGun.LOGGER.debug("entityHitboxHistory.cgc$getHistoryHitbox({}): {}", i, aabb);
+            }
+        } else {
+            source.sendFailure(Component.literal("Player is not IEntityHitboxHistory"));
         }
         return Command.SINGLE_SUCCESS;
     }

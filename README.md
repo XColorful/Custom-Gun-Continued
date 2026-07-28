@@ -80,6 +80,7 @@
 |---|---|
 |`IGunOperator`|`ILivingShooter`（extends _IGunOperator_, _IShooterState_, _ISynGunState_, _IShooterModifierCacheHolder_）|
 ||_IGunOperator_（extends _ICommonGunOperator_）|
+||_IShooterState_ (extends _IShooterLatency_)|
 ||_IClientGunOperator_（extends _ICommonGunOperator_）|
 |`IGun`|`IGun`（extends _IGunRuntime_, _IAnimationItem_, _IGunDataAccess_, _IGunGetter_）|
 ||_IGunRuntime_（extends _IGunActionRuntime_, _IGunAttackRuntime_, _IGunInventoryRuntime_, _IGunStateRuntime_）|
@@ -166,6 +167,7 @@ Everything completed so far supports synchronization across **Minecraft 1.20.1 -
 |---|---|
 |`IGunOperator`|`ILivingShooter` (extends _IGunOperator_, _IShooterState_, _ISynGunState_, _IShooterModifierCacheHolder_)|
 ||_IGunOperator_ (extends _ICommonGunOperator_)|
+||_IShooterState_ (extends _IShooterLatency_)|
 ||_IClientGunOperator_ (extends _ICommonGunOperator_)|
 |`IGun`|`IGun` (extends _IGunRuntime_, _IAnimationItem_, _IGunDataAccess_, _IGunGetter_)|
 ||_IGunRuntime_ (extends _IGunActionRuntime_, _IGunAttackRuntime_, _IGunInventoryRuntime_, _IGunStateRuntime_)|

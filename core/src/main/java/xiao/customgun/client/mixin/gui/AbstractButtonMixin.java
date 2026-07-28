@@ -22,7 +22,7 @@ public class AbstractButtonMixin {
      * 记录点击按钮的时间，后续方便给予射击冷却，防止点击按钮后误触开火
      */
     @Inject(method = "onClick(Lnet/minecraft/client/input/MouseButtonEvent;Z)V", at = @At("HEAD"))
-    public void onClickHead(MouseButtonEvent event, boolean doubleClick,
+    public void cgc$onClickHead(MouseButtonEvent event, boolean doubleClick,
                             CallbackInfo ci) {
         LocalShooterProperty.clientClickButtonTimestamp = System.currentTimeMillis();
     }

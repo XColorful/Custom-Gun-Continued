@@ -26,6 +26,7 @@ import xiao.customgun.core.api.event.ILeftClickBlockEvent;
 import xiao.customgun.core.api.minecraft.CommandLevel;
 import xiao.customgun.core.api.minecraft.HandAction;
 import xiao.customgun.core.api.minecraft.TriResult;
+import xiao.customgun.core.util.Vec3Utils;
 import xiao.customgun.neoforge.common.McSideHelper;
 import xiao.customgun.neoforge.minecraft.HandActionHelper;
 import xiao.customgun.neoforge.minecraft.TriResultHelper;
@@ -115,7 +116,7 @@ public class NeoLeftClickBlockEvent extends NeoEvent implements ILeftClickBlockE
         Player player = this.getEntity();
         return new CommandSourceStack(
                 source != null ? source : CommandSource.NULL,
-                this.getBlockPos().getCenter(),
+                Vec3Utils.getCenter(this.getBlockPos()),
                 player.getRotationVector(),
                 (ServerLevel) level,
                 CommandLevel.permission(4),

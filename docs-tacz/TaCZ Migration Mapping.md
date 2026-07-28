@@ -799,7 +799,7 @@ Notation:
 |com.tacz.guns.client.event|xiao.customgun.client.gui|
 |---|---|
 |`RenderCrosshairEvent`|crosshair.`CrosshairRender`|
-|`TooltipEvent`|tooltip.`PojoLocationTooltip`|
+|`TooltipEvent`.onTooltip|tooltip.`PojoLocationTooltip`.addPojoLocationTooltip|
 
 | |xiao.customgun.client.event|
 |---|---|

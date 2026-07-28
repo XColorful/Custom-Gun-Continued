@@ -10,10 +10,10 @@ import xiao.customgun.core.resource._AllDataManager;
 public class ModEvent {
 
     private static final ModEvent INSTANCE = new ModEvent();
-
     public static ModEvent get() {
         return INSTANCE;
     }
+    private ModEvent() {}
 
     public void onServerStarting(MinecraftServer server) {
     }

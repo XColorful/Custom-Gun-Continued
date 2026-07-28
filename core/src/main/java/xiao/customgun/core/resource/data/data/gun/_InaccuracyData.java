@@ -19,6 +19,7 @@ public final class _InaccuracyData extends ResourcePojo<_InaccuracyData> {
 
     private float stand = 5.0F;
     private float move = 5.75F;
+    private float ride = 5.5F;
     private float sneak = 3.5F;
     private float prone = 2.5F;
     private float aim = 0.15F;
@@ -37,6 +38,7 @@ public final class _InaccuracyData extends ResourcePojo<_InaccuracyData> {
                 switch (key) {
                     case _InaccuracyDataTag.STAND -> pojo.stand = JsonUtils.readFloat(reader);
                     case _InaccuracyDataTag.MOVE -> pojo.move = JsonUtils.readFloat(reader);
+                    case _InaccuracyDataTag.RIDE -> pojo.ride = JsonUtils.readFloat(reader);
                     case _InaccuracyDataTag.SNEAK -> pojo.sneak = JsonUtils.readFloat(reader);
                     case _InaccuracyDataTag.PRONE, _InaccuracyDataTag.PRONE_OLD1 -> pojo.prone = JsonUtils.readFloat(reader);
                     case _InaccuracyDataTag.AIM -> pojo.aim = JsonUtils.readFloat(reader);
@@ -57,6 +59,7 @@ public final class _InaccuracyData extends ResourcePojo<_InaccuracyData> {
         writer.beginObject(); {
             JsonUtils.writeFloat(writer, _InaccuracyDataTag.STAND, this.stand);
             JsonUtils.writeFloat(writer, _InaccuracyDataTag.MOVE, this.move);
+            JsonUtils.writeFloat(writer, _InaccuracyDataTag.RIDE, this.ride);
             JsonUtils.writeFloat(writer, _InaccuracyDataTag.SNEAK, this.sneak);
             JsonUtils.writeFloat(writer, _InaccuracyDataTag.PRONE, this.prone);
             JsonUtils.writeFloat(writer, _InaccuracyDataTag.AIM, this.aim);
@@ -78,6 +81,9 @@ public final class _InaccuracyData extends ResourcePojo<_InaccuracyData> {
     public float getMove() {
         return move;
     }
+    public float getRide() {
+        return ride;
+    }
     public float getSneak() {
         return sneak;
     }
@@ -96,6 +102,9 @@ public final class _InaccuracyData extends ResourcePojo<_InaccuracyData> {
     }
     public void setMove(float move) {
         this.move = move;
+    }
+    public void setRide(float ride) {
+        this.ride = ride;
     }
     public void setSneak(float sneak) {
         this.sneak = sneak;

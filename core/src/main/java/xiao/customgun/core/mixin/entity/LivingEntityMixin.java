@@ -10,6 +10,7 @@ package xiao.customgun.core.mixin.entity;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Pose;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -63,7 +64,7 @@ public abstract class LivingEntityMixin extends Entity implements ILivingShooter
     }
 
     @Inject(method = "tick", at = @At(value = "RETURN"))
-    private void onLivingTick(CallbackInfo ci) {
+    private void cgc$onLivingTick(CallbackInfo ci) {
         if (level().isClientSide()) {
             return;
         }
@@ -179,6 +180,11 @@ public abstract class LivingEntityMixin extends Entity implements ILivingShooter
     @Override
     public boolean cgc$getProcessedSprintStatus(boolean sprint) {
         return this.cgc$sprint.getProcessedSprintStatus(sprint);
+    }
+
+    @Override
+    public ShootState cgc$getShootState() {
+        return ShootState.fromLivingShooter(this, this.cgc$shooter);
     }
 
     // --------ISynGunState--------

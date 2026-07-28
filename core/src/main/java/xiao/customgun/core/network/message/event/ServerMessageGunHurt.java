@@ -16,33 +16,33 @@ import xiao.customgun.core.util.NetworkUtils;
 
 import java.util.function.Consumer;
 
-public record ServerMessageGunHurt(int bulletId, int hurtEntityId, int attackerId,
+public record ServerMessageGunHurt(int bulletId, int victimEntityId, int shooterId,
                                    Identifier gunLocation, Identifier gunDisplayLocation,// 细节：Identifier 放同一行
-                                   float amount, boolean isHeadShot, float headshotMultiplier)
+                                   float damage, boolean isHeadShot, float headshotMultiplier)
         implements IMessage<ServerMessageGunHurt> {
 
     @Override
     public void encode(ServerMessageGunHurt message, FriendlyByteBuf buffer) {
         buffer.writeInt(message.bulletId);
-        buffer.writeInt(message.hurtEntityId);
-        buffer.writeInt(message.attackerId);
+        buffer.writeInt(message.victimEntityId);
+        buffer.writeInt(message.shooterId);
         NetworkUtils.writeResourceLocation(buffer, message.gunLocation);
         NetworkUtils.writeResourceLocation(buffer, message.gunDisplayLocation);
-        buffer.writeFloat(message.amount);
+        buffer.writeFloat(message.damage);
         buffer.writeBoolean(message.isHeadShot);
         buffer.writeFloat(message.headshotMultiplier);
     }
 
     public static ServerMessageGunHurt decode(FriendlyByteBuf buffer) {
         int bulletId = buffer.readInt();
-        int hurtEntityId = buffer.readInt();
-        int attackerId = buffer.readInt();
+        int victimEntityId = buffer.readInt();
+        int shooterId = buffer.readInt();
         var gunId = NetworkUtils.readResourceLocation(buffer);
         var gunDisplayId = NetworkUtils.readResourceLocation(buffer);
-        float amount = buffer.readFloat();
+        float damage = buffer.readFloat();
         boolean isHeadShot = buffer.readBoolean();
         float headshotMultiplier = buffer.readFloat();
-        return new ServerMessageGunHurt(bulletId, hurtEntityId, attackerId, gunId, gunDisplayId, amount, isHeadShot, headshotMultiplier);
+        return new ServerMessageGunHurt(bulletId, victimEntityId, shooterId, gunId, gunDisplayId, damage, isHeadShot, headshotMultiplier);
     }
 
     @Override

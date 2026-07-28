@@ -24,4 +24,8 @@ public class NeoClientModEvent {
     public static void onClientLoggingOut(ClientPlayerNetworkEvent.LoggingOut event) {
         CLIENT_MOD_EVENT.onClientLoggingOut(event.getPlayer(), event.getConnection());
     }
+    @SubscribeEvent
+    public static void onClientPlayerClone(ClientPlayerNetworkEvent.Clone event) {
+        CLIENT_MOD_EVENT.onClientPlayerClone(event.getOldPlayer(), event.getNewPlayer());
+    }
 }

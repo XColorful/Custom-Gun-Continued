@@ -7,7 +7,9 @@
 
 package xiao.customgun.core.api.entity.shooter;
 
-public interface IShooterState {
+import xiao.customgun.core.api.entity.ShootState;
+
+public interface IShooterState extends IShooterLatency {
 
     /**
      * 服务端，该操作者是否受弹药数影响
@@ -30,4 +32,9 @@ public interface IShooterState {
      * TODO
      */
     boolean cgc$getProcessedSprintStatus(boolean sprint);
+
+    /**
+     * @return 当前射击状态，可用于不准确度计算
+     */
+    ShootState cgc$getShootState();
 }

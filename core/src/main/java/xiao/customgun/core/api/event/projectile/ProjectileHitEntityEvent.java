@@ -14,6 +14,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.projectile.Projectile;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -41,6 +42,10 @@ public class ProjectileHitEntityEvent extends GunProjectileEvent implements ILog
     protected @NotNull IProjectilePhysicsRuntime.EntityHitResult entityHitResult;
     protected @Nullable IBulletVictimEntity iBulletVictimEntity;
 
+    /**
+     * 暂时不使用 (依赖默认值填充)
+     */
+    @Deprecated
     public ProjectileHitEntityEvent(McLogicalSide logicalSide,
                                     @Nullable IGunProjectile iGunProjectile, @Nullable Entity gunProjectile,
                                     @NotNull IProjectilePhysicsRuntime.EntityHitResult entityHitResult,
@@ -187,14 +192,19 @@ public class ProjectileHitEntityEvent extends GunProjectileEvent implements ILog
 
     // --------便利方法--------
 
-    public @NotNull Entity getVictimEntity() {
+    public Entity getVictimEntity() {
         return this.getEntityHitResult().entity();
     }
 
+    @Deprecated
     @ApiStatus.Internal
     public void buildDefaultContext() {
         context.victimEntity = this.getVictimEntity();
         context.causingEntity = this.getGunProjectile();
+        if (context.causingEntity instanceof Projectile projectile) {
+            @Nullable Entity livingShooter = projectile.getOwner();
+            if (livingShooter != null) context.causingEntity = livingShooter;
+        }
         context.gunLocation = this.getGunLocation();
         // TODO damage
 

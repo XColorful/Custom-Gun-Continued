@@ -76,7 +76,7 @@ public class LocalPlayerMixin implements ILocalShooter {
 
     private void cgc$tickHotbarSelection() {
         Inventory inventory = this.cgc$localShooter.getInventory();
-        int currentIndex = inventory.selected;
+        int currentIndex = inventory.getSelectedSlot();
 
         // 玩家切换选中物品
         if (this.cgc$previousHotbarIndex != currentIndex) {

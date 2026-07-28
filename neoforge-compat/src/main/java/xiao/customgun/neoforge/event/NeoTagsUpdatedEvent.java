@@ -17,6 +17,7 @@ import net.neoforged.neoforge.event.TagsUpdatedEvent;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.event.EventType;
 import xiao.customgun.core.api.event.ITagsUpdatedEvent;
+import xiao.customgun.neoforge.CustomGunNeoforge;
 
 public class NeoTagsUpdatedEvent extends NeoEvent implements ITagsUpdatedEvent {
 
@@ -32,6 +33,11 @@ public class NeoTagsUpdatedEvent extends NeoEvent implements ITagsUpdatedEvent {
     }
     @Override public EventType getType() {
         return EventType.TAGS_UPDATED_EVENT;
+    }
+
+    @Override
+    public xiao.customgun.core.api.common.McLogicalSide getLogicalSide() {
+        return CustomGunNeoforge.sideExecutor.getLogicalSide();
     }
 
     @Override

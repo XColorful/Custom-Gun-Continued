@@ -7,6 +7,7 @@
 
 package xiao.customgun.neoforgeclient.event;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
@@ -45,12 +46,12 @@ public class NeoRenderLevelStageEvent extends NeoEvent implements IRenderLevelSt
 
     @Override
     public Vec3 getCamera_getPosition() {
-        return this.typedEvent.getCamera().getPosition();
+        return this.typedEvent.getLevelRenderState().cameraRenderState.pos;
     }
 
     @Override
     public float getPartialTick() {
-        return this.typedEvent.getPartialTick().getGameTimeDeltaPartialTick(true);
+        return Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(true);
     }
 
     @Override

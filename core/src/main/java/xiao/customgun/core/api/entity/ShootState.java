@@ -115,7 +115,9 @@ public enum ShootState implements ResourceTag.CategoryTag {
         // 4. 移动
         @Nullable IEntityHitboxHistory entityHitboxHistory = IEntityHitboxHistoryGetter.cgc$fromEntity(livingShooter);
         @Nullable Vec3 velocity = entityHitboxHistory != null ? entityHitboxHistory.cgc$getHistoryVelocity(0) : null;
-        if (velocity != null && velocity.length() > 0.05f || livingShooter.walkDist - livingShooter.walkDistO > 0.05f) {
+        if (velocity != null && velocity.length() > 0.05f
+//                || livingShooter.walkDist - livingShooter.walkDistO > 0.05f // 这两个字段在1.21.4被移除
+        ) {
             return ShootState.MOVE;
         }
 

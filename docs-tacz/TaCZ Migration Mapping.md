@@ -770,7 +770,6 @@ Notation:
 |`PreventsHotbarEvent`|_Deprecated_|
 |`ReloadResourceEvent`|_Deprecated_|
 |`TickAnimationEvent`||
-|`TooltipEvent`||
 
 |com.tacz.guns.client.event|xiao.customgun.client.entity|
 |---|---|
@@ -795,8 +794,12 @@ Notation:
 |com.tacz.guns.client.event|xiao.customgun.client.renderer|
 |---|---|
 |`PlayerHurtByGunEvent`.onPlayerHurtByGun|victim.onProjectileHit|
-|`RenderCrosshairEvent`|gui.`CrosshairRender`|
 |`RenderHeadShotAABB`|entity.`HeadAABBRender`|
+
+|com.tacz.guns.client.event|xiao.customgun.client.gui|
+|---|---|
+|`RenderCrosshairEvent`|crosshair.`CrosshairRender`|
+|`TooltipEvent`|tooltip.`PojoLocationTooltip`|
 
 | |xiao.customgun.client.event|
 |---|---|

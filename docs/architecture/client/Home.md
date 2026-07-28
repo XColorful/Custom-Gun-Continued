@@ -62,6 +62,7 @@
 > _./client/gui_
 
 - GunRefitScreen：枪械改装界面
+- Crosshair：准心
 - Tooltip：提示框
 	- AmmoBox：子弹盒
 		- ClientAmmoBoxTooltip：客户端子弹盒提示框
@@ -143,7 +144,6 @@
 > _./client/renderer_
 
 - Entity：实体
-- GUI：屏幕渲染
 - Item：物品
 - Model：模型
 - Shooter：射手生物
@@ -238,6 +238,7 @@ Module division based on the `xiao.customgun.client` top-level package
 > _./client/gui_
 
 - GunRefitScreen: Gun refit screen
+- Crosshair: Crosshair
 - Tooltip:
 	- AmmoBox:
 		- ClientAmmoBoxTooltip: Client ammo box tooltip
@@ -319,7 +320,6 @@ Module division based on the `xiao.customgun.client` top-level package
 > _./client/renderer_
 
 - Entity
-- GUI
 - Item
 - Model
 - Shooter

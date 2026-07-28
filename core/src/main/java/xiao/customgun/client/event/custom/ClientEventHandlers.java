@@ -2,6 +2,7 @@ package xiao.customgun.client.event.custom;
 
 import xiao.customgun.client.api.event._CustomEventType;
 import xiao.customgun.client.entity.shooter.player._LocalMessageHandler;
+import xiao.customgun.client.gui.tooltip.PojoLocationTooltip;
 import xiao.customgun.client.input.shooter.AimKey;
 import xiao.customgun.client.input.shooter.ReloadKey;
 import xiao.customgun.client.input.shooter.ShootKey;
@@ -28,6 +29,7 @@ public class ClientEventHandlers {
         CoreEventHandlers.register(customEventRegister, AimKey.get(), EventType.CLIENT_TICK_EVENT, EventPriority.NORMAL, false);
         CoreEventHandlers.register(customEventRegister, ReloadKey.get(), EventType.PREPARE_CLIENT_PLAYER_TICK_EVENT, EventPriority.NORMAL, false);
         CoreEventHandlers.register(customEventRegister, ShootKey.get(), EventType.CLIENT_TICK_EVENT, EventPriority.NORMAL, false);
+        CoreEventHandlers.register(customEventRegister, PojoLocationTooltip.get(), EventType.ITEM_TOOLTIP_EVENT, EventPriority.NORMAL, false);
 
         // ----custom event type----
         CoreEventHandlers.register(customEventRegister, _LocalMessageHandler.get(), CustomEventType.SWAP_ITEM_WITH_OFFHAND_EVENT, EventPriority.NORMAL, false);

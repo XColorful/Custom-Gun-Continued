@@ -6,6 +6,7 @@ package xiao.customgun.client.init;
 
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.Connection;
+import xiao.customgun.client.entity.shooter.player._LocalPlayerHandler;
 import xiao.customgun.client.resource._AssetsInstanceManager;
 import xiao.customgun.client.resource.network.SyncDataCache;
 import xiao.customgun.core.resource._AllDataManager;
@@ -27,5 +28,9 @@ public class ClientModEvent {
     }
 
     public void onClientLoggingOut(LocalPlayer player, Connection connection) {
+    }
+
+    public void onClientPlayerClone(LocalPlayer oldPlayer, LocalPlayer newPlayer) {
+        _LocalPlayerHandler.get().onClientPlayerClone(oldPlayer, newPlayer);
     }
 }

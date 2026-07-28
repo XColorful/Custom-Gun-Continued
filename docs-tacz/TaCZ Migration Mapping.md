@@ -317,21 +317,39 @@ Notation:
 > package com.tacz.guns.event;
 > ```
 
-|com.tacz.guns.event| |
+|com.tacz.guns.event|xiao.customgun.core.projectile|
 |---|---|
-|ammo.`BellRing`.onAmmoHitBlock||
-|ammo.`DestroyGlassBlock`.onAmmoHitBlock||
+|ammo.`BellRing`.onAmmoHitBlock|impact.`_WorldImpactHandler`.onHitBell|
+|ammo.`DestroyGlassBlock`.onAmmoHitBlock|impact.`_WorldImpactHandler`.onHitGlass|
+|`EntityDamageEvent`.onLivingHurt|impact.`_EntityImpactHandler`.onLivingHurt|
 
 |com.tacz.guns.event| |
 |---|---|
-|`EntityDamageEvent`||
-|`HitboxHelperEvent`||
-|`LoadingConfigEvent`||
-|`PlayerRespawnEvent`||
-|`PreventGunClick`||
-|`ServerTickEvent`||
-|`SyncBaseTimestamp`||
-|`TravelToDimensionEvent`||
+|`CommonLoadPack`|_Deprecated_|
+
+|com.tacz.guns.event|xiao.customgun.core.mixin|
+|---|---|
+|`HitboxHelperEvent`.onPlayerTick|entity.`ServerPlayerMixin`.cgc$tickHitboxHistory|
+|`HitboxHelperEvent`.onPlayerLoggedOut|_Deprecated_|
+
+|com.tacz.guns.event|xiao.customgun.core.init|
+|---|---|
+|`LoadingConfigEvent`.\*|`ModConfig`.`Event`.\*|
+
+|com.tacz.guns.event|xiao.customgun.client.init|
+|---|---|
+|`LoadingConfigEvent`.\*|`ClientModConfig`.`Event`.\*|
+
+|com.tacz.guns.event|xiao.customgun.core.entity|
+|---|---|
+|`PlayerRespawnEvent`.onPlayerRespawn|shooter.player.`_PlayerShooterHandler`.autoReload|
+|`PreventGunClick`.onLeftClickBlock|shooter.player.`_PlayerShooterHandler`.preventShootInteraction|
+|`SyncBaseTimestamp`|`LivingShooterSyncHandler`.onPlayerJoinWorld|
+|`TravelToDimensionEvent`.onTravelToDimension|shooter.world.`_WorldShooterHandler`.onTravelDimension|
+
+|com.tacz.guns.event|xiao.customgun.core.api.event|
+|---|---|
+|`ServerTickEvent`.onServerTick|`CycledEvent`.`Handler`.static|
 
 |com.tacz.guns.event|xiao.customgun.core.entity|
 |---|---|
@@ -365,7 +383,7 @@ Notation:
 |`CommonRegistry`.registerAttributes||
 |`CommonRegistry`.onAddPackFinders|_Deprecated_|
 |`CompatRegistry`||
-|`ModAttributes`||
+|`ModAttributes`|_Deprecated_|
 |`ModBlocks`|_Deprecated_|
 |`ModContainer`|_Deprecated_|
 |`ModCreativeTabs`|registry.`ModCreativeTabs`|
@@ -563,6 +581,7 @@ Notation:
 |com.tacz.guns.resource|xiao.customgun.core.api.entity|
 |---|---|
 |pojo.data.gun.`InaccuracyType`|`ShootState`|
+|pojo.data.gun.`InaccuracyType`.getInaccuracyType|shooter.`IShooterState`.cgc$getShootState|
 
 |com.tacz.guns.resource|xiao.customgun.core.util|
 |---|---|
@@ -600,11 +619,11 @@ Notation:
 |math.`PerlinNoise`||
 |math.`SecondOrderDynamics`||
 |`ColorHex`|`ColorUtils`|
-|`CycleTaskHelper`||
 |`EntityUtil`|`RayTraceUtils`|
 |`ExplodeUtil`||
 |`GetJarResources`|_Deprecated_|
-|`HitboxHelper`||
+|`HitboxHelper`.onPlayerLoggedOut|_Deprecated_|
+|`HitboxHelper`.getFixedBoundingBox|`EntityHitboxUtils`.getTracedHitbox|
 |`Md5Utils`|_Deprecated_|
 |`PathHandler`|_Deprecated_|
 |`ResourceScanner`|_Deprecated_|
@@ -614,15 +633,29 @@ Notation:
 |---|---|
 |`AttachmentDataUtils`.getAllAttachmentData|`ResourceApi`.getAllAttachmentIndexInstance|
 
+|com.tacz.guns.util|xiao.customgun.core.api.event|
+|---|---|
+|`CycleTaskHelper`|`CycledEvent`|
+
 |com.tacz.guns.util|xiao.customgun.core.resource|
 |---|---|
 |`AllowAttachmentTagMatcher`|network.`_AttachmentInstallabilityCache`|
 |`AttachmentDataUtils`.getMagExtendLevel|data.data.`AttachmentData`.getMagazineCategory|
 |`AttachmentDataUtils`.\*||
 
-|com.tacz.guns.util|xiao.customgun.core.api.event|
+|com.tacz.guns.util|xiao.customgun.client.api.event|
 |---|---|
-|`DelayedTask`|`DelayedEvent`|
+|`DelayedTask`|`ClientDelayedEvent`|
+
+|com.tacz.guns.util|xiao.customgun.core.mixin|
+|---|---|
+|`HitboxHelper`.onPlayerTick|entity.`ServerPlayerMixin`.cgc$tickHitboxHistory|
+
+|com.tacz.guns.util|xiao.customgun.core.api.entity|
+|---|---|
+|`HitboxHelper`.getPlayerVelocity|_Deprecated_|
+|`HitboxHelper`.getBoundingBox|hitbox.`IEntityHitboxAccess`.cgc$getHistoryHitbox|
+|`HitboxHelper`.getVelocity|hitbox.`IEntityHitboxAccess`.cgc$getHistoryVelocity|
 
 |com.tacz.guns.util|xiao.customgun.client.util|
 |---|---|
@@ -731,27 +764,42 @@ Notation:
 |com.tacz.guns.client.event| |
 |---|---|
 |`CameraSetupEvent`||
-|`ClientPreventGunClick`||
 |`FirstPersonRenderEvent`||
 |`FirstPersonRenderGunEvent`||
-|`InventoryEvent`||
 |`PlayerEnterWorld`|_Deprecated_|
-|`PlayerHurtByGunEvent`||
-|`PreventsHotbarEvent`||
-|`RefreshClonePlayerDataEvent`||
-|`ReloadResourceEvent`||
-|`RenderCrosshairEvent`||
-|`RenderHeadShotAABB`||
+|`PreventsHotbarEvent`|_Deprecated_|
+|`ReloadResourceEvent`|_Deprecated_|
 |`TickAnimationEvent`||
-|`TooltipEvent`||
 
 |com.tacz.guns.client.event|xiao.customgun.client.entity|
 |---|---|
 |`ClientHitMark`|`ClientHitMarkHandler`|
+|`InventoryEvent`.onPlayerSwapMainHand|shooter.player.`_LocalMessageHandler`.onSwapItemWithOffhand|
+|`RefreshClonePlayerDataEvent`|shooter.player.`_LocalPlayerHandler`.onClientPlayerClone|
+|`RefreshClonePlayerDataEvent`.onClientTick|_Deprecated_|
+
+|com.tacz.guns.client.event|xiao.customgun.client.mixin|
+|---|---|
+|`InventoryEvent`.onPlayerChangeSelect|entity.`LocalPlayerMixin`.cgc$tickHotbarSelection|
+|`InventoryEvent`.onPlayerLoggedOut|entity.`LocalPlayerMixin`.cgc$resetHotbarSelection|
+
+|com.tacz.guns.client.event|xiao.customgun.client.input|
+|---|---|
+|`ClientPreventGunClick`.onClickInput|player.`InteractKey`.onInteractionMapping|
 
 |com.tacz.guns.client.event|xiao.customgun.client.init|
 |---|---|
 |`CommonNetworkCacheEvent`.onClientPlayerLoggingIn|`ClientModEvent`.onClientLoggingIn|
+
+|com.tacz.guns.client.event|xiao.customgun.client.renderer|
+|---|---|
+|`PlayerHurtByGunEvent`.onPlayerHurtByGun|victim.onProjectileHit|
+|`RenderHeadShotAABB`|entity.`HeadAABBRender`|
+
+|com.tacz.guns.client.event|xiao.customgun.client.gui|
+|---|---|
+|`RenderCrosshairEvent`|crosshair.`CrosshairRender`|
+|`TooltipEvent`.onTooltip|tooltip.`PojoLocationTooltip`.addPojoLocationTooltip|
 
 | |xiao.customgun.client.event|
 |---|---|
@@ -951,7 +999,7 @@ Notation:
 |`ClientAssetsManager`|`_AllAssetsManager`|
 |`ClientIndexManager`|`_AssetsInstanceManager`|
 |`GunDisplayInstance`|instance.assets.`GunDisplayInstance`|
-|`InternalAssetLoader`||
+|`InternalAssetLoader`|_Deprecated_|
 
 |com.tacz.guns.client.resource|xiao.customgun.core.api.item|
 |---|---|
@@ -974,6 +1022,10 @@ Notation:
 |`GunSoundInstance`.`TaczSound`|`ResourceSound`|
 |`GunSoundPreload`|_Deprecated_|
 |`SoundPlayManager`|`SoundPlayManager`|
+
+|com.tacz.guns.client.sound|xiao.customgun.client.resource|
+|---|---|
+|`SoundPlayManager`.clearSoundResourceCache|assets.`SoundManager`.clearCacheOnReload|
 
 ### Tooltip (Client)
 > ```java

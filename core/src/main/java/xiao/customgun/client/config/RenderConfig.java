@@ -29,7 +29,7 @@ public class RenderConfig {
     public static IModConfigSpec<Boolean> AUTO_SELECT_GUN_SMITH_TABLE_FILTER;
     public static IModConfigSpec<Integer> DAMAGE_COUNTER_RESET_TIME;
     public static IModConfigSpec<Boolean> DISABLE_MOVEMENT_ATTRIBUTE_FOV;
-    public static IModConfigSpec<Boolean> ENABLE_GUN_LOCATION_IN_TOOLTIP;
+    public static IModConfigSpec<Boolean> ENABLE_RESOURCE_LOCATION_IN_TOOLTIP;
     public static IModConfigSpec<Boolean> BLOCK_ENTITY_TRANSLUCENT;
 
     public static void init(IModConfigSpecBuilder builder) {
@@ -83,8 +83,8 @@ public class RenderConfig {
         builder.addComment(ClientModConfigTag.disableMovementAttributeFov_comment);
         DISABLE_MOVEMENT_ATTRIBUTE_FOV = builder.addConfig(ClientModConfigTag.disableMovementAttributeFov_path, true);
 
-        builder.addComment(ClientModConfigTag.enableGunLocationInTooltip_comment);
-        ENABLE_GUN_LOCATION_IN_TOOLTIP = builder.addConfig(ClientModConfigTag.enableGunLocationInTooltip_path, true);
+        builder.addComment(ClientModConfigTag.enableResourceLocationInTooltip_comment);
+        ENABLE_RESOURCE_LOCATION_IN_TOOLTIP = builder.addConfig(ClientModConfigTag.enableResourceLocationInTooltip_path, true);
 
         builder.addComment(ClientModConfigTag.blockEntityTranslucent_comment);
         BLOCK_ENTITY_TRANSLUCENT = builder.addConfig(ClientModConfigTag.blockEntityTranslucent_path, false);

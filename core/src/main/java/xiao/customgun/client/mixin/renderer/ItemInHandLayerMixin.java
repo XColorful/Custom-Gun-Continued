@@ -32,7 +32,7 @@ public class ItemInHandLayerMixin<S extends ArmedEntityRenderState, M extends En
 
     @Inject(method = "submit(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;ILnet/minecraft/client/renderer/entity/state/ArmedEntityRenderState;FF)V",
             at = @At(value = "TAIL"))
-    private void render(PoseStack poseStack,
+    private void cgc$render(PoseStack poseStack,
                         SubmitNodeCollector submitNodeCollector,
                         int lightCoords,
                         S renderState,
@@ -45,7 +45,7 @@ public class ItemInHandLayerMixin<S extends ArmedEntityRenderState, M extends En
 
     @Inject(method = "submitArmWithItem(Lnet/minecraft/client/renderer/entity/state/ArmedEntityRenderState;Lnet/minecraft/client/renderer/item/ItemStackRenderState;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/entity/HumanoidArm;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;I)V",
             at = @At(value = "HEAD"), cancellable = true)
-    private void renderArmWithItemHead(S renderState,
+    private void cgc$renderArmWithItemHead(S renderState,
                                        ItemStackRenderState itemStackRenderState,
                                        ItemStack itemStack,
                                        HumanoidArm arm, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int packedLight,
@@ -62,7 +62,7 @@ public class ItemInHandLayerMixin<S extends ArmedEntityRenderState, M extends En
 
     @Inject(method = "submitArmWithItem(Lnet/minecraft/client/renderer/entity/state/ArmedEntityRenderState;Lnet/minecraft/client/renderer/item/ItemStackRenderState;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/entity/HumanoidArm;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;I)V",
             at = @At(value = "TAIL"))
-    private void renderArmWithItemTail(S renderState,
+    private void cgc$renderArmWithItemTail(S renderState,
                                        ItemStackRenderState itemStackRenderState,
                                        ItemStack itemStack,
                                        HumanoidArm arm, PoseStack poseStack,

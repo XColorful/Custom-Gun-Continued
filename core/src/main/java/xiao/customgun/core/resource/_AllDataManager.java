@@ -174,6 +174,7 @@ public class _AllDataManager implements IEventHandler {
      * {@link ITagsUpdatedEvent} 会在 {@link #reloadAndRegister} PojoManager {@link ResourcePojoManager#apply} 全结束之后触发
      */
     private static void onTagsUpdateEvent(ITagsUpdatedEvent event) {
+//        if (!event.getLogicalSide().isServer()) return;
         if (event.getUpdateCause() != ITagsUpdatedEvent.UpdateCause.SERVER_DATA_LOAD) return;
 
         var _this = getCurrent();

@@ -764,7 +764,6 @@ Notation:
 |com.tacz.guns.client.event| |
 |---|---|
 |`CameraSetupEvent`||
-|`ClientPreventGunClick`||
 |`FirstPersonRenderEvent`||
 |`FirstPersonRenderGunEvent`||
 |`InventoryEvent`||
@@ -781,6 +780,10 @@ Notation:
 |com.tacz.guns.client.event|xiao.customgun.client.entity|
 |---|---|
 |`ClientHitMark`|`ClientHitMarkHandler`|
+
+|com.tacz.guns.client.event|xiao.customgun.client.input|
+|---|---|
+|`ClientPreventGunClick`.onClickInput|player.`InteractKey`.onInteractionMapping|
 
 |com.tacz.guns.client.event|xiao.customgun.client.init|
 |---|---|

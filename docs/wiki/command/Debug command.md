@@ -1,7 +1,7 @@
 [English](#English)
 
 # 调试指令
-> wiki 版本：`0.0.1`.0
+> wiki 版本：`0.0.1`.1
 
 ## 服务端指令
 
@@ -34,7 +34,7 @@
 > _/customgun debug mixinTest [target]_
 
 验证Mixin是否正确应用
-- `target`（字面量）：测试目标，可选值为`ILivingShooter`、`GunProjectile`
+- `target`（字面量）：测试目标，可选值为`ILivingShooter`、`GunProjectile`、`IEntityHitboxHistory`
 
 ## 客户端指令
 
@@ -45,7 +45,7 @@
 - `rl`（字符串）：声音文件的ResourceLocation
 
 # English
-> wiki verison: `0.0.1`.0
+> wiki verison: `0.0.1`.1
 
 ## Server command
 
@@ -78,7 +78,7 @@ Export all loaded data packs to the specified path
 > _/customgun debug mixinTest [target]_
 
 Verify that Mixin is correctly applied
-- `target` (literal): Test target, options are `ILivingShooter`, `GunProjectile`
+- `target` (literal): Test target, options are `ILivingShooter`, `GunProjectile`, `IEntityHitboxHistory`
 
 ## Client command
 

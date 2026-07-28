@@ -767,8 +767,7 @@ Notation:
 |`FirstPersonRenderEvent`||
 |`FirstPersonRenderGunEvent`||
 |`PlayerEnterWorld`|_Deprecated_|
-|`PreventsHotbarEvent`||
-|`RefreshClonePlayerDataEvent`||
+|`PreventsHotbarEvent`|_Deprecated_|
 |`ReloadResourceEvent`||
 |`RenderCrosshairEvent`||
 |`RenderHeadShotAABB`||
@@ -779,6 +778,8 @@ Notation:
 |---|---|
 |`ClientHitMark`|`ClientHitMarkHandler`|
 |`InventoryEvent`.onPlayerSwapMainHand|shooter.player.`_LocalMessageHandler`.onSwapItemWithOffhand|
+|`RefreshClonePlayerDataEvent`|shooter.player.`_LocalPlayerHandler`.onClientPlayerClone|
+|`RefreshClonePlayerDataEvent`.onClientTick|_Deprecated_|
 
 |com.tacz.guns.client.event|xiao.customgun.client.mixin|
 |---|---|

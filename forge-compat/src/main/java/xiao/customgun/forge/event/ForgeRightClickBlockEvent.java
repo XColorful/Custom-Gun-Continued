@@ -27,6 +27,7 @@ import xiao.customgun.core.api.event.EventType;
 import xiao.customgun.core.api.event.IRightClickBlockEvent;
 import xiao.customgun.core.api.minecraft.CommandLevel;
 import xiao.customgun.core.api.minecraft.TriResult;
+import xiao.customgun.core.util.Vec3Utils;
 import xiao.customgun.forge.minecraft.TriResultHelper;
 import xiao.customgun.forge.common.McSideHelper;
 
@@ -125,7 +126,7 @@ public class ForgeRightClickBlockEvent extends ForgeEvent implements IRightClick
         Player player = this.getEntity();
         return new CommandSourceStack(
                 source != null ? source : CommandSource.NULL,
-                this.getBlockPos().getCenter(),
+                Vec3Utils.getCenter(this.getBlockPos()),
                 player.getRotationVector(),
                 (ServerLevel) level,
                 CommandLevel.permission(4),

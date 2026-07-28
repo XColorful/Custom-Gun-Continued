@@ -27,6 +27,7 @@ import xiao.customgun.core.api.common.McLogicalSide;
 import xiao.customgun.core.api.event.EventType;
 import xiao.customgun.core.api.event.IEntityInteractSpecificEvent;
 import xiao.customgun.core.api.minecraft.CommandLevel;
+import xiao.customgun.core.util.Vec3Utils;
 import xiao.customgun.forge.common.McSideHelper;
 
 public class ForgeEntityInteractSpecificEvent extends ForgeEvent implements IEntityInteractSpecificEvent {
@@ -109,7 +110,7 @@ public class ForgeEntityInteractSpecificEvent extends ForgeEvent implements IEnt
         Player player = this.getEntity();
         return new CommandSourceStack(
                 source != null ? source : CommandSource.NULL,
-                this.getBlockPos().getCenter(),
+                Vec3Utils.getCenter(this.getBlockPos()),
                 player.getRotationVector(),
                 (ServerLevel) level,
                 CommandLevel.permission(4),

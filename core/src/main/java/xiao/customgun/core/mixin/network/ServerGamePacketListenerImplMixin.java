@@ -19,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import xiao.customgun.core.api.entity.ILivingShooter;
 import xiao.customgun.core.api.entity.shooter.ILivingShooterGetter;
-import xiao.customgun.core.network.message.ServerMessageSwapItem;
+import xiao.customgun.core.network.message.event.ServerMessageSwapItem;
 import xiao.customgun.core.util.SendUtils;
 
 @Mixin(ServerGamePacketListenerImpl.class)

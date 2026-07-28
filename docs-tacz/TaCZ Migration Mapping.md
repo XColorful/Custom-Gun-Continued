@@ -766,7 +766,6 @@ Notation:
 |`CameraSetupEvent`||
 |`FirstPersonRenderEvent`||
 |`FirstPersonRenderGunEvent`||
-|`InventoryEvent`||
 |`PlayerEnterWorld`|_Deprecated_|
 |`PlayerHurtByGunEvent`||
 |`PreventsHotbarEvent`||
@@ -780,6 +779,12 @@ Notation:
 |com.tacz.guns.client.event|xiao.customgun.client.entity|
 |---|---|
 |`ClientHitMark`|`ClientHitMarkHandler`|
+|`InventoryEvent`.onPlayerSwapMainHand|shooter.player.`_LocalMessageHandler`.onSwapItemWithOffhand|
+
+|com.tacz.guns.client.event|xiao.customgun.client.mixin|
+|---|---|
+|`InventoryEvent`.onPlayerChangeSelect|entity.`LocalPlayerMixin`.cgc$tickHotbarSelection|
+|`InventoryEvent`.onPlayerLoggedOut|entity.`LocalPlayerMixin`.cgc$resetHotbarSelection|
 
 |com.tacz.guns.client.event|xiao.customgun.client.input|
 |---|---|

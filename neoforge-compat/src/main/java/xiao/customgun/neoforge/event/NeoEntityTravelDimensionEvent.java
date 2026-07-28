@@ -3,59 +3,48 @@ package xiao.customgun.neoforge.event;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.Event;
-import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.EntityTravelToDimensionEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import xiao.customgun.core.api.common.McLogicalSide;
 import xiao.customgun.core.api.event.EventType;
-import xiao.customgun.core.api.event.IEntityJoinLevelEvent;
+import xiao.customgun.core.api.event.IEntityTravelDimensionEvent;
 import xiao.customgun.core.api.minecraft.CommandLevel;
-import xiao.customgun.neoforge.CustomGunNeoforge;
 
-public class NeoEntityJoinLevelEvent extends NeoEvent implements IEntityJoinLevelEvent {
+public class NeoEntityTravelDimensionEvent extends NeoEvent implements IEntityTravelDimensionEvent {
 
-    protected EntityJoinLevelEvent entityJoinLevelEvent;
+    protected EntityTravelToDimensionEvent entityTravelToDimensionEvent;
 
-    public NeoEntityJoinLevelEvent(Event event) {
+    public NeoEntityTravelDimensionEvent(Event event) {
         super(event);
-        if (event instanceof EntityJoinLevelEvent eventIn) {
-            this.entityJoinLevelEvent = eventIn;
+        if (event instanceof EntityTravelToDimensionEvent eventIn) {
+            this.entityTravelToDimensionEvent = eventIn;
         } else {
-            throw new RuntimeException("Expected EntityJoinLevelEvent but received: " + event.getClass().getName());
+            throw new RuntimeException("Expected EntityTravelToDimensionEvent but received: " + event.getClass().getName());
         }
     }
     @Override public EventType getType() {
-        return EventType.ENTITY_JOIN_LEVEL_EVENT;
-    }
-
-    @Override
-    public McLogicalSide getLogicalSide() {
-        return CustomGunNeoforge.sideExecutor.getLogicalSide();
+        return EventType.ENTITY_TRAVEL_DIMENSION_EVENT;
     }
 
     @Override
     public Entity getEntity() {
-        return entityJoinLevelEvent.getEntity();
+        return entityTravelToDimensionEvent.getEntity();
     }
 
     @Override
-    public Level getLevel() {
-        return entityJoinLevelEvent.getLevel();
-    }
-
-    @Override
-    public boolean isLoadedFromDisk() {
-        return entityJoinLevelEvent.loadedFromDisk();
+    public ResourceKey<Level> getDimension() {
+        return entityTravelToDimensionEvent.getDimension();
     }
 
     @Override
     public @Nullable CommandSourceStack createCommandSourceStack(@Nullable CommandSource source) {
         @NotNull Entity entity = this.getEntity();
-        Level level = this.getLevel();
+        Level level = entity.level();
         if (level != null && level.isClientSide()) return null;
         return new CommandSourceStack(
                 source != null ? source : CommandSource.NULL,

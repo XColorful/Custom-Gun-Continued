@@ -11,13 +11,11 @@ import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import xiao.customgun.client.api.event.RenderLevelStage;
 import xiao.customgun.core.api.event.EventPriority;
 import xiao.customgun.core.api.event.EventType;
 import xiao.customgun.core.api.event.IEventHandler;
 import xiao.customgun.neoforge.event.NeoEvent;
 import xiao.customgun.neoforge.event.events.AbstractNeoEventCommon;
-import xiao.customgun.neoforgeclient.event.NeoRenderLevelStage;
 import xiao.customgun.neoforgeclient.event.NeoRenderLevelStageEvent;
 
 public class NeoRenderTranslucentEventManager {
@@ -57,43 +55,41 @@ public class NeoRenderTranslucentEventManager {
 
         @Override
         protected NeoEvent getNeoEventType(Event event) {
-            return new NeoRenderLevelStageEvent((RenderLevelStageEvent) event);
+            return new NeoRenderLevelStageEvent((RenderLevelStageEvent.AfterTranslucentBlocks) event);
         }
 
-        protected void handle(RenderLevelStageEvent event) {
-            if (NeoRenderLevelStage.fromStage(event.getStage()) == RenderLevelStage.AFTER_TRANSLUCENT_BLOCKS) {
-                super.onEvent(event);
-            }
+        protected void handle(RenderLevelStageEvent.AfterTranslucentBlocks event) {
+            super.onEvent(event);
         }
     }
 
     public static class RenderTranslucentProxyHighest extends RenderTranslucentProxy {
         static final RenderTranslucentProxyHighest INSTANCE = new RenderTranslucentProxyHighest();
         @SubscribeEvent(priority = net.neoforged.bus.api.EventPriority.HIGHEST, receiveCanceled = true)
-        public void onEvent(RenderLevelStageEvent e) { handle(e); }
+        public void onEvent(RenderLevelStageEvent.AfterTranslucentBlocks e) { handle(e); }
     }
 
     public static class RenderTranslucentProxyHigh extends RenderTranslucentProxy {
         static final RenderTranslucentProxyHigh INSTANCE = new RenderTranslucentProxyHigh();
         @SubscribeEvent(priority = net.neoforged.bus.api.EventPriority.HIGH, receiveCanceled = true)
-        public void onEvent(RenderLevelStageEvent e) { handle(e); }
+        public void onEvent(RenderLevelStageEvent.AfterTranslucentBlocks e) { handle(e); }
     }
 
     public static class RenderTranslucentProxyNormal extends RenderTranslucentProxy {
         static final RenderTranslucentProxyNormal INSTANCE = new RenderTranslucentProxyNormal();
         @SubscribeEvent(priority = net.neoforged.bus.api.EventPriority.NORMAL, receiveCanceled = true)
-        public void onEvent(RenderLevelStageEvent e) { handle(e); }
+        public void onEvent(RenderLevelStageEvent.AfterTranslucentBlocks e) { handle(e); }
     }
 
     public static class RenderTranslucentProxyLow extends RenderTranslucentProxy {
         static final RenderTranslucentProxyLow INSTANCE = new RenderTranslucentProxyLow();
         @SubscribeEvent(priority = net.neoforged.bus.api.EventPriority.LOW, receiveCanceled = true)
-        public void onEvent(RenderLevelStageEvent e) { handle(e); }
+        public void onEvent(RenderLevelStageEvent.AfterTranslucentBlocks e) { handle(e); }
     }
 
     public static class RenderTranslucentProxyLowest extends RenderTranslucentProxy {
         static final RenderTranslucentProxyLowest INSTANCE = new RenderTranslucentProxyLowest();
         @SubscribeEvent(priority = net.neoforged.bus.api.EventPriority.LOWEST, receiveCanceled = true)
-        public void onEvent(RenderLevelStageEvent e) { handle(e); }
+        public void onEvent(RenderLevelStageEvent.AfterTranslucentBlocks e) { handle(e); }
     }
 }

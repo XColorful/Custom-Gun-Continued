@@ -7,8 +7,21 @@
 
 package xiao.customgun.core.api.item;
 
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import xiao.customgun.core.api.item.ammo.IAmmoDataAccess;
 import xiao.customgun.core.api.item.ammo.IAmmoGetter;
 
-public interface IAmmo extends IAmmoDataAccess, IAmmoGetter {
+public interface IAmmo extends IAmmoDataAccess, IAmmoGetter,
+        IPojoItem {
+
+    @Override
+    default @NotNull ResourceLocation getPojoLocation(ItemStack ammoItem) {
+        return this.getAmmoLocation(ammoItem);
+    }
+    @Override
+    default void setPojoLocation(ItemStack ammoItem, ResourceLocation ammoLocation) {
+        this.setAmmoLocation(ammoItem, ammoLocation);
+    }
 }

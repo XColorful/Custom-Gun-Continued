@@ -10,9 +10,11 @@ import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.eventbus.api.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import xiao.customgun.core.api.common.McLogicalSide;
 import xiao.customgun.core.api.event.EventType;
 import xiao.customgun.core.api.event.IEntityJoinLevelEvent;
 import xiao.customgun.core.api.minecraft.CommandLevel;
+import xiao.customgun.forge.CustomGunForge;
 
 public class ForgeEntityJoinLevelEvent extends ForgeEvent implements IEntityJoinLevelEvent {
 
@@ -28,6 +30,11 @@ public class ForgeEntityJoinLevelEvent extends ForgeEvent implements IEntityJoin
     }
     @Override public EventType getType() {
         return EventType.ENTITY_JOIN_LEVEL_EVENT;
+    }
+
+    @Override
+    public McLogicalSide getLogicalSide() {
+        return CustomGunForge.sideExecutor.getLogicalSide();
     }
 
     @Override

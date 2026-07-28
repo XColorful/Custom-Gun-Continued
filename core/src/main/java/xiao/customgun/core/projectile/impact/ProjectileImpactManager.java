@@ -8,9 +8,12 @@ import org.jetbrains.annotations.Nullable;
 import xiao.customgun.CustomGun;
 import xiao.customgun.core.api.block.IBulletVictimBlock;
 import xiao.customgun.core.api.block.victim.IBulletVictimBlockGetter;
+import xiao.customgun.core.api.common.McLogicalSide;
 import xiao.customgun.core.api.entity.IBulletVictimEntity;
 import xiao.customgun.core.api.entity.IGunProjectile;
 import xiao.customgun.core.api.entity.victim.IBulletVictimEntityGetter;
+import xiao.customgun.core.api.event.projectile.ProjectileHitBlockEvent;
+import xiao.customgun.core.api.event.projectile.ProjectileHitEntityEvent;
 import xiao.customgun.core.api.projectile.impact.IProjectileImpactManager;
 import xiao.customgun.core.api.projectile.physics.IProjectilePhysicsRuntime;
 import xiao.customgun.core.api.projectile.process.IProjectileProcessRuntime;
@@ -109,6 +112,10 @@ public class ProjectileImpactManager implements IProjectileImpactManager {
             {
                 Block block = gunProjectile.level().getBlockState(blockHitResult.getBlockPos()).getBlock();
                 @Nullable IBulletVictimBlock iBulletVictimBlock = IBulletVictimBlockGetter.fromBlock(block);
+
+                // 事件钩子
+                if (CustomGun.getEventPoster().postCustomEvent(new ProjectileHitBlockEvent(iGunProjectile, gunProjectile, blockHitResult, iBulletVictimBlock, block))) return;
+
                 boolean processed = iBulletVictimBlock != null
                         ? this.onBulletVictimHit(blockHitResult, iBulletVictimBlock, block, iGunProjectile, gunProjectile)
                         : this.onNonBulletVictimHit(blockHitResult, block, iGunProjectile, gunProjectile);

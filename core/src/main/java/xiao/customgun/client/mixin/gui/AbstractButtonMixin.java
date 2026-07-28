@@ -21,7 +21,7 @@ public class AbstractButtonMixin {
      * 记录点击按钮的时间，后续方便给予射击冷却，防止点击按钮后误触开火
      */
     @Inject(method = "onClick(DD)V", at = @At("HEAD"))
-    public void onClickHead(double mouseX, double mouseY,
+    public void cgc$onClickHead(double mouseX, double mouseY,
                             CallbackInfo ci) {
         LocalShooterProperty.clientClickButtonTimestamp = System.currentTimeMillis();
     }

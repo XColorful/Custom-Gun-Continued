@@ -9,8 +9,10 @@ package xiao.customgun.client.init;
 
 import xiao.customgun.CustomGun;
 import xiao.customgun.client.config.*;
+import xiao.customgun.client.config.sync.InteractFilterData;
 import xiao.customgun.core.api.config.IModConfigSpecBuilder;
 import xiao.customgun.core.api.config.ModConfigType;
+import xiao.customgun.core.config.sync.HeadAABBData;
 
 public class ClientModConfig {
 
@@ -27,6 +29,30 @@ public class ClientModConfig {
             SoundConfig.init(builder);
             ZoomConfig.init(builder);
             builder.buildAndRegister(ModConfigType.CLIENT);
+        }
+    }
+
+    /**
+     * 仅逻辑客户端触发
+     */
+    public static class Event {
+        private static final Event INSTANCE = new Event();
+        public static Event get() {
+            return INSTANCE;
+        }
+        private Event() {}
+
+        public void onLoadingConfig(ModConfigType modConfigType) {
+            if (modConfigType == ModConfigType.SERVER) {
+                HeadAABBData.reloadHeadAABB();
+                InteractFilterData.reloadInteractFilter();
+            }
+        }
+        public void onReloadingConfig(ModConfigType modConfigType) {
+            if (modConfigType == ModConfigType.SERVER) {
+                HeadAABBData.reloadHeadAABB();
+                InteractFilterData.reloadInteractFilter();
+            }
         }
     }
 }

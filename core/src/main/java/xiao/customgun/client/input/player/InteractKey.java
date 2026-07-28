@@ -19,8 +19,7 @@ import net.minecraft.world.phys.HitResult;
 import org.lwjgl.glfw.GLFW;
 import xiao.customgun.CustomGun;
 import xiao.customgun.client.CustomGunClient;
-import xiao.customgun.client.api.event.IInputKeyEvent;
-import xiao.customgun.client.api.event.IMouseButtonEvent;
+import xiao.customgun.client.api.event.*;
 import xiao.customgun.client.api.input.IInputKeyManager;
 import xiao.customgun.client.api.input.IKeyConflictContext;
 import xiao.customgun.client.api.input.IKeyMapping;
@@ -30,9 +29,10 @@ import xiao.customgun.client.config.sync.InteractFilterData;
 import xiao.customgun.client.init.registry.ClientInputCategory;
 import xiao.customgun.client.input.InputKey;
 import xiao.customgun.client.util.ClientInputUtils;
+import xiao.customgun.core.api.event.*;
 import xiao.customgun.core.api.item.gun.IGunGetter;
 
-public final class InteractKey extends InputKey {
+public final class InteractKey extends InputKey implements IEventHandler {
 
     private static final class InteractKeyHolder {
         private static final InteractKey INSTANCE = new InteractKey();
@@ -61,11 +61,27 @@ public final class InteractKey extends InputKey {
 
     @Override
     public boolean registerEventHandler() {
+        ICustomEventRegister customEventRegister = CustomGun.getEventRegister();
+        customEventRegister.register(this, EventType.INTERACTION_MAPPING_EVENT, EventPriority.NORMAL, false);
         return true;
     }
     @Override
     public boolean unregisterEventHandler() {
+        ICustomEventRegister customEventRegister = CustomGun.getEventRegister();
+        customEventRegister.unregister(this, EventType.INTERACTION_MAPPING_EVENT, EventPriority.NORMAL, false);
         return true;
+    }
+
+    @Override public String getEventHandlerName() {
+        return this.getClass().getName();
+    }
+    @Override
+    public void handleEvent(EventType eventType, IEvent event) {
+        if (eventType == EventType.INTERACTION_MAPPING_EVENT) {
+            onInteractionMapping((IInteractionMappingEvent) event);
+        } else {
+            onReceiveWrongEvent(eventType);
+        }
     }
 
     // --------IInputHandler--------
@@ -107,5 +123,37 @@ public final class InteractKey extends InputKey {
                 CustomGunClient.getAccessTransformer().startUseItem(mc);
             }
         }
+    }
+
+    private void onInteractionMapping(IInteractionMappingEvent event) {
+        Minecraft mc = Minecraft.getInstance();
+        LocalPlayer player = mc.player;
+        if (player == null) return;
+
+        if (this.keyMapping.get().isDown()) return; // 按了交互键
+
+        if (IGunGetter.fromMainHand(player) == null) return; // 主手没枪
+
+        HitResult hitResult = mc.hitResult;
+        if (hitResult == null) return;
+
+        // 方块交互
+        if (hitResult instanceof BlockHitResult blockHitResult) {
+            BlockPos blockPos = blockHitResult.getBlockPos();
+            BlockState blockState = player.level().getBlockState(blockPos);
+            if (InteractFilterData.canInteract(blockState)) {
+                return;
+            }
+        }
+        // 实体交互
+        else if (hitResult instanceof EntityHitResult entityHitResult) {
+            Entity entity = entityHitResult.getEntity();
+            if (InteractFilterData.canInteract(entity)) {
+                return;
+            }
+        }
+
+        event.setSwingHand(false); // 阻止客户端粒子生成
+        event.setCanceled(true);
     }
 }

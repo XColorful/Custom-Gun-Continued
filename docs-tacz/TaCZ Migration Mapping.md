@@ -767,7 +767,6 @@ Notation:
 |`FirstPersonRenderEvent`||
 |`FirstPersonRenderGunEvent`||
 |`PlayerEnterWorld`|_Deprecated_|
-|`PlayerHurtByGunEvent`||
 |`PreventsHotbarEvent`||
 |`RefreshClonePlayerDataEvent`||
 |`ReloadResourceEvent`||
@@ -793,6 +792,10 @@ Notation:
 |com.tacz.guns.client.event|xiao.customgun.client.init|
 |---|---|
 |`CommonNetworkCacheEvent`.onClientPlayerLoggingIn|`ClientModEvent`.onClientLoggingIn|
+
+|com.tacz.guns.client.event|xiao.customgun.client.renderer|
+|---|---|
+|`PlayerHurtByGunEvent`.onPlayerHurtByGun|victim.onProjectileHit|
 
 | |xiao.customgun.client.event|
 |---|---|

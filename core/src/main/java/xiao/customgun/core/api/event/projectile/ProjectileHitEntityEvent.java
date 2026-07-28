@@ -192,7 +192,7 @@ public class ProjectileHitEntityEvent extends GunProjectileEvent implements ILog
 
     // --------便利方法--------
 
-    public @NotNull Entity getVictimEntity() {
+    public Entity getVictimEntity() {
         return this.getEntityHitResult().entity();
     }
 

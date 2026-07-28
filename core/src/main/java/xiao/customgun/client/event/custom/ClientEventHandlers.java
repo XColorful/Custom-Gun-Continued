@@ -5,6 +5,7 @@ import xiao.customgun.client.entity.shooter.player._LocalMessageHandler;
 import xiao.customgun.client.input.shooter.AimKey;
 import xiao.customgun.client.input.shooter.ReloadKey;
 import xiao.customgun.client.input.shooter.ShootKey;
+import xiao.customgun.client.renderer.victim.GunHurtBobTweak;
 import xiao.customgun.client.resource._AllAssetsManager;
 import xiao.customgun.client.sound.SoundPlayManager;
 import xiao.customgun.core.api.event.CustomEventType;
@@ -30,5 +31,6 @@ public class ClientEventHandlers {
 
         // ----custom event type----
         CoreEventHandlers.register(customEventRegister, _LocalMessageHandler.get(), CustomEventType.SWAP_ITEM_WITH_OFFHAND_EVENT, EventPriority.NORMAL, false);
+        CoreEventHandlers.register(customEventRegister, GunHurtBobTweak.get(), CustomEventType.PROJECTILE_HIT_ENTITY_EVENT, EventPriority.NORMAL, false);
     }
 }

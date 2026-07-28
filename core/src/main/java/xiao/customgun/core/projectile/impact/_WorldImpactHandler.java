@@ -62,10 +62,11 @@ public class _WorldImpactHandler implements ICustomEventHandler {
      */
     private boolean isGlass(Level level, BlockPos blockPos, Block block) {
         // TODO 改成 stength + collision 或 tag匹配
-        return (block instanceof AbstractGlassBlock) // 玻璃块
-//                || block instanceof StainedGlassBlock // 染色玻璃块
-//                || block instanceof StainedGlassPaneBlock // 染色玻璃板
-//                || block instanceof TintedGlassBlock // 遮光玻璃
+        NoteBlockInstrument instrument = level.getBlockState(blockPos).instrument();
+        return (block instanceof TransparentBlock && instrument == NoteBlockInstrument.HAT) // 玻璃块
+                || block instanceof StainedGlassBlock // 染色玻璃块
+                || block instanceof StainedGlassPaneBlock // 染色玻璃板
+                || block instanceof TintedGlassBlock // 遮光玻璃
                 || (block instanceof IronBarsBlock && level.getBlockState(blockPos).instrument() == NoteBlockInstrument.HAT); // 玻璃板
     }
     private void onHitGlass(Level level, BlockPos blockPos) {

@@ -768,7 +768,7 @@ Notation:
 |`FirstPersonRenderGunEvent`||
 |`PlayerEnterWorld`|_Deprecated_|
 |`PreventsHotbarEvent`|_Deprecated_|
-|`ReloadResourceEvent`||
+|`ReloadResourceEvent`|_Deprecated_|
 |`RenderCrosshairEvent`||
 |`RenderHeadShotAABB`||
 |`TickAnimationEvent`||
@@ -996,7 +996,7 @@ Notation:
 |`ClientAssetsManager`|`_AllAssetsManager`|
 |`ClientIndexManager`|`_AssetsInstanceManager`|
 |`GunDisplayInstance`|instance.assets.`GunDisplayInstance`|
-|`InternalAssetLoader`||
+|`InternalAssetLoader`|_Deprecated_|
 
 |com.tacz.guns.client.resource|xiao.customgun.core.api.item|
 |---|---|
@@ -1019,6 +1019,10 @@ Notation:
 |`GunSoundInstance`.`TaczSound`|`ResourceSound`|
 |`GunSoundPreload`|_Deprecated_|
 |`SoundPlayManager`|`SoundPlayManager`|
+
+|com.tacz.guns.client.sound|xiao.customgun.client.resource|
+|---|---|
+|`SoundPlayManager`.clearSoundResourceCache|assets.`SoundManager`.clearCacheOnReload|
 
 ### Tooltip (Client)
 > ```java

@@ -36,9 +36,9 @@ public class ClientRenderUtils {
      */
     @Deprecated(forRemoval = false)
     public static Matrix4f createCenterOffsetMatrix(IRenderLevelStageEvent event, Vec3 worldCenter, Vec3 cameraPos) {
-        return createCenterOffsetMatrix(event.getModelViewMatrix(), worldCenter.x, worldCenter.y, worldCenter.z, cameraPos);
+        return createCenterOffsetMatrix(new Matrix4f(), worldCenter.x, worldCenter.y, worldCenter.z, cameraPos);
     }
     public static Matrix4f createCenterOffsetMatrix(IRenderLevelStageEvent event, double centerX, double centerY, double centerZ, Vec3 cameraPos) {
-        return createCenterOffsetMatrix(event.getModelViewMatrix(), centerX, centerY, centerZ, cameraPos);
+        return createCenterOffsetMatrix(new Matrix4f(), centerX, centerY, centerZ, cameraPos);
     }
 }

@@ -10,6 +10,7 @@ package xiao.customgun.client.util;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 import xiao.customgun.client.api.event.IRenderLevelStageEvent;
+import xiao.customgun.client.api.event.ISubmitCustomGeometryEvent;
 
 public class ClientRenderUtils {
 
@@ -39,6 +40,12 @@ public class ClientRenderUtils {
         return createCenterOffsetMatrix(new Matrix4f(), worldCenter.x, worldCenter.y, worldCenter.z, cameraPos);
     }
     public static Matrix4f createCenterOffsetMatrix(IRenderLevelStageEvent event, double centerX, double centerY, double centerZ, Vec3 cameraPos) {
+        return createCenterOffsetMatrix(new Matrix4f(), centerX, centerY, centerZ, cameraPos);
+    }
+    public static Matrix4f createCenterOffsetMatrix(ISubmitCustomGeometryEvent event, Vec3 worldCenter, Vec3 cameraPos) {
+        return createCenterOffsetMatrix(new Matrix4f(), worldCenter.x, worldCenter.y, worldCenter.z, cameraPos);
+    }
+    public static Matrix4f createCenterOffsetMatrix(ISubmitCustomGeometryEvent event, double centerX, double centerY, double centerZ, Vec3 cameraPos) {
         return createCenterOffsetMatrix(new Matrix4f(), centerX, centerY, centerZ, cameraPos);
     }
 }

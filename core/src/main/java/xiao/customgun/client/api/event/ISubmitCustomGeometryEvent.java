@@ -8,6 +8,7 @@
 package xiao.customgun.client.api.event;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.ApiStatus;
 import xiao.customgun.core.api.event.IEvent;
@@ -22,5 +23,5 @@ public interface ISubmitCustomGeometryEvent extends IEvent {
     float getPartialTick();
 
     @ApiStatus.AvailableSince("neoforge26.2")
-    Object getSubmitNodeCollector();
+    SubmitNodeCollector getSubmitNodeCollector();
 }

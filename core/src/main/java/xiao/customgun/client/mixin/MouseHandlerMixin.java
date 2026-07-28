@@ -26,7 +26,7 @@ import xiao.customgun.core.util.MathUtil;
 public class MouseHandlerMixin {
 
     @WrapOperation(method = "turnPlayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;turn(DD)V"))
-    public void adjustSensitivity(LocalPlayer player, double yaw, double pitch, Operation<Void> original) {
+    public void cgc$adjustSensitivity(LocalPlayer player, double yaw, double pitch, Operation<Void> original) {
         ItemStack gunItem = player.getMainHandItem();
         IGun iGun= IGunGetter.fromItemStack(gunItem);
         if (iGun == null) {

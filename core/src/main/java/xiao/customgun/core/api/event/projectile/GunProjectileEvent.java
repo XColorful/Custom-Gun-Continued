@@ -1,6 +1,7 @@
 package xiao.customgun.core.api.event.projectile;
 
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.entity.IGunProjectile;
 import xiao.customgun.core.api.event.CustomEvent;
@@ -23,5 +24,9 @@ public abstract class GunProjectileEvent extends CustomEvent implements IGunProj
     }
     public @Nullable Entity getGunProjectile() {
         return this.gunProjectile;
+    }
+
+    public @Nullable Level getLevel() {
+        return this.gunProjectile != null ? gunProjectile.level() : null;
     }
 }

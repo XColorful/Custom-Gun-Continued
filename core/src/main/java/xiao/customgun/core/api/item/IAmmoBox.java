@@ -10,5 +10,6 @@ package xiao.customgun.core.api.item;
 import xiao.customgun.core.api.item.ammobox.IAmmoBoxDataAccess;
 import xiao.customgun.core.api.item.ammobox.IAmmoBoxGetter;
 
-public interface IAmmoBox extends IAmmo, IAmmoBoxDataAccess, IAmmoBoxGetter {
+public interface IAmmoBox extends IAmmo, IAmmoBoxDataAccess, IAmmoBoxGetter,
+        IPojoItem {
 }

@@ -22,6 +22,6 @@ public interface IAnimationItem {
     // --------Deprecated--------
 
     @Deprecated default boolean isSame(ItemStack oldItem, ItemStack newItem) {
-        return this.switchItemNeedReset(oldItem, newItem);
+        return !this.switchItemNeedReset(oldItem, newItem);
     }
 }

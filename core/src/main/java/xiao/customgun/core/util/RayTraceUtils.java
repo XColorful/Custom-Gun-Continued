@@ -160,6 +160,7 @@ public class RayTraceUtils {
         /**
          * 广义的、解耦的带实体过滤功能射线检测
          * @param contextEntity 当前探测的基准实体（用于获取 Level）
+         * @param owner 发起射线检测的实体 (进行延迟补偿)
          * @param startPos 射线起点
          * @param endPos 射线终点
          * @param searchBox 实体扫描范围
@@ -168,6 +169,7 @@ public class RayTraceUtils {
          */
         public static <T> List<T> rayTraceEntities(
                 Entity contextEntity,
+                @Nullable Entity owner,
                 Vec3 startPos,
                 Vec3 endPos,
                 AABB searchBox,
@@ -182,7 +184,7 @@ public class RayTraceUtils {
 
             for (Entity entity : entities) {
                 // 计算射线与当前实体包围盒的精确交点
-                Optional<Vec3> clipResult = entity.getBoundingBox().clip(startPos, endPos);
+                Optional<Vec3> clipResult = EntityHitboxUtils.getTracedHitbox(entity, owner).clip(startPos, endPos);
                 if (clipResult.isPresent()) {
                     // 将命中结果包装为调用方指定类型
                     T result = hitFactory.apply(entity, clipResult.get());
@@ -216,6 +218,7 @@ public class RayTraceUtils {
         /**
          * 广义的、解耦的带实体过滤功能射线检测（自动拉伸扫描范围重载版本）
          * @param contextEntity 当前探测的基准实体
+         * @param owner 发起射线检测的实体 (进行延迟补偿)
          * @param startPos 射线起点
          * @param endPos 射线终点
          * @param inflateRadius 轴向上的额外扩充半径
@@ -224,6 +227,7 @@ public class RayTraceUtils {
          */
         public static <T> List<T> rayTraceEntities(
                 Entity contextEntity,
+                @Nullable Entity owner,
                 Vec3 startPos,
                 Vec3 endPos,
                 double inflateRadius,
@@ -231,7 +235,7 @@ public class RayTraceUtils {
                 BiFunction<Entity, Vec3, T> hitFactory
         ) {
             AABB searchBox = createTraceBox(contextEntity, startPos, endPos, inflateRadius);
-            return rayTraceEntities(contextEntity, startPos, endPos, searchBox, targetPredicate, hitFactory);
+            return rayTraceEntities(contextEntity, owner, startPos, endPos, searchBox, targetPredicate, hitFactory);
         }
     }
 }

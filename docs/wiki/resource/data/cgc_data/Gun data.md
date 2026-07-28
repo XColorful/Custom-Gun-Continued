@@ -1,7 +1,7 @@
 [English](#English)
 
 # 枪械数据
-> wiki 版本：`0.0.1`.2
+> wiki 版本：`0.0.1`.3
 
 - `bullet_data`/`bullet`（\_BulletData）：
 	- `display_damage`/`damage`（float）：
@@ -40,6 +40,7 @@
 - `inaccuracy_data`/`inaccuracy`（\_InaccuracyData）：
 	- `stand`（float）：
 	- `move`（float）：
+	- `ride`（float）：
 	- `sneak`（float）：
 	- `prone`/`lie`（float）：
 	- `aim`（float）：
@@ -189,6 +190,7 @@
 	"inaccuracy_data": {
 		"stand": 0.0,
 		"move": 0.0,
+		"ride": 0.0,
 		"sneak": 0.0,
 		"prone": 0.0,
 		"aim": 0.0,
@@ -331,7 +333,7 @@
 ```
 
 # English
-> wiki verison: `0.0.1`.2
+> wiki verison: `0.0.1`.3
 
 - `bullet_data`/`bullet`( \_BulletData):
 	- `display_damage`/`damage`(float):
@@ -370,6 +372,7 @@
 - `inaccuracy_data`/`inaccuracy`( \_InaccuracyData):
 	- `stand`(float):
 	- `move`(float):
+	- `ride`(float):
 	- `sneak`(float):
 	- `prone`/`lie`(float):
 	- `aim`(float):
@@ -519,6 +522,7 @@
 	"inaccuracy_data": {
 		"stand": 0.0,
 		"move": 0.0,
+		"ride": 0.0,
 		"sneak": 0.0,
 		"prone": 0.0,
 		"aim": 0.0,

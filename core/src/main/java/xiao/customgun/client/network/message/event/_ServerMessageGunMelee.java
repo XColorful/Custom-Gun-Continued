@@ -10,8 +10,17 @@ package xiao.customgun.client.network.message.event;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
+import xiao.customgun.CustomGun;
 import xiao.customgun.client.util.ClientWorldUtils;
+import xiao.customgun.core.api.common.McLogicalSide;
+import xiao.customgun.core.api.entity.ILivingShooter;
+import xiao.customgun.core.api.entity.shooter.ILivingShooterGetter;
+import xiao.customgun.core.api.event.shooter.ShooterMeleeEvent;
+import xiao.customgun.core.api.item.IGun;
+import xiao.customgun.core.api.item.gun.IGunGetter;
 import xiao.customgun.core.network.message.event.ServerMessageGunMelee;
 
 @ApiStatus.Internal
@@ -19,12 +28,16 @@ public class _ServerMessageGunMelee {
 
     public static void doClientEvent(ServerMessageGunMelee message) {
         ClientLevel level = Minecraft.getInstance().level;
-        if (level == null) {
-            return;
-        }
-        LivingEntity shooter = ClientWorldUtils.getLivingEntityById(level, message.shooterId());
-        if (shooter != null) {
-            // TODO GunMeleeEvent
-        }
+        if (level == null) return;
+
+        @Nullable LivingEntity livingShooter = ClientWorldUtils.getLivingEntityById(level, message.shooterId());
+        @Nullable ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromEntity(livingShooter);
+        ItemStack gunItem = message.gunItem();
+        @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
+
+        ShooterMeleeEvent event = new ShooterMeleeEvent(McLogicalSide.CLIENT,
+                iLivingShooter, livingShooter,
+                iGun, gunItem);
+        CustomGun.getEventPoster().postCustomEvent(event);
     }
 }

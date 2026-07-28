@@ -1,61 +1,62 @@
+/*
+ * Copyright (c) 2025-2026 XiaoColorful (https://github.com/XColorful)
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ *
+ * Source: https://github.com/XColorful/BattleRoyale
+ */
+
 package xiao.customgun.neoforge.event;
 
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.Entity;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.Event;
-import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.living.LivingAttackEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import xiao.customgun.core.api.common.McLogicalSide;
 import xiao.customgun.core.api.event.EventType;
-import xiao.customgun.core.api.event.IEntityJoinLevelEvent;
+import xiao.customgun.core.api.event.ILivingAttackEvent;
 import xiao.customgun.core.api.minecraft.CommandLevel;
-import xiao.customgun.neoforge.CustomGunNeoforge;
 
-public class NeoEntityJoinLevelEvent extends NeoEvent implements IEntityJoinLevelEvent {
+public class NeoLivingAttackEvent extends NeoEvent implements ILivingAttackEvent {
 
-    protected EntityJoinLevelEvent entityJoinLevelEvent;
+    protected LivingAttackEvent livingAttackEvent;
 
-    public NeoEntityJoinLevelEvent(Event event) {
+    public NeoLivingAttackEvent(Event event) {
         super(event);
-        if (event instanceof EntityJoinLevelEvent eventIn) {
-            this.entityJoinLevelEvent = eventIn;
+        if (event instanceof LivingAttackEvent eventIn) {
+            this.livingAttackEvent = eventIn;
         } else {
-            throw new RuntimeException("Expected EntityJoinLevelEvent but received: " + event.getClass().getName());
+            throw new RuntimeException("Expected LivingAttackEvent but received: " + event.getClass().getName());
         }
     }
     @Override public EventType getType() {
-        return EventType.ENTITY_JOIN_LEVEL_EVENT;
+        return EventType.LIVING_ATTACK_EVENT;
     }
 
     @Override
-    public McLogicalSide getLogicalSide() {
-        return CustomGunNeoforge.sideExecutor.getLogicalSide();
+    public @NotNull LivingEntity getEntity() {
+        return livingAttackEvent.getEntity();
     }
 
     @Override
-    public Entity getEntity() {
-        return entityJoinLevelEvent.getEntity();
+    public @NotNull DamageSource getSource() {
+        return livingAttackEvent.getSource();
     }
 
     @Override
-    public Level getLevel() {
-        return entityJoinLevelEvent.getLevel();
-    }
-
-    @Override
-    public boolean isLoadedFromDisk() {
-        return entityJoinLevelEvent.loadedFromDisk();
+    public float getDamageAmount() {
+        return livingAttackEvent.getAmount();
     }
 
     @Override
     public @Nullable CommandSourceStack createCommandSourceStack(@Nullable CommandSource source) {
-        @NotNull Entity entity = this.getEntity();
-        Level level = this.getLevel();
+        @NotNull LivingEntity entity = this.getEntity();
+        Level level = entity.level();
         if (level != null && level.isClientSide()) return null;
         return new CommandSourceStack(
                 source != null ? source : CommandSource.NULL,

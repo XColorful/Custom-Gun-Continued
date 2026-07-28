@@ -12,15 +12,7 @@ import xiao.customgun.core.api.event.EventPriority;
 import xiao.customgun.core.api.event.EventType;
 import xiao.customgun.core.api.event.IEventHandler;
 import xiao.customgun.core.api.event.IEventRegister;
-import xiao.customgun.neoforgeclient.event.events.NeoAddClientReloadListenerEventManager;
-import xiao.customgun.neoforgeclient.event.events.NeoClientPlayerTickEventManager;
-import xiao.customgun.neoforgeclient.event.events.NeoClientTickEventManager;
-import xiao.customgun.neoforgeclient.event.events.NeoInputKeyEventManager;
-import xiao.customgun.neoforgeclient.event.events.NeoInteractionMappingEventManager;
-import xiao.customgun.neoforgeclient.event.events.NeoMouseButtonEventManager;
-import xiao.customgun.neoforgeclient.event.events.NeoMouseScrollingEventManager;
-import xiao.customgun.neoforgeclient.event.events.NeoPrepareClientPlayerTickEventManager;
-import xiao.customgun.neoforgeclient.event.events.NeoPrepareClientTickEventManager;
+import xiao.customgun.neoforgeclient.event.events.*;
 
 public class NeoClientEventRegister implements IEventRegister {
 
@@ -39,6 +31,13 @@ public class NeoClientEventRegister implements IEventRegister {
             case MOUSE_SCROLLING_EVENT -> NeoMouseScrollingEventManager.register(eventHandler, priority, receiveCanceled);
             // resource
             case ADD_CLIENT_RELOAD_LISTENER_EVENT -> NeoAddClientReloadListenerEventManager.register(eventHandler, priority, receiveCanceled);
+            // render
+            case RENDER_LEVEL_STAGE_EVENT -> NeoRenderLevelStageEventManager.register(eventHandler, priority, receiveCanceled);
+            case RENDER_TRANSLUCENT_EVENT -> NeoRenderTranslucentEventManager.register(eventHandler, priority, receiveCanceled);
+            case SUBMIT_CUSTOM_GEOMETRY_EVENT -> NeoSubmitCustomGeometryEventManager.register(eventHandler, priority, receiveCanceled);
+            case RENDER_GUI_EVENT -> NeoRenderGuiEventManager.register(eventHandler, priority, receiveCanceled);
+            // display
+            case ITEM_TOOLTIP_EVENT -> NeoItemTooltipEventManager.register(eventHandler, priority, receiveCanceled);
             default -> {
                 CustomGun.LOGGER.warn("Attempted to register handler for unassigned EventType: {}. Registration aborted.", eventType);
                 yield false;
@@ -61,6 +60,13 @@ public class NeoClientEventRegister implements IEventRegister {
             case MOUSE_SCROLLING_EVENT -> NeoMouseScrollingEventManager.unregister(eventHandler, priority, receiveCanceled);
             // resource
             case ADD_CLIENT_RELOAD_LISTENER_EVENT -> NeoAddClientReloadListenerEventManager.unregister(eventHandler, priority, receiveCanceled);
+            // render
+            case RENDER_LEVEL_STAGE_EVENT -> NeoRenderLevelStageEventManager.unregister(eventHandler, priority, receiveCanceled);
+            case RENDER_TRANSLUCENT_EVENT -> NeoRenderTranslucentEventManager.unregister(eventHandler, priority, receiveCanceled);
+            case SUBMIT_CUSTOM_GEOMETRY_EVENT -> NeoSubmitCustomGeometryEventManager.unregister(eventHandler, priority, receiveCanceled);
+            case RENDER_GUI_EVENT -> NeoRenderGuiEventManager.unregister(eventHandler, priority, receiveCanceled);
+            // display
+            case ITEM_TOOLTIP_EVENT -> NeoItemTooltipEventManager.unregister(eventHandler, priority, receiveCanceled);
             default -> {
                 CustomGun.LOGGER.warn("Attempted to unregister handler for unassigned EventType: {}. Registration aborted.", eventType);
                 yield false;

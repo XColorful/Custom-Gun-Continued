@@ -7,7 +7,7 @@
 
 package xiao.customgun.core.api.item;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import xiao.customgun.core.api.gun.IGunRuntime;
@@ -19,11 +19,11 @@ public interface IGun extends IGunRuntime, IAnimationItem,
         IPojoItem {
 
     @Override
-    default @NotNull ResourceLocation getPojoLocation(ItemStack gunItem) {
+    default @NotNull Identifier getPojoLocation(ItemStack gunItem) {
         return this.getGunLocation(gunItem);
     }
     @Override
-    default void setPojoLocation(ItemStack gunItem, ResourceLocation gunLocation) {
+    default void setPojoLocation(ItemStack gunItem, Identifier gunLocation) {
         this.setGunLocation(gunItem, gunLocation);
     }
 }

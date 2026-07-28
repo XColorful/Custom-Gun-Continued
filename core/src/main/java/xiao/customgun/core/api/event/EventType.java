@@ -7,6 +7,7 @@
 
 package xiao.customgun.core.api.event;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -52,7 +53,15 @@ public enum EventType {
     ADD_SERVER_RELOAD_LISTENER_EVENT(false),
     ADD_CLIENT_RELOAD_LISTENER_EVENT(true),
     TAGS_UPDATED_EVENT(false),
-    DATAPACK_SYNC_EVENT(false);
+    DATAPACK_SYNC_EVENT(false),
+    // render
+    RENDER_LEVEL_STAGE_EVENT(true),
+    RENDER_TRANSLUCENT_EVENT(true), // 单独拆一个事件，减少一点不必要的转发开销
+    @ApiStatus.AvailableSince("neoforge26.2")
+    SUBMIT_CUSTOM_GEOMETRY_EVENT(true),
+    RENDER_GUI_EVENT(true),
+    // display
+    ITEM_TOOLTIP_EVENT(true);
 
     public final boolean isClientSideOnly;
     EventType(boolean isClientSideOnly) {

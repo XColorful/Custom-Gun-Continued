@@ -7,7 +7,7 @@
 
 package xiao.customgun.core.api.item;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import xiao.customgun.core.api.item.attachment.IAttachmentDataAccess;
@@ -17,11 +17,11 @@ public interface IAttachment extends IAttachmentDataAccess, IAttachmentGetter,
         IPojoItem {
 
     @Override
-    default @NotNull ResourceLocation getPojoLocation(ItemStack attachmentItem) {
+    default @NotNull Identifier getPojoLocation(ItemStack attachmentItem) {
         return this.getAttachmentLocation(attachmentItem);
     }
     @Override
-    default void setPojoLocation(ItemStack attachmentItem, ResourceLocation attachmentLocation) {
+    default void setPojoLocation(ItemStack attachmentItem, Identifier attachmentLocation) {
         this.setAttachmentLocation(attachmentItem, attachmentLocation);
     }
 }

@@ -27,8 +27,8 @@ import xiao.customgun.core.api.minecraft.CommandLevel;
 import xiao.customgun.core.api.minecraft.HandAction;
 import xiao.customgun.core.api.minecraft.TriResult;
 import xiao.customgun.neoforge.common.McSideHelper;
-import xiao.customgun.neoforge.minecraft.NeoHandActionHelper;
-import xiao.customgun.neoforge.minecraft.NeoTriResultHelper;
+import xiao.customgun.neoforge.minecraft.HandActionHelper;
+import xiao.customgun.neoforge.minecraft.TriResultHelper;
 
 public class NeoLeftClickBlockEvent extends NeoEvent implements ILeftClickBlockEvent {
 
@@ -83,27 +83,27 @@ public class NeoLeftClickBlockEvent extends NeoEvent implements ILeftClickBlockE
 
     @Override
     public TriResult getUseBlock() {
-        return NeoTriResultHelper.convert(leftClickBlockEvent.getUseBlock());
+        return TriResultHelper.convert(leftClickBlockEvent.getUseBlock());
     }
 
     @Override
     public TriResult getUseItem() {
-        return NeoTriResultHelper.convert(leftClickBlockEvent.getUseItem());
+        return TriResultHelper.convert(leftClickBlockEvent.getUseItem());
     }
 
     @Override
     public HandAction getAction() {
-        return NeoHandActionHelper.convert(leftClickBlockEvent.getAction());
+        return HandActionHelper.convert(leftClickBlockEvent.getAction());
     }
 
     @Override
     public void setUseBlock(TriResult triggerBlock) {
-        leftClickBlockEvent.setUseBlock(NeoTriResultHelper.convert(triggerBlock));
+        leftClickBlockEvent.setUseBlock(TriResultHelper.convert(triggerBlock));
     }
 
     @Override
     public void setUseItem(TriResult triggerItem) {
-        leftClickBlockEvent.setUseItem(NeoTriResultHelper.convert(triggerItem));
+        leftClickBlockEvent.setUseItem(TriResultHelper.convert(triggerItem));
     }
 
     @Override

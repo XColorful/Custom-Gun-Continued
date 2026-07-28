@@ -38,7 +38,7 @@ public class PlayerModelMixin<T extends LivingEntity> extends HumanoidModel<T> {
      * 用于清除默认的手臂旋转
      */
     @Inject(method = "setupAnim(Lnet/minecraft/world/entity/LivingEntity;FFFFF)V", at = @At(value = "TAIL"))
-    private void setRotationAnglesTail(T entityIn,
+    private void cgc$setRotationAnglesTail(T entityIn,
                                        float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch,
                                        CallbackInfo ci) {
         if (!(entityIn instanceof Player player)) {

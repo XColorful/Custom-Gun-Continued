@@ -15,8 +15,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraftforge.event.TagsUpdatedEvent;
 import net.minecraftforge.eventbus.api.Event;
 import org.jetbrains.annotations.Nullable;
+import xiao.customgun.core.api.common.McLogicalSide;
 import xiao.customgun.core.api.event.EventType;
 import xiao.customgun.core.api.event.ITagsUpdatedEvent;
+import xiao.customgun.forge.CustomGunForge;
 
 public class ForgeTagsUpdatedEvent extends ForgeEvent implements ITagsUpdatedEvent {
 
@@ -32,6 +34,11 @@ public class ForgeTagsUpdatedEvent extends ForgeEvent implements ITagsUpdatedEve
     }
     @Override public EventType getType() {
         return EventType.TAGS_UPDATED_EVENT;
+    }
+
+    @Override
+    public McLogicalSide getLogicalSide() {
+        return CustomGunForge.sideExecutor.getLogicalSide();
     }
 
     @Override

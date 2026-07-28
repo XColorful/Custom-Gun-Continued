@@ -18,10 +18,10 @@ import java.util.Map;
 @Deprecated(forRemoval = true)
 public enum InaccuracyType {
     NONE;
-    public static InaccuracyType getInaccuracyType(LivingEntity livingEntity) {
+    public static ShootState getInaccuracyType(LivingEntity livingEntity) {
         return null;
     }
-    public static Map<InaccuracyType, Float> getDefaultInaccuracy() {
+    public static Map<ShootState, Float> getDefaultInaccuracy() {
         return null;
     }
     private static boolean isMove(LivingEntity livingEntity) {

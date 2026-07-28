@@ -95,6 +95,7 @@ public class ProjectilePhysicsManager implements IProjectilePhysicsManager {
 
         tickContext.entityHitResults = RayTraceUtils.EntityTrace.rayTraceEntities(
                 gunProjectile,
+                gunProjectile instanceof Projectile projectile ? projectile.getOwner() : null,
                 tickContext.startPos,
                 tickContext.endPos,
                 1.0,

@@ -21,6 +21,8 @@ import xiao.customgun.core.event.EventDispatcher;
 import xiao.customgun.core.util.Vec3Utils;
 
 /**
+ * 仅服务端触发
+ * <br>
  * 枪射物{@link IGunProjectile} 命中 方块{@link Block} 事件
  */
 public final class ProjectileHitBlockEvent extends GunProjectileEvent implements IBulletVictimBlockEvent {
@@ -29,8 +31,7 @@ public final class ProjectileHitBlockEvent extends GunProjectileEvent implements
     private final @Nullable IBulletVictimBlock ibulletVictimBlock;
     private final Block bulletVictimBlock;
 
-    public ProjectileHitBlockEvent(@NotNull ProjectileHitEntityEvent.Context context,
-                                   @Nullable IGunProjectile iGunProjectile, @Nullable Entity gunProjectile,
+    public ProjectileHitBlockEvent(@NotNull IGunProjectile iGunProjectile, @NotNull Entity gunProjectile, // 纯服务端事件，默认不为null
                                    @NotNull BlockHitResult blockHitResult,
                                    @Nullable IBulletVictimBlock ibulletVictimBlock, Block bulletVictimBlock) {
         super(iGunProjectile, gunProjectile);

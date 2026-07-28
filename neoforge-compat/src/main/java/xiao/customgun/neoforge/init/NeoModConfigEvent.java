@@ -1,14 +1,14 @@
 package xiao.customgun.neoforge.init;
 
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.config.ModConfigEvent;
 import xiao.customgun.CustomGun;
 import xiao.customgun.core.init.ModConfig;
 import xiao.customgun.neoforge.CustomGunNeoforge;
 import xiao.customgun.neoforge.config.ModConfigTypeHelper;
 
-@Mod.EventBusSubscriber(modid = CustomGun.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = CustomGun.MOD_ID)
 public class NeoModConfigEvent {
 
     public static final ModConfig.Event MOD_CONFIG_EVENT = ModConfig.Event.get();

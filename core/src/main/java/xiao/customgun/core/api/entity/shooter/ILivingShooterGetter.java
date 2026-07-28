@@ -9,6 +9,7 @@ package xiao.customgun.core.api.entity.shooter;
 
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.entity.ILivingShooter;
 import xiao.customgun.core.mixin.entity.LivingEntityMixin;
@@ -22,7 +23,7 @@ public interface ILivingShooterGetter {
     /**
      * {@link LivingEntityMixin} mixin到LivingEntity实现该接口
      */
-    static ILivingShooter cgc$fromLivingEntity(LivingEntity livingEntity) {
+    static @NotNull ILivingShooter cgc$fromLivingEntity(@NotNull LivingEntity livingEntity) {
         return (ILivingShooter) livingEntity;
     }
 }

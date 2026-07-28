@@ -11,7 +11,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.world.entity.LivingEntity;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
+import xiao.customgun.CustomGun;
 import xiao.customgun.client.util.ClientWorldUtils;
+import xiao.customgun.core.api.common.McLogicalSide;
+import xiao.customgun.core.api.entity.ILivingShooter;
+import xiao.customgun.core.api.entity.shooter.ILivingShooterGetter;
+import xiao.customgun.core.api.event.shooter.ShooterDrawEvent;
 import xiao.customgun.core.network.message.event.ServerMessageGunDraw;
 
 @ApiStatus.Internal
@@ -19,12 +25,14 @@ public class _ServerMessageGunDraw {
 
     public static void doClientEvent(ServerMessageGunDraw message) {
         ClientLevel level = Minecraft.getInstance().level;
-        if (level == null) {
-            return;
-        }
-        LivingEntity livingEntity = ClientWorldUtils.getLivingEntityById(level, message.entityId());
-        if (livingEntity != null) {
-            // TODO GunDrawEvent
-        }
+        if (level == null) return;
+
+        @Nullable LivingEntity livingShooter = ClientWorldUtils.getLivingEntityById(level, message.entityId());
+        @Nullable ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromEntity(livingShooter);
+
+        ShooterDrawEvent event = new ShooterDrawEvent(McLogicalSide.CLIENT,
+                iLivingShooter, livingShooter,
+                message.previousGunItem(), message.currentGunItem());
+        CustomGun.getEventPoster().postCustomEvent(event);
     }
 }

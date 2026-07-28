@@ -10,7 +10,7 @@ package xiao.customgun.neoforge.minecraft;
 import net.neoforged.bus.api.Event;
 import xiao.customgun.core.api.minecraft.TriResult;
 
-public class NeoTriResultHelper {
+public class TriResultHelper {
 
     public static TriResult convert(Event.Result result) {
         return switch (result) {

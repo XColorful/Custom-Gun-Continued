@@ -10,7 +10,7 @@ package xiao.customgun.neoforge.event.events;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.entity.living.LivingAttackEvent;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import xiao.customgun.core.api.event.EventPriority;
 import xiao.customgun.core.api.event.EventType;
 import xiao.customgun.core.api.event.IEventHandler;
@@ -29,16 +29,16 @@ public class NeoLivingAttackEventManager {
 
     private static AbstractNeoEventCommon getProxy(EventPriority priority) {
         return switch (priority) {
-            case HIGHEST -> LivingAttackProxyHighest.INSTANCE;
-            case HIGH -> LivingAttackProxyHigh.INSTANCE;
-            case NORMAL -> LivingAttackProxyNormal.INSTANCE;
-            case LOW -> LivingAttackProxyLow.INSTANCE;
-            case LOWEST -> LivingAttackProxyLowest.INSTANCE;
+            case HIGHEST -> NeoLivingAttackProxyHighest.INSTANCE;
+            case HIGH -> NeoLivingAttackProxyHigh.INSTANCE;
+            case NORMAL -> NeoLivingAttackProxyNormal.INSTANCE;
+            case LOW -> NeoLivingAttackProxyLow.INSTANCE;
+            case LOWEST -> NeoLivingAttackProxyLowest.INSTANCE;
         };
     }
 
-    private static abstract class LivingAttackProxy extends AbstractNeoEventCommon {
-        public LivingAttackProxy() {
+    private static abstract class NeoLivingAttackProxy extends AbstractNeoEventCommon {
+        public NeoLivingAttackProxy() {
             super(EventType.LIVING_ATTACK_EVENT);
         }
 
@@ -46,36 +46,36 @@ public class NeoLivingAttackEventManager {
         @Override protected void unregisterToNeo() { NeoForge.EVENT_BUS.unregister(this); }
         @Override protected NeoEvent getNeoEventType(Event event) { return new NeoLivingAttackEvent(event); }
 
-        protected void handle(LivingAttackEvent event) { super.onEvent(event); }
+        protected void handle(LivingIncomingDamageEvent event) { super.onEvent(event); }
     }
 
-    public static class LivingAttackProxyHighest extends LivingAttackProxy {
-        static final LivingAttackProxyHighest INSTANCE = new LivingAttackProxyHighest();
+    public static class NeoLivingAttackProxyHighest extends NeoLivingAttackProxy {
+        static final NeoLivingAttackProxyHighest INSTANCE = new NeoLivingAttackProxyHighest();
         @SubscribeEvent(priority = net.neoforged.bus.api.EventPriority.HIGHEST, receiveCanceled = true)
-        public void onEvent(LivingAttackEvent e) { handle(e); }
+        public void onEvent(LivingIncomingDamageEvent e) { handle(e); }
     }
 
-    public static class LivingAttackProxyHigh extends LivingAttackProxy {
-        static final LivingAttackProxyHigh INSTANCE = new LivingAttackProxyHigh();
+    public static class NeoLivingAttackProxyHigh extends NeoLivingAttackProxy {
+        static final NeoLivingAttackProxyHigh INSTANCE = new NeoLivingAttackProxyHigh();
         @SubscribeEvent(priority = net.neoforged.bus.api.EventPriority.HIGH, receiveCanceled = true)
-        public void onEvent(LivingAttackEvent e) { handle(e); }
+        public void onEvent(LivingIncomingDamageEvent e) { handle(e); }
     }
 
-    public static class LivingAttackProxyNormal extends LivingAttackProxy {
-        static final LivingAttackProxyNormal INSTANCE = new LivingAttackProxyNormal();
+    public static class NeoLivingAttackProxyNormal extends NeoLivingAttackProxy {
+        static final NeoLivingAttackProxyNormal INSTANCE = new NeoLivingAttackProxyNormal();
         @SubscribeEvent(priority = net.neoforged.bus.api.EventPriority.NORMAL, receiveCanceled = true)
-        public void onEvent(LivingAttackEvent e) { handle(e); }
+        public void onEvent(LivingIncomingDamageEvent e) { handle(e); }
     }
 
-    public static class LivingAttackProxyLow extends LivingAttackProxy {
-        static final LivingAttackProxyLow INSTANCE = new LivingAttackProxyLow();
+    public static class NeoLivingAttackProxyLow extends NeoLivingAttackProxy {
+        static final NeoLivingAttackProxyLow INSTANCE = new NeoLivingAttackProxyLow();
         @SubscribeEvent(priority = net.neoforged.bus.api.EventPriority.LOW, receiveCanceled = true)
-        public void onEvent(LivingAttackEvent e) { handle(e); }
+        public void onEvent(LivingIncomingDamageEvent e) { handle(e); }
     }
 
-    public static class LivingAttackProxyLowest extends LivingAttackProxy {
-        static final LivingAttackProxyLowest INSTANCE = new LivingAttackProxyLowest();
+    public static class NeoLivingAttackProxyLowest extends NeoLivingAttackProxy {
+        static final NeoLivingAttackProxyLowest INSTANCE = new NeoLivingAttackProxyLowest();
         @SubscribeEvent(priority = net.neoforged.bus.api.EventPriority.LOWEST, receiveCanceled = true)
-        public void onEvent(LivingAttackEvent e) { handle(e); }
+        public void onEvent(LivingIncomingDamageEvent e) { handle(e); }
     }
 }

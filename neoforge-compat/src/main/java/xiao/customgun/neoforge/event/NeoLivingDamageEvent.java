@@ -14,6 +14,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec2;
 import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import org.jetbrains.annotations.NotNull;
@@ -24,20 +25,21 @@ import xiao.customgun.core.api.minecraft.CommandLevel;
 
 public class NeoLivingDamageEvent extends NeoEvent implements ILivingDamageEvent {
 
-    protected LivingDamageEvent livingDamageEvent;
+    protected LivingDamageEvent.Post livingDamageEvent;
 
     public NeoLivingDamageEvent(Event event) {
         super(event);
-        if (event instanceof LivingDamageEvent eventIn) {
+        if (event instanceof LivingDamageEvent.Post eventIn) {
             this.livingDamageEvent = eventIn;
         } else {
-            throw new RuntimeException("Expected LivingDamageEvent but received: " + event.getClass().getName());
+            throw new RuntimeException("Expected LivingDamageEvent.Post but received: " + event.getClass().getName());
         }
     }
     @Override public EventType getType() {
         return EventType.LIVING_DAMAGE_EVENT;
     }
 
+    @Deprecated
     @Override
     public void setCanceled(boolean cancel) {
         super.setCanceled(cancel);
@@ -55,7 +57,7 @@ public class NeoLivingDamageEvent extends NeoEvent implements ILivingDamageEvent
 
     @Override
     public float getDamageAmount() {
-        return livingDamageEvent.getAmount();
+        return livingDamageEvent.getNewDamage();
     }
 
     @Override
@@ -66,7 +68,7 @@ public class NeoLivingDamageEvent extends NeoEvent implements ILivingDamageEvent
         return new CommandSourceStack(
                 source != null ? source : CommandSource.NULL,
                 entity.position(),
-                entity.getRotationVector(),
+                entity != null ? entity.getRotationVector() : Vec2.ZERO,
                 (ServerLevel) level,
                 CommandLevel.permission(4),
                 this.getTextName(),

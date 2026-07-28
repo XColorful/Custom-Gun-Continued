@@ -15,7 +15,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.Event;
-import net.neoforged.neoforge.event.entity.living.LivingHurtEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.event.EventType;
@@ -24,14 +24,14 @@ import xiao.customgun.core.api.minecraft.CommandLevel;
 
 public class NeoLivingHurtEvent extends NeoEvent implements ILivingHurtEvent {
 
-    protected LivingHurtEvent livingHurtEvent;
+    protected LivingDamageEvent.Pre livingHurtEvent;
 
     public NeoLivingHurtEvent(Event event) {
         super(event);
-        if (event instanceof LivingHurtEvent eventIn) {
+        if (event instanceof LivingDamageEvent.Pre eventIn) {
             this.livingHurtEvent = eventIn;
         } else {
-            throw new RuntimeException("Expected LivingHurtEvent but received: " + event.getClass().getName());
+            throw new RuntimeException("Expected LivingHurtEvent.Pre but received: " + event.getClass().getName());
         }
     }
     @Override public EventType getType() {
@@ -50,12 +50,12 @@ public class NeoLivingHurtEvent extends NeoEvent implements ILivingHurtEvent {
 
     @Override
     public float getDamageAmount() {
-        return livingHurtEvent.getAmount();
+        return livingHurtEvent.getNewDamage();
     }
 
     @Override
     public void setDamageAmount(float amount) {
-        this.livingHurtEvent.setAmount(amount);
+        livingHurtEvent.setNewDamage(amount);
     }
 
     @Override

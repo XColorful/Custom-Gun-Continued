@@ -5,10 +5,11 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package xiao.customgun.core.network.message;
+package xiao.customgun.core.network.message.event;
 
 import net.minecraft.network.FriendlyByteBuf;
 import xiao.customgun.CustomGun;
+import xiao.customgun.client.network.message.event._ServerMessageSwapItem;
 import xiao.customgun.core.api.network.message.IMessage;
 
 import java.util.function.Consumer;
@@ -29,9 +30,7 @@ public class ServerMessageSwapItem implements IMessage<ServerMessageSwapItem> {
     @Override
     public void handle(ServerMessageSwapItem message, Consumer<Runnable> handler, NetworkContext context) {
         if (CustomGun.getSideExecutor().getLogicalSide().isClient()) {
-            handler.accept(() -> {
-                // TODO SwapItemWithOffHand
-            });
+            handler.accept(() -> _ServerMessageSwapItem.doClientEvent(message));
         }
     }
 }

@@ -7,13 +7,19 @@
 
 package xiao.customgun.core.api.entity;
 
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Pose;
+import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import xiao.customgun.core.api.entity.hitbox.IEntityHitboxHistoryGetter;
 import xiao.customgun.core.api.resource.ResourceTag;
 import xiao.customgun.core.resource.data.data.gun._InaccuracyData;
 
 import java.util.HashMap;
 import java.util.Map;
 
+// TODO 改成mask的形式，让pojo多个数据充当modifier
 public enum ShootState implements ResourceTag.CategoryTag {
     /**
      * 站立不动
@@ -23,6 +29,10 @@ public enum ShootState implements ResourceTag.CategoryTag {
      * 跑打
      */
     MOVE(ShootStateTag.MOVE),
+    /**
+     * 骑射
+     */
+    RIDE(ShootStateTag.RIDE),
     /**
      * 潜行 (半蹲)
      */
@@ -79,11 +89,52 @@ public enum ShootState implements ResourceTag.CategoryTag {
         return switch (this) {
             case STAND -> pojo.getStand();
             case MOVE -> pojo.getMove();
+            case RIDE -> pojo.getRide();
             case SNEAK -> pojo.getSneak();
             case PRONE -> pojo.getProne();
             case AIM -> pojo.getAim();
             case LEVITATE -> pojo.getLevitate();
             // 如后续添加则强制编译不通过
         };
+    }
+
+    public static ShootState fromLivingShooter(@NotNull ILivingShooter iLivingShooter, @NotNull LivingEntity livingShooter) {
+        // 1. 骑乘 (优先于悬空)
+        if (livingShooter.isPassenger() || livingShooter.isVehicle()) {
+            return ShootState.RIDE;
+        }
+        // 2. 悬空
+        if (!livingShooter.onGround() || livingShooter.isSwimming()) {
+            return ShootState.LEVITATE;
+        }
+
+        // 3. 瞄准 (这个跟移动的优先级有争议)
+        if (iLivingShooter.cgc$getSynAimingProgress() >= 1.0f) {
+            return ShootState.AIM;
+        }
+        // 4. 移动
+        @Nullable IEntityHitboxHistory entityHitboxHistory = IEntityHitboxHistoryGetter.cgc$fromEntity(livingShooter);
+        @Nullable Vec3 velocity = entityHitboxHistory != null ? entityHitboxHistory.cgc$getHistoryVelocity(0) : null;
+        if (velocity != null && velocity.length() > 0.05f || livingShooter.walkDist - livingShooter.walkDistO > 0.05f) {
+            return ShootState.MOVE;
+        }
+
+        // 5. 潜行
+        if (livingShooter.getPose() == Pose.CROUCHING) {
+            return ShootState.SNEAK;
+        }
+        // 6. 趴姿
+        if (livingShooter.isVisuallySwimming()) { // 任意模组的swim姿势均可，用活版门也算
+            return ShootState.PRONE;
+        }
+
+        // 7. 站姿
+        return ShootState.STAND;
+    }
+
+    // --------Deprecated--------
+
+    @Deprecated public boolean isAim() {
+        return this == AIM;
     }
 }

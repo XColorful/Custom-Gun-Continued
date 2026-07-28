@@ -14,6 +14,7 @@ import xiao.customgun.core.config.AmmoConfig;
 import xiao.customgun.core.config.GunConfig;
 import xiao.customgun.core.config.OtherConfig;
 import xiao.customgun.core.config.SyncConfig;
+import xiao.customgun.core.config.sync.HeadAABBData;
 
 public class ModConfig {
 
@@ -37,6 +38,28 @@ public class ModConfig {
             IModConfigSpecBuilder builder = CustomGun.getModConfigSpecBuilder();
             SyncConfig.init(builder);
             builder.buildAndRegister(ModConfigType.SERVER);
+        }
+    }
+
+    /**
+     * 仅逻辑服务端触发
+     */
+    public static class Event {
+        private static final Event INSTANCE = new Event();
+        public static Event get() {
+            return INSTANCE;
+        }
+        private Event() {}
+
+        public void onLoadingConfig(ModConfigType modConfigType) {
+            if (modConfigType == ModConfigType.SERVER) {
+                HeadAABBData.reloadHeadAABB();
+            }
+        }
+        public void onReloadingConfig(ModConfigType modConfigType) {
+            if (modConfigType == ModConfigType.SERVER) {
+                HeadAABBData.reloadHeadAABB();
+            }
         }
     }
 }

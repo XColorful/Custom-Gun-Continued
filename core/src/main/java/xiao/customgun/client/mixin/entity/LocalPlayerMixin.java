@@ -10,6 +10,7 @@ package xiao.customgun.client.mixin.entity;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -19,11 +20,16 @@ import xiao.customgun.client.api.entity.ILocalShooter;
 import xiao.customgun.client.api.entity.LocalShooterProperty;
 import xiao.customgun.client.entity.shooter.*;
 import xiao.customgun.core.api.entity.ShootResult;
+import xiao.customgun.core.api.item.IGun;
+import xiao.customgun.core.api.item.gun.IGunGetter;
 
 @Mixin(LocalPlayer.class)
 public class LocalPlayerMixin implements ILocalShooter {
     private final LocalPlayer cgc$localShooter = (LocalPlayer) (Object) this;
     private final LocalShooterProperty cgc$localShooterProperty = new LocalShooterProperty(cgc$localShooter);
+
+    private int cgc$previousHotbarIndex = -1;
+    private ItemStack cgc$previousHotbarItem = ItemStack.EMPTY;
 
     // 行为动作
     private final LocalShooterProne cgc$localProne = new LocalShooterProne(cgc$localShooter, cgc$localShooterProperty);
@@ -41,18 +47,20 @@ public class LocalPlayerMixin implements ILocalShooter {
     private final LocalShooterInspect cgc$localInspect = new LocalShooterInspect(cgc$localShooter, cgc$localShooterProperty);
 
     @Inject(method = "tick", at = @At("HEAD"))
-    public void onLocalTick(CallbackInfo ci) {
-        if (cgc$localShooter.level().isClientSide()) {
-            this.cgc$localAim.tickAimingProgress();
-            this.cgc$localProne.tickProne();
-            this.cgc$localShooterProperty.tickStateLock();
-            this.cgc$localBolt.tickAutoBolt();
-            cgc$localShooter.setSprinting(this.cgc$localSprint.getProcessedSprintStatus(cgc$localShooter.isSprinting()));
-        }
+    public void cgc$onLocalTick(CallbackInfo ci) {
+        if (!cgc$localShooter.level().isClientSide()) return;
+
+        this.cgc$localAim.tickAimingProgress();
+        this.cgc$localProne.tickProne();
+        this.cgc$localShooterProperty.tickStateLock();
+        this.cgc$localBolt.tickAutoBolt();
+        cgc$localShooter.setSprinting(this.cgc$localSprint.getProcessedSprintStatus(cgc$localShooter.isSprinting()));
+
+        this.cgc$tickHotbarSelection();
     }
 
     @WrapOperation(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;setSprinting(Z)V"))
-    public void swapSprintStatus(LocalPlayer player, boolean sprinting, Operation<Void> original) {
+    public void cgc$swapSprintStatus(LocalPlayer player, boolean sprinting, Operation<Void> original) {
         if (sprinting) {
             this.cgc$localReload.cancelReload();
         }
@@ -60,9 +68,45 @@ public class LocalPlayerMixin implements ILocalShooter {
     }
 
     @Inject(method = "respawn", at = @At("RETURN"))
-    public void onRespawn(CallbackInfo ci) {
+    public void cgc$onRespawn(CallbackInfo ci) {
         this.cgc$localShooterProperty.resetProperty();
+        this.cgc$resetHotbarSelection();
         this.cgc$clientDraw(ItemStack.EMPTY);
+    }
+
+    private void cgc$tickHotbarSelection() {
+        Inventory inventory = this.cgc$localShooter.getInventory();
+        int currentIndex = inventory.selected;
+
+        // 玩家切换选中物品
+        if (this.cgc$previousHotbarIndex != currentIndex) {
+            this.cgc$clientDraw(this.cgc$previousHotbarIndex != -1 ? this.cgc$previousHotbarItem : ItemStack.EMPTY);
+            this.cgc$previousHotbarIndex = currentIndex;
+            this.cgc$setPreviousHotbarItem(inventory.getItem(currentIndex));
+            return;
+        }
+
+        // 选中物品本身进行了NBT更新
+        ItemStack currentItem = inventory.getItem(currentIndex);
+        IGun iGun = IGunGetter.fromItemStack(currentItem);
+        boolean tagMatch = ItemStack.matches(this.cgc$previousHotbarItem, currentItem);
+        if (
+                (iGun != null && iGun.switchItemNeedReset(this.cgc$previousHotbarItem, currentItem))
+                || (iGun == null && !tagMatch)
+        ) {
+            this.cgc$clientDraw(this.cgc$previousHotbarItem);
+        }
+
+        if (!tagMatch) {
+            this.cgc$setPreviousHotbarItem(currentItem);
+        }
+    }
+    private void cgc$setPreviousHotbarItem(ItemStack itemStack) {
+        this.cgc$previousHotbarItem = itemStack.copy();
+    }
+    private void cgc$resetHotbarSelection() {
+        this.cgc$previousHotbarIndex = -1;
+        this.cgc$previousHotbarItem = ItemStack.EMPTY;
     }
 
     // --------ILocalShooter--------

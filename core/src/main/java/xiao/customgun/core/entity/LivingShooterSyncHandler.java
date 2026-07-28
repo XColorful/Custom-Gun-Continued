@@ -15,6 +15,7 @@ import xiao.customgun.core.entity.sync.DataEntry;
 import xiao.customgun.core.entity.sync.SyncDataHolder;
 import xiao.customgun.core.entity.sync.SyncedDataKey;
 import xiao.customgun.core.entity.sync.SyncedEntityData;
+import xiao.customgun.core.network.message.ServerMessageSyncBaseTimestamp;
 import xiao.customgun.core.network.message.ServerMessageUpdateEntityData;
 import xiao.customgun.core.util.SendUtils;
 
@@ -99,10 +100,13 @@ public class LivingShooterSyncHandler implements IEventHandler {
     }
 
     private void onPlayerJoinWorld(IEntityJoinLevelEvent event) {
+//        if (!event.getLogicalSide().isServer()) return;
         Entity entity = event.getEntity();
         if (!(entity instanceof ServerPlayer serverPlayer)) {
             return;
         }
+
+        SendUtils.sendMessageToPlayer(serverPlayer, new ServerMessageSyncBaseTimestamp());
 
         SyncDataHolder holder = SyncedEntityData.instance().getSyncDataHolder(serverPlayer);
         if (holder != null) {

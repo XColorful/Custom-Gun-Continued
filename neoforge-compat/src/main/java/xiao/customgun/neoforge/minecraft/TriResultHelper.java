@@ -7,23 +7,23 @@
 
 package xiao.customgun.neoforge.minecraft;
 
-import net.neoforged.bus.api.Event;
+import net.neoforged.neoforge.common.util.TriState;
 import xiao.customgun.core.api.minecraft.TriResult;
 
 public class TriResultHelper {
 
-    public static TriResult convert(Event.Result result) {
+    public static TriResult convert(TriState result) {
         return switch (result) {
-            case ALLOW -> TriResult.ALLOW;
-            case DENY -> TriResult.DENY;
+            case TRUE -> TriResult.ALLOW;
+            case FALSE -> TriResult.DENY;
             default -> TriResult.DEFAULT;
         };
     }
-    public static Event.Result convert(TriResult result) {
+    public static TriState convert(TriResult result) {
         return switch (result) {
-            case ALLOW -> Event.Result.ALLOW;
-            case DENY -> Event.Result.DENY;
-            default -> Event.Result.DEFAULT;
+            case ALLOW -> TriState.TRUE;
+            case DENY -> TriState.FALSE;
+            default -> TriState.DEFAULT;
         };
     }
 }

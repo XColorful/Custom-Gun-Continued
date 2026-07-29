@@ -263,9 +263,9 @@ Notation:
 > package com.tacz.guns.debug;
 > ```
 
-|com.tacz.guns.crafting.result|package xiao.customgun.core.recipe|
+|com.tacz.guns.crafting.result| |
 |---|---|
-|`GunMeleeDebug`||
+|`GunMeleeDebug`|_Deprecated_|
 
 ### Entity
 > ```java
@@ -380,7 +380,7 @@ Notation:
 |`CapabilityRegistry`|`CapabilityRegistry`|
 |`CommandRegistry`|`CommandRegistry`|
 |`CommonRegistry`|`CommonSetup`|
-|`CommonRegistry`.registerAttributes||
+|`CommonRegistry`.registerAttributes|_Deprecated_|
 |`CommonRegistry`.onAddPackFinders|_Deprecated_|
 |`CompatRegistry`||
 |`ModAttributes`|_Deprecated_|

@@ -134,6 +134,14 @@ Notation:
 |---|---|
 |`IAttachmentModifier`|attachment.modifier.`IAttachmentModifier`|
 
+|com.tacz.guns.api.modifier|xiao.customgun.core.api.item|
+|---|---|
+|`IAttachmentModifier`.readJson|`IItemModifier`.getModifier|
+
+|com.tacz.guns.api.modifier|xiao.customgun.core.api.item|
+|---|---|
+|`IAttachmentModifier`.initCache|gun.modifier.`IGunModifier`.getBase|
+
 |com.tacz.guns.api.modifier| |
 |---|---|
 |`IAttachmentModifier`.`DiagramsData`||

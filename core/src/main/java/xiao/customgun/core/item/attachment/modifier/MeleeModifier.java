@@ -8,6 +8,7 @@
 package xiao.customgun.core.item.attachment.modifier;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.item.gun.modifier.IMeleeModifier;
 import xiao.customgun.core.resource.data.data.AttachmentData;
 import xiao.customgun.core.resource.data.data.attachment._MeleeModifierData;
@@ -21,13 +22,37 @@ public final class MeleeModifier extends AttachmentModifier<_MeleeModifierData, 
     // --------IAttachmentModifier--------
 
     @Override
-    public _MeleeModifierData getModifier(@NotNull AttachmentData pojo) {
+    public @Nullable _MeleeModifierData getModifier(@NotNull AttachmentData pojo) {
         return pojo.getMeleeModifier();
     }
 
     @Override
     public _MeleeModifierData eval(Collection<_MeleeModifierData> modifiers, _MeleeModifierData base) {
-        // TODO: eval 不能复用父类函数 — 近战有7个独立字段，各自需要独立的计算逻辑
+        if (modifiers.isEmpty()) return base;
+
+        _MeleeModifierData result = new _MeleeModifierData();
+//        List<_SimpleModifierData> meleeDamageModifiers = new ArrayList<>();
+//        List<_SimpleModifierData> meleeDistanceModifiers = new ArrayList<>();
+//        List<_SimpleModifierData> rangeAngleModifiers = new ArrayList<>();
+//
+//        List<_SimpleModifierData> damageDelaySecondsModifiers = new ArrayList<>();
+//        List<_SimpleModifierData> baseCooldownModifiers = new ArrayList<>();
+//
+//        List<_SimpleModifierData> knockbackStrengthModifiers = new ArrayList<>();
+
+        for (_MeleeModifierData modifier : modifiers) {
+            result.setMeleeDamage(modifier.getMeleeDamage());
+            result.setMeleeDamage(modifier.getMeleeDamage());
+            result.setRangeAngle(modifier.getRangeAngle());
+
+            result.setDamageDelaySeconds(modifier.getDamageDelaySeconds());
+            result.setBaseCooldown(modifier.getBaseCooldown());
+
+            result.setKnockbackStrength(modifier.getKnockbackStrength());
+            result.setTargetEffect(modifier.getTargetEffect());
+            return result;
+        }
+
         return base;
     }
 }

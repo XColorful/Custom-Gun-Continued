@@ -8,6 +8,7 @@
 package xiao.customgun.core.api.entity;
 
 import net.minecraft.world.item.ItemStack;
+import org.luaj.vm2.LuaValue;
 import xiao.customgun.core.api.entity.shooter.modifier.ShooterGunModifierCache;
 
 import javax.annotation.Nonnull;
@@ -100,11 +101,10 @@ public class ShooterProperty {
      */
     public boolean isProne = false;
     /**
-     * TODO
      * 用于缓存 lua 脚本的数据
      */
     @Nullable
-    public Object scriptData = null;
+    public LuaValue scriptData = null;
 
     public long heatTimestamp = -1;
     /**

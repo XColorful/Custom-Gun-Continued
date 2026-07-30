@@ -69,23 +69,32 @@ public class ReloadState {
         /**
          * 表示当前玩家未进行换弹。
          */
-        NOT_RELOADING,
+        NOT_RELOADING(0),
         /**
          * 表示当前换弹状态为 正在进行空仓换弹 ，并处在填装弹药阶段。
          */
-        EMPTY_RELOAD_FEEDING,
+        EMPTY_RELOAD_FEEDING(1),
         /**
          * 表示当前换弹状态为 正在进行空仓换弹，并处在收尾阶段。
          */
-        EMPTY_RELOAD_FINISHING,
+        EMPTY_RELOAD_FINISHING(2),
         /**
          * 表示当前换弹状态为 正在进行战术快速换弹 ，并处在填装弹药阶段。
          */
-        TACTICAL_RELOAD_FEEDING,
+        TACTICAL_RELOAD_FEEDING(3),
         /**
          * 表示当前换弹状态为 正在进行战术快速换弹，并处在收尾阶段。
          */
-        TACTICAL_RELOAD_FINISHING;
+        TACTICAL_RELOAD_FINISHING(4);
+
+        public final int index;
+        StateType(int index) {
+            this.index = index;
+        }
+
+        public int getIndex() {
+            return this.index;
+        }
 
         /**
          * 判断这个状态是否是空仓换弹过程中的其中一个阶段。包括空仓换弹的收尾阶段。

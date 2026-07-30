@@ -164,10 +164,10 @@ Notation:
 > package com.tacz.guns.api.util;
 > ```
 
-|com.tacz.guns.util| |
+|com.tacz.guns.util|xiao.customgun.core.api.gun|
 |---|---|
-|`LuaEntityAccessor`||
-|`LuaNbtAccessor`||
+|`LuaEntityAccessor`|script.`_LuaEntityAccessor`|
+|`LuaNbtAccessor`|script.`_LuaNbtAccessor`|
 
 #### Lua virtual machine library API
 > ```java

@@ -278,7 +278,7 @@ public final class LivingShooterShoot extends LivingShooterAspect {
 
     // TODO 把原模组GunData里的getShootInterval找个位置
     public static long _getShootInterval(LivingEntity livingShooter,
-                                  GunData gunData, FireModeType fireModeType, IGun iGun, ItemStack gunItem) {
+                                         GunData gunData, FireModeType fireModeType, IGun iGun, ItemStack gunItem) {
 
         // ----TODO 把原模组GunData里的getRoundsPerMinute找个位置
         int rpm = gunData.getRpm();

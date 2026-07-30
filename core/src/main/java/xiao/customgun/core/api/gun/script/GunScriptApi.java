@@ -46,6 +46,7 @@ public class GunScriptApi {
         scriptApi.livingShooter = livingShooter;
         scriptApi.iGun = iGun;
         scriptApi.gunItem = gunItem;
+        scriptApi.resetCache();
         return scriptApi;
     }
     public static GunScriptApi of(@NotNull IGun iGun, @NotNull ItemStack gunItem) {
@@ -65,6 +66,13 @@ public class GunScriptApi {
         if (this.scriptCache == null || this.scriptParamsCache == null) return false;
 
         return true;
+    }
+
+    /**
+     * @return {@link #resetCache()}是否准备好
+     */
+    public boolean isCacheValid() {
+        return this.gunIndexInstanceCache != null && this.scriptCache != null && this.scriptParamsCache != null;
     }
 
     public @Nullable LuaFunction getFunction(ScriptMethodType scriptMethodType) {

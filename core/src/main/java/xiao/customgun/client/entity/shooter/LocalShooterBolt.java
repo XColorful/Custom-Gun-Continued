@@ -32,16 +32,15 @@ public final class LocalShooterBolt extends LocalShooterAspect {
      * 对齐{@link LivingShooterBolt#bolt()}
      */
     public void bolt() {
-        // 检查状态锁
-        if (this.localShooterProperty.clientStateLock) return;
-
         ItemStack gunItem = this.localShooter.getMainHandItem();
         IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return;
 
         if (
+                // 检查状态锁
+                this.localShooterProperty.clientStateLock
                 // 检查是否在拉栓
-                this.localShooterProperty.isBolting
+                || this.localShooterProperty.isBolting
         ) return;
 
         // 锁上状态锁

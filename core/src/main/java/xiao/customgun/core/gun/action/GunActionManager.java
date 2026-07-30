@@ -40,8 +40,9 @@ public class GunActionManager implements IGunActionManager {
                              ILivingShooter iLivingShooter, LivingEntity livingShooter) {
         GunScriptApi scriptApi = GunScriptApi.of(iLivingShooter, livingShooter, iGun, gunItem);
         return switch (scriptApi.simpleCall(ScriptMethodType.START_BOLT)) {
-            case TRUE, UNKNOWN -> true;
+            case TRUE -> true;
             case FALSE -> false;
+            case UNKNOWN -> _DefaultGunAction.startBolt(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter);
         };
     }
     @Override

@@ -59,6 +59,11 @@ public interface IGunAmmoDataAccess {
     int consumeMagAmmo(ItemStack gunItem);
 
     /**
+     * 查询当前配件下弹匣大小
+     */
+    int getMagAmmoLimit(ItemStack gunItem);
+
+    /**
      * 消耗枪管里的子弹
      */
     default boolean hasBarrelAmmo(ItemStack gunItem) {

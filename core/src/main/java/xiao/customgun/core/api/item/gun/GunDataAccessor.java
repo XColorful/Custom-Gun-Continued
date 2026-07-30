@@ -22,6 +22,7 @@ import xiao.customgun.core.api.item.ammo.IAmmoGetter;
 import xiao.customgun.core.api.item.attachment.AttachmentCategory;
 import xiao.customgun.core.api.item.attachment.AttachmentNBTAccessor;
 import xiao.customgun.core.api.item.attachment.IAttachmentGetter;
+import xiao.customgun.core.api.item.attachment.MagazineCategory;
 import xiao.customgun.core.api.item.builder.AttachmentBuilder;
 import xiao.customgun.core.api.item.builder.ItemBuilder;
 import xiao.customgun.core.api.minecraft.capability.IInventoryCapability;
@@ -29,6 +30,8 @@ import xiao.customgun.core.api.resource.ResourceApi;
 import xiao.customgun.core.api.resource.ResourceTag;
 import xiao.customgun.core.developer.PlannedRefactor;
 import xiao.customgun.core.init.registry.ModItems;
+import xiao.customgun.core.resource.data.data.AttachmentData;
+import xiao.customgun.core.resource.data.data.GunData;
 import xiao.customgun.core.resource.instance.data.GunIndexInstance;
 import xiao.customgun.core.util.NBTUtils;
 
@@ -303,6 +306,27 @@ public interface GunDataAccessor extends IGunDataAccess {
         if (current <= 0) return 0;
         NBTUtils.setInt(gunItem, GunProperty.MAG_AMMO.getTagName(), current - 1);
         return 1;
+    }
+
+    @Override
+    default int getMagAmmoLimit(ItemStack gunItem) {
+        var gunLocation = this.getGunLocation(gunItem);
+        @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(gunLocation);
+        if (gunIndexInstance == null) return 0;
+
+        GunData gunData = gunIndexInstance.getGunData();
+        MagazineCategory magazineCategory = MagazineCategory.NONE;
+        {
+            var attachmentLocation = this.getAttachmentLocation(gunItem, AttachmentCategory.MAGAZINE);
+            AttachmentData attachmentData = ResourceApi.getAttachmentData(attachmentLocation);
+            if (attachmentData != null) magazineCategory = attachmentData.getMagazineCategory();
+        }
+        if (magazineCategory == null || magazineCategory == MagazineCategory.NONE)
+            return gunData.getDefaultMagSize();
+        int[] extendedMagAmmoSize = gunData.getExtendedMagAmmoSize();
+        int index = magazineCategory.getIndex() - 1;
+        if (index < 0 || index >= extendedMagAmmoSize.length) return 0;
+        else return extendedMagAmmoSize[index];
     }
 
     @Override

@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import xiao.customgun.core.api.entity.ILivingShooter;
 import xiao.customgun.core.api.entity.ReloadState;
 import xiao.customgun.core.api.entity.ShooterProperty;
+import xiao.customgun.core.api.event.shooter.ShooterReloadEvent;
 import xiao.customgun.core.api.item.IGun;
 
 /*
@@ -36,12 +37,16 @@ public interface IGunActionRuntime {
                      ILivingShooter iLivingShooter, LivingEntity livingShooter);
 
     /**
+     * {@link IGunActionRuntime#startReload}包含该检查，不触发{@link ShooterReloadEvent}
+     * <br>
      * 换弹前的检查，完成如下检查：枪内弹药是否已经填满？玩家背包是否有可用弹药？是否为背包直读？
      * @return 是否满足换弹条件
      */
     boolean canReload(@NotNull IGun iGun, @NotNull ItemStack gunItem,
                       ILivingShooter iLivingShooter, LivingEntity livingShooter);
     /**
+     * 调用时会执行{@link IGunActionRuntime#canReload}检查，检查通过后触发{@link ShooterReloadEvent}
+     * <br>
      * 开始换弹时调用
      */
     boolean startReload(ShooterProperty shooterProperty,

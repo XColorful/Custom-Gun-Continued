@@ -1,7 +1,7 @@
 [English](#English)
 
 # 枪械数据
-> wiki 版本：`0.0.1`.3
+> wiki 版本：`0.0.1`.4
 
 - `bullet_data`/`bullet`（\_BulletData）：
 	- `display_damage`/`damage`（float）：
@@ -67,7 +67,7 @@
 - 
 - `reload_data`/`reload`（\_ReloadData）：
 	- `ammo_feed_type`/`type`（AmmoFeedType）：
-	- `infinite_ammo`/`infinite`（boolean）：
+	- `free_ammo_feed`/`infinite`（boolean）：
 	- `reload_feed`/`feed`（\_ReloadFeedData）：
 		- `empty`（float）：
 		- `tactical`（float）：
@@ -227,7 +227,7 @@
 
 	"reload_data": {
 		"ammo_feed_type": "",
-		"infinite_ammo": false,
+		"free_ammo_feed": false,
 		"reload_feed": {
 			"empty": 0.0,
 			"tactical": 0.0
@@ -333,7 +333,7 @@
 ```
 
 # English
-> wiki verison: `0.0.1`.3
+> wiki verison: `0.0.1`.4
 
 - `bullet_data`/`bullet`( \_BulletData):
 	- `display_damage`/`damage`(float):
@@ -399,7 +399,7 @@
 - 
 - `reload_data`/`reload`( \_ReloadData):
 	- `ammo_feed_type`/`type`(AmmoFeedType):
-	- `infinite_ammo`/`infinite`(boolean):
+	- `free_ammo_feed`/`infinite`(boolean):
 	- `reload_feed`/`feed`( \_ReloadFeedData):
 		- `empty`(float):
 		- `tactical`(float):
@@ -559,7 +559,7 @@
 
 	"reload_data": {
 		"ammo_feed_type": "",
-		"infinite_ammo": false,
+		"free_ammo_feed": false,
 		"reload_feed": {
 			"empty": 0.0,
 			"tactical": 0.0

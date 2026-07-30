@@ -33,6 +33,7 @@ import xiao.customgun.core.api.resource.ResourceApi;
 import xiao.customgun.core.api.resource.ResourceTag;
 import xiao.customgun.core.entity.shooter.LivingShooterAspect;
 import xiao.customgun.core.entity.shooter.LivingShooterShoot;
+import xiao.customgun.core.gun.action._DefaultGunAction;
 import xiao.customgun.core.resource.data.data.AttachmentData;
 import xiao.customgun.core.resource.data.data.GunData;
 import xiao.customgun.core.resource.data.data.gun._BurstData;
@@ -289,22 +290,9 @@ public class _GunScriptBackCompat {
      * @return 当前枪械需要的弹药数量
      */
     protected static int getNeededAmmoAmount(GunScriptApi _this) {
-        GunIndexInstance gunIndexInstance = _this.gunIndexInstanceCache;
-        if (gunIndexInstance == null) return 0;
-
-        GunData gunData = gunIndexInstance.getGunData();
-        MagazineCategory magazineCategory = MagazineCategory.NONE;
-        {
-            var attachmentLocation = _this.iGun.getAttachmentLocation(_this.gunItem, AttachmentCategory.MAGAZINE);
-            AttachmentData attachmentData = ResourceApi.getAttachmentData(attachmentLocation);
-            if (attachmentData != null) magazineCategory = attachmentData.getMagazineCategory();
-        }
+        int magAmmoLimit = _this.iGun.getMagAmmoLimit(_this.gunItem);
         int currentAmmoCount = getAmmoCountInMagazine(_this);
-        if (magazineCategory == null || magazineCategory == MagazineCategory.NONE) return gunData.getDefaultMagSize() - currentAmmoCount;
-        int[] extendedMagAmmoSize = gunData.getExtendedMagAmmoSize();
-        int index = magazineCategory.getIndex();
-        if (index >= extendedMagAmmoSize.length) return 0;
-        else return extendedMagAmmoSize[index] - currentAmmoCount;
+        return magAmmoLimit - currentAmmoCount;
     }
 
     /**
@@ -319,22 +307,7 @@ public class _GunScriptBackCompat {
      * @return 返回枪械弹匣的最大备弹数，不计算已在枪管中的弹药。
      */
     protected static int getMaxAmmoCount(GunScriptApi _this) {
-        GunIndexInstance gunIndexInstance = _this.gunIndexInstanceCache;
-        if (gunIndexInstance == null) return 0;
-
-        GunData gunData = gunIndexInstance.getGunData();
-        MagazineCategory magazineCategory = MagazineCategory.NONE;
-        {
-            var attachmentLocation = _this.iGun.getAttachmentLocation(_this.gunItem, AttachmentCategory.MAGAZINE);
-            AttachmentData attachmentData = ResourceApi.getAttachmentData(attachmentLocation);
-            if (attachmentData != null) magazineCategory = attachmentData.getMagazineCategory();
-        }
-        if (magazineCategory == null || magazineCategory == MagazineCategory.NONE)
-            return gunData.getDefaultMagSize();
-        int[] extendedMagAmmoSize = gunData.getExtendedMagAmmoSize();
-        int index = magazineCategory.getIndex() - 1;
-        if (index < 0 || index >= extendedMagAmmoSize.length) return 0;
-        else return extendedMagAmmoSize[index];
+        return _this.iGun.getMagAmmoLimit(_this.gunItem);
     }
 
     /**
@@ -354,15 +327,7 @@ public class _GunScriptBackCompat {
      * @return 实际消耗的弹药数量
      */
     protected static int consumeAmmoFromPlayer(GunScriptApi _this, int neededAmount) {
-        // 如果处于背包直读并且创造模式不消耗的情况
-        if (useInventoryAmmo(_this) && !isReloadingNeedConsumeAmmo(_this)) return neededAmount;
-
-        if (_this.iGun.useDummyAmmo(_this.gunItem)) return _this.iGun.findAndExtractDummyAmmo(_this.gunItem, neededAmount);
-        else {
-            if (_this.livingShooter == null) return neededAmount;
-            IInventoryCapability inventoryCapability = CustomGun.getCapabilityProvider().getItemHandler(_this.livingShooter, null);
-            return _this.iGun.findAndExtractInventoryAmmo(inventoryCapability, _this.gunItem, neededAmount);
-        }
+        return _DefaultGunAction.consumeAmmoFromPlayer(_this.iGun, _this.gunItem, _this.iLivingShooter, _this.livingShooter, neededAmount);
     }
 
     /**

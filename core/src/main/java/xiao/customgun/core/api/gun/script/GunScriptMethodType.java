@@ -20,6 +20,7 @@ public enum GunScriptMethodType implements ResourceTag.ConstantTag, IScriptMetho
     START_BOLT(ScriptMethodType.START_BOLT),
     TICK_BOLT(ScriptMethodType.TICK_BOLT),
     SHOOT(ScriptMethodType.SHOOT),
+    CAN_RELOAD(ScriptMethodType.CAN_RELOAD),
     START_RELOAD(ScriptMethodType.START_RELOAD),
     TICK_RELOAD(ScriptMethodType.TICK_RELOAD),
     INTERRUPT_RELOAD(ScriptMethodType.INTERRUPT_RELOAD),

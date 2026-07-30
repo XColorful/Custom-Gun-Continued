@@ -30,27 +30,32 @@ public final class LivingShooterBolt extends LivingShooterAspect {
     }
 
     public void bolt() {
+        // 1. 手持枪械检查
         if (this.shooterProperty.currentGunItem == null) return;
-
         ItemStack currentGunItem = this.shooterProperty.currentGunItem.get();
         IGun iGun = IGunGetter.fromItemStack(currentGunItem);
         if (iGun == null) return;
 
-        if (
+        if ( // 2.1 检查状态锁
                 // 判断是否正在射击冷却
                 this.shoot.getShootCooldown() > 0
                 // 检查是否正在换弹
                 || this.shooterProperty.reloadStateType.isReloading()
                 // 检查是否在切枪
                 || this.draw.getDrawCooldown() > 0
+        ) return;
+        else if ( // 2.2
                 // 检查是否在拉栓
-                || this.shooterProperty.isBolting
+                this.shooterProperty.isBolting
         ) return;
 
+        // 3. IGunRuntime操作结果 -> Shooter状态
         this.shooterProperty.isBolting = iGun.startBolt(this.shooterProperty, iGun, currentGunItem, ILivingShooterGetter.cgc$fromLivingEntity(this.livingShooter), this.livingShooter);
-        if (this.shooterProperty.isBolting) {
-            this.shooterProperty.boltTimestamp = System.currentTimeMillis();
+        if (!this.shooterProperty.isBolting) {
+            return;
         }
+
+        this.shooterProperty.boltTimestamp = System.currentTimeMillis();
     }
 
     public void tickBolt() {

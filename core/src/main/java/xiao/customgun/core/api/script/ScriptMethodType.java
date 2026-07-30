@@ -21,6 +21,7 @@ public enum ScriptMethodType implements ResourceTag.ConstantTag, IScriptMethodTy
     START_BOLT(ScriptMethodTag.START_BOLT, null),
     TICK_BOLT(ScriptMethodTag.TICK_BOLT, null),
     SHOOT(ScriptMethodTag.SHOOT, null),
+    CAN_RELOAD(ScriptMethodTag.CAN_RELOAD, null),
     START_RELOAD(ScriptMethodTag.START_RELOAD, null),
     TICK_RELOAD(ScriptMethodTag.TICK_RELOAD, null),
     INTERRUPT_RELOAD(ScriptMethodTag.INTERRUPT_RELOAD, null),

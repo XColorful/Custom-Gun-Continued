@@ -47,11 +47,19 @@ public final class LivingShooterReload extends LivingShooterAspect {
         @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(iGun.getGunLocation(currentGunItem));
         if (gunIndexInstance == null) return;
 
-        if (this.shooterProperty.reloadStateType.isReloading() // 检查换弹是否还未完成
-                || this.shooterProperty.isBolting // 检查是否在拉栓
-                || this.shoot.getShootCooldown() != 0 // 检查是否正在开火冷却
-                || this.draw.getDrawCooldown() != 0 // 检查是否在切枪
-                || iGun.useInventoryAmmo(currentGunItem) // 检查是否为背包直读
+        if ( // 检查状态锁
+                // 检查换弹是否还未完成
+                this.shooterProperty.reloadStateType.isReloading()
+                // 检查是否在拉栓
+                || this.shooterProperty.isBolting
+                // 检查是否正在开火冷却
+                || this.shoot.getShootCooldown() != 0
+                // 检查是否在切枪
+                || this.draw.getDrawCooldown() != 0
+        ) return;
+        else if (
+                // 射击后冷却50ms (比客户端快一点)
+                System.currentTimeMillis() - this.shooterProperty.lastShootTimestamp < RELOAD_COOLDOWN_MS
         ) return;
 
         // 检查弹药

@@ -68,14 +68,12 @@ public final class LocalShooterReload extends LocalShooterAspect {
         @Nullable GunDisplayInstance gunDisplayInstance = ClientResourceApi.getGunDisplayInstance(gunItem);
         if (gunDisplayInstance == null) return;
 
-        // 检查状态锁
-        if (this.localShooterProperty.clientStateLock) return;
-
-        if (
-                // 检查是否为背包直读
-                iGun.useInventoryAmmo(gunItem)
+        if ( // 检查状态锁
+                this.localShooterProperty.clientStateLock
+        ) return;
+        else if (
                 // 射击后冷却100ms
-                || System.currentTimeMillis() - this.localShooterProperty.clientShootTimestamp < RELOAD_COOLDOWN_MS
+                System.currentTimeMillis() - this.localShooterProperty.clientShootTimestamp < RELOAD_COOLDOWN_MS
         ) return;
 
         // 检查弹药

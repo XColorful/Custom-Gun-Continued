@@ -260,11 +260,11 @@ public class _DefaultGunAction {
         // 如果处于背包直读并且创造模式不消耗的情况
         if (iGun.useInventoryAmmo(gunItem) && !(iLivingShooter == null || iLivingShooter.cgc$needCheckAmmo())) return neededAmount;
 
-        if (iGun.useDummyAmmo(gunItem)) return iGun.findAndExtractDummyAmmo(gunItem, neededAmount);
+        if (iGun.useDummyAmmo(gunItem)) return iGun.findAndExtractDummyAmmo(iGun, gunItem, neededAmount);
         else {
             if (livingShooter == null) return neededAmount;
             IInventoryCapability inventoryCapability = CustomGun.getCapabilityProvider().getItemHandler(livingShooter, null);
-            return iGun.findAndExtractInventoryAmmo(inventoryCapability, gunItem, neededAmount);
+            return iGun.findAndExtractInventoryAmmo(inventoryCapability, iGun, gunItem, neededAmount);
         }
     }
 

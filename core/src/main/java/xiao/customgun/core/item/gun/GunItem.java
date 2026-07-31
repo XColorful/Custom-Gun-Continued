@@ -130,20 +130,20 @@ public class GunItem extends Item implements IGun, GunDataAccessor {
                 .melee(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter, meleeType);
     }
     // ----IGunInventoryRuntime----
-    @Override public void dropAllAmmo(ItemStack gunItem, LivingEntity livingShooter) {
+    @Override public void dropAllAmmo(@NotNull IGun iGun, @NotNull ItemStack gunItem, ILivingShooter iLivingShooter, LivingEntity livingShooter) {
         CustomGun.getGunManager().getManagerGroup(this.getManagerGroupTag(gunItem))
                 .gunInventoryManager()
-                .dropAllAmmo(gunItem, livingShooter);
+                .dropAllAmmo(iGun, gunItem, iLivingShooter, livingShooter);
     }
-    @Override public int findAndExtractInventoryAmmo(IInventoryCapability inventoryCapability, ItemStack gunItem, int needAmmoCount) {
+    @Override public int findAndExtractInventoryAmmo(IInventoryCapability inventoryCapability, @NotNull IGun iGun, @NotNull ItemStack gunItem, int requiredAmmoCount) {
         return CustomGun.getGunManager().getManagerGroup(this.getManagerGroupTag(gunItem))
                 .gunInventoryManager()
-                .findAndExtractInventoryAmmo(inventoryCapability, gunItem, needAmmoCount);
+                .findAndExtractInventoryAmmo(inventoryCapability, iGun, gunItem, requiredAmmoCount);
     }
-    @Override public int findAndExtractDummyAmmo(ItemStack gunItem, int needAmmoCount) {
+    @Override public int findAndExtractDummyAmmo(@NotNull IGun iGun, @NotNull ItemStack gunItem, int requiredAmmoCount) {
         return CustomGun.getGunManager().getManagerGroup(this.getManagerGroupTag(gunItem))
                 .gunInventoryManager()
-                .findAndExtractDummyAmmo(gunItem, needAmmoCount);
+                .findAndExtractDummyAmmo(iGun, gunItem, requiredAmmoCount);
     }
     // ----IGunScriptRuntime----
     @Override public @NotNull <V> V evalByScript(ItemStack gunItem, GunScriptApi scriptApi, GunModifierType modifierType, @NotNull V value) {

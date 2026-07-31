@@ -9,8 +9,11 @@ package xiao.customgun.core.gun.inventory;
 
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import xiao.customgun.CustomGun;
+import xiao.customgun.core.api.entity.ILivingShooter;
 import xiao.customgun.core.api.gun.inventory.IGunInventoryManager;
+import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.api.minecraft.capability.IInventoryCapability;
 
 public class GunInventoryManager implements IGunInventoryManager {
@@ -26,16 +29,21 @@ public class GunInventoryManager implements IGunInventoryManager {
     // --------IGunInventoryRuntime--------
 
     @Override
-    public void dropAllAmmo(ItemStack gunItem, LivingEntity livingShooter) {
+    public void dropAllAmmo(@NotNull IGun iGun, @NotNull ItemStack gunItem,
+                            ILivingShooter iLivingShooter, LivingEntity livingShooter) {
+        _DefaultGunInventory.dropAllAmmo(iGun, gunItem, iLivingShooter, livingShooter);
     }
 
     @Override
-    public int findAndExtractInventoryAmmo(IInventoryCapability inventoryCapability, ItemStack gunItem, int needAmmoCount) {
-        return 0;
+    public int findAndExtractInventoryAmmo(IInventoryCapability inventoryCapability,
+                                           @NotNull IGun iGun, @NotNull ItemStack gunItem,
+                                           int requiredAmmoCount) {
+        return _DefaultGunInventory.findAndExtractInventoryAmmo(inventoryCapability, iGun, gunItem, requiredAmmoCount);
     }
 
     @Override
-    public int findAndExtractDummyAmmo(ItemStack gunItem, int needAmmoCount) {
-        return 0;
+    public int findAndExtractDummyAmmo(@NotNull IGun iGun, @NotNull ItemStack gunItem,
+                                       int requiredAmmoCount) {
+        return _DefaultGunInventory.findAndExtractDummyAmmo(iGun, gunItem, requiredAmmoCount);
     }
 }

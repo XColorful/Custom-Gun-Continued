@@ -269,10 +269,10 @@ public final class LivingShooterShoot extends LivingShooterAspect {
 
         if (iGun.useDummyAmmo(gunItem)) {
             // TODO 这个逻辑是要统一在consumeAmmoOnce里处理的
-            iGun.findAndExtractDummyAmmo(gunItem, 1);
+            iGun.findAndExtractDummyAmmo(iGun, gunItem, 1);
         } else {
             IInventoryCapability inventoryCapability = CustomGun.getCapabilityProvider().getItemHandler(this.livingShooter, null);
-            iGun.findAndExtractInventoryAmmo(inventoryCapability, gunItem, 1);
+            iGun.findAndExtractInventoryAmmo(inventoryCapability, iGun, gunItem, 1);
         }
     }
 

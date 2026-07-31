@@ -166,7 +166,7 @@ public class _DefaultGunAction {
         _ReloadData reloadData = gunData.getReloadData();
         ReloadState.StateType stateType = ReloadState.StateType.NOT_RELOADING; // 编译器的静态检查得增加default分支
         ReloadState.StateType oldStateType = shooterProperty.reloadStateType;
-        long countDown;
+        long countDown = ReloadState.NOT_RELOADING_COUNTDOWN; // 编译器的静态检查得增加default分支
         long progressMs = shooterProperty.reloadTimestamp > 0 ? System.currentTimeMillis() - shooterProperty.reloadTimestamp : 0;
 
         // 计算新的 stateType 和 countDown
@@ -213,6 +213,8 @@ public class _DefaultGunAction {
             _defaultReloadFeed(gunData, iGun, gunItem, iLivingShooter, livingShooter, stateType.isReloadingTactical());
         }
 
+        reloadState.setStateType(stateType);
+        reloadState.setCountDown(countDown);
         return reloadState;
     }
     private static void _defaultReloadFeed(GunData gunData,

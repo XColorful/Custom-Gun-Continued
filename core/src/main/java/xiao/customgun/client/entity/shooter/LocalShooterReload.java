@@ -16,7 +16,6 @@ import xiao.customgun.client.api.sound.gun.GunSoundType;
 import xiao.customgun.client.resource.instance.assets.GunDisplayInstance;
 import xiao.customgun.client.sound.SoundPlayManager;
 import xiao.customgun.core.api.entity.ILivingShooter;
-import xiao.customgun.core.api.entity.ReloadState;
 import xiao.customgun.core.api.entity.shooter.ILivingShooterGetter;
 import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.api.item.gun.BoltType;
@@ -67,25 +66,21 @@ public final class LocalShooterReload extends LocalShooterAspect {
         SendUtils.sendMessageToServer(new ClientMessagePlayerReloadGun());
 
         // 执行客户端 reload 相关内容
-        this._doReload(iGun, gunItem, gunItem);
+        this._doReload(iGun, gunItem);
     }
-    private void _doReload(IGun iGun, ItemStack gunItem, ItemStack mainHandItem) {
+    private void _doReload(IGun iGun, ItemStack gunItem) {
+        @Nullable GunDisplayInstance gunDisplayInstance = ClientResourceApi.getGunDisplayInstance(gunItem);
+        if (gunDisplayInstance == null) return;
+
         var gunLocation = iGun.getGunLocation(gunItem);
         @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(gunLocation);
         if (gunIndexInstance == null) return;
 
         GunData gunData = gunIndexInstance.getGunData();
-
-        if (false) {
-            return;
-        }
-
-        @Nullable GunDisplayInstance gunDisplayInstance = ClientResourceApi.getGunDisplayInstance(gunItem);
-        if (gunDisplayInstance == null) return;
-
         BoltType boltType = gunData.getBoltType();
         boolean hasAmmo = boltType == BoltType.OPEN_BOLT ? iGun.getMagAmmoCount(gunItem) > 0
                 : iGun.hasBarrelAmmo(gunItem);
+
         // 触发 reload，停止播放声音
         SoundPlayManager.get().stopCurrentSound();
         var soundLocation = !hasAmmo ? GunSoundType.RELOAD_EMPTY_SOUND : GunSoundType.RELOAD_TACTICAL_SOUND;

@@ -28,21 +28,23 @@ public final class LivingShooterSwitchFireMode extends LivingShooterAspect {
     }
 
     public void switchFireMode() {
+        // 1. 手持枪械检查
         if (this.shooterProperty.currentGunItem == null) return;
-
         ItemStack currentGunItem = this.shooterProperty.currentGunItem.get();
         IGun iGun = IGunGetter.fromItemStack(currentGunItem);
         if (iGun == null) return;
 
-        ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(this.livingShooter);
-        if (EventPoster.get().postCustomEvent(new ShooterSwitchFireModeEvent(McLogicalSide.SERVER,
-                iLivingShooter, this.livingShooter, iGun, currentGunItem))) {
-            return;
-        }
+        if ( // 2.1 检查状态锁
+                false
+        ) return;
+
+        // 3. IGunRuntime操作结果 -> Shooter状态
+        boolean success = iGun.switchFireMode(this.shooterProperty, iGun, currentGunItem, ILivingShooterGetter.cgc$fromLivingEntity(this.livingShooter), this.livingShooter);
+        if (!success) return;
+
         SendUtils.sendMessageToTrackingEntity(this.livingShooter,
                 new ServerMessageGunSwitchFireMode(this.livingShooter.getId(), currentGunItem));
 
-        iGun.switchFireMode(this.shooterProperty, iGun, currentGunItem);
         // 刷新配件缓存
         ShooterGunModifierManager.postChangeEvent(this.livingShooter, currentGunItem);
     }

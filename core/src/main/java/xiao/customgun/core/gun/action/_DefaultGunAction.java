@@ -19,6 +19,7 @@ import xiao.customgun.core.api.entity.ShooterProperty;
 import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.api.item.gun.AmmoFeedType;
 import xiao.customgun.core.api.item.gun.BoltType;
+import xiao.customgun.core.api.item.gun.FireModeType;
 import xiao.customgun.core.api.minecraft.capability.IInventoryCapability;
 import xiao.customgun.core.api.resource.ResourceApi;
 import xiao.customgun.core.resource.data.data.GunData;
@@ -26,6 +27,8 @@ import xiao.customgun.core.resource.data.data.gun._ReloadData;
 import xiao.customgun.core.resource.data.data.gun.reload._ReloadCooldownData;
 import xiao.customgun.core.resource.data.data.gun.reload._ReloadFeedData;
 import xiao.customgun.core.resource.instance.data.GunIndexInstance;
+
+import java.util.List;
 
 @ApiStatus.Internal
 public class _DefaultGunAction {
@@ -269,5 +272,22 @@ public class _DefaultGunAction {
                                           @NotNull IGun iGun, @NotNull ItemStack gunItem,
                                           ILivingShooter iLivingShooter, LivingEntity livingShooter) {
         return;
+    }
+
+    protected static boolean switchFireMode(ShooterProperty shooterProperty,
+                                         @NotNull IGun iGun, @NotNull ItemStack gunItem) {
+        var gunLocation = iGun.getGunLocation(gunItem);
+        @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(gunLocation);
+        if (gunIndexInstance == null) return false;
+
+        GunData gunData = gunIndexInstance.getGunData();
+        List<FireModeType> fireModeTypes = gunData.getFireModeTypes();
+        if (fireModeTypes.isEmpty()) return false;
+
+        FireModeType fireModeType = iGun.getFireModeType(gunItem);
+        int nextIndex = fireModeTypes.indexOf(fireModeType) + 1;
+        fireModeType = fireModeTypes.get(nextIndex % fireModeTypes.size());
+        iGun.setFireModeType(gunItem, fireModeType);
+        return true;
     }
 }

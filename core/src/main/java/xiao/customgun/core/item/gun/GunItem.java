@@ -101,10 +101,10 @@ public class GunItem extends Item implements IGun, GunDataAccessor {
                 .gunActionManager()
                 .interruptReload(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter);
     }
-    @Override public void switchFireMode(ShooterProperty shooterProperty, @NotNull IGun iGun, @NotNull ItemStack gunItem) {
-        CustomGun.getGunManager().getManagerGroup(this.getManagerGroupTag(gunItem))
+    @Override public boolean switchFireMode(ShooterProperty shooterProperty, @NotNull IGun iGun, @NotNull ItemStack gunItem, ILivingShooter iLivingShooter, LivingEntity livingShooter) {
+        return CustomGun.getGunManager().getManagerGroup(this.getManagerGroupTag(gunItem))
                 .gunActionManager()
-                .switchFireMode(shooterProperty, iGun, gunItem);
+                .switchFireMode(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter);
     }
     // ----IGunAttackRuntime----
     @Override public void shoot(ShooterProperty shooterProperty, @NotNull IGun iGun, @NotNull ItemStack gunItem, ILivingShooter iLivingShooter, LivingEntity livingShooter, Supplier<Float> pitch, Supplier<Float> yaw) {

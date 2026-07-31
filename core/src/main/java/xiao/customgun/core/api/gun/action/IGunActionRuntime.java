@@ -68,7 +68,9 @@ public interface IGunActionRuntime {
 
     /**
      * 切换开火模式时调用
+     * @return 是否成功切换开火模式
      */
-    void switchFireMode(ShooterProperty shooterProperty,
-                        @NotNull IGun iGun, @NotNull ItemStack gunItem);
+    boolean switchFireMode(ShooterProperty shooterProperty,
+                           @NotNull IGun iGun, @NotNull ItemStack gunItem,
+                           ILivingShooter iLivingShooter, LivingEntity livingShooter);
 }

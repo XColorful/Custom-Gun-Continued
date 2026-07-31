@@ -12,6 +12,7 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.CustomGun;
+import xiao.customgun.core.api.common.McLogicalSide;
 import xiao.customgun.core.api.entity.ILivingShooter;
 import xiao.customgun.core.api.entity.ShooterProperty;
 import xiao.customgun.core.api.entity.shooter.ILivingShooterGetter;
@@ -22,6 +23,7 @@ import xiao.customgun.core.api.item.gun.IGunGetter;
 import xiao.customgun.core.api.resource.ResourceApi;
 import xiao.customgun.core.resource.instance.data.GunIndexInstance;
 
+// TODO 这个类现在跟原模组的AllowAttachmentTagMatcher一样是双端污染的
 public class ShooterGunModifierManager {
 
     public static void postChangeEvent(LivingEntity livingShooter) {
@@ -39,7 +41,8 @@ public class ShooterGunModifierManager {
         ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(livingShooter);
         ShooterGunModifierCache gunPropertyCache = ShooterGunModifierCache.of(gunIndexInstance, iGun, gunItem);
 
-        CustomGun.getEventPoster().postCustomEvent(new ShooterGunModifierCacheEvent(CustomGun.getSideExecutor().getLogicalSide(),
+        McLogicalSide logicalSide = CustomGun.getSideExecutor().getLogicalSide();
+        CustomGun.getEventPoster().postCustomEvent(new ShooterGunModifierCacheEvent(logicalSide,
                 iLivingShooter, livingShooter,
                 iGun, gunItem,
                 gunPropertyCache));

@@ -19,6 +19,7 @@ import xiao.customgun.core.api.entity.ILivingShooter;
 import xiao.customgun.core.api.entity.ReloadState;
 import xiao.customgun.core.api.entity.ShooterProperty;
 import xiao.customgun.core.api.event.shooter.ShooterReloadEvent;
+import xiao.customgun.core.api.event.shooter.ShooterSwitchFireModeEvent;
 import xiao.customgun.core.api.gun.action.IGunActionManager;
 import xiao.customgun.core.api.gun.script.GunScriptApi;
 import xiao.customgun.core.api.item.IGun;
@@ -126,7 +127,15 @@ public class GunActionManager implements IGunActionManager {
     }
 
     @Override
-    public void switchFireMode(ShooterProperty shooterProperty,
-                               @NotNull IGun iGun, @NotNull ItemStack gunItem) {
+    public boolean switchFireMode(ShooterProperty shooterProperty,
+                                  @NotNull IGun iGun, @NotNull ItemStack gunItem,
+                                  ILivingShooter iLivingShooter, LivingEntity livingShooter) {
+        McLogicalSide logicalSide = CustomGun.getSideExecutor().getLogicalSide();
+        if (EventPoster.get().postCustomEvent(new ShooterSwitchFireModeEvent(logicalSide,
+                iLivingShooter, livingShooter, iGun, gunItem))) {
+            return false;
+        }
+
+        return _DefaultGunAction.switchFireMode(shooterProperty, iGun, gunItem);
     }
 }

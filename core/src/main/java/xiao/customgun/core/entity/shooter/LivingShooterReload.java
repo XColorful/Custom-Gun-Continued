@@ -41,8 +41,8 @@ public final class LivingShooterReload extends LivingShooterAspect {
     public void reload() {
         // 1. 手持枪械检查
         if (this.shooterProperty.currentGunItem == null) return;
-        ItemStack currentGunItem = this.shooterProperty.currentGunItem.get();
-        IGun iGun = IGunGetter.fromItemStack(currentGunItem);
+        ItemStack gunItem = this.shooterProperty.currentGunItem.get();
+        IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return;
 
         long currentTimeMillis = System.currentTimeMillis();
@@ -63,7 +63,7 @@ public final class LivingShooterReload extends LivingShooterAspect {
 
         // 3. IGunRuntime操作结果 -> Shooter状态
         ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(this.livingShooter);
-        boolean isReloading = iGun.startReload(this.shooterProperty, iGun, currentGunItem, iLivingShooter, this.livingShooter);
+        boolean isReloading = iGun.startReload(this.shooterProperty, iGun, gunItem, iLivingShooter, this.livingShooter);
         if (!isReloading) {
             this.shooterProperty.reloadStateType = ReloadState.StateType.NOT_RELOADING;
             this.shooterProperty.reloadTimestamp = -1;
@@ -72,10 +72,10 @@ public final class LivingShooterReload extends LivingShooterAspect {
 
         // 发包通知客户端
         SendUtils.sendMessageToTrackingEntity(this.livingShooter,
-                new ServerMessageGunReload(this.livingShooter.getId(), currentGunItem));
+                new ServerMessageGunReload(this.livingShooter.getId(), gunItem));
 
         // 执行服务端 reload 相关内容
-        this._doReload(currentTimeMillis, iGun, currentGunItem);
+        this._doReload(currentTimeMillis, iGun, gunItem);
     }
     private void _doReload(long currentTimeMillis, IGun iGun, ItemStack gunItem) {
         var gunLocation = iGun.getGunLocation(gunItem);

@@ -30,8 +30,8 @@ public final class LivingShooterSwitchFireMode extends LivingShooterAspect {
     public void switchFireMode() {
         // 1. 手持枪械检查
         if (this.shooterProperty.currentGunItem == null) return;
-        ItemStack currentGunItem = this.shooterProperty.currentGunItem.get();
-        IGun iGun = IGunGetter.fromItemStack(currentGunItem);
+        ItemStack gunItem = this.shooterProperty.currentGunItem.get();
+        IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return;
 
         if ( // 2.1 检查状态锁
@@ -39,13 +39,13 @@ public final class LivingShooterSwitchFireMode extends LivingShooterAspect {
         ) return;
 
         // 3. IGunRuntime操作结果 -> Shooter状态
-        boolean success = iGun.switchFireMode(this.shooterProperty, iGun, currentGunItem, ILivingShooterGetter.cgc$fromLivingEntity(this.livingShooter), this.livingShooter);
+        boolean success = iGun.switchFireMode(this.shooterProperty, iGun, gunItem, ILivingShooterGetter.cgc$fromLivingEntity(this.livingShooter), this.livingShooter);
         if (!success) return;
 
         SendUtils.sendMessageToTrackingEntity(this.livingShooter,
-                new ServerMessageGunSwitchFireMode(this.livingShooter.getId(), currentGunItem));
+                new ServerMessageGunSwitchFireMode(this.livingShooter.getId(), gunItem));
 
         // 刷新配件缓存
-        ShooterGunModifierManager.postChangeEvent(this.livingShooter, currentGunItem);
+        ShooterGunModifierManager.postChangeEvent(this.livingShooter, gunItem);
     }
 }

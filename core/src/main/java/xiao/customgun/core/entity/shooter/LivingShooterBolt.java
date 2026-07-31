@@ -32,8 +32,8 @@ public final class LivingShooterBolt extends LivingShooterAspect {
     public void bolt() {
         // 1. 手持枪械检查
         if (this.shooterProperty.currentGunItem == null) return;
-        ItemStack currentGunItem = this.shooterProperty.currentGunItem.get();
-        IGun iGun = IGunGetter.fromItemStack(currentGunItem);
+        ItemStack gunItem = this.shooterProperty.currentGunItem.get();
+        IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return;
 
         if ( // 2.1 检查状态锁
@@ -50,7 +50,7 @@ public final class LivingShooterBolt extends LivingShooterAspect {
         ) return;
 
         // 3. IGunRuntime操作结果 -> Shooter状态
-        this.shooterProperty.isBolting = iGun.startBolt(this.shooterProperty, iGun, currentGunItem, ILivingShooterGetter.cgc$fromLivingEntity(this.livingShooter), this.livingShooter);
+        this.shooterProperty.isBolting = iGun.startBolt(this.shooterProperty, iGun, gunItem, ILivingShooterGetter.cgc$fromLivingEntity(this.livingShooter), this.livingShooter);
         if (!this.shooterProperty.isBolting) {
             return;
         }

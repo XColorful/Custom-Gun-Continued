@@ -11,6 +11,7 @@ import net.minecraft.world.item.ItemStack;
 import org.luaj.vm2.LuaValue;
 import xiao.customgun.core.api.entity.shooter.modifier.ShooterGunModifierCache;
 import xiao.customgun.core.api.item.gun.MeleeType;
+import xiao.customgun.core.entity.shooter.LivingShooterAim;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -45,10 +46,10 @@ public class ShooterProperty {
      */
     public @Nullable MeleeType preparingMeleeType;
     /**
-     * 切枪时间戳，在切枪开始时更新，单位 ms。
+     * 切枪预计完成时间，在切枪开始时更新，单位 ms。
      * 用于计算切枪进度。切枪进度完成后，才能进行各种操作。
      */
-    public long drawTimestamp = -1L;
+    public long drawFinishTimestamp = -1L;
     /**
      * 拉栓时间戳，在拉栓开始时更新，单位 ms。
      */
@@ -92,7 +93,10 @@ public class ShooterProperty {
      * 与疾跑相关的参数，开镜时会阻止疾跑
      */
     public float sprintTimeS = 0;
-    public long sprintTimestamp = -1;
+    /**
+     * 这个字段的作用域只在{@link LivingShooterAim}内部
+     */
+    @Deprecated public long sprintTimestamp = -1;
     /**
      * @deprecated 改用{@link IBulletVictimEntity}
      */
@@ -129,7 +133,6 @@ public class ShooterProperty {
         aimingProgress = 0;
         reloadTimestamp = -1;
         reloadStateType = ReloadState.StateType.NOT_RELOADING;
-        sprintTimestamp = -1;
         sprintTimeS = 0;
         boltTimestamp = -1;
         isBolting = false;

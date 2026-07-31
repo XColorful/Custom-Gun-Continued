@@ -184,8 +184,11 @@ public class LocalPlayerMixin implements ILocalShooter {
     @Override public boolean cgc$isCharging() {
         return this.cgc$localShooterProperty.isCharging;
     }
-    @Override public float cgc$getAimingProgress(float partialTicks) {
-        return this.cgc$localAim.getClientAimingProgress(partialTicks);
+    @Override public float cgc$getAimingProgress() {
+        return this.cgc$localShooterProperty.clientAimingProgress;
+    }
+    @Override public float cgc$getRenderAimingProgress(float partialTicks) {
+        return this.cgc$localAim.getRenderAimingProgress(partialTicks);
     }
     @Override public long cgc$getShootCooldown() {
         return this.cgc$localShoot.getClientShootCooldown();

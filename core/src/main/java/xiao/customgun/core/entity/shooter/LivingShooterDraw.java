@@ -38,19 +38,19 @@ public final class LivingShooterDraw extends LivingShooterAspect {
 
         long currentTimeMillis = System.currentTimeMillis();
 
-        if (this.shooterProperty.drawTimestamp < 0) this.shooterProperty.drawTimestamp = currentTimeMillis;
+        if (this.shooterProperty.drawFinishTimestamp < 0) this.shooterProperty.drawFinishTimestamp = currentTimeMillis;
         if (this.shooterProperty.heatTimestamp < 0) this.shooterProperty.heatTimestamp = currentTimeMillis;
 
         // 更新切枪时间戳
-        long drawTime = currentTimeMillis - this.shooterProperty.drawTimestamp;
+        long drawTime = currentTimeMillis - this.shooterProperty.drawFinishTimestamp;
         if (drawTime >= 0) {
             // 不处于收枪状态时，计算收枪时长
             if (drawTime < this.shooterProperty.currentPutAwayTimeS * 1000) {
                 // 从开始切枪到现在，抬枪的时间小于收枪需要的时间 -> 按抬枪时间计算
-                this.shooterProperty.drawTimestamp = currentTimeMillis + drawTime;
+                this.shooterProperty.drawFinishTimestamp = currentTimeMillis + drawTime;
             } else {
                 // 从开始切枪到现在，抬枪的时间大于收枪需要的时间 -> 按收枪时间计算
-                this.shooterProperty.drawTimestamp = currentTimeMillis + (long) (this.shooterProperty.currentPutAwayTimeS * 1000);
+                this.shooterProperty.drawFinishTimestamp = currentTimeMillis + (long) (this.shooterProperty.currentPutAwayTimeS * 1000);
             }
         }
 
@@ -83,7 +83,7 @@ public final class LivingShooterDraw extends LivingShooterAspect {
         if (gunIndexInstance == null) return -1;
 
         long coolDown = (long) (gunIndexInstance.getGunData().getDrawTime() * 1000)
-                - (System.currentTimeMillis() - this.shooterProperty.drawTimestamp);
+                - (System.currentTimeMillis() - this.shooterProperty.drawFinishTimestamp);
         // 给 5 ms 的窗口时间，以平衡延迟
         return coolDown < WINDOW_TIME_MS ? 0 : coolDown;
     }

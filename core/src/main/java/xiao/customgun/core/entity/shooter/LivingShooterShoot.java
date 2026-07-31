@@ -212,8 +212,8 @@ public final class LivingShooterShoot extends LivingShooterAspect {
             long startTimestamp = this.shooterProperty.baseTimestamp + this.shooterProperty.shootTimestamp;
             return System.currentTimeMillis() - startTimestamp;
         }
-        if (this.shooterProperty.drawTimestamp >= 0) {
-            return System.currentTimeMillis() - this.shooterProperty.drawTimestamp;
+        if (this.shooterProperty.drawFinishTimestamp >= 0) {
+            return System.currentTimeMillis() - this.shooterProperty.drawFinishTimestamp;
         }
         return 0L;
     }

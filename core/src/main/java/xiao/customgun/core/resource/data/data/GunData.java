@@ -75,7 +75,7 @@ public final class GunData extends ResourcePojo<GunData> {
     // 操作枪械的时长
     private float drawTime = 0.4f;
     private float putAwayTime = 0.4f;
-    private float sprintTime = 0.2f;
+    private float sprintSwitchTime = 0.2f;
     private float aimTime = 0.2f;
     private float boltActionTime = 0f;
     private float boltFeedTime = -1f;
@@ -131,7 +131,7 @@ public final class GunData extends ResourcePojo<GunData> {
 
                     case GunDataTag.DRAW_TIME -> pojo.drawTime = JsonUtils.readFloat(reader);
                     case GunDataTag.PUT_AWAY_TIME -> pojo.putAwayTime = JsonUtils.readFloat(reader);
-                    case GunDataTag.SPRINT_TIME -> pojo.sprintTime = JsonUtils.readFloat(reader);
+                    case GunDataTag.SPRINT_SWITCH_TIME, GunDataTag.SPRINT_SWITCH_TIME_OLD1 -> pojo.sprintSwitchTime = JsonUtils.readFloat(reader);
                     case GunDataTag.AIM_TIME -> pojo.aimTime = JsonUtils.readFloat(reader);
                     case GunDataTag.BOLT_ACTION_TIME -> pojo.boltActionTime = JsonUtils.readFloat(reader);
                     case GunDataTag.BOLT_FEED_TIME -> pojo.boltFeedTime = JsonUtils.readFloat(reader);
@@ -189,7 +189,7 @@ public final class GunData extends ResourcePojo<GunData> {
 
             JsonUtils.writeFloat(writer, GunDataTag.DRAW_TIME, drawTime);
             JsonUtils.writeFloat(writer, GunDataTag.PUT_AWAY_TIME, putAwayTime);
-            JsonUtils.writeFloat(writer, GunDataTag.SPRINT_TIME, sprintTime);
+            JsonUtils.writeFloat(writer, GunDataTag.SPRINT_SWITCH_TIME, sprintSwitchTime);
             JsonUtils.writeFloat(writer, GunDataTag.AIM_TIME, aimTime);
             JsonUtils.writeFloat(writer, GunDataTag.BOLT_ACTION_TIME, boltActionTime);
             JsonUtils.writeFloat(writer, GunDataTag.BOLT_FEED_TIME, boltFeedTime);
@@ -344,8 +344,8 @@ public final class GunData extends ResourcePojo<GunData> {
     public float getPutAwayTime() {
         return putAwayTime;
     }
-    public float getSprintTime() {
-        return sprintTime;
+    public float getSprintSwitchTime() {
+        return sprintSwitchTime;
     }
     public float getAimTime() {
         return aimTime;
@@ -447,8 +447,8 @@ public final class GunData extends ResourcePojo<GunData> {
     public void setPutAwayTime(float putAwayTime) {
         this.putAwayTime = putAwayTime;
     }
-    public void setSprintTime(float sprintTime) {
-        this.sprintTime = sprintTime;
+    public void setSprintSwitchTime(float sprintSwitchTime) {
+        this.sprintSwitchTime = sprintSwitchTime;
     }
     public void setAimTime(float aimTime) {
         this.aimTime = aimTime;

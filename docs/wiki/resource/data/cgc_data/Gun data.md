@@ -1,7 +1,7 @@
 [English](#English)
 
 # 枪械数据
-> wiki 版本：`0.0.1`.5
+> wiki 版本：`0.0.1`.6
 
 - `bullet_data`/`bullet`（\_BulletData）：
 	- `display_damage`/`damage`（float）：
@@ -140,7 +140,7 @@
 ---
 - `draw_time`（float）：
 - `put_away_time`（float）：
-- `sprint_time`（float）：
+- `sprint_switch_time`/`sprint_time`（float）：
 - `aim_time`（float）：
 - `bolt_action_time`（float）：
 - `bolt_feed_time`（float）：
@@ -324,7 +324,7 @@
 	
 	"draw_time": 0.0,
 	"put_away_time": 0.0,
-	"sprint_time": 0.0,
+	"sprint_switch_time": 0.0,
 	"aim_time": 0.0,
 	"bolt_action_time": 0.0,
 	"bolt_feed_time": 0.0
@@ -332,7 +332,7 @@
 ```
 
 # English
-> wiki verison: `0.0.1`.5
+> wiki verison: `0.0.1`.6
 
 - `bullet_data`/`bullet`( \_BulletData):
 	- `display_damage`/`damage`(float):
@@ -471,7 +471,7 @@
 ---
 - `draw_time`(float):
 - `put_away_time`(float):
-- `sprint_time`(float):
+- `sprint_switch_time`/`sprint_time`(float):
 - `aim_time`(float):
 - `bolt_action_time`(float):
 - `bolt_feed_time`(float):
@@ -655,7 +655,7 @@
 	
 	"draw_time": 0.0,
 	"put_away_time": 0.0,
-	"sprint_time": 0.0,
+	"sprint_switch_time": 0.0,
 	"aim_time": 0.0,
 	"bolt_action_time": 0.0,
 	"bolt_feed_time": 0.0

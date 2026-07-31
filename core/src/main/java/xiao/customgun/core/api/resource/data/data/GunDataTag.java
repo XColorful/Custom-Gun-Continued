@@ -56,7 +56,7 @@ public class GunDataTag {
     // 操作枪械的时长
     public static final String DRAW_TIME = "draw_time";
     public static final String PUT_AWAY_TIME = "put_away_time";
-    public static final String SPRINT_TIME = "sprint_time";
+    public static final String SPRINT_SWITCH_TIME = "sprint_switch_time"; public static final String SPRINT_SWITCH_TIME_OLD1 = "sprint_time";
     public static final String AIM_TIME = "aim_time";
     public static final String BOLT_ACTION_TIME = "bolt_action_time";
     public static final String BOLT_FEED_TIME = "bolt_feed_time";

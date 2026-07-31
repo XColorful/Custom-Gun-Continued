@@ -8,6 +8,7 @@
 package xiao.customgun.core.entity.shooter;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
@@ -16,10 +17,13 @@ import xiao.customgun.core.api.entity.ILivingShooter;
 import xiao.customgun.core.api.entity.ReloadState;
 import xiao.customgun.core.api.entity.ShooterProperty;
 import xiao.customgun.core.api.entity.shooter.ILivingShooterGetter;
+import xiao.customgun.core.api.entity.shooter.modifier.ShooterGunModifierCache;
 import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.api.item.attachment.AttachmentCategory;
 import xiao.customgun.core.api.item.attachment.AttachmentNBTAccessor;
+import xiao.customgun.core.api.item.attachment.modifier.AttachmentModifierType;
 import xiao.customgun.core.api.item.gun.IGunGetter;
+import xiao.customgun.core.api.item.gun.modifier.IAdsModifier;
 import xiao.customgun.core.api.resource.ResourceApi;
 import xiao.customgun.core.developer.PlannedRefactor;
 import xiao.customgun.core.resource.data.data.GunData;
@@ -33,21 +37,101 @@ public final class LivingShooterAim extends LivingShooterAspect {
     }
 
     public void aim(boolean isAim) {
+        // 1. 手持枪械检查
+        if (this.shooterProperty.currentGunItem == null) return;
+        ItemStack gunItem = this.shooterProperty.currentGunItem.get();
+        IGun iGun = IGunGetter.fromItemStack(gunItem);
+        if (iGun == null) {
+            this.shooterProperty.isAiming = false;
+            return;
+        }
+
         this.shooterProperty.isAiming = isAim;
     }
 
-    public void zoom() {
-        if (this.shooterProperty.currentGunItem == null) return;
+    @ApiStatus.Internal private void _resetAiming() {
+        this.shooterProperty.aimingProgress = 0;
+        this.shooterProperty.aimingTimestamp = System.currentTimeMillis();
+    }
+    public void tickAimingProgress() {
+        // 1. 手持枪械检查
+        if (this.shooterProperty.currentGunItem == null) {
+            _resetAiming();
+            return;
+        }
+        ItemStack gunItem = this.shooterProperty.currentGunItem.get();
+        IGun iGun = IGunGetter.fromItemStack(gunItem);
+        if (iGun == null) {
+            _resetAiming();
+            return;
+        }
 
-        ItemStack currentGunItem = this.shooterProperty.currentGunItem.get();
-        IGun iGun = IGunGetter.fromItemStack(currentGunItem);
+        long currentTimeMillis = System.currentTimeMillis();
+        if ( // 2.2
+                // 正在收枪时不能瞄准
+                currentTimeMillis < this.shooterProperty.drawFinishTimestamp
+        ) {
+            _resetAiming();
+            return;
+        }
+
+        _doAiming(iGun, gunItem, currentTimeMillis);
+    }
+    private void _doAiming(IGun iGun, ItemStack gunItem, long currentTimeMillis) {
+        var gunLocation = iGun.getGunLocation(gunItem);
+        @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(gunLocation);
+        if (gunIndexInstance == null) {
+            _resetAiming();
+            return;
+        }
+
+        GunData gunData = gunIndexInstance.getGunData();
+        ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(this.livingShooter);
+        float alphaProgress = LivingShooterAim._getAlphaProgress(iLivingShooter, gunData, this.shooterProperty.isAiming, currentTimeMillis, this.shooterProperty.aimingTimestamp);
+
+        _aimProgressCalculate(this.shooterProperty.isAiming, alphaProgress, currentTimeMillis);
+    }
+    @ApiStatus.Internal
+    public static float _getAlphaProgress(ILivingShooter iLivingShooter,
+                                          GunData gunData,
+                                          boolean isAiming,
+                                          long currentTimeMillis, long aimingTimestamp) {
+        float aimTime = gunData.getAimTime();
+        if (aimTime <= 0) {
+            return isAiming ? 1 : 0;
+        }
+
+        @Nullable ShooterGunModifierCache cache = iLivingShooter.cgc$getGunModifierCache();
+        if (cache != null) {
+            Float _aimTime = IAdsModifier.getValue(cache, AttachmentModifierType.ADS);
+            if (_aimTime != null) aimTime = _aimTime;
+        }
+
+        return (currentTimeMillis - aimingTimestamp + 1) / (aimTime * 1000);
+    }
+    private void _aimProgressCalculate(boolean isAiming,
+                                       float alphaProgress, long currentTimeMillis) {
+        float aimProgress = this.shooterProperty.aimingProgress + (isAiming ? alphaProgress : -alphaProgress);
+        this.shooterProperty.aimingProgress = Mth.clamp(aimProgress, 0, 1f);
+
+        this.shooterProperty.aimingTimestamp = currentTimeMillis;
+    }
+
+    public void zoom() {
+        // 1. 手持枪械检查
+        if (this.shooterProperty.currentGunItem == null) return;
+        ItemStack gunItem = this.shooterProperty.currentGunItem.get();
+        IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return;
 
+        _doZoom(iGun, gunItem);
+    }
+    private void _doZoom(IGun iGun, ItemStack gunItem) {
         final var SCOPE = AttachmentCategory.SCOPE;
-        @Nullable CompoundTag scopeCustomDataTag = iGun.getAttachmentCustomDataTag(currentGunItem, SCOPE);
+        @Nullable CompoundTag scopeCustomDataTag = iGun.getAttachmentCustomDataTag(gunItem, SCOPE);
         if (scopeCustomDataTag == null) return;
 
-        var scopeLocation = iGun.getAttachmentLocation(currentGunItem, SCOPE);
+        var scopeLocation = iGun.getAttachmentLocation(gunItem, SCOPE);
         @Nullable AttachmentIndexInstance attachmentIndexInstance = ResourceApi.getAttachmentIndexInstance(scopeLocation);
         if (attachmentIndexInstance == null) return;
 
@@ -60,95 +144,55 @@ public final class LivingShooterAim extends LivingShooterAspect {
         }
         AttachmentNBTAccessor.INSTANCE.setScopeViewIndex(scopeCustomDataTag, scopeViewIndex);
 
-        iGun.setAttachmentCustomDataTag(currentGunItem, SCOPE, scopeCustomDataTag);
+        iGun.setAttachmentCustomDataTag(gunItem, SCOPE, scopeCustomDataTag);
     }
 
-    @ApiStatus.Internal private void _resetAiming() {
-        this.shooterProperty.aimingProgress = 0;
-        this.shooterProperty.aimingTimestamp = System.currentTimeMillis();
-    }
-    public void tickAimingProgress() {
-        if (this.shooterProperty.currentGunItem == null) {
-            _resetAiming();
-            return;
-        }
-
-        ItemStack currentGunItem = this.shooterProperty.currentGunItem.get();
-        IGun iGun = IGunGetter.fromItemStack(currentGunItem);
-        if (iGun == null) {
-            _resetAiming();
-            return;
-        }
-
-        var gunLocation = iGun.getGunLocation(currentGunItem);
-        @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(gunLocation);
-        if (gunIndexInstance == null) {
-            // 获取不到data就取消瞄准状态并重置瞄准进度
-            this.shooterProperty.aimingProgress = 0;
-            return;
-        }
-
-        GunData gunData = gunIndexInstance.getGunData();
-        float aimTime = gunData.getAimTime();
-        if (this.shooterProperty.shooterGunModifierCache != null) {
-            // TODO GunPropertyCache
-        }
-
-        long currentTimeMillis = System.currentTimeMillis();
-        if (aimTime <= 0) {
-            this.shooterProperty.aimingProgress = this.shooterProperty.isAiming ? 1 : 0;
-            this.shooterProperty.aimingTimestamp = currentTimeMillis;
-            return;
-        }
-        float alphaProgress = (currentTimeMillis - this.shooterProperty.aimingTimestamp + 1) / (aimTime * 1000f);
-
-        if (this.shooterProperty.isAiming) {
-            // 瞄准状态加aimingProgress
-            this.shooterProperty.aimingProgress += alphaProgress;
-            if (this.shooterProperty.aimingProgress > 1) this.shooterProperty.aimingProgress = 1;
-        } else {
-            // 取消瞄准状态减aimingProgress
-            this.shooterProperty.aimingProgress -= alphaProgress;
-            if (this.shooterProperty.aimingProgress < 0) this.shooterProperty.aimingProgress = 0;
-        }
-
-        this.shooterProperty.aimingTimestamp = currentTimeMillis;
-    }
-
+    /**
+     * 上次执行{@link #tickSprint()}的时间戳，用于计算疾跑时间变化量
+     */
+    private long lastSprintTickTimestamp = -1;
     public void tickSprint() {
-        ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(this.livingShooter);
-        ReloadState reloadState = iLivingShooter.cgc$getSynReloadState();
-
-        // 瞄准或换弹阶段 禁止疾跑
-        if (this.shooterProperty.isAiming || (reloadState.getStateType().isReloading() && !reloadState.getStateType().isReloadFinishing())) {
-            this.livingShooter.setSprinting(false);
-        }
-
         long currentTimeMillis = System.currentTimeMillis();
-        if (this.shooterProperty.sprintTimestamp < 0) {
-            this.shooterProperty.sprintTimestamp = currentTimeMillis;
-        }
 
+        // 初始化时间戳
+        if (this.lastSprintTickTimestamp < 0) this.lastSprintTickTimestamp = currentTimeMillis;
+
+        _doTickSprint(currentTimeMillis);
+
+        // 设置sprint时间戳
+        this.lastSprintTickTimestamp = currentTimeMillis;
+    }
+    private void _doTickSprint(long currentTimeMillis) {
+        // 1. 手持枪械检查
         if (this.shooterProperty.currentGunItem == null) return;
         ItemStack currentGunItem = this.shooterProperty.currentGunItem.get();
         IGun iGun = IGunGetter.fromItemStack(currentGunItem);
         if (iGun == null) return;
 
-        @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(iGun.getGunLocation(currentGunItem));
-        if (gunIndexInstance != null) {
-            float gunSprintTime = gunIndexInstance.getGunData().getSprintTime();
-            float alphaGunSprintTime = (currentTimeMillis - this.shooterProperty.sprintTimestamp) / 1000f;
-            if (this.livingShooter.isSprinting() && !this.livingShooter.isCrouching()) {
-                this.shooterProperty.sprintTimeS += alphaGunSprintTime;
-                if (this.shooterProperty.sprintTimeS > gunSprintTime) this.shooterProperty.sprintTimeS = gunSprintTime;
-            } else {
-                this.shooterProperty.sprintTimeS -= alphaGunSprintTime;
-                if (this.shooterProperty.sprintTimeS < 0) this.shooterProperty.sprintTimeS = 0;
-            }
-        } else {
-            this.shooterProperty.sprintTimeS = 0;
+        ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(this.livingShooter);
+        ReloadState reloadState = iLivingShooter.cgc$getSynReloadState();
+        if ( // 2.2 禁止疾跑
+            // 瞄准状态
+                this.shooterProperty.aimingProgress > 0
+                        // 换弹中
+                        || (reloadState.getStateType().isReloading() && !reloadState.getStateType().isReloadFinishing())
+        ) {
+            this.livingShooter.setSprinting(false);
         }
 
-        this.shooterProperty.sprintTimestamp = currentTimeMillis;
+        @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(iGun.getGunLocation(currentGunItem));
+        if (gunIndexInstance == null) {
+            this.shooterProperty.sprintTimeS = 0;
+            return;
+        }
+
+        // 当前tick时间戳-上次tick时间戳
+        float alphaGunSprintTime = (currentTimeMillis - this.lastSprintTickTimestamp) / 1000f;
+        boolean isSprinting = this.livingShooter.isSprinting() && !this.livingShooter.isCrouching();
+        float sprintTimeS = this.shooterProperty.sprintTimeS + (isSprinting ? alphaGunSprintTime : -alphaGunSprintTime);
+
+        GunData gunData = gunIndexInstance.getGunData();
+        float gunSprintSwitchTime = gunData.getSprintSwitchTime();
+        this.shooterProperty.sprintTimeS = Mth.clamp(sprintTimeS, 0, gunSprintSwitchTime);
     }
 }

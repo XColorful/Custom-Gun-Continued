@@ -52,7 +52,7 @@ public final class LocalShooterDraw extends LocalShooterAspect {
         IGun currentGun = IGunGetter.fromItemStack(currentItem);
 
         // 计算 draw 时长和 putAway 时长
-        long drawTime = currentTimeMillis - this.localShooterProperty.clientDrawTimestamp;
+        long drawTime = currentTimeMillis - this.localShooterProperty.clientDrawFinishTimestamp;
         if (drawTime >= 0) {
             drawTime = _getDrawTime(currentTimeMillis, lastItem, lastGun, drawTime);
         }
@@ -73,10 +73,10 @@ public final class LocalShooterDraw extends LocalShooterAspect {
     private long _getDrawTime(long currentTimeMillis, ItemStack lastItem, IGun lastGun, long drawTime) {
         if (true) {
             // TODO AnimateGeoItemRenderer getPutAwayTime
-            this.localShooterProperty.clientDrawTimestamp = currentTimeMillis + drawTime;
+            this.localShooterProperty.clientDrawFinishTimestamp = currentTimeMillis + drawTime;
         } else {
             drawTime = 0;
-            this.localShooterProperty.clientDrawTimestamp = currentTimeMillis;
+            this.localShooterProperty.clientDrawFinishTimestamp = currentTimeMillis;
         }
         return drawTime;
     }
@@ -94,8 +94,8 @@ public final class LocalShooterDraw extends LocalShooterAspect {
         // 重置拉栓状态
         this.localShooterProperty.isBolting = false;
         // 更新切枪时间戳
-        if (this.localShooterProperty.clientDrawTimestamp < 0) {
-            this.localShooterProperty.clientDrawTimestamp = currentTimeMillis;
+        if (this.localShooterProperty.clientDrawFinishTimestamp < 0) {
+            this.localShooterProperty.clientDrawFinishTimestamp = currentTimeMillis;
         }
     }
 

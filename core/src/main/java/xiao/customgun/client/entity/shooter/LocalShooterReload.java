@@ -58,8 +58,7 @@ public final class LocalShooterReload extends LocalShooterAspect {
             if (!canReload) {
                 return;
             }
-        }
-        { // 3.1锁上状态锁
+        } { // 3.1锁上状态锁
             this.localShooterProperty.lockState(_iLivingShooter -> _iLivingShooter.cgc$getSynReloadState().getStateType().isReloading());
             this.localShooterProperty.chargeProgress = 0f;
         }

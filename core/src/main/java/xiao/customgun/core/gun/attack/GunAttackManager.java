@@ -18,13 +18,17 @@ import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 import xiao.customgun.CustomGun;
+import xiao.customgun.core.api.common.McLogicalSide;
 import xiao.customgun.core.api.entity.IGunProjectile;
 import xiao.customgun.core.api.entity.ILivingShooter;
 import xiao.customgun.core.api.entity.ShooterProperty;
+import xiao.customgun.core.api.event.shooter.ShooterPrepareMeleeEvent;
 import xiao.customgun.core.api.gun.attack.IGunAttackManager;
 import xiao.customgun.core.api.gun.script.GunScriptApi;
 import xiao.customgun.core.api.item.IGun;
+import xiao.customgun.core.api.item.gun.MeleeType;
 import xiao.customgun.core.api.script.ScriptMethodType;
+import xiao.customgun.core.event.EventPoster;
 
 import java.util.function.Supplier;
 
@@ -85,9 +89,21 @@ public class GunAttackManager implements IGunAttackManager {
     }
 
     @Override
+    public @Nullable MeleePreparation prepareMelee(@NotNull IGun iGun, @NotNull ItemStack gunItem,
+                                                   ILivingShooter iLivingShooter, LivingEntity livingShooter) {
+        McLogicalSide logicalSide = CustomGun.getSideExecutor().getLogicalSide();
+        if (EventPoster.get().postCustomEvent(new ShooterPrepareMeleeEvent(logicalSide,
+                iLivingShooter, livingShooter, iGun, gunItem))) {
+            return null;
+        }
+
+        return _DefaultGunAttack.prepareMelee(iGun, gunItem, iLivingShooter, livingShooter);
+    }
+    @Override
     public void melee(ShooterProperty shooterProperty,
                       @NotNull IGun iGun, @NotNull ItemStack gunItem,
-                      ILivingShooter iLivingShooter, LivingEntity livingShooter) {
-        _DefaultGunAttack.melee(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter);
+                      ILivingShooter iLivingShooter, LivingEntity livingShooter,
+                      MeleeType meleeType) {
+        _DefaultGunAttack.melee(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter, meleeType);
     }
 }

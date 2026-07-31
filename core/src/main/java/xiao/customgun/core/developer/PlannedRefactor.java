@@ -38,4 +38,6 @@ public class PlannedRefactor {
     public static final boolean ON_SET_BARREL_AMMO = false;
     // scope数据(xiao.customgun.client.resource.assets.display.AttachmentDisplay)从资源包移到数据包里，并且服务端可能还要加开镜后的散布减小
     public static final boolean MOVE_SCOPE_VIEW_INDEX_TO_CORE = false;
+    // 专门处理刺刀范围
+    public static final boolean SPECIAL_MELEE_RANGE_CALCULATION = false;
 }

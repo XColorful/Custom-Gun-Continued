@@ -46,7 +46,7 @@ public final class MeleeModifier extends AttachmentModifier<_MeleeModifierData, 
             result.setRangeAngle(modifier.getRangeAngle());
 
             result.setDamageDelaySeconds(modifier.getDamageDelaySeconds());
-            result.setBaseCooldown(modifier.getBaseCooldown());
+            result.setExtraCooldown(modifier.getExtraCooldown());
 
             result.setKnockbackStrength(modifier.getKnockbackStrength());
             result.setTargetEffect(modifier.getTargetEffect());

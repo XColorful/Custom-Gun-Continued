@@ -145,7 +145,7 @@ public class LocalPlayerMixin implements ILocalShooter {
 
     @Override
     public void cgc$melee() {
-        this.cgc$localMelee.melee();
+        this.cgc$localMelee.prepareMelee();
     }
 
     @Override public ShootResult cgc$localShoot() {

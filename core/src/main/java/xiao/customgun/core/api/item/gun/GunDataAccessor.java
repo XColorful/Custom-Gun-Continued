@@ -11,6 +11,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.CustomGun;
@@ -24,7 +25,6 @@ import xiao.customgun.core.api.item.attachment.AttachmentNBTAccessor;
 import xiao.customgun.core.api.item.attachment.IAttachmentGetter;
 import xiao.customgun.core.api.item.attachment.MagazineCategory;
 import xiao.customgun.core.api.item.builder.AttachmentBuilder;
-import xiao.customgun.core.api.item.builder.ItemBuilder;
 import xiao.customgun.core.api.minecraft.capability.IInventoryCapability;
 import xiao.customgun.core.api.resource.ResourceApi;
 import xiao.customgun.core.api.resource.ResourceTag;
@@ -32,10 +32,12 @@ import xiao.customgun.core.developer.PlannedRefactor;
 import xiao.customgun.core.init.registry.ModItems;
 import xiao.customgun.core.resource.data.data.AttachmentData;
 import xiao.customgun.core.resource.data.data.GunData;
+import xiao.customgun.core.resource.data.data.attachment._MeleeModifierData;
+import xiao.customgun.core.resource.data.data.gun._MeleeData;
+import xiao.customgun.core.resource.data.data.gun.melee._DefaultMeleeData;
+import xiao.customgun.core.resource.instance.data.AttachmentIndexInstance;
 import xiao.customgun.core.resource.instance.data.GunIndexInstance;
 import xiao.customgun.core.util.NBTUtils;
-
-import java.util.function.Supplier;
 
 public interface GunDataAccessor extends IGunDataAccess {
 
@@ -176,6 +178,37 @@ public interface GunDataAccessor extends IGunDataAccess {
     @Override
     default void setTooltipMask(ItemStack gunItem, int tooltipMask) {
         NBTUtils.setInt(gunItem, GunProperty.TOOLTIP_MASK.getTagName(), tooltipMask);
+    }
+
+    @Override
+    default @Nullable MeleeType getGunMeleeType(ItemStack gunItem) {
+        if (_getAttachmentMeleeModifierData(this, gunItem, AttachmentCategory.MUZZLE) != null)
+            return MeleeType.BAYONET;
+        else if (_getAttachmentMeleeModifierData(this, gunItem, AttachmentCategory.STOCK) != null)
+            return MeleeType.STOCK;
+        else if (_getGunDefaultMeleeData(this, gunItem) != null)
+            return MeleeType.PUSH;
+        return null;
+    }
+    @ApiStatus.Internal
+    static @Nullable _MeleeModifierData _getAttachmentMeleeModifierData(IGunDataAccess iGun, ItemStack gunItem, AttachmentCategory attachmentCategory) {
+        var meleeLocation = iGun.getAttachmentLocation(gunItem, attachmentCategory);
+        @Nullable AttachmentIndexInstance attachmentIndexInstance = ResourceApi.getAttachmentIndexInstance(meleeLocation);
+        if (attachmentIndexInstance == null) return null;
+
+        AttachmentData attachmentData = attachmentIndexInstance.getAttachmentData();
+        @Nullable _MeleeModifierData meleeModifierData = attachmentData.getMeleeModifier();
+        return meleeModifierData;
+    }
+    @ApiStatus.Internal
+    static @Nullable _DefaultMeleeData _getGunDefaultMeleeData(IGunDataAccess iGun, ItemStack gunItem) {
+        var gunLocation = iGun.getGunLocation(gunItem);
+        @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(gunLocation);
+        if (gunIndexInstance == null) return null;
+
+        GunData gunData = gunIndexInstance.getGunData();
+        _MeleeData meleeData = gunData.getMeleeData();
+        return meleeData.getDefaultMeleeData();
     }
 
     // --------IGunAmmoDataAccess--------

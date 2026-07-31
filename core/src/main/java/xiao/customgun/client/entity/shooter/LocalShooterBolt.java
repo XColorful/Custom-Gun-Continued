@@ -46,8 +46,7 @@ public final class LocalShooterBolt extends LocalShooterAspect {
 
         { // 3. IGunRuntime操作结果 -> Shooter状态
             this.localShooterProperty.isBolting = true;
-        }
-        { // 3.1 锁上状态锁
+        } { // 3.1 锁上状态锁
             this.localShooterProperty.lockState(ISynGunState::cgc$getSynIsBolting);
         }
 

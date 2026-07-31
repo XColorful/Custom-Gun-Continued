@@ -78,7 +78,7 @@ Notation:
 |common.`GunFinishReloadEvent`|shooter.`ShooterReloadFinishEvent`|
 |common.`GunFireEvent`|gun.`GunFireEvent`|
 |common.`GunFireSelectEvent`|shooter.`ShooterSwitchFireModeEvent`|
-|common.`GunMeleeEvent`|shooter.`ShooterMeleeEvent`|
+|common.`GunMeleeEvent`|shooter.`ShooterPrepareMeleeEvent`|
 |common.`GunReloadEvent`|shooter.`ShooterReloadEvent`|
 |common.`GunShootEvent`|shooter.`ShooterFireEvent`|
 |common.`KubeJSGunEventPoster`|_Deprecated_|
@@ -431,6 +431,7 @@ Notation:
 |`DefaultTableItem`|_Deprecated_|
 |`GunSmithTableItem`|_Deprecated_|
 |`ModernKineticGunItem`|gun.`GunItem`|
+|`ModernKineticGunItem`.AM_FACTORY|_Deprecated_|
 |`ModernKineticGunItem`.`DefaultPropertyModification`|_Deprecated_|
 |`TargetMinecartItem`|_Deprecated_|
 

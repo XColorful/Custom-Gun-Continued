@@ -9,6 +9,7 @@ package xiao.customgun.core.api.item.gun;
 
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 public interface IGunStateAccess {
 
@@ -54,6 +55,11 @@ public interface IGunStateAccess {
     boolean hasTooltipMask(ItemStack gunItem);
     int getTooltipMask(ItemStack gunItem);
     void setTooltipMask(ItemStack gunItem, int tooltipMask);
+
+    /**
+     * 获取枪械当前使用的近战类型
+     */
+    @Nullable MeleeType getGunMeleeType(ItemStack gunItem);
 
     // --------Deprecated--------
 

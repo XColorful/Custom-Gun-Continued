@@ -10,6 +10,7 @@ package xiao.customgun.core.api.entity;
 import net.minecraft.world.item.ItemStack;
 import org.luaj.vm2.LuaValue;
 import xiao.customgun.core.api.entity.shooter.modifier.ShooterGunModifierCache;
+import xiao.customgun.core.api.item.gun.MeleeType;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -37,7 +38,12 @@ public class ShooterProperty {
      * == 0 时：执行刺刀近战
      * < 0 时，默认情况，什么也不做
      */
-    public int meleePrepTickCount = -1;
+    public int meleePreparationTick = -1;
+    /**
+     * 本次近战的类型
+     * 近战是延迟触发的，需要保存信息
+     */
+    public @Nullable MeleeType preparingMeleeType;
     /**
      * 切枪时间戳，在切枪开始时更新，单位 ms。
      * 用于计算切枪进度。切枪进度完成后，才能进行各种操作。
@@ -117,7 +123,8 @@ public class ShooterProperty {
         // 重置各个状态
         shootTimestamp = -1;
         meleeTimestamp = -1;
-        meleePrepTickCount = -1;
+        meleePreparationTick = -1;
+        preparingMeleeType = null;
         isAiming = false;
         aimingProgress = 0;
         reloadTimestamp = -1;

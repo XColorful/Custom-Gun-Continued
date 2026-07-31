@@ -1,7 +1,7 @@
 [English](#English)
 
 # 枪械数据
-> wiki 版本：`0.0.1`.4
+> wiki 版本：`0.0.1`.5
 
 - `bullet_data`/`bullet`（\_BulletData）：
 	- `display_damage`/`damage`（float）：
@@ -96,8 +96,8 @@
 	- `continuous_shoot`（boolean）：
 ---
 - `melee_data`/`melee`（\_MeleeData）：
-	- `melee_distance`/`distance`（float）：
-	- `melee_cooldown`/`cooldown`（float）：
+	- `gun_base_length`/`distance`（float）：
+	- ~~`cooldown`~~
 	- `default_melee_data`/`default`（\_DefaultMeleeData）：
 		- `melee_type`/`animation_type`（MeleeType）：
 		---
@@ -269,8 +269,7 @@
 	},
 	
 	"melee_data": {
-		"melee_distance": 0.0,
-		"melee_cooldown": 0.0,
+		"gun_base_length": 0.0,
 		"default_melee_data": {
 			"melee_type": "",
 			"melee_damage": 0.0,
@@ -333,7 +332,7 @@
 ```
 
 # English
-> wiki verison: `0.0.1`.4
+> wiki verison: `0.0.1`.5
 
 - `bullet_data`/`bullet`( \_BulletData):
 	- `display_damage`/`damage`(float):
@@ -428,8 +427,8 @@
 	- `continuous_shoot`(boolean):
 ---
 - `melee_data`/`melee`( \_MeleeData):
-	- `melee_distance`/`distance`(float):
-	- `melee_cooldown`/`cooldown`(float):
+	- `gun_base_length`/`distance`(float):
+	- ~~`cooldown`~~
 	- `default_melee_data`/`default`( \_DefaultMeleeData):
 		- `melee_type`/`animation_type`(MeleeType):
 		---
@@ -601,8 +600,7 @@
 	},
 	
 	"melee_data": {
-		"melee_distance": 0.0,
-		"melee_cooldown": 0.0,
+		"gun_base_length": 0.0,
 		"default_melee_data": {
 			"melee_type": "",
 			"melee_damage": 0.0,

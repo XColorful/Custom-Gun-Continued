@@ -14,6 +14,7 @@ import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import xiao.customgun.CustomGun;
 import xiao.customgun.client.item.gun._GunItem;
 import xiao.customgun.core.api.entity.IGunProjectile;
@@ -24,6 +25,7 @@ import xiao.customgun.core.api.gun.script.GunScriptApi;
 import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.api.item.gun.GunDataAccessor;
 import xiao.customgun.core.api.item.gun.IGunGetter;
+import xiao.customgun.core.api.item.gun.MeleeType;
 import xiao.customgun.core.api.item.gun.modifier.GunModifierType;
 import xiao.customgun.core.api.minecraft.capability.IInventoryCapability;
 import xiao.customgun.core.api.minecraft.item.ItemType;
@@ -117,10 +119,15 @@ public class GunItem extends Item implements IGun, GunDataAccessor {
                 .gunAttackManager()
                 .doBulletSpread(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter, iGunProjectile, projectile, bulletId, xRot, yRot, pow, uncertainty);
     }
-    @Override public void melee(ShooterProperty shooterProperty, @NotNull IGun iGun, @NotNull ItemStack gunItem, ILivingShooter iLivingShooter, LivingEntity livingShooter) {
+    @Override public @Nullable MeleePreparation prepareMelee(@NotNull IGun iGun, @NotNull ItemStack gunItem, ILivingShooter iLivingShooter, LivingEntity livingShooter) {
+        return CustomGun.getGunManager().getManagerGroup(this.getManagerGroupTag(gunItem))
+                .gunAttackManager()
+                .prepareMelee(iGun, gunItem, iLivingShooter, livingShooter);
+    }
+    @Override public void melee(ShooterProperty shooterProperty, @NotNull IGun iGun, @NotNull ItemStack gunItem, ILivingShooter iLivingShooter, LivingEntity livingShooter, MeleeType meleeType) {
         CustomGun.getGunManager().getManagerGroup(this.getManagerGroupTag(gunItem))
                 .gunAttackManager()
-                .melee(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter);
+                .melee(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter, meleeType);
     }
     // ----IGunInventoryRuntime----
     @Override public void dropAllAmmo(ItemStack gunItem, LivingEntity livingShooter) {

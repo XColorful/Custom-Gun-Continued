@@ -10,7 +10,6 @@ package xiao.customgun.core.mixin.entity;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Pose;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -80,7 +79,7 @@ public abstract class LivingEntityMixin extends Entity implements ILivingShooter
         cgc$shooter.setSprinting(this.cgc$getProcessedSprintStatus(this.cgc$shooter.isSprinting()));
         // 从服务端同步数据
         LivingShooterSyncKey.SHOOT_COOL_DOWN_KEY.setValue(cgc$shooter, this.cgc$shoot.getShootCooldown());
-        LivingShooterSyncKey.MELEE_COOL_DOWN_KEY.setValue(cgc$shooter, this.cgc$melee.getMeleeCooldown(System.currentTimeMillis()));
+        LivingShooterSyncKey.MELEE_COOL_DOWN_KEY.setValue(cgc$shooter, this.cgc$melee.getMeleeCooldownMs(System.currentTimeMillis()));
         LivingShooterSyncKey.DRAW_COOL_DOWN_KEY.setValue(cgc$shooter, this.cgc$draw.getDrawCooldown());
         LivingShooterSyncKey.IS_BOLTING_KEY.setValue(cgc$shooter, this.cgc$shooterProperty.isBolting);
         LivingShooterSyncKey.RELOAD_STATE_KEY.setValue(cgc$shooter, reloadState);
@@ -139,7 +138,7 @@ public abstract class LivingEntityMixin extends Entity implements ILivingShooter
 
     @Override
     public void cgc$melee() {
-        this.cgc$melee.melee();
+        this.cgc$melee.prepareMelee();
     }
 
     @Override public ShootResult cgc$shoot(Supplier<Float> pitch, Supplier<Float> yaw, long timestamp, float chargeProgress) {

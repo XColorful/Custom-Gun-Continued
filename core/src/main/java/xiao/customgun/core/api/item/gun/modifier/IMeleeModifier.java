@@ -31,11 +31,11 @@ public interface IMeleeModifier<T extends ResourcePojo<T>> extends IGunModifier<
         _MeleeModifierData base = new _MeleeModifierData();
 
         base.setMeleeDamage(defaultMeleeData.getMeleeDamage());
-        base.setMeleeDistance(source.getMeleeDistance());
+        base.setMeleeDistance(source.getGunBaseLength());
         base.setRangeAngle(defaultMeleeData.getRangeAngle());
 
         base.setDamageDelaySeconds(defaultMeleeData.getDamageDelaySeconds());
-        base.setBaseCooldown(source.getMeleeCooldown());
+        base.setExtraCooldown(defaultMeleeData.getBaseCooldown());
 
         base.setKnockbackStrength(defaultMeleeData.getKnockbackStrength());
         base.setTargetEffect(new ArrayList<>());

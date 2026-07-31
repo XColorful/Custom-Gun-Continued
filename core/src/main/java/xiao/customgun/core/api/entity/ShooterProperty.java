@@ -12,6 +12,7 @@ import org.luaj.vm2.LuaValue;
 import xiao.customgun.core.api.entity.shooter.modifier.ShooterGunModifierCache;
 import xiao.customgun.core.api.item.gun.MeleeType;
 import xiao.customgun.core.entity.shooter.LivingShooterAim;
+import xiao.customgun.core.entity.shooter.LivingShooterDraw;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -85,10 +86,9 @@ public class ShooterProperty {
     @Nullable
     public Supplier<ItemStack> currentGunItem = null;
     /**
-     * 缓存当前枪械的收枪时间，以确保下一次切枪的时候使用此时间计算收枪。
-     * 此数值不会因 tacz$CurrentGunItem 提供的 ItemStack 改变而改变，因此应当在恰当的时机调用 updatePutAwayTime() 进行更新。
+     * 这个字段的作用域只在{@link LivingShooterDraw}内部
      */
-    public float currentPutAwayTimeS = 0;
+    @Deprecated public float currentPutAwayTimeS = 0;
     /**
      * 与疾跑相关的参数，开镜时会阻止疾跑
      */

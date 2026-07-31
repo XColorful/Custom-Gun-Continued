@@ -43,34 +43,40 @@ public final class LocalShooterDraw extends LocalShooterAspect {
     }
 
     public void draw(ItemStack lastItem) {
-        // 重置各种参数
+        // 重置各个状态
         long currentTimeMillis = System.currentTimeMillis();
-        this._resetData(currentTimeMillis);
+        this.localShooterProperty.resetProperty();
+        // 初始化切枪时间戳
+        if (this.localShooterProperty.clientDrawFinishTimestamp < 0) this.localShooterProperty.clientDrawFinishTimestamp = currentTimeMillis;
 
-        IGun lastGun = IGunGetter.fromItemStack(lastItem);
+        // 锁上状态锁
+        this.localShooterProperty.lockState(operator -> operator.cgc$getSynDrawCooldown() > 0);
+
+        @Nullable IGun lastIGun = IGunGetter.fromItemStack(lastItem);
         ItemStack currentItem = this.localShooter.getMainHandItem();
-        IGun currentGun = IGunGetter.fromItemStack(currentItem);
+        @Nullable IGun currentIGun = IGunGetter.fromItemStack(currentItem);
 
         // 计算 draw 时长和 putAway 时长
-        long drawTime = currentTimeMillis - this.localShooterProperty.clientDrawFinishTimestamp;
-        if (drawTime >= 0) {
-            drawTime = _getDrawTime(currentTimeMillis, lastItem, lastGun, drawTime);
+        long fromLastDrawFinishedMs = currentTimeMillis - this.localShooterProperty.clientDrawFinishTimestamp;
+        if (fromLastDrawFinishedMs >= 0) { // draw结束 在 当前时间 之前 -> 当前没有一个未来的drawFinishTime -> 当前不在draw
+            fromLastDrawFinishedMs = _updateDrawTime(currentTimeMillis, lastItem, lastIGun, fromLastDrawFinishedMs);
         }
-        long putAwayTime = Math.abs(drawTime);
+        long putAwayTime = Math.abs(fromLastDrawFinishedMs);
 
         ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(this.localShooter);
         CustomGun.getEventPoster().postCustomEvent(new ShooterDrawEvent(McLogicalSide.CLIENT,
                 iLivingShooter, this.localShooter, lastItem, currentItem));
+
         SendUtils.sendMessageToServer(new ClientMessagePlayerDrawGun());
 
         // 异步放映抬枪动画
-        if (currentGun != null) {
-            this.doDraw(currentItem, putAwayTime);
+        if (currentIGun != null) {
+            this._doDraw(currentItem, putAwayTime);
             // 刷新配件数据
             ShooterGunModifierManager.postChangeEvent(this.localShooter, currentItem);
         }
     }
-    private long _getDrawTime(long currentTimeMillis, ItemStack lastItem, IGun lastGun, long drawTime) {
+    private long _updateDrawTime(long currentTimeMillis, ItemStack lastItem, IGun lastGun, long drawTime) {
         if (true) {
             // TODO AnimateGeoItemRenderer getPutAwayTime
             this.localShooterProperty.clientDrawFinishTimestamp = currentTimeMillis + drawTime;
@@ -80,26 +86,8 @@ public final class LocalShooterDraw extends LocalShooterAspect {
         }
         return drawTime;
     }
-    private void _resetData(long currentTimeMillis) {
-        // 锁上状态锁
-        this.localShooterProperty.lockState(operator -> operator.cgc$getSynDrawCooldown() > 0);
-        // 重置客户端的 shoot 时间戳
-        this.localShooterProperty.isShootRecorded = true;
-        this.localShooterProperty.clientShootTimestamp = -1;
-        this.localShooterProperty.chargeProgress = 0;
-        // 重置客户端瞄准状态
-        this.localShooterProperty.clientIsAiming = false;
-        this.localShooterProperty.clientAimingProgress = 0;
-        LocalShooterProperty.oldAimingProgress = 0;
-        // 重置拉栓状态
-        this.localShooterProperty.isBolting = false;
-        // 更新切枪时间戳
-        if (this.localShooterProperty.clientDrawFinishTimestamp < 0) {
-            this.localShooterProperty.clientDrawFinishTimestamp = currentTimeMillis;
-        }
-    }
 
-     private void doDraw(ItemStack currentItem, long putAwayTime) {
+     private void _doDraw(ItemStack currentItem, long putAwayTime) {
         @Nullable GunDisplayInstance gunDisplayInstance = ClientResourceApi.getGunDisplayInstance(currentItem);
         if (gunDisplayInstance == null) return;
 
@@ -115,7 +103,7 @@ public final class LocalShooterDraw extends LocalShooterAspect {
 //            }, putAwayTime, TimeUnit.MILLISECONDS);
 //        });
      }
-     private void doPutAway(ItemStack lastItem, long putAwayTime) {
+     private void _doPutAway(ItemStack lastItem, long putAwayTime) {
         // TODO
      }
 }

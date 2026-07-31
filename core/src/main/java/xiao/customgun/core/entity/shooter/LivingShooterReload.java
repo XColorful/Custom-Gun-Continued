@@ -52,9 +52,9 @@ public final class LivingShooterReload extends LivingShooterAspect {
                 // 检查是否在拉栓
                 || this.shooterProperty.isBolting
                 // 检查是否正在开火冷却
-                || this.shoot.getShootCooldown() != 0
+                || this.shoot.getShootCooldown() > 0
                 // 检查是否在切枪
-                || this.draw.getDrawCooldown() != 0
+                || this.draw.getDrawCooldown() > 0
         ) return;
         else if ( // 2.2
                 // 射击后冷却50ms (比客户端快一点)

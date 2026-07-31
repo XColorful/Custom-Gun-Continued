@@ -61,13 +61,14 @@ public final class LivingShooterReload extends LivingShooterAspect {
                 currentTimeMillis - this.shooterProperty.lastShootTimestamp < RELOAD_COOLDOWN_MS
         ) return;
 
-        // 3. IGunRuntime操作结果 -> Shooter状态
-        ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(this.livingShooter);
-        boolean isReloading = iGun.startReload(this.shooterProperty, iGun, gunItem, iLivingShooter, this.livingShooter);
-        if (!isReloading) {
-            this.shooterProperty.reloadStateType = ReloadState.StateType.NOT_RELOADING;
-            this.shooterProperty.reloadTimestamp = -1;
-            return;
+        { // 3. IGunRuntime操作结果 -> Shooter状态
+            ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(this.livingShooter);
+            boolean isReloading = iGun.startReload(this.shooterProperty, iGun, gunItem, iLivingShooter, this.livingShooter);
+            if (!isReloading) {
+                this.shooterProperty.reloadStateType = ReloadState.StateType.NOT_RELOADING;
+                this.shooterProperty.reloadTimestamp = -1;
+                return;
+            }
         }
 
         // 发包通知客户端

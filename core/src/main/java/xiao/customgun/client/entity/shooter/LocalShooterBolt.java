@@ -44,10 +44,12 @@ public final class LocalShooterBolt extends LocalShooterAspect {
                 this.localShooterProperty.isBolting
         ) return;
 
-        // 3. IGunRuntime操作结果 -> Shooter状态
-        this.localShooterProperty.isBolting = true;
-        // 3.1 锁上状态锁
-        this.localShooterProperty.lockState(ISynGunState::cgc$getSynIsBolting);
+        { // 3. IGunRuntime操作结果 -> Shooter状态
+            this.localShooterProperty.isBolting = true;
+        }
+        { // 3.1 锁上状态锁
+            this.localShooterProperty.lockState(ISynGunState::cgc$getSynIsBolting);
+        }
 
         SendUtils.sendMessageToServer(new ClientMessagePlayerBoltGun());
         @Nullable GunDisplayInstance gunDisplayInstance = ClientResourceApi.getGunDisplayInstance(gunItem);

@@ -10,6 +10,7 @@ package xiao.customgun.core.entity.shooter;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
+import xiao.customgun.core.api.entity.ILivingShooter;
 import xiao.customgun.core.api.entity.ShooterProperty;
 import xiao.customgun.core.api.entity.shooter.ILivingShooterGetter;
 import xiao.customgun.core.api.item.IGun;
@@ -49,10 +50,12 @@ public final class LivingShooterBolt extends LivingShooterAspect {
                 this.shooterProperty.isBolting
         ) return;
 
-        // 3. IGunRuntime操作结果 -> Shooter状态
-        this.shooterProperty.isBolting = iGun.startBolt(this.shooterProperty, iGun, gunItem, ILivingShooterGetter.cgc$fromLivingEntity(this.livingShooter), this.livingShooter);
-        if (!this.shooterProperty.isBolting) {
-            return;
+        { // 3. IGunRuntime操作结果 -> Shooter状态
+            ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(this.livingShooter);
+            this.shooterProperty.isBolting = iGun.startBolt(this.shooterProperty, iGun, gunItem, iLivingShooter, this.livingShooter);
+            if (!this.shooterProperty.isBolting) {
+                return;
+            }
         }
 
         this.shooterProperty.boltTimestamp = System.currentTimeMillis();

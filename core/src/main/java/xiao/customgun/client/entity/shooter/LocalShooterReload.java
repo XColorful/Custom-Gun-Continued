@@ -52,15 +52,17 @@ public final class LocalShooterReload extends LocalShooterAspect {
                 System.currentTimeMillis() - this.localShooterProperty.clientShootTimestamp < RELOAD_COOLDOWN_MS
         ) return;
 
-        // 3. IGunRuntime操作结果 -> Shooter状态
-        ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(this.localShooter);
-        boolean canReload = iGun.canReload(iGun, gunItem, iLivingShooter, this.localShooter);
-        if (!canReload) {
-            return;
+        { // 3. IGunRuntime操作结果 -> Shooter状态
+            ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(this.localShooter);
+            boolean canReload = iGun.canReload(iGun, gunItem, iLivingShooter, this.localShooter);
+            if (!canReload) {
+                return;
+            }
         }
-        // 3.1锁上状态锁
-        this.localShooterProperty.lockState(operator -> operator.cgc$getSynReloadState().getStateType().isReloading());
-        this.localShooterProperty.chargeProgress = 0f;
+        { // 3.1锁上状态锁
+            this.localShooterProperty.lockState(_iLivingShooter -> _iLivingShooter.cgc$getSynReloadState().getStateType().isReloading());
+            this.localShooterProperty.chargeProgress = 0f;
+        }
 
         // 发包通知服务器
         SendUtils.sendMessageToServer(new ClientMessagePlayerReloadGun());

@@ -41,13 +41,15 @@ public void bolt() {
             this.shooterProperty.isBolting
     ) return;
   
-	// 3. IGunRuntime操作结果 -> Shooter状态
-    this.shooterProperty.isBolting = iGun.startBolt(this.shooterProperty, iGun, currentGunItem, ILivingShooterGetter.cgc$fromLivingEntity(this.livingShooter), this.livingShooter);
-	if (!this.shooterProperty.isBolting) {
-		// （可选）重置状态
-	    return;
+	{ // 3. IGunRuntime操作结果 -> Shooter状态
+		ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(this.livingShooter);
+		this.shooterProperty.isBolting = iGun.startBolt(this.shooterProperty, iGun, gunItem, iLivingShooter, this.livingShooter);
+		if (!this.shooterProperty.isBolting) {
+			// （可选）重置状态
+			return;
+		}
 	}
-	  
+	
 	this.shooterProperty.boltTimestamp = System.currentTimeMillis();
 }
 ```
@@ -64,10 +66,12 @@ public void bolt() {
             this.localShooterProperty.isBolting
     ) return;
     
-	// 3. IGunRuntime操作结果 -> Shooter状态
-	this.localShooterProperty.isBolting = true;
-	// 3.1 锁上状态锁
-	this.localShooterProperty.lockState(ISynGunState::cgc$getSynIsBolting);
+	{ // 3. IGunRuntime操作结果 -> Shooter状态
+	    this.localShooterProperty.isBolting = true;
+	}
+	{ // 3.1 锁上状态锁
+	    this.localShooterProperty.lockState(ISynGunState::cgc$getSynIsBolting);
+	}
   
     SendUtils.sendMessageToServer(new ClientMessagePlayerBoltGun());
     @Nullable GunDisplayInstance gunDisplayInstance = ClientResourceApi.getGunDisplayInstance(gunItem);

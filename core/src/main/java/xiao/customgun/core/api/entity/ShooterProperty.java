@@ -13,6 +13,7 @@ import xiao.customgun.core.api.entity.shooter.modifier.ShooterGunModifierCache;
 import xiao.customgun.core.api.item.gun.MeleeType;
 import xiao.customgun.core.entity.shooter.LivingShooterAim;
 import xiao.customgun.core.entity.shooter.LivingShooterDraw;
+import xiao.customgun.core.entity.shooter.LivingShooterProne;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -107,9 +108,9 @@ public class ShooterProperty {
     public int shootCount = 0;
     public float chargeProgress = 0f;
     /**
-     * 是否处于趴下状态
+     * 这个字段的作用域只在{@link LivingShooterProne}内部
      */
-    public boolean isProne = false;
+    @Deprecated public boolean isProne = false;
     /**
      * 用于缓存 lua 脚本的数据
      */

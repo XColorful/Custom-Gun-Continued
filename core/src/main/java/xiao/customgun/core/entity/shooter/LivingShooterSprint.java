@@ -8,6 +8,7 @@
 package xiao.customgun.core.entity.shooter;
 
 import net.minecraft.world.entity.LivingEntity;
+import org.jetbrains.annotations.ApiStatus;
 import xiao.customgun.core.api.entity.ILivingShooter;
 import xiao.customgun.core.api.entity.ReloadState;
 import xiao.customgun.core.api.entity.ShooterProperty;
@@ -20,16 +21,37 @@ public final class LivingShooterSprint extends LivingShooterAspect {
         super(livingShooter, shooterProperty);
     }
 
-    public boolean getProcessedSprintStatus(boolean sprint) {
+    /**
+     * 根据情况返回玩家应当处于的冲刺状态
+     * @param isSprint 当前冲刺状态
+     * @return 当前是否应该处于冲刺状态
+     */
+    public boolean onSprint(boolean isSprint) {
         ILivingShooter livingShooter = ILivingShooterGetter.cgc$fromLivingEntity(this.livingShooter);
-        boolean isAiming = livingShooter.cgc$getSynIsAiming();
-        if (isAiming && !PlannedRefactor.SPRINT_ON_AIMING) return false;
+        if ( // 2.1 检查状态
+                // 禁止疾跑的状态
+                _shouldForceDisableSprint(livingShooter, isSprint)
+        ) return false;
 
-        ReloadState.StateType reloadStateType = livingShooter.cgc$getSynReloadState().getStateType();
-        if (!PlannedRefactor.SPRINT_ON_RELOADING && reloadStateType.isReloading() && !reloadStateType.isReloadFinishing()) {
-            return false;
-        } else {
-            return sprint;
-        }
+        return isSprint;
+    }
+    private boolean _shouldForceDisableSprint(ILivingShooter iLivingShooter, boolean isSprint) {
+        if (isSprintImpossible(iLivingShooter)) return true;
+
+        return false;
+    }
+    /**
+     * 用于排除一定不允许冲刺的情况
+     * @return 是否不可能(是否禁止)处于冲刺状态
+     */
+    @ApiStatus.Internal
+    public static boolean isSprintImpossible(ILivingShooter iLivingShooter) {
+        boolean isAiming = iLivingShooter.cgc$getSynIsAiming();
+        if (isAiming && !PlannedRefactor.SPRINT_ON_AIMING) return true;
+
+        ReloadState.StateType reloadStateType = iLivingShooter.cgc$getSynReloadState().getStateType();
+        if (!PlannedRefactor.SPRINT_ON_RELOADING && reloadStateType.isReloading() && !reloadStateType.isReloadFinishing()) return true;
+
+        return false;
     }
 }

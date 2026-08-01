@@ -174,7 +174,7 @@ public abstract class LivingEntityMixin extends Entity implements ILivingShooter
 
     @Override
     public boolean cgc$getProcessedSprintStatus(boolean sprint) {
-        return this.cgc$sprint.getProcessedSprintStatus(sprint);
+        return this.cgc$sprint.onSprint(sprint);
     }
 
     @Override

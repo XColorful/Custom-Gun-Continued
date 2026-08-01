@@ -1,7 +1,7 @@
 [English](#English)
 
 # 枪械数据
-> wiki 版本：`0.0.1`.6
+> wiki 版本：`0.0.1`.7
 
 - `bullet_data`/`bullet`（\_BulletData）：
 	- `display_damage`/`damage`（float）：
@@ -54,11 +54,11 @@
 		- `value`（float[]）：
 - `prone_recoil_multiplier`/`crawl_recoil_multiplier`（float）：
 - 
-- `weight`（float）：
-- `movement_data`/`movement_speed`（\_MovementData）：
-	- `base`（float）：
-	- `aim`（float）：
-	- `reload`（float）：
+- ~~`weight`~~
+- ~~`movement_data`/`movement_speed`~~
+	- ~~`base`~~
+	- ~~`aim`~~
+	- ~~`reload`~~
 - 
 - `fire_sound_data`/`fire_sound`（\_FireSoundData）：
 	- `normal_multiplier`/`fire_multiplier`（float）：
@@ -212,13 +212,6 @@
 	},
 	"prone_recoil_multiplier": 0.0,
 
-	"weight": 0.0,
-	"movement_data": {
-		"base": 0.0,
-		"aim": 0.0,
-		"reload": 0.0
-	},
-
 	"fire_sound_data": {
 		"normal_multiplier": 0.0,
 		"silenced_multiplier": 0.0
@@ -332,7 +325,7 @@
 ```
 
 # English
-> wiki verison: `0.0.1`.6
+> wiki verison: `0.0.1`.7
 
 - `bullet_data`/`bullet`( \_BulletData):
 	- `display_damage`/`damage`(float):
@@ -385,11 +378,11 @@
 		- `value`(float[]):
 - `prone_recoil_multiplier`/`crawl_recoil_multiplier`(float):
 - 
-- `weight`(float):
-- `movement_data`/`movement_speed`( \_MovementData):
-	- `base`(float):
-	- `aim`(float):
-	- `reload`(float):
+- ~~`weight`~~
+- ~~`movement_data`/`movement_speed`~~
+	- ~~`base`~~
+	- ~~`aim`~~
+	- ~~`reload`~~
 - 
 - `fire_sound_data`/`fire_sound`( \_FireSoundData):
 	- `normal_multiplier`/`fire_multiplier`(float):
@@ -542,13 +535,6 @@
 		]
 	},
 	"prone_recoil_multiplier": 0.0,
-
-	"weight": 0.0,
-	"movement_data": {
-		"base": 0.0,
-		"aim": 0.0,
-		"reload": 0.0
-	},
 
 	"fire_sound_data": {
 		"normal_multiplier": 0.0,

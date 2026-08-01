@@ -38,8 +38,8 @@ public final class GunData extends ResourcePojo<GunData> {
     private _RecoilData recoilData; // 后坐力
     private float proneRecoilMultiplier = 0.5f; // 趴后坐力
 
-    private float weight = 0f; // 基础移速影响
-    private _MovementData movementData; // 移速数据
+    @Deprecated(forRemoval = true) private float weight = 0f; // 基础移速影响
+    @Deprecated(forRemoval = true) private _MovementData movementData; // 移速数据
 
     private _FireSoundData fireSoundData; // 开火声音范围
     private float hurtBobTweakMultiplier = 0.05f; // 被命中者受击晃动
@@ -100,9 +100,6 @@ public final class GunData extends ResourcePojo<GunData> {
                     case GunDataTag.RECOIL_DATA, GunDataTag.RECOIL_DATA_OLD1 -> pojo.recoilData = JsonUtils.read(reader, _RecoilData::fromJson);
                     case GunDataTag.PRONE_RECOIL_MULTIPLIER, GunDataTag.PRONE_RECOIL_MULTIPLIER_OLD1 -> pojo.proneRecoilMultiplier = JsonUtils.readFloat(reader);
 
-                    case GunDataTag.WEIGHT -> pojo.weight = JsonUtils.readFloat(reader);
-                    case GunDataTag.MOVEMENT_DATA, GunDataTag.MOVEMENT_DATA_OLD1 -> pojo.movementData = JsonUtils.read(reader, _MovementData::fromJson);
-
                     case GunDataTag.FIRE_SOUND_DATA, GunDataTag.FIRE_SOUND_DATA_OLD1 -> pojo.fireSoundData = JsonUtils.read(reader, _FireSoundData::fromJson);
                     case GunDataTag.HURT_BOB_TWEAK_MULTIPLIER -> pojo.hurtBobTweakMultiplier = JsonUtils.readFloat(reader);
 
@@ -158,9 +155,6 @@ public final class GunData extends ResourcePojo<GunData> {
             JsonUtils.write(writer, GunDataTag.RECOIL_DATA, recoilData, _RecoilData::toJson);
             JsonUtils.writeFloat(writer, GunDataTag.PRONE_RECOIL_MULTIPLIER, proneRecoilMultiplier);
 
-            JsonUtils.writeFloat(writer, GunDataTag.WEIGHT, weight);
-            JsonUtils.write(writer, GunDataTag.MOVEMENT_DATA, movementData, _MovementData::toJson);
-
             JsonUtils.write(writer, GunDataTag.FIRE_SOUND_DATA, fireSoundData, _FireSoundData::toJson);
             JsonUtils.writeFloat(writer, GunDataTag.HURT_BOB_TWEAK_MULTIPLIER, hurtBobTweakMultiplier);
 
@@ -202,26 +196,24 @@ public final class GunData extends ResourcePojo<GunData> {
         if (ENABLE_BACK_COMPATIBILITY) this.applyBackCompatibility();
 
         boolean n1 = (this.bulletData == null | this.ammoLocation == null | this.boltType == null | this.inaccuracyData == null);
-        boolean n2 = (this.recoilData == null | this.movementData == null | this.fireSoundData == null | this.reloadData == null);
-        boolean n3 = (this.defaultFireModeType == null | this.fireModeTypes == null | this.fireModeAdjustData == null | this.burstData == null);
-        boolean n4 = (this.meleeData == null | this.chargingData == null | this.allowAttachmentTypes == null | this.exclusiveAttachments == null);
-        boolean n5 = (this.extendedMagAmmoSize == null | this.builtinAttachments == null);
-        if (n1 | n2 | n3 | n4 | n5) {
+        boolean n2 = (this.recoilData == null | this.fireSoundData == null | this.reloadData == null | this.defaultFireModeType == null);
+        boolean n3 = (this.fireModeTypes == null | this.fireModeAdjustData == null | this.burstData == null | this.meleeData == null);
+        boolean n4 = (this.chargingData == null | this.allowAttachmentTypes == null | this.exclusiveAttachments == null | this.extendedMagAmmoSize == null | this.builtinAttachments == null);
+        if (n1 | n2 | n3 | n4) {
             this.setValid(false);
             return;
         }
         this.bulletData.validate();
         this.inaccuracyData.validate();
         this.recoilData.validate();
-        this.movementData.validate();
         this.fireSoundData.validate();
         this.reloadData.validate();
         this.burstData.validate();
         this.meleeData.validate();
         if (this.heatData != null) this.heatData.validate();
         boolean v1 = (this.bulletData.isValid() & this.inaccuracyData.isValid() & this.recoilData.isValid());
-        boolean v2 = (this.movementData.isValid() & this.fireSoundData.isValid() & this.reloadData.isValid());
-        boolean v3 = (this.burstData.isValid() & this.meleeData.isValid() & (this.heatData == null || this.heatData.isValid()));
+        boolean v2 = (this.fireSoundData.isValid() & this.reloadData.isValid() & this.burstData.isValid());
+        boolean v3 = (this.meleeData.isValid() & (this.heatData == null || this.heatData.isValid()));
         if (!(v1 & v2 & v3)) {
             this.setValid(false);
             return;
@@ -275,10 +267,10 @@ public final class GunData extends ResourcePojo<GunData> {
     public float getProneRecoilMultiplier() {
         return proneRecoilMultiplier;
     }
-    public float getWeight() {
+    @Deprecated(forRemoval = true) public float getWeight() {
         return weight;
     }
-    public _MovementData getMovementData() {
+    @Deprecated(forRemoval = true) public _MovementData getMovementData() {
         return movementData;
     }
     public _FireSoundData getFireSoundData() {
@@ -378,10 +370,10 @@ public final class GunData extends ResourcePojo<GunData> {
     public void setProneRecoilMultiplier(float proneRecoilMultiplier) {
         this.proneRecoilMultiplier = proneRecoilMultiplier;
     }
-    public void setWeight(float weight) {
+    @Deprecated(forRemoval = true) public void setWeight(float weight) {
         this.weight = weight;
     }
-    public void setMovementData(_MovementData movementData) {
+    @Deprecated(forRemoval = true) public void setMovementData(_MovementData movementData) {
         this.movementData = movementData;
     }
     public void setFireSoundData(_FireSoundData fireSoundData) {
@@ -468,7 +460,6 @@ public final class GunData extends ResourcePojo<GunData> {
         this.ammoLocation = this.ammoLocation == null ? ResourceTag.NULL_LOCATION : this.ammoLocation;
         this.inaccuracyData = this.inaccuracyData == null ? new _InaccuracyData().applyBackCompatibility() : this.inaccuracyData.applyBackCompatibility();
         this.recoilData = this.recoilData == null ? new _RecoilData().applyBackCompatibility() : this.recoilData.applyBackCompatibility();
-        this.movementData = this.movementData == null ? new _MovementData().applyBackCompatibility() : this.movementData.applyBackCompatibility();
         this.fireSoundData = this.fireSoundData == null ? new _FireSoundData().applyBackCompatibility() : this.fireSoundData.applyBackCompatibility();
         this.reloadData = this.reloadData == null ? new _ReloadData().applyBackCompatibility() : this.reloadData.applyBackCompatibility();
 

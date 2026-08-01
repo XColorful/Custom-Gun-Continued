@@ -57,7 +57,7 @@
 	- LivingShooterMelee：近战
 	- LivingShooterReload：换弹
 	- LivingShooterShoot：射击
-	- LivingShooterSpeedModifier：速度修改
+	- ~~LivingShooterSpeedModifier：速度修改~~
 	- LivingShooterSprint：冲刺
 	- modifier：[射手修饰框架](./entity/shooter/modifier/Home.md)
 		- ShooterGunModifierManager：射手枪械修饰管理器
@@ -280,7 +280,7 @@ Module division based on the `xiao.customgun.core` top-level package
 	- LivingShooterMelee: Melee
 	- LivingShooterReload: Reload
 	- LivingShooterShoot: Shoot
-	- LivingShooterSpeedModifier: Speed modifier
+	- ~~LivingShooterSpeedModifier: Speed modifier~~
 	- LivingShooterSprint: Sprint
 	- modifier: [Shooter modifier framework](./entity/shooter/modifier/Home.md#English)
 		- ShooterGunModifierManager: Shooter gun modifier manager

@@ -46,9 +46,6 @@ public abstract class LivingEntityMixin extends Entity implements ILivingShooter
     private final LivingShooterBolt cgc$bolt = new LivingShooterBolt(cgc$shooter, cgc$shooterProperty, cgc$draw, cgc$shoot);
     private final LivingShooterReload cgc$reload = new LivingShooterReload(cgc$shooter, cgc$shooterProperty, cgc$draw, cgc$shoot);
 
-    // 生物本体影响
-    private final LivingShooterSpeedModifier cgc$speed = new LivingShooterSpeedModifier(cgc$shooter, cgc$shooterProperty);
-
     // 持枪者属性
     private final LivingShooterAmmoCheck cgc$ammoCheck = new LivingShooterAmmoCheck(cgc$shooter, cgc$shooterProperty);
 
@@ -74,7 +71,6 @@ public abstract class LivingEntityMixin extends Entity implements ILivingShooter
         this.cgc$prone.tickProne();
         this.cgc$bolt.tickBolt();
         this.cgc$melee.scheduleTickMelee();
-        this.cgc$speed.updateSpeedModifier();
         this.cgc$heat.tickHeat();
         cgc$shooter.setSprinting(this.cgc$getProcessedSprintStatus(this.cgc$shooter.isSprinting()));
         // 从服务端同步数据

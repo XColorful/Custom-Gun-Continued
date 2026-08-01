@@ -15,6 +15,7 @@ import xiao.customgun.core.resource.data.data.attachment._SimpleModifierData;
 
 import java.util.Collection;
 
+@Deprecated(forRemoval = true)
 public final class WeightModifier extends AttachmentModifier<_SimpleModifierData, Float>
         implements IWeightModifier<AttachmentData> {
     public static final WeightModifier INSTANCE = new WeightModifier();

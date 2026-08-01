@@ -19,8 +19,8 @@ public class GunDataTag {
     public static final String RECOIL_DATA = "recoil_data"; public static final String RECOIL_DATA_OLD1 = "recoil";
     public static final String PRONE_RECOIL_MULTIPLIER = "prone_recoil_multiplier"; public static final String PRONE_RECOIL_MULTIPLIER_OLD1 = "crawl_recoil_multiplier";
 
-    public static final String WEIGHT = "weight";
-    public static final String MOVEMENT_DATA = "movement_data"; public static final String MOVEMENT_DATA_OLD1 = "movement_speed";
+    @Deprecated public static final String WEIGHT = "weight";
+    @Deprecated public static final String MOVEMENT_DATA = "movement_data"; @Deprecated public static final String MOVEMENT_DATA_OLD1 = "movement_speed";
 
     public static final String FIRE_SOUND_DATA = "fire_sound_data"; public static final String FIRE_SOUND_DATA_OLD1 = "fire_sound";
     public static final String HURT_BOB_TWEAK_MULTIPLIER = "hurt_bob_tweak_multiplier";

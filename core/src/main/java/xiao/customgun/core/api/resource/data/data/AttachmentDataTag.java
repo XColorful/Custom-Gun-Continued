@@ -29,7 +29,7 @@ public class AttachmentDataTag {
     public static final String RPM = GunModifierTypeTag.RPM;
     public static final String RECOIL_DATA = GunModifierTypeTag.RECOIL_DATA; public static final String RECOIL_DATA_OLD1 = "recoil";
     public static final String EFFECTIVE_RANGE = GunModifierTypeTag.EFFECTIVE_RANGE;
-    public static final String WEIGHT = GunModifierTypeTag.WEIGHT; public static final String WEIGHT_OLD1 = "weight_modifier";
+    @Deprecated public static final String WEIGHT = GunModifierTypeTag.WEIGHT; @Deprecated public static final String WEIGHT_OLD1 = "weight_modifier";
     public static final String MUZZLE = GunModifierTypeTag.MUZZLE; public static final String MUZZLE_OLD1 = "silence";
     /**
      * 不准确度Modifier {@link _InaccuracyData}

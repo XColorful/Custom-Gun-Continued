@@ -124,10 +124,10 @@ public final class LivingShooterShoot extends LivingShooterAspect {
             if (!shooterFireResult.isSuccess()) {
                 return ShootResult.UNKNOWN_FAIL;
             }
-        this.shooterProperty.lastShootTimestamp = this.shooterProperty.shootTimestamp;
-        this.shooterProperty.shootTimestamp = timestamp;
-        this.shooterProperty.heatTimestamp = System.currentTimeMillis();
-        this.shooterProperty.chargeProgress = validateChargeProgress(chargeData, chargeProgress, hasChargeContext);
+            this.shooterProperty.lastShootTimestamp = this.shooterProperty.shootTimestamp;
+            this.shooterProperty.shootTimestamp = timestamp;
+            this.shooterProperty.heatTimestamp = System.currentTimeMillis();
+            this.shooterProperty.chargeProgress = validateChargeProgress(chargeData, chargeProgress, hasChargeContext);
             // 发包通知客户端
             SendUtils.sendMessageToTrackingEntity(this.livingShooter,
                     new ServerMessageGunShoot(this.livingShooter.getId(), gunItem));

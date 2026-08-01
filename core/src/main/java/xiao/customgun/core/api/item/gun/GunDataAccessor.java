@@ -33,11 +33,14 @@ import xiao.customgun.core.init.registry.ModItems;
 import xiao.customgun.core.resource.data.data.AttachmentData;
 import xiao.customgun.core.resource.data.data.GunData;
 import xiao.customgun.core.resource.data.data.attachment._MeleeModifierData;
+import xiao.customgun.core.resource.data.data.gun._ChargingData;
 import xiao.customgun.core.resource.data.data.gun._MeleeData;
 import xiao.customgun.core.resource.data.data.gun.melee._DefaultMeleeData;
 import xiao.customgun.core.resource.instance.data.AttachmentIndexInstance;
 import xiao.customgun.core.resource.instance.data.GunIndexInstance;
 import xiao.customgun.core.util.NBTUtils;
+
+import java.util.Map;
 
 public interface GunDataAccessor extends IGunDataAccess {
 
@@ -80,8 +83,8 @@ public interface GunDataAccessor extends IGunDataAccess {
     // --------IGunStateAccess--------
 
     @Override
-    default FireModeType getFireModeType(ItemStack gunItem) {
-        if (gunItem.isEmpty()) return null;
+    default @NotNull FireModeType getFireModeType(ItemStack gunItem) {
+        if (gunItem.isEmpty()) return FireModeType.DEFAULT;
         FireModeType fireModeType = FireModeType.fromString(NBTUtils.getString(gunItem, GunProperty.FIRE_MODE_TYPE.getTagName()));
         return fireModeType != null ? fireModeType : FireModeType.DEFAULT;
     }
@@ -89,6 +92,26 @@ public interface GunDataAccessor extends IGunDataAccess {
     default void setFireModeType(ItemStack gunItem, FireModeType fireModeType) {
         if (gunItem.isEmpty()) return;
         NBTUtils.setString(gunItem, GunProperty.FIRE_MODE_TYPE.getTagName(), fireModeType.getTagName());
+    }
+
+    @Override
+    default ChargeType getChargeType(ItemStack gunItem, FireModeType fireModeType) {
+        @Nullable Map<FireModeType, _ChargingData> chargingData = _getChargingData(this, gunItem);
+        if (chargingData == null) return null;
+
+        @Nullable _ChargingData _chargingData = chargingData.get(fireModeType);
+        if (_chargingData == null) return null;
+
+        return _chargingData.getChargeType();
+    }
+    @ApiStatus.Internal
+    static @Nullable Map<FireModeType, _ChargingData> _getChargingData(IGunDataAccess iGun, ItemStack gunItem) {
+        var gunLocation = iGun.getGunLocation(gunItem);
+        @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(gunLocation);
+        if (gunIndexInstance == null) return null;
+
+        GunData gunData = gunIndexInstance.getGunData();
+        return gunData.getChargingData();
     }
 
     @Override

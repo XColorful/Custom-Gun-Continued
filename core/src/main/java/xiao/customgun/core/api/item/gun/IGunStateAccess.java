@@ -9,15 +9,24 @@ package xiao.customgun.core.api.item.gun;
 
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public interface IGunStateAccess {
 
     /**
-     * 获取枪械的开火模式
+     * 获取枪械的开火模式，如无则返回{@link FireModeType#DEFAULT}
      */
-    FireModeType getFireModeType(ItemStack gunItem);
+    @NotNull FireModeType getFireModeType(ItemStack gunItem);
     void setFireModeType(ItemStack gunItem, FireModeType fireModeType);
+
+    /**
+     * @return 枪械的蓄力模式，返回{@code null}则没有
+     */
+    @Nullable ChargeType getChargeType(ItemStack gunItem, FireModeType fireModeType);
+    default @Nullable ChargeType getCurrentChargeType(ItemStack gunItem) {
+        return this.getChargeType(gunItem, this.getFireModeType(gunItem));
+    }
 
     /**
      * 获取瞄准放大倍率

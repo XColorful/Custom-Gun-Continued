@@ -192,7 +192,8 @@ public final class ShootKey extends InputKey implements IEventHandler {
 
         // 检查是否蓄力满/不需要充能 -> 开火充能就绪
         ILocalShooter localShooter = ILocalShooterGetter.fromLocalPlayer(player);
-        if (!localShooter.cgc$chargeAndGetResult(doShoot)) return false; // 包含了蓄力进度tick
+        boolean shouldShoot = localShooter.cgc$doCharge_isChargeEnough(doShoot); // 包含了蓄力进度tick
+        if (!shouldShoot) return false;
 
         // ----开火充能就绪----
 

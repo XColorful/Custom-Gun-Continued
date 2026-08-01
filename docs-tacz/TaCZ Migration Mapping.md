@@ -286,6 +286,7 @@ Notation:
 |shooter.`LivingEntityCrawl`|shooter.`LivingShooterProne`|
 |shooter.`LivingEntityDrawGun`|shooter.`LivingShooterDraw`|
 |shooter.`LivingEntityFireSelect`|shooter.`LivingShooterSwitchFireMode`|
+|shooter.`LivingEntitySpeedModifier`|_Deprecated_|
 |sync.core|sync|
 |sync.core.`DataHolder`|sync.`SyncDataHolder`|
 |sync.`ModSerializers`.RELOAD_STATE|sync.`Serializers`.RELOAD_STATE|
@@ -533,6 +534,7 @@ Notation:
 |pojo.data.block.`*`|data.data.block|
 |pojo.data.gun.`GunData`|data.data.`GunData`|
 |pojo.data.gun.`*`|data.data.gun|
+|pojo.data.gun.`MoveSpeed`|_Deprecated_|
 |pojo.data.loot|_Deprecated_|
 |pojo.data.recipe.`*`|data.recipe.`RecipeData`|
 |pojo.data.recipe.`GunResult`|_Deprecated_|
@@ -559,6 +561,7 @@ Notation:
 |com.tacz.guns.resource|xiao.customgun.core.item|
 |---|---|
 |modifier.custom.`*Modifier`|attachment.modifier.`*Modifier`|
+|modifier.custom.`ExtraMovementModifier`|_Deprecated_|
 |modifier.`AttachmentPropertyManager`.eval|attachment.modifier.`AttachmentModifier`.evalSimpleModifierData|
 
 |com.tacz.guns.resource|xiao.customgun.core.api.entity|

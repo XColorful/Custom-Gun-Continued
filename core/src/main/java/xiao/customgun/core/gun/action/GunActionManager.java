@@ -24,7 +24,6 @@ import xiao.customgun.core.api.gun.action.IGunActionManager;
 import xiao.customgun.core.api.gun.script.GunScriptApi;
 import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.api.script.ScriptMethodType;
-import xiao.customgun.core.event.EventPoster;
 
 public class GunActionManager implements IGunActionManager {
     public static final GunActionManager INSTANCE = new GunActionManager();
@@ -80,7 +79,7 @@ public class GunActionManager implements IGunActionManager {
 
         // 装弹事件钩子提前，不让脚本覆盖换弹事件
         McLogicalSide logicalSide = CustomGun.getSideExecutor().getLogicalSide();
-        if (EventPoster.get().postCustomEvent(new ShooterReloadEvent(logicalSide,
+        if (CustomGun.getEventPoster().postCustomEvent(new ShooterReloadEvent(logicalSide,
                 iLivingShooter, livingShooter, iGun, gunItem))) {
             return false;
         }
@@ -131,7 +130,7 @@ public class GunActionManager implements IGunActionManager {
                                   @NotNull IGun iGun, @NotNull ItemStack gunItem,
                                   ILivingShooter iLivingShooter, LivingEntity livingShooter) {
         McLogicalSide logicalSide = CustomGun.getSideExecutor().getLogicalSide();
-        if (EventPoster.get().postCustomEvent(new ShooterSwitchFireModeEvent(logicalSide,
+        if (CustomGun.getEventPoster().postCustomEvent(new ShooterSwitchFireModeEvent(logicalSide,
                 iLivingShooter, livingShooter, iGun, gunItem))) {
             return false;
         }

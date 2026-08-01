@@ -145,7 +145,8 @@ public final class LocalShooterShoot extends LocalShooterAspect {
         if (coolDown >= 50) return ShootResult.COOL_DOWN;
 
         // 基础检查
-        ShootResult errorResult = preCheckError(iGun, gunItem, gunDisplayInstance, gunData, true);
+        boolean playDrySound = true;
+        ShootResult errorResult = preCheckError(iGun, gunItem, gunDisplayInstance, gunData, playDrySound);
         if (errorResult != null) return errorResult;
 
         // 检查是否正在奔跑
@@ -159,6 +160,17 @@ public final class LocalShooterShoot extends LocalShooterAspect {
              */
             @NotNull IGunAttackRuntime.ShooterFireResult shooterFireResult = iGun.shooterFire(null, iGun, gunItem, iLivingShooter, localShooter, null, null);
             if (!shooterFireResult.isSuccess()) {
+                switch (shooterFireResult) {
+                    case OVERHEATED -> {
+                        if (playDrySound) {
+                            SoundPlayManager.get().playGunSound(gunDisplayInstance.getGunSound(GunSoundType.DRY_FIRE_SOUND),
+                                    1.0f,
+                                    this.localShooter,
+                                    GunConfig.DEFAULT_GUN_OTHER_SOUND_DISTANCE.get(),
+                                    false);
+                        }
+                    }
+                }
                 return ShootResult.UNKNOWN_FAIL;
             }
         }
@@ -201,20 +213,6 @@ public final class LocalShooterShoot extends LocalShooterAspect {
 
         // 判断是否处于近战冷却时间
         if (iLivingShooter.cgc$getSynMeleeCooldown() > 0) return ShootResult.IS_MELEE;
-
-        // 检查过热锁
-        if (iGun.hasHeat(gunItem)) {
-            if (iGun.hasOverheatLock(gunItem)) {
-                if (playDrySound) {
-                    SoundPlayManager.get().playGunSound(gunDisplayInstance.getGunSound(GunSoundType.DRY_FIRE_SOUND),
-                            1.0f,
-                            this.localShooter,
-                            GunConfig.DEFAULT_GUN_OTHER_SOUND_DISTANCE.get(),
-                            false);
-                }
-                return ShootResult.OVERHEATED;
-            }
-        }
 
         // 检查消耗子弹
         BoltType boltType = gunData.getBoltType();

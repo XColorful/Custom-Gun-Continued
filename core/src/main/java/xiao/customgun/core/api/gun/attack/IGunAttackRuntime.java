@@ -31,7 +31,8 @@ public interface IGunAttackRuntime {
                                            Supplier<Float> pitch, Supplier<Float> yaw);
     enum ShooterFireResult {
         SUCCESS,
-        ERROR;
+        ERROR,
+        OVERHEATED;
         public boolean isSuccess() {
             return this == SUCCESS;
         }

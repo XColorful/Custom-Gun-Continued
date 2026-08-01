@@ -82,9 +82,9 @@ public final class LivingShooterShoot extends LivingShooterAspect {
         FireModeType fireModeType = iGun.getFireModeType(gunItem);
         @Nullable _ChargingData chargeData = gunData.getChargingData().get(fireModeType);
 
-        ShootResult errorResult = preCheckError(iGun, gunItem,
-                gunData, chargeData, timestamp, chargeProgress, hasChargeContext);
-        if (errorResult != null) return errorResult;
+        if ( // 2.2
+                preCheckError(iGun, gunItem, gunData, chargeData, timestamp, chargeProgress, hasChargeContext) != null
+        ) return ShootResult.PRE_CHECK_ERROR;
 
         // --------TODO
 //        int consumedAmmo = iGun.consumeAmmoOnce(this.livingShooter, currentGunItem);
@@ -147,7 +147,7 @@ public final class LivingShooterShoot extends LivingShooterAspect {
                                       GunData gunData, _ChargingData chargeData, long timestamp, float chargeProgress, boolean hasChargeContext) {
         if (SyncConfig.SERVER_SHOOT_COOLDOWN_V.get()) {
             // 判断射击是否正在冷却
-            long coolDown = getShootCooldown(timestamp);
+            long coolDown = _getShootCooldown(timestamp);
             if (coolDown < 0) return ShootResult.UNKNOWN_FAIL;
             else if (coolDown > 0) return ShootResult.COOL_DOWN;
         }
@@ -184,13 +184,6 @@ public final class LivingShooterShoot extends LivingShooterAspect {
 
         if (hasChargeContext && !isChargeProgressReasonable(chargeData, chargeProgress)) {
             return ShootResult.UNKNOWN_FAIL;
-        }
-
-        // 检查过热锁
-        if (iGun.hasHeat(gunItem)) {
-            if (iGun.hasOverheatLock(gunItem)) {
-                return ShootResult.OVERHEATED;
-            }
         }
 
         return null;
@@ -248,14 +241,14 @@ public final class LivingShooterShoot extends LivingShooterAspect {
      * @return 射击冷却
      */
     public long getShootCooldown() {
-        return getShootCooldown(System.currentTimeMillis() - this.shooterProperty.baseTimestamp);
+        return _getShootCooldown(System.currentTimeMillis() - this.shooterProperty.baseTimestamp);
     }
     /**
      * 查询指定的 timestamp 下的射击冷却。根据情况返回值可能超过枪械的射击间隔。
      * @param timestamp 指定 timestamp，是偏移时间戳（基于base timestamp 的相对时间戳）
      * @return 射击冷却
      */
-    public long getShootCooldown(long timestamp) {
+    private long _getShootCooldown(long timestamp) {
         if (this.shooterProperty.currentGunItem == null) return 0;
 
         ItemStack currentGunItem = this.shooterProperty.currentGunItem.get();

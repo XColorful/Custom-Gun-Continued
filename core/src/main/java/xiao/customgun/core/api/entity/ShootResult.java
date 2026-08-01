@@ -7,6 +7,16 @@
 
 package xiao.customgun.core.api.entity;
 
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
+import xiao.customgun.core.api.common.McLogicalSide;
+import xiao.customgun.core.api.gun.attack.IGunAttackRuntime;
+import xiao.customgun.core.api.item.IGun;
+import xiao.customgun.core.gun.attack._DefaultGunAttack;
+
+import java.util.function.Supplier;
+
 public enum ShootResult {
     /**
      * 成功
@@ -43,6 +53,7 @@ public enum ShootResult {
     /**
      * 正处于换弹状态
      */
+    @ApiStatus.Internal
     IS_RELOADING,
     /**
      * 正处于切枪状态
@@ -51,10 +62,12 @@ public enum ShootResult {
     /**
      * 正处于拉拴状态
      */
+    @ApiStatus.Internal
     IS_BOLTING,
     /**
      * 正处于近战状态
      */
+    @ApiStatus.Internal
     IS_MELEE,
     /**
      * 正处于疾跑状态
@@ -63,13 +76,23 @@ public enum ShootResult {
     /**
      * 网络波动导致射击失败
      */
+    @ApiStatus.Internal
     NETWORK_FAIL,
     /**
      * 事件取消
+     * @deprecated Go to {@link IGunAttackRuntime}
      */
+    @Deprecated
     EVENT_CANCELED,
     /**
      * 武器过热
+     * @see _DefaultGunAttack#shooterFire 生成该结果
+     * @deprecated 完全在{@code LocalShooterShoot.shoot()} (3.) 内部处理
      */
-    OVERHEATED
+    @Deprecated
+    OVERHEATED,
+    /**
+     * 状态不对
+     */
+    PRE_CHECK_ERROR;
 }

@@ -57,14 +57,11 @@ public class GunAttackManager implements IGunAttackManager {
             return ShooterFireResult.ERROR;
         }
 
-        // 客户端侧提前返回，以继续客户端逻辑
-        if (logicalSide.isClient()) return ShooterFireResult.SUCCESS;
-
         GunScriptApi scriptApi = GunScriptApi.of(iLivingShooter, livingShooter, iGun, gunItem);
         return switch (scriptApi.simpleCall(ScriptMethodType.SHOOTER_FIRE)) {
             case TRUE -> ShooterFireResult.SUCCESS;
             case FALSE -> ShooterFireResult.ERROR;
-            case UNKNOWN -> _DefaultGunAttack.shooterFire(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter, pitch, yaw);
+            case UNKNOWN -> _DefaultGunAttack.shooterFire(logicalSide, shooterProperty, iGun, gunItem, iLivingShooter, livingShooter, pitch, yaw);
         };
     }
     @Override

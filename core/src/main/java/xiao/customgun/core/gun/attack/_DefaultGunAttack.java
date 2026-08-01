@@ -20,6 +20,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.CustomGun;
+import xiao.customgun.core.api.common.McLogicalSide;
 import xiao.customgun.core.api.entity.IGunProjectile;
 import xiao.customgun.core.api.entity.ILivingShooter;
 import xiao.customgun.core.api.entity.ShooterProperty;
@@ -44,11 +45,21 @@ import java.util.function.Supplier;
 @ApiStatus.Internal
 public class _DefaultGunAttack {
 
-    protected static IGunAttackRuntime.ShooterFireResult shooterFire(ShooterProperty shooterProperty,
+    // public仅用于文档链接
+    @ApiStatus.Internal
+    public    static IGunAttackRuntime.ShooterFireResult shooterFire(McLogicalSide logicalSide,
+                                                                     ShooterProperty shooterProperty,
                                                                      @NotNull IGun iGun, @NotNull ItemStack gunItem,
                                                                      ILivingShooter iLivingShooter, LivingEntity livingShooter,
                                                                      Supplier<Float> pitch, Supplier<Float> yaw) {
-        // TODO
+        // 检查过热锁
+        if (iGun.hasHeat(gunItem) && iGun.hasOverheatLock(gunItem)) {
+            return IGunAttackRuntime.ShooterFireResult.OVERHEATED;
+        }
+
+        // 客户端侧提前返回，以继续客户端逻辑
+        if (logicalSide.isClient()) return IGunAttackRuntime.ShooterFireResult.SUCCESS;
+
         return IGunAttackRuntime.ShooterFireResult.SUCCESS;
     }
 

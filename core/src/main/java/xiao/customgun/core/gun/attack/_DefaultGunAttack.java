@@ -44,11 +44,21 @@ import java.util.function.Supplier;
 @ApiStatus.Internal
 public class _DefaultGunAttack {
 
-    protected static void shoot(ShooterProperty shooterProperty,
-                                @NotNull IGun iGun, @NotNull ItemStack gunItem,
-                                ILivingShooter iLivingShooter, LivingEntity livingShooter,
-                                Supplier<Float> pitch, Supplier<Float> yaw) {
+    protected static IGunAttackRuntime.ShooterFireResult shooterFire(ShooterProperty shooterProperty,
+                                                                     @NotNull IGun iGun, @NotNull ItemStack gunItem,
+                                                                     ILivingShooter iLivingShooter, LivingEntity livingShooter,
+                                                                     Supplier<Float> pitch, Supplier<Float> yaw) {
         // TODO
+        return IGunAttackRuntime.ShooterFireResult.SUCCESS;
+    }
+
+    /**
+     * 对应原模组{@code AbstractGunItem.shoot()}，仅服务端触发
+     */
+    protected static IGunAttackRuntime.GunFireResult gunFire(@NotNull IGun iGun, @NotNull ItemStack gunItem,
+                                                             ILivingShooter iLivingShooter, LivingEntity livingShooter) {
+
+        return IGunAttackRuntime.GunFireResult.SUCCESS;
     }
 
     protected static void doBulletSpread(ShooterProperty shooterProperty,

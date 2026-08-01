@@ -21,6 +21,7 @@ import xiao.customgun.core.api.entity.IGunProjectile;
 import xiao.customgun.core.api.entity.ILivingShooter;
 import xiao.customgun.core.api.entity.ReloadState;
 import xiao.customgun.core.api.entity.ShooterProperty;
+import xiao.customgun.core.api.gun.attack.IGunAttackRuntime;
 import xiao.customgun.core.api.gun.script.GunScriptApi;
 import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.api.item.gun.GunDataAccessor;
@@ -109,10 +110,15 @@ public class GunItem extends Item implements IGun, GunDataAccessor {
                 .switchFireMode(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter);
     }
     // ----IGunAttackRuntime----
-    @Override public void shoot(ShooterProperty shooterProperty, @NotNull IGun iGun, @NotNull ItemStack gunItem, ILivingShooter iLivingShooter, LivingEntity livingShooter, Supplier<Float> pitch, Supplier<Float> yaw) {
-        CustomGun.getGunManager().getManagerGroup(this.getManagerGroupTag(gunItem))
+    @Override public @NotNull IGunAttackRuntime.ShooterFireResult shooterFire(ShooterProperty shooterProperty, @NotNull IGun iGun, @NotNull ItemStack gunItem, ILivingShooter iLivingShooter, LivingEntity livingShooter, Supplier<Float> pitch, Supplier<Float> yaw) {
+        return CustomGun.getGunManager().getManagerGroup(this.getManagerGroupTag(gunItem))
                 .gunAttackManager()
-                .shoot(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter, pitch, yaw);
+                .shooterFire(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter, pitch, yaw);
+    }
+    @Override public @NotNull IGunAttackRuntime.GunFireResult gunFire(ShooterProperty shooterProperty, @NotNull IGun iGun, @NotNull ItemStack gunItem, ILivingShooter iLivingShooter, LivingEntity livingShooter, Supplier<Float> pitch, Supplier<Float> yaw) {
+        return CustomGun.getGunManager().getManagerGroup(this.getManagerGroupTag(gunItem))
+                .gunAttackManager()
+                .gunFire(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter, pitch, yaw);
     }
     @Override public void doBulletSpread(ShooterProperty shooterProperty, @NotNull IGun iGun, @NotNull ItemStack gunItem, ILivingShooter iLivingShooter, LivingEntity livingShooter, @NotNull IGunProjectile iGunProjectile, @NotNull Projectile projectile, int bulletId, float xRot, float yRot, float pow, float uncertainty) {
         CustomGun.getGunManager().getManagerGroup(this.getManagerGroupTag(gunItem))

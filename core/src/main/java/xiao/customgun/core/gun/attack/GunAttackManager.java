@@ -22,8 +22,11 @@ import xiao.customgun.core.api.common.McLogicalSide;
 import xiao.customgun.core.api.entity.IGunProjectile;
 import xiao.customgun.core.api.entity.ILivingShooter;
 import xiao.customgun.core.api.entity.ShooterProperty;
+import xiao.customgun.core.api.event.gun.GunFireEvent;
+import xiao.customgun.core.api.event.shooter.ShooterFireEvent;
 import xiao.customgun.core.api.event.shooter.ShooterPrepareMeleeEvent;
 import xiao.customgun.core.api.gun.attack.IGunAttackManager;
+import xiao.customgun.core.api.gun.attack.IGunAttackRuntime;
 import xiao.customgun.core.api.gun.script.GunScriptApi;
 import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.api.item.gun.MeleeType;
@@ -44,16 +47,48 @@ public class GunAttackManager implements IGunAttackManager {
     // --------IGunAttackRuntime--------
 
     @Override
-    public void shoot(ShooterProperty shooterProperty,
-                      @NotNull IGun iGun, @NotNull ItemStack gunItem,
-                      ILivingShooter iLivingShooter, LivingEntity livingShooter,
-                      Supplier<Float> pitch, Supplier<Float> yaw) { // TODO 这两个参数写到GunScriptApi还是lua函数参数?
+    public @NotNull IGunAttackRuntime.ShooterFireResult shooterFire(ShooterProperty shooterProperty,
+                                                                    @NotNull IGun iGun, @NotNull ItemStack gunItem,
+                                                                    ILivingShooter iLivingShooter, LivingEntity livingShooter,
+                                                                    Supplier<Float> pitch, Supplier<Float> yaw) {
+        McLogicalSide logicalSide = CustomGun.getSideExecutor().getLogicalSide();
+        if (CustomGun.getEventPoster().postCustomEvent(new ShooterFireEvent(logicalSide,
+                iLivingShooter, livingShooter, iGun, gunItem))) {
+            return ShooterFireResult.ERROR;
+        }
+
+        // 客户端侧提前返回，以继续客户端逻辑
+        if (logicalSide.isClient()) return ShooterFireResult.SUCCESS;
+
         GunScriptApi scriptApi = GunScriptApi.of(iLivingShooter, livingShooter, iGun, gunItem);
-        switch (scriptApi.simpleCall(ScriptMethodType.SHOOT)) {
-            case TRUE, FALSE -> {}
-            case UNKNOWN -> _DefaultGunAttack.shoot(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter, pitch, yaw);
+        return switch (scriptApi.simpleCall(ScriptMethodType.SHOOTER_FIRE)) {
+            case TRUE -> ShooterFireResult.SUCCESS;
+            case FALSE -> ShooterFireResult.ERROR;
+            case UNKNOWN -> _DefaultGunAttack.shooterFire(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter, pitch, yaw);
         };
     }
+    @Override
+    public @NotNull IGunAttackRuntime.GunFireResult gunFire(ShooterProperty shooterProperty,
+                                                            @NotNull IGun iGun, @NotNull ItemStack gunItem,
+                                                            ILivingShooter iLivingShooter, LivingEntity livingShooter,
+                      Supplier<Float> pitch, Supplier<Float> yaw) { // TODO 这两个参数写到GunScriptApi还是lua函数参数?
+        McLogicalSide logicalSide = CustomGun.getSideExecutor().getLogicalSide();
+        if (CustomGun.getEventPoster().postCustomEvent(new GunFireEvent(logicalSide,
+                iGun, gunItem, iLivingShooter, livingShooter))) {
+            return GunFireResult.ERROR;
+        }
+
+        // 客户端侧提前返回，以继续客户端逻辑
+        if (logicalSide.isClient()) return GunFireResult.SUCCESS;
+
+        GunScriptApi scriptApi = GunScriptApi.of(iLivingShooter, livingShooter, iGun, gunItem);
+        return switch (scriptApi.simpleCall(ScriptMethodType.GUN_FIRE)) {
+            case TRUE -> GunFireResult.SUCCESS;
+            case FALSE -> GunFireResult.ERROR;
+            case UNKNOWN -> _DefaultGunAttack.gunFire(iGun, gunItem, iLivingShooter, livingShooter);
+        };
+    }
+
     @Override
     public void doBulletSpread(ShooterProperty shooterProperty,
                                @NotNull IGun iGun, @NotNull ItemStack gunItem,

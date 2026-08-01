@@ -12,15 +12,15 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.CustomGun;
-import xiao.customgun.core.api.common.McLogicalSide;
 import xiao.customgun.core.api.entity.ILivingShooter;
 import xiao.customgun.core.api.entity.ShootResult;
 import xiao.customgun.core.api.entity.ShooterProperty;
 import xiao.customgun.core.api.entity.shooter.modifier.ShooterGunModifierCache;
 import xiao.customgun.core.api.entity.shooter.ILivingShooterGetter;
-import xiao.customgun.core.api.event.shooter.ShooterFireEvent;
+import xiao.customgun.core.api.gun.attack.IGunAttackRuntime;
 import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.api.item.gun.BoltType;
 import xiao.customgun.core.api.item.gun.ChargeType;
@@ -30,7 +30,7 @@ import xiao.customgun.core.api.minecraft.capability.IInventoryCapability;
 import xiao.customgun.core.api.resource.ResourceApi;
 import xiao.customgun.core.config.SyncConfig;
 import xiao.customgun.core.developer.PlannedRefactor;
-import xiao.customgun.core.event.EventPoster;
+import xiao.customgun.core.gun.attack.GunAttackManager;
 import xiao.customgun.core.network.message.ServerMessageSyncBaseTimestamp;
 import xiao.customgun.core.network.message.event.ServerMessageGunShoot;
 import xiao.customgun.core.resource.data.data.GunData;
@@ -52,20 +52,30 @@ public final class LivingShooterShoot extends LivingShooterAspect {
         this.draw = draw;
     }
 
-    public ShootResult shoot(Supplier<Float> pitch, Supplier<Float> yaw, long timestamp) {
-        return shootInternal(pitch, yaw, timestamp, 0f, false);
+    public ShootResult shoot(Supplier<Float> pitch, Supplier<Float> yaw,
+                             long timestamp) {
+        return shoot(pitch, yaw,
+                timestamp,
+                0f, false);
     }
-    public ShootResult shoot(Supplier<Float> pitch, Supplier<Float> yaw, long timestamp, float chargeProgress) {
-        return shootInternal(pitch, yaw, timestamp, chargeProgress, true);
+    public ShootResult shoot(Supplier<Float> pitch, Supplier<Float> yaw,
+                             long timestamp,
+                             float chargeProgress) {
+        return shoot(pitch, yaw,
+                timestamp,
+                chargeProgress,true);
     }
-    private ShootResult shootInternal(Supplier<Float> pitch, Supplier<Float> yaw, long timestamp, float chargeProgress, boolean hasChargeContext) {
+    private ShootResult shoot(Supplier<Float> pitch, Supplier<Float> yaw,
+                              long timestamp,
+                              float chargeProgress, boolean hasChargeContext) {
+        // 1. 手持枪械检查
         if (this.shooterProperty.currentGunItem == null) return ShootResult.NOT_DRAW;
-
         ItemStack currentGunItem = this.shooterProperty.currentGunItem.get();
         IGun iGun = IGunGetter.fromItemStack(currentGunItem);
         if (iGun == null) return ShootResult.NOT_GUN;
 
-        @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(iGun.getGunLocation(currentGunItem));
+        var gunLocation = iGun.getGunLocation(currentGunItem);
+        @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(gunLocation);
         if (gunIndexInstance == null) return ShootResult.ID_NOT_EXIST;
 
         GunData gunData = gunIndexInstance.getGunData();
@@ -106,20 +116,30 @@ public final class LivingShooterShoot extends LivingShooterAspect {
         }
         // --------
 
-        if (EventPoster.get().postCustomEvent(new ShooterFireEvent(McLogicalSide.SERVER,
-                iLivingShooter, this.livingShooter, iGun, currentGunItem))) {
-            return ShootResult.EVENT_CANCELED;
-        }
-        SendUtils.sendMessageToTrackingEntity(this.livingShooter,
-                new ServerMessageGunShoot(this.livingShooter.getId(), currentGunItem));
-
+        { // 3. IGunRuntime操作结果 -> Shooter状态
+            /**
+             * {@link IGunAttackRuntime#shooterFire}的默认实现为{@link GunAttackManager#shooterFire}
+             */
+            @NotNull IGunAttackRuntime.ShooterFireResult shooterFireResult = iGun.shooterFire(this.shooterProperty, iGun, currentGunItem, iLivingShooter, this.livingShooter, pitch, yaw);
+            if (!shooterFireResult.isSuccess()) {
+                return ShootResult.UNKNOWN_FAIL;
+            }
         this.shooterProperty.lastShootTimestamp = this.shooterProperty.shootTimestamp;
         this.shooterProperty.shootTimestamp = timestamp;
         this.shooterProperty.heatTimestamp = System.currentTimeMillis();
         this.shooterProperty.chargeProgress = validateChargeProgress(chargeData, chargeProgress, hasChargeContext);
+            // 发包通知客户端
+            SendUtils.sendMessageToTrackingEntity(this.livingShooter,
+                    new ServerMessageGunShoot(this.livingShooter.getId(), currentGunItem));
+        }
 
-        // 执行枪械射击逻辑
-        iGun.shoot(this.shooterProperty, iGun, currentGunItem, iLivingShooter, this.livingShooter, pitch, yaw);
+        /**
+         * {@link IGunAttackRuntime#gunFire}的默认实现为{@link IGunAttackRuntime#gunFire}
+         */
+        @NotNull IGunAttackRuntime.GunFireResult gunFireResult = iGun.gunFire(this.shooterProperty, iGun, currentGunItem, iLivingShooter, this.livingShooter, pitch, yaw);
+        if (!gunFireResult.isSuccess()) {
+            return ShootResult.UNKNOWN_FAIL;
+        }
         return ShootResult.SUCCESS;
     }
     @Nullable

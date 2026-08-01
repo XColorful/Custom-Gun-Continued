@@ -15,7 +15,8 @@ public class ScriptMethodTag {
     // IGunRuntime
     public static final String START_BOLT = "start_bolt";
     public static final String TICK_BOLT = "tick_bolt";
-    public static final String SHOOT = "shoot";
+    public static final String SHOOTER_FIRE = "shooter_fire";
+    public static final String GUN_FIRE = "gun_fire"; public static final String GUN_FIRE_OLD1 = "shoot";
     public static final String CAN_RELOAD = "can_reload";
     public static final String START_RELOAD = "start_reload";
     public static final String TICK_RELOAD = "tick_reload";

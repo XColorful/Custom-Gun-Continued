@@ -10,8 +10,8 @@ package xiao.customgun.client.entity.shooter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import xiao.customgun.CustomGun;
 import xiao.customgun.client.api.entity.LocalShooterProperty;
 import xiao.customgun.client.api.entity.shooter.ILocalShooterGetter;
 import xiao.customgun.client.api.resource.ClientResourceApi;
@@ -19,13 +19,11 @@ import xiao.customgun.client.api.sound.gun.GunSoundType;
 import xiao.customgun.client.resource.instance.assets.GunDisplayInstance;
 import xiao.customgun.client.resource.instance.data.ClientGunIndexInstance;
 import xiao.customgun.client.sound.SoundPlayManager;
-import xiao.customgun.core.api.common.McLogicalSide;
 import xiao.customgun.core.api.entity.ILivingShooter;
 import xiao.customgun.core.api.entity.ShootResult;
 import xiao.customgun.core.api.entity.shooter.modifier.ShooterGunModifierCache;
 import xiao.customgun.core.api.entity.shooter.ILivingShooterGetter;
-import xiao.customgun.core.api.event.gun.GunFireEvent;
-import xiao.customgun.core.api.event.shooter.ShooterFireEvent;
+import xiao.customgun.core.api.gun.attack.IGunAttackRuntime;
 import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.api.item.gun.BoltType;
 import xiao.customgun.core.api.item.gun.ChargeType;
@@ -33,6 +31,7 @@ import xiao.customgun.core.api.item.gun.FireModeType;
 import xiao.customgun.core.api.item.gun.IGunGetter;
 import xiao.customgun.core.config.GunConfig;
 import xiao.customgun.core.entity.shooter.LivingShooterShoot;
+import xiao.customgun.core.gun.attack.GunAttackManager;
 import xiao.customgun.core.network.message.ClientMessagePlayerShoot;
 import xiao.customgun.core.resource.data.data.GunData;
 import xiao.customgun.core.resource.data.data.gun._BurstData;
@@ -117,6 +116,7 @@ public final class LocalShooterShoot extends LocalShooterAspect {
     }
 
     public ShootResult shoot() {
+        // 1. 手持枪械检查
         ItemStack gunItem = this.localShooter.getMainHandItem();
         IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return ShootResult.NOT_GUN;
@@ -153,10 +153,14 @@ public final class LocalShooterShoot extends LocalShooterAspect {
         if (iLivingShooter.cgc$getSynSprintTime() > 0) return ShootResult.IS_SPRINTING;
 
 
-        // 触发开火事件
-        if (CustomGun.getEventPoster().postCustomEvent(new ShooterFireEvent(McLogicalSide.CLIENT,
-                iLivingShooter, this.localShooter, iGun, gunItem))) {
-            return ShootResult.EVENT_CANCELED;
+        { // 3. IGunRuntime操作结果 -> Shooter状态
+            /**
+             * {@link IGunAttackRuntime#shooterFire}的默认实现为{@link GunAttackManager#shooterFire}
+             */
+            @NotNull IGunAttackRuntime.ShooterFireResult shooterFireResult = iGun.shooterFire(null, iGun, gunItem, iLivingShooter, localShooter, null, null);
+            if (!shooterFireResult.isSuccess()) {
+                return ShootResult.UNKNOWN_FAIL;
+            }
         }
 
         // 切换状态锁，不允许换弹、检视等行为进行
@@ -299,7 +303,12 @@ public final class LocalShooterShoot extends LocalShooterAspect {
                 if (localPlayer == null) return;
 
                 ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(localPlayer);
-                if (CustomGun.getEventPoster().postCustomEvent(new GunFireEvent(McLogicalSide.CLIENT, iGun, gunItem, iLivingShooter, localPlayer))) {
+
+                /**
+                 * {@link IGunAttackRuntime#gunFire}的默认实现为{@link IGunAttackRuntime#gunFire}
+                 */
+                @NotNull IGunAttackRuntime.GunFireResult gunFireResult = iGun.gunFire(null, iGun, gunItem, iLivingShooter, localPlayer, null, null);
+                if (!gunFireResult.isSuccess()) {
                     return;
                 }
 

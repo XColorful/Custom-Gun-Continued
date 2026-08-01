@@ -20,7 +20,8 @@ public enum ScriptMethodType implements ResourceTag.ConstantTag, IScriptMethodTy
     // IGunRuntime
     START_BOLT(ScriptMethodTag.START_BOLT, null),
     TICK_BOLT(ScriptMethodTag.TICK_BOLT, null),
-    SHOOT(ScriptMethodTag.SHOOT, null),
+    SHOOTER_FIRE(ScriptMethodTag.SHOOTER_FIRE, null),
+    GUN_FIRE(ScriptMethodTag.GUN_FIRE, ScriptMethodTag.GUN_FIRE_OLD1),
     CAN_RELOAD(ScriptMethodTag.CAN_RELOAD, null),
     START_RELOAD(ScriptMethodTag.START_RELOAD, null),
     TICK_RELOAD(ScriptMethodTag.TICK_RELOAD, null),

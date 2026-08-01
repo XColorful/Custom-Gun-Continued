@@ -79,7 +79,11 @@ public class GunScriptApi {
         if (this.scriptCache == null) return null;
         LuaValue function = this.scriptCache.get(scriptMethodType.getConstantName());
         if (function.isfunction()) return function.checkfunction();
-        else return null;
+        else if (scriptMethodType.typeNameOld != null) {
+            function = this.scriptCache.get(scriptMethodType.typeNameOld);
+            if (function.isfunction()) return function.checkfunction();
+            else return null;
+        } else return null;
     }
 
     /**

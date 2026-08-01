@@ -19,7 +19,8 @@ import java.util.Map;
 public enum GunScriptMethodType implements ResourceTag.ConstantTag, IScriptMethodType {
     START_BOLT(ScriptMethodType.START_BOLT),
     TICK_BOLT(ScriptMethodType.TICK_BOLT),
-    SHOOT(ScriptMethodType.SHOOT),
+    SHOOTER_FIRE(ScriptMethodType.SHOOTER_FIRE),
+    GUN_FIRE(ScriptMethodType.GUN_FIRE),
     CAN_RELOAD(ScriptMethodType.CAN_RELOAD),
     START_RELOAD(ScriptMethodType.START_RELOAD),
     TICK_RELOAD(ScriptMethodType.TICK_RELOAD),

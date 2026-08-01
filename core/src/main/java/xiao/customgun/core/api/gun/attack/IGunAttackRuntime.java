@@ -17,20 +17,47 @@ import xiao.customgun.core.api.entity.ILivingShooter;
 import xiao.customgun.core.api.entity.ShooterProperty;
 import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.api.item.gun.MeleeType;
-import xiao.customgun.core.entity.shooter.LivingShooterShoot;
 
 import java.util.function.Supplier;
 
 public interface IGunAttackRuntime {
 
     /**
-     * 射击时触发
-     * TODO 把{@link LivingShooterShoot}里枪械本身的判断移到IGunAttackRuntime里，把这个shoot改成boolean，避免像原版ScriptAPI里又检查一次
+     * 射手射击时触发
      */
+    @NotNull ShooterFireResult shooterFire(ShooterProperty shooterProperty,
+                                           @NotNull IGun iGun, @NotNull ItemStack gunItem,
+                                           ILivingShooter iLivingShooter, LivingEntity livingShooter,
+                                           Supplier<Float> pitch, Supplier<Float> yaw);
+    enum ShooterFireResult {
+        SUCCESS,
+        ERROR;
+        public boolean isSuccess() {
+            return this == SUCCESS;
+        }
+    }
+    /**
+     * 枪械射击时触发，在客户端执行时仅触发事件
+     */
+    @NotNull GunFireResult gunFire(ShooterProperty shooterProperty,
+                                   @NotNull IGun iGun, @NotNull ItemStack gunItem,
+                                   ILivingShooter iLivingShooter, LivingEntity livingShooter,
+                                   Supplier<Float> pitch, Supplier<Float> yaw);
+    enum GunFireResult {
+        SUCCESS,
+        ERROR;
+        public boolean isSuccess() {
+            return this == SUCCESS;
+        }
+    }
+    @Deprecated(forRemoval = true) default // 为了diff所以没写在最后
     void shoot(ShooterProperty shooterProperty,
                @NotNull IGun iGun, @NotNull ItemStack gunItem,
                ILivingShooter iLivingShooter, LivingEntity livingShooter,
-               Supplier<Float> pitch, Supplier<Float> yaw);
+               Supplier<Float> pitch, Supplier<Float> yaw) {
+        this.gunFire(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter, pitch, yaw);
+    }
+
     /**
      * 初始化子弹角度和速度
      * @param shooterProperty 状态数据
@@ -66,4 +93,6 @@ public interface IGunAttackRuntime {
                @NotNull IGun iGun, @NotNull ItemStack gunItem,
                ILivingShooter iLivingShooter, LivingEntity livingShooter,
                MeleeType meleeType);
+
+    // --------Deprecated--------
 }

@@ -50,13 +50,6 @@ public interface IGunAttackRuntime {
             return this == SUCCESS;
         }
     }
-    @Deprecated(forRemoval = true) default // 为了diff所以没写在最后
-    void shoot(ShooterProperty shooterProperty,
-               @NotNull IGun iGun, @NotNull ItemStack gunItem,
-               ILivingShooter iLivingShooter, LivingEntity livingShooter,
-               Supplier<Float> pitch, Supplier<Float> yaw) {
-        this.gunFire(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter, pitch, yaw);
-    }
 
     /**
      * 初始化子弹角度和速度
@@ -95,4 +88,11 @@ public interface IGunAttackRuntime {
                MeleeType meleeType);
 
     // --------Deprecated--------
+
+    @Deprecated(forRemoval = true) default void shoot(ShooterProperty shooterProperty,
+                                                      @NotNull IGun iGun, @NotNull ItemStack gunItem,
+                                                      ILivingShooter iLivingShooter, LivingEntity livingShooter,
+                                                      Supplier<Float> pitch, Supplier<Float> yaw) {
+        this.gunFire(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter, pitch, yaw);
+    }
 }

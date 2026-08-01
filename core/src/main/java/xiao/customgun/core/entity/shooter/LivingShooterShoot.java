@@ -70,19 +70,19 @@ public final class LivingShooterShoot extends LivingShooterAspect {
                               float chargeProgress, boolean hasChargeContext) {
         // 1. 手持枪械检查
         if (this.shooterProperty.currentGunItem == null) return ShootResult.NOT_DRAW;
-        ItemStack currentGunItem = this.shooterProperty.currentGunItem.get();
-        IGun iGun = IGunGetter.fromItemStack(currentGunItem);
+        ItemStack gunItem = this.shooterProperty.currentGunItem.get();
+        IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return ShootResult.NOT_GUN;
 
-        var gunLocation = iGun.getGunLocation(currentGunItem);
+        var gunLocation = iGun.getGunLocation(gunItem);
         @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(gunLocation);
         if (gunIndexInstance == null) return ShootResult.ID_NOT_EXIST;
 
         GunData gunData = gunIndexInstance.getGunData();
-        FireModeType fireModeType = iGun.getFireModeType(currentGunItem);
+        FireModeType fireModeType = iGun.getFireModeType(gunItem);
         @Nullable _ChargingData chargeData = gunData.getChargingData().get(fireModeType);
 
-        ShootResult errorResult = preCheckError(iGun, currentGunItem,
+        ShootResult errorResult = preCheckError(iGun, gunItem,
                 gunData, chargeData, timestamp, chargeProgress, hasChargeContext);
         if (errorResult != null) return errorResult;
 
@@ -93,24 +93,24 @@ public final class LivingShooterShoot extends LivingShooterAspect {
 //        }
         // 消耗子弹
         BoltType boltType = gunData.getBoltType();
-        boolean useInventoryAmmo = iGun.useInventoryAmmo(currentGunItem); // 是否为背包直读
-        boolean hasAmmo = useInventoryAmmo ? iGun.hasInventoryAmmo(this.livingShooter, currentGunItem)
-                : iGun.getMagAmmoCountWithBarrel(currentGunItem, boltType) > 0;
+        boolean useInventoryAmmo = iGun.useInventoryAmmo(gunItem); // 是否为背包直读
+        boolean hasAmmo = useInventoryAmmo ? iGun.hasInventoryAmmo(this.livingShooter, gunItem)
+                : iGun.getMagAmmoCountWithBarrel(gunItem, boltType) > 0;
         if (!hasAmmo) {
             return ShootResult.NO_AMMO;
         }
         ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(this.livingShooter);
         switch (boltType) {
             case MANUAL_ACTION -> {// 检查膛内子弹
-                if (!iGun.hasBarrelAmmo(currentGunItem)) return ShootResult.NEED_BOLT;
+                if (!iGun.hasBarrelAmmo(gunItem)) return ShootResult.NEED_BOLT;
             }
             case CLOSED_BOLT -> {// 闭膛的膛内检查逻辑
-                if (!iGun.hasBarrelAmmo(currentGunItem)) {
-                    if (useInventoryAmmo) this.consumeAmmoFromPlayer(iGun, currentGunItem, iLivingShooter.cgc$needCheckAmmo());
-                    else iGun.consumeMagAmmo(currentGunItem);
+                if (!iGun.hasBarrelAmmo(gunItem)) {
+                    if (useInventoryAmmo) this.consumeAmmoFromPlayer(iGun, gunItem, iLivingShooter.cgc$needCheckAmmo());
+                    else iGun.consumeMagAmmo(gunItem);
 
                     if (PlannedRefactor.ON_SET_BARREL_AMMO) {};
-                    iGun.setBarrelAmmoCount(currentGunItem, 1);
+                    iGun.setBarrelAmmoCount(gunItem, 1);
                 }
             }
         }
@@ -120,7 +120,7 @@ public final class LivingShooterShoot extends LivingShooterAspect {
             /**
              * {@link IGunAttackRuntime#shooterFire}的默认实现为{@link GunAttackManager#shooterFire}
              */
-            @NotNull IGunAttackRuntime.ShooterFireResult shooterFireResult = iGun.shooterFire(this.shooterProperty, iGun, currentGunItem, iLivingShooter, this.livingShooter, pitch, yaw);
+            @NotNull IGunAttackRuntime.ShooterFireResult shooterFireResult = iGun.shooterFire(this.shooterProperty, iGun, gunItem, iLivingShooter, this.livingShooter, pitch, yaw);
             if (!shooterFireResult.isSuccess()) {
                 return ShootResult.UNKNOWN_FAIL;
             }
@@ -130,13 +130,13 @@ public final class LivingShooterShoot extends LivingShooterAspect {
         this.shooterProperty.chargeProgress = validateChargeProgress(chargeData, chargeProgress, hasChargeContext);
             // 发包通知客户端
             SendUtils.sendMessageToTrackingEntity(this.livingShooter,
-                    new ServerMessageGunShoot(this.livingShooter.getId(), currentGunItem));
+                    new ServerMessageGunShoot(this.livingShooter.getId(), gunItem));
         }
 
         /**
          * {@link IGunAttackRuntime#gunFire}的默认实现为{@link IGunAttackRuntime#gunFire}
          */
-        @NotNull IGunAttackRuntime.GunFireResult gunFireResult = iGun.gunFire(this.shooterProperty, iGun, currentGunItem, iLivingShooter, this.livingShooter, pitch, yaw);
+        @NotNull IGunAttackRuntime.GunFireResult gunFireResult = iGun.gunFire(this.shooterProperty, iGun, gunItem, iLivingShooter, this.livingShooter, pitch, yaw);
         if (!gunFireResult.isSuccess()) {
             return ShootResult.UNKNOWN_FAIL;
         }

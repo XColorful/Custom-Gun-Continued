@@ -71,7 +71,7 @@ public class GunAttackManager implements IGunAttackManager {
     public @NotNull IGunAttackRuntime.GunFireResult gunFire(ShooterProperty shooterProperty,
                                                             @NotNull IGun iGun, @NotNull ItemStack gunItem,
                                                             ILivingShooter iLivingShooter, LivingEntity livingShooter,
-                      Supplier<Float> pitch, Supplier<Float> yaw) { // TODO 这两个参数写到GunScriptApi还是lua函数参数?
+                                                            Supplier<Float> pitch, Supplier<Float> yaw) { // TODO 这两个参数写到GunScriptApi还是lua函数参数?
         McLogicalSide logicalSide = CustomGun.getSideExecutor().getLogicalSide();
         if (CustomGun.getEventPoster().postCustomEvent(new GunFireEvent(logicalSide,
                 iGun, gunItem, iLivingShooter, livingShooter))) {

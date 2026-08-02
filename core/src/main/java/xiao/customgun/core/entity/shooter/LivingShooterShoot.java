@@ -14,7 +14,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import xiao.customgun.CustomGun;
 import xiao.customgun.core.api.entity.ILivingShooter;
 import xiao.customgun.core.api.entity.ShootResult;
 import xiao.customgun.core.api.entity.ShooterProperty;
@@ -22,15 +21,9 @@ import xiao.customgun.core.api.entity.shooter.modifier.ShooterGunModifierCache;
 import xiao.customgun.core.api.entity.shooter.ILivingShooterGetter;
 import xiao.customgun.core.api.gun.attack.IGunAttackRuntime;
 import xiao.customgun.core.api.item.IGun;
-import xiao.customgun.core.api.item.gun.BoltType;
-import xiao.customgun.core.api.item.gun.ChargeType;
-import xiao.customgun.core.api.item.gun.FireModeType;
-import xiao.customgun.core.api.item.gun.IGunGetter;
-import xiao.customgun.core.api.minecraft.capability.IInventoryCapability;
+import xiao.customgun.core.api.item.gun.*;
 import xiao.customgun.core.api.resource.ResourceApi;
 import xiao.customgun.core.config.SyncConfig;
-import xiao.customgun.core.developer.PlannedRefactor;
-import xiao.customgun.core.gun.attack.GunAttackManager;
 import xiao.customgun.core.network.message.ServerMessageSyncBaseTimestamp;
 import xiao.customgun.core.network.message.event.ServerMessageGunShoot;
 import xiao.customgun.core.resource.data.data.GunData;
@@ -40,6 +33,7 @@ import xiao.customgun.core.resource.data.data.gun._HeatData;
 import xiao.customgun.core.resource.instance.data.GunIndexInstance;
 import xiao.customgun.core.util.SendUtils;
 
+import java.util.Map;
 import java.util.function.Supplier;
 
 public final class LivingShooterShoot extends LivingShooterAspect {
@@ -52,41 +46,41 @@ public final class LivingShooterShoot extends LivingShooterAspect {
         this.draw = draw;
     }
 
+    /**
+     * 已经在{@link ILivingShooter#cgc$shoot}提供默认重载实现
+     */
+    @Deprecated(forRemoval = true)
     public ShootResult shoot(Supplier<Float> pitch, Supplier<Float> yaw,
                              long timestamp) {
         return shoot(pitch, yaw,
                 timestamp,
-                0f, false);
+                0f);
     }
+    /**
+     * @param hasChargeContext 这个字段始终为 true，没有意义，只要有chargeData就始终检查
+     */
+    @Deprecated(forRemoval = true)
     public ShootResult shoot(Supplier<Float> pitch, Supplier<Float> yaw,
                              long timestamp,
-                             float chargeProgress) {
+                             float chargeProgress, boolean hasChargeContext) {
         return shoot(pitch, yaw,
                 timestamp,
-                chargeProgress,true);
+                chargeProgress);
     }
     /**
      * 执行一次射击
      */
-    private ShootResult shoot(Supplier<Float> pitch, Supplier<Float> yaw,
+    public ShootResult shoot(Supplier<Float> pitch, Supplier<Float> yaw,
                               long timestamp,
-                              float chargeProgress, boolean hasChargeContext) {
+                              float chargeProgress) {
         // 1. 手持枪械检查
         if (this.shooterProperty.currentGunItem == null) return ShootResult.NOT_DRAW;
         ItemStack gunItem = this.shooterProperty.currentGunItem.get();
         IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return ShootResult.NOT_GUN;
 
-        var gunLocation = iGun.getGunLocation(gunItem);
-        @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(gunLocation);
-        if (gunIndexInstance == null) return ShootResult.ID_NOT_EXIST;
-
-        GunData gunData = gunIndexInstance.getGunData();
-        FireModeType fireModeType = iGun.getFireModeType(gunItem);
-        @Nullable _ChargingData chargeData = gunData.getChargingData().get(fireModeType);
-
         if ( // 2.2
-                preCheckError(iGun, gunItem, gunData, chargeData, timestamp, chargeProgress, hasChargeContext) != null
+                preCheckError(timestamp) != null
         ) return ShootResult.PRE_CHECK_ERROR;
 
         // --------TODO
@@ -100,16 +94,16 @@ public final class LivingShooterShoot extends LivingShooterAspect {
 
         { // 3. IGunRuntime操作结果 -> Shooter状态
             /**
-             * {@link IGunAttackRuntime#shooterFire}的默认实现为{@link GunAttackManager#shooterFire}
+             * {@link IGunAttackRuntime#shooterFire}的默认实现为{@link IGunAttackRuntime#shooterFire}
              */
-            @NotNull IGunAttackRuntime.ShooterFireResult shooterFireResult = iGun.shooterFire(this.shooterProperty, iGun, gunItem, iLivingShooter, this.livingShooter, pitch, yaw);
+            @NotNull IGunAttackRuntime.ShooterFireResult shooterFireResult = iGun.shooterFire(this.shooterProperty, iGun, gunItem, iLivingShooter, this.livingShooter, pitch, yaw, chargeProgress);
             if (!shooterFireResult.isSuccess()) {
                 return ShootResult.UNKNOWN_FAIL;
             }
             this.shooterProperty.lastShootTimestamp = this.shooterProperty.shootTimestamp;
             this.shooterProperty.shootTimestamp = timestamp;
             this.shooterProperty.heatTimestamp = System.currentTimeMillis();
-            this.shooterProperty.chargeProgress = validateChargeProgress(chargeData, chargeProgress, hasChargeContext);
+            this.shooterProperty.chargeProgress = validateChargeProgress(iGun, gunItem, chargeProgress);
             // 发包通知客户端
             SendUtils.sendMessageToTrackingEntity(this.livingShooter,
                     new ServerMessageGunShoot(this.livingShooter.getId(), gunItem));
@@ -125,8 +119,7 @@ public final class LivingShooterShoot extends LivingShooterAspect {
         return ShootResult.SUCCESS;
     }
     @Nullable
-    private ShootResult preCheckError(IGun iGun, ItemStack gunItem,
-                                      GunData gunData, _ChargingData chargeData, long timestamp, float chargeProgress, boolean hasChargeContext) {
+    private ShootResult preCheckError(long timestamp) {
         if (SyncConfig.SERVER_SHOOT_COOLDOWN_V.get()) {
             // 判断射击是否正在冷却
             long coolDown = _getShootCooldown(timestamp);
@@ -164,58 +157,21 @@ public final class LivingShooterShoot extends LivingShooterAspect {
             return ShootResult.IS_SPRINTING;
         }
 
-        if (hasChargeContext && !isChargeProgressReasonable(chargeData, chargeProgress)) {
-            return ShootResult.UNKNOWN_FAIL;
-        }
-
         return null;
     }
-    private float validateChargeProgress(@Nullable _ChargingData chargeData, float chargeProgress, boolean hasChargeContext) {
-        if (!hasChargeContext || !Float.isFinite(chargeProgress)) {
+    private float validateChargeProgress(IGun iGun, ItemStack gunItem,
+                                         float chargeProgress) {
+        @Nullable Map<FireModeType, _ChargingData> chargingDataMap = GunDataAccessor._getChargingData(iGun, gunItem);
+        FireModeType fireModeType = iGun.getFireModeType(gunItem);
+        @Nullable _ChargingData chargingData = chargingDataMap != null ? chargingDataMap.get(fireModeType) : null;
+
+        if (!true || !Float.isFinite(chargeProgress)) {
             return 0f;
         }
-        if (chargeData == null) {
+        if (chargingData == null) {
             return 0f;
         }
-        return Math.max(0f, Math.min(chargeProgress, chargeData.getMaxCharge()));
-    }
-
-    /**
-     * 简单校验: 服务端不追踪扳机按住状态 -> 只拒绝超过"客户端一直按住蓄力"时理论可达到的最大进度
-     */
-    private boolean isChargeProgressReasonable(@Nullable _ChargingData chargeData, float chargeProgress) {
-        if (!Float.isFinite(chargeProgress)) return false;
-        if (chargeData == null) return Math.abs(chargeProgress) <= CHARGE_PROGRESS_TOLERANCE;
-
-        if (chargeProgress < -CHARGE_PROGRESS_TOLERANCE) return false;
-
-        float minimumProgress = Math.min(chargeData.getFireThreshold(), chargeData.getMaxCharge());
-        if (chargeProgress + CHARGE_PROGRESS_TOLERANCE < minimumProgress) return false;
-        if (chargeProgress > _getMaxReasonableChargeProgress(chargeData) + CHARGE_PROGRESS_TOLERANCE) return false;
-
-        return true;
-    }
-    private float _getMaxReasonableChargeProgress(_ChargingData chargeData) {
-        // 预留少量 tick 余量，用于容忍网络抖动和客户端/服务端调度偏差
-        float elapsedTicks = Math.max(_getChargeElapsedMillis() / 50f, 0f) + CHARGE_TICK_TOLERANCE;
-        float startProgress = _getChargeProgressAfterLastFire(chargeData);
-        float maxProgress = startProgress + elapsedTicks * Math.max(chargeData.getChargePerTick(), 0f);
-        return Math.min(maxProgress, chargeData.getMaxCharge());
-    }
-    private long _getChargeElapsedMillis() {
-        if (this.shooterProperty.shootTimestamp >= 0) {
-            long startTimestamp = this.shooterProperty.baseTimestamp + this.shooterProperty.shootTimestamp;
-            return System.currentTimeMillis() - startTimestamp;
-        }
-        if (this.shooterProperty.drawFinishTimestamp >= 0) {
-            return System.currentTimeMillis() - this.shooterProperty.drawFinishTimestamp;
-        }
-        return 0L;
-    }
-    private float _getChargeProgressAfterLastFire(_ChargingData chargeData) {
-        if (this.shooterProperty.shootTimestamp < 0) return 0f;
-        if (chargeData.getChargeType() == ChargeType.DELAY) return 0f; // delay 蓄力模式在客户端开火后总是重置
-        return Math.max(0f, this.shooterProperty.chargeProgress - chargeData.getRecoverByFire());
+        return Math.max(0f, Math.min(chargeProgress, chargingData.getMaxCharge()));
     }
 
     /**

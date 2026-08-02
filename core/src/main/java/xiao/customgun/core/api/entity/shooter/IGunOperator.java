@@ -55,8 +55,6 @@ public interface IGunOperator extends ICommonGunOperator {
      * @return 本次射击的结果
      */
     ShootResult cgc$shoot(Supplier<Float> pitch, Supplier<Float> yaw, long timestamp, float chargeProgress);
-    ShootResult cgc$shoot(Supplier<Float> pitch, Supplier<Float> yaw, long timestamp);
-    ShootResult cgc$shoot(Supplier<Float> pitch, Supplier<Float> yaw);
 
     /**
      * 拉栓 (服务端)
@@ -71,4 +69,11 @@ public interface IGunOperator extends ICommonGunOperator {
      * 取消换弹 (服务端)
      */
     void cgc$cancelReload();
+
+    // --------Deprecated--------
+
+    @Deprecated default ShootResult cgc$shoot(Supplier<Float> pitch, Supplier<Float> yaw, long timestamp) {
+        return this.cgc$shoot(pitch, yaw, timestamp, 0.0f);
+    }
+    @Deprecated ShootResult cgc$shoot(Supplier<Float> pitch, Supplier<Float> yaw);
 }

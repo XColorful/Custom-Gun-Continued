@@ -50,7 +50,8 @@ public class GunAttackManager implements IGunAttackManager {
     public @NotNull IGunAttackRuntime.ShooterFireResult shooterFire(ShooterProperty shooterProperty,
                                                                     @NotNull IGun iGun, @NotNull ItemStack gunItem,
                                                                     ILivingShooter iLivingShooter, LivingEntity livingShooter,
-                                                                    Supplier<Float> pitch, Supplier<Float> yaw) {
+                                                                    Supplier<Float> pitch, Supplier<Float> yaw,
+                                                                    float clientChargeProgress) {
         McLogicalSide logicalSide = CustomGun.getSideExecutor().getLogicalSide();
         if (CustomGun.getEventPoster().postCustomEvent(new ShooterFireEvent(logicalSide,
                 iLivingShooter, livingShooter, iGun, gunItem))) {
@@ -61,7 +62,7 @@ public class GunAttackManager implements IGunAttackManager {
         return switch (scriptApi.simpleCall(ScriptMethodType.SHOOTER_FIRE)) {
             case TRUE -> ShooterFireResult.SUCCESS;
             case FALSE -> ShooterFireResult.ERROR;
-            case UNKNOWN -> _DefaultGunAttack.shooterFire(logicalSide, shooterProperty, iGun, gunItem, iLivingShooter, livingShooter, pitch, yaw);
+            case UNKNOWN -> _DefaultGunAttack.shooterFire(logicalSide, shooterProperty, iGun, gunItem, iLivingShooter, livingShooter, pitch, yaw, clientChargeProgress);
         };
     }
     @Override

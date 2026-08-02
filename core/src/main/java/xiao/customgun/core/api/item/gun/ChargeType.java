@@ -54,6 +54,9 @@ public enum ChargeType implements ResourceTag.CategoryTag {
     public boolean unstoppableIfStarted() {
         return !this.needHolding;
     }
+    public boolean resetChargeAfterShoot() {
+        return unstoppableIfStarted();
+    }
     /**
      * @return 是否在蓄满后自动开火
      */

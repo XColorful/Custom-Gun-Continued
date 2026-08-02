@@ -31,7 +31,6 @@ import xiao.customgun.core.api.item.gun.*;
 import xiao.customgun.core.api.resource.ResourceApi;
 import xiao.customgun.core.config.GunConfig;
 import xiao.customgun.core.entity.shooter.LivingShooterShoot;
-import xiao.customgun.core.gun.attack.GunAttackManager;
 import xiao.customgun.core.network.message.ClientMessagePlayerShoot;
 import xiao.customgun.core.resource.data.data.GunData;
 import xiao.customgun.core.resource.data.data.gun._BurstData;
@@ -72,7 +71,6 @@ public final class LocalShooterShoot extends LocalShooterAspect {
         if (chargeData == null) return doShoot;
 
         boolean isChargeEnabled = chargeData.getEnableChargeDuringCooldown() || _getShootCooldown(iGun, gunItem) < SHOOT_COOLDOWN_MS;
-//                && preCheckError(iGun, gunItem, gunData, doShoot) == null; // 不需要preCheck，ShootKey之后shoot的时候还会执行一次
         final float maxCharge = chargeData.getMaxCharge();
         boolean isChargeEnough = _isChargeEnough(doShoot, isChargeEnabled, chargeData, maxCharge);
         this.localShooterProperty.chargeProgress = Mth.clamp(this.localShooterProperty.chargeProgress, 0, maxCharge);
@@ -156,9 +154,9 @@ public final class LocalShooterShoot extends LocalShooterAspect {
 
         { // 3. IGunRuntime操作结果 -> Shooter状态
             /**
-             * {@link IGunAttackRuntime#shooterFire}的默认实现为{@link GunAttackManager#shooterFire}
+             * {@link IGunAttackRuntime#shooterFire}的默认实现为{@link IGunAttackRuntime#shooterFire}
              */
-            @NotNull IGunAttackRuntime.ShooterFireResult shooterFireResult = iGun.shooterFire(null, iGun, gunItem, iLivingShooter, localShooter, null, null);
+            @NotNull IGunAttackRuntime.ShooterFireResult shooterFireResult = iGun.shooterFire(null, iGun, gunItem, iLivingShooter, localShooter, null, null, this.localShooterProperty.chargeProgress);
             if (!shooterFireResult.isSuccess()) {
                 return _onShooterFireFailed(shooterFireResult, gunDisplayInstance, playDrySound);
             }
@@ -202,7 +200,7 @@ public final class LocalShooterShoot extends LocalShooterAspect {
         if (chargeData == null) return;
 
         ChargeType chargeType = chargeData.getChargeType();
-        if (chargeType.unstoppableIfStarted()) { // 无法取消蓄力的类型，蓄满后清零
+        if (chargeType.resetChargeAfterShoot()) {
             this.localShooterProperty.chargeProgress = 0f;
         } else { // 其他类型则正常恢复蓄力
             this.localShooterProperty.chargeProgress = Math.max(0f, this.localShooterProperty.chargeProgress - chargeData.getRecoverByFire());

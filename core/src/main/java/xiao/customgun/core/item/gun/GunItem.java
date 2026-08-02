@@ -110,10 +110,10 @@ public class GunItem extends Item implements IGun, GunDataAccessor {
                 .switchFireMode(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter);
     }
     // ----IGunAttackRuntime----
-    @Override public @NotNull IGunAttackRuntime.ShooterFireResult shooterFire(ShooterProperty shooterProperty, @NotNull IGun iGun, @NotNull ItemStack gunItem, ILivingShooter iLivingShooter, LivingEntity livingShooter, Supplier<Float> pitch, Supplier<Float> yaw) {
+    @Override public @NotNull IGunAttackRuntime.ShooterFireResult shooterFire(ShooterProperty shooterProperty, @NotNull IGun iGun, @NotNull ItemStack gunItem, ILivingShooter iLivingShooter, LivingEntity livingShooter, Supplier<Float> pitch, Supplier<Float> yaw, float clientChargeProgress) {
         return CustomGun.getGunManager().getManagerGroup(this.getManagerGroupTag(gunItem))
                 .gunAttackManager()
-                .shooterFire(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter, pitch, yaw);
+                .shooterFire(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter, pitch, yaw, clientChargeProgress);
     }
     @Override public @NotNull IGunAttackRuntime.GunFireResult gunFire(ShooterProperty shooterProperty, @NotNull IGun iGun, @NotNull ItemStack gunItem, ILivingShooter iLivingShooter, LivingEntity livingShooter, Supplier<Float> pitch, Supplier<Float> yaw) {
         return CustomGun.getGunManager().getManagerGroup(this.getManagerGroupTag(gunItem))

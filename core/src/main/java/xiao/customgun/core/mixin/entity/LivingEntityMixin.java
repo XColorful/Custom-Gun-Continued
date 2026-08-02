@@ -140,12 +140,6 @@ public abstract class LivingEntityMixin extends Entity implements ILivingShooter
     @Override public ShootResult cgc$shoot(Supplier<Float> pitch, Supplier<Float> yaw, long timestamp, float chargeProgress) {
         return this.cgc$shoot.shoot(pitch, yaw, timestamp, chargeProgress);
     }
-    @Override public ShootResult cgc$shoot(Supplier<Float> pitch, Supplier<Float> yaw, long timestamp) {
-        return this.cgc$shoot.shoot(pitch, yaw, timestamp);
-    }
-    @Override public ShootResult cgc$shoot(Supplier<Float> pitch, Supplier<Float> yaw) {
-        return this.cgc$shoot(pitch, yaw, System.currentTimeMillis() - cgc$shooterProperty.baseTimestamp);
-    }
 
     @Override
     public void cgc$bolt() {

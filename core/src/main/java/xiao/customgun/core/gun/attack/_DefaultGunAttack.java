@@ -28,6 +28,7 @@ import xiao.customgun.core.api.gun.attack.IGunAttackRuntime;
 import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.api.item.attachment.AttachmentCategory;
 import xiao.customgun.core.api.item.gun.BoltType;
+import xiao.customgun.core.api.item.gun.FireModeType;
 import xiao.customgun.core.api.item.gun.GunDataAccessor;
 import xiao.customgun.core.api.item.gun.MeleeType;
 import xiao.customgun.core.api.minecraft.IMcRegistry;
@@ -53,7 +54,8 @@ public class _DefaultGunAttack {
                                                                      ShooterProperty shooterProperty,
                                                                      @NotNull IGun iGun, @NotNull ItemStack gunItem,
                                                                      ILivingShooter iLivingShooter, LivingEntity livingShooter,
-                                                                     Supplier<Float> pitch, Supplier<Float> yaw) {
+                                                                     Supplier<Float> pitch, Supplier<Float> yaw,
+                                                                     float clientChargeProgress) {
         // 0. 枪械数据异常
         var gunLocation = iGun.getGunLocation(gunItem);
         @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(gunLocation);
@@ -75,8 +77,7 @@ public class _DefaultGunAttack {
             if (!hasAmmo) return IGunAttackRuntime.ShooterFireResult.NO_AMMO;
         }
 
-        // 3. 检查拉栓
-        {
+        { // 3. 检查拉栓
             switch (boltType) {
                 case MANUAL_ACTION -> {
                     // 检查枪管是否有子弹 (否则要拉栓)
@@ -103,6 +104,14 @@ public class _DefaultGunAttack {
         // 客户端侧提前返回，以继续客户端逻辑
         if (logicalSide.isClient()) return IGunAttackRuntime.ShooterFireResult.SUCCESS;
 
+        // --------服务端--------
+
+        FireModeType fireModeType = iGun.getFireModeType(gunItem);
+        { // 4. 蓄力进度检查
+            if (!_DefaultGunCharge.isChargeProgressAcceptable(shooterProperty, gunData, fireModeType, clientChargeProgress)) {
+                return IGunAttackRuntime.ShooterFireResult.NOT_CHARGED;
+            }
+        }
 
         return IGunAttackRuntime.ShooterFireResult.SUCCESS;
     }

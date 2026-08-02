@@ -28,7 +28,8 @@ public interface IGunAttackRuntime {
     @NotNull ShooterFireResult shooterFire(ShooterProperty shooterProperty,
                                            @NotNull IGun iGun, @NotNull ItemStack gunItem,
                                            ILivingShooter iLivingShooter, LivingEntity livingShooter,
-                                           Supplier<Float> pitch, Supplier<Float> yaw);
+                                           Supplier<Float> pitch, Supplier<Float> yaw,
+                                           float clientChargeProgress);
     enum ShooterFireResult {
         SUCCESS(0),
         ERROR(0),
@@ -36,6 +37,7 @@ public interface IGunAttackRuntime {
         OVERHEATED(1),
         NO_AMMO(2),
         NO_BARREL_AMMO(3), // 暂时不去扣枪膛(chamber)的细节，要改得整个模组范围里改，代码里还是用更好懂的说法
+        NOT_CHARGED(4),
         ;
 
         public final int priority;

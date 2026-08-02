@@ -133,6 +133,9 @@ public interface GunDataAccessor extends IGunDataAccess {
         if (!scopeLocation.equals(ResourceTag.NULL_LOCATION)) {
             @Nullable CompoundTag attachmentCustomDataTag = this.getAttachmentCustomDataTag(gunItem, AttachmentCategory.SCOPE);
             int scopeViewIndex = builtIn ? 0 : AttachmentNBTAccessor.INSTANCE.getScopeViewIndex(attachmentCustomDataTag);
+            if (PlannedRefactor.MOVE_SCOPE_VIEW_INDEX_TO_CORE) {
+                return 0;
+            }
             @Nullable ClientAttachmentIndexInstance attachmentIndexInstance = ClientResourceApi.getClientAttachmentIndexInstance(scopeLocation);
             if (attachmentIndexInstance != null) {
                 float[] scopeZoomScale = attachmentIndexInstance.getAttachmentDisplay().getScopeZoomScale();

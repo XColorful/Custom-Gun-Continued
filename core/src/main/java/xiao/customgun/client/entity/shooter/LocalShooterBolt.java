@@ -60,6 +60,7 @@ public final class LocalShooterBolt extends LocalShooterAspect {
     }
 
     /**
+     * // TODO 加一个手动拉栓的按键
      * 能拉栓的时候自动拉栓
      * 避免多加一个按键 或者 嵌入到shoot的逻辑里
      */

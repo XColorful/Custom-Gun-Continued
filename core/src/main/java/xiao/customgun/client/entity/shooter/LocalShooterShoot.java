@@ -11,6 +11,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.client.api.entity.LocalShooterProperty;
@@ -54,8 +55,6 @@ public final class LocalShooterShoot extends LocalShooterAspect {
 
     /**
      * 充能，然后判断是否充能完毕
-     * <br>
-     * 因为开火冷却检测用了特别定制的方法，所以不检查状态锁，而是手动检查是否换弹、切枪
      */
     public boolean doCharge_isChargeEnough(boolean doShoot) {
         // 1. 手持枪械检查
@@ -144,7 +143,7 @@ public final class LocalShooterShoot extends LocalShooterAspect {
 
         // 基础检查
         boolean playDrySound = true;
-        ShootResult errorResult = preCheckError(iGun, gunItem, gunData, playDrySound);
+        ShootResult errorResult = preCheckError();
         if (errorResult != null) return errorResult;
 
         // 检查是否正在奔跑
@@ -158,18 +157,7 @@ public final class LocalShooterShoot extends LocalShooterAspect {
              */
             @NotNull IGunAttackRuntime.ShooterFireResult shooterFireResult = iGun.shooterFire(null, iGun, gunItem, iLivingShooter, localShooter, null, null);
             if (!shooterFireResult.isSuccess()) {
-                switch (shooterFireResult) {
-                    case OVERHEATED -> {
-                        if (playDrySound) {
-                            SoundPlayManager.get().playGunSound(gunDisplayInstance.getGunSound(GunSoundType.DRY_FIRE_SOUND),
-                                    1.0f,
-                                    this.localShooter,
-                                    GunConfig.DEFAULT_GUN_OTHER_SOUND_DISTANCE.get(),
-                                    false);
-                        }
-                    }
-                }
-                return ShootResult.UNKNOWN_FAIL;
+                return _onShooterFireFailed(shooterFireResult, gunDisplayInstance, playDrySound);
             }
         }
 
@@ -182,6 +170,27 @@ public final class LocalShooterShoot extends LocalShooterAspect {
 
         this._recoverChargeAfterShoot(iGun, gunItem, gunData);
         return ShootResult.SUCCESS;
+    }
+    @ApiStatus.Internal
+    private ShootResult _onShooterFireFailed(@NotNull IGunAttackRuntime.ShooterFireResult shooterFireResult,
+                                             @NotNull GunDisplayInstance gunDisplayInstance,
+                                             boolean playDrySound) {
+        switch (shooterFireResult) {
+            case OVERHEATED, NO_AMMO -> {
+                if (playDrySound) {
+                    SoundPlayManager.get().playGunSound(gunDisplayInstance.getGunSound(GunSoundType.DRY_FIRE_SOUND),
+                            1.0f,
+                            this.localShooter,
+                            GunConfig.DEFAULT_GUN_OTHER_SOUND_DISTANCE.get(),
+                            false);
+                }
+            }
+            case NO_BARREL_AMMO -> {
+                // 自动拉栓
+                ILocalShooterGetter.fromLocalPlayer(this.localShooter).cgc$bolt();
+            }
+        }
+        return ShootResult.UNKNOWN_FAIL;
     }
     private void _recoverChargeAfterShoot(IGun iGun, ItemStack gunItem,
                                           GunData gunData) {
@@ -198,8 +207,7 @@ public final class LocalShooterShoot extends LocalShooterAspect {
     }
 
     @Nullable
-    private ShootResult preCheckError(IGun iGun, ItemStack gunItem,
-                                      GunData gunData, boolean playDrySound) {
+    private ShootResult preCheckError() {
         // 按钮冷却时间未到，防止误触
         if (System.currentTimeMillis() - LocalShooterProperty.clientClickButtonTimestamp < SHOOT_COOLDOWN_MS) {
             return ShootResult.COOL_DOWN;
@@ -215,33 +223,6 @@ public final class LocalShooterShoot extends LocalShooterAspect {
 
         // 判断是否处于近战冷却时间
         if (iLivingShooter.cgc$getSynMeleeCooldown() > 0) return ShootResult.IS_MELEE;
-
-        // 检查消耗子弹
-        BoltType boltType = gunData.getBoltType();
-        boolean useInventoryAmmo = iGun.useInventoryAmmo(gunItem); // 是否为背包直读
-        boolean hasAmmo = useInventoryAmmo ? iGun.hasInventoryAmmo(this.localShooter, gunItem)
-                : iGun.getMagAmmoCountWithBarrel(gunItem, boltType) > 0;
-        if (!hasAmmo) {
-            if (playDrySound) {
-                @Nullable GunDisplayInstance gunDisplayInstance = ClientResourceApi.getGunDisplayInstance(gunItem);
-                if (gunDisplayInstance == null) return ShootResult.NO_AMMO;
-                SoundPlayManager.get().playGunSound(gunDisplayInstance.getGunSound(GunSoundType.DRY_FIRE_SOUND),
-                        1.0f,
-                        this.localShooter,
-                        GunConfig.DEFAULT_GUN_OTHER_SOUND_DISTANCE.get(),
-                        false);
-            }
-            return ShootResult.NO_AMMO;
-        }
-        switch (boltType) {
-            case MANUAL_ACTION -> {
-                if (!iGun.hasBarrelAmmo(gunItem)) {
-                    ILocalShooterGetter.fromLocalPlayer(this.localShooter).cgc$bolt();
-                    return ShootResult.NEED_BOLT;
-                }
-            }
-        }
-
         return null;
     }
 

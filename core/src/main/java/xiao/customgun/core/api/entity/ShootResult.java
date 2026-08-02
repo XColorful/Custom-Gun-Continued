@@ -32,7 +32,9 @@ public enum ShootResult {
     COOL_DOWN,
     /**
      * 无弹药 (或没有备弹)
+     * @deprecated 完全在{@code LocalShooterShoot._onShooterFireFailed()}内部处理
      */
+    @Deprecated
     NO_AMMO,
     /**
      * 没有执行切枪逻辑
@@ -48,7 +50,9 @@ public enum ShootResult {
     ID_NOT_EXIST,
     /**
      * 需要手动上膛
+     * @deprecated 完全在{@code LocalShooterShoot._onShooterFireFailed()}内部处理
      */
+    @Deprecated
     NEED_BOLT,
     /**
      * 正处于换弹状态
@@ -87,7 +91,7 @@ public enum ShootResult {
     /**
      * 武器过热
      * @see _DefaultGunAttack#shooterFire 生成该结果
-     * @deprecated 完全在{@code LocalShooterShoot.shoot()} (3.) 内部处理
+     * @deprecated 完全在{@code LocalShooterShoot._onShooterFireFailed()}内部处理
      */
     @Deprecated
     OVERHEATED,

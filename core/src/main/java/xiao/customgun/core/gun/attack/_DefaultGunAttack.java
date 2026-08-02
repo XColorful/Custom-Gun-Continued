@@ -27,9 +27,11 @@ import xiao.customgun.core.api.entity.ShooterProperty;
 import xiao.customgun.core.api.gun.attack.IGunAttackRuntime;
 import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.api.item.attachment.AttachmentCategory;
+import xiao.customgun.core.api.item.gun.BoltType;
 import xiao.customgun.core.api.item.gun.GunDataAccessor;
 import xiao.customgun.core.api.item.gun.MeleeType;
 import xiao.customgun.core.api.minecraft.IMcRegistry;
+import xiao.customgun.core.api.minecraft.capability.IInventoryCapability;
 import xiao.customgun.core.api.resource.ResourceApi;
 import xiao.customgun.core.developer.PlannedRefactor;
 import xiao.customgun.core.resource.data.data.GunData;
@@ -52,15 +54,66 @@ public class _DefaultGunAttack {
                                                                      @NotNull IGun iGun, @NotNull ItemStack gunItem,
                                                                      ILivingShooter iLivingShooter, LivingEntity livingShooter,
                                                                      Supplier<Float> pitch, Supplier<Float> yaw) {
-        // 检查过热锁
+        // 0. 枪械数据异常
+        var gunLocation = iGun.getGunLocation(gunItem);
+        @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(gunLocation);
+        if (gunIndexInstance == null) return IGunAttackRuntime.ShooterFireResult.ERROR;
+
+        GunData gunData = gunIndexInstance.getGunData();
+
+        // 1. 检查过热锁
         if (iGun.hasHeat(gunItem) && iGun.hasOverheatLock(gunItem)) {
             return IGunAttackRuntime.ShooterFireResult.OVERHEATED;
+        }
+
+        // 2. 检查消耗子弹
+        BoltType boltType = gunData.getBoltType();
+        boolean useInventoryAmmo = iGun.useInventoryAmmo(gunItem); // 是否为背包直读
+        boolean hasAmmo = useInventoryAmmo ? iGun.hasInventoryAmmo(livingShooter, gunItem)
+                : iGun.getMagAmmoCountWithBarrel(gunItem, boltType) > 0;
+        if (!hasAmmo) return IGunAttackRuntime.ShooterFireResult.NO_AMMO;
+
+        // 3. 检查拉栓
+        switch (boltType) {
+            case MANUAL_ACTION -> {
+                // 检查枪管是否有子弹 (否则要拉栓)
+                if (!iGun.hasBarrelAmmo(gunItem)) {
+                    return IGunAttackRuntime.ShooterFireResult.NO_BARREL_AMMO;
+                }
+            }
+            case CLOSED_BOLT -> {
+                // 检查枪管是否有子弹 (否则要上膛)
+                if (!iGun.hasBarrelAmmo(gunItem)) {
+                    // 已经有子弹，仅在服务端执行NBT换弹逻辑
+                    if (!logicalSide.isClient()) {
+                        if (iGun.useInventoryAmmo(gunItem)) _consumeAmmoFromPlayer(iGun, gunItem, iLivingShooter, livingShooter);
+                        else iGun.consumeMagAmmo(gunItem);
+
+                        if (PlannedRefactor.ON_SET_BARREL_AMMO) {};
+                        iGun.setBarrelAmmoCount(gunItem, 1);
+                    }
+                }
+            }
         }
 
         // 客户端侧提前返回，以继续客户端逻辑
         if (logicalSide.isClient()) return IGunAttackRuntime.ShooterFireResult.SUCCESS;
 
+
         return IGunAttackRuntime.ShooterFireResult.SUCCESS;
+    }
+
+    private static void _consumeAmmoFromPlayer(IGun iGun, ItemStack gunItem,
+                                               ILivingShooter iLivingShooter, LivingEntity livingShooter) {
+        if (!iLivingShooter.cgc$needCheckAmmo()) return;
+
+        if (iGun.useDummyAmmo(gunItem)) {
+            // TODO 这个逻辑是要统一在consumeAmmoOnce里处理的
+            iGun.findAndExtractDummyAmmo(iGun, gunItem, 1);
+        } else {
+            IInventoryCapability inventoryCapability = CustomGun.getCapabilityProvider().getItemHandler(livingShooter, null);
+            iGun.findAndExtractInventoryAmmo(inventoryCapability, iGun, gunItem, 1);
+        }
     }
 
     /**

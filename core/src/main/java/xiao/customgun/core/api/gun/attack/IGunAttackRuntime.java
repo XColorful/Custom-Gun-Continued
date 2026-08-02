@@ -30,9 +30,23 @@ public interface IGunAttackRuntime {
                                            ILivingShooter iLivingShooter, LivingEntity livingShooter,
                                            Supplier<Float> pitch, Supplier<Float> yaw);
     enum ShooterFireResult {
-        SUCCESS,
-        ERROR,
-        OVERHEATED;
+        SUCCESS(0),
+        ERROR(0),
+        // ----以下按判定优先级排序----
+        OVERHEATED(1),
+        NO_AMMO(2),
+        NO_BARREL_AMMO(3) // 暂时不去扣枪膛(chamber)的细节，要改得整个模组范围里改，代码里还是用更好懂的说法
+        ;
+
+        public final int priority;
+        ShooterFireResult(int priority) {
+            this.priority = priority;
+        }
+
+        public int getPriority() {
+            return priority;
+        }
+
         public boolean isSuccess() {
             return this == SUCCESS;
         }

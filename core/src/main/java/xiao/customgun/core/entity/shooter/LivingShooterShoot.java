@@ -92,28 +92,7 @@ public final class LivingShooterShoot extends LivingShooterAspect {
 //            return ShootResult.NO_AMMO;
 //        }
         // 消耗子弹
-        BoltType boltType = gunData.getBoltType();
-        boolean useInventoryAmmo = iGun.useInventoryAmmo(gunItem); // 是否为背包直读
-        boolean hasAmmo = useInventoryAmmo ? iGun.hasInventoryAmmo(this.livingShooter, gunItem)
-                : iGun.getMagAmmoCountWithBarrel(gunItem, boltType) > 0;
-        if (!hasAmmo) {
-            return ShootResult.NO_AMMO;
-        }
         ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(this.livingShooter);
-        switch (boltType) {
-            case MANUAL_ACTION -> {// 检查膛内子弹
-                if (!iGun.hasBarrelAmmo(gunItem)) return ShootResult.NEED_BOLT;
-            }
-            case CLOSED_BOLT -> {// 闭膛的膛内检查逻辑
-                if (!iGun.hasBarrelAmmo(gunItem)) {
-                    if (useInventoryAmmo) this.consumeAmmoFromPlayer(iGun, gunItem, iLivingShooter.cgc$needCheckAmmo());
-                    else iGun.consumeMagAmmo(gunItem);
-
-                    if (PlannedRefactor.ON_SET_BARREL_AMMO) {};
-                    iGun.setBarrelAmmoCount(gunItem, 1);
-                }
-            }
-        }
         // --------
 
         { // 3. IGunRuntime操作结果 -> Shooter状态
@@ -274,18 +253,6 @@ public final class LivingShooterShoot extends LivingShooterAspect {
             // 给 5 ms 的窗口时间，以平衡延迟
             coolDown = coolDown - 5;
             return Math.max(coolDown, 0L);
-        }
-    }
-
-    private void consumeAmmoFromPlayer(IGun iGun, ItemStack gunItem, boolean needCheckAmmo) {
-        if (!needCheckAmmo) return;
-
-        if (iGun.useDummyAmmo(gunItem)) {
-            // TODO 这个逻辑是要统一在consumeAmmoOnce里处理的
-            iGun.findAndExtractDummyAmmo(iGun, gunItem, 1);
-        } else {
-            IInventoryCapability inventoryCapability = CustomGun.getCapabilityProvider().getItemHandler(this.livingShooter, null);
-            iGun.findAndExtractInventoryAmmo(inventoryCapability, iGun, gunItem, 1);
         }
     }
 

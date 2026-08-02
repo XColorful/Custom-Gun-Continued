@@ -67,7 +67,7 @@ public final class LivingShooterProne extends LivingShooterAspect {
         if (this.livingShooter.onGround()) this.notOnGroundTicks = 0;
         else this.notOnGroundTicks++;
 
-        if ( // 2.1 检查状态
+        if ( // 2.2 检查状态
                 // 悬空时间超时
                 this.notOnGroundTicks >= NOT_ON_GROUND_DISABLE_PRONE_TICKS
                 // 悬空时间没超时，但是趴下的时长不够，用来立即取消趴姿
@@ -84,7 +84,7 @@ public final class LivingShooterProne extends LivingShooterAspect {
         this._setPronePose(this.isProne);
     }
     private boolean _shouldForceDisableProne() {
-        if (isProneImpossible(this.livingShooter)) {
+        if (isIllegalProneState(this.livingShooter)) {
             return true;
         }
 
@@ -106,8 +106,8 @@ public final class LivingShooterProne extends LivingShooterAspect {
      * @return 是否不可能(是否禁止)处于趴姿状态
      */
     @ApiStatus.Internal
-    public static boolean isProneImpossible(LivingEntity livingShooter) {
-        if ( // 2.2
+    public static boolean isIllegalProneState(LivingEntity livingShooter) {
+        if ( // 2.2 检查状态
                 // 骑乘
                 livingShooter.isPassenger()
                 // 游泳

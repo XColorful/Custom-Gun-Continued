@@ -67,7 +67,7 @@ public final class LivingShooterAim extends LivingShooterAspect {
         }
 
         long currentTimeMillis = System.currentTimeMillis();
-        if ( // 2.2
+        if ( // 2.2 检查状态
                 // 正在收枪时不能瞄准
                 currentTimeMillis < this.shooterProperty.drawFinishTimestamp
         ) {

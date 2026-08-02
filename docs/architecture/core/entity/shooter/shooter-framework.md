@@ -36,7 +36,7 @@ public void bolt() {
             // 检查是否在切枪
             || this.draw.getDrawCooldown() > 0
     ) return;
-    else if ( // 2.2
+    else if ( // 2.2 检查状态
             // 检查是否在拉栓
             this.shooterProperty.isBolting
     ) return;
@@ -61,7 +61,7 @@ public void bolt() {
   
     if ( // 2.1 检查状态锁
             this.localShooterProperty.clientStateLock) return;
-    else if ( // 2.2
+    else if ( // 2.2 检查状态
             // 检查是否在拉栓
             this.localShooterProperty.isBolting
     ) return;

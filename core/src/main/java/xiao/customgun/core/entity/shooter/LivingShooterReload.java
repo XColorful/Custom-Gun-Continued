@@ -53,7 +53,7 @@ public final class LivingShooterReload extends LivingShooterAspect {
                 // 检查是否在切枪
                 || this.draw.getDrawCooldown() > 0
         ) return;
-        else if ( // 2.2
+        else if ( // 2.2 检查状态
                 // 射击后冷却50ms (比客户端快一点)
                 currentTimeMillis - this.shooterProperty.lastShootTimestamp < RELOAD_COOLDOWN_MS
         ) return;
@@ -126,7 +126,7 @@ public final class LivingShooterReload extends LivingShooterAspect {
         IGun iGun = IGunGetter.fromItemStack(currentGunItem);
         if (iGun == null) return;
 
-        else if ( // 2.2
+        else if ( // 2.2 检查状态
                 // 检查是否在换弹
                 !this.shooterProperty.reloadStateType.isReloading()
         ) return;

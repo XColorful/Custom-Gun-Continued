@@ -26,7 +26,7 @@ public final class LocalShooterSprint extends LocalShooterAspect {
 
     public boolean onSprint(boolean isSprint) {
         ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(this.localShooter);
-        if ( // 2.1 检查状态
+        if ( // 2.2 检查状态
             // 禁止疾跑的状态
                 _shouldForceDisableSprint(iLivingShooter, isSprint)
         ) return false;
@@ -34,7 +34,7 @@ public final class LocalShooterSprint extends LocalShooterAspect {
         return isSprint;
     }
     private boolean _shouldForceDisableSprint(ILivingShooter iLivingShooter, boolean isSprint) {
-        if (LivingShooterSprint.isSprintImpossible(iLivingShooter)) return true;
+        if (LivingShooterSprint.isIllegalSprintState(iLivingShooter)) return true;
 
         if (forceDisableSprint) return true;
 

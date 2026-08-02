@@ -46,7 +46,7 @@ public final class LocalShooterReload extends LocalShooterAspect {
         if ( // 2.1 检查状态锁
                 this.localShooterProperty.clientStateLock
         ) return;
-        else if ( // 2.2
+        else if ( // 2.2 检查状态
                 // 射击后冷却100ms
                 System.currentTimeMillis() - this.localShooterProperty.clientShootTimestamp < RELOAD_COOLDOWN_MS
         ) return;
@@ -95,7 +95,7 @@ public final class LocalShooterReload extends LocalShooterAspect {
         IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return;
 
-        else if ( // 2.2
+        else if ( // 2.2 检查状态
                 !ILivingShooterGetter.cgc$fromLivingEntity(this.localShooter).cgc$getSynReloadState()
                         .getStateType().isReloading()
         ) return;

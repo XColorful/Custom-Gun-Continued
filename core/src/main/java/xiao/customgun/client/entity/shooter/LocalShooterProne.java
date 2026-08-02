@@ -86,7 +86,7 @@ public final class LocalShooterProne extends LocalShooterAspect {
 
         if (this.proneCooldownTicks > 0) this.proneCooldownTicks--;
 
-        if ( // 2.1 检查状态
+        if ( // 2.2 检查状态
                 // 悬空时间超时
                 this.notOnGroundTicks >= NOT_ON_GROUND_DISABLE_PRONE_TICKS
                 // 悬空时间没超时，但是趴下的时长不够，用来立即取消趴姿
@@ -104,7 +104,7 @@ public final class LocalShooterProne extends LocalShooterAspect {
     }
 
     private boolean _shouldForceDisableProne() {
-        if (LivingShooterProne.isProneImpossible(this.localShooter)) {
+        if (LivingShooterProne.isIllegalProneState(this.localShooter)) {
             return true;
         }
 

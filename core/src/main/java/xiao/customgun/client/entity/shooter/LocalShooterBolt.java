@@ -39,7 +39,7 @@ public final class LocalShooterBolt extends LocalShooterAspect {
 
         if ( // 2.1 检查状态锁
                 this.localShooterProperty.clientStateLock) return;
-        else if ( // 2.2
+        else if ( // 2.2 检查状态
                 // 检查是否在拉栓
                 this.localShooterProperty.isBolting
         ) return;

@@ -28,7 +28,7 @@ public final class LivingShooterSprint extends LivingShooterAspect {
      */
     public boolean onSprint(boolean isSprint) {
         ILivingShooter livingShooter = ILivingShooterGetter.cgc$fromLivingEntity(this.livingShooter);
-        if ( // 2.1 检查状态
+        if ( // 2.2 检查状态
                 // 禁止疾跑的状态
                 _shouldForceDisableSprint(livingShooter, isSprint)
         ) return false;
@@ -36,7 +36,7 @@ public final class LivingShooterSprint extends LivingShooterAspect {
         return isSprint;
     }
     private boolean _shouldForceDisableSprint(ILivingShooter iLivingShooter, boolean isSprint) {
-        if (isSprintImpossible(iLivingShooter)) return true;
+        if (isIllegalSprintState(iLivingShooter)) return true;
 
         return false;
     }
@@ -45,7 +45,7 @@ public final class LivingShooterSprint extends LivingShooterAspect {
      * @return 是否不可能(是否禁止)处于冲刺状态
      */
     @ApiStatus.Internal
-    public static boolean isSprintImpossible(ILivingShooter iLivingShooter) {
+    public static boolean isIllegalSprintState(ILivingShooter iLivingShooter) {
         boolean isAiming = iLivingShooter.cgc$getSynIsAiming();
         if (isAiming && !PlannedRefactor.SPRINT_ON_AIMING) return true;
 

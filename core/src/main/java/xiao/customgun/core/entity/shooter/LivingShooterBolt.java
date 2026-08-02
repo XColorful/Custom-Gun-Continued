@@ -45,7 +45,7 @@ public final class LivingShooterBolt extends LivingShooterAspect {
                 // 检查是否在切枪
                 || this.draw.getDrawCooldown() > 0
         ) return;
-        else if ( // 2.2
+        else if ( // 2.2 检查状态
                 // 检查是否在拉栓
                 this.shooterProperty.isBolting
         ) return;

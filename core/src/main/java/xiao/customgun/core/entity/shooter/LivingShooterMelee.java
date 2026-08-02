@@ -48,7 +48,7 @@ public final class LivingShooterMelee extends LivingShooterAspect {
                 || this.shooterProperty.isBolting
         ) return;
         long currentTimeMillis = System.currentTimeMillis();
-        if ( // 2.2
+        if ( // 2.2 检查状态
                 // 近战冷却
                 _getMeleeCooldownMs(currentTimeMillis, iGun, gunItem) > 0
         ) return;

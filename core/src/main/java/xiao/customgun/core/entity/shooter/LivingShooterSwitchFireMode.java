@@ -30,7 +30,7 @@ public final class LivingShooterSwitchFireMode extends LivingShooterAspect {
         IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return;
 
-        if ( // 2.1 检查状态锁
+        if ( // 2.2 检查状态锁
                 false
         ) return;
 

@@ -13,6 +13,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -20,6 +21,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import xiao.customgun.core.api.entity.*;
 import xiao.customgun.core.api.entity.shooter.modifier.ShooterGunModifierCache;
+import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.api.projectile.physics.IProjectilePhysicsRuntime;
 import xiao.customgun.core.entity.LivingShooterSyncKey;
 import xiao.customgun.core.entity.shooter.modifier.ShooterGunModifierManager;
@@ -136,9 +138,13 @@ public abstract class LivingEntityMixin extends Entity implements ILivingShooter
     public void cgc$melee() {
         this.cgc$melee.prepareMelee();
     }
+    @Override
+    @ApiStatus.Internal public long cgc$_getMeleeCooldownMs(long currentTimeMillis) {
+        return this.cgc$melee.getMeleeCooldownMs(currentTimeMillis);
+    }
 
-    @Override public ShootResult cgc$shoot(Supplier<Float> pitch, Supplier<Float> yaw, long timestamp, float chargeProgress) {
-        return this.cgc$shoot.shoot(pitch, yaw, timestamp, chargeProgress);
+    @Override public ShootResult cgc$shoot(Supplier<Float> pitch, Supplier<Float> yaw, long clientFromBaseToCurrentTimeMs, float chargeProgress) {
+        return this.cgc$shoot.shoot(pitch, yaw, clientFromBaseToCurrentTimeMs, chargeProgress);
     }
 
     @Override

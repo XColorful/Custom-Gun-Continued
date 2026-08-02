@@ -8,6 +8,7 @@
 package xiao.customgun.core.api.entity.shooter;
 
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 import xiao.customgun.core.api.entity.ShootResult;
 
 import java.util.function.Supplier;
@@ -46,15 +47,16 @@ public interface IGunOperator extends ICommonGunOperator {
      * 刺刀/近战 (服务端)
      */
     @Override void cgc$melee();
+    @ApiStatus.Internal long cgc$_getMeleeCooldownMs(long currentTimeMillis);
 
     /**
      * 从实体的位置，向指定的方向开枪
      * @param pitch 开火方向的俯仰角 (xRot)
      * @param yaw   开火方向的偏航角 (yRot)
-     * @param timestamp 计算冷却的时候使用的时间戳，为偏移时间戳（相对于 base timestamp 的时间戳）
+     * @param clientFromBaseToCurrentTimeMs 计算冷却的时候使用的时间戳，为偏移时间戳（相对于 base timestamp 的时间戳）
      * @return 本次射击的结果
      */
-    ShootResult cgc$shoot(Supplier<Float> pitch, Supplier<Float> yaw, long timestamp, float chargeProgress);
+    ShootResult cgc$shoot(Supplier<Float> pitch, Supplier<Float> yaw, long clientFromBaseToCurrentTimeMs, float chargeProgress);
 
     /**
      * 拉栓 (服务端)
@@ -72,8 +74,8 @@ public interface IGunOperator extends ICommonGunOperator {
 
     // --------Deprecated--------
 
-    @Deprecated default ShootResult cgc$shoot(Supplier<Float> pitch, Supplier<Float> yaw, long timestamp) {
-        return this.cgc$shoot(pitch, yaw, timestamp, 0.0f);
+    @Deprecated default ShootResult cgc$shoot(Supplier<Float> pitch, Supplier<Float> yaw, long fromBaseToCurrentTimeMs) {
+        return this.cgc$shoot(pitch, yaw, fromBaseToCurrentTimeMs, 0.0f);
     }
     @Deprecated ShootResult cgc$shoot(Supplier<Float> pitch, Supplier<Float> yaw);
 }

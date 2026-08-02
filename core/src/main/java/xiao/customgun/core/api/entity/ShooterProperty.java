@@ -106,6 +106,9 @@ public class ShooterProperty {
      * 记录射击数，用以判定曳光弹
      */
     public int shootCount = 0;
+    /**
+     * 范围在 [0, +∞)，仅在启用charge数据的时候才使用
+     */
     public float chargeProgress = 0f;
     /**
      * 这个字段的作用域只在{@link LivingShooterProne}内部

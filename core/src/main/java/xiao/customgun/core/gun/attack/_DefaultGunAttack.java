@@ -38,11 +38,13 @@ import xiao.customgun.core.developer.PlannedRefactor;
 import xiao.customgun.core.resource.data.data.GunData;
 import xiao.customgun.core.resource.data.data.attachment._MeleeModifierData;
 import xiao.customgun.core.resource.data.data.attachment.melee._TargetEffectData;
+import xiao.customgun.core.resource.data.data.gun._ChargingData;
 import xiao.customgun.core.resource.data.data.gun._MeleeData;
 import xiao.customgun.core.resource.data.data.gun.melee._DefaultMeleeData;
 import xiao.customgun.core.resource.instance.data.GunIndexInstance;
 
 import java.util.List;
+import java.util.Map;
 import java.util.function.Supplier;
 
 @ApiStatus.Internal
@@ -107,13 +109,22 @@ public class _DefaultGunAttack {
         // --------服务端--------
 
         FireModeType fireModeType = iGun.getFireModeType(gunItem);
+        @Nullable Map<FireModeType, _ChargingData> chargingDataMap = gunData.getChargingData();
+        _ChargingData chargingData = chargingDataMap != null ? chargingDataMap.get(fireModeType) : null;
         { // 4. 蓄力进度检查
-            if (!_DefaultGunCharge.isChargeProgressAcceptable(shooterProperty, gunData, fireModeType, clientChargeProgress)) {
+            if (!_DefaultGunCharge.isChargeProgressAcceptable(shooterProperty, chargingData, clientChargeProgress)) {
                 return IGunAttackRuntime.ShooterFireResult.NOT_CHARGED;
             }
         }
 
-        return IGunAttackRuntime.ShooterFireResult.SUCCESS;
+        // --------收尾--------
+        final @NotNull IGunAttackRuntime.ShooterFireResult result = IGunAttackRuntime.ShooterFireResult.SUCCESS;
+
+        { // 蓄力进度clamp更正
+            shooterProperty.chargeProgress = _DefaultGunCharge.clampChargeProgress(shooterProperty, chargingData, clientChargeProgress);
+        }
+
+        return result;
     }
 
     private static void _consumeAmmoFromPlayer(IGun iGun, ItemStack gunItem,

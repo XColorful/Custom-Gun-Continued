@@ -12,6 +12,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.entity.ILivingShooter;
@@ -27,13 +28,11 @@ import xiao.customgun.core.config.SyncConfig;
 import xiao.customgun.core.network.message.ServerMessageSyncBaseTimestamp;
 import xiao.customgun.core.network.message.event.ServerMessageGunShoot;
 import xiao.customgun.core.resource.data.data.GunData;
-import xiao.customgun.core.resource.data.data.gun._ChargingData;
 import xiao.customgun.core.resource.data.data.gun._FireModeAdjustData;
 import xiao.customgun.core.resource.data.data.gun._HeatData;
 import xiao.customgun.core.resource.instance.data.GunIndexInstance;
 import xiao.customgun.core.util.SendUtils;
 
-import java.util.Map;
 import java.util.function.Supplier;
 
 public final class LivingShooterShoot extends LivingShooterAspect {
@@ -51,9 +50,9 @@ public final class LivingShooterShoot extends LivingShooterAspect {
      */
     @Deprecated(forRemoval = true)
     public ShootResult shoot(Supplier<Float> pitch, Supplier<Float> yaw,
-                             long timestamp) {
+                             long clientFromBaseToCurrentTimeMs) {
         return shoot(pitch, yaw,
-                timestamp,
+                clientFromBaseToCurrentTimeMs,
                 0f);
     }
     /**
@@ -61,17 +60,17 @@ public final class LivingShooterShoot extends LivingShooterAspect {
      */
     @Deprecated(forRemoval = true)
     public ShootResult shoot(Supplier<Float> pitch, Supplier<Float> yaw,
-                             long timestamp,
+                             long clientFromBaseToCurrentTimeMs,
                              float chargeProgress, boolean hasChargeContext) {
         return shoot(pitch, yaw,
-                timestamp,
+                clientFromBaseToCurrentTimeMs,
                 chargeProgress);
     }
     /**
      * 执行一次射击
      */
     public ShootResult shoot(Supplier<Float> pitch, Supplier<Float> yaw,
-                              long timestamp,
+                              long clientFromBaseToCurrentTimeMs,
                               float chargeProgress) {
         // 1. 手持枪械检查
         if (this.shooterProperty.currentGunItem == null) return ShootResult.NOT_DRAW;
@@ -79,9 +78,16 @@ public final class LivingShooterShoot extends LivingShooterAspect {
         IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return ShootResult.NOT_GUN;
 
-        if ( // 2.2
-                preCheckError(timestamp) != null
-        ) return ShootResult.PRE_CHECK_ERROR;
+        final long currentTimeMillis = System.currentTimeMillis();
+        ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(this.livingShooter);
+        if ( // 2.2 检查状态
+                // 禁止射击的状态
+                _shouldForceDisableShoot()
+                // 近战冷却
+                || iLivingShooter.cgc$_getMeleeCooldownMs(currentTimeMillis) > 0
+                // 服务端射击冷却
+                || SyncConfig.SERVER_SHOOT_COOLDOWN_V.get() && isInServerShootCooldown(currentTimeMillis, clientFromBaseToCurrentTimeMs)
+        ) return ShootResult.UNKNOWN_FAIL;
 
         // --------TODO
 //        int consumedAmmo = iGun.consumeAmmoOnce(this.livingShooter, currentGunItem);
@@ -89,7 +95,6 @@ public final class LivingShooterShoot extends LivingShooterAspect {
 //            return ShootResult.NO_AMMO;
 //        }
         // 消耗子弹
-        ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(this.livingShooter);
         // --------
 
         { // 3. IGunRuntime操作结果 -> Shooter状态
@@ -101,9 +106,8 @@ public final class LivingShooterShoot extends LivingShooterAspect {
                 return ShootResult.UNKNOWN_FAIL;
             }
             this.shooterProperty.lastShootTimestamp = this.shooterProperty.shootTimestamp;
-            this.shooterProperty.shootTimestamp = timestamp;
-            this.shooterProperty.heatTimestamp = System.currentTimeMillis();
-            this.shooterProperty.chargeProgress = validateChargeProgress(iGun, gunItem, chargeProgress);
+            this.shooterProperty.shootTimestamp = clientFromBaseToCurrentTimeMs;
+            this.shooterProperty.heatTimestamp = currentTimeMillis;
             // 发包通知客户端
             SendUtils.sendMessageToTrackingEntity(this.livingShooter,
                     new ServerMessageGunShoot(this.livingShooter.getId(), gunItem));
@@ -118,60 +122,55 @@ public final class LivingShooterShoot extends LivingShooterAspect {
         }
         return ShootResult.SUCCESS;
     }
-    @Nullable
-    private ShootResult preCheckError(long timestamp) {
-        if (SyncConfig.SERVER_SHOOT_COOLDOWN_V.get()) {
-            // 判断射击是否正在冷却
-            long coolDown = _getShootCooldown(timestamp);
-            if (coolDown < 0) return ShootResult.UNKNOWN_FAIL;
-            else if (coolDown > 0) return ShootResult.COOL_DOWN;
-        }
 
-        if (SyncConfig.SERVER_SHOOT_NETWORK_V.get()) {
-            // 根据 tick time 和 允许的网络延迟波动 计算 时间戳的接受窗口
-            MinecraftServer server = ((ServerLevel) this.livingShooter.level()).getServer();
-            double tickTime = Math.max(server.tickTimes[server.getTickCount() % 100] * 1.0E-6D, 50);
-            long alpha = System.currentTimeMillis() - this.shooterProperty.baseTimestamp - timestamp;
-            if (alpha < -NETWORK_DELAY_MS || alpha > NETWORK_DELAY_MS + tickTime * 2) { // 允许 +- 300ms 的网络波动、窗口下限再扩大 2 个 tick time 时间(最坏情况射击会延迟2个 tick)
-                if (this.livingShooter instanceof ServerPlayer player) {
-                    SendUtils.sendMessageToPlayer(player, new ServerMessageSyncBaseTimestamp());
-                }
-                return ShootResult.NETWORK_FAIL;
-            }
-        }
+    @ApiStatus.Internal
+    public boolean _shouldForceDisableShoot() {
+        if (isIllegalShootState(this.livingShooter)) return true;
 
-        // 检查是否正在换弹
-        if (this.shooterProperty.reloadStateType.isReloading()) {
-            return ShootResult.IS_RELOADING;
-        }
-        // 检查是否在切枪
-        if (draw.getDrawCooldown() > 0) {
-            return ShootResult.IS_DRAWING;
-        }
-        // 检查是否在拉栓
-        if (this.shooterProperty.isBolting) {
-            return ShootResult.IS_BOLTING;
-        }
-        // 检查是否在奔跑
-        if (this.shooterProperty.sprintTimeS > 0) {
-            return ShootResult.IS_SPRINTING;
-        }
+        if ( // 2.2 检查状态
+                // 正在换弹
+                this.shooterProperty.reloadStateType.isReloading()
+                // 正在切枪
+                || draw.getDrawCooldown() > 0
+                // 正在拉栓
+                || this.shooterProperty.isBolting
+                // 正在疾跑
+                || this.shooterProperty.sprintTimeS > 0
+        ) return true;
 
-        return null;
+        return false;
     }
-    private float validateChargeProgress(IGun iGun, ItemStack gunItem,
-                                         float chargeProgress) {
-        @Nullable Map<FireModeType, _ChargingData> chargingDataMap = GunDataAccessor._getChargingData(iGun, gunItem);
-        FireModeType fireModeType = iGun.getFireModeType(gunItem);
-        @Nullable _ChargingData chargingData = chargingDataMap != null ? chargingDataMap.get(fireModeType) : null;
+    @ApiStatus.Internal
+    public boolean isInServerShootCooldown(long currentTimeMillis, long clientFromBaseToCurrentTimeMs) {
+        if (this.shooterProperty.currentGunItem == null) return false;
+        ItemStack gunItem = this.shooterProperty.currentGunItem.get();
+        IGun iGun = IGunGetter.fromItemStack(gunItem);
+        if (iGun == null) return false;
 
-        if (!true || !Float.isFinite(chargeProgress)) {
-            return 0f;
+        return this.isInServerShootCooldown(iGun, gunItem, currentTimeMillis, clientFromBaseToCurrentTimeMs);
+    }
+    private boolean isInServerShootCooldown(IGun iGun, ItemStack gunItem,
+                                            long currentTimeMillis, long clientFromBaseToCurrentTimeMs) {
+        // 判断射击是否正在冷却
+        long coolDown = _getShootCooldown(iGun, gunItem, clientFromBaseToCurrentTimeMs);
+        if (coolDown > 0) return true;
+
+        // 根据 tick time 和 允许的网络延迟波动 计算 时间戳的接受窗口
+        MinecraftServer server = ((ServerLevel) this.livingShooter.level()).getServer();
+        double tickTime = Math.max(server.tickTimes[server.getTickCount() % 100] * 1.0E-6D, 50);
+        long alpha = currentTimeMillis - this.shooterProperty.baseTimestamp - clientFromBaseToCurrentTimeMs;
+        if (alpha < -NETWORK_DELAY_MS || alpha > NETWORK_DELAY_MS + tickTime * 2) { // 允许 +- 300ms 的网络波动、窗口下限再扩大 2 个 tick time 时间(最坏情况射击会延迟2个 tick)
+            if (this.livingShooter instanceof ServerPlayer player) {
+                SendUtils.sendMessageToPlayer(player, new ServerMessageSyncBaseTimestamp());
+            }
+            return true;
         }
-        if (chargingData == null) {
-            return 0f;
-        }
-        return Math.max(0f, Math.min(chargeProgress, chargingData.getMaxCharge()));
+
+        return false;
+    }
+    @ApiStatus.Internal
+    public static boolean isIllegalShootState(LivingEntity livingShooter) {
+        return false;
     }
 
     /**
@@ -179,34 +178,36 @@ public final class LivingShooterShoot extends LivingShooterAspect {
      * @return 射击冷却
      */
     public long getShootCooldown() {
-        return _getShootCooldown(System.currentTimeMillis() - this.shooterProperty.baseTimestamp);
+        if (this.shooterProperty.currentGunItem == null) return 0;
+
+        ItemStack gunItem = this.shooterProperty.currentGunItem.get();
+        IGun iGun = IGunGetter.fromItemStack(gunItem);
+        if (iGun == null) return 0;
+
+        return _getShootCooldown(iGun, gunItem, System.currentTimeMillis() - this.shooterProperty.baseTimestamp);
     }
     /**
      * 查询指定的 timestamp 下的射击冷却。根据情况返回值可能超过枪械的射击间隔。
-     * @param timestamp 指定 timestamp，是偏移时间戳（基于base timestamp 的相对时间戳）
+     * @param clientFromBaseToCurrentTimeMs 指定 timestamp，是偏移时间戳（基于base timestamp 的相对时间戳）
      * @return 射击冷却
      */
-    private long _getShootCooldown(long timestamp) {
-        if (this.shooterProperty.currentGunItem == null) return 0;
-
-        ItemStack currentGunItem = this.shooterProperty.currentGunItem.get();
-        IGun iGun = IGunGetter.fromItemStack(currentGunItem);
-        if (iGun == null) return 0;
-
-        @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(iGun.getGunLocation(currentGunItem));
-        if (gunIndexInstance == null) return -1;
+    private long _getShootCooldown(IGun iGun, ItemStack gunItem,
+                                   long clientFromBaseToCurrentTimeMs) {
+        var gunLocation = iGun.getGunLocation(gunItem);
+        @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(gunLocation);
+        if (gunIndexInstance == null) return 0;
 
         GunData gunData = gunIndexInstance.getGunData();
-        long interval = timestamp - this.shooterProperty.shootTimestamp;
 
-        FireModeType fireModeType = iGun.getFireModeType(currentGunItem);
+        long interval = clientFromBaseToCurrentTimeMs - this.shooterProperty.shootTimestamp;
+        FireModeType fireModeType = iGun.getFireModeType(gunItem);
         if (fireModeType == FireModeType.BURST) {
             long coolDown = (long) (gunData.getBurstData().getShootIntervalSeconds() * 1000f) - interval;
             // 给 5 ms 的窗口时间，以平衡延迟
             coolDown = coolDown - WINDOW_TIME_MS;
             return Math.max(coolDown, 0L);
         } else {
-            long shootInterval = _getShootInterval(this.livingShooter, gunData, fireModeType, iGun, currentGunItem);
+            long shootInterval = _getShootInterval(this.livingShooter, gunData, fireModeType, iGun, gunItem);
 
             long coolDown = shootInterval - interval;
             // 给 5 ms 的窗口时间，以平衡延迟

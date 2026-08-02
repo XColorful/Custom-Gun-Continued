@@ -7,15 +7,12 @@
 
 package xiao.customgun.core.gun.attack;
 
+import net.minecraft.util.Mth;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.entity.ShooterProperty;
-import xiao.customgun.core.api.item.gun.FireModeType;
-import xiao.customgun.core.resource.data.data.GunData;
 import xiao.customgun.core.resource.data.data.gun._ChargingData;
-
-import java.util.Map;
 
 import static xiao.customgun.core.entity.shooter.LivingShooterAspect.CHARGE_PROGRESS_TOLERANCE;
 import static xiao.customgun.core.entity.shooter.LivingShooterAspect.CHARGE_TICK_TOLERANCE;
@@ -28,12 +25,9 @@ public class _DefaultGunCharge {
      */
     @ApiStatus.Internal
     protected static boolean isChargeProgressAcceptable(@Nullable ShooterProperty shooterProperty,
-                                                     @NotNull GunData gunData,
-                                                     FireModeType fireModeType,
-                                                     float clientChargeProgress) {
+                                                        @Nullable _ChargingData chargingData,
+                                                        float clientChargeProgress) {
         // 只对有charge数据的才启用蓄力检查
-        @Nullable Map<FireModeType, _ChargingData> chargingDataMap = gunData.getChargingData();
-        _ChargingData chargingData = chargingDataMap != null ? chargingDataMap.get(fireModeType) : null;
         if (chargingData == null) return true;
 
         if (!Float.isFinite(clientChargeProgress)) return false; // 客户端瞎传数值
@@ -75,5 +69,16 @@ public class _DefaultGunCharge {
                 || chargeData.getChargeType().resetChargeAfterShoot() // 重置进度的一定重新开始计算
         ) return 0f;
         else return Math.max(0f, shooterProperty.chargeProgress - chargeData.getRecoverByFire());
+    }
+
+    protected static float clampChargeProgress(@Nullable ShooterProperty shooterProperty,
+                                               @Nullable _ChargingData chargingData,
+                                               float finalChargeProgress) {
+        // 只对有charge数据的才启用蓄力检查
+        if (chargingData == null) return finalChargeProgress;
+
+        if (!Float.isFinite(finalChargeProgress)) return 0; // 客户端瞎传数值
+
+        return Mth.clamp(finalChargeProgress, 0, chargingData.getMaxCharge());
     }
 }

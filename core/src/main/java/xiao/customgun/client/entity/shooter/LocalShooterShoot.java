@@ -19,7 +19,6 @@ import xiao.customgun.client.api.entity.shooter.ILocalShooterGetter;
 import xiao.customgun.client.api.resource.ClientResourceApi;
 import xiao.customgun.client.api.sound.gun.GunSoundType;
 import xiao.customgun.client.resource.instance.assets.GunDisplayInstance;
-import xiao.customgun.client.resource.instance.data.ClientGunIndexInstance;
 import xiao.customgun.client.sound.SoundPlayManager;
 import xiao.customgun.core.api.entity.ILivingShooter;
 import xiao.customgun.core.api.entity.ShootResult;
@@ -120,17 +119,20 @@ public final class LocalShooterShoot extends LocalShooterAspect {
         if (iGun == null) return ShootResult.NOT_GUN;
 
         var gunLocation = iGun.getGunLocation(gunItem);
-        @Nullable ClientGunIndexInstance clientGunIndexInstance = ClientResourceApi.getClientGunIndexInstance(gunLocation);
+        @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(gunLocation);
         @Nullable GunDisplayInstance gunDisplayInstance = ClientResourceApi.getGunDisplayInstance(gunItem);
-        if (clientGunIndexInstance == null || gunDisplayInstance == null) return ShootResult.ID_NOT_EXIST;
+        if (gunIndexInstance == null || gunDisplayInstance == null) return ShootResult.ID_NOT_EXIST;
 
-        GunData gunData = clientGunIndexInstance.getGunData();
-        if (gunData == null) return ShootResult.UNKNOWN_FAIL;
+        GunData gunData = gunIndexInstance.getGunData();
+        long cooldown = _getShootCooldown(iGun, gunItem, gunData);
 
-        long coolDown = _getShootCooldown(iGun, gunItem, gunData);
+        if ( // 2.1 检查状态锁
+                // 如果上一次异步开火的效果还未执行，则直接返回
+                !this.localShooterProperty.isShootRecorded
+                // 射击冷却大于等于 1 tick 则不允许开火
+                || cooldown >= 50
+        ) return ShootResult.UNKNOWN_FAIL;
 
-        // 如果上一次异步开火的效果还未执行，则直接返回
-        if (!this.localShooterProperty.isShootRecorded) return ShootResult.COOL_DOWN;
         // 如果状态锁正在准备锁定，且不是开火的状态锁，则不允许开火
         if (this.localShooterProperty.clientStateLock
                 && this.localShooterProperty.lockedCondition != SHOOT_LOCKED_CONDITION
@@ -139,19 +141,19 @@ public final class LocalShooterShoot extends LocalShooterAspect {
             return ShootResult.IS_DRAWING; // 主要目的是防止切枪后开火动作覆盖切枪动作
         }
 
-        // 如果射击冷却大于等于 1 tick 则不允许开火
-        if (coolDown >= 50) return ShootResult.COOL_DOWN;
-
-        // 基础检查
-        boolean playDrySound = true;
-        ShootResult errorResult = preCheckError();
-        if (errorResult != null) return errorResult;
-
-        // 检查是否正在奔跑
         ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(this.localShooter);
-        if (iLivingShooter.cgc$getSynSprintTime() > 0) return ShootResult.IS_SPRINTING;
+        if ( // 2.2 检查状态
+                // 禁止射击的状态
+                _shouldForceDisableShoot()
+                // 近战冷却
+                || iLivingShooter.cgc$getSynMeleeCooldown() > 0
+                // 客户方防按键误触冷却 (已经在ShootKey利用ClientTickEvent触发了)
+//                System.currentTimeMillis() - LocalShooterProperty.clientClickButtonTimestamp < SHOOT_COOLDOWN_MS
+        ) {
+            return ShootResult.UNKNOWN_FAIL;
+        }
 
-
+        boolean playDrySound = true;
         { // 3. IGunRuntime操作结果 -> Shooter状态
             /**
              * {@link IGunAttackRuntime#shooterFire}的默认实现为{@link IGunAttackRuntime#shooterFire}
@@ -160,14 +162,14 @@ public final class LocalShooterShoot extends LocalShooterAspect {
             if (!shooterFireResult.isSuccess()) {
                 return _onShooterFireFailed(shooterFireResult, gunDisplayInstance, playDrySound);
             }
+            // 切换状态锁，不允许换弹、检视等行为进行
+            this.localShooterProperty.lockState(SHOOT_LOCKED_CONDITION);
+            this.localShooterProperty.isShootRecorded = false;
         }
 
-        // 切换状态锁，不允许换弹、检视等行为进行
-        this.localShooterProperty.lockState(SHOOT_LOCKED_CONDITION);
-        this.localShooterProperty.isShootRecorded = false;
         // 调用开火逻辑
         float finalChargeProgress = this.localShooterProperty.chargeProgress;
-        this.doShoot(gunDisplayInstance, iGun, gunItem, gunData, coolDown, finalChargeProgress);
+        this.doShoot(gunDisplayInstance, iGun, gunItem, gunData, cooldown, finalChargeProgress);
 
         this._recoverChargeAfterShoot(iGun, gunItem, gunData);
         return ShootResult.SUCCESS;
@@ -193,6 +195,28 @@ public final class LocalShooterShoot extends LocalShooterAspect {
         }
         return ShootResult.UNKNOWN_FAIL;
     }
+
+    /**
+     * 对应{@link LivingShooterShoot#_shouldForceDisableShoot}
+     */
+    private boolean _shouldForceDisableShoot() {
+        if (LivingShooterShoot.isIllegalShootState(this.localShooter)) return true;
+
+        ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(this.localShooter);
+        if ( // 2.2 检查状态
+                // 正在换弹
+                iLivingShooter.cgc$getSynReloadState().getStateType().isReloading()
+                // 正在切枪
+                || iLivingShooter.cgc$getSynDrawCooldown() > 0
+                // 正在拉栓
+                || iLivingShooter.cgc$getSynIsBolting()
+                // 正在疾跑
+                || iLivingShooter.cgc$getSynSprintTime() > 0
+        ) return true;
+
+        return false;
+    }
+
     private void _recoverChargeAfterShoot(IGun iGun, ItemStack gunItem,
                                           GunData gunData) {
         FireModeType fireModeType = iGun.getFireModeType(gunItem);
@@ -205,26 +229,6 @@ public final class LocalShooterShoot extends LocalShooterAspect {
         } else { // 其他类型则正常恢复蓄力
             this.localShooterProperty.chargeProgress = Math.max(0f, this.localShooterProperty.chargeProgress - chargeData.getRecoverByFire());
         }
-    }
-
-    @Nullable
-    private ShootResult preCheckError() {
-        // 按钮冷却时间未到，防止误触
-        if (System.currentTimeMillis() - LocalShooterProperty.clientClickButtonTimestamp < SHOOT_COOLDOWN_MS) {
-            return ShootResult.COOL_DOWN;
-        }
-
-        ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(this.localShooter);
-        // 检查是否正在换弹
-        if (iLivingShooter.cgc$getSynReloadState().getStateType().isReloading()) return ShootResult.IS_RELOADING;
-        // 检查是否正在切枪
-        if (iLivingShooter.cgc$getSynDrawCooldown() > 0) return ShootResult.IS_DRAWING;
-        // 检查是否正在拉栓
-        if (iLivingShooter.cgc$getSynIsBolting()) return ShootResult.IS_BOLTING;
-
-        // 判断是否处于近战冷却时间
-        if (iLivingShooter.cgc$getSynMeleeCooldown() > 0) return ShootResult.IS_MELEE;
-        return null;
     }
 
     private void doShoot(GunDisplayInstance gunDisplayInstance, IGun iGun, ItemStack gunItem,

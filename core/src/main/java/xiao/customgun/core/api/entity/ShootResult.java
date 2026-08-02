@@ -7,15 +7,10 @@
 
 package xiao.customgun.core.api.entity;
 
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
-import xiao.customgun.core.api.common.McLogicalSide;
 import xiao.customgun.core.api.gun.attack.IGunAttackRuntime;
-import xiao.customgun.core.api.item.IGun;
+import xiao.customgun.core.entity.shooter.LivingShooterShoot;
 import xiao.customgun.core.gun.attack._DefaultGunAttack;
-
-import java.util.function.Supplier;
 
 public enum ShootResult {
     /**
@@ -29,6 +24,7 @@ public enum ShootResult {
     /**
      * 射击冷却时间还没到
      */
+    @Deprecated
     COOL_DOWN,
     /**
      * 无弹药 (或没有备弹)
@@ -75,12 +71,15 @@ public enum ShootResult {
     IS_MELEE,
     /**
      * 正处于疾跑状态
+     * @deprecated 完全在{@link LivingShooterShoot#_shouldForceDisableShoot()}内部处理
      */
+    @Deprecated
     IS_SPRINTING,
     /**
      * 网络波动导致射击失败
+     * @deprecated 完全在{@link LivingShooterShoot#isInServerShootCooldown(long, long)}内部处理
      */
-    @ApiStatus.Internal
+    @Deprecated
     NETWORK_FAIL,
     /**
      * 事件取消
@@ -94,9 +93,5 @@ public enum ShootResult {
      * @deprecated 完全在{@code LocalShooterShoot._onShooterFireFailed()}内部处理
      */
     @Deprecated
-    OVERHEATED,
-    /**
-     * 状态不对
-     */
-    PRE_CHECK_ERROR;
+    OVERHEATED
 }

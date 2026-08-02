@@ -33,6 +33,9 @@ public final class LocalShooterSprint extends LocalShooterAspect {
 
         return isSprint;
     }
+    /**
+     * 对应{@link LivingShooterSprint#_shouldForceDisableSprint}
+     */
     private boolean _shouldForceDisableSprint(ILivingShooter iLivingShooter, boolean isSprint) {
         if (LivingShooterSprint.isIllegalSprintState(iLivingShooter)) return true;
 

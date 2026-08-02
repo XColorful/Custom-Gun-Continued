@@ -83,7 +83,9 @@ public final class LivingShooterProne extends LivingShooterAspect {
 
         this._setPronePose(this.isProne);
     }
-    private boolean _shouldForceDisableProne() {
+
+    @ApiStatus.Internal
+    public boolean _shouldForceDisableProne() {
         if (isIllegalProneState(this.livingShooter)) {
             return true;
         }

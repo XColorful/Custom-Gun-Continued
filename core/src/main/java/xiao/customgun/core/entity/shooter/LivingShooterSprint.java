@@ -35,7 +35,8 @@ public final class LivingShooterSprint extends LivingShooterAspect {
 
         return isSprint;
     }
-    private boolean _shouldForceDisableSprint(ILivingShooter iLivingShooter, boolean isSprint) {
+    @ApiStatus.Internal
+    public boolean _shouldForceDisableSprint(ILivingShooter iLivingShooter, boolean isSprint) {
         if (isIllegalSprintState(iLivingShooter)) return true;
 
         return false;

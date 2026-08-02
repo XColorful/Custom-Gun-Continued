@@ -103,6 +103,9 @@ public final class LocalShooterProne extends LocalShooterAspect {
         this._setPronePose(this.isProne);
     }
 
+    /**
+     * 对应{@link LivingShooterProne#_shouldForceDisableProne()}
+     */
     private boolean _shouldForceDisableProne() {
         if (LivingShooterProne.isIllegalProneState(this.localShooter)) {
             return true;

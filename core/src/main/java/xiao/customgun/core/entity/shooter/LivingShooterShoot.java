@@ -65,6 +65,9 @@ public final class LivingShooterShoot extends LivingShooterAspect {
                 timestamp,
                 chargeProgress,true);
     }
+    /**
+     * 执行一次射击
+     */
     private ShootResult shoot(Supplier<Float> pitch, Supplier<Float> yaw,
                               long timestamp,
                               float chargeProgress, boolean hasChargeContext) {

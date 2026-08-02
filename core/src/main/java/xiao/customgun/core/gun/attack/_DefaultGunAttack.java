@@ -61,36 +61,40 @@ public class _DefaultGunAttack {
 
         GunData gunData = gunIndexInstance.getGunData();
 
-        // 1. 检查过热锁
-        if (iGun.hasHeat(gunItem) && iGun.hasOverheatLock(gunItem)) {
-            return IGunAttackRuntime.ShooterFireResult.OVERHEATED;
+        { // 1. 检查过热锁
+            if (iGun.hasHeat(gunItem) && iGun.hasOverheatLock(gunItem)) {
+                return IGunAttackRuntime.ShooterFireResult.OVERHEATED;
+            }
         }
 
-        // 2. 检查消耗子弹
         BoltType boltType = gunData.getBoltType();
-        boolean useInventoryAmmo = iGun.useInventoryAmmo(gunItem); // 是否为背包直读
-        boolean hasAmmo = useInventoryAmmo ? iGun.hasInventoryAmmo(livingShooter, gunItem)
-                : iGun.getMagAmmoCountWithBarrel(gunItem, boltType) > 0;
-        if (!hasAmmo) return IGunAttackRuntime.ShooterFireResult.NO_AMMO;
+        { // 2. 检查消耗子弹
+            boolean useInventoryAmmo = iGun.useInventoryAmmo(gunItem); // 是否为背包直读
+            boolean hasAmmo = useInventoryAmmo ? iGun.hasInventoryAmmo(livingShooter, gunItem)
+                    : iGun.getMagAmmoCountWithBarrel(gunItem, boltType) > 0;
+            if (!hasAmmo) return IGunAttackRuntime.ShooterFireResult.NO_AMMO;
+        }
 
         // 3. 检查拉栓
-        switch (boltType) {
-            case MANUAL_ACTION -> {
-                // 检查枪管是否有子弹 (否则要拉栓)
-                if (!iGun.hasBarrelAmmo(gunItem)) {
-                    return IGunAttackRuntime.ShooterFireResult.NO_BARREL_AMMO;
+        {
+            switch (boltType) {
+                case MANUAL_ACTION -> {
+                    // 检查枪管是否有子弹 (否则要拉栓)
+                    if (!iGun.hasBarrelAmmo(gunItem)) {
+                        return IGunAttackRuntime.ShooterFireResult.NO_BARREL_AMMO;
+                    }
                 }
-            }
-            case CLOSED_BOLT -> {
-                // 检查枪管是否有子弹 (否则要上膛)
-                if (!iGun.hasBarrelAmmo(gunItem)) {
-                    // 已经有子弹，仅在服务端执行NBT换弹逻辑
-                    if (!logicalSide.isClient()) {
-                        if (iGun.useInventoryAmmo(gunItem)) _consumeAmmoFromPlayer(iGun, gunItem, iLivingShooter, livingShooter);
-                        else iGun.consumeMagAmmo(gunItem);
+                case CLOSED_BOLT -> {
+                    // 检查枪管是否有子弹 (否则要上膛)
+                    if (!iGun.hasBarrelAmmo(gunItem)) {
+                        // 已经有子弹，仅在服务端执行NBT换弹逻辑
+                        if (!logicalSide.isClient()) {
+                            if (iGun.useInventoryAmmo(gunItem)) _consumeAmmoFromPlayer(iGun, gunItem, iLivingShooter, livingShooter);
+                            else iGun.consumeMagAmmo(gunItem);
 
-                        if (PlannedRefactor.ON_SET_BARREL_AMMO) {};
-                        iGun.setBarrelAmmoCount(gunItem, 1);
+                            if (PlannedRefactor.ON_SET_BARREL_AMMO) {};
+                            iGun.setBarrelAmmoCount(gunItem, 1);
+                        }
                     }
                 }
             }

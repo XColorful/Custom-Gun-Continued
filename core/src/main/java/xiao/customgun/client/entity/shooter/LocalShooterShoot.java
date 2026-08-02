@@ -112,6 +112,9 @@ public final class LocalShooterShoot extends LocalShooterAspect {
         }
     }
 
+    /**
+     * 执行一次射击
+     */
     public ShootResult shoot() {
         // 1. 手持枪械检查
         ItemStack gunItem = this.localShooter.getMainHandItem();

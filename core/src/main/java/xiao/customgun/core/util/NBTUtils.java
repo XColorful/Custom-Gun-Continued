@@ -388,7 +388,7 @@ public class NBTUtils {
 
     public static double getDouble(@Nullable CompoundTag nbt, String key) {
         if (nbt == null) return 0;
-        else if (nbt.contains(key)) return nbt.getDouble(key);
+        else if (nbt.contains(key)) return nbt.getDoubleOr(key, 0);
         else return 0;
     }
     public static void setDouble(@Nullable CompoundTag nbt, String key, double value) {
@@ -399,7 +399,7 @@ public class NBTUtils {
 
     public static float getFloat(@Nullable CompoundTag nbt, String key) {
         if (nbt == null) return 0;
-        else if (nbt.contains(key)) return nbt.getFloat(key).orElse(0F);
+        else if (nbt.contains(key)) return nbt.getFloatOr(key, 0);
         else return 0;
     }
     public static void setFloat(@Nullable CompoundTag nbt, String key, float value) {
@@ -409,7 +409,7 @@ public class NBTUtils {
 
     public static long getLong(@Nullable CompoundTag nbt, String key) {
         if (nbt == null) return 0;
-        else if (nbt.contains(key)) return nbt.getLong(key);
+        else if (nbt.contains(key)) return nbt.getLongOr(key, 0);
         else return 0;
     }
     public static void setLong(@Nullable CompoundTag nbt, String key, long value) {
@@ -420,7 +420,7 @@ public class NBTUtils {
 
     public static int getInt(@Nullable CompoundTag nbt, String key) {
         if (nbt == null) return 0;
-        else if (nbt.contains(key)) return nbt.getInt(key).orElse(0);
+        else if (nbt.contains(key)) return nbt.getIntOr(key, 0);
         else return 0;
     }
     public static void setInt(@Nullable CompoundTag nbt, String key, int value) {
@@ -430,7 +430,7 @@ public class NBTUtils {
 
     public static boolean getBoolean(@Nullable CompoundTag nbt, String key) {
         if (nbt == null) return false;
-        else if (nbt.contains(key)) return nbt.getBoolean(key).orElse(false);
+        else if (nbt.contains(key)) return nbt.getBooleanOr(key, false);
         else return false;
     }
     public static void setBoolean(@Nullable CompoundTag nbt, String key, boolean value) {

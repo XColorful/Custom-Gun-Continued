@@ -287,7 +287,8 @@ public class _DefaultGunAttack {
                 : livingShooter.damageSources().mobAttack(livingShooter);
         victimEntity.knockback(knockback,
                 (float) Math.sin(Math.toRadians(livingShooter.getYRot())),
-                (float) -Math.cos(Math.toRadians(livingShooter.getYRot()))
+                (float) -Math.cos(Math.toRadians(livingShooter.getYRot())),
+                damageSource, 0
         );
         if (serverLevel != null) victimEntity.hurtServer(serverLevel, damageSource, damage);
 

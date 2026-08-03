@@ -10,6 +10,7 @@ package xiao.customgun.core.gun.attack;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2d;
@@ -18,12 +19,17 @@ import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 import xiao.customgun.CustomGun;
+import xiao.customgun.core.api.common.McLogicalSide;
 import xiao.customgun.core.api.entity.IGunProjectile;
 import xiao.customgun.core.api.entity.ILivingShooter;
 import xiao.customgun.core.api.entity.ShooterProperty;
+import xiao.customgun.core.api.event.shooter.ShooterFireEvent;
+import xiao.customgun.core.api.event.shooter.ShooterPrepareMeleeEvent;
 import xiao.customgun.core.api.gun.attack.IGunAttackManager;
+import xiao.customgun.core.api.gun.attack.IGunAttackRuntime;
 import xiao.customgun.core.api.gun.script.GunScriptApi;
 import xiao.customgun.core.api.item.IGun;
+import xiao.customgun.core.api.item.gun.MeleeType;
 import xiao.customgun.core.api.script.ScriptMethodType;
 
 import java.util.function.Supplier;
@@ -41,16 +47,42 @@ public class GunAttackManager implements IGunAttackManager {
     // --------IGunAttackRuntime--------
 
     @Override
-    public void shoot(ShooterProperty shooterProperty,
-                      @NotNull IGun iGun, @NotNull ItemStack gunItem,
-                      ILivingShooter iLivingShooter, LivingEntity livingShooter,
-                      Supplier<Float> pitch, Supplier<Float> yaw) { // TODO 这两个参数写到GunScriptApi还是lua函数参数?
+    public @NotNull IGunAttackRuntime.ShooterFireResult shooterFire(ShooterProperty shooterProperty,
+                                                                    @NotNull IGun iGun, @NotNull ItemStack gunItem,
+                                                                    ILivingShooter iLivingShooter, LivingEntity livingShooter,
+                                                                    Supplier<Float> pitch, Supplier<Float> yaw,
+                                                                    float clientChargeProgress) {
+        McLogicalSide logicalSide = CustomGun.getSideExecutor().getLogicalSide();
+        if (CustomGun.getEventPoster().postCustomEvent(new ShooterFireEvent(logicalSide,
+                iLivingShooter, livingShooter, iGun, gunItem))) {
+            return ShooterFireResult.ERROR;
+        }
+
         GunScriptApi scriptApi = GunScriptApi.of(iLivingShooter, livingShooter, iGun, gunItem);
-        switch (scriptApi.simpleCall(ScriptMethodType.SHOOT)) {
-            case TRUE, FALSE -> {}
-            case UNKNOWN -> _DefaultGunAttack.shoot(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter, pitch, yaw);
+        return switch (scriptApi.simpleCall(ScriptMethodType.SHOOTER_FIRE)) {
+            case TRUE -> ShooterFireResult.SUCCESS;
+            case FALSE -> ShooterFireResult.ERROR;
+            case UNKNOWN -> _DefaultGunAttack.shooterFire(logicalSide, shooterProperty, iGun, gunItem, iLivingShooter, livingShooter, pitch, yaw, clientChargeProgress);
         };
     }
+    @Override
+    public @NotNull IGunAttackRuntime.GunFireResult gunFire(ShooterProperty shooterProperty,
+                                                            @NotNull IGun iGun, @NotNull ItemStack gunItem,
+                                                            ILivingShooter iLivingShooter, LivingEntity livingShooter,
+                                                            Supplier<Float> pitch, Supplier<Float> yaw) {
+        McLogicalSide logicalSide = CustomGun.getSideExecutor().getLogicalSide();
+
+        // 客户端侧提前返回，以继续客户端逻辑
+        if (logicalSide.isClient()) return GunFireResult.SUCCESS;
+
+        GunScriptApi scriptApi = GunScriptApi.of(iLivingShooter, livingShooter, iGun, gunItem);
+        return switch (scriptApi.simpleCall(ScriptMethodType.GUN_FIRE)) {
+            case TRUE -> GunFireResult.SUCCESS;
+            case FALSE -> GunFireResult.ERROR;
+            case UNKNOWN -> _DefaultGunAttack.gunFire(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter, pitch, yaw);
+        };
+    }
+
     @Override
     public void doBulletSpread(ShooterProperty shooterProperty,
                                @NotNull IGun iGun, @NotNull ItemStack gunItem,
@@ -69,11 +101,11 @@ public class GunAttackManager implements IGunAttackManager {
                 );
                 if (luaValue != null && luaValue.istable()) {
                     LuaTable luaTable = luaValue.checktable();
-                    Vector2d spreadOffset = new Vector2d(
-                            luaTable.get(1).checkdouble(),
-                            luaTable.get(2).checkdouble()
+                    Vec2 spreadOffset = new Vec2(
+                            (float) luaTable.get(1).checkdouble(),
+                            (float) luaTable.get(2).checkdouble()
                     );
-                    iGunProjectile.shootFromRotation(livingShooter, xRot, yRot, 0, pow, spreadOffset);
+                    iGunProjectile.shootFromRotation(livingShooter, projectile, xRot, yRot, 0, pow, spreadOffset);
                     return;
                 }
             } catch (Exception e) {
@@ -81,13 +113,25 @@ public class GunAttackManager implements IGunAttackManager {
             }
         }
 
-        _DefaultGunAttack.doBulletSpread(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter, iGunProjectile, projectile, bulletId, xRot, yRot, pow, uncertainty);
+        _DefaultGunAttack.doBulletSpread(livingShooter, iGunProjectile, projectile, xRot, yRot, pow, uncertainty);
     }
 
     @Override
+    public @Nullable MeleePreparation prepareMelee(@NotNull IGun iGun, @NotNull ItemStack gunItem,
+                                                   ILivingShooter iLivingShooter, LivingEntity livingShooter) {
+        McLogicalSide logicalSide = CustomGun.getSideExecutor().getLogicalSide();
+        if (CustomGun.getEventPoster().postCustomEvent(new ShooterPrepareMeleeEvent(logicalSide,
+                iLivingShooter, livingShooter, iGun, gunItem))) {
+            return null;
+        }
+
+        return _DefaultGunAttack.prepareMelee(iGun, gunItem, iLivingShooter, livingShooter);
+    }
+    @Override
     public void melee(ShooterProperty shooterProperty,
                       @NotNull IGun iGun, @NotNull ItemStack gunItem,
-                      ILivingShooter iLivingShooter, LivingEntity livingShooter) {
-        _DefaultGunAttack.melee(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter);
+                      ILivingShooter iLivingShooter, LivingEntity livingShooter,
+                      MeleeType meleeType) {
+        _DefaultGunAttack.melee(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter, meleeType);
     }
 }

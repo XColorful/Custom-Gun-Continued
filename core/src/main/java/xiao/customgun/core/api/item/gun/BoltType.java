@@ -13,36 +13,55 @@ import xiao.customgun.core.api.resource.ResourceTag;
 import java.util.HashMap;
 import java.util.Map;
 
-public enum BoltType implements ResourceTag.CategoryTag {
+public enum BoltType implements ResourceTag.CategoryTag, ResourceTag.IndexTag {
     /**
      * 开膛待击 (枪管不留子弹)
      */
-    OPEN_BOLT(BoltTypeTag.OPEN_BOLT),
+    OPEN_BOLT(3, BoltTypeTag.OPEN_BOLT,
+            false, false),
     /**
      * 闭膛待击 ("+1"弹匣)
      */
-    CLOSED_BOLT(BoltTypeTag.CLOSED_BOLT),
+    CLOSED_BOLT(2, BoltTypeTag.CLOSED_BOLT,
+            true, true),
     /**
      * 手动上膛 (栓狙)
      */
-    MANUAL_ACTION(BoltTypeTag.MANUAL_ACTION);
+    MANUAL_ACTION(1, BoltTypeTag.MANUAL_ACTION,
+            true, false);
 
+    public final int index;
     public final String typeName;
-    BoltType(String name) {
+    public final boolean useBarrelAmmo;
+    public final boolean autoBoltBarrelAmmo;
+    BoltType(int index, String name, boolean useBarrelAmmo, boolean autoBoltBarrelAmmo) {
+        this.index = index;
         this.typeName = name;
+        this.useBarrelAmmo = useBarrelAmmo;
+        this.autoBoltBarrelAmmo = autoBoltBarrelAmmo;
     }
-
     @Override public String getTagName() {
         return this.typeName;
     }
     @Override public String getCategoryName() {
         return this.typeName;
     }
+    @Override public int getIndex() {
+        return this.index;
+    }
+
+    public boolean useBarrelAmmo() {
+        return this.useBarrelAmmo;
+    }
+    public boolean autoBoltBarrelAmmo() {
+        return this.autoBoltBarrelAmmo;
+    }
 
     private static final Map<String, BoltType> BOLT_TYPES = new HashMap<>();
 
     static {
         for (BoltType type : values()) {
+            BOLT_TYPES.put(String.valueOf(type.index), type);
             BOLT_TYPES.put(type.typeName, type);
         }
     }

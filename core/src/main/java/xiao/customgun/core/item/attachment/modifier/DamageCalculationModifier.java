@@ -8,6 +8,7 @@
 package xiao.customgun.core.item.attachment.modifier;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.item.gun.modifier.IDamageCalculationModifier;
 import xiao.customgun.core.resource.data.data.AttachmentData;
 import xiao.customgun.core.resource.data.data.attachment._SimpleModifierData;
@@ -24,19 +25,17 @@ public final class DamageCalculationModifier extends AttachmentModifier<_SimpleM
     // --------IAttachmentModifier--------
 
     @Override
-    public _SimpleModifierData getModifier(@NotNull AttachmentData pojo) {
+    public @Nullable _SimpleModifierData getModifier(@NotNull AttachmentData pojo) {
         return pojo.getDamageCalculationModifier();
     }
 
     @Override
     public List<_DistanceDamageData> eval(Collection<_SimpleModifierData> modifiers, List<_DistanceDamageData> base) {
-        // Clone the list so we don't mutate the original base
         List<_DistanceDamageData> result = new ArrayList<>(base.size());
         for (_DistanceDamageData entry : base) {
             _DistanceDamageData copy = new _DistanceDamageData();
             copy.setDistance(entry.getDistance());
-            Float modified = evalSimpleModifierData(modifiers, entry.getDamage());
-            copy.setDamage(modified);
+            copy.setDamage(evalSimpleModifierData(modifiers, entry.getDamage()));
             result.add(copy);
         }
         return result;

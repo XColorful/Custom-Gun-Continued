@@ -8,12 +8,14 @@
 package xiao.customgun.core.item.attachment.modifier;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.item.gun.modifier.IWeightModifier;
 import xiao.customgun.core.resource.data.data.AttachmentData;
 import xiao.customgun.core.resource.data.data.attachment._SimpleModifierData;
 
 import java.util.Collection;
 
+@Deprecated(forRemoval = true)
 public final class WeightModifier extends AttachmentModifier<_SimpleModifierData, Float>
         implements IWeightModifier<AttachmentData> {
     public static final WeightModifier INSTANCE = new WeightModifier();
@@ -21,7 +23,7 @@ public final class WeightModifier extends AttachmentModifier<_SimpleModifierData
     // --------IAttachmentModifier--------
 
     @Override
-    public _SimpleModifierData getModifier(@NotNull AttachmentData pojo) {
+    public @Nullable _SimpleModifierData getModifier(@NotNull AttachmentData pojo) {
         return pojo.getWeightModifier();
     }
 

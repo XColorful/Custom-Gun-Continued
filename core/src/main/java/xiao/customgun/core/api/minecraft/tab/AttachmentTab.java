@@ -9,11 +9,13 @@ package xiao.customgun.core.api.minecraft.tab;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import xiao.customgun.core.api.item.AttachmentProperty;
 import xiao.customgun.core.api.item.attachment.AttachmentCategory;
 import xiao.customgun.core.api.item.builder.AttachmentBuilder;
 import xiao.customgun.core.api.resource.ResourceApi;
 import xiao.customgun.core.init.registry.ModItems;
+import xiao.customgun.core.resource.data.index.AttachmentIndex;
 import xiao.customgun.core.resource.instance.data.AttachmentIndexInstance;
 
 import java.util.ArrayList;
@@ -30,12 +32,14 @@ public class AttachmentTab {
     public static List<ItemStack> buildAttachmentItems(AttachmentCategory attachmentCategory) {
         List<ItemStack> attachmentItems = new ArrayList<>();
         ResourceApi.getAllAttachmentIndexInstance().stream().sorted(indexSort()).forEach(entry -> {
-            AttachmentIndexInstance attachmentIndexInstance = entry.getValue();
-            if (attachmentIndexInstance.getPojo().isHideInGame()) {
+            @NotNull AttachmentIndexInstance attachmentIndexInstance = entry.getValue();
+
+            AttachmentIndex attachmentIndex = attachmentIndexInstance.getPojo();
+            if (attachmentIndex.isHideInGame()) {
                 return;
             }
 
-            if (attachmentIndexInstance.getPojo().getAttachmentCategory() == attachmentCategory) {
+            if (attachmentIndex.getAttachmentCategory() == attachmentCategory) {
                 ItemStack attachmentItem = AttachmentBuilder.create(ModItems.ATTACHMENT.get())
                         // 配件ResourceLocation
                         .setProperty(AttachmentProperty.ATTACHMENT_LOCATION,

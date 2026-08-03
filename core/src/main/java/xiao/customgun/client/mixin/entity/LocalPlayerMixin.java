@@ -54,7 +54,7 @@ public class LocalPlayerMixin implements ILocalShooter {
         this.cgc$localProne.tickProne();
         this.cgc$localShooterProperty.tickStateLock();
         this.cgc$localBolt.tickAutoBolt();
-        cgc$localShooter.setSprinting(this.cgc$localSprint.getProcessedSprintStatus(cgc$localShooter.isSprinting()));
+        cgc$localShooter.setSprinting(this.cgc$localSprint.onSprint(cgc$localShooter.isSprinting()));
 
         this.cgc$tickHotbarSelection();
     }
@@ -64,7 +64,7 @@ public class LocalPlayerMixin implements ILocalShooter {
         if (sprinting) {
             this.cgc$localReload.cancelReload();
         }
-        original.call(player, this.cgc$localSprint.getProcessedSprintStatus(sprinting));
+        original.call(player, this.cgc$localSprint.onSprint(sprinting));
     }
 
     @Inject(method = "respawn", at = @At("RETURN"))
@@ -145,15 +145,15 @@ public class LocalPlayerMixin implements ILocalShooter {
 
     @Override
     public void cgc$melee() {
-        this.cgc$localMelee.melee();
+        this.cgc$localMelee.prepareMelee();
     }
 
     @Override public ShootResult cgc$localShoot() {
         this.cgc$localReload.cancelReload();
         return this.cgc$localShoot.shoot();
     }
-    @Override public boolean cgc$chargeAndGetResult(boolean doShoot) {
-        return this.cgc$localShoot.chargeAndGetResult(doShoot);
+    @Override public boolean cgc$doCharge_isChargeEnough(boolean doShoot) {
+        return this.cgc$localShoot.doCharge_isChargeEnough(doShoot);
     }
 
     @Override
@@ -184,8 +184,11 @@ public class LocalPlayerMixin implements ILocalShooter {
     @Override public boolean cgc$isCharging() {
         return this.cgc$localShooterProperty.isCharging;
     }
-    @Override public float cgc$getAimingProgress(float partialTicks) {
-        return this.cgc$localAim.getClientAimingProgress(partialTicks);
+    @Override public float cgc$getAimingProgress() {
+        return this.cgc$localShooterProperty.clientAimingProgress;
+    }
+    @Override public float cgc$getRenderAimingProgress(float partialTicks) {
+        return this.cgc$localAim.getRenderAimingProgress(partialTicks);
     }
     @Override public long cgc$getShootCooldown() {
         return this.cgc$localShoot.getClientShootCooldown();

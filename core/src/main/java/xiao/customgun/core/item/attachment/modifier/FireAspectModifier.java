@@ -8,6 +8,7 @@
 package xiao.customgun.core.item.attachment.modifier;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.item.gun.modifier.IFireAspectModifier;
 import xiao.customgun.core.resource.data.data.AttachmentData;
 import xiao.customgun.core.resource.data.data.attachment._FireAspectModifierData;
@@ -21,13 +22,15 @@ public final class FireAspectModifier extends AttachmentModifier<_FireAspectModi
     // --------IAttachmentModifier--------
 
     @Override
-    public _FireAspectModifierData getModifier(@NotNull AttachmentData pojo) {
+    public @Nullable _FireAspectModifierData getModifier(@NotNull AttachmentData pojo) {
         return pojo.getFireAspectModifier();
     }
 
     @Override
     public Boolean eval(Collection<_FireAspectModifierData> modifiers, Boolean base) {
-        // TODO: eval 不能复用父类函数 — _FireAspectModifierData 有 boolean 语义（OR/AND），非数值计算
+        for (_FireAspectModifierData modifier : modifiers) {
+            if (modifier.getIgniteEntity() || modifier.getIgniteBlock()) return true;
+        }
         return base;
     }
 }

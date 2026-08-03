@@ -30,7 +30,7 @@ public final class _BulletData extends ResourcePojo<_BulletData> {
     private float friction = 0.01f;
 
     // 射击效果
-    private int bulletAmount = 1; // 子弹分裂数 (霰弹枪)
+    private int bulletSplitAmount = 1; // 子弹分裂数 (霰弹枪)
     private int pierceCount = 1; // 穿透数
     private int tracerInterval = -1; // 发射子弹为曳光弹的间隔
 
@@ -60,7 +60,7 @@ public final class _BulletData extends ResourcePojo<_BulletData> {
                     case _BulletDataTag.GRAVITY -> pojo.gravity = JsonUtils.readFloat(reader);
                     case _BulletDataTag.FRICTION -> pojo.friction = JsonUtils.readFloat(reader);
 
-                    case _BulletDataTag.BULLET_SPILT_AMOUNT, _BulletDataTag.BULLET_SPILT_AMOUNT_OLD1 -> pojo.bulletAmount = JsonUtils.readInt(reader);
+                    case _BulletDataTag.BULLET_SPILT_AMOUNT, _BulletDataTag.BULLET_SPILT_AMOUNT_OLD1 -> pojo.bulletSplitAmount = JsonUtils.readInt(reader);
                     case _BulletDataTag.PIERCE_COUNT, _BulletDataTag.PIERCE_COUNT_OLD1 -> pojo.pierceCount = JsonUtils.readInt(reader);
                     case _BulletDataTag.TRACER_INTERVAL, _BulletDataTag.TRACER_INTERVAL_OLD1 -> pojo.tracerInterval = JsonUtils.readInt(reader);
 
@@ -91,7 +91,7 @@ public final class _BulletData extends ResourcePojo<_BulletData> {
             JsonUtils.writeFloat(writer, _BulletDataTag.GRAVITY, gravity);
             JsonUtils.writeFloat(writer, _BulletDataTag.FRICTION, friction);
 
-            JsonUtils.writeInt(writer, _BulletDataTag.BULLET_SPILT_AMOUNT, bulletAmount);
+            JsonUtils.writeInt(writer, _BulletDataTag.BULLET_SPILT_AMOUNT, bulletSplitAmount);
             JsonUtils.writeInt(writer, _BulletDataTag.PIERCE_COUNT, pierceCount);
             JsonUtils.writeInt(writer, _BulletDataTag.TRACER_INTERVAL, tracerInterval);
 
@@ -143,8 +143,8 @@ public final class _BulletData extends ResourcePojo<_BulletData> {
     public float getFriction() {
         return friction;
     }
-    public int getBulletAmount() {
-        return bulletAmount;
+    public int getBulletSplitAmount() {
+        return bulletSplitAmount;
     }
     public int getPierceCount() {
         return pierceCount;
@@ -183,8 +183,8 @@ public final class _BulletData extends ResourcePojo<_BulletData> {
     public void setFriction(float friction) {
         this.friction = friction;
     }
-    public void setBulletAmount(int bulletAmount) {
-        this.bulletAmount = bulletAmount;
+    public void setBulletSplitAmount(int bulletSplitAmount) {
+        this.bulletSplitAmount = bulletSplitAmount;
     }
     public void setPierceCount(int pierceCount) {
         this.pierceCount = pierceCount;

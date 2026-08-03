@@ -288,7 +288,7 @@ public class _DefaultGunAttack {
         );
         DamageSource damageSource = livingShooter instanceof ServerPlayer serverPlayer ? livingShooter.damageSources().playerAttack(serverPlayer)
                 : livingShooter.damageSources().mobAttack(livingShooter);
-        victimEntity.hurt(damageSource, damage); // victimEntity.hurt(serverLevel, damageSource, damage);
+        victimEntity.hurt(damageSource, damage); // victimEntity.hurtServer(serverLevel, damageSource, damage);
 
         // 使近战枪械兼容神化词条/宝石
         if (serverLevel != null) {

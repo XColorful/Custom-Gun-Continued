@@ -21,12 +21,14 @@ public final class LivingShooterHeat extends LivingShooterAspect {
     }
 
     public void tickHeat() {
+        // 1. 手持枪械检查
         if (this.shooterProperty.currentGunItem == null) return;
-
         ItemStack currentGunItem = this.shooterProperty.currentGunItem.get();
         IGun iGun = IGunGetter.fromItemStack(currentGunItem);
         if (iGun == null) return;
 
-        iGun.tickHeat(this.shooterProperty, iGun, currentGunItem, ILivingShooterGetter.cgc$fromLivingEntity(this.livingShooter), this.livingShooter);
+        { // 3. IGunRuntime操作结果 -> Shooter状态
+            iGun.tickHeat(this.shooterProperty, iGun, currentGunItem, ILivingShooterGetter.cgc$fromLivingEntity(this.livingShooter), this.livingShooter);
+        }
     }
 }

@@ -11,6 +11,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.CustomGun;
@@ -22,17 +23,25 @@ import xiao.customgun.core.api.item.ammo.IAmmoGetter;
 import xiao.customgun.core.api.item.attachment.AttachmentCategory;
 import xiao.customgun.core.api.item.attachment.AttachmentNBTAccessor;
 import xiao.customgun.core.api.item.attachment.IAttachmentGetter;
+import xiao.customgun.core.api.item.attachment.MagazineCategory;
 import xiao.customgun.core.api.item.builder.AttachmentBuilder;
-import xiao.customgun.core.api.item.builder.ItemBuilder;
 import xiao.customgun.core.api.minecraft.capability.IInventoryCapability;
 import xiao.customgun.core.api.resource.ResourceApi;
 import xiao.customgun.core.api.resource.ResourceTag;
 import xiao.customgun.core.developer.PlannedRefactor;
 import xiao.customgun.core.init.registry.ModItems;
+import xiao.customgun.core.resource.data.data.AttachmentData;
+import xiao.customgun.core.resource.data.data.GunData;
+import xiao.customgun.core.resource.data.data.attachment._MeleeModifierData;
+import xiao.customgun.core.resource.data.data.gun._ChargingData;
+import xiao.customgun.core.resource.data.data.gun._MeleeData;
+import xiao.customgun.core.resource.data.data.gun._ReloadData;
+import xiao.customgun.core.resource.data.data.gun.melee._DefaultMeleeData;
+import xiao.customgun.core.resource.instance.data.AttachmentIndexInstance;
 import xiao.customgun.core.resource.instance.data.GunIndexInstance;
 import xiao.customgun.core.util.NBTUtils;
 
-import java.util.function.Supplier;
+import java.util.Map;
 
 public interface GunDataAccessor extends IGunDataAccess {
 
@@ -62,7 +71,7 @@ public interface GunDataAccessor extends IGunDataAccess {
         if (gunDisplayLocation != null) return gunDisplayLocation;
 
         var gunLocation = this.getGunLocation(gunItem);
-        GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(gunLocation);
+        @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(gunLocation);
         if (gunIndexInstance == null) return ResourceTag.NULL_LOCATION;
 
         return gunIndexInstance.getPojo().getDisplayIndexLocation();
@@ -75,8 +84,8 @@ public interface GunDataAccessor extends IGunDataAccess {
     // --------IGunStateAccess--------
 
     @Override
-    default FireModeType getFireModeType(ItemStack gunItem) {
-        if (gunItem.isEmpty()) return null;
+    default @NotNull FireModeType getFireModeType(ItemStack gunItem) {
+        if (gunItem.isEmpty()) return FireModeType.DEFAULT;
         FireModeType fireModeType = FireModeType.fromString(NBTUtils.getString(gunItem, GunProperty.FIRE_MODE_TYPE.getTagName()));
         return fireModeType != null ? fireModeType : FireModeType.DEFAULT;
     }
@@ -84,6 +93,26 @@ public interface GunDataAccessor extends IGunDataAccess {
     default void setFireModeType(ItemStack gunItem, FireModeType fireModeType) {
         if (gunItem.isEmpty()) return;
         NBTUtils.setString(gunItem, GunProperty.FIRE_MODE_TYPE.getTagName(), fireModeType.getTagName());
+    }
+
+    @Override
+    default ChargeType getChargeType(ItemStack gunItem, FireModeType fireModeType) {
+        @Nullable Map<FireModeType, _ChargingData> chargingData = _getChargingData(this, gunItem);
+        if (chargingData == null) return null;
+
+        @Nullable _ChargingData _chargingData = chargingData.get(fireModeType);
+        if (_chargingData == null) return null;
+
+        return _chargingData.getChargeType();
+    }
+    @ApiStatus.Internal
+    static @Nullable Map<FireModeType, _ChargingData> _getChargingData(IGunDataAccess iGun, ItemStack gunItem) {
+        var gunLocation = iGun.getGunLocation(gunItem);
+        @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(gunLocation);
+        if (gunIndexInstance == null) return null;
+
+        GunData gunData = gunIndexInstance.getGunData();
+        return gunData.getChargingData();
     }
 
     @Override
@@ -105,6 +134,9 @@ public interface GunDataAccessor extends IGunDataAccess {
         if (!scopeLocation.equals(ResourceTag.NULL_LOCATION)) {
             @Nullable CompoundTag attachmentCustomDataTag = this.getAttachmentCustomDataTag(gunItem, AttachmentCategory.SCOPE);
             int scopeViewIndex = builtIn ? 0 : AttachmentNBTAccessor.INSTANCE.getScopeViewIndex(attachmentCustomDataTag);
+            if (PlannedRefactor.MOVE_SCOPE_VIEW_INDEX_TO_CORE) {
+                return 0;
+            }
             @Nullable ClientAttachmentIndexInstance attachmentIndexInstance = ClientResourceApi.getClientAttachmentIndexInstance(scopeLocation);
             if (attachmentIndexInstance != null) {
                 float[] scopeZoomScale = attachmentIndexInstance.getAttachmentDisplay().getScopeZoomScale();
@@ -175,6 +207,37 @@ public interface GunDataAccessor extends IGunDataAccess {
         NBTUtils.setInt(gunItem, GunProperty.TOOLTIP_MASK.getTagName(), tooltipMask);
     }
 
+    @Override
+    default @Nullable MeleeType getGunMeleeType(ItemStack gunItem) {
+        if (_getAttachmentMeleeModifierData(this, gunItem, AttachmentCategory.MUZZLE) != null)
+            return MeleeType.BAYONET;
+        else if (_getAttachmentMeleeModifierData(this, gunItem, AttachmentCategory.STOCK) != null)
+            return MeleeType.STOCK;
+        else if (_getGunDefaultMeleeData(this, gunItem) != null)
+            return MeleeType.PUSH;
+        return null;
+    }
+    @ApiStatus.Internal
+    static @Nullable _MeleeModifierData _getAttachmentMeleeModifierData(IGunDataAccess iGun, ItemStack gunItem, AttachmentCategory attachmentCategory) {
+        var meleeLocation = iGun.getAttachmentLocation(gunItem, attachmentCategory);
+        @Nullable AttachmentIndexInstance attachmentIndexInstance = ResourceApi.getAttachmentIndexInstance(meleeLocation);
+        if (attachmentIndexInstance == null) return null;
+
+        AttachmentData attachmentData = attachmentIndexInstance.getAttachmentData();
+        @Nullable _MeleeModifierData meleeModifierData = attachmentData.getMeleeModifier();
+        return meleeModifierData;
+    }
+    @ApiStatus.Internal
+    static @Nullable _DefaultMeleeData _getGunDefaultMeleeData(IGunDataAccess iGun, ItemStack gunItem) {
+        var gunLocation = iGun.getGunLocation(gunItem);
+        @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(gunLocation);
+        if (gunIndexInstance == null) return null;
+
+        GunData gunData = gunIndexInstance.getGunData();
+        _MeleeData meleeData = gunData.getMeleeData();
+        return meleeData.getDefaultMeleeData();
+    }
+
     // --------IGunAmmoDataAccess--------
 
     @Override
@@ -186,7 +249,7 @@ public interface GunDataAccessor extends IGunDataAccess {
         IAmmo iAmmo = IAmmoGetter.fromItemStack(ammoItem);
         if (iAmmo == null) return 0;
 
-        GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(this.getGunLocation(gunItem));
+        @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(this.getGunLocation(gunItem));
         if (gunIndexInstance == null) return 0;
 
         @Nullable var customData = NBTUtils.getCustomData(ammoItem);
@@ -198,18 +261,21 @@ public interface GunDataAccessor extends IGunDataAccess {
         }
         return iAmmo.getAmmoCount(ammoItem);
     }
-    @Override
-    default int consumeAmmoOnce(LivingEntity livingEntity, ItemStack gunItem) {
-        if (PlannedRefactor.ON_CONSUME_AMMO) return 0;
-        /**TODO 虚拟子弹，背包直读，NBT弹匣子弹
-         * {@link xiao.customgun.core.entity.shooter.LivingShooterShoot#shootInternal}
-         */
-        return consumeMagAmmo(gunItem);
-    }
 
     @Override
-    default void unloadAmmo(LivingEntity livingEntity, ItemStack gunItem) {
-        // TODO 事件钩子，各种机制
+    default int consumeAmmoOnce(LivingEntity livingEntity, ItemStack gunItem) {
+        @Nullable BoltType boltType = _getBoltType(this, gunItem);
+        if (boltType == null) return 0;
+        return this.consumeAmmoOnce(livingEntity, gunItem, boltType);
+    }
+    @ApiStatus.Internal
+    static @Nullable BoltType _getBoltType(IGunDataAccess iGun, ItemStack gunItem) {
+        var gunLocation = iGun.getGunLocation(gunItem);
+        @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(gunLocation);
+        if (gunIndexInstance == null) return null;
+
+        GunData gunData = gunIndexInstance.getGunData();
+        return gunData.getBoltType();
     }
 
     @Override
@@ -243,16 +309,19 @@ public interface GunDataAccessor extends IGunDataAccess {
 
     @Override
     default boolean useInventoryAmmo(ItemStack gunItem) {
-        GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(this.getGunLocation(gunItem));
+        @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(this.getGunLocation(gunItem));
         if (gunIndexInstance == null) return false;
-        return gunIndexInstance.getGunData().getReloadData().getAmmoFeedType() == AmmoFeedType.INVENTORY;
+
+        GunData gunData = gunIndexInstance.getGunData();
+        _ReloadData reloadData = gunData.getReloadData();
+        return reloadData.getAmmoFeedType() == AmmoFeedType.INVENTORY;
     }
     @Override
     default boolean hasInventoryAmmo(LivingEntity livingEntity, ItemStack gunItem) {
         IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return false;
 
-        IInventoryCapability inventoryCapability = CustomGun.getCapabilityProvider().getItemHandler(livingEntity, null);
+        @Nullable IInventoryCapability inventoryCapability = CustomGun.getCapabilityProvider().getItemHandler(livingEntity, null);
         if (inventoryCapability == null) return false;
 
         for (int i = 0; i < inventoryCapability.getContainerSize(); i++) {
@@ -269,7 +338,7 @@ public interface GunDataAccessor extends IGunDataAccess {
         IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return 0;
 
-        IInventoryCapability inventoryCapability = CustomGun.getCapabilityProvider().getItemHandler(livingEntity, null);
+        @Nullable IInventoryCapability inventoryCapability = CustomGun.getCapabilityProvider().getItemHandler(livingEntity, null);
         if (inventoryCapability == null) return 0;
 
         int count = 0;
@@ -298,11 +367,32 @@ public interface GunDataAccessor extends IGunDataAccess {
         NBTUtils.setInt(gunItem, GunProperty.MAG_AMMO.getTagName(), count);
     }
     @Override
-    default int consumeMagAmmo(ItemStack gunItem) {
+    default int consumeMagAmmoOnce(ItemStack gunItem) {
         int current = this.getMagAmmoCount(gunItem);
         if (current <= 0) return 0;
         NBTUtils.setInt(gunItem, GunProperty.MAG_AMMO.getTagName(), current - 1);
         return 1;
+    }
+
+    @Override
+    default int getMagAmmoLimit(ItemStack gunItem) {
+        var gunLocation = this.getGunLocation(gunItem);
+        @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(gunLocation);
+        if (gunIndexInstance == null) return 0;
+
+        GunData gunData = gunIndexInstance.getGunData();
+        MagazineCategory magazineCategory = MagazineCategory.NONE;
+        {
+            var attachmentLocation = this.getAttachmentLocation(gunItem, AttachmentCategory.MAGAZINE);
+            AttachmentData attachmentData = ResourceApi.getAttachmentData(attachmentLocation);
+            if (attachmentData != null) magazineCategory = attachmentData.getMagazineCategory();
+        }
+        if (magazineCategory == null || magazineCategory == MagazineCategory.NONE)
+            return gunData.getDefaultMagSize();
+        int[] extendedMagAmmoSize = gunData.getExtendedMagAmmoSize();
+        int index = magazineCategory.getIndex() - 1;
+        if (index < 0 || index >= extendedMagAmmoSize.length) return 0;
+        else return extendedMagAmmoSize[index];
     }
 
     @Override
@@ -312,6 +402,13 @@ public interface GunDataAccessor extends IGunDataAccess {
     @Override
     default void setBarrelAmmoCount(ItemStack gunItem, int amount) {
         NBTUtils.setInt(gunItem, GunProperty.BARREL_AMMO.getTagName(), amount);
+    }
+
+    @Override
+    default int boltBarrelAmmo(LivingEntity livingEntity, ItemStack gunItem) {
+        @Nullable BoltType boltType = _getBoltType(this, gunItem);
+        if (boltType == null) return 0;
+        return boltBarrelAmmo(livingEntity, gunItem, boltType);
     }
 
     // --------IGunAttachmentDataAccess--------
@@ -365,7 +462,7 @@ public interface GunDataAccessor extends IGunDataAccess {
         IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return false;
 
-        GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(iGun.getGunLocation(gunItem));
+        @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(iGun.getGunLocation(gunItem));
         if (gunIndexInstance == null) return false;
 
         return gunIndexInstance.getGunData().getAllowAttachmentTypes().contains(attachmentCategory);
@@ -468,7 +565,7 @@ public interface GunDataAccessor extends IGunDataAccess {
 
     @Override
     default @NotNull Identifier getBuiltinAttachmentLocation(ItemStack gunItem, AttachmentCategory attachmentCategory) {
-        GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(this.getGunLocation(gunItem));
+        @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(this.getGunLocation(gunItem));
         if (gunIndexInstance == null) return ResourceTag.NULL_LOCATION;
         var location = gunIndexInstance.getGunData().getBuiltinAttachments().get(attachmentCategory);
         return location != null ? location : ResourceTag.NULL_LOCATION;

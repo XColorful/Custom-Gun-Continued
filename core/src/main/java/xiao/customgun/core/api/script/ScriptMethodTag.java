@@ -15,12 +15,14 @@ public class ScriptMethodTag {
     // IGunRuntime
     public static final String START_BOLT = "start_bolt";
     public static final String TICK_BOLT = "tick_bolt";
-    public static final String SHOOT = "shoot";
+    public static final String SHOOTER_FIRE = "shooter_fire";
+    public static final String GUN_FIRE = "gun_fire"; public static final String GUN_FIRE_OLD1 = "shoot";
+    public static final String CAN_RELOAD = "can_reload";
     public static final String START_RELOAD = "start_reload";
     public static final String TICK_RELOAD = "tick_reload";
     public static final String INTERRUPT_RELOAD = "interrupt_reload";
     public static final String TICK_HEAT = "tick_heat";
-    public static final String CALCULATE_SPREAD = "calculate_spread"; public static final String CALCULATE_SPREAD_OLD1 = "calSpread";
+    public static final String CALCULATE_SPREAD = "calculate_spread"; public static final String CALCULATE_SPREAD_OLD1 = "calcSpread";
     public static final String HANDLE_SHOOT_HEAT = "handle_shoot_heat";
 
     private ScriptMethodTag() {}

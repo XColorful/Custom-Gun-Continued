@@ -15,9 +15,7 @@ import xiao.customgun.core.util.JsonUtils;
 
 import java.io.IOException;
 
-/**
- * TODO 重命名该类，既有 speed 又有别的参数
- */
+@Deprecated(forRemoval = true)
 public final class _MovementData extends ResourcePojo<_MovementData> {
 
     private float base = 0F;

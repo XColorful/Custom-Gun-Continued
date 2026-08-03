@@ -11,18 +11,20 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import xiao.customgun.client.api.resource.ClientResourceApi;
-import xiao.customgun.client.resource.instance.data.ClientAttachmentIndexInstance;
 import xiao.customgun.core.api.item.IAttachment;
+import xiao.customgun.core.api.resource.ResourceApi;
+import xiao.customgun.core.resource.data.index.AttachmentIndex;
+import xiao.customgun.core.resource.instance.data.AttachmentIndexInstance;
 
 public class _AttachmentItem {
 
     public static @Nullable Component getName(IAttachment _this,
                                               @NotNull ItemStack attachmentItem) {
         var attachmentLocation = _this.getAttachmentLocation(attachmentItem);
-        ClientAttachmentIndexInstance clientAttachmentIndexInstance = ClientResourceApi.getClientAttachmentIndexInstance(attachmentLocation);
-        if (clientAttachmentIndexInstance == null) return null;
+        @Nullable AttachmentIndexInstance attachmentIndexInstance = ResourceApi.getAttachmentIndexInstance(attachmentLocation);
+        if (attachmentIndexInstance == null) return null;
 
-        return clientAttachmentIndexInstance.getPojo().getNameLang();
+        AttachmentIndex attachmentIndex = attachmentIndexInstance.getPojo();
+        return attachmentIndex.getNameLang();
     }
 }

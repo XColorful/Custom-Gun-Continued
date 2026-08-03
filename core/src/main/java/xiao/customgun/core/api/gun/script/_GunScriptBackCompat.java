@@ -47,7 +47,6 @@ import java.util.function.Supplier;
 
 /**
  * 用来兼容旧lua脚本API的public方法
- * TODO 空的方法即还没移植
  */
 @Deprecated(forRemoval = false)
 public class _GunScriptBackCompat {
@@ -97,7 +96,7 @@ public class _GunScriptBackCompat {
      * @return 是否成功消耗子弹
      */
     protected static boolean reduceAmmoOnce(GunScriptApi _this) {
-        return true;
+        return _this.iGun.consumeAmmoOnce(_this.livingShooter, _this.gunItem) > 0;
     }
 
     /**

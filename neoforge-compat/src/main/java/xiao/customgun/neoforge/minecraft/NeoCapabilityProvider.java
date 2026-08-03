@@ -14,7 +14,7 @@ import xiao.customgun.neoforge.minecraft.capability.SyncDataCapabilityProvider;
 
 public class NeoCapabilityProvider implements ICapabilityProvider {
 
-    @Override public @Nullable IInventoryCapability getItemHandler(LivingEntity livingEntity, @Nullable Direction facing) {
+    @Override public @Nullable IInventoryCapability getItemHandler(@Nullable LivingEntity livingEntity, @Nullable Direction facing) {
         return NeoInventoryCapability.fromLivingEntity(livingEntity, facing);
     }
 

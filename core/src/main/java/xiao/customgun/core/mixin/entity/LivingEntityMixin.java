@@ -10,10 +10,10 @@ package xiao.customgun.core.mixin.entity;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Pose;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -21,6 +21,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import xiao.customgun.core.api.entity.*;
 import xiao.customgun.core.api.entity.shooter.modifier.ShooterGunModifierCache;
+import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.api.projectile.physics.IProjectilePhysicsRuntime;
 import xiao.customgun.core.entity.LivingShooterSyncKey;
 import xiao.customgun.core.entity.shooter.modifier.ShooterGunModifierManager;
@@ -47,9 +48,6 @@ public abstract class LivingEntityMixin extends Entity implements ILivingShooter
     private final LivingShooterBolt cgc$bolt = new LivingShooterBolt(cgc$shooter, cgc$shooterProperty, cgc$draw, cgc$shoot);
     private final LivingShooterReload cgc$reload = new LivingShooterReload(cgc$shooter, cgc$shooterProperty, cgc$draw, cgc$shoot);
 
-    // 生物本体影响
-    private final LivingShooterSpeedModifier cgc$speed = new LivingShooterSpeedModifier(cgc$shooter, cgc$shooterProperty);
-
     // 持枪者属性
     private final LivingShooterAmmoCheck cgc$ammoCheck = new LivingShooterAmmoCheck(cgc$shooter, cgc$shooterProperty);
 
@@ -75,12 +73,11 @@ public abstract class LivingEntityMixin extends Entity implements ILivingShooter
         this.cgc$prone.tickProne();
         this.cgc$bolt.tickBolt();
         this.cgc$melee.scheduleTickMelee();
-        this.cgc$speed.updateSpeedModifier();
         this.cgc$heat.tickHeat();
         cgc$shooter.setSprinting(this.cgc$getProcessedSprintStatus(this.cgc$shooter.isSprinting()));
         // 从服务端同步数据
         LivingShooterSyncKey.SHOOT_COOL_DOWN_KEY.setValue(cgc$shooter, this.cgc$shoot.getShootCooldown());
-        LivingShooterSyncKey.MELEE_COOL_DOWN_KEY.setValue(cgc$shooter, this.cgc$melee.getMeleeCooldown(System.currentTimeMillis()));
+        LivingShooterSyncKey.MELEE_COOL_DOWN_KEY.setValue(cgc$shooter, this.cgc$melee.getMeleeCooldownMs(System.currentTimeMillis()));
         LivingShooterSyncKey.DRAW_COOL_DOWN_KEY.setValue(cgc$shooter, this.cgc$draw.getDrawCooldown());
         LivingShooterSyncKey.IS_BOLTING_KEY.setValue(cgc$shooter, this.cgc$shooterProperty.isBolting);
         LivingShooterSyncKey.RELOAD_STATE_KEY.setValue(cgc$shooter, reloadState);
@@ -139,17 +136,15 @@ public abstract class LivingEntityMixin extends Entity implements ILivingShooter
 
     @Override
     public void cgc$melee() {
-        this.cgc$melee.melee();
+        this.cgc$melee.prepareMelee();
+    }
+    @Override
+    @ApiStatus.Internal public long cgc$_getMeleeCooldownMs(long currentTimeMillis) {
+        return this.cgc$melee.getMeleeCooldownMs(currentTimeMillis);
     }
 
-    @Override public ShootResult cgc$shoot(Supplier<Float> pitch, Supplier<Float> yaw, long timestamp, float chargeProgress) {
-        return this.cgc$shoot.shoot(pitch, yaw, timestamp, chargeProgress);
-    }
-    @Override public ShootResult cgc$shoot(Supplier<Float> pitch, Supplier<Float> yaw, long timestamp) {
-        return this.cgc$shoot.shoot(pitch, yaw, timestamp);
-    }
-    @Override public ShootResult cgc$shoot(Supplier<Float> pitch, Supplier<Float> yaw) {
-        return this.cgc$shoot(pitch, yaw, System.currentTimeMillis() - cgc$shooterProperty.baseTimestamp);
+    @Override public ShootResult cgc$shoot(Supplier<Float> pitch, Supplier<Float> yaw, long clientFromBaseToCurrentTimeMs, float chargeProgress) {
+        return this.cgc$shoot.shoot(pitch, yaw, clientFromBaseToCurrentTimeMs, chargeProgress);
     }
 
     @Override
@@ -179,7 +174,7 @@ public abstract class LivingEntityMixin extends Entity implements ILivingShooter
 
     @Override
     public boolean cgc$getProcessedSprintStatus(boolean sprint) {
-        return this.cgc$sprint.getProcessedSprintStatus(sprint);
+        return this.cgc$sprint.onSprint(sprint);
     }
 
     @Override

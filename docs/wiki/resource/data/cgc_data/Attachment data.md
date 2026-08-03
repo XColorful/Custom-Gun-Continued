@@ -1,7 +1,7 @@
 [English](#English)
 
 # 配件数据
-> wiki 版本：`0.0.1`.1
+> wiki 版本：`0.0.1`.2
 
 - `ads`（\_SimpleModifierData）：
 	- `shared_base_add`/`addend`（float）：
@@ -115,7 +115,7 @@
 	- `melee_distance`/`distance`（float）：
 	- `range_angle`（float）：
 	- `damage_delay_seconds`/`prep`（float）：
-	- `base_cooldown`/`cooldown`（float）：
+	- `extra_cooldown`/`cooldown`（float）：
 	- `knockback_strength`/`knockback`（float）：
 	- `target_effect`/`effects`（List<\_TargetEffectData>）：
 		- `effect_location`/`id`（ResourceLocation）：
@@ -262,7 +262,7 @@
 		"melee_distance": 1.0,
 		"range_angle": 30.0,
 		"damage_delay_seconds": 0.1,
-		"base_cooldown": 0.0,
+		"extra_cooldown": 0.0,
 		"knockback_strength": 0.0,
 		"target_effect": [
 			{
@@ -279,7 +279,7 @@
 ```
 
 # English
-> wiki verison: `0.0.1`.1
+> wiki verison: `0.0.1`.2
 
 - `ads`(\_SimpleModifierData):
 	- `shared_base_add`/`addend`(float):
@@ -393,7 +393,7 @@
 	- `melee_distance`/`distance`(float):
 	- `range_angle`(float):
 	- `damage_delay_seconds`/`prep`(float):
-	- `base_cooldown`/`cooldown`(float):
+	- `extra_cooldown`/`cooldown`(float):
 	- `knockback_strength`/`knockback`(float):
 	- `target_effect`/`effects`(List<\_TargetEffectData>):
 		- `effect_location`/`id`(ResourceLocation):
@@ -540,7 +540,7 @@
 		"melee_distance": 1.0,
 		"range_angle": 30.0,
 		"damage_delay_seconds": 0.1,
-		"base_cooldown": 0.0,
+		"extra_cooldown": 0.0,
 		"knockback_strength": 0.0,
 		"target_effect": [
 			{

@@ -34,8 +34,10 @@ public class PlannedRefactor {
     public static final boolean ON_PROJECTILE_TICK_FINISH_EVENT = false;
     // 添加config来做一般Entity的击退 (扩展模组就应该直接注入IBulletVictimEntity而无需这个重构)
     public static final boolean ON_NON_BULLET_VICTIM_HIT = true;
-    // 获取上膛子弹数
-    public static final boolean ON_SET_BARREL_AMMO = false;
     // scope数据(xiao.customgun.client.resource.assets.display.AttachmentDisplay)从资源包移到数据包里，并且服务端可能还要加开镜后的散布减小
     public static final boolean MOVE_SCOPE_VIEW_INDEX_TO_CORE = false;
+    // 专门处理刺刀范围
+    public static final boolean SPECIAL_MELEE_RANGE_CALCULATION = false;
+    // 获取上膛子弹数 (写进GunData里)
+    public static final int GET_MAX_BARREL_AMMO = 1;
 }

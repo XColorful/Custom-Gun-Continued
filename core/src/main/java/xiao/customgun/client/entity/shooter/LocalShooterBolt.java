@@ -14,14 +14,12 @@ import xiao.customgun.client.api.entity.LocalShooterProperty;
 import xiao.customgun.client.api.resource.ClientResourceApi;
 import xiao.customgun.client.api.sound.gun.GunSoundType;
 import xiao.customgun.client.resource.instance.assets.GunDisplayInstance;
-import xiao.customgun.client.resource.instance.data.ClientGunIndexInstance;
 import xiao.customgun.client.sound.SoundPlayManager;
 import xiao.customgun.core.api.entity.shooter.ISynGunState;
 import xiao.customgun.core.api.item.IGun;
-import xiao.customgun.core.api.item.gun.BoltType;
 import xiao.customgun.core.api.item.gun.IGunGetter;
+import xiao.customgun.core.entity.shooter.LivingShooterBolt;
 import xiao.customgun.core.network.message.ClientMessagePlayerBoltGun;
-import xiao.customgun.core.resource.data.data.GunData;
 import xiao.customgun.core.util.SendUtils;
 
 public final class LocalShooterBolt extends LocalShooterAspect {
@@ -30,42 +28,27 @@ public final class LocalShooterBolt extends LocalShooterAspect {
         super(localShooter, localShooterProperty);
     }
 
+    /**
+     * 对齐{@link LivingShooterBolt#bolt()}
+     */
     public void bolt() {
-        // 检查状态锁
-        if (this.localShooterProperty.clientStateLock) return;
-
+        // 1. 手持枪械检查
         ItemStack gunItem = this.localShooter.getMainHandItem();
         IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return;
 
-        // 缓存近的判断前置
-        if (
+        if ( // 2.1 检查状态锁
+                this.localShooterProperty.clientStateLock) return;
+        else if ( // 2.2 检查状态
                 // 检查是否在拉栓
                 this.localShooterProperty.isBolting
-                // 检查是否有弹药在枪膛内
-                || iGun.hasBarrelAmmo(gunItem)
         ) return;
 
-        var gunLocation = iGun.getGunLocation(gunItem);
-        @Nullable ClientGunIndexInstance clientGunIndexInstance = ClientResourceApi.getClientGunIndexInstance(gunLocation);
-        if (clientGunIndexInstance == null) return;
-
-        GunData gunData = clientGunIndexInstance.getGunData();
-        if (gunData == null) return;
-
-        // 检查 bolt 类型是否是 manual action
-        BoltType boltType = gunData.getBoltType();
-        if (boltType != BoltType.MANUAL_ACTION) return;
-
-        // 判断没有子弹的条件 (背包直读且包内没子弹 / 非背包直读且弹匣子弹数 < 1)
-        boolean useInventoryAmmo = iGun.useInventoryAmmo(gunItem); // 是否为背包直读
-        boolean hasAmmo = useInventoryAmmo ? !iGun.hasInventoryAmmo(this.localShooter, gunItem)
-                : iGun.getMagAmmoCount(gunItem) < 1;
-        if (hasAmmo) return;
-
-        // 锁上状态锁
-        this.localShooterProperty.lockState(ISynGunState::cgc$getSynIsBolting);
-        this.localShooterProperty.isBolting = true;
+        { // 3. IGunRuntime操作结果 -> Shooter状态
+            this.localShooterProperty.isBolting = true;
+        } { // 3.1 锁上状态锁
+            this.localShooterProperty.lockState(ISynGunState::cgc$getSynIsBolting);
+        }
 
         SendUtils.sendMessageToServer(new ClientMessagePlayerBoltGun());
         @Nullable GunDisplayInstance gunDisplayInstance = ClientResourceApi.getGunDisplayInstance(gunItem);
@@ -76,6 +59,11 @@ public final class LocalShooterBolt extends LocalShooterAspect {
         }
     }
 
+    /**
+     * // TODO 加一个手动拉栓的按键
+     * 能拉栓的时候自动拉栓
+     * 避免多加一个按键 或者 嵌入到shoot的逻辑里
+     */
     public void tickAutoBolt() {
         ItemStack gunItem = this.localShooter.getMainHandItem();
         IGun iGun = IGunGetter.fromItemStack(gunItem);
@@ -84,6 +72,7 @@ public final class LocalShooterBolt extends LocalShooterAspect {
             return;
         }
 
+        // TODO ↓这个太简单粗暴了
         this.bolt();
 
         if (this.localShooterProperty.isBolting) {

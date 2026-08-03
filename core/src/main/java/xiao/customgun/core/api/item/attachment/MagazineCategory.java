@@ -29,11 +29,12 @@ public enum MagazineCategory implements ResourceTag.CategoryTag {
     @Override public String getTagName() {
         return this.categoryName;
     }
-    public int getIndex() {
-        return this.index;
-    }
     @Override public String getCategoryName() {
         return this.categoryName;
+    }
+
+    public int getIndex() {
+        return this.index;
     }
 
     private static final Map<String, MagazineCategory> CATEGORIES = new HashMap<>();

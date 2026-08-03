@@ -14,9 +14,12 @@ import org.jetbrains.annotations.Nullable;
 import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.Varargs;
 import xiao.customgun.CustomGun;
+import xiao.customgun.core.api.common.McLogicalSide;
 import xiao.customgun.core.api.entity.ILivingShooter;
 import xiao.customgun.core.api.entity.ReloadState;
 import xiao.customgun.core.api.entity.ShooterProperty;
+import xiao.customgun.core.api.event.shooter.ShooterReloadEvent;
+import xiao.customgun.core.api.event.shooter.ShooterSwitchFireModeEvent;
 import xiao.customgun.core.api.gun.action.IGunActionManager;
 import xiao.customgun.core.api.gun.script.GunScriptApi;
 import xiao.customgun.core.api.item.IGun;
@@ -40,8 +43,9 @@ public class GunActionManager implements IGunActionManager {
                              ILivingShooter iLivingShooter, LivingEntity livingShooter) {
         GunScriptApi scriptApi = GunScriptApi.of(iLivingShooter, livingShooter, iGun, gunItem);
         return switch (scriptApi.simpleCall(ScriptMethodType.START_BOLT)) {
-            case TRUE, UNKNOWN -> true;
+            case TRUE -> true;
             case FALSE -> false;
+            case UNKNOWN -> _DefaultGunAction.startBolt(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter);
         };
     }
     @Override
@@ -60,12 +64,26 @@ public class GunActionManager implements IGunActionManager {
     public boolean canReload(@NotNull IGun iGun, @NotNull ItemStack gunItem,
                              ILivingShooter iLivingShooter, LivingEntity livingShooter) {
         GunScriptApi scriptApi = GunScriptApi.of(iLivingShooter, livingShooter, iGun, gunItem);
-        return false;
+        return switch (scriptApi.simpleCall(ScriptMethodType.CAN_RELOAD)) {
+            case TRUE -> true;
+            case FALSE -> false;
+            case UNKNOWN -> _DefaultGunAction.canReload(iGun, gunItem, iLivingShooter, livingShooter);
+        };
     }
     @Override
     public boolean startReload(ShooterProperty shooterProperty,
                                @NotNull IGun iGun, @NotNull ItemStack gunItem,
                                ILivingShooter iLivingShooter, LivingEntity livingShooter) {
+        // 换弹检查
+        if (!iGun.canReload(iGun, gunItem, iLivingShooter, livingShooter)) return false;
+
+        // 装弹事件钩子提前，不让脚本覆盖换弹事件
+        McLogicalSide logicalSide = CustomGun.getSideExecutor().getLogicalSide();
+        if (CustomGun.getEventPoster().postCustomEvent(new ShooterReloadEvent(logicalSide,
+                iLivingShooter, livingShooter, iGun, gunItem))) {
+            return false;
+        }
+
         GunScriptApi scriptApi = GunScriptApi.of(iLivingShooter, livingShooter, iGun, gunItem);
         return switch (scriptApi.simpleCall(ScriptMethodType.START_RELOAD)) {
             case TRUE -> true;
@@ -108,7 +126,15 @@ public class GunActionManager implements IGunActionManager {
     }
 
     @Override
-    public void switchFireMode(ShooterProperty shooterProperty,
-                               @NotNull IGun iGun, @NotNull ItemStack gunItem) {
+    public boolean switchFireMode(ShooterProperty shooterProperty,
+                                  @NotNull IGun iGun, @NotNull ItemStack gunItem,
+                                  ILivingShooter iLivingShooter, LivingEntity livingShooter) {
+        McLogicalSide logicalSide = CustomGun.getSideExecutor().getLogicalSide();
+        if (CustomGun.getEventPoster().postCustomEvent(new ShooterSwitchFireModeEvent(logicalSide,
+                iLivingShooter, livingShooter, iGun, gunItem))) {
+            return false;
+        }
+
+        return _DefaultGunAction.switchFireMode(shooterProperty, iGun, gunItem);
     }
 }

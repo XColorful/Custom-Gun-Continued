@@ -121,6 +121,17 @@ public class NBTUtils {
         setCustomDataTag(itemStack, customDataTag);
     }
 
+    public static double getDouble(@Nullable ItemStack itemStack, String key) {
+        @Nullable var customData = getCustomData(itemStack);
+        return customData != null ? getDouble(getCustomDataTag(customData), key) : 0;
+    }
+    public static void setDouble(@NotNull ItemStack itemStack, String key, double value) {
+        var customData = getOrCreateCustomData(itemStack);
+        @NotNull CompoundTag customDataTag = getCustomDataTag(customData);
+        setDouble(customDataTag, key, value);
+        setCustomDataTag(itemStack, customDataTag);
+    }
+
     public static float getFloat(@Nullable ItemStack itemStack, String key) {
         @Nullable var customData = getCustomData(itemStack);
         return customData != null ? getFloat(getCustomDataTag(customData), key) : 0;
@@ -129,6 +140,17 @@ public class NBTUtils {
         var customData = getOrCreateCustomData(itemStack);
         @NotNull CompoundTag customDataTag = getCustomDataTag(customData);
         setFloat(customDataTag, key, value);
+        setCustomDataTag(itemStack, customDataTag);
+    }
+
+    public static long getLong(@Nullable ItemStack itemStack, String key) {
+        @Nullable var customData = getCustomData(itemStack);
+        return customData != null ? getLong(getCustomDataTag(customData), key) : 0;
+    }
+    public static void setLong(@NotNull ItemStack itemStack, String key, long value) {
+        var customData = getOrCreateCustomData(itemStack);
+        @NotNull CompoundTag customDataTag = getCustomDataTag(customData);
+        setLong(customDataTag, key, value);
         setCustomDataTag(itemStack, customDataTag);
     }
 
@@ -228,6 +250,18 @@ public class NBTUtils {
 //        setCustomDataTag(entity, customDataTag);
     }
 
+    public static double getDouble(@Nullable Entity entity, String key) {
+        @Nullable CompoundTag customDataTag =
+                getCustomData(entity);
+        return customDataTag != null ? getDouble(customDataTag, key) : 0;
+    }
+    public static void setDouble(@NotNull Entity entity, String key, double value) {
+        @NotNull CompoundTag customDataTag =
+                getOrCreateCustomData(entity);
+        setDouble(customDataTag, key, value);
+//        setCustomDataTag(entity, customDataTag);
+    }
+
     public static float getFloat(@Nullable Entity entity, String key) {
         @Nullable CompoundTag customDataTag =
                 getCustomData(entity);
@@ -237,6 +271,18 @@ public class NBTUtils {
         @NotNull CompoundTag customDataTag =
                 getOrCreateCustomData(entity);
         setFloat(customDataTag, key, value);
+//        setCustomDataTag(entity, customDataTag);
+    }
+
+    public static long getLong(@Nullable Entity entity, String key) {
+        @Nullable CompoundTag customDataTag =
+                getCustomData(entity);
+        return customDataTag != null ? getLong(customDataTag, key) : 0;
+    }
+    public static void setLong(@NotNull Entity entity, String key, long value) {
+        @NotNull CompoundTag customDataTag =
+                getOrCreateCustomData(entity);
+        setLong(customDataTag, key, value);
 //        setCustomDataTag(entity, customDataTag);
     }
 
@@ -338,6 +384,17 @@ public class NBTUtils {
         else nbt.putString(key, value.toString());
     }
 
+    public static double getDouble(@Nullable CompoundTag nbt, String key) {
+        if (nbt == null) return 0;
+        else if (nbt.contains(key)) return nbt.getDouble(key);
+        else return 0;
+    }
+    public static void setDouble(@Nullable CompoundTag nbt, String key, double value) {
+        if (nbt == null) return;
+        else nbt.putDouble(key, value);
+    }
+
+
     public static float getFloat(@Nullable CompoundTag nbt, String key) {
         if (nbt == null) return 0;
         else if (nbt.contains(key)) return nbt.getFloat(key);
@@ -347,6 +404,17 @@ public class NBTUtils {
         if (nbt == null) return;
         else nbt.putFloat(key, value);
     }
+
+    public static long getLong(@Nullable CompoundTag nbt, String key) {
+        if (nbt == null) return 0;
+        else if (nbt.contains(key)) return nbt.getLong(key);
+        else return 0;
+    }
+    public static void setLong(@Nullable CompoundTag nbt, String key, long value) {
+        if (nbt == null) return;
+        else nbt.putLong(key, value);
+    }
+
 
     public static int getInt(@Nullable CompoundTag nbt, String key) {
         if (nbt == null) return 0;

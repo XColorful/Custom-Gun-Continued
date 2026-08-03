@@ -17,8 +17,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.client.api.resource.ClientResourceApi;
 import xiao.customgun.client.resource.assets.info.GunpackInfo;
-import xiao.customgun.client.resource.instance.data.ClientAmmoIndexInstance;
 import xiao.customgun.core.api.item.IAmmo;
+import xiao.customgun.core.api.resource.ResourceApi;
+import xiao.customgun.core.resource.data.index.AmmoIndex;
+import xiao.customgun.core.resource.instance.data.AmmoIndexInstance;
 
 import java.util.List;
 
@@ -27,18 +29,20 @@ public class _AmmoItem {
     public static @Nullable Component getName(IAmmo _this,
                                     @NotNull ItemStack ammoItem) {
         var ammoLocation = _this.getAmmoLocation(ammoItem);
-        ClientAmmoIndexInstance clientAmmoIndexInstance = ClientResourceApi.getClientAmmoIndexInstance(ammoLocation);
-        if (clientAmmoIndexInstance == null) return null;
+        @Nullable AmmoIndexInstance ammoIndexInstance = ResourceApi.getAmmoIndexInstance(ammoLocation);
+        if (ammoIndexInstance == null) return null;
 
-        return clientAmmoIndexInstance.getPojo().getNameLang();
+        AmmoIndex ammoIndex = ammoIndexInstance.getPojo();
+        return ammoIndex.getNameLang();
     }
 
     public static void appendHoverText(IAmmo _this,
                                        ItemStack ammoItem, @Nullable Level level, List<Component> components, TooltipFlag isAdvanced) {
         var ammoLocation = _this.getAmmoLocation(ammoItem);
-        ClientAmmoIndexInstance clientAmmoIndexInstance = ClientResourceApi.getClientAmmoIndexInstance(ammoLocation);
-        if (clientAmmoIndexInstance != null) {
-            @NotNull MutableComponent tooltipLang = clientAmmoIndexInstance.getPojo().getTooltipLang()
+        @Nullable AmmoIndexInstance ammoIndexInstance = ResourceApi.getAmmoIndexInstance(ammoLocation);
+        if (ammoIndexInstance != null) {
+            AmmoIndex ammoIndex = ammoIndexInstance.getPojo();
+            @NotNull MutableComponent tooltipLang = ammoIndex.getTooltipLang()
                     .copy().withStyle(ChatFormatting.GRAY);
             components.add(tooltipLang);
         }

@@ -8,6 +8,7 @@
 package xiao.customgun.neoforge.minecraft;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.particles.ParticleType;
@@ -49,8 +50,8 @@ public class NeoRegistry implements IMcRegistry {
     @Override public @Nullable MobEffect getMobEffect(ResourceLocation rl) {
         return BuiltInRegistries.MOB_EFFECT.get(rl);
     }
-    @Override public @Nullable MobEffect getMobEffect_orHolder(ResourceLocation rl) {
-        return BuiltInRegistries.MOB_EFFECT.get(rl);
+    @Override public @Nullable Holder<MobEffect> getMobEffect_orHolder(ResourceLocation rl) {
+        return BuiltInRegistries.MOB_EFFECT.getHolder(rl).orElse(null);
     }
     @Override public @Nullable ResourceLocation getMobEffectRl(MobEffect mobEffect) {
         return BuiltInRegistries.MOB_EFFECT.getKey(mobEffect);

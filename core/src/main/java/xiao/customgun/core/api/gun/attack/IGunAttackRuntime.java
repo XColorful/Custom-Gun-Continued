@@ -7,7 +7,7 @@
 
 package xiao.customgun.core.api.gun.attack;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
@@ -84,9 +84,9 @@ public interface IGunAttackRuntime {
     }
     // TODO 基本照搬移植的类，待重构
     class GunFirePropertyCache { // 当作record类，赋值后不再修改
-        public ResourceLocation gunLocation;
-        public ResourceLocation gunDisplayLocation;
-        public ResourceLocation ammoLocation;
+        public Identifier gunLocation;
+        public Identifier gunDisplayLocation;
+        public Identifier ammoLocation;
         public float inaccuracy = 1f;
         public float soundDistance = 0;
         public boolean silenceSound = false;

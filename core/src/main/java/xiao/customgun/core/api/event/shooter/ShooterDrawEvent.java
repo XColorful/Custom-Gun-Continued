@@ -24,6 +24,10 @@ import xiao.customgun.core.event.EventDispatcher;
  * 射手生物{@link ILivingShooter} 切枪事件
  */
 public final class ShooterDrawEvent extends LivingShooterEvent {
+    @Override
+    public boolean isCancelable() {
+        return false;
+    }
 
     private final ItemStack previousItem;
     private final ItemStack currentItem;

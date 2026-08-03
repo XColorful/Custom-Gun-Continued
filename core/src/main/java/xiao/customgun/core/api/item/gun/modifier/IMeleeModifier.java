@@ -16,14 +16,30 @@ import xiao.customgun.core.resource.data.data.GunData;
 import xiao.customgun.core.api.entity.shooter.modifier.ShooterGunModifierCache;
 import xiao.customgun.core.api.gun.script.GunScriptApi;
 import xiao.customgun.core.resource.data.data.attachment._MeleeModifierData;
+import xiao.customgun.core.resource.data.data.gun._MeleeData;
+import xiao.customgun.core.resource.data.data.gun.melee._DefaultMeleeData;
+
+import java.util.ArrayList;
 
 public interface IMeleeModifier<T extends ResourcePojo<T>> extends IGunModifier<T, _MeleeModifierData, _MeleeModifierData> {
 
     @Override
     default @Nullable _MeleeModifierData getBase(@NotNull IGun iGun, @NotNull ItemStack gunItem,
                                                   @NotNull GunData gunData) {
-        // TODO: from gunData.getMeleeData() — build a copy
-        return new _MeleeModifierData();
+        _MeleeData source = gunData.getMeleeData();
+        _DefaultMeleeData defaultMeleeData = source.getDefaultMeleeData();
+        _MeleeModifierData base = new _MeleeModifierData();
+
+        base.setMeleeDamage(defaultMeleeData.getMeleeDamage());
+        base.setMeleeDistance(source.getGunBaseLength());
+        base.setRangeAngle(defaultMeleeData.getRangeAngle());
+
+        base.setDamageDelaySeconds(defaultMeleeData.getDamageDelaySeconds());
+        base.setExtraCooldown(defaultMeleeData.getBaseCooldown());
+
+        base.setKnockbackStrength(defaultMeleeData.getKnockbackStrength());
+        base.setTargetEffect(new ArrayList<>());
+        return base;
     }
 
     static @Nullable _MeleeModifierData getValue(ShooterGunModifierCache cache, IGunModifierHolder modifierType) {

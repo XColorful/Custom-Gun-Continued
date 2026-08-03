@@ -28,6 +28,9 @@ public enum GunSoundType implements ResourceTag.CategoryTag {
     DRY_FIRE_SOUND(GunSoundTypeTag.DRY_FIRE_SOUND,null, true),
     RELOAD_EMPTY_SOUND(GunSoundTypeTag.RELOAD_EMPTY_SOUND,null, true),
     RELOAD_TACTICAL_SOUND(GunSoundTypeTag.RELOAD_TACTICAL_SOUND,null, true),
+    /**
+     * EMPTY指的是枪管没有子弹，而不是弹匣没有子弹
+     */
     INSPECT_EMPTY_SOUND(GunSoundTypeTag.INSPECT_EMPTY_SOUND,null, true),
     INSPECT_SOUND(GunSoundTypeTag.INSPECT_SOUND,null, true),
     DRAW_SOUND(GunSoundTypeTag.DRAW_SOUND,null, true),

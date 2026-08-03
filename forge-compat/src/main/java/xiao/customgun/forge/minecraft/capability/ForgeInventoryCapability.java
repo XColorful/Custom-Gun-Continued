@@ -15,7 +15,8 @@ public class ForgeInventoryCapability implements IInventoryCapability {
     private ForgeInventoryCapability(@NotNull IItemHandler itemHandler) {
         this.itemHandler = itemHandler;
     }
-    public static ForgeInventoryCapability fromLivingEntity(LivingEntity livingEntity, @Nullable Direction facing) {
+    public static ForgeInventoryCapability fromLivingEntity(@Nullable LivingEntity livingEntity, @Nullable Direction facing) {
+        if (livingEntity == null) return null;
         IItemHandler itemHandler = livingEntity.getCapability(ForgeCapabilities.ITEM_HANDLER, facing).orElse(null);
         if (itemHandler != null) return new ForgeInventoryCapability(itemHandler);
         else return null;

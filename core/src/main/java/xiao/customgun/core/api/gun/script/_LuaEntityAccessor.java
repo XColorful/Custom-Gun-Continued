@@ -8,9 +8,12 @@
 package xiao.customgun.core.api.gun.script;
 
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
+import xiao.customgun.core.util.ChatUtils;
 
 @Deprecated
 public class _LuaEntityAccessor {
@@ -25,13 +28,15 @@ public class _LuaEntityAccessor {
     }
 
     public void sendSystemMessage(Component message) {
-        if (this.livingEntity == null) return;
-        this.livingEntity.sendSystemMessage(message);
+        if (this.livingEntity instanceof ServerPlayer serverPlayer) {
+            ChatUtils.sendComponentMessageToPlayer(serverPlayer, message);
+        }
     }
 
     public void sendActionBar(Component message) {
-        if (!(this.livingEntity instanceof Player player)) return;
-        player.displayClientMessage(message, false);
+        if (this.livingEntity instanceof ServerPlayer serverPlayer) {
+            ChatUtils.sendActionBarToPlayer(serverPlayer, message);
+        }
     }
 
     public float getHealth() {
@@ -40,7 +45,10 @@ public class _LuaEntityAccessor {
 
     public boolean hurt(float amount) {
         if (this.livingEntity == null) return false;
-        return this.livingEntity.hurt(this.livingEntity.level().damageSources().generic(), amount);
+        if (!(this.livingEntity.level() instanceof ServerLevel serverLevel)) return false;
+
+        DamageSource damageSource = serverLevel.damageSources().generic();
+        return this.livingEntity.hurt(damageSource, amount); // this.livingEntity.hurtServer(serverLevel, damageSource, amount);
     }
 
     public Component literal(String text) {

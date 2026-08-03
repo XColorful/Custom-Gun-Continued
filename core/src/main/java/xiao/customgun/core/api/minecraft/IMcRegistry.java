@@ -7,6 +7,7 @@
 
 package xiao.customgun.core.api.minecraft;
 
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.particles.ParticleType;
@@ -33,7 +34,7 @@ public interface IMcRegistry {
     /**
      * @since 1.21.1 返回{@code Holder<MobEffect>}
      */
-    @Nullable MobEffect getMobEffect_orHolder(Identifier rl);
+    @Nullable Holder<MobEffect> getMobEffect_orHolder(Identifier rl);
     @Nullable Identifier getMobEffectRl(MobEffect mobEffect);
     @Nullable Item getItem(Identifier rl);
     @Nullable Identifier getItemRl(Item item);

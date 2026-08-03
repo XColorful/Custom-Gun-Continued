@@ -283,12 +283,12 @@ public class _DefaultGunAttack {
         if (livingShooter.equals(victimEntity)) return;
 
         @Nullable ServerLevel serverLevel = livingShooter.level() instanceof ServerLevel level ? level : null;
+        DamageSource damageSource = livingShooter instanceof ServerPlayer serverPlayer ? livingShooter.damageSources().playerAttack(serverPlayer)
+                : livingShooter.damageSources().mobAttack(livingShooter);
         victimEntity.knockback(knockback,
                 (float) Math.sin(Math.toRadians(livingShooter.getYRot())),
                 (float) -Math.cos(Math.toRadians(livingShooter.getYRot()))
         );
-        DamageSource damageSource = livingShooter instanceof ServerPlayer serverPlayer ? livingShooter.damageSources().playerAttack(serverPlayer)
-                : livingShooter.damageSources().mobAttack(livingShooter);
         if (serverLevel != null) victimEntity.hurtServer(serverLevel, damageSource, damage);
 
         // 使近战枪械兼容神化词条/宝石

@@ -51,7 +51,7 @@ public class NeoRegistry implements IMcRegistry {
         return BuiltInRegistries.MOB_EFFECT.getOptional(rl).orElse(null);
     }
     @Override public @Nullable Holder<MobEffect> getMobEffect_orHolder(ResourceLocation rl) {
-        return BuiltInRegistries.MOB_EFFECT.getHolder(rl).orElse(null);
+        var reference = BuiltInRegistries.MOB_EFFECT.get(rl).orElse(null); return reference != null ? reference.getDelegate() : null;
     }
     @Override public @Nullable ResourceLocation getMobEffectRl(MobEffect mobEffect) {
         return BuiltInRegistries.MOB_EFFECT.getKey(mobEffect);

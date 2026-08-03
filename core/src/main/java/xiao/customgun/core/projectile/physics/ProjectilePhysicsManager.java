@@ -43,6 +43,12 @@ public class ProjectilePhysicsManager implements IProjectilePhysicsManager {
     @ApiStatus.Internal
     public static final double SPREAD_FORWARD_DISTANCE = 8.0D;
 
+    /**
+     * 原版散布参数转换为方向偏移时使用的倍率。
+     */
+    @ApiStatus.Internal
+    public static final float VANILLA_SPREAD_SCALE = 0.0172275F;
+
     public static Predicate<Entity> PROJECTILE_TARGETS =
             input -> input != null
                     && input.isAlive()
@@ -165,11 +171,9 @@ public class ProjectilePhysicsManager implements IProjectilePhysicsManager {
 
     @Override
     public void shootFromRotation(Entity livingShooter, @NotNull Projectile projectile, float xRot, float yRot, float yOffset, float pow, Vec2 spreadOffset) {
-        // ----暂时照搬原版----
-
         // 根据散布和射击角度计算子弹方向
         Vec3 projectileDirection = new Vec3(spreadOffset.x, spreadOffset.y, SPREAD_FORWARD_DISTANCE)
-                .xRot(xRot * Mth.DEG_TO_RAD)
+                .xRot((xRot + yOffset) * Mth.DEG_TO_RAD)
                 .yRot(yRot * Mth.DEG_TO_RAD);
         // 将方向向量转换为指定速度的子弹速度
         Vec3 projectileVelocity = projectileDirection.normalize().scale(pow);

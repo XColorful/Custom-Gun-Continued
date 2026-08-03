@@ -10,11 +10,13 @@ package xiao.customgun.core.gun.attack;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -32,6 +34,7 @@ import xiao.customgun.core.api.item.gun.*;
 import xiao.customgun.core.api.minecraft.IMcRegistry;
 import xiao.customgun.core.api.resource.ResourceApi;
 import xiao.customgun.core.developer.PlannedRefactor;
+import xiao.customgun.core.projectile.physics.ProjectilePhysicsManager;
 import xiao.customgun.core.resource.data.data.GunData;
 import xiao.customgun.core.resource.data.data.attachment._MeleeModifierData;
 import xiao.customgun.core.resource.data.data.attachment.melee._TargetEffectData;
@@ -135,14 +138,18 @@ public class _DefaultGunAttack {
         return IGunAttackRuntime.GunFireResult.SUCCESS;
     }
 
-    protected static void doBulletSpread(ShooterProperty shooterProperty,
-                                         @NotNull IGun iGun, @NotNull ItemStack gunItem,
-                                         ILivingShooter iLivingShooter, LivingEntity livingShooter,
+    protected static void doBulletSpread(LivingEntity livingShooter,
                                          @NotNull IGunProjectile iGunProjectile, @NotNull Projectile projectile,
-                                         int bulletId,
                                          float xRot, float yRot, float pow, float uncertainty) {
-        float yOffset = 0;
-        projectile.shootFromRotation(livingShooter, xRot, yRot, yOffset, pow, uncertainty);
+        float spread = ProjectilePhysicsManager.VANILLA_SPREAD_SCALE * uncertainty;
+        RandomSource random = livingShooter.getRandom();
+
+        Vec2 spreadOffset = new Vec2(
+                (float) random.triangle(0.0F, spread),
+                (float) random.triangle(0.0F, spread)
+        );
+
+        iGunProjectile.shootFromRotation(livingShooter, projectile, xRot, yRot, 0, pow, spreadOffset);
     }
 
     protected static @Nullable IGunAttackRuntime.MeleePreparation prepareMelee(@NotNull IGun iGun, @NotNull ItemStack gunItem,

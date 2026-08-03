@@ -28,7 +28,7 @@ public interface IProjectilePhysicsExtension {
      * @param projectile    发射的投射物
      * @param xRot          垂直旋转角度
      * @param yRot          水平旋转角度
-     * @param yOffset       垂直方向偏移量
+     * @param yOffset       垂直方向角度偏移量（原版参数），默认为0；未来可用于弹道补偿、瞄准修正等功能
      * @param pow           投射物初速度
      * @param spreadOffset  投射物散布偏移
      */

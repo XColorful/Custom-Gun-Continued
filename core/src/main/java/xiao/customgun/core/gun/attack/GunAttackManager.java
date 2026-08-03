@@ -113,7 +113,7 @@ public class GunAttackManager implements IGunAttackManager {
             }
         }
 
-        _DefaultGunAttack.doBulletSpread(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter, iGunProjectile, projectile, bulletId, xRot, yRot, pow, uncertainty);
+        _DefaultGunAttack.doBulletSpread(livingShooter, iGunProjectile, projectile, xRot, yRot, pow, uncertainty);
     }
 
     @Override

@@ -28,6 +28,10 @@ public interface IMcRegistry {
     @Nullable ParticleType<?> getParticleType(ResourceLocation rl);
     @Nullable ResourceLocation getParticleTypeRl(ParticleType<?> particleType);
     @Nullable MobEffect getMobEffect(ResourceLocation rl);
+    /**
+     * @since 1.21.1 返回{@code Holder<MobEffect>}
+     */
+    @Nullable MobEffect getMobEffect_orHolder(ResourceLocation rl);
     @Nullable ResourceLocation getMobEffectRl(MobEffect mobEffect);
     @Nullable Item getItem(ResourceLocation rl);
     @Nullable ResourceLocation getItemRl(Item item);

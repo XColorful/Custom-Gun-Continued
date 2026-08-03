@@ -11,6 +11,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
@@ -281,14 +282,15 @@ public class _DefaultGunAttack {
         if (livingShooter.equals(victimEntity)) return;
 
         victimEntity.knockback(knockback, (float) Math.sin(Math.toRadians(livingShooter.getYRot())), (float) -Math.cos(Math.toRadians(livingShooter.getYRot())));
-        if (livingShooter instanceof ServerPlayer serverPlayer) {
-            victimEntity.hurt(livingShooter.damageSources().playerAttack(serverPlayer), damage);
-        } else {
-            victimEntity.hurt(livingShooter.damageSources().mobAttack(livingShooter), damage);
-        }
+        DamageSource damageSource = livingShooter instanceof ServerPlayer serverPlayer ? livingShooter.damageSources().playerAttack(serverPlayer)
+                : livingShooter.damageSources().mobAttack(livingShooter);
+        victimEntity.hurt(damageSource, damage);
 
         // 使近战枪械兼容神化词条/宝石
-        livingShooter.doEnchantDamageEffects(livingShooter, victimEntity);
+        @Nullable ServerLevel serverLevel = livingShooter.level() instanceof ServerLevel level ? level : null;
+        if (serverLevel != null) {
+            livingShooter.doEnchantDamageEffects(livingShooter, victimEntity);
+        }
 
         if (!victimEntity.isAlive()) return;
 
@@ -296,7 +298,7 @@ public class _DefaultGunAttack {
             IMcRegistry mcRegistry = CustomGun.getMcRegistry();
             for (_TargetEffectData targetEffectData : targetEffects) {
                 var effectLocation = targetEffectData.getEffectLocation();
-                MobEffect mobEffect = mcRegistry.getMobEffect(effectLocation);
+                var mobEffect = mcRegistry.getMobEffect_orHolder(effectLocation);
                 if (mobEffect == null) continue;
 
                 int effectTicks = Math.max(0, targetEffectData.getSeconds() * 20);
@@ -306,7 +308,7 @@ public class _DefaultGunAttack {
             }
         }
 
-        if (livingShooter.level() instanceof ServerLevel serverLevel) {
+        if (serverLevel != null) {
             int count = (int) (damage * 0.5);
             serverLevel.sendParticles(ParticleTypes.DAMAGE_INDICATOR,
                     victimEntity.getX(), victimEntity.getY(0.5), victimEntity.getZ(),

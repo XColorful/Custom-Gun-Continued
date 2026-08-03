@@ -26,8 +26,8 @@ public interface IProneInaccuracyModifier<T extends ResourcePojo<T>> extends IGu
         var inaccuracy = gunData.getInaccuracyData();
         if (inaccuracy == null) return 2.5F;
         float base = inaccuracy.getProne();
-        _FireModeAdjustData fireModeAdjust = gunData.getFireModeAdjustData().get(iGun.getFireModeType(gunItem));
-        if (fireModeAdjust != null) base += fireModeAdjust.getOtherInaccuracy();
+//        _FireModeAdjustData fireModeAdjust = gunData.getFireModeAdjustData().get(iGun.getFireModeType(gunItem));
+//        if (fireModeAdjust != null) base += fireModeAdjust.getOtherInaccuracy();
         return Math.max(base, 0);
     }
 

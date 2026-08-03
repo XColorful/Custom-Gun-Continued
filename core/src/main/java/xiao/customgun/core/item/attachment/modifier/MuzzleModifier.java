@@ -8,7 +8,7 @@
 package xiao.customgun.core.item.attachment.modifier;
 
 import org.jetbrains.annotations.NotNull;
-import xiao.customgun.core.api.item.gun.modifier.IMuzzleModifier;
+import org.jetbrains.annotations.Nullable;import xiao.customgun.core.api.item.gun.modifier.IMuzzleModifier;
 import xiao.customgun.core.api.item.gun.FireSoundType;
 import xiao.customgun.core.resource.data.data.AttachmentData;
 import xiao.customgun.core.resource.data.data.attachment._MuzzleModifierData;
@@ -22,13 +22,18 @@ public final class MuzzleModifier extends AttachmentModifier<_MuzzleModifierData
     // --------IAttachmentModifier--------
 
     @Override
-    public _MuzzleModifierData getModifier(@NotNull AttachmentData pojo) {
+    public @Nullable _MuzzleModifierData getModifier(@NotNull AttachmentData pojo) {
         return pojo.getMuzzleModifier();
     }
 
     @Override
     public FireSoundType eval(Collection<_MuzzleModifierData> modifiers, FireSoundType base) {
-        // TODO: eval 不能复用父类函数 — MuzzleModifier 的 K 是 _MuzzleModifierData（含 FireSoundType），非数值
+        if (modifiers.isEmpty()) return base;
+
+        for (_MuzzleModifierData modifier : modifiers) {
+            return modifier.getFireSoundType();
+        }
+
         return base;
     }
 }

@@ -10,30 +10,37 @@ package xiao.customgun.client.entity.shooter;
 import net.minecraft.client.player.LocalPlayer;
 import xiao.customgun.client.api.entity.LocalShooterProperty;
 import xiao.customgun.core.api.entity.ILivingShooter;
-import xiao.customgun.core.api.entity.ReloadState;
 import xiao.customgun.core.api.entity.shooter.ILivingShooterGetter;
 import xiao.customgun.core.entity.shooter.LivingShooterSprint;
 
 public final class LocalShooterSprint extends LocalShooterAspect {
 
-    public static boolean stopSprint = false;
+    /**
+     * 是否强制取消疾跑，目前是纯客户端拦截
+     */
+    public static boolean forceDisableSprint = false; // TODO 移除static
 
     public LocalShooterSprint(LocalPlayer localShooter, LocalShooterProperty localShooterProperty) {
         super(localShooter, localShooterProperty);
     }
 
-    /**
-     * 根据情况返回玩家应当处于的冲刺状态，在玩家切换冲刺状态的时候调用
-     * 这里的逻辑应该严格与服务端对应 {@link LivingShooterSprint#getProcessedSprintStatus}
-     */
-    public boolean getProcessedSprintStatus(boolean sprinting) {
+    public boolean onSprint(boolean isSprint) {
         ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(this.localShooter);
-        ReloadState.StateType reloadStateType = iLivingShooter.cgc$getSynReloadState().getStateType();
-        if (iLivingShooter.cgc$getSynIsAiming()
-                || (reloadStateType.isReloading() && !reloadStateType.isReloadFinishing())
-                || stopSprint
+        if ( // 2.2 检查状态
+            // 禁止疾跑的状态
+                _shouldForceDisableSprint(iLivingShooter, isSprint)
         ) return false;
 
-        return sprinting;
+        return isSprint;
+    }
+    /**
+     * 对应{@link LivingShooterSprint#_shouldForceDisableSprint}
+     */
+    private boolean _shouldForceDisableSprint(ILivingShooter iLivingShooter, boolean isSprint) {
+        if (LivingShooterSprint.isIllegalSprintState(iLivingShooter)) return true;
+
+        if (forceDisableSprint) return true;
+
+        return false;
     }
 }

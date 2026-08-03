@@ -18,7 +18,7 @@ public class _MeleeModifierDataTag {
 
     // 时间属性
     public static final String DAMAGE_DELAY_SECONDS = "damage_delay_seconds"; public static final String DAMAGE_DELAY_SECONDS_OLD1 = "prep";
-    public static final String BASE_COOLDOWN = "base_cooldown"; public static final String BASE_COOLDOWN_OLD1 = "cooldown";
+    public static final String BASE_COOLDOWN = "extra_cooldown"; public static final String BASE_COOLDOWN_OLD1 = "cooldown";
 
     // 命中效果
     public static final String KNOCKBACK_STRENGTH = _BulletDataTag.KNOCKBACK_STRENGTH; public static final String KNOCKBACK_STRENGTH_OLD1 = "knockback";

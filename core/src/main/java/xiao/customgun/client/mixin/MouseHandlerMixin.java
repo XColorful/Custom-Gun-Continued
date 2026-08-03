@@ -20,6 +20,7 @@ import xiao.customgun.client.config.ZoomConfig;
 import xiao.customgun.core.api.entity.shooter.ILivingShooterGetter;
 import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.api.item.gun.IGunGetter;
+import xiao.customgun.core.entity.shooter.LivingShooterProne;
 import xiao.customgun.core.util.MathUtil;
 
 @Mixin(MouseHandler.class)
@@ -63,7 +64,7 @@ public class MouseHandlerMixin {
     private static double cgc$calculatePronePitch(LocalPlayer player, double pitch, double denominator) {
         double finalPitch = pitch * denominator;
         // 对趴姿限制 pitch 范围
-        if (!player.isSwimming() && player.getPose() == Pose.SWIMMING) {
+        if (!player.isSwimming() && player.getPose() == LivingShooterProne.PRONE_POSE) {
             // 仰角正负是反的
             float playerPitch = -player.getXRot();
 

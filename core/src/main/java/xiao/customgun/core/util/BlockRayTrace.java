@@ -10,7 +10,7 @@ package xiao.customgun.core.util;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
-import xiao.customgun.core.projectile.physics.ProjectilePhysicsManager;
+import xiao.customgun.core.init.registry.ModBlocks;
 
 /**
  * Go to {@link RayTraceUtils}
@@ -30,7 +30,7 @@ public class BlockRayTrace {
                     if (blockState == null) {
                         return false;
                     }
-                    return blockState.is(ProjectilePhysicsManager.BULLET_IGNORE_BLOCKS);
+                    return blockState.is(ModBlocks.BULLET_IGNORE_BLOCKS);
                 }
         );
     }

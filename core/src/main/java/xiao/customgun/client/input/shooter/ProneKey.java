@@ -14,7 +14,6 @@ import org.lwjgl.glfw.GLFW;
 import xiao.customgun.CustomGun;
 import xiao.customgun.client.api.entity.ILocalShooter;
 import xiao.customgun.client.api.entity.shooter.ILocalShooterGetter;
-import xiao.customgun.client.api.event.IClientTickEvent;
 import xiao.customgun.client.api.event.IInputKeyEvent;
 import xiao.customgun.client.api.event.IMouseButtonEvent;
 import xiao.customgun.client.api.event.IPrepareClientTickEvent;
@@ -28,7 +27,6 @@ import xiao.customgun.client.init.registry.ClientInputCategory;
 import xiao.customgun.client.input.InputKey;
 import xiao.customgun.client.util.ClientInputUtils;
 import xiao.customgun.core.api.event.*;
-import xiao.customgun.core.api.item.gun.IGunGetter;
 
 public final class ProneKey extends InputKey implements IEventHandler {
 
@@ -61,14 +59,12 @@ public final class ProneKey extends InputKey implements IEventHandler {
     public boolean registerEventHandler() {
         ICustomEventRegister customEventRegister = CustomGun.getEventRegister();
         customEventRegister.register(this, EventType.PREPARE_CLIENT_TICK_EVENT, EventPriority.NORMAL, false);
-        customEventRegister.register(this, EventType.CLIENT_TICK_EVENT, EventPriority.NORMAL, false);
         return true;
     }
     @Override
     public boolean unregisterEventHandler() {
         ICustomEventRegister customEventRegister = CustomGun.getEventRegister();
         customEventRegister.unregister(this, EventType.PREPARE_CLIENT_TICK_EVENT, EventPriority.NORMAL, false);
-        customEventRegister.unregister(this, EventType.CLIENT_TICK_EVENT, EventPriority.NORMAL, false);
         return true;
     }
 
@@ -77,10 +73,10 @@ public final class ProneKey extends InputKey implements IEventHandler {
     }
     @Override
     public void handleEvent(EventType eventType, IEvent event) {
-        switch (eventType) {
-            case PREPARE_CLIENT_TICK_EVENT -> onProneHoldingPreInput((IPrepareClientTickEvent) event);
-            case CLIENT_TICK_EVENT -> checkProne((IClientTickEvent) event);
-            default -> onReceiveWrongEvent(eventType);
+        if (eventType == EventType.PREPARE_CLIENT_TICK_EVENT) {
+            onProneHoldingPreInput((IPrepareClientTickEvent) event);
+        } else {
+            onReceiveWrongEvent(eventType);
         }
     }
 
@@ -98,10 +94,7 @@ public final class ProneKey extends InputKey implements IEventHandler {
         if (!ClientInputUtils.isGameplayFocused()) return; // 不在焦点
 
         LocalPlayer player = Minecraft.getInstance().player;
-        if (player == null || player.isSpectator() // 旁观模式
-                || IGunGetter.fromMainHand(player) == null // 主手没枪
-                || player.isPassenger() // 乘客不能趴着
-        ) return;
+        if (player == null) return;
 
         ILocalShooter localShooter = ILocalShooterGetter.fromLocalPlayer(player);
         boolean holdToProne = KeyConfig.HOLD_TO_PRONE.get();
@@ -129,30 +122,11 @@ public final class ProneKey extends InputKey implements IEventHandler {
         if (player == null) return;
 
         ILocalShooter localShooter = ILocalShooterGetter.fromLocalPlayer(player);
-        if (IGunGetter.fromMainHand(player) == null) {
-            localShooter.cgc$prone(false);
-            return;
-        }
 
         boolean isProne = ClientInputUtils.isGameplayFocused() // 在焦点
                 && this.keyMapping.get().isDown(); // 按住了趴键
         if (localShooter.cgc$isProne() != isProne) {
             localShooter.cgc$prone(isProne);
-        }
-    }
-    /**
-     * tick结束时的校正 (仅用于取消趴姿)
-     */
-    private void checkProne(IClientTickEvent event) {
-        LocalPlayer player = Minecraft.getInstance().player;
-        if (player == null) return;
-
-        ILocalShooter localShooter = ILocalShooterGetter.fromLocalPlayer(player);
-        if (!ClientInputUtils.isGameplayFocused() // 不在焦点
-                || IGunGetter.fromMainHand(player) == null // 主手没枪
-                || player.isSpectator() // 旁观模式
-        ) {
-            localShooter.cgc$prone(false);
         }
     }
 

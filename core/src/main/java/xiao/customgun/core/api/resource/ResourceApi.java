@@ -219,7 +219,7 @@ public class ResourceApi {
         if (CustomGun.getSideExecutor().getLogicalSide().isServer()) return _DataInstanceManager.GUN_INDEX.get(gunLocation);
         else return SyncDataCache.INSTANCE.GUN_INDEX.get(gunLocation);
     }
-    public static Set<Map.Entry<ResourceLocation, GunIndexInstance>> getAllGunIndexInstance() {
+    public static Set<Map.Entry<ResourceLocation, @NotNull GunIndexInstance>> getAllGunIndexInstance() {
         if (CustomGun.getSideExecutor().getLogicalSide().isServer()) return _DataInstanceManager.GUN_INDEX.entrySet();
         else return SyncDataCache.INSTANCE.GUN_INDEX.entrySet();
     }
@@ -227,7 +227,7 @@ public class ResourceApi {
         if (CustomGun.getSideExecutor().getLogicalSide().isServer()) return _DataInstanceManager.GUN_SORT.getGunSort(gunLocation);
         else return SyncDataCache.INSTANCE.GUN_SORT.getGunSort(gunLocation);
     }
-    public static @NotNull Map<ResourceLocation, Integer> getAllGunSort() {
+    public static @NotNull Map<ResourceLocation, @NotNull Integer> getAllGunSort() {
         if (CustomGun.getSideExecutor().getLogicalSide().isServer()) return _DataInstanceManager.GUN_SORT.getAllGunSort();
         else return SyncDataCache.INSTANCE.GUN_SORT.getAllGunSort();
     }
@@ -235,7 +235,7 @@ public class ResourceApi {
         if (CustomGun.getSideExecutor().getLogicalSide().isServer()) return _DataInstanceManager.ATTACHMENT_INDEX.get(attachmentLocation);
         else return SyncDataCache.INSTANCE.ATTACHMENT_INDEX.get(attachmentLocation);
     }
-    public static Set<Map.Entry<ResourceLocation, AttachmentIndexInstance>> getAllAttachmentIndexInstance() {
+    public static Set<Map.Entry<ResourceLocation, @NotNull AttachmentIndexInstance>> getAllAttachmentIndexInstance() {
         if (CustomGun.getSideExecutor().getLogicalSide().isServer()) return _DataInstanceManager.ATTACHMENT_INDEX.entrySet();
         else return SyncDataCache.INSTANCE.ATTACHMENT_INDEX.entrySet();
     }
@@ -243,7 +243,7 @@ public class ResourceApi {
         if (CustomGun.getSideExecutor().getLogicalSide().isServer()) return _DataInstanceManager.AMMO_INDEX.get(ammoLocation);
         else return SyncDataCache.INSTANCE.AMMO_INDEX.get(ammoLocation);
     }
-    public static Set<Map.Entry<ResourceLocation, AmmoIndexInstance>> getAllAmmoIndexInstance() {
+    public static Set<Map.Entry<ResourceLocation, @NotNull AmmoIndexInstance>> getAllAmmoIndexInstance() {
         if (CustomGun.getSideExecutor().getLogicalSide().isServer()) return _DataInstanceManager.AMMO_INDEX.entrySet();
         else return SyncDataCache.INSTANCE.AMMO_INDEX.entrySet();
     }
@@ -251,7 +251,7 @@ public class ResourceApi {
         if (CustomGun.getSideExecutor().getLogicalSide().isServer()) return _DataInstanceManager.BLOCK_INDEX.get(blockLocation);
         else return SyncDataCache.INSTANCE.BLOCK_INDEX.get(blockLocation);
     }
-    public static Set<Map.Entry<ResourceLocation, BlockIndexInstance>> getAllBlockIndexInstance() {
+    public static Set<Map.Entry<ResourceLocation, @NotNull BlockIndexInstance>> getAllBlockIndexInstance() {
         if (CustomGun.getSideExecutor().getLogicalSide().isServer()) return _DataInstanceManager.BLOCK_INDEX.entrySet();
         else return SyncDataCache.INSTANCE.BLOCK_INDEX.entrySet();
     }

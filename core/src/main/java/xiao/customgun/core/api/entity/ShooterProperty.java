@@ -8,7 +8,12 @@
 package xiao.customgun.core.api.entity;
 
 import net.minecraft.world.item.ItemStack;
+import org.luaj.vm2.LuaValue;
 import xiao.customgun.core.api.entity.shooter.modifier.ShooterGunModifierCache;
+import xiao.customgun.core.api.item.gun.MeleeType;
+import xiao.customgun.core.entity.shooter.LivingShooterAim;
+import xiao.customgun.core.entity.shooter.LivingShooterDraw;
+import xiao.customgun.core.entity.shooter.LivingShooterProne;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -36,12 +41,17 @@ public class ShooterProperty {
      * == 0 时：执行刺刀近战
      * < 0 时，默认情况，什么也不做
      */
-    public int meleePrepTickCount = -1;
+    public int meleePreparationTick = -1;
     /**
-     * 切枪时间戳，在切枪开始时更新，单位 ms。
+     * 本次近战的类型
+     * 近战是延迟触发的，需要保存信息
+     */
+    public @Nullable MeleeType preparingMeleeType;
+    /**
+     * 切枪预计完成时间，在切枪开始时更新，单位 ms。
      * 用于计算切枪进度。切枪进度完成后，才能进行各种操作。
      */
-    public long drawTimestamp = -1L;
+    public long drawFinishTimestamp = -1L;
     /**
      * 拉栓时间戳，在拉栓开始时更新，单位 ms。
      */
@@ -77,15 +87,17 @@ public class ShooterProperty {
     @Nullable
     public Supplier<ItemStack> currentGunItem = null;
     /**
-     * 缓存当前枪械的收枪时间，以确保下一次切枪的时候使用此时间计算收枪。
-     * 此数值不会因 tacz$CurrentGunItem 提供的 ItemStack 改变而改变，因此应当在恰当的时机调用 updatePutAwayTime() 进行更新。
+     * 这个字段的作用域只在{@link LivingShooterDraw}内部
      */
-    public float currentPutAwayTimeS = 0;
+    @Deprecated public float currentPutAwayTimeS = 0;
     /**
      * 与疾跑相关的参数，开镜时会阻止疾跑
      */
     public float sprintTimeS = 0;
-    public long sprintTimestamp = -1;
+    /**
+     * 这个字段的作用域只在{@link LivingShooterAim}内部
+     */
+    @Deprecated public long sprintTimestamp = -1;
     /**
      * @deprecated 改用{@link IBulletVictimEntity}
      */
@@ -94,17 +106,19 @@ public class ShooterProperty {
      * 记录射击数，用以判定曳光弹
      */
     public int shootCount = 0;
+    /**
+     * 范围在 [0, +∞)，仅在启用charge数据的时候才使用
+     */
     public float chargeProgress = 0f;
     /**
-     * 是否处于趴下状态
+     * 这个字段的作用域只在{@link LivingShooterProne}内部
      */
-    public boolean isProne = false;
+    @Deprecated public boolean isProne = false;
     /**
-     * TODO
      * 用于缓存 lua 脚本的数据
      */
     @Nullable
-    public Object scriptData = null;
+    public LuaValue scriptData = null;
 
     public long heatTimestamp = -1;
     /**
@@ -117,12 +131,12 @@ public class ShooterProperty {
         // 重置各个状态
         shootTimestamp = -1;
         meleeTimestamp = -1;
-        meleePrepTickCount = -1;
+        meleePreparationTick = -1;
+        preparingMeleeType = null;
         isAiming = false;
         aimingProgress = 0;
         reloadTimestamp = -1;
         reloadStateType = ReloadState.StateType.NOT_RELOADING;
-        sprintTimestamp = -1;
         sprintTimeS = 0;
         boltTimestamp = -1;
         isBolting = false;

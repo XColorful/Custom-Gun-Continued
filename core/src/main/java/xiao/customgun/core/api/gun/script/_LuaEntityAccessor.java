@@ -48,7 +48,7 @@ public class _LuaEntityAccessor {
         if (!(this.livingEntity.level() instanceof ServerLevel serverLevel)) return false;
 
         DamageSource damageSource = serverLevel.damageSources().generic();
-        return this.livingEntity.hurt(damageSource, amount); // this.livingEntity.hurtServer(serverLevel, damageSource, amount);
+        return this.livingEntity.hurtServer(serverLevel, damageSource, amount);
     }
 
     public Component literal(String text) {

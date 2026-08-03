@@ -71,7 +71,7 @@ public interface GunDataAccessor extends IGunDataAccess {
         if (gunDisplayLocation != null) return gunDisplayLocation;
 
         var gunLocation = this.getGunLocation(gunItem);
-        GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(gunLocation);
+        @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(gunLocation);
         if (gunIndexInstance == null) return ResourceTag.NULL_LOCATION;
 
         return gunIndexInstance.getPojo().getDisplayIndexLocation();

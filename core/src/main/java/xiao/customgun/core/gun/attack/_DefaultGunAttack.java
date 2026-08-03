@@ -24,27 +24,24 @@ import xiao.customgun.core.api.common.McLogicalSide;
 import xiao.customgun.core.api.entity.IGunProjectile;
 import xiao.customgun.core.api.entity.ILivingShooter;
 import xiao.customgun.core.api.entity.ShooterProperty;
+import xiao.customgun.core.api.event.CycledEvent;
 import xiao.customgun.core.api.gun.attack.IGunAttackRuntime;
 import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.api.item.attachment.AttachmentCategory;
-import xiao.customgun.core.api.item.gun.BoltType;
-import xiao.customgun.core.api.item.gun.FireModeType;
-import xiao.customgun.core.api.item.gun.GunDataAccessor;
-import xiao.customgun.core.api.item.gun.MeleeType;
+import xiao.customgun.core.api.item.gun.*;
 import xiao.customgun.core.api.minecraft.IMcRegistry;
-import xiao.customgun.core.api.minecraft.capability.IInventoryCapability;
 import xiao.customgun.core.api.resource.ResourceApi;
 import xiao.customgun.core.developer.PlannedRefactor;
 import xiao.customgun.core.resource.data.data.GunData;
 import xiao.customgun.core.resource.data.data.attachment._MeleeModifierData;
 import xiao.customgun.core.resource.data.data.attachment.melee._TargetEffectData;
-import xiao.customgun.core.resource.data.data.gun._ChargingData;
-import xiao.customgun.core.resource.data.data.gun._MeleeData;
+import xiao.customgun.core.resource.data.data.gun.*;
 import xiao.customgun.core.resource.data.data.gun.melee._DefaultMeleeData;
 import xiao.customgun.core.resource.instance.data.GunIndexInstance;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 @ApiStatus.Internal
@@ -87,7 +84,7 @@ public class _DefaultGunAttack {
                         return IGunAttackRuntime.ShooterFireResult.NO_BARREL_AMMO;
                     }
                 } else {
-                    // 服务端后续处理自动上弹，客户端不更新本地数据
+                    // 服务端在gunFire处理自动上弹，客户端不更新本地数据
                 }
             }
         }
@@ -106,13 +103,6 @@ public class _DefaultGunAttack {
             }
         }
 
-        { // 5. 消耗子弹
-            int consumedAmmo = iGun.consumeAmmoOnce(livingShooter, gunItem, boltType);
-            if (consumedAmmo <= 0) {
-                return IGunAttackRuntime.ShooterFireResult.AMMO_CONSUME_FAILED;
-            }
-        }
-
         // --------收尾--------
         final @NotNull IGunAttackRuntime.ShooterFireResult result = IGunAttackRuntime.ShooterFireResult.SUCCESS; {
             // 蓄力进度clamp更正
@@ -123,8 +113,24 @@ public class _DefaultGunAttack {
     /**
      * 对应原模组{@code AbstractGunItem.shoot()}，仅服务端触发
      */
-    protected static IGunAttackRuntime.GunFireResult gunFire(@NotNull IGun iGun, @NotNull ItemStack gunItem,
-                                                             ILivingShooter iLivingShooter, LivingEntity livingShooter) {
+    protected static IGunAttackRuntime.GunFireResult gunFire(@Nullable ShooterProperty shooterProperty,
+                                                             @NotNull IGun iGun, @NotNull ItemStack gunItem,
+                                                             ILivingShooter iLivingShooter, LivingEntity livingShooter,
+                                                             Supplier<Float> pitch, Supplier<Float> yaw) { // TODO 这两个参数写到GunScriptApi还是lua函数参数?
+        // 0. 枪械数据异常
+        var gunLocation = iGun.getGunLocation(gunItem);
+        @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(gunLocation);
+        if (gunIndexInstance == null) return IGunAttackRuntime.GunFireResult.ERROR;
+
+        GunData gunData = gunIndexInstance.getGunData();
+
+        @Nullable IGunAttackRuntime.GunFirePropertyCache gunFirePropertyCache = _DefaultGunFire._getGunFireContext(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter, gunData);
+        if (gunFirePropertyCache == null) return IGunAttackRuntime.GunFireResult.ERROR;
+
+        BooleanSupplier shootTask = () -> _DefaultGunFire.doGunFire(gunFirePropertyCache,
+                iGun, gunItem, iLivingShooter, livingShooter, pitch, yaw, gunData)
+                .isSuccess();
+        CycledEvent.create(shootTask, 0, gunFirePropertyCache.shootIntervalMs, gunFirePropertyCache.shootCount);
 
         return IGunAttackRuntime.GunFireResult.SUCCESS;
     }

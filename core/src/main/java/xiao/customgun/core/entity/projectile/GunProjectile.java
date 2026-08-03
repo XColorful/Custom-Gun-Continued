@@ -448,7 +448,7 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
     }
     @Deprecated public float damageModifier() {
         if (this.gunIndexInstanceCache == null) return 0;
-        return 1f / this.gunIndexInstanceCache.getGunData().getBulletData().getBulletAmount();
+        return 1f / this.gunIndexInstanceCache.getGunData().getBulletData().getBulletSplitAmount();
     }
     @Deprecated public int pierce(@Nullable ShooterGunModifierCache shooterGunModifierCache) {
         if (shooterGunModifierCache == null) return 0;

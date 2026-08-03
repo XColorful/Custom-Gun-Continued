@@ -14,25 +14,28 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import xiao.customgun.CustomGun;
 import xiao.customgun.client.api.entity.LocalShooterProperty;
 import xiao.customgun.client.api.entity.shooter.ILocalShooterGetter;
 import xiao.customgun.client.api.resource.ClientResourceApi;
 import xiao.customgun.client.api.sound.gun.GunSoundType;
 import xiao.customgun.client.resource.instance.assets.GunDisplayInstance;
 import xiao.customgun.client.sound.SoundPlayManager;
+import xiao.customgun.core.api.common.McLogicalSide;
 import xiao.customgun.core.api.entity.ILivingShooter;
 import xiao.customgun.core.api.entity.ShootResult;
 import xiao.customgun.core.api.entity.shooter.modifier.ShooterGunModifierCache;
 import xiao.customgun.core.api.entity.shooter.ILivingShooterGetter;
+import xiao.customgun.core.api.event.gun.GunFireEvent;
 import xiao.customgun.core.api.gun.attack.IGunAttackRuntime;
 import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.api.item.gun.*;
 import xiao.customgun.core.api.resource.ResourceApi;
 import xiao.customgun.core.config.GunConfig;
 import xiao.customgun.core.entity.shooter.LivingShooterShoot;
+import xiao.customgun.core.gun.attack._DefaultGunFire;
 import xiao.customgun.core.network.message.ClientMessagePlayerShoot;
 import xiao.customgun.core.resource.data.data.GunData;
-import xiao.customgun.core.resource.data.data.gun._BurstData;
 import xiao.customgun.core.resource.data.data.gun._ChargingData;
 import xiao.customgun.core.resource.instance.data.GunIndexInstance;
 import xiao.customgun.core.util.SendUtils;
@@ -240,7 +243,7 @@ public final class LocalShooterShoot extends LocalShooterAspect {
         int ammoCount = consumeAmmo ? Integer.MAX_VALUE
                 : iGun.getMagAmmoCountWithBarrel(gunItem, boltType);
         // 连发射击间隔
-        long period = fireModeType == FireModeType.BURST ? _getBurstShootInterval(gunData) : 1;
+        long period = fireModeType == FireModeType.BURST ? _DefaultGunFire._getBurstShootIntervalMs(gunData) : 1;
         // 最大连发数
         final int maxCount = Math.min(ammoCount, fireModeType == FireModeType.BURST ? gunData.getBurstData().getBurstAmount() : 1);
         // 连发计数器
@@ -292,13 +295,20 @@ public final class LocalShooterShoot extends LocalShooterAspect {
 
                 ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(localPlayer);
 
-                /**
-                 * {@link IGunAttackRuntime#gunFire}的默认实现为{@link IGunAttackRuntime#gunFire}
-                 */
-                @NotNull IGunAttackRuntime.GunFireResult gunFireResult = iGun.gunFire(null, iGun, gunItem, iLivingShooter, localPlayer, null, null);
-                if (!gunFireResult.isSuccess()) {
+
+                McLogicalSide logicalSide = CustomGun.getSideExecutor().getLogicalSide();
+                if (CustomGun.getEventPoster().postCustomEvent(new GunFireEvent(logicalSide,
+                        iGun, gunItem, iLivingShooter, localPlayer))) {
                     return;
                 }
+
+//                /**
+//                 * {@link IGunAttackRuntime#gunFire}的默认实现为{@link IGunAttackRuntime#gunFire}
+//                 */
+//                @NotNull IGunAttackRuntime.GunFireResult gunFireResult = iGun.gunFire(null, iGun, gunItem, iLivingShooter, localPlayer, null, null);
+//                if (!gunFireResult.isSuccess()) {
+//                    return;
+//                }
 
                 // 动画和声音循环播放
                 // TODO GunDisplayInstance AnimationStateMachine
@@ -326,12 +336,6 @@ public final class LocalShooterShoot extends LocalShooterAspect {
 
             count.getAndIncrement();
         }, delay, period, TimeUnit.MILLISECONDS);
-    }
-    private long _getBurstShootInterval(GunData gunData) {
-        _BurstData burstData = gunData.getBurstData();
-        int bpm = burstData.getBpm();
-        return bpm > 0 ? 60_000L / bpm
-                : 300; // 为避免非法运算，随意返回一个默认值
     }
     private boolean _useSilenceSound() {
         ShooterGunModifierCache shooterGunModifierCache = ILivingShooterGetter.cgc$fromLivingEntity(this.localShooter).cgc$getGunModifierCache();

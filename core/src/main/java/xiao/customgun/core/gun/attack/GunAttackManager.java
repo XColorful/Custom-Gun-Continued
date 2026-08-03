@@ -69,12 +69,8 @@ public class GunAttackManager implements IGunAttackManager {
     public @NotNull IGunAttackRuntime.GunFireResult gunFire(ShooterProperty shooterProperty,
                                                             @NotNull IGun iGun, @NotNull ItemStack gunItem,
                                                             ILivingShooter iLivingShooter, LivingEntity livingShooter,
-                                                            Supplier<Float> pitch, Supplier<Float> yaw) { // TODO 这两个参数写到GunScriptApi还是lua函数参数?
+                                                            Supplier<Float> pitch, Supplier<Float> yaw) {
         McLogicalSide logicalSide = CustomGun.getSideExecutor().getLogicalSide();
-        if (CustomGun.getEventPoster().postCustomEvent(new GunFireEvent(logicalSide,
-                iGun, gunItem, iLivingShooter, livingShooter))) {
-            return GunFireResult.ERROR;
-        }
 
         // 客户端侧提前返回，以继续客户端逻辑
         if (logicalSide.isClient()) return GunFireResult.SUCCESS;
@@ -83,7 +79,7 @@ public class GunAttackManager implements IGunAttackManager {
         return switch (scriptApi.simpleCall(ScriptMethodType.GUN_FIRE)) {
             case TRUE -> GunFireResult.SUCCESS;
             case FALSE -> GunFireResult.ERROR;
-            case UNKNOWN -> _DefaultGunAttack.gunFire(iGun, gunItem, iLivingShooter, livingShooter);
+            case UNKNOWN -> _DefaultGunAttack.gunFire(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter, pitch, yaw);
         };
     }
 

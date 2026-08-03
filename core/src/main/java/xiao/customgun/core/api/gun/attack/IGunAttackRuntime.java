@@ -7,6 +7,7 @@
 
 package xiao.customgun.core.api.gun.attack;
 
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
@@ -38,7 +39,6 @@ public interface IGunAttackRuntime {
         NO_AMMO(2),
         NO_BARREL_AMMO(3), // 暂时不去扣枪膛(chamber)的细节，要改得整个模组范围里改，代码里还是用更好懂的说法
         NOT_CHARGED(4),
-        AMMO_CONSUME_FAILED(5),
         ;
 
         public final int priority;
@@ -62,10 +62,39 @@ public interface IGunAttackRuntime {
                                    ILivingShooter iLivingShooter, LivingEntity livingShooter,
                                    Supplier<Float> pitch, Supplier<Float> yaw);
     enum GunFireResult {
-        SUCCESS,
-        ERROR;
+        SUCCESS(0),
+        ERROR(0),
+        // ----以下按判定优先级排序----
+        OVERHEATED(1),
+        AMMO_CONSUME_FAILED(2),
+        // 暂时没检查充能 (仅用于burst + hold charging)
+        ;
+        public final int priority;
+        GunFireResult(int priority) {
+            this.priority = priority;
+        }
+
+        public int getPriority() {
+            return priority;
+        }
+
         public boolean isSuccess() {
             return this == SUCCESS;
+        }
+    }
+    // TODO 基本照搬移植的类，待重构
+    class GunFirePropertyCache { // 当作record类，赋值后不再修改
+        public ResourceLocation gunLocation;
+        public ResourceLocation gunDisplayLocation;
+        public ResourceLocation ammoLocation;
+        public float inaccuracy = 1f;
+        public float soundDistance = 0;
+        public boolean silenceSound = false;
+        public float bulletSpeed = 0;
+        public int bulletSplitAmount = 1;
+        public int shootCount = 1;
+        public long shootIntervalMs = 50;
+        public GunFirePropertyCache() {
         }
     }
 

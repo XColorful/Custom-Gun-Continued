@@ -16,6 +16,7 @@ import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import xiao.customgun.CustomGun;
+import xiao.customgun.core.api.entity.ILivingShooter;
 import xiao.customgun.core.api.entity.ShooterProperty;
 import xiao.customgun.core.api.entity.shooter.ILivingShooterGetter;
 import xiao.customgun.core.api.entity.shooter.modifier.ShooterGunModifierCache;
@@ -68,6 +69,12 @@ public class _GunScriptBackCompat {
      * @param consumeAmmo 本次射击是否消耗弹药
      */
     protected static void shootOnce(GunScriptApi _this, boolean consumeAmmo) {
+        @Nullable ILivingShooter iLivingShooter = _this.iLivingShooter;
+        @Nullable ShooterProperty shooterProperty = iLivingShooter != null ? iLivingShooter.cgc$getShooterProperty() : null;
+        _this.iGun.gunFire(shooterProperty,
+                _this.iGun, _this.gunItem,
+                iLivingShooter, _this.livingShooter,
+                _this.pitchSupplier, _this.yawSupplier);
     }
 
     /**

@@ -293,6 +293,8 @@ Notation:
 |sync.`ModSyncedEntityData`|`LivingShooterSyncKey`|
 |sync.`ModSyncedEntityData`.THROWABLE_USE_TICK|_Deprecated_|
 |`EntityKineticBullet`|projectile.`GunProjectile`|
+|`EntityKineticBullet`.applyShotgunDamageSpread||
+|`EntityKineticBullet`.setShotDamageMultiplier||
 |`EntityKineticBullet`.IEntityAdditionalSpawnData|projectile.`GunProjectile`.constructInitData|
 
 |com.tacz.guns.entity|xiao.customgun.core.api.entity|

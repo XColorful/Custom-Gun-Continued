@@ -14,10 +14,10 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Vector2d;
 import xiao.customgun.CustomGun;
 import xiao.customgun.core.api.entity.IGunProjectile;
 import xiao.customgun.core.api.entity.shooter.modifier.ShooterGunModifierCache;
@@ -363,8 +363,10 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
         tickContext.group.projectilePhysicsManager().physicMove(tickContext, iGunProjectile, gunProjectile);
     }
     // ----IProjectilePhysicsExtension----
-    @Override public void shootFromRotation(Entity source, float xRot, float yRot, float yOffset, float pow, Vector2d spreadOffset) {
-        _GunProjectileShoot.shootFromRotation(this, source, xRot, yRot, yOffset, pow, spreadOffset);
+    @Override public void shootFromRotation(Entity livingShooter, @NotNull Projectile projectile, float xRot, float yRot, float yOffset, float pow, Vec2 spreadOffset) {
+        CustomGun.getProjectileManager().getProjectileManagerGroup(this.getManagerGroupTag(this))
+                .projectilePhysicsManager()
+                .shootFromRotation(livingShooter, projectile, xRot, yRot, yOffset, pow, spreadOffset);
     }
 
     // --------IProjectileProcessRuntime--------

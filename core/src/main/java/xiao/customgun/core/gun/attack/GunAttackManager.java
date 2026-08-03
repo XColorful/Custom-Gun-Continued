@@ -10,6 +10,7 @@ package xiao.customgun.core.gun.attack;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2d;
@@ -22,7 +23,6 @@ import xiao.customgun.core.api.common.McLogicalSide;
 import xiao.customgun.core.api.entity.IGunProjectile;
 import xiao.customgun.core.api.entity.ILivingShooter;
 import xiao.customgun.core.api.entity.ShooterProperty;
-import xiao.customgun.core.api.event.gun.GunFireEvent;
 import xiao.customgun.core.api.event.shooter.ShooterFireEvent;
 import xiao.customgun.core.api.event.shooter.ShooterPrepareMeleeEvent;
 import xiao.customgun.core.api.gun.attack.IGunAttackManager;
@@ -101,11 +101,11 @@ public class GunAttackManager implements IGunAttackManager {
                 );
                 if (luaValue != null && luaValue.istable()) {
                     LuaTable luaTable = luaValue.checktable();
-                    Vector2d spreadOffset = new Vector2d(
-                            luaTable.get(1).checkdouble(),
-                            luaTable.get(2).checkdouble()
+                    Vec2 spreadOffset = new Vec2(
+                            (float) luaTable.get(1).checkdouble(),
+                            (float) luaTable.get(2).checkdouble()
                     );
-                    iGunProjectile.shootFromRotation(livingShooter, xRot, yRot, 0, pow, spreadOffset);
+                    iGunProjectile.shootFromRotation(livingShooter, projectile, xRot, yRot, 0, pow, spreadOffset);
                     return;
                 }
             } catch (Exception e) {

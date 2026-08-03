@@ -8,19 +8,14 @@
 package xiao.customgun.core.projectile.physics;
 
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.*;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Vector2d;
 import xiao.customgun.CustomGun;
 import xiao.customgun.core.api.entity.IGunProjectile;
 import xiao.customgun.core.api.minecraft.IMcRegistry;
@@ -29,6 +24,7 @@ import xiao.customgun.core.api.projectile.process.IProjectileProcessRuntime;
 import xiao.customgun.core.config.AmmoConfig;
 import xiao.customgun.core.config.sync.HeadAABBData;
 import xiao.customgun.core.entity.projectile.GunProjectile;
+import xiao.customgun.core.init.registry.ModBlocks;
 import xiao.customgun.core.util.RayTraceUtils;
 
 import java.util.Comparator;
@@ -38,8 +34,15 @@ import java.util.function.Predicate;
 public class ProjectilePhysicsManager implements IProjectilePhysicsManager {
     public static final ProjectilePhysicsManager INSTANCE = new ProjectilePhysicsManager();
 
-    // TODO 移到别的地方
-    public static TagKey<Block> BULLET_IGNORE_BLOCKS = BlockTags.create(CustomGun.getMcRegistry().createResourceLocation(String.format("%s:%s", CustomGun.MOD_ID, "bullet_ignore")));
+    /**
+     * 构造子弹散布方向时使用的前向基准分量
+     * <p>
+     * 该值用于平衡散布偏移与前向方向的比例，不代表实际飞行距离
+     * 在方向向量归一化后，仅影响散布角度大小
+     */
+    @ApiStatus.Internal
+    public static final double SPREAD_FORWARD_DISTANCE = 8.0D;
+
     public static Predicate<Entity> PROJECTILE_TARGETS =
             input -> input != null
                     && input.isAlive()
@@ -83,7 +86,7 @@ public class ProjectilePhysicsManager implements IProjectilePhysicsManager {
                         return true; // 返回 true 代表需要忽略该方块（即穿透）
                     }
                     // 检查是否包含忽略标签
-                    return blockState.is(BULLET_IGNORE_BLOCKS);
+                    return blockState.is(ModBlocks.BULLET_IGNORE_BLOCKS);
                 }
         );
         if (blockHitResult.getType() != HitResult.Type.MISS) {
@@ -161,8 +164,34 @@ public class ProjectilePhysicsManager implements IProjectilePhysicsManager {
     // --------IProjectilePhysicsExtension--------
 
     @Override
-    public void shootFromRotation(Entity source, float xRot, float yRot, float yOffset, float pow, Vector2d spreadOffset) {
-        // TODO
+    public void shootFromRotation(Entity livingShooter, @NotNull Projectile projectile, float xRot, float yRot, float yOffset, float pow, Vec2 spreadOffset) {
+        // ----暂时照搬原版----
+
+        // 根据散布和射击角度计算子弹方向
+        Vec3 projectileDirection = new Vec3(spreadOffset.x, spreadOffset.y, SPREAD_FORWARD_DISTANCE)
+                .xRot(xRot * Mth.DEG_TO_RAD)
+                .yRot(yRot * Mth.DEG_TO_RAD);
+        // 将方向向量转换为指定速度的子弹速度
+        Vec3 projectileVelocity = projectileDirection.normalize().scale(pow);
+
+        // 根据速度方向同步子弹实体朝向
+        double horizontalDistance = projectileVelocity.horizontalDistance();
+        projectile.setYRot((float) (Mth.atan2(projectileVelocity.x, projectileVelocity.z) * (double) (180f / (float) Math.PI)));
+        projectile.setXRot((float) (Mth.atan2(projectileVelocity.y, horizontalDistance) * (double) (180f / (float) Math.PI)));
+
+        // 初始化上一帧旋转，避免首帧插值异常
+        projectile.yRotO = projectile.getYRot();
+        projectile.xRotO = projectile.getXRot();
+
+        // 叠加射击者自身速度，继承移动惯性
+        Vec3 shooterVelocity = livingShooter.getDeltaMovement();
+        projectile.setDeltaMovement(
+                projectileVelocity.add(
+                        shooterVelocity.x,
+                        livingShooter.onGround() ? 0 : shooterVelocity.y,
+                        shooterVelocity.z
+                )
+        );
     }
 
     // --------便利方法--------

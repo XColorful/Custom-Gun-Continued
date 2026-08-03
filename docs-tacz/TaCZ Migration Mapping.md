@@ -301,6 +301,7 @@ Notation:
 |---|---|
 |shooter.`ShooterDataHolder`|`ShooterProperty`|
 |`EntityKineticBullet`|`IGunProjectile`|
+|`EntityKineticBullet`.shootFromRotation|projectile.physics.`IProjectilePhysicsExtension`.shootFromRotation|
 |`TargetMinecart`.onProjectileHit|`IBulletVictimEntity`.cgc$onProjectileImpact|
 
 |com.tacz.guns.entity|xiao.customgun.forge.minecraft|
@@ -396,6 +397,7 @@ Notation:
 |`CompatRegistry`||
 |`ModAttributes`|_Deprecated_|
 |`ModBlocks`|_Deprecated_|
+|`ModBlocks`.BULLET_IGNORE_BLOCKS|registry.`ModBlocks`.BULLET_IGNORE_BLOCKS|
 |`ModContainer`|_Deprecated_|
 |`ModCreativeTabs`|registry.`ModCreativeTabs`|
 |`ModDamageTypes`|registry.`ModDamageTypes`|

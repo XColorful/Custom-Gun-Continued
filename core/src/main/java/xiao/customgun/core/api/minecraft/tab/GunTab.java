@@ -9,6 +9,8 @@ package xiao.customgun.core.api.minecraft.tab;
 
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.item.GunProperty;
 import xiao.customgun.core.api.item.builder.GunBuilder;
 import xiao.customgun.core.api.item.gun.FireModeType;
@@ -16,6 +18,7 @@ import xiao.customgun.core.api.item.gun.GunCategory;
 import xiao.customgun.core.api.resource.ResourceApi;
 import xiao.customgun.core.init.registry.ModItems;
 import xiao.customgun.core.resource.data.data.GunData;
+import xiao.customgun.core.resource.data.index.GunIndex;
 import xiao.customgun.core.resource.instance.data.GunIndexInstance;
 
 import java.util.ArrayList;
@@ -32,8 +35,10 @@ public class GunTab {
     public static List<ItemStack> buildGunItems(GunCategory gunCategory) {
         List<ItemStack> gunItems = new ArrayList<>();
         ResourceApi.getAllGunIndexInstance().stream().sorted(indexSort()).forEach(entry -> {
-            GunIndexInstance gunIndexInstance = entry.getValue();
-            if (gunIndexInstance.getPojo().getGunCategory() == gunCategory) {
+            @NotNull GunIndexInstance gunIndexInstance = entry.getValue();
+
+            GunIndex gunIndex = gunIndexInstance.getPojo();
+            if (gunIndex.getGunCategory() == gunCategory) {
                 GunData gunData = gunIndexInstance.getGunData();
                 ItemStack gunItem = GunBuilder.create(ModItems.GUN.get())
                         // 枪械ResourceLocation

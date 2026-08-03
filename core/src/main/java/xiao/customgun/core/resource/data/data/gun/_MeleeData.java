@@ -18,8 +18,7 @@ import java.io.IOException;
 
 public final class _MeleeData extends ResourcePojo<_MeleeData> {
 
-    private float meleeDistance = 1.0F;
-    private float meleeCooldown = 1.0F;
+    private float gunBaseLength = 1.0F;
     private _DefaultMeleeData defaultMeleeData;
 
     private static final _MeleeData PARSER = new _MeleeData();
@@ -34,8 +33,7 @@ public final class _MeleeData extends ResourcePojo<_MeleeData> {
             while (reader.hasNext()) {
                 String key = reader.nextName();
                 switch (key) {
-                    case _MeleeDataTag.MELEE_DISTANCE, _MeleeDataTag.MELEE_DISTANCE_OLD1 -> pojo.meleeDistance = JsonUtils.readFloat(reader);
-                    case _MeleeDataTag.MELEE_COOLDOWN, _MeleeDataTag.MELEE_COOLDOWN_OLD1 -> pojo.meleeCooldown = JsonUtils.readFloat(reader);
+                    case _MeleeDataTag.GUN_BASE_LENGTH, _MeleeDataTag.GUN_BASE_LENGTH_OLD1 -> pojo.gunBaseLength = JsonUtils.readFloat(reader);
                     case _MeleeDataTag.DEFAULT_MELEE_DATA, _MeleeDataTag.DEFAULT_MELEE_DATA_OLD1 -> pojo.defaultMeleeData = JsonUtils.read(reader, _DefaultMeleeData::fromJson);
                     default -> reader.skipValue();
                 }
@@ -52,8 +50,7 @@ public final class _MeleeData extends ResourcePojo<_MeleeData> {
     @Override
     public void toJson(JsonWriter writer) throws IOException {
         writer.beginObject(); {
-            JsonUtils.writeFloat(writer, _MeleeDataTag.MELEE_DISTANCE, this.meleeDistance);
-            JsonUtils.writeFloat(writer, _MeleeDataTag.MELEE_COOLDOWN, this.meleeCooldown);
+            JsonUtils.writeFloat(writer, _MeleeDataTag.GUN_BASE_LENGTH, this.gunBaseLength);
             JsonUtils.write(writer, _MeleeDataTag.DEFAULT_MELEE_DATA, this.defaultMeleeData, _DefaultMeleeData::toJson);
         }
         writer.endObject();
@@ -80,21 +77,15 @@ public final class _MeleeData extends ResourcePojo<_MeleeData> {
 
     // --------Getter & Setter--------
 
-    public float getMeleeDistance() {
-        return meleeDistance;
-    }
-    public float getMeleeCooldown() {
-        return meleeCooldown;
+    public float getGunBaseLength() {
+        return gunBaseLength;
     }
     public _DefaultMeleeData getDefaultMeleeData() {
         return defaultMeleeData;
     }
 
-    public void setMeleeDistance(float meleeDistance) {
-        this.meleeDistance = meleeDistance;
-    }
-    public void setMeleeCooldown(float meleeCooldown) {
-        this.meleeCooldown = meleeCooldown;
+    public void setGunBaseLength(float gunBaseLength) {
+        this.gunBaseLength = gunBaseLength;
     }
     public void setDefaultMeleeData(_DefaultMeleeData defaultMeleeData) {
         this.defaultMeleeData = defaultMeleeData;

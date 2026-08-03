@@ -23,22 +23,22 @@ import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.event.EventDispatcher;
 
 /**
- * 射手生物{@link ILivingShooter} 近战(刺刀/枪托)事件
+ * 射手生物{@link ILivingShooter} 准备 近战(刺刀/枪托)事件
  */
-public final class ShooterMeleeEvent extends LivingShooterEvent implements IGunEvent {
+public final class ShooterPrepareMeleeEvent extends LivingShooterEvent implements IGunEvent {
 
     private final @Nullable IGun iGun;
     private final @NotNull ItemStack gunItem;
 
-    public ShooterMeleeEvent(McLogicalSide logicalSide,
-                             @Nullable ILivingShooter iLivingShooter, @Nullable LivingEntity livingShooter,
-                             @Nullable IGun iGun, @NotNull ItemStack gunItem) {
+    public ShooterPrepareMeleeEvent(McLogicalSide logicalSide,
+                                    @Nullable ILivingShooter iLivingShooter, @Nullable LivingEntity livingShooter,
+                                    @Nullable IGun iGun, @NotNull ItemStack gunItem) {
         super(logicalSide, iLivingShooter, livingShooter);
         this.iGun = iGun;
         this.gunItem = gunItem;
     }
     @Override public CustomEventType getEventType() {
-        return CustomEventType.SHOOTER_MELEE_EVENT;
+        return CustomEventType.SHOOTER_PREPARE_MELEE_EVENT;
     }
 
     public @Nullable IGun getIGun() {
@@ -50,14 +50,14 @@ public final class ShooterMeleeEvent extends LivingShooterEvent implements IGunE
 
     @Override public String getTextName() {
         return this.livingShooter != null ? this.livingShooter.getName().getString()
-                : "ShooterMeleeEvent";
+                : "ShooterPrepareMeleeEvent";
     }
     @Override public Component getDisplayName() {
         return this.livingShooter != null ? this.livingShooter.getDisplayName()
                 : Component.literal(getTextName());
     }
 
-    private static final EventDispatcher<ICustomEventHandler, ICustomEvent, CustomEventType> _EVENT_DISPATCHER = CustomGun.getEventPoster().getEventDispatcher(ShooterMeleeEvent.class);
+    private static final EventDispatcher<ICustomEventHandler, ICustomEvent, CustomEventType> _EVENT_DISPATCHER = CustomGun.getEventPoster().getEventDispatcher(ShooterPrepareMeleeEvent.class);
     @Override public @NotNull EventDispatcher<ICustomEventHandler, ICustomEvent, CustomEventType> getEventDispatcher() {
         return _EVENT_DISPATCHER;
     }

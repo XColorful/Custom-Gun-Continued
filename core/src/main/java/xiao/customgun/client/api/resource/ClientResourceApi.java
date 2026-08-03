@@ -12,6 +12,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.client.resource._AllAssetsManager;
 import xiao.customgun.client.resource._AssetsInstanceManager;
@@ -130,25 +131,25 @@ public class ClientResourceApi {
     public static @Nullable ClientGunIndexInstance getClientGunIndexInstance(Identifier gunLocation) {
         return _AssetsInstanceManager.GUN_INDEX.get(gunLocation);
     }
-    public static Set<Map.Entry<Identifier, ClientGunIndexInstance>> getAllClientGunIndexInstance() {
+    public static Set<Map.Entry<Identifier, @NotNull ClientGunIndexInstance>> getAllClientGunIndexInstance() {
         return _AssetsInstanceManager.GUN_INDEX.entrySet();
     }
     public static @Nullable ClientAttachmentIndexInstance getClientAttachmentIndexInstance(Identifier attachmentLocation) {
         return _AssetsInstanceManager.ATTACHMENT_INDEX.get(attachmentLocation);
     }
-    public static Set<Map.Entry<Identifier, ClientAttachmentIndexInstance>> getAllClientAttachmentIndexInstance() {
+    public static Set<Map.Entry<Identifier, @NotNull ClientAttachmentIndexInstance>> getAllClientAttachmentIndexInstance() {
         return _AssetsInstanceManager.ATTACHMENT_INDEX.entrySet();
     }
     public static @Nullable ClientAmmoIndexInstance getClientAmmoIndexInstance(Identifier ammoLocation) {
         return _AssetsInstanceManager.AMMO_INDEX.get(ammoLocation);
     }
-    public static Set<Map.Entry<Identifier, ClientAmmoIndexInstance>> getAllClientAmmoIndexInstance() {
+    public static Set<Map.Entry<Identifier, @NotNull ClientAmmoIndexInstance>> getAllClientAmmoIndexInstance() {
         return _AssetsInstanceManager.AMMO_INDEX.entrySet();
     }
     public static @Nullable ClientBlockIndexInstance getClientBlockIndexInstance(Identifier blockLocation) {
         return _AssetsInstanceManager.BLOCK_INDEX.get(blockLocation);
     }
-    public static Set<Map.Entry<Identifier, ClientBlockIndexInstance>> getAllClientBlockIndexInstance() {
+    public static Set<Map.Entry<Identifier, @NotNull ClientBlockIndexInstance>> getAllClientBlockIndexInstance() {
         return _AssetsInstanceManager.BLOCK_INDEX.entrySet();
     }
 
@@ -168,7 +169,7 @@ public class ClientResourceApi {
         GunDisplayInstance instance = getGunDisplayInstance(displayLocation);
         return instance != null ? instance : getGunDisplayInstance(fallbackLocation);
     }
-    public static Set<Map.Entry<Identifier, GunDisplayInstance>> getAllGunDisplayInstance() {
+    public static Set<Map.Entry<Identifier, @NotNull GunDisplayInstance>> getAllGunDisplayInstance() {
         return _AssetsInstanceManager.GUN_DISPLAY.entrySet();
     }
 

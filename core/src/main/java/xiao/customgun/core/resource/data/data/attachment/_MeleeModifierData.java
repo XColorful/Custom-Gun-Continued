@@ -27,7 +27,7 @@ public final class _MeleeModifierData extends ResourcePojo<_MeleeModifierData> {
 
     // 时间属性
     private float damageDelaySeconds = 0.1F;
-    private float baseCooldown = 0.0F;
+    private float extraCooldown = 0.0F;
 
     // 命中效果
     private float knockbackStrength = 0.0F;
@@ -49,7 +49,7 @@ public final class _MeleeModifierData extends ResourcePojo<_MeleeModifierData> {
                     case _MeleeModifierDataTag.RANGE_ANGLE -> pojo.rangeAngle = JsonUtils.readFloat(reader);
 
                     case _MeleeModifierDataTag.DAMAGE_DELAY_SECONDS, _MeleeModifierDataTag.DAMAGE_DELAY_SECONDS_OLD1 -> pojo.damageDelaySeconds = JsonUtils.readFloat(reader);
-                    case _MeleeModifierDataTag.BASE_COOLDOWN, _MeleeModifierDataTag.BASE_COOLDOWN_OLD1 -> pojo.baseCooldown = JsonUtils.readFloat(reader);
+                    case _MeleeModifierDataTag.BASE_COOLDOWN, _MeleeModifierDataTag.BASE_COOLDOWN_OLD1 -> pojo.extraCooldown = JsonUtils.readFloat(reader);
 
                     case _MeleeModifierDataTag.KNOCKBACK_STRENGTH, _MeleeModifierDataTag.KNOCKBACK_STRENGTH_OLD1 -> pojo.knockbackStrength = JsonUtils.readFloat(reader);
                     case _MeleeModifierDataTag.TARGET_EFFECT, _MeleeModifierDataTag.TARGET_EFFECT_OLD1 -> pojo.targetEffect = JsonUtils.readList(reader, _TargetEffectData::fromJson);
@@ -72,7 +72,7 @@ public final class _MeleeModifierData extends ResourcePojo<_MeleeModifierData> {
             JsonUtils.writeFloat(writer, _MeleeModifierDataTag.RANGE_ANGLE, this.rangeAngle);
 
             JsonUtils.writeFloat(writer, _MeleeModifierDataTag.DAMAGE_DELAY_SECONDS, this.damageDelaySeconds);
-            JsonUtils.writeFloat(writer, _MeleeModifierDataTag.BASE_COOLDOWN, this.baseCooldown);
+            JsonUtils.writeFloat(writer, _MeleeModifierDataTag.BASE_COOLDOWN, this.extraCooldown);
 
             JsonUtils.writeFloat(writer, _MeleeModifierDataTag.KNOCKBACK_STRENGTH, this.knockbackStrength);
             JsonUtils.writeList(writer, _MeleeModifierDataTag.TARGET_EFFECT, this.targetEffect, _TargetEffectData::toJson);
@@ -115,8 +115,8 @@ public final class _MeleeModifierData extends ResourcePojo<_MeleeModifierData> {
     public float getDamageDelaySeconds() {
         return damageDelaySeconds;
     }
-    public float getBaseCooldown() {
-        return baseCooldown;
+    public float getExtraCooldown() {
+        return extraCooldown;
     }
     public float getKnockbackStrength() {
         return knockbackStrength;
@@ -137,8 +137,8 @@ public final class _MeleeModifierData extends ResourcePojo<_MeleeModifierData> {
     public void setDamageDelaySeconds(float damageDelaySeconds) {
         this.damageDelaySeconds = damageDelaySeconds;
     }
-    public void setBaseCooldown(float baseCooldown) {
-        this.baseCooldown = baseCooldown;
+    public void setExtraCooldown(float extraCooldown) {
+        this.extraCooldown = extraCooldown;
     }
     public void setKnockbackStrength(float knockbackStrength) {
         this.knockbackStrength = knockbackStrength;

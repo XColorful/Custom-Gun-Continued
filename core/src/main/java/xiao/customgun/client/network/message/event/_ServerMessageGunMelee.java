@@ -18,7 +18,7 @@ import xiao.customgun.client.util.ClientWorldUtils;
 import xiao.customgun.core.api.common.McLogicalSide;
 import xiao.customgun.core.api.entity.ILivingShooter;
 import xiao.customgun.core.api.entity.shooter.ILivingShooterGetter;
-import xiao.customgun.core.api.event.shooter.ShooterMeleeEvent;
+import xiao.customgun.core.api.event.shooter.ShooterPrepareMeleeEvent;
 import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.api.item.gun.IGunGetter;
 import xiao.customgun.core.network.message.event.ServerMessageGunMelee;
@@ -35,7 +35,7 @@ public class _ServerMessageGunMelee {
         ItemStack gunItem = message.gunItem();
         @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
 
-        ShooterMeleeEvent event = new ShooterMeleeEvent(McLogicalSide.CLIENT,
+        ShooterPrepareMeleeEvent event = new ShooterPrepareMeleeEvent(McLogicalSide.CLIENT,
                 iLivingShooter, livingShooter,
                 iGun, gunItem);
         CustomGun.getEventPoster().postCustomEvent(event);

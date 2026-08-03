@@ -32,7 +32,7 @@ public record GunTooltip(ItemStack gunItem, IGun iGun,
 
         var gunLocation = iGun.getGunLocation(gunItem);
 
-        GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(gunLocation);
+        @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(gunLocation);
         if (gunIndexInstance == null) return null;
 
         GunData gunData = gunIndexInstance.getGunData();

@@ -27,9 +27,13 @@ public interface IBulletExplosionModifier<T extends ResourcePojo<T>> extends IGu
         if (explosion == null) return null;
         var base = new _ExplosionData();
         base.setEnableExplode(explosion.getEnableExplode());
+
+        base.setExplodeDamage(explosion.getExplodeDamage());
+        base.setExplodeScale(explosion.getExplodeScale());
+        base.setMaxDelaySeconds(explosion.getMaxDelaySeconds());
+
         base.setEnableKnockback(explosion.getEnableKnockback());
         base.setEnableWorldDestruction(explosion.getEnableWorldDestruction());
-        // TODO: explodeDamage/explodeScale/maxDelaySeconds → _SimpleModifierData
         return base;
     }
 

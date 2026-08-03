@@ -20,6 +20,9 @@ public interface ResourceTag {
     interface ConstantTag extends ResourceTag {
         String getConstantName();
     }
+    interface IndexTag extends ResourceTag {
+        int getIndex();
+    }
     interface MaskTag extends ResourceTag {
         int getMask();
     }

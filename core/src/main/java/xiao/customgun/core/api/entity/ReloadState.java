@@ -42,6 +42,10 @@ public class ReloadState {
         this.stateType = stateType;
     }
 
+    public boolean isReloading() {
+        return stateType != StateType.NOT_RELOADING || this.countDown >= 0;
+    }
+
     /**
      * @return 如果 StateType 为 NOT_RELOADING，则返回 NOT_RELOADING_COUNTDOWN(= -1), 否则返回当前状态剩余的时长，单位为 ms 。
      */
@@ -65,47 +69,71 @@ public class ReloadState {
         }
     }
 
+    public enum StateCategory {
+        NOT_RELOADING,
+        EMPTY_RELOAD,
+        TACTICAL_RELOAD;
+    }
+
     public enum StateType {
         /**
          * 表示当前玩家未进行换弹。
          */
-        NOT_RELOADING,
+        NOT_RELOADING(0, StateCategory.NOT_RELOADING),
         /**
          * 表示当前换弹状态为 正在进行空仓换弹 ，并处在填装弹药阶段。
          */
-        EMPTY_RELOAD_FEEDING,
+        EMPTY_RELOAD_FEEDING(1, StateCategory.EMPTY_RELOAD),
         /**
          * 表示当前换弹状态为 正在进行空仓换弹，并处在收尾阶段。
          */
-        EMPTY_RELOAD_FINISHING,
+        EMPTY_RELOAD_FINISHING(2, StateCategory.EMPTY_RELOAD),
         /**
          * 表示当前换弹状态为 正在进行战术快速换弹 ，并处在填装弹药阶段。
          */
-        TACTICAL_RELOAD_FEEDING,
+        TACTICAL_RELOAD_FEEDING(3, StateCategory.TACTICAL_RELOAD),
         /**
          * 表示当前换弹状态为 正在进行战术快速换弹，并处在收尾阶段。
          */
-        TACTICAL_RELOAD_FINISHING;
+        TACTICAL_RELOAD_FINISHING(4, StateCategory.TACTICAL_RELOAD);
+
+        public final int index;
+        public final StateCategory category;
+        StateType(int index, StateCategory category) {
+            this.index = index;
+            this.category = category;
+        }
+
+        public int getIndex() {
+            return this.index;
+        }
+        public StateCategory getCategory() {
+            return this.category;
+        }
 
         /**
          * 判断这个状态是否是空仓换弹过程中的其中一个阶段。包括空仓换弹的收尾阶段。
          */
         public boolean isReloadingEmpty() {
-            return this == EMPTY_RELOAD_FEEDING || this == EMPTY_RELOAD_FINISHING;
+            return this.category == StateCategory.EMPTY_RELOAD;
         }
 
         /**
          * 判断这个状态是否是战术换弹过程中的其中一个阶段。包括战术换弹的收尾阶段。
          */
         public boolean isReloadingTactical() {
-            return this == TACTICAL_RELOAD_FEEDING || this == TACTICAL_RELOAD_FINISHING;
+            return this.category == StateCategory.TACTICAL_RELOAD;
         }
 
         /**
          * 判断这个状态是否是任意换弹过程中的其中一个阶段。包括任意换弹的收尾阶段。
          */
         public boolean isReloading() {
-            return isReloadingEmpty() || isReloadingTactical();
+            return this.category == StateCategory.EMPTY_RELOAD ||  this.category == StateCategory.TACTICAL_RELOAD;
+        }
+
+        public boolean isReloadFeeding() {
+            return this == StateType.EMPTY_RELOAD_FEEDING || this.category == StateCategory.TACTICAL_RELOAD;
         }
 
         /**

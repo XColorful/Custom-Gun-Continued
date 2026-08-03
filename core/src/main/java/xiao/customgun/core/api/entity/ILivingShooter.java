@@ -12,6 +12,8 @@ import xiao.customgun.core.api.entity.shooter.IGunOperator;
 import xiao.customgun.core.api.entity.shooter.IShooterState;
 import xiao.customgun.core.api.entity.shooter.ISynGunState;
 
+import java.util.function.Supplier;
+
 /*
 文档译名: 射手生物 (XiaoColorful译); 否决译名: 射击生物(跟动词混淆), 射击者(范围超出了接口默认的LivingEntity)
  */
@@ -30,4 +32,11 @@ public interface ILivingShooter extends IGunOperator, IShooterState, ISynGunStat
      * @return 是否为曳光弹
      */
     boolean cgc$nextBulletIsTracer(int tracerCountInterval);
+
+    // --------Deprecated--------
+
+    @Override
+    @Deprecated default ShootResult cgc$shoot(Supplier<Float> pitch, Supplier<Float> yaw) {
+        return this.cgc$shoot(pitch, yaw, System.currentTimeMillis() - this.cgc$getShooterProperty().baseTimestamp, 0.0f);
+    }
 }

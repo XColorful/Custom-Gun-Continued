@@ -151,7 +151,7 @@ public final class ShootKey extends InputKey implements IEventHandler {
     private boolean checkAndDoShoot() {
         if (!ClientInputUtils.isGameplayFocused()) return false; // 不在焦点
 
-        LocalShooterSprint.stopSprint = false;
+        LocalShooterSprint.forceDisableSprint = false;
 
         Minecraft mc = Minecraft.getInstance();
         LocalPlayer player = mc.player;
@@ -168,7 +168,7 @@ public final class ShootKey extends InputKey implements IEventHandler {
         boolean shootPressed = this.hasPressedShoot || currentShootDown;
 
         if (shootPressed) // 按住开火键就禁止奔跑
-            LocalShooterSprint.stopSprint = true;
+            LocalShooterSprint.forceDisableSprint = true;
         else {
             SoundPlayManager.get().resetDryFireSound(); // 没按开火,后面没开火成功允许触发音效
             // 不提前返回, 需要减少蓄力进度
@@ -192,11 +192,12 @@ public final class ShootKey extends InputKey implements IEventHandler {
 
         // 检查是否蓄力满/不需要充能 -> 开火充能就绪
         ILocalShooter localShooter = ILocalShooterGetter.fromLocalPlayer(player);
-        if (!localShooter.cgc$chargeAndGetResult(doShoot)) return false; // 包含了蓄力进度tick
+        boolean shouldShoot = localShooter.cgc$doCharge_isChargeEnough(doShoot); // 包含了蓄力进度tick
+        if (!shouldShoot) return false;
 
         // ----开火充能就绪----
 
-        LocalShooterSprint.stopSprint = true;
+        LocalShooterSprint.forceDisableSprint = true;
 
         // 不允许连续射击模式 + 上次开火成功 -> 阻止继续蓄力(不开火)
         if (!allowContinuousShoot && this.lastShootSuccess) return false;

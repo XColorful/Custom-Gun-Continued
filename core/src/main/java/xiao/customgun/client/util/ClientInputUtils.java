@@ -33,6 +33,21 @@ public class ClientInputUtils {
         return mc.isWindowActive();
     }
 
+    /**
+     * 判断当前是否处于游戏内状态，比{@link #isGameplayFocused()}宽松
+     * <br>
+     * 不限制: 窗口焦点、鼠标、是否打开GUI
+     * @return 当前是否可进行游戏操作
+     */
+    public static boolean isInGameWorld() {
+        Minecraft mc = Minecraft.getInstance();
+        // 不能是加载界面
+        if (ClientGuiUtils.getOverlay(mc) != null) {
+            return false;
+        }
+        return true;
+    }
+
     // --------Deprecated--------
 
     @Deprecated(forRemoval = true)

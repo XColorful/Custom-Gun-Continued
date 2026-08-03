@@ -78,7 +78,7 @@ Notation:
 |common.`GunFinishReloadEvent`|shooter.`ShooterReloadFinishEvent`|
 |common.`GunFireEvent`|gun.`GunFireEvent`|
 |common.`GunFireSelectEvent`|shooter.`ShooterSwitchFireModeEvent`|
-|common.`GunMeleeEvent`|shooter.`ShooterMeleeEvent`|
+|common.`GunMeleeEvent`|shooter.`ShooterPrepareMeleeEvent`|
 |common.`GunReloadEvent`|shooter.`ShooterReloadEvent`|
 |common.`GunShootEvent`|shooter.`ShooterFireEvent`|
 |common.`KubeJSGunEventPoster`|_Deprecated_|
@@ -134,6 +134,14 @@ Notation:
 |---|---|
 |`IAttachmentModifier`|attachment.modifier.`IAttachmentModifier`|
 
+|com.tacz.guns.api.modifier|xiao.customgun.core.api.item|
+|---|---|
+|`IAttachmentModifier`.readJson|`IItemModifier`.getModifier|
+
+|com.tacz.guns.api.modifier|xiao.customgun.core.api.item|
+|---|---|
+|`IAttachmentModifier`.initCache|gun.modifier.`IGunModifier`.getBase|
+
 |com.tacz.guns.api.modifier| |
 |---|---|
 |`IAttachmentModifier`.`DiagramsData`||
@@ -156,10 +164,10 @@ Notation:
 > package com.tacz.guns.api.util;
 > ```
 
-|com.tacz.guns.util| |
+|com.tacz.guns.util|xiao.customgun.core.api.gun|
 |---|---|
-|`LuaEntityAccessor`||
-|`LuaNbtAccessor`||
+|`LuaEntityAccessor`|script.`_LuaEntityAccessor`|
+|`LuaNbtAccessor`|script.`_LuaNbtAccessor`|
 
 #### Lua virtual machine library API
 > ```java
@@ -263,9 +271,9 @@ Notation:
 > package com.tacz.guns.debug;
 > ```
 
-|com.tacz.guns.crafting.result|package xiao.customgun.core.recipe|
+|com.tacz.guns.crafting.result| |
 |---|---|
-|`GunMeleeDebug`||
+|`GunMeleeDebug`|_Deprecated_|
 
 ### Entity
 > ```java
@@ -278,18 +286,22 @@ Notation:
 |shooter.`LivingEntityCrawl`|shooter.`LivingShooterProne`|
 |shooter.`LivingEntityDrawGun`|shooter.`LivingShooterDraw`|
 |shooter.`LivingEntityFireSelect`|shooter.`LivingShooterSwitchFireMode`|
+|shooter.`LivingEntitySpeedModifier`|_Deprecated_|
 |sync.core|sync|
 |sync.core.`DataHolder`|sync.`SyncDataHolder`|
 |sync.`ModSerializers`.RELOAD_STATE|sync.`Serializers`.RELOAD_STATE|
 |sync.`ModSyncedEntityData`|`LivingShooterSyncKey`|
 |sync.`ModSyncedEntityData`.THROWABLE_USE_TICK|_Deprecated_|
 |`EntityKineticBullet`|projectile.`GunProjectile`|
+|`EntityKineticBullet`.applyShotgunDamageSpread||
+|`EntityKineticBullet`.setShotDamageMultiplier||
 |`EntityKineticBullet`.IEntityAdditionalSpawnData|projectile.`GunProjectile`.constructInitData|
 
 |com.tacz.guns.entity|xiao.customgun.core.api.entity|
 |---|---|
 |shooter.`ShooterDataHolder`|`ShooterProperty`|
 |`EntityKineticBullet`|`IGunProjectile`|
+|`EntityKineticBullet`.shootFromRotation|projectile.physics.`IProjectilePhysicsExtension`.shootFromRotation|
 |`TargetMinecart`.onProjectileHit|`IBulletVictimEntity`.cgc$onProjectileImpact|
 
 |com.tacz.guns.entity|xiao.customgun.forge.minecraft|
@@ -380,11 +392,12 @@ Notation:
 |`CapabilityRegistry`|`CapabilityRegistry`|
 |`CommandRegistry`|`CommandRegistry`|
 |`CommonRegistry`|`CommonSetup`|
-|`CommonRegistry`.registerAttributes||
+|`CommonRegistry`.registerAttributes|_Deprecated_|
 |`CommonRegistry`.onAddPackFinders|_Deprecated_|
 |`CompatRegistry`||
 |`ModAttributes`|_Deprecated_|
 |`ModBlocks`|_Deprecated_|
+|`ModBlocks`.BULLET_IGNORE_BLOCKS|registry.`ModBlocks`.BULLET_IGNORE_BLOCKS|
 |`ModContainer`|_Deprecated_|
 |`ModCreativeTabs`|registry.`ModCreativeTabs`|
 |`ModDamageTypes`|registry.`ModDamageTypes`|
@@ -423,6 +436,7 @@ Notation:
 |`DefaultTableItem`|_Deprecated_|
 |`GunSmithTableItem`|_Deprecated_|
 |`ModernKineticGunItem`|gun.`GunItem`|
+|`ModernKineticGunItem`.AM_FACTORY|_Deprecated_|
 |`ModernKineticGunItem`.`DefaultPropertyModification`|_Deprecated_|
 |`TargetMinecartItem`|_Deprecated_|
 
@@ -524,6 +538,7 @@ Notation:
 |pojo.data.block.`*`|data.data.block|
 |pojo.data.gun.`GunData`|data.data.`GunData`|
 |pojo.data.gun.`*`|data.data.gun|
+|pojo.data.gun.`MoveSpeed`|_Deprecated_|
 |pojo.data.loot|_Deprecated_|
 |pojo.data.recipe.`*`|data.recipe.`RecipeData`|
 |pojo.data.recipe.`GunResult`|_Deprecated_|
@@ -550,6 +565,7 @@ Notation:
 |com.tacz.guns.resource|xiao.customgun.core.item|
 |---|---|
 |modifier.custom.`*Modifier`|attachment.modifier.`*Modifier`|
+|modifier.custom.`ExtraMovementModifier`|_Deprecated_|
 |modifier.`AttachmentPropertyManager`.eval|attachment.modifier.`AttachmentModifier`.evalSimpleModifierData|
 
 |com.tacz.guns.resource|xiao.customgun.core.api.entity|

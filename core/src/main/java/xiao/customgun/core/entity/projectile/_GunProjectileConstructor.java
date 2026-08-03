@@ -99,7 +99,7 @@ public class _GunProjectileConstructor {
 
         ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(livingShooter);
         GunScriptApi scriptApi = GunScriptApi.of(iLivingShooter, livingShooter, iGun, gunItem);
-        if (!scriptApi.resetCache()) return;
+        if (!scriptApi.isCacheValid()) return;
 
         _this.stateCache.armorIgnorePercent = IArmorIgnoreModifier.evalByScript(scriptApi, _this.stateCache.armorIgnorePercent);
         _this.stateCache.headshotMultiplier = IHeadshotMultiplierModifier.evalByScript(scriptApi, _this.stateCache.headshotMultiplier);

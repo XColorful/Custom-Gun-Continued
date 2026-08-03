@@ -8,20 +8,21 @@
 package xiao.customgun.core.item.attachment.modifier;
 
 import org.jetbrains.annotations.NotNull;
-import xiao.customgun.core.api.item.gun.modifier.IAmmoSpeedModifier;
+import org.jetbrains.annotations.Nullable;
+import xiao.customgun.core.api.item.gun.modifier.IBulletSpeedModifier;
 import xiao.customgun.core.resource.data.data.AttachmentData;
 import xiao.customgun.core.resource.data.data.attachment._SimpleModifierData;
 
 import java.util.Collection;
 
 public final class BulletSpeedModifier extends AttachmentModifier<_SimpleModifierData, Float>
-        implements IAmmoSpeedModifier<AttachmentData> {
+        implements IBulletSpeedModifier<AttachmentData> {
     public static final BulletSpeedModifier INSTANCE = new BulletSpeedModifier();
 
     // --------IAttachmentModifier--------
 
     @Override
-    public _SimpleModifierData getModifier(@NotNull AttachmentData pojo) {
+    public @Nullable _SimpleModifierData getModifier(@NotNull AttachmentData pojo) {
         return pojo.getBulletSpeedModifier();
     }
 

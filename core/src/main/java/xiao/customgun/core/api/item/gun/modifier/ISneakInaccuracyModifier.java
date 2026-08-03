@@ -26,8 +26,8 @@ public interface ISneakInaccuracyModifier<T extends ResourcePojo<T>> extends IGu
         var inaccuracy = gunData.getInaccuracyData();
         if (inaccuracy == null) return 3.5F;
         float base = inaccuracy.getSneak();
-        _FireModeAdjustData fireModeAdjust = gunData.getFireModeAdjustData().get(iGun.getFireModeType(gunItem));
-        if (fireModeAdjust != null) base += fireModeAdjust.getOtherInaccuracy();
+//        _FireModeAdjustData fireModeAdjust = gunData.getFireModeAdjustData().get(iGun.getFireModeType(gunItem));
+//        if (fireModeAdjust != null) base += fireModeAdjust.getOtherInaccuracy();
         return Math.max(base, 0);
     }
 

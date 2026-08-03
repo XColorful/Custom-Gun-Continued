@@ -8,6 +8,7 @@
 package xiao.customgun.core.item.attachment.modifier;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.item.gun.modifier.IRpmModifier;
 import xiao.customgun.core.resource.data.data.AttachmentData;
 import xiao.customgun.core.resource.data.data.attachment._SimpleModifierData;
@@ -21,7 +22,7 @@ public final class RpmModifier extends AttachmentModifier<_SimpleModifierData, I
     // --------IAttachmentModifier--------
 
     @Override
-    public _SimpleModifierData getModifier(@NotNull AttachmentData pojo) {
+    public @Nullable _SimpleModifierData getModifier(@NotNull AttachmentData pojo) {
         return pojo.getRpmModifier();
     }
 

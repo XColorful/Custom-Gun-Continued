@@ -24,6 +24,10 @@ import xiao.customgun.core.config.SyncConfig;
 
 import java.util.UUID;
 
+/**
+ * 枪械移速影响抽到单独的模组
+ */
+@Deprecated(forRemoval = true)
 public final class LivingShooterSpeedModifier extends LivingShooterAspect {
 
     public static final @NotNull ResourceLocation EXTRA_SPEED_MODIFIER = CustomGun.getMcRegistry().createResourceLocation(String.format("%s:extra_speed_modifier", CustomGun.MOD_ID));
@@ -53,7 +57,7 @@ public final class LivingShooterSpeedModifier extends LivingShooterAspect {
 
         double weightFactor = SyncConfig.WEIGHT_SPEED_MULTIPLIER.get();
         if (weightFactor > 0) {
-            float targetSpeed = 0; // TODO WeightModifier: GunPropertyCache.getCache(WeightModifier.ID)
+            float targetSpeed = 0;
             targetSpeed *= (float) -weightFactor;
             AttributeModifier modifier = speedModifier.getModifier(WEIGHT_SPEED_MODIFIER);
             if (modifier == null) {
@@ -64,7 +68,7 @@ public final class LivingShooterSpeedModifier extends LivingShooterAspect {
             }
         }
 
-        Object speed = null; // TODO ExtraMovementModifier: GunPropertyCache.getCache(ExtraMovementModifier.ID)
+        Object speed = null;
         if (speed != null) {
             double targetSpeed = _getTargetSpeed(speed);
             AttributeModifier modifier = speedModifier.getModifier(EXTRA_SPEED_MODIFIER);

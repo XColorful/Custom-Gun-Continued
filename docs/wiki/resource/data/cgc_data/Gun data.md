@@ -1,7 +1,7 @@
 [English](#English)
 
 # 枪械数据
-> wiki 版本：`0.0.1`.3
+> wiki 版本：`0.0.1`.7
 
 - `bullet_data`/`bullet`（\_BulletData）：
 	- `display_damage`/`damage`（float）：
@@ -54,11 +54,11 @@
 		- `value`（float[]）：
 - `prone_recoil_multiplier`/`crawl_recoil_multiplier`（float）：
 - 
-- `weight`（float）：
-- `movement_data`/`movement_speed`（\_MovementData）：
-	- `base`（float）：
-	- `aim`（float）：
-	- `reload`（float）：
+- ~~`weight`~~
+- ~~`movement_data`/`movement_speed`~~
+	- ~~`base`~~
+	- ~~`aim`~~
+	- ~~`reload`~~
 - 
 - `fire_sound_data`/`fire_sound`（\_FireSoundData）：
 	- `normal_multiplier`/`fire_multiplier`（float）：
@@ -67,7 +67,7 @@
 - 
 - `reload_data`/`reload`（\_ReloadData）：
 	- `ammo_feed_type`/`type`（AmmoFeedType）：
-	- `infinite_ammo`/`infinite`（boolean）：
+	- `free_ammo_feed`/`infinite`（boolean）：
 	- `reload_feed`/`feed`（\_ReloadFeedData）：
 		- `empty`（float）：
 		- `tactical`（float）：
@@ -96,8 +96,8 @@
 	- `continuous_shoot`（boolean）：
 ---
 - `melee_data`/`melee`（\_MeleeData）：
-	- `melee_distance`/`distance`（float）：
-	- `melee_cooldown`/`cooldown`（float）：
+	- `gun_base_length`/`distance`（float）：
+	- ~~`cooldown`~~
 	- `default_melee_data`/`default`（\_DefaultMeleeData）：
 		- `melee_type`/`animation_type`（MeleeType）：
 		---
@@ -140,7 +140,7 @@
 ---
 - `draw_time`（float）：
 - `put_away_time`（float）：
-- `sprint_time`（float）：
+- `sprint_switch_time`/`sprint_time`（float）：
 - `aim_time`（float）：
 - `bolt_action_time`（float）：
 - `bolt_feed_time`（float）：
@@ -212,13 +212,6 @@
 	},
 	"prone_recoil_multiplier": 0.0,
 
-	"weight": 0.0,
-	"movement_data": {
-		"base": 0.0,
-		"aim": 0.0,
-		"reload": 0.0
-	},
-
 	"fire_sound_data": {
 		"normal_multiplier": 0.0,
 		"silenced_multiplier": 0.0
@@ -227,7 +220,7 @@
 
 	"reload_data": {
 		"ammo_feed_type": "",
-		"infinite_ammo": false,
+		"free_ammo_feed": false,
 		"reload_feed": {
 			"empty": 0.0,
 			"tactical": 0.0
@@ -269,8 +262,7 @@
 	},
 	
 	"melee_data": {
-		"melee_distance": 0.0,
-		"melee_cooldown": 0.0,
+		"gun_base_length": 0.0,
 		"default_melee_data": {
 			"melee_type": "",
 			"melee_damage": 0.0,
@@ -325,7 +317,7 @@
 	
 	"draw_time": 0.0,
 	"put_away_time": 0.0,
-	"sprint_time": 0.0,
+	"sprint_switch_time": 0.0,
 	"aim_time": 0.0,
 	"bolt_action_time": 0.0,
 	"bolt_feed_time": 0.0
@@ -333,7 +325,7 @@
 ```
 
 # English
-> wiki verison: `0.0.1`.3
+> wiki verison: `0.0.1`.7
 
 - `bullet_data`/`bullet`( \_BulletData):
 	- `display_damage`/`damage`(float):
@@ -386,11 +378,11 @@
 		- `value`(float[]):
 - `prone_recoil_multiplier`/`crawl_recoil_multiplier`(float):
 - 
-- `weight`(float):
-- `movement_data`/`movement_speed`( \_MovementData):
-	- `base`(float):
-	- `aim`(float):
-	- `reload`(float):
+- ~~`weight`~~
+- ~~`movement_data`/`movement_speed`~~
+	- ~~`base`~~
+	- ~~`aim`~~
+	- ~~`reload`~~
 - 
 - `fire_sound_data`/`fire_sound`( \_FireSoundData):
 	- `normal_multiplier`/`fire_multiplier`(float):
@@ -399,7 +391,7 @@
 - 
 - `reload_data`/`reload`( \_ReloadData):
 	- `ammo_feed_type`/`type`(AmmoFeedType):
-	- `infinite_ammo`/`infinite`(boolean):
+	- `free_ammo_feed`/`infinite`(boolean):
 	- `reload_feed`/`feed`( \_ReloadFeedData):
 		- `empty`(float):
 		- `tactical`(float):
@@ -428,8 +420,8 @@
 	- `continuous_shoot`(boolean):
 ---
 - `melee_data`/`melee`( \_MeleeData):
-	- `melee_distance`/`distance`(float):
-	- `melee_cooldown`/`cooldown`(float):
+	- `gun_base_length`/`distance`(float):
+	- ~~`cooldown`~~
 	- `default_melee_data`/`default`( \_DefaultMeleeData):
 		- `melee_type`/`animation_type`(MeleeType):
 		---
@@ -472,7 +464,7 @@
 ---
 - `draw_time`(float):
 - `put_away_time`(float):
-- `sprint_time`(float):
+- `sprint_switch_time`/`sprint_time`(float):
 - `aim_time`(float):
 - `bolt_action_time`(float):
 - `bolt_feed_time`(float):
@@ -544,13 +536,6 @@
 	},
 	"prone_recoil_multiplier": 0.0,
 
-	"weight": 0.0,
-	"movement_data": {
-		"base": 0.0,
-		"aim": 0.0,
-		"reload": 0.0
-	},
-
 	"fire_sound_data": {
 		"normal_multiplier": 0.0,
 		"silenced_multiplier": 0.0
@@ -559,7 +544,7 @@
 
 	"reload_data": {
 		"ammo_feed_type": "",
-		"infinite_ammo": false,
+		"free_ammo_feed": false,
 		"reload_feed": {
 			"empty": 0.0,
 			"tactical": 0.0
@@ -601,8 +586,7 @@
 	},
 	
 	"melee_data": {
-		"melee_distance": 0.0,
-		"melee_cooldown": 0.0,
+		"gun_base_length": 0.0,
 		"default_melee_data": {
 			"melee_type": "",
 			"melee_damage": 0.0,
@@ -657,7 +641,7 @@
 	
 	"draw_time": 0.0,
 	"put_away_time": 0.0,
-	"sprint_time": 0.0,
+	"sprint_switch_time": 0.0,
 	"aim_time": 0.0,
 	"bolt_action_time": 0.0,
 	"bolt_feed_time": 0.0

@@ -50,7 +50,7 @@ public enum AttachmentModifierType implements ResourceTag.CategoryTag, IGunModif
             RecoilDataModifier.INSTANCE),
     EFFECTIVE_RANGE(GunModifierType.EFFECTIVE_RANGE,
             EffectiveRangeModifier.INSTANCE),
-    WEIGHT(GunModifierType.WEIGHT,
+    @Deprecated(forRemoval = true) WEIGHT(GunModifierType.WEIGHT,
             WeightModifier.INSTANCE),
     MUZZLE(GunModifierType.MUZZLE,
             MuzzleModifier.INSTANCE),

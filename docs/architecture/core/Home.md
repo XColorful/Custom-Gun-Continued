@@ -46,6 +46,7 @@
 - Gun Projectile：枪射物
 	- GunProjectile：枪射物（实体）
 - Living Shooter (aspect)：射手生物（切面）
+	> [射手框架](./entity/shooter/shooter-framework.md)
 	- LivingShooterAim：瞄准
 	- LivingShooterAmmoCheck：子弹检查
 	- LivingShooterBolt：拉栓
@@ -56,7 +57,7 @@
 	- LivingShooterMelee：近战
 	- LivingShooterReload：换弹
 	- LivingShooterShoot：射击
-	- LivingShooterSpeedModifier：速度修改
+	- ~~LivingShooterSpeedModifier：速度修改~~
 	- LivingShooterSprint：冲刺
 	- modifier：[射手修饰框架](./entity/shooter/modifier/Home.md)
 		- ShooterGunModifierManager：射手枪械修饰管理器
@@ -268,6 +269,7 @@ Module division based on the `xiao.customgun.core` top-level package
 - Gun Projectile:
 	- GunProjectile: Gun projectile (entity)
 - Living Shooter (aspect):
+	> [Shooter framework](./entity/shooter/shooter-framework.md#English)
 	- LivingShooterAim: Aim
 	- LivingShooterAmmoCheck: Ammo check
 	- LivingShooterBolt: Bolt
@@ -278,9 +280,9 @@ Module division based on the `xiao.customgun.core` top-level package
 	- LivingShooterMelee: Melee
 	- LivingShooterReload: Reload
 	- LivingShooterShoot: Shoot
-	- LivingShooterSpeedModifier: Speed modifier
+	- ~~LivingShooterSpeedModifier: Speed modifier~~
 	- LivingShooterSprint: Sprint
-	- modifier: [Shooter modifier framework](./entity/shooter/modifier/Home.md)
+	- modifier: [Shooter modifier framework](./entity/shooter/modifier/Home.md#English)
 		- ShooterGunModifierManager: Shooter gun modifier manager
 	- player: Player shooter
 	- world: In-game world related operations

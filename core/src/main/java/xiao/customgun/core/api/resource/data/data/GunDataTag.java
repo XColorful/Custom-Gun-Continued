@@ -19,8 +19,8 @@ public class GunDataTag {
     public static final String RECOIL_DATA = "recoil_data"; public static final String RECOIL_DATA_OLD1 = "recoil";
     public static final String PRONE_RECOIL_MULTIPLIER = "prone_recoil_multiplier"; public static final String PRONE_RECOIL_MULTIPLIER_OLD1 = "crawl_recoil_multiplier";
 
-    public static final String WEIGHT = "weight";
-    public static final String MOVEMENT_DATA = "movement_data"; public static final String MOVEMENT_DATA_OLD1 = "movement_speed";
+    @Deprecated public static final String WEIGHT = "weight";
+    @Deprecated public static final String MOVEMENT_DATA = "movement_data"; @Deprecated public static final String MOVEMENT_DATA_OLD1 = "movement_speed";
 
     public static final String FIRE_SOUND_DATA = "fire_sound_data"; public static final String FIRE_SOUND_DATA_OLD1 = "fire_sound";
     public static final String HURT_BOB_TWEAK_MULTIPLIER = "hurt_bob_tweak_multiplier";
@@ -56,7 +56,7 @@ public class GunDataTag {
     // 操作枪械的时长
     public static final String DRAW_TIME = "draw_time";
     public static final String PUT_AWAY_TIME = "put_away_time";
-    public static final String SPRINT_TIME = "sprint_time";
+    public static final String SPRINT_SWITCH_TIME = "sprint_switch_time"; public static final String SPRINT_SWITCH_TIME_OLD1 = "sprint_time";
     public static final String AIM_TIME = "aim_time";
     public static final String BOLT_ACTION_TIME = "bolt_action_time";
     public static final String BOLT_FEED_TIME = "bolt_feed_time";

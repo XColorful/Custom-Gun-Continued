@@ -22,7 +22,9 @@ import xiao.customgun.core.api.entity.shooter.modifier.ShooterGunModifierCache;
 import xiao.customgun.core.api.entity.shooter.ILivingShooterGetter;
 import xiao.customgun.core.api.gun.attack.IGunAttackRuntime;
 import xiao.customgun.core.api.item.IGun;
+import xiao.customgun.core.api.item.attachment.modifier.AttachmentModifierType;
 import xiao.customgun.core.api.item.gun.*;
+import xiao.customgun.core.api.item.gun.modifier.IRpmModifier;
 import xiao.customgun.core.api.resource.ResourceApi;
 import xiao.customgun.core.config.SyncConfig;
 import xiao.customgun.core.network.message.ServerMessageSyncBaseTimestamp;
@@ -223,12 +225,15 @@ public final class LivingShooterShoot extends LivingShooterAspect {
 
         ShooterGunModifierCache shooterGunModifierCache = ILivingShooterGetter.cgc$fromLivingEntity(livingShooter).cgc$getGunModifierCache();
         if (shooterGunModifierCache != null) {
-            // TODO GunPropertyCache
+            @Nullable Integer _rpm = IRpmModifier.getValue(shooterGunModifierCache, AttachmentModifierType.RPM);
+            if (_rpm != null) rpm = _rpm;
         }
         _HeatData heatData = gunData.getHeatData();
         if (heatData != null) {
             rpm = (int) (rpm * iGun.lerpRPM(gunItem));
         }
+
+        if (rpm > 1200) rpm = 1200;
 
         return 60_000L / rpm;
     }

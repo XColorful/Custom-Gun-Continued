@@ -151,7 +151,7 @@ public final class LivingShooterShoot extends LivingShooterAspect {
 
         // 根据 tick time 和 允许的网络延迟波动 计算 时间戳的接受窗口
         MinecraftServer server = ((ServerLevel) this.livingShooter.level()).getServer();
-        double tickTime = Math.max(server.tickTimes[server.getTickCount() % 100] * 1.0E-6D, 50);
+        double tickTime = Math.max(server.tickTimesNanos[server.getTickCount() % 100] * 1.0E-6D, 50);
         long alpha = currentTimeMillis - this.shooterProperty.baseTimestamp - clientFromBaseToCurrentTimeMs;
         if (alpha < -NETWORK_DELAY_MS || alpha > NETWORK_DELAY_MS + tickTime * 2) { // 允许 +- 300ms 的网络波动、窗口下限再扩大 2 个 tick time 时间(最坏情况射击会延迟2个 tick)
             if (this.livingShooter instanceof ServerPlayer player) {

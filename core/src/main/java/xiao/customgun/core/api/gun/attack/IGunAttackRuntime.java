@@ -38,6 +38,7 @@ public interface IGunAttackRuntime {
         NO_AMMO(2),
         NO_BARREL_AMMO(3), // 暂时不去扣枪膛(chamber)的细节，要改得整个模组范围里改，代码里还是用更好懂的说法
         NOT_CHARGED(4),
+        AMMO_CONSUME_FAILED(5),
         ;
 
         public final int priority;

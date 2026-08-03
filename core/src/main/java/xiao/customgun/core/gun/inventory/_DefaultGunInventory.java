@@ -23,7 +23,6 @@ import xiao.customgun.core.api.item.IAmmo;
 import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.api.item.ammo.IAmmoGetter;
 import xiao.customgun.core.api.item.builder.AmmoBuilder;
-import xiao.customgun.core.api.item.gun.AmmoFeedType;
 import xiao.customgun.core.api.minecraft.capability.IInventoryCapability;
 import xiao.customgun.core.api.resource.ResourceApi;
 import xiao.customgun.core.init.registry.ModItems;
@@ -35,16 +34,13 @@ import xiao.customgun.core.resource.instance.data.GunIndexInstance;
 
 public class _DefaultGunInventory {
 
-    protected static void dropAllAmmo(@NotNull IGun iGun, @NotNull ItemStack gunItem,
-                                      ILivingShooter iLivingShooter, LivingEntity livingShooter) {
+    protected static void retrieveAmmoFromGun(@NotNull IGun iGun, @NotNull ItemStack gunItem,
+                                              ILivingShooter iLivingShooter, LivingEntity livingShooter) {
         var gunLocation = iGun.getGunLocation(gunItem);
         @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(gunLocation);
         if (gunIndexInstance == null) return;
 
-        // 背包直读不用退弹
-        if (iGun.useInventoryAmmo(gunItem)) return;
-
-        int magAmmoCount = iGun.getMagAmmoCount(gunItem);
+        int magAmmoCount = iGun.getMagAmmoCount(gunItem); // 只取回弹匣的子弹
         if (magAmmoCount <= 0) return;
 
         GunData gunData = gunIndexInstance.getGunData();
@@ -53,15 +49,15 @@ public class _DefaultGunInventory {
         // --------虚拟备弹--------
         if (iGun.useDummyAmmo(gunItem)) {
             iGun.setMagAmmoCount(gunItem, 0);
-            // 燃料类型不返还
-            if (reloadData.getAmmoFeedType() == AmmoFeedType.FUEL) {
+            // 不返还的类型
+            if (!reloadData.getAmmoFeedType().canRetrieveAmmo()) {
                 return;
             }
             iGun.setDummyAmmoCount(gunItem, magAmmoCount);
             return;
         }
-        // --------燃料类型不返还--------
-        else if (reloadData.getAmmoFeedType() == AmmoFeedType.FUEL) {
+        // --------背包直读/燃料类型不返还--------
+        else if (!reloadData.getAmmoFeedType().canRetrieveAmmo()) {
             iGun.setMagAmmoCount(gunItem, 0);
             return;
         }
@@ -73,7 +69,7 @@ public class _DefaultGunInventory {
         // --------退弹--------
 
         // 优先退到背包 (物品)
-        int dropAmmoRemain = dropAmmoToInventory(iGun, gunItem, livingShooter, gunData, magAmmoCount);
+        int dropAmmoRemain = retrieveAmmoToInventory(iGun, gunItem, livingShooter, gunData, magAmmoCount);
         // 退弹到世界 (物品实体)
         if (dropAmmoRemain > 0) dropAmmoRemain = dropAmmoToWorld(iGun, gunItem, livingShooter, gunData, dropAmmoRemain);
         iGun.setMagAmmoCount(gunItem, dropAmmoRemain);
@@ -82,10 +78,10 @@ public class _DefaultGunInventory {
      * @return 剩余待退弹的数量
      */
     @ApiStatus.Internal
-    public static int dropAmmoToInventory(@NotNull IGun iGun, @NotNull ItemStack gunItem,
-                                          LivingEntity livingShooter,
-                                          GunData gunData,
-                                          int dropAmmoRemain) {
+    public static int retrieveAmmoToInventory(@NotNull IGun iGun, @NotNull ItemStack gunItem,
+                                              LivingEntity livingShooter,
+                                              GunData gunData,
+                                              int dropAmmoRemain) {
         var ammoLocation = gunData.getAmmoLocation();
         @Nullable AmmoIndexInstance ammoIndexInstance = ResourceApi.getAmmoIndexInstance(ammoLocation);
         if (ammoIndexInstance == null) return dropAmmoRemain;
@@ -250,7 +246,7 @@ public class _DefaultGunInventory {
     @ApiStatus.Internal
     public static int findAndExtractDummyAmmo(@NotNull IGun iGun, @NotNull ItemStack gunItem,
                                               int requiredAmmoCount) {
-        int dummyAmmoCount = iGun.getDummyAmmoCount(gunItem);
+        int dummyAmmoCount = iGun.useDummyAmmo(gunItem) ? iGun.getDummyAmmoCount(gunItem) : 0;
         if (dummyAmmoCount <= 0) return 0;
 
         int extract = Math.min(dummyAmmoCount, requiredAmmoCount);

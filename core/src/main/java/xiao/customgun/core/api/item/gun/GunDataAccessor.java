@@ -35,6 +35,7 @@ import xiao.customgun.core.resource.data.data.GunData;
 import xiao.customgun.core.resource.data.data.attachment._MeleeModifierData;
 import xiao.customgun.core.resource.data.data.gun._ChargingData;
 import xiao.customgun.core.resource.data.data.gun._MeleeData;
+import xiao.customgun.core.resource.data.data.gun._ReloadData;
 import xiao.customgun.core.resource.data.data.gun.melee._DefaultMeleeData;
 import xiao.customgun.core.resource.instance.data.AttachmentIndexInstance;
 import xiao.customgun.core.resource.instance.data.GunIndexInstance;
@@ -260,18 +261,21 @@ public interface GunDataAccessor extends IGunDataAccess {
         }
         return iAmmo.getAmmoCount(ammoItem);
     }
-    @Override
-    default int consumeAmmoOnce(LivingEntity livingEntity, ItemStack gunItem) {
-        if (PlannedRefactor.ON_CONSUME_AMMO) return 0;
-        /**TODO 虚拟子弹，背包直读，NBT弹匣子弹
-         * {@link xiao.customgun.core.entity.shooter.LivingShooterShoot#shootInternal}
-         */
-        return consumeMagAmmo(gunItem);
-    }
 
     @Override
-    default void unloadAmmo(LivingEntity livingEntity, ItemStack gunItem) {
-        // TODO 事件钩子，各种机制
+    default int consumeAmmoOnce(LivingEntity livingEntity, ItemStack gunItem) {
+        @Nullable BoltType boltType = _getBoltType(this, gunItem);
+        if (boltType == null) return 0;
+        return this.consumeAmmoOnce(livingEntity, gunItem, boltType);
+    }
+    @ApiStatus.Internal
+    static @Nullable BoltType _getBoltType(IGunDataAccess iGun, ItemStack gunItem) {
+        var gunLocation = iGun.getGunLocation(gunItem);
+        @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(gunLocation);
+        if (gunIndexInstance == null) return null;
+
+        GunData gunData = gunIndexInstance.getGunData();
+        return gunData.getBoltType();
     }
 
     @Override
@@ -307,14 +311,17 @@ public interface GunDataAccessor extends IGunDataAccess {
     default boolean useInventoryAmmo(ItemStack gunItem) {
         GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(this.getGunLocation(gunItem));
         if (gunIndexInstance == null) return false;
-        return gunIndexInstance.getGunData().getReloadData().getAmmoFeedType() == AmmoFeedType.INVENTORY;
+
+        GunData gunData = gunIndexInstance.getGunData();
+        _ReloadData reloadData = gunData.getReloadData();
+        return reloadData.getAmmoFeedType() == AmmoFeedType.INVENTORY;
     }
     @Override
     default boolean hasInventoryAmmo(LivingEntity livingEntity, ItemStack gunItem) {
         IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return false;
 
-        IInventoryCapability inventoryCapability = CustomGun.getCapabilityProvider().getItemHandler(livingEntity, null);
+        @Nullable IInventoryCapability inventoryCapability = CustomGun.getCapabilityProvider().getItemHandler(livingEntity, null);
         if (inventoryCapability == null) return false;
 
         for (int i = 0; i < inventoryCapability.getContainerSize(); i++) {
@@ -331,7 +338,7 @@ public interface GunDataAccessor extends IGunDataAccess {
         IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return 0;
 
-        IInventoryCapability inventoryCapability = CustomGun.getCapabilityProvider().getItemHandler(livingEntity, null);
+        @Nullable IInventoryCapability inventoryCapability = CustomGun.getCapabilityProvider().getItemHandler(livingEntity, null);
         if (inventoryCapability == null) return 0;
 
         int count = 0;
@@ -360,7 +367,7 @@ public interface GunDataAccessor extends IGunDataAccess {
         NBTUtils.setInt(gunItem, GunProperty.MAG_AMMO.getTagName(), count);
     }
     @Override
-    default int consumeMagAmmo(ItemStack gunItem) {
+    default int consumeMagAmmoOnce(ItemStack gunItem) {
         int current = this.getMagAmmoCount(gunItem);
         if (current <= 0) return 0;
         NBTUtils.setInt(gunItem, GunProperty.MAG_AMMO.getTagName(), current - 1);
@@ -395,6 +402,13 @@ public interface GunDataAccessor extends IGunDataAccess {
     @Override
     default void setBarrelAmmoCount(ItemStack gunItem, int amount) {
         NBTUtils.setInt(gunItem, GunProperty.BARREL_AMMO.getTagName(), amount);
+    }
+
+    @Override
+    default int boltBarrelAmmo(LivingEntity livingEntity, ItemStack gunItem) {
+        @Nullable BoltType boltType = _getBoltType(this, gunItem);
+        if (boltType == null) return 0;
+        return boltBarrelAmmo(livingEntity, gunItem, boltType);
     }
 
     // --------IGunAttachmentDataAccess--------

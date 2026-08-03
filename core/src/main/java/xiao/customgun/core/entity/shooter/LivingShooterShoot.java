@@ -89,14 +89,6 @@ public final class LivingShooterShoot extends LivingShooterAspect {
                 || SyncConfig.SERVER_SHOOT_COOLDOWN_V.get() && isInServerShootCooldown(currentTimeMillis, clientFromBaseToCurrentTimeMs)
         ) return ShootResult.UNKNOWN_FAIL;
 
-        // --------TODO
-//        int consumedAmmo = iGun.consumeAmmoOnce(this.livingShooter, currentGunItem);
-//        if (consumedAmmo <= 0) {
-//            return ShootResult.NO_AMMO;
-//        }
-        // 消耗子弹
-        // --------
-
         { // 3. IGunRuntime操作结果 -> Shooter状态
             /**
              * {@link IGunAttackRuntime#shooterFire}的默认实现为{@link IGunAttackRuntime#shooterFire}

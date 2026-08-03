@@ -78,8 +78,7 @@ public final class LocalShooterReload extends LocalShooterAspect {
 
         GunData gunData = gunIndexInstance.getGunData();
         BoltType boltType = gunData.getBoltType();
-        boolean hasAmmo = boltType == BoltType.OPEN_BOLT ? iGun.getMagAmmoCount(gunItem) > 0
-                : iGun.hasBarrelAmmo(gunItem);
+        boolean hasAmmo = iGun.getMagAmmoCountWithBarrel(gunItem, boltType) > 0;
 
         // 触发 reload，停止播放声音
         SoundPlayManager.get().stopCurrentSound();

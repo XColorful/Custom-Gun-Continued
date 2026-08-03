@@ -29,13 +29,13 @@ public class GunInventoryManager implements IGunInventoryManager {
     // --------IGunInventoryRuntime--------
 
     @Override
-    public void dropAllAmmo(@NotNull IGun iGun, @NotNull ItemStack gunItem,
-                            ILivingShooter iLivingShooter, LivingEntity livingShooter) {
-        _DefaultGunInventory.dropAllAmmo(iGun, gunItem, iLivingShooter, livingShooter);
+    public void retrieveAmmoFromGun(@NotNull IGun iGun, @NotNull ItemStack gunItem,
+                                    ILivingShooter iLivingShooter, LivingEntity livingShooter) {
+        _DefaultGunInventory.retrieveAmmoFromGun(iGun, gunItem, iLivingShooter, livingShooter);
     }
 
     @Override
-    public int findAndExtractInventoryAmmo(IInventoryCapability inventoryCapability,
+    public int findAndExtractInventoryAmmo(@NotNull IInventoryCapability inventoryCapability,
                                            @NotNull IGun iGun, @NotNull ItemStack gunItem,
                                            int requiredAmmoCount) {
         return _DefaultGunInventory.findAndExtractInventoryAmmo(inventoryCapability, iGun, gunItem, requiredAmmoCount);

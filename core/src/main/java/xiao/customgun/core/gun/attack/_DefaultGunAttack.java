@@ -80,25 +80,14 @@ public class _DefaultGunAttack {
         }
 
         { // 3. 检查拉栓
-            switch (boltType) {
-                case MANUAL_ACTION -> {
+            if (boltType.useBarrelAmmo()) {
+                if (!boltType.autoBoltBarrelAmmo()) {
                     // 检查枪管是否有子弹 (否则要拉栓)
                     if (!iGun.hasBarrelAmmo(gunItem)) {
                         return IGunAttackRuntime.ShooterFireResult.NO_BARREL_AMMO;
                     }
-                }
-                case CLOSED_BOLT -> {
-                    // 检查枪管是否有子弹 (否则要上膛)
-                    if (!iGun.hasBarrelAmmo(gunItem)) {
-                        // 已经有子弹，仅在服务端执行NBT换弹逻辑
-                        if (!logicalSide.isClient()) {
-                            if (iGun.useInventoryAmmo(gunItem)) _consumeAmmoFromPlayer(iGun, gunItem, iLivingShooter, livingShooter);
-                            else iGun.consumeMagAmmo(gunItem);
-
-                            if (PlannedRefactor.ON_SET_BARREL_AMMO) {};
-                            iGun.setBarrelAmmoCount(gunItem, 1);
-                        }
-                    }
+                } else {
+                    // 服务端后续处理自动上弹，客户端不更新本地数据
                 }
             }
         }
@@ -117,27 +106,18 @@ public class _DefaultGunAttack {
             }
         }
 
+        { // 5. 消耗子弹
+            int consumedAmmo = iGun.consumeAmmoOnce(livingShooter, gunItem, boltType);
+            if (consumedAmmo <= 0) {
+                return IGunAttackRuntime.ShooterFireResult.AMMO_CONSUME_FAILED;
+            }
+        }
+
         // --------收尾--------
-        final @NotNull IGunAttackRuntime.ShooterFireResult result = IGunAttackRuntime.ShooterFireResult.SUCCESS;
-
-        { // 蓄力进度clamp更正
+        final @NotNull IGunAttackRuntime.ShooterFireResult result = IGunAttackRuntime.ShooterFireResult.SUCCESS; {
+            // 蓄力进度clamp更正
             shooterProperty.chargeProgress = _DefaultGunCharge.clampChargeProgress(shooterProperty, chargingData, clientChargeProgress);
-        }
-
-        return result;
-    }
-
-    private static void _consumeAmmoFromPlayer(IGun iGun, ItemStack gunItem,
-                                               ILivingShooter iLivingShooter, LivingEntity livingShooter) {
-        if (!iLivingShooter.cgc$needCheckAmmo()) return;
-
-        if (iGun.useDummyAmmo(gunItem)) {
-            // TODO 这个逻辑是要统一在consumeAmmoOnce里处理的
-            iGun.findAndExtractDummyAmmo(iGun, gunItem, 1);
-        } else {
-            IInventoryCapability inventoryCapability = CustomGun.getCapabilityProvider().getItemHandler(livingShooter, null);
-            iGun.findAndExtractInventoryAmmo(inventoryCapability, iGun, gunItem, 1);
-        }
+        } return result;
     }
 
     /**

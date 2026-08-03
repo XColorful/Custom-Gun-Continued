@@ -136,12 +136,12 @@ public class GunItem extends Item implements IGun, GunDataAccessor {
                 .melee(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter, meleeType);
     }
     // ----IGunInventoryRuntime----
-    @Override public void dropAllAmmo(@NotNull IGun iGun, @NotNull ItemStack gunItem, ILivingShooter iLivingShooter, LivingEntity livingShooter) {
+    @Override public void retrieveAmmoFromGun(@NotNull IGun iGun, @NotNull ItemStack gunItem, ILivingShooter iLivingShooter, LivingEntity livingShooter) {
         CustomGun.getGunManager().getManagerGroup(this.getManagerGroupTag(gunItem))
                 .gunInventoryManager()
-                .dropAllAmmo(iGun, gunItem, iLivingShooter, livingShooter);
+                .retrieveAmmoFromGun(iGun, gunItem, iLivingShooter, livingShooter);
     }
-    @Override public int findAndExtractInventoryAmmo(IInventoryCapability inventoryCapability, @NotNull IGun iGun, @NotNull ItemStack gunItem, int requiredAmmoCount) {
+    @Override public int findAndExtractInventoryAmmo(@NotNull IInventoryCapability inventoryCapability, @NotNull IGun iGun, @NotNull ItemStack gunItem, int requiredAmmoCount) {
         return CustomGun.getGunManager().getManagerGroup(this.getManagerGroupTag(gunItem))
                 .gunInventoryManager()
                 .findAndExtractInventoryAmmo(inventoryCapability, iGun, gunItem, requiredAmmoCount);

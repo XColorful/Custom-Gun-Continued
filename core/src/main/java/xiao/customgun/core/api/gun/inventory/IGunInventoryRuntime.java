@@ -13,16 +13,31 @@ import org.jetbrains.annotations.NotNull;
 import xiao.customgun.core.api.entity.ILivingShooter;
 import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.api.minecraft.capability.IInventoryCapability;
+import xiao.customgun.core.gun.inventory.GunInventoryManager;
 
 public interface IGunInventoryRuntime {
 
     /**
-     * 将枪内的弹药全部退至背包（如果背包满了会丢到地上），不会退枪膛内的弹药
+     * 尝试将枪内的弹药取回，其中:
+     * <ul>
+     *     <li>不保证全部取回(如燃料类型)</li>
+     *     <li>不保证能卸载供弹</li>
+     * </ul>
+     * <br>
+     * 模组内置的默认实现(见{@link GunInventoryManager#retrieveAmmoFromGun})如下:
+     * <ul>
+     *     <li>先退至背包，其次丢到地上</li>
+     *     <li>不会退枪膛内的弹药</li>
+     * </ul>
+     * 可以用于:
+     * <ul>
+     *     <li>明确需要将枪内子弹取回</li>
+     * </ul>
      * @param gunItem 枪械物品
      * @param livingShooter 准备退弹的实体
      */
-    void dropAllAmmo(@NotNull IGun iGun, @NotNull ItemStack gunItem,
-                     ILivingShooter iLivingShooter, LivingEntity livingShooter);
+    void retrieveAmmoFromGun(@NotNull IGun iGun, @NotNull ItemStack gunItem,
+                             ILivingShooter iLivingShooter, LivingEntity livingShooter);
 
     /**
      * 枪械寻弹和扣除背包弹药逻辑
@@ -31,7 +46,7 @@ public interface IGunInventoryRuntime {
      * @param requiredAmmoCount 需要的弹药 (物品) 数量
      * @return 扣除的弹药 (物品) 数量
      */
-    int findAndExtractInventoryAmmo(IInventoryCapability inventoryCapability,
+    int findAndExtractInventoryAmmo(@NotNull IInventoryCapability inventoryCapability,
                                     @NotNull IGun iGun, @NotNull ItemStack gunItem,
                                     int requiredAmmoCount);
 
@@ -43,4 +58,11 @@ public interface IGunInventoryRuntime {
      */
     int findAndExtractDummyAmmo(@NotNull IGun iGun, @NotNull ItemStack gunItem,
                                 int requiredAmmoCount);
+
+    // --------Deprecated--------
+
+    @Deprecated default void dropAllAmmo(@NotNull IGun iGun, @NotNull ItemStack gunItem,
+                             ILivingShooter iLivingShooter, LivingEntity livingShooter) {
+        retrieveAmmoFromGun(iGun, gunItem, iLivingShooter, livingShooter);
+    }
 }

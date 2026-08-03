@@ -17,21 +17,28 @@ public enum BoltType implements ResourceTag.CategoryTag, ResourceTag.IndexTag {
     /**
      * 开膛待击 (枪管不留子弹)
      */
-    OPEN_BOLT(3, BoltTypeTag.OPEN_BOLT),
+    OPEN_BOLT(3, BoltTypeTag.OPEN_BOLT,
+            false, false),
     /**
      * 闭膛待击 ("+1"弹匣)
      */
-    CLOSED_BOLT(2, BoltTypeTag.CLOSED_BOLT),
+    CLOSED_BOLT(2, BoltTypeTag.CLOSED_BOLT,
+            true, true),
     /**
      * 手动上膛 (栓狙)
      */
-    MANUAL_ACTION(1, BoltTypeTag.MANUAL_ACTION);
+    MANUAL_ACTION(1, BoltTypeTag.MANUAL_ACTION,
+            true, false);
 
     public final int index;
     public final String typeName;
-    BoltType(int index, String name) {
+    public final boolean useBarrelAmmo;
+    public final boolean autoBoltBarrelAmmo;
+    BoltType(int index, String name, boolean useBarrelAmmo, boolean autoBoltBarrelAmmo) {
         this.index = index;
         this.typeName = name;
+        this.useBarrelAmmo = useBarrelAmmo;
+        this.autoBoltBarrelAmmo = autoBoltBarrelAmmo;
     }
     @Override public String getTagName() {
         return this.typeName;
@@ -41,6 +48,13 @@ public enum BoltType implements ResourceTag.CategoryTag, ResourceTag.IndexTag {
     }
     @Override public int getIndex() {
         return this.index;
+    }
+
+    public boolean useBarrelAmmo() {
+        return this.useBarrelAmmo;
+    }
+    public boolean autoBoltBarrelAmmo() {
+        return this.autoBoltBarrelAmmo;
     }
 
     private static final Map<String, BoltType> BOLT_TYPES = new HashMap<>();

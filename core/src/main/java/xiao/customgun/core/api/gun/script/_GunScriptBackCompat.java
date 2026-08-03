@@ -340,7 +340,7 @@ public class _GunScriptBackCompat {
         else if (_this.iGun.useDummyAmmo(_this.gunItem)) return _this.iGun.getDummyAmmoCount(_this.gunItem) > 0;
         else {
             if (_this.livingShooter == null) return false;
-            IInventoryCapability inventoryCapability = CustomGun.getCapabilityProvider().getItemHandler(_this.livingShooter, null);
+            @Nullable IInventoryCapability inventoryCapability = CustomGun.getCapabilityProvider().getItemHandler(_this.livingShooter, null);
             return false;
         }
     }

@@ -20,31 +20,39 @@ public enum AmmoFeedType implements ResourceTag.CategoryTag {
     /**
      * 弹匣供弹
      */
-    MAGAZINE(AmmoFeedTypeTag.MAGAZINE),
+    MAGAZINE(AmmoFeedTypeTag.MAGAZINE,
+            true),
     /**
      * 手动供弹
      */
-    MANUAL(AmmoFeedTypeTag.MANUAL),
+    MANUAL(AmmoFeedTypeTag.MANUAL,
+            true),
     /**
      * 燃料供弹(消耗单个物品补满弹药)
      */
-    FUEL(AmmoFeedTypeTag.FUEL),
+    FUEL(AmmoFeedTypeTag.FUEL,
+            false),
     /**
      * 背包直读(直接消耗背包内弹药)
      */
-    INVENTORY(AmmoFeedTypeTag.INVENTORY);
+    INVENTORY(AmmoFeedTypeTag.INVENTORY,
+            false);
 
     public final String typeName;
-
-    AmmoFeedType(String name) {
+    public final boolean canRetrieveAmmo;
+    AmmoFeedType(String name, boolean canRetrieveAmmo) {
         this.typeName = name;
+        this.canRetrieveAmmo = canRetrieveAmmo;
     }
-
     @Override public String getTagName() {
         return this.typeName;
     }
     @Override public String getCategoryName() {
         return this.typeName;
+    }
+
+    public boolean canRetrieveAmmo() {
+        return this.canRetrieveAmmo;
     }
 
     private static final Map<String, AmmoFeedType> AMMO_FEED_TYPES = new HashMap<>();

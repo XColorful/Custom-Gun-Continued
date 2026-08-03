@@ -82,7 +82,7 @@ public final class LivingShooterReload extends LivingShooterAspect {
 
         GunData gunData = gunIndexInstance.getGunData();
         BoltType boltType = gunData.getBoltType();
-        if (boltType == BoltType.CLOSED_BOLT && iGun.hasBarrelAmmo(gunItem)) {
+        if (boltType.useBarrelAmmo() && iGun.hasBarrelAmmo(gunItem)) {
             // 初始化战术换弹的 tick 的状态
             this.shooterProperty.reloadStateType = ReloadState.StateType.TACTICAL_RELOAD_FEEDING;
         } else {

@@ -48,12 +48,12 @@ public final class LocalShooterInspect extends LocalShooterAspect {
         if (gunDisplayInstance == null) return;
 
         BoltType boltType = gunData.getBoltType();
-        boolean hasAmmo = boltType == BoltType.OPEN_BOLT ? iGun.getMagAmmoCount(gunItem) > 0
-                : iGun.hasBarrelAmmo(gunItem);
+        boolean hasInspectAmmo = boltType.useBarrelAmmo() ? iGun.hasBarrelAmmo(gunItem)
+                : iGun.getMagAmmoCount(gunItem) > 0;
 
         // 触发 inspect，停止播放声音
         SoundPlayManager.get().stopCurrentSound();
-        var soundLocation = gunDisplayInstance.getGunSound(!hasAmmo ? GunSoundType.INSPECT_EMPTY_SOUND : GunSoundType.INSPECT_SOUND);
+        var soundLocation = gunDisplayInstance.getGunSound(!hasInspectAmmo ? GunSoundType.INSPECT_EMPTY_SOUND : GunSoundType.INSPECT_SOUND);
         SoundPlayManager.get().playGunSound(soundLocation,
                 this.localShooter);
         // TODO GunDisplayInstance AnimationStateMachine

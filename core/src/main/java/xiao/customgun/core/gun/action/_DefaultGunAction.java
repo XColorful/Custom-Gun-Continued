@@ -49,7 +49,7 @@ public class _DefaultGunAction {
 
         // 检查 bolt 类型是否是 manual action
         BoltType boltType = gunIndexInstance.getGunData().getBoltType();
-        if (boltType != BoltType.MANUAL_ACTION) return false;
+        if (!boltType.useBarrelAmmo() || boltType.autoBoltBarrelAmmo()) return false;
 
         // 检查是否有子弹可拉栓
         boolean hasAmmo = iGun.useInventoryAmmo(gunItem)
@@ -81,18 +81,10 @@ public class _DefaultGunAction {
             return true;
         }
 
-        BoltType boltType = gunData.getBoltType();
-        if (boltType == BoltType.OPEN_BOLT) return false; // open bolt不需要拉栓
-
-        // 仅在枪管没子弹才上弹 (一次bolt只触发一次)
+        // 仅在枪管没子弹才上弹 (一次bolt只触发一次，但防不住换弹期间意外消耗掉枪管子弹)
         if (!iGun.hasBarrelAmmo(gunItem)) {
-            int consumedAmmo = iGun.useInventoryAmmo(gunItem)
-                    ? iGun.consumeAmmoOnce(livingShooter, gunItem) // 背包直读
-                    : iGun.consumeMagAmmo(gunItem); // 枪械弹匣供弹 (要先装弹)
-            if (consumedAmmo > 0) {
-                // 上弹到枪管
-                iGun.setBarrelAmmoCount(gunItem, consumedAmmo);
-            }
+            int boltAmmoCount =  iGun.boltBarrelAmmo(livingShooter, gunItem);
+            if (boltAmmoCount <= 0) return false; // 拉栓上膛失败/无效
         }
 
         if (boltTime >= gunData.getBoltActionTime()) { // 完成bolt
@@ -120,12 +112,12 @@ public class _DefaultGunAction {
 //        BoltType boltType = gunData.getBoltType();
 //        int currentAmmoCount = iGun.getMagAmmoCountWithBarrel(gunItem, boltType);
         // ↓装弹只管弹匣，不管枪管↑
-        int currentAmmoCount = iGun.getMagAmmoCount(gunItem);
+        int currentMagAmmoCount = iGun.getMagAmmoCount(gunItem);
         int magAmmoLimit = iGun.getMagAmmoLimit(gunItem);
 
         if (
                 // 达到容量就不用装
-                currentAmmoCount >= magAmmoLimit
+                currentMagAmmoCount >= magAmmoLimit
                 // 背包直读不需要换弹
                 || iGun.useInventoryAmmo(gunItem)
                 // 还有虚拟备弹
@@ -133,7 +125,7 @@ public class _DefaultGunAction {
         ) return false;
 
         // 检查背包内子弹库存
-        IInventoryCapability inventoryCapability = CustomGun.getCapabilityProvider().getItemHandler(livingShooter, null);
+        @Nullable IInventoryCapability inventoryCapability = CustomGun.getCapabilityProvider().getItemHandler(livingShooter, null);
         if (inventoryCapability == null) return false;
         for (int i = 0; i < inventoryCapability.getContainerSize(); i++) {
             final ItemStack ammoItem = inventoryCapability.getItemReadOnly(i);
@@ -247,8 +239,10 @@ public class _DefaultGunAction {
             }
             // 增加类型使此处强制编译不通过
         }
-        // 如果不是战术换弹，需要将弹匣中的一枚子弹放到枪膛中
-        // TODO
+        // 如果不是战术换弹，需要执行上膛
+        if (!isTactical) {
+            iGun.boltBarrelAmmo(livingShooter, gunItem);
+        }
     }
     /**
      * 获取不到玩家 则 默认消耗成功
@@ -263,7 +257,8 @@ public class _DefaultGunAction {
         if (iGun.useDummyAmmo(gunItem)) return iGun.findAndExtractDummyAmmo(iGun, gunItem, neededAmount);
         else {
             if (livingShooter == null) return neededAmount;
-            IInventoryCapability inventoryCapability = CustomGun.getCapabilityProvider().getItemHandler(livingShooter, null);
+            @Nullable IInventoryCapability inventoryCapability = CustomGun.getCapabilityProvider().getItemHandler(livingShooter, null);
+            if (inventoryCapability == null) return neededAmount;
             return iGun.findAndExtractInventoryAmmo(inventoryCapability, iGun, gunItem, neededAmount);
         }
     }

@@ -3,6 +3,7 @@
 # 射手框架
 
 ## 射手切面
+> 目前仅用于开发教程草稿，待更新
 
 一般流程：
 - 检查射手状态（`ILivingShooter`）
@@ -85,3 +86,4 @@ public void bolt() {
 # English
 
 ## Shooter aspect
+> TODO

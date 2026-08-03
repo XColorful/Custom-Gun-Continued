@@ -14,12 +14,13 @@ import xiao.customgun.client.api.entity.LocalShooterProperty;
 import xiao.customgun.client.api.resource.ClientResourceApi;
 import xiao.customgun.client.api.sound.gun.GunSoundType;
 import xiao.customgun.client.resource.instance.assets.GunDisplayInstance;
-import xiao.customgun.client.resource.instance.data.ClientGunIndexInstance;
 import xiao.customgun.client.sound.SoundPlayManager;
 import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.api.item.gun.BoltType;
 import xiao.customgun.core.api.item.gun.IGunGetter;
+import xiao.customgun.core.api.resource.ResourceApi;
 import xiao.customgun.core.resource.data.data.GunData;
+import xiao.customgun.core.resource.instance.data.GunIndexInstance;
 
 public final class LocalShooterInspect extends LocalShooterAspect {
 
@@ -39,21 +40,20 @@ public final class LocalShooterInspect extends LocalShooterAspect {
         if (this.localShooterProperty.clientStateLock) return;
 
         var gunLocation = iGun.getGunLocation(gunItem);
-        @Nullable ClientGunIndexInstance clientGunIndexInstance = ClientResourceApi.getClientGunIndexInstance(gunLocation);
-        if (clientGunIndexInstance == null) return;
-        GunData gunData = clientGunIndexInstance.getGunData();
-        if (gunData == null) return;
+        @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(gunLocation);
+        if (gunIndexInstance == null) return;
+        GunData gunData = gunIndexInstance.getGunData();
 
         @Nullable GunDisplayInstance gunDisplayInstance = ClientResourceApi.getGunDisplayInstance(gunItem);
         if (gunDisplayInstance == null) return;
 
         BoltType boltType = gunData.getBoltType();
-        boolean hasAmmo = boltType == BoltType.OPEN_BOLT ? iGun.getMagAmmoCount(gunItem) > 0
-                : iGun.hasBarrelAmmo(gunItem);
+        boolean hasInspectAmmo = boltType.useBarrelAmmo() ? iGun.hasBarrelAmmo(gunItem)
+                : iGun.getMagAmmoCount(gunItem) > 0;
 
         // 触发 inspect，停止播放声音
         SoundPlayManager.get().stopCurrentSound();
-        var soundLocation = gunDisplayInstance.getGunSound(!hasAmmo ? GunSoundType.INSPECT_EMPTY_SOUND : GunSoundType.INSPECT_SOUND);
+        var soundLocation = gunDisplayInstance.getGunSound(!hasInspectAmmo ? GunSoundType.INSPECT_EMPTY_SOUND : GunSoundType.INSPECT_SOUND);
         SoundPlayManager.get().playGunSound(soundLocation,
                 this.localShooter);
         // TODO GunDisplayInstance AnimationStateMachine

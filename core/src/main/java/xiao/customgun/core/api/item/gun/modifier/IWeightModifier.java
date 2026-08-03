@@ -17,6 +17,7 @@ import xiao.customgun.core.api.entity.shooter.modifier.ShooterGunModifierCache;
 import xiao.customgun.core.api.gun.script.GunScriptApi;
 import xiao.customgun.core.resource.data.data.attachment._SimpleModifierData;
 
+@Deprecated(forRemoval = true)
 public interface IWeightModifier<T extends ResourcePojo<T>> extends IGunModifier<T, _SimpleModifierData, Float> {
 
     @Override

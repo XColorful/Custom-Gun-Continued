@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.resource.ResourceApi;
 import xiao.customgun.core.resource._DataInstanceManager;
+import xiao.customgun.core.resource.data.index.GunIndex;
 import xiao.customgun.core.resource.instance.data.GunIndexInstance;
 
 import java.util.HashMap;
@@ -36,7 +37,8 @@ public class _GunSortCache {
     public void reload() {
         for (Map.Entry<ResourceLocation, GunIndexInstance> entry : ResourceApi.getAllGunIndexInstance()) {
             GunIndexInstance gunIndexInstance = entry.getValue();
-            this.gunSorts.put(entry.getKey(), gunIndexInstance.getPojo().getSlotSort());
+            GunIndex gunIndex = gunIndexInstance.getPojo();
+            this.gunSorts.put(entry.getKey(), gunIndex.getSlotSort());
         }
     }
 

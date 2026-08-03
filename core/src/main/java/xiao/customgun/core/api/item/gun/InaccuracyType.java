@@ -19,7 +19,7 @@ import java.util.Map;
 public enum InaccuracyType {
     NONE;
     public static ShootState getInaccuracyType(LivingEntity livingEntity) {
-        return null;
+        return ShootState.fromLivingShooter(livingEntity);
     }
     public static Map<ShootState, Float> getDefaultInaccuracy() {
         return null;

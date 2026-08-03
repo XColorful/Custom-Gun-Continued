@@ -13,6 +13,7 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.entity.hitbox.IEntityHitboxHistoryGetter;
+import xiao.customgun.core.api.entity.shooter.ILivingShooterGetter;
 import xiao.customgun.core.api.resource.ResourceTag;
 import xiao.customgun.core.resource.data.data.gun._InaccuracyData;
 
@@ -98,6 +99,10 @@ public enum ShootState implements ResourceTag.CategoryTag {
         };
     }
 
+    public static ShootState fromLivingShooter(@Nullable LivingEntity livingShooter) {
+        if (livingShooter == null) return ShootState.LEVITATE;
+        return fromLivingShooter(ILivingShooterGetter.cgc$fromLivingEntity(livingShooter), livingShooter);
+    }
     public static ShootState fromLivingShooter(@NotNull ILivingShooter iLivingShooter, @NotNull LivingEntity livingShooter) {
         // 1. 骑乘 (优先于悬空)
         if (livingShooter.isPassenger() || livingShooter.isVehicle()) {

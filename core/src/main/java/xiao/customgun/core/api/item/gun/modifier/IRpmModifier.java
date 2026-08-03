@@ -24,7 +24,7 @@ public interface IRpmModifier<T extends ResourcePojo<T>> extends IGunModifier<T,
                                       @NotNull GunData gunData) {
         int rpm = gunData.getRpm();
         var fireModeAdjust = gunData.getFireModeAdjustData().get(iGun.getFireModeType(gunItem));
-        if (fireModeAdjust != null) rpm += fireModeAdjust.getRpm();
+        if (fireModeAdjust != null) rpm = fireModeAdjust.getRpm();
         if (rpm <= 0) rpm = 300;
         return rpm;
     }

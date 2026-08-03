@@ -49,6 +49,6 @@ public class GunStateManager implements IGunStateManager {
             return;
         }
 
-        _DefaultGunState.tickHeat(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter);
+        _DefaultGunState.tickHeat(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter, heatTimestamp);
     }
 }

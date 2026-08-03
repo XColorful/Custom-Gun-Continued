@@ -8,11 +8,11 @@
 package xiao.customgun.core.network.message;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.LivingEntity;
+import org.jetbrains.annotations.Nullable;
 import xiao.customgun.CustomGun;
 import xiao.customgun.core.api.entity.shooter.ILivingShooterGetter;
 import xiao.customgun.core.api.network.message.IMessage;
-import xiao.customgun.core.config.SyncConfig;
 
 import java.util.function.Consumer;
 
@@ -32,15 +32,10 @@ public record ClientMessagePlayerProne(boolean isProne)
     public void handle(ClientMessagePlayerProne message, Consumer<Runnable> handler, NetworkContext context) {
         if (CustomGun.getSideExecutor().getLogicalSide().isServer()) {
             handler.accept(() -> {
-                if (!(context.sender() instanceof ServerPlayer player)) {
-                    return;
-                }
+                @Nullable LivingEntity livingShooter = context.sender();
+                if (livingShooter == null) return;
 
-                if (!SyncConfig.ENABLE_PRONE.get()) {
-                    return;
-                }
-
-                ILivingShooterGetter.cgc$fromLivingEntity(player).cgc$prone(message.isProne);
+                ILivingShooterGetter.cgc$fromLivingEntity(livingShooter).cgc$prone(message.isProne);
             });
         }
     }

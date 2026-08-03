@@ -10,15 +10,15 @@ package xiao.customgun.client.entity.shooter;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.client.api.entity.LocalShooterProperty;
-import xiao.customgun.client.api.resource.ClientResourceApi;
-import xiao.customgun.client.resource.instance.data.ClientGunIndexInstance;
 import xiao.customgun.core.api.entity.ILivingShooter;
 import xiao.customgun.core.api.entity.shooter.ILivingShooterGetter;
 import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.api.item.gun.IGunGetter;
 import xiao.customgun.core.api.resource.ResourceApi;
+import xiao.customgun.core.entity.shooter.LivingShooterAim;
 import xiao.customgun.core.network.message.ClientMessagePlayerAim;
 import xiao.customgun.core.resource.data.data.GunData;
 import xiao.customgun.core.resource.instance.data.GunIndexInstance;
@@ -31,19 +31,18 @@ public final class LocalShooterAim extends LocalShooterAspect {
     }
 
     public void aim(boolean isAim) {
+        // 1. 手持枪械检查
         ItemStack gunItem = this.localShooter.getMainHandItem();
         IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return;
 
-        var gunLocation = iGun.getGunLocation(gunItem);
-        @Nullable ClientGunIndexInstance clientGunIndexInstance = ClientResourceApi.getClientGunIndexInstance(gunLocation);
-        if (clientGunIndexInstance == null) return;
-
         this.localShooterProperty.clientIsAiming = isAim;
+
         SendUtils.sendMessageToServer(new ClientMessagePlayerAim(isAim));
     }
 
-    public float getClientAimingProgress(float partialTicks) {
+    public float getRenderAimingProgress(float partialTicks) {
+        // TODO 非线性映射
         return Mth.lerp(partialTicks, LocalShooterProperty.oldAimingProgress, this.localShooterProperty.clientAimingProgress);
     }
 
@@ -51,57 +50,52 @@ public final class LocalShooterAim extends LocalShooterAspect {
         return this.localShooterProperty.clientIsAiming;
     }
 
+    @ApiStatus.Internal private void _resetAiming() {
+        this.localShooterProperty.clientIsAiming = false;
+        this.localShooterProperty.clientAimingProgress = 0;
+        LocalShooterProperty.oldAimingProgress = System.currentTimeMillis();
+    }
     public void tickAimingProgress() {
+        // 1. 手持枪械检查
         ItemStack gunItem = this.localShooter.getMainHandItem();
         IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) {
-            // 主手不是枪械 -> 取消瞄准状态并重置aimingProgress
-            this.localShooterProperty.clientAimingProgress = 0;
-            LocalShooterProperty.oldAimingProgress = 0;
+            _resetAiming();
             return;
         }
 
         long currentTimeMillis = System.currentTimeMillis();
-
-        // 正在收枪时不能瞄准
-        if (currentTimeMillis - this.localShooterProperty.clientDrawTimestamp < 0) {
-            this.localShooterProperty.clientIsAiming = false;
+        if ( // 2.2 检查状态
+                // 正在收枪时不能瞄准
+                currentTimeMillis < this.localShooterProperty.clientDrawFinishTimestamp
+        ) {
+            _resetAiming();
+            return;
         }
 
+        _doAiming(iGun, gunItem, currentTimeMillis);
+    }
+    private void _doAiming(IGun iGun, ItemStack gunItem, long currentTimeMillis) {
         var gunLocation = iGun.getGunLocation(gunItem);
         @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(gunLocation);
-        if (gunIndexInstance != null) {
-            float alphaProgress = _getAlphaProgress(gunIndexInstance.getGunData(), currentTimeMillis);
-            _aimProgressCalculate(alphaProgress, currentTimeMillis);
-        } else {
-            this.localShooterProperty.clientAimingProgress = 0;
-            LocalShooterProperty.oldAimingProgress = 0;
+        if (gunIndexInstance == null) {
+            _resetAiming();
+            return;
         }
-    }
-    private float _getAlphaProgress(GunData gunData, long currentTimeMillis) {
-        float aimTime = gunData.getAimTime();
+
+        GunData gunData = gunIndexInstance.getGunData();
         ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(this.localShooter);
-        if (iLivingShooter.cgc$getGunModifierCache() != null) {
-            // TODO GunPropertyCache AdsModifier
-        }
-        aimTime = Math.max(0, aimTime);
-        return (currentTimeMillis - this.localShooterProperty.clientAimingTimestamp + 1) / (aimTime * 1000);
+        float alphaProgress = LivingShooterAim._getAlphaProgress(iLivingShooter, gunData, this.localShooterProperty.clientIsAiming, currentTimeMillis, this.localShooterProperty.clientAimingTimestamp);
+
+        _aimProgressCalculate(this.localShooterProperty.clientIsAiming, alphaProgress, currentTimeMillis);
     }
-    private void _aimProgressCalculate(float alphaProgress, long currentTimeMillis) {
+    private void _aimProgressCalculate(boolean isAiming,
+                                       float alphaProgress, long currentTimeMillis) {
         LocalShooterProperty.oldAimingProgress = this.localShooterProperty.clientAimingProgress;
-        if (this.localShooterProperty.clientIsAiming) {
-            // 处于执行瞄准状态，增加 aimingProgress
-            this.localShooterProperty.clientAimingProgress += alphaProgress;
-            if (this.localShooterProperty.clientAimingProgress > 1) {
-                this.localShooterProperty.clientAimingProgress = 1;
-            }
-        } else {
-            // 处于取消瞄准状态，减小 aimingProgress
-            this.localShooterProperty.clientAimingProgress -= alphaProgress;
-            if (this.localShooterProperty.clientAimingProgress < 0) {
-                this.localShooterProperty.clientAimingProgress = 0;
-            }
-        }
+
+        float aimProgress = this.localShooterProperty.clientAimingProgress + (isAiming ? alphaProgress : -alphaProgress);
+        this.localShooterProperty.clientAimingProgress = Mth.clamp(aimProgress, 0, 1f);
+
         this.localShooterProperty.clientAimingTimestamp = currentTimeMillis;
     }
 }

@@ -63,10 +63,10 @@ public class LocalShooterProperty {
     public long clientAimingTimestamp = -1L;
     public boolean clientIsAiming = false;
     /**
-     * 切枪时间戳，在切枪开始时更新，单位 ms。
+     * 切枪预计完成时间，在切枪开始时更新，单位 ms。
      * 在客户端仅用于计算收枪动画的时长和过渡时长。
      */
-    public long clientDrawTimestamp = -1L;
+    public long clientDrawFinishTimestamp = -1L;
     /**
      * 异步切枪
      */

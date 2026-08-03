@@ -11,7 +11,7 @@ import xiao.customgun.core.entity.sync.SyncDataHolder;
 
 public interface ICapabilityProvider {
 
-    @Nullable IInventoryCapability getItemHandler(LivingEntity livingEntity, @Nullable Direction facing);
+    @Nullable IInventoryCapability getItemHandler(@Nullable LivingEntity livingEntity, @Nullable Direction facing);
 
     @NotNull ISyncDataCapabilityProvider createSyncDataCapabilityProvider();
     @Nullable SyncDataHolder getSyncDataHolder(Entity entity, Direction facing);

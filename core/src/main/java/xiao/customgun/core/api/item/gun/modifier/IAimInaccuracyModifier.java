@@ -10,6 +10,7 @@ package xiao.customgun.core.api.item.gun.modifier;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import xiao.customgun.core.api.entity.ShootState;
 import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.resource.data.data.GunData;
@@ -18,6 +19,9 @@ import xiao.customgun.core.api.gun.script.GunScriptApi;
 import xiao.customgun.core.resource.data.data.attachment._SimpleModifierData;
 import xiao.customgun.core.resource.data.data.gun._FireModeAdjustData;
 
+/**
+ * TODO 等 {@link ShootState} mask后，所有inaccuracy整合到一起
+ */
 public interface IAimInaccuracyModifier<T extends ResourcePojo<T>> extends IGunModifier<T, _SimpleModifierData, Float> {
 
     @Override
@@ -26,6 +30,7 @@ public interface IAimInaccuracyModifier<T extends ResourcePojo<T>> extends IGunM
         var inaccuracy = gunData.getInaccuracyData();
         if (inaccuracy == null) return 0.15F;
         float base = inaccuracy.getAim();
+        // TODO 这个也得改
         _FireModeAdjustData fireModeAdjust = gunData.getFireModeAdjustData().get(iGun.getFireModeType(gunItem));
         if (fireModeAdjust != null) base += fireModeAdjust.getAimInaccuracy();
         return Math.max(base, 0);

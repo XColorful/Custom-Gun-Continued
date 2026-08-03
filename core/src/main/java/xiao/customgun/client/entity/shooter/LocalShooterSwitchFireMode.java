@@ -10,16 +10,12 @@ package xiao.customgun.client.entity.shooter;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
-import xiao.customgun.CustomGun;
 import xiao.customgun.client.api.entity.LocalShooterProperty;
 import xiao.customgun.client.api.resource.ClientResourceApi;
 import xiao.customgun.client.api.sound.gun.GunSoundType;
 import xiao.customgun.client.resource.instance.assets.GunDisplayInstance;
 import xiao.customgun.client.sound.SoundPlayManager;
-import xiao.customgun.core.api.common.McLogicalSide;
-import xiao.customgun.core.api.entity.ILivingShooter;
 import xiao.customgun.core.api.entity.shooter.ILivingShooterGetter;
-import xiao.customgun.core.api.event.shooter.ShooterSwitchFireModeEvent;
 import xiao.customgun.core.api.item.IGun;
 import xiao.customgun.core.api.item.gun.IGunGetter;
 import xiao.customgun.core.entity.shooter.modifier.ShooterGunModifierManager;
@@ -33,29 +29,32 @@ public final class LocalShooterSwitchFireMode extends LocalShooterAspect {
     }
 
     public void switchFireMode() {
-        // 检查状态锁
-        if (this.localShooterProperty.clientStateLock) return;
-
+        // 1. 手持枪械检查
         ItemStack gunItem = this.localShooter.getMainHandItem();
         IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return;
 
-        @Nullable GunDisplayInstance gunDisplayInstance = ClientResourceApi.getGunDisplayInstance(gunItem);
-        if (gunDisplayInstance == null) return;
+        if ( // 2.1 检查状态锁
+                this.localShooterProperty.clientStateLock
+        ) return;
 
-        ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(this.localShooter);
-        if (CustomGun.getEventPoster().postCustomEvent(new ShooterSwitchFireModeEvent(McLogicalSide.CLIENT,
-                iLivingShooter, this.localShooter, iGun, gunItem))) {
-            return;
-        }
+        // 3. IGunRuntime操作结果 -> Shooter状态
+        boolean success = iGun.switchFireMode(null, iGun, gunItem, ILivingShooterGetter.cgc$fromLivingEntity(this.localShooter), this.localShooter);
+        if (!success) return;
+
         SendUtils.sendMessageToServer(new ClientMessagePlayerSwitchFireMode());
 
+        // 刷新配件缓存
+        ShooterGunModifierManager.postChangeEvent(this.localShooter, gunItem);
+
+        this._doSwitchFireMode(iGun, gunItem);
+    }
+    private void _doSwitchFireMode(IGun iGun, ItemStack gunItem) {
         // 播放音效
+        @Nullable GunDisplayInstance gunDisplayInstance = ClientResourceApi.getGunDisplayInstance(gunItem);
+        if (gunDisplayInstance == null) return;
         SoundPlayManager.get().playGunSound(gunDisplayInstance.getGunSound(GunSoundType.SWITCH_FIRE_MODE),
                 this.localShooter);
-        // 客户端切换开火模式
-        iGun.switchFireMode(null, iGun, gunItem);
-        ShooterGunModifierManager.postChangeEvent(this.localShooter, gunItem);
         // TODO AnimationStateMachine
     }
 }

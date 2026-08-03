@@ -249,7 +249,7 @@ public interface GunDataAccessor extends IGunDataAccess {
         IAmmo iAmmo = IAmmoGetter.fromItemStack(ammoItem);
         if (iAmmo == null) return 0;
 
-        GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(this.getGunLocation(gunItem));
+        @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(this.getGunLocation(gunItem));
         if (gunIndexInstance == null) return 0;
 
         @Nullable var customData = NBTUtils.getCustomData(ammoItem);
@@ -309,7 +309,7 @@ public interface GunDataAccessor extends IGunDataAccess {
 
     @Override
     default boolean useInventoryAmmo(ItemStack gunItem) {
-        GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(this.getGunLocation(gunItem));
+        @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(this.getGunLocation(gunItem));
         if (gunIndexInstance == null) return false;
 
         GunData gunData = gunIndexInstance.getGunData();
@@ -462,7 +462,7 @@ public interface GunDataAccessor extends IGunDataAccess {
         IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return false;
 
-        GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(iGun.getGunLocation(gunItem));
+        @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(iGun.getGunLocation(gunItem));
         if (gunIndexInstance == null) return false;
 
         return gunIndexInstance.getGunData().getAllowAttachmentTypes().contains(attachmentCategory);
@@ -565,7 +565,7 @@ public interface GunDataAccessor extends IGunDataAccess {
 
     @Override
     default @NotNull ResourceLocation getBuiltinAttachmentLocation(ItemStack gunItem, AttachmentCategory attachmentCategory) {
-        GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(this.getGunLocation(gunItem));
+        @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(this.getGunLocation(gunItem));
         if (gunIndexInstance == null) return ResourceTag.NULL_LOCATION;
         var location = gunIndexInstance.getGunData().getBuiltinAttachments().get(attachmentCategory);
         return location != null ? location : ResourceTag.NULL_LOCATION;

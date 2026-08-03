@@ -81,7 +81,7 @@ public class _GunScriptBackCompat {
      * 处理一次射击的过热变化
      */
     protected static void handleShootHeat(GunScriptApi _this) {
-        GunIndexInstance gunIndexInstance = _this.gunIndexInstanceCache;
+        @Nullable GunIndexInstance gunIndexInstance = _this.gunIndexInstanceCache;
         if (gunIndexInstance == null) return;
         @Nullable _HeatData heatData = gunIndexInstance.getGunData().getHeatData();
         if (heatData == null) return;
@@ -122,7 +122,7 @@ public class _GunScriptBackCompat {
      * @return 枪械的射击间隔，单位毫秒
      */
     protected static long getShootInterval(GunScriptApi _this) {
-        GunIndexInstance gunIndexInstance = _this.gunIndexInstanceCache;
+        @Nullable GunIndexInstance gunIndexInstance = _this.gunIndexInstanceCache;
         if (gunIndexInstance == null) return 0;
 
         GunData gunData = gunIndexInstance.getGunData();
@@ -400,7 +400,7 @@ public class _GunScriptBackCompat {
      * @return 枪膛内是否有子弹.如果是开膛待击的枪械，则此方法返回 false
      */
     protected static boolean hasAmmoInBarrel(GunScriptApi _this) {
-        GunIndexInstance gunIndexInstance = _this.gunIndexInstanceCache;
+        @Nullable GunIndexInstance gunIndexInstance = _this.gunIndexInstanceCache;
         if (gunIndexInstance == null) return false;
 
         GunData gunData = gunIndexInstance.getGunData();
@@ -530,7 +530,7 @@ public class _GunScriptBackCompat {
     }
 
     protected static boolean hasHeatData(GunScriptApi _this) {
-        GunIndexInstance gunIndexInstance = _this.gunIndexInstanceCache;
+        @Nullable GunIndexInstance gunIndexInstance = _this.gunIndexInstanceCache;
         if (gunIndexInstance == null) return false;
 
         GunData gunData = gunIndexInstance.getGunData();
@@ -538,7 +538,7 @@ public class _GunScriptBackCompat {
     }
 
     protected static float getHeatMinRpm(GunScriptApi _this) {
-        GunIndexInstance gunIndexInstance = _this.gunIndexInstanceCache;
+        @Nullable GunIndexInstance gunIndexInstance = _this.gunIndexInstanceCache;
         if (gunIndexInstance == null) return 0;
 
         GunData gunData = gunIndexInstance.getGunData();
@@ -547,7 +547,7 @@ public class _GunScriptBackCompat {
     }
 
     protected static float getHeatMaxRpm(GunScriptApi _this) {
-        GunIndexInstance gunIndexInstance = _this.gunIndexInstanceCache;
+        @Nullable GunIndexInstance gunIndexInstance = _this.gunIndexInstanceCache;
         if (gunIndexInstance == null) return 0;
 
         GunData gunData = gunIndexInstance.getGunData();
@@ -556,7 +556,7 @@ public class _GunScriptBackCompat {
     }
 
     protected static float getHeatMinInaccuracy(GunScriptApi _this) {
-        GunIndexInstance gunIndexInstance = _this.gunIndexInstanceCache;
+        @Nullable GunIndexInstance gunIndexInstance = _this.gunIndexInstanceCache;
         if (gunIndexInstance == null) return 0;
 
         GunData gunData = gunIndexInstance.getGunData();
@@ -565,7 +565,7 @@ public class _GunScriptBackCompat {
     }
 
     protected static float getHeatMaxInaccuracy(GunScriptApi _this) {
-        GunIndexInstance gunIndexInstance = _this.gunIndexInstanceCache;
+        @Nullable GunIndexInstance gunIndexInstance = _this.gunIndexInstanceCache;
         if (gunIndexInstance == null) return 0;
 
         GunData gunData = gunIndexInstance.getGunData();
@@ -574,7 +574,7 @@ public class _GunScriptBackCompat {
     }
 
     protected static float getHeatMax(GunScriptApi _this) {
-        GunIndexInstance gunIndexInstance = _this.gunIndexInstanceCache;
+        @Nullable GunIndexInstance gunIndexInstance = _this.gunIndexInstanceCache;
         if (gunIndexInstance == null) return 0;
 
         GunData gunData = gunIndexInstance.getGunData();
@@ -583,7 +583,7 @@ public class _GunScriptBackCompat {
     }
 
     protected static float getHeatPerShot(GunScriptApi _this) {
-        GunIndexInstance gunIndexInstance = _this.gunIndexInstanceCache;
+        @Nullable GunIndexInstance gunIndexInstance = _this.gunIndexInstanceCache;
         if (gunIndexInstance == null) return 0;
 
         GunData gunData = gunIndexInstance.getGunData();
@@ -600,7 +600,7 @@ public class _GunScriptBackCompat {
     }
 
     protected static long getOverheatTime(GunScriptApi _this) {
-        GunIndexInstance gunIndexInstance = _this.gunIndexInstanceCache;
+        @Nullable GunIndexInstance gunIndexInstance = _this.gunIndexInstanceCache;
         if (gunIndexInstance == null) return 0;
 
         GunData gunData = gunIndexInstance.getGunData();
@@ -609,7 +609,7 @@ public class _GunScriptBackCompat {
     }
 
     protected static long getCoolingDelay(GunScriptApi _this) {
-        GunIndexInstance gunIndexInstance = _this.gunIndexInstanceCache;
+        @Nullable GunIndexInstance gunIndexInstance = _this.gunIndexInstanceCache;
         if (gunIndexInstance == null) return 0;
 
         GunData gunData = gunIndexInstance.getGunData();
@@ -618,7 +618,7 @@ public class _GunScriptBackCompat {
     }
 
     protected static float calcHeatReduction(GunScriptApi _this, long heatTimestamp) {
-        GunIndexInstance gunIndexInstance = _this.gunIndexInstanceCache;
+        @Nullable GunIndexInstance gunIndexInstance = _this.gunIndexInstanceCache;
         if (gunIndexInstance == null) return 0;
 
         GunData gunData = gunIndexInstance.getGunData();
@@ -628,7 +628,7 @@ public class _GunScriptBackCompat {
     }
 
     protected static int getBoltByInt(GunScriptApi _this) {
-        GunIndexInstance gunIndexInstance = _this.gunIndexInstanceCache;
+        @Nullable GunIndexInstance gunIndexInstance = _this.gunIndexInstanceCache;
         if (gunIndexInstance == null) return 0;
 
         GunData gunData = gunIndexInstance.getGunData();
@@ -637,7 +637,7 @@ public class _GunScriptBackCompat {
     }
 
     protected static BoltType getBolt(GunScriptApi _this) {
-        GunIndexInstance gunIndexInstance = _this.gunIndexInstanceCache;
+        @Nullable GunIndexInstance gunIndexInstance = _this.gunIndexInstanceCache;
         if (gunIndexInstance == null) return null;
 
         GunData gunData = gunIndexInstance.getGunData();
@@ -645,7 +645,7 @@ public class _GunScriptBackCompat {
     }
 
     private static @Nullable _ChargingData getChargeData(GunScriptApi _this) {
-        GunIndexInstance gunIndexInstance = _this.gunIndexInstanceCache;
+        @Nullable GunIndexInstance gunIndexInstance = _this.gunIndexInstanceCache;
         if (gunIndexInstance == null) return null;
 
         GunData gunData = gunIndexInstance.getGunData();

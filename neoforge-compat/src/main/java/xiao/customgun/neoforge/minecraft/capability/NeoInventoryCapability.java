@@ -24,11 +24,11 @@ public class NeoInventoryCapability implements IInventoryCapability {
     private NeoInventoryCapability(@NotNull ResourceHandler<ItemResource> itemHandler) {
         this.itemHandler = itemHandler;
     }
-    public static NeoInventoryCapability fromLivingEntity(LivingEntity livingEntity, @Nullable Direction facing) {
+    public static NeoInventoryCapability fromLivingEntity(@Nullable LivingEntity livingEntity, @Nullable Direction facing) {
+        if (livingEntity == null) return null;
         ResourceHandler<ItemResource> itemHandler;
         if (facing != null) itemHandler = livingEntity.getCapability(Capabilities.Item.ENTITY_AUTOMATION, facing);
         else itemHandler = livingEntity.getCapability(Capabilities.Item.ENTITY, null);
-
         if (itemHandler != null) return new NeoInventoryCapability(itemHandler);
         else return null;
     }

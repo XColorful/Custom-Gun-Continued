@@ -17,6 +17,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.ApiStatus;
@@ -289,7 +290,7 @@ public class _DefaultGunAttack {
         // 使近战枪械兼容神化词条/宝石
         @Nullable ServerLevel serverLevel = livingShooter.level() instanceof ServerLevel level ? level : null;
         if (serverLevel != null) {
-            livingShooter.doEnchantDamageEffects(livingShooter, victimEntity);
+            EnchantmentHelper.doPostAttackEffects(serverLevel, victimEntity, damageSource);
         }
 
         if (!victimEntity.isAlive()) return;

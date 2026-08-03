@@ -133,8 +133,8 @@ public final class ReloadKey extends InputKey implements IEventHandler {
             if (gunIndexInstance == null) return;
 
             BoltType boltType = gunIndexInstance.getGunData().getBoltType();
-            boolean hasBarrelAmmo = boltType == BoltType.OPEN_BOLT ? iGun.getMagAmmoCountWithBarrel(gunItem, boltType) > 0
-                    : iGun.hasBarrelAmmo(gunItem);
+            boolean hasBarrelAmmo = boltType.useBarrelAmmo() ? iGun.hasBarrelAmmo(gunItem)
+                    : iGun.getMagAmmoCountWithBarrel(gunItem, boltType) > 0;
             if (hasBarrelAmmo) return;
         }
 

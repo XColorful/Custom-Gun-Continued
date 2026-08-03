@@ -50,10 +50,10 @@ public interface IClientGunOperator extends ICommonGunOperator {
      */
     ShootResult cgc$localShoot();
     /**
-     * 尝试充能/尝试开火
-     * @return 本次是否应该射击 (充能进度满/不需要充能)
+     * 执行充能，并判断充能是否足够，不代表能开火
+     * @return 是否满足射击所需的充能 (充能进度满/不需要充能)
      */
-    boolean cgc$chargeAndGetResult(boolean doShoot);
+    boolean cgc$doCharge_isChargeEnough(boolean doShoot);
 
     /**
      * 客户端手动拉栓(换弹)
@@ -73,6 +73,6 @@ public interface IClientGunOperator extends ICommonGunOperator {
     // --------Deprecated--------
 
     @Deprecated default boolean cgc$chargeShoot(boolean isCharging) {
-        return this.cgc$chargeAndGetResult(isCharging);
+        return this.cgc$doCharge_isChargeEnough(isCharging);
     }
 }

@@ -14,7 +14,7 @@ import xiao.customgun.forge.minecraft.capability.SyncDataCapabilityProvider;
 
 public class ForgeCapabilityProvider implements ICapabilityProvider {
 
-    @Override public @Nullable IInventoryCapability getItemHandler(LivingEntity livingEntity, @Nullable Direction facing) {
+    @Override public @Nullable IInventoryCapability getItemHandler(@Nullable LivingEntity livingEntity, @Nullable Direction facing) {
         return ForgeInventoryCapability.fromLivingEntity(livingEntity, facing);
     }
 

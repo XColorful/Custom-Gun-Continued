@@ -9,6 +9,7 @@ package xiao.customgun.core.api.minecraft.tab;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import xiao.customgun.core.api.item.AmmoProperty;
 import xiao.customgun.core.api.item.ammo.AmmoCategory;
 import xiao.customgun.core.api.item.builder.AmmoBuilder;
@@ -30,7 +31,7 @@ public class AmmoTab {
     public static List<ItemStack> buildAmmoItems(AmmoCategory ammoCategory) {
         List<ItemStack> ammoItems = new ArrayList<>();
         ResourceApi.getAllAmmoIndexInstance().stream().sorted(indexSort()).forEach(entry -> {
-            AmmoIndexInstance ammoIndexInstance = entry.getValue();
+            @NotNull AmmoIndexInstance ammoIndexInstance = entry.getValue();
             {
                 ItemStack ammoItem = AmmoBuilder.create(ModItems.AMMO.get())
                         // 子弹ResourceLocation

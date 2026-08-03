@@ -16,14 +16,17 @@ import xiao.customgun.core.resource.data.data.GunData;
 import xiao.customgun.core.api.entity.shooter.modifier.ShooterGunModifierCache;
 import xiao.customgun.core.api.gun.script.GunScriptApi;
 import xiao.customgun.core.resource.data.data.attachment._RecoilDataModifierData;
+import xiao.customgun.core.resource.data.data.gun._RecoilData;
 
-public interface IRecoilDataModifier<T extends ResourcePojo<T>> extends IGunModifier<T, _RecoilDataModifierData, _RecoilDataModifierData> {
+public interface IRecoilDataModifier<T extends ResourcePojo<T>> extends IGunModifier<T, _RecoilDataModifierData, _RecoilData> {
 
     @Override
-    default @Nullable _RecoilDataModifierData getBase(@NotNull IGun iGun, @NotNull ItemStack gunItem,
+    default @Nullable _RecoilData getBase(@NotNull IGun iGun, @NotNull ItemStack gunItem,
                                                        @NotNull GunData gunData) {
-        // TODO: from gunData.getRecoilData() — build a copy
-        return new _RecoilDataModifierData();
+        _RecoilData source = gunData.getRecoilData();
+        // TODO copy
+        _RecoilData result = source;
+        return result;
     }
 
     static @Nullable _RecoilDataModifierData getValue(ShooterGunModifierCache cache, IGunModifierHolder modifierType) {

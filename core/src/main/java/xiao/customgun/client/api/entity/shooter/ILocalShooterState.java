@@ -27,7 +27,12 @@ public interface ILocalShooterState {
      * 客户端瞄准进度
      * @return 0-1，1 代表开镜进度到 100%
      */
-    float cgc$getAimingProgress(float partialTicks);
+    float cgc$getAimingProgress();
+    /**
+     * 客户端渲染用的瞄准进度
+     * @return 0-1，1 代表开镜进度到 100%
+     */
+    float cgc$getRenderAimingProgress(float partialTicks);
 
     /**
      * 客户端射击冷却时间

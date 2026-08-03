@@ -8,6 +8,7 @@
 package xiao.customgun.core.item.attachment.modifier;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import xiao.customgun.core.api.item.gun.modifier.IMagazineCategoryModifier;
 import xiao.customgun.core.api.item.attachment.MagazineCategory;
 import xiao.customgun.core.resource.data.data.AttachmentData;
@@ -21,13 +22,17 @@ public final class MagazineCategoryModifier extends AttachmentModifier<MagazineC
     // --------IAttachmentModifier--------
 
     @Override
-    public MagazineCategory getModifier(@NotNull AttachmentData pojo) {
+    public @Nullable MagazineCategory getModifier(@NotNull AttachmentData pojo) {
         return pojo.getMagazineCategory();
     }
 
     @Override
     public MagazineCategory eval(Collection<MagazineCategory> modifiers, MagazineCategory base) {
-        // TODO: eval 不能复用父类函数 — 弹匣类别不是数值，取最高等级
+        for (MagazineCategory modifier : modifiers) {
+            if (modifier != MagazineCategory.NONE) {
+                return modifier;
+            }
+        }
         return base;
     }
 }

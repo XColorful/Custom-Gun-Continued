@@ -23,7 +23,6 @@ public interface IMuzzleModifier<T extends ResourcePojo<T>> extends IGunModifier
     @Override
     default @Nullable FireSoundType getBase(@NotNull IGun iGun, @NotNull ItemStack gunItem,
                                             @NotNull GunData gunData) {
-        // TODO: FireSoundData → FireSoundType mapping
         return FireSoundType.NORMAL;
     }
 

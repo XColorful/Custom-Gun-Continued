@@ -16,14 +16,20 @@ import xiao.customgun.core.resource.data.data.GunData;
 import xiao.customgun.core.api.entity.shooter.modifier.ShooterGunModifierCache;
 import xiao.customgun.core.api.gun.script.GunScriptApi;
 import xiao.customgun.core.resource.data.data.attachment._SimpleModifierData;
+import xiao.customgun.core.resource.data.data.gun.bullet._BulletSkillData;
+import xiao.customgun.core.resource.data.data.gun.bullet.damage._DistanceDamageData;
+
+import java.util.List;
 
 public interface IEffectiveRangeModifier<T extends ResourcePojo<T>> extends IGunModifier<T, _SimpleModifierData, Float> {
 
     @Override
     default @Nullable Float getBase(@NotNull IGun iGun, @NotNull ItemStack gunItem,
                                     @NotNull GunData gunData) {
-        // TODO ExtraDamage distance
-        return (float) Integer.MAX_VALUE;
+        _BulletSkillData bulletSkill = gunData.getBulletData().getBulletSkillData();
+        List<_DistanceDamageData> source = bulletSkill.getDamageCalculation();
+        if (source.isEmpty()) return null;
+        else return source.get(0).getDistance();
     }
 
     @Override

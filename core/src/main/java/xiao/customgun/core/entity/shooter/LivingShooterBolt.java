@@ -10,10 +10,10 @@ package xiao.customgun.core.entity.shooter;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
+import xiao.customgun.core.api.entity.ILivingShooter;
 import xiao.customgun.core.api.entity.ShooterProperty;
 import xiao.customgun.core.api.entity.shooter.ILivingShooterGetter;
 import xiao.customgun.core.api.item.IGun;
-import xiao.customgun.core.api.item.gun.BoltType;
 import xiao.customgun.core.api.item.gun.IGunGetter;
 import xiao.customgun.core.api.resource.ResourceApi;
 import xiao.customgun.core.resource.instance.data.GunIndexInstance;
@@ -31,43 +31,34 @@ public final class LivingShooterBolt extends LivingShooterAspect {
     }
 
     public void bolt() {
+        // 1. 手持枪械检查
         if (this.shooterProperty.currentGunItem == null) return;
-
-        ItemStack currentGunItem = this.shooterProperty.currentGunItem.get();
-        IGun iGun = IGunGetter.fromItemStack(currentGunItem);
+        ItemStack gunItem = this.shooterProperty.currentGunItem.get();
+        IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return;
 
-        // 缓存近的判断前置
-        if (
+        if ( // 2.1 检查状态锁
                 // 判断是否正在射击冷却
                 this.shoot.getShootCooldown() > 0
                 // 检查是否正在换弹
                 || this.shooterProperty.reloadStateType.isReloading()
                 // 检查是否在切枪
                 || this.draw.getDrawCooldown() > 0
+        ) return;
+        else if ( // 2.2 检查状态
                 // 检查是否在拉栓
-                || this.shooterProperty.isBolting
-                // 检查是否有弹药在枪膛内
-                || iGun.hasBarrelAmmo(currentGunItem)
+                this.shooterProperty.isBolting
         ) return;
 
-        var gunLocation = iGun.getGunLocation(currentGunItem);
-        @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(gunLocation);
-        if (gunIndexInstance == null) return;
-
-        // 检查 bolt 类型是否是 manual action
-        BoltType boltType = gunIndexInstance.getGunData().getBoltType();
-        if (boltType != BoltType.MANUAL_ACTION) return;
-
-
-        // 判断没有子弹的条件 (背包直读且包内没子弹 / 非背包直读且弹匣子弹数 < 1)
-        boolean useInventoryAmmo = iGun.useInventoryAmmo(currentGunItem); // 是否为背包直读
-        boolean hasAmmo = useInventoryAmmo ? iGun.hasInventoryAmmo(this.livingShooter, currentGunItem)
-                : iGun.getMagAmmoCount(currentGunItem) < 1;
-        if (!hasAmmo) return;
+        { // 3. IGunRuntime操作结果 -> Shooter状态
+            ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(this.livingShooter);
+            this.shooterProperty.isBolting = iGun.startBolt(this.shooterProperty, iGun, gunItem, iLivingShooter, this.livingShooter);
+            if (!this.shooterProperty.isBolting) {
+                return;
+            }
+        }
 
         this.shooterProperty.boltTimestamp = System.currentTimeMillis();
-        this.shooterProperty.isBolting = iGun.startBolt(this.shooterProperty, iGun, currentGunItem, ILivingShooterGetter.cgc$fromLivingEntity(this.livingShooter), this.livingShooter);
     }
 
     public void tickBolt() {
@@ -87,7 +78,11 @@ public final class LivingShooterBolt extends LivingShooterAspect {
 
         var gunLocation = iGun.getGunLocation(currentGunItem);
         @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(gunLocation);
-        this.shooterProperty.isBolting = gunIndexInstance != null
-                && iGun.tickBolt(this.shooterProperty, iGun, currentGunItem, ILivingShooterGetter.cgc$fromLivingEntity(this.livingShooter), this.livingShooter);
+        if (gunIndexInstance == null) {
+            this.shooterProperty.isBolting = false;
+            return;
+        }
+
+        this.shooterProperty.isBolting = iGun.tickBolt(this.shooterProperty, iGun, currentGunItem, ILivingShooterGetter.cgc$fromLivingEntity(this.livingShooter), this.livingShooter);
     }
 }

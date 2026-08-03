@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2024-2026 MCModderAnchor (https://github.com/MCModderAnchor)
- * SPDX-License-Identifier: GPL-3.0-only
- *
- * Source: https://github.com/MCModderAnchor/TACZ
- */
-
 package xiao.customgun.neoforge.minecraft.capability;
 
 import net.minecraft.core.Direction;
@@ -22,7 +15,8 @@ public class NeoInventoryCapability implements IInventoryCapability {
     private NeoInventoryCapability(@NotNull IItemHandler itemHandler) {
         this.itemHandler = itemHandler;
     }
-    public static NeoInventoryCapability fromLivingEntity(LivingEntity livingEntity, @Nullable Direction facing) {
+    public static NeoInventoryCapability fromLivingEntity(@Nullable LivingEntity LivingEntity livingEntity, @Nullable Direction facing) {
+        if (livingEntity == null) return null;
         IItemHandler itemHandler;
         if (facing != null) itemHandler = livingEntity.getCapability(Capabilities.ItemHandler.ENTITY_AUTOMATION, facing);
         else itemHandler = livingEntity.getCapability(Capabilities.ItemHandler.ENTITY, null);

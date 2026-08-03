@@ -173,7 +173,7 @@ public class _DefaultGunInventory {
                     .build();
             ItemEntity itemEntity = new ItemEntity(serverLevel, pos.x, pos.y, pos.z, ammoItem);
             itemEntity.setPickUpDelay(10);
-            itemEntity.setThrower(livingShooter.getUUID());
+            itemEntity.setThrower(livingShooter);
 
             if (!serverLevel.addFreshEntity(itemEntity)) {
                 CustomGun.LOGGER.warn("_DefaultGunInventory: Failed to add item entity {} to world, canceled dropAmmoToWorld", itemEntity.toString());

@@ -93,6 +93,18 @@
  * {@link xiao.customgun.core.api.item.gun.IGunAmmoDataAccess#getDummyAmmoCount}
  */
 ```
+- Gun modifier：枪械修饰工具
+```java
+/**
+ * {@link xiao.customgun.core.api.item.gun.modifier.IGunModifier}
+ */
+```
+- Attachment modifier：配件修饰工具
+```java
+/**
+ * {@link xiao.customgun.core.api.item.attachment.modifier.IAttachmentModifier}
+ */
+```
 
 ### Projectile 
 

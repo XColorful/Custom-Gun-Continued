@@ -11,6 +11,9 @@ import xiao.customgun.core.api.item.IItemModifier;
 import xiao.customgun.core.api.item.gun.modifier.IGunModifier;
 import xiao.customgun.core.resource.data.data.AttachmentData;
 
+/*
+文档译名: 配件修饰工具 (XiaoColorful译)
+ */
 /**
  * 配件修饰工具
  */

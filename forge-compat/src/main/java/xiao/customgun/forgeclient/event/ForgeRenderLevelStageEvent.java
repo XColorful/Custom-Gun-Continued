@@ -7,6 +7,7 @@
 
 package xiao.customgun.forgeclient.event;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
@@ -40,7 +41,7 @@ public class ForgeRenderLevelStageEvent extends ForgeEvent implements IRenderLev
 
     @Override
     public Matrix4f getModelViewMatrix() {
-        return this.typedEvent.getPoseStack().last().pose();
+        return this.typedEvent.getPoseStack();
     }
 
     @Override
@@ -50,7 +51,17 @@ public class ForgeRenderLevelStageEvent extends ForgeEvent implements IRenderLev
 
     @Override
     public float getPartialTick() {
-        return this.typedEvent.getPartialTick();
+//        return this.typedEvent.getPartialTick();
+        /*
+         * 【修复 Forge 1.21.1 渲染抖动问题】
+         * * 异常现象：使用 typedEvent.getPartialTick() 会导致渲染物体随坐标平移而剧烈抖动。
+         * 原因分析：Forge 在 1.21.1 的 RenderLevelStageEvent 中传入的是 getRealtimeDeltaTicks()，
+         * 该值基于系统真实增量时间，且逻辑上与游戏 Tick 步调不完全同步，甚至会出现回退现象（如 0.28 -> 0.12）。
+         * 解决方案：改用 Minecraft 计时器维护的 GameTimeDeltaPartialTick。
+         * 该值对应旧版本的 partialTick (deltaTickResidual)，是基于游戏逻辑刻平滑插值的系数，
+         * 能保证渲染位置与玩家坐标插值（LERP）逻辑完全同步。
+         */
+        return Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true);
     }
 
     @Override

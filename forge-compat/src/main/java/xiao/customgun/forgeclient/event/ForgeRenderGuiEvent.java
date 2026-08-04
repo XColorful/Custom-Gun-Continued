@@ -11,7 +11,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
-import net.minecraftforge.client.event.RenderGuiEvent;
+import net.minecraftforge.client.event.CustomizeGuiOverlayEvent;
 import net.minecraftforge.eventbus.api.Event;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.client.api.event.IRenderGuiEvent;
@@ -20,11 +20,11 @@ import xiao.customgun.forge.event.ForgeEvent;
 
 public class ForgeRenderGuiEvent extends ForgeEvent implements IRenderGuiEvent {
 
-    private final RenderGuiEvent.Post event;
+    private final CustomizeGuiOverlayEvent event;
 
     public ForgeRenderGuiEvent(Event event) {
         super(event);
-        if (event instanceof RenderGuiEvent.Post eventIn) {
+        if (event instanceof CustomizeGuiOverlayEvent eventIn) {
             this.event = eventIn;
         } else {
             throw new RuntimeException("Expected RenderGuiEvent but received: " + event.getClass().getName());

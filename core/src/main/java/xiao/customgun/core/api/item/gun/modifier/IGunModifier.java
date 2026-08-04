@@ -16,6 +16,9 @@ import xiao.customgun.core.resource.ResourcePojo;
 import xiao.customgun.core.resource.data.data.GunData;
 import xiao.customgun.core.util.ScriptUtils;
 
+/*
+文档译名: 枪械修饰工具 (XiaoColorful译)
+ */
 /**
  * 枪械修饰工具
  */

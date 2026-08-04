@@ -132,7 +132,7 @@
 	- [AmmoBoxItem](./item/ammobox/ammo-box-item.md)：子弹盒物品
 - Attachment：配件
 	- [AttachmentItem](./item/attachment/attachment-item.md)：配件物品
-	- modifier：配件属性修改器
+	- modifier：配件修饰工具
 - Gun：枪械
 	- [GunItem](./item/gun/gun-item.md)：枪械物品
 
@@ -204,6 +204,7 @@
 > 
 > 当存在对应工具时，必须优先使用工具提供的统一接口，而非直接调用平台或 Minecraft API，以保持一致性与兼容性
 
+- ChatUtils：聊天栏消息、标题、动作栏统一发送入口
 - ClassUtils：基本数据结构，用于简化算法
 	- 已封装组合数据结构：`ArraySet`、`QueueSet`、`ArrayMap`
 - ColorUtils：处理颜色字符串、游戏内颜色等
@@ -353,7 +354,7 @@ Module division based on the `xiao.customgun.core` top-level package
 	- [AmmoBoxItem](./item/ammobox/ammo-box-item.md#English): Ammo box item
 - Attachment:
 	- [AttachmentItem](./item/attachment/attachment-item.md#English): Attachment item
-	- modifier: Attachment property modifier
+	- modifier: Attachment modifier
 - Gun:
 	- [GunItem](./item/gun/gun-item.md#English): Gun item
 
@@ -425,6 +426,7 @@ Module division based on the `xiao.customgun.core` top-level package
 >
 > When an equivalent utility exists, it must be used instead of calling platform or Minecraft APIs directly, to preserve consistency and compatibility.
 
+- ChatUtils: Unified entry point for sending chat messages, titles, action bars
 - ClassUtils: Basic data structures, used to simplify algorithms
 	- Encapsulates combined data structures: `ArraySet`, `QueueSet`, `ArrayMap`
 - ColorUtils: Utilities for color strings and in-game colors

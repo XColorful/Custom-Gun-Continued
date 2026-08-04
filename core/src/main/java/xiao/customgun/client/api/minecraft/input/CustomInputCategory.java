@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum CustomInputCategory implements ICustomInputCategory {
-    CONFIG(CustomInputCategoryTag.CONFIG),
+    @Deprecated(forRemoval = true) CONFIG(CustomInputCategoryTag.CONFIG),
     PLAYER(CustomInputCategoryTag.PLAYER),
     SHOOTER(CustomInputCategoryTag.SHOOTER);
 

@@ -132,7 +132,7 @@
 	- [AmmoBoxItem](./item/ammobox/ammo-box-item.md)：子弹盒物品
 - Attachment：配件
 	- [AttachmentItem](./item/attachment/attachment-item.md)：配件物品
-	- modifier：配件属性修改器
+	- modifier：配件修饰工具
 - Gun：枪械
 	- [GunItem](./item/gun/gun-item.md)：枪械物品
 
@@ -354,7 +354,7 @@ Module division based on the `xiao.customgun.core` top-level package
 	- [AmmoBoxItem](./item/ammobox/ammo-box-item.md#English): Ammo box item
 - Attachment:
 	- [AttachmentItem](./item/attachment/attachment-item.md#English): Attachment item
-	- modifier: Attachment property modifier
+	- modifier: Attachment modifier
 - Gun:
 	- [GunItem](./item/gun/gun-item.md#English): Gun item
 

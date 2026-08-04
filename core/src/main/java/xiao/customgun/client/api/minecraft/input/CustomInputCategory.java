@@ -2,15 +2,15 @@ package xiao.customgun.client.api.minecraft.input;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.CustomGun;
 import xiao.customgun.core.api.minecraft.input.CustomInputCategoryTag;
-import xiao.customgun.core.api.resource.ResourceTag;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public enum CustomInputCategory implements ResourceTag.CategoryTag, ResourceTag.RegistryTag {
+public enum CustomInputCategory implements ICustomInputCategory {
     CONFIG(CustomInputCategoryTag.CONFIG),
     PLAYER(CustomInputCategoryTag.PLAYER),
     SHOOTER(CustomInputCategoryTag.SHOOTER);
@@ -43,21 +43,26 @@ public enum CustomInputCategory implements ResourceTag.CategoryTag, ResourceTag.
         return this.registryLocation;
     }
 
+    @Override
     public Component getCategoryLang() {
         return this.categoryLang;
     }
 
-    private static final Map<String, CustomInputCategory> CATEGORIES = new HashMap<>();
+    private static final Map<String, ICustomInputCategory> CATEGORIES = new HashMap<>();
+    @ApiStatus.Internal
+    public static void registerInputCategory(ICustomInputCategory category) {
+        CATEGORIES.put(category.getTagName(), category);
+        CATEGORIES.put(category.getCategoryName(), category);
+        CATEGORIES.put(category.getRegistryName(), category);
+    }
 
     static {
         for (CustomInputCategory category : values()) {
-            CATEGORIES.put(category.tagName, category);
-            CATEGORIES.put(category.categoryName, category);
-            CATEGORIES.put(category.registryName, category);
+            registerInputCategory(category);
         }
     }
 
-    public static @Nullable CustomInputCategory fromString(String name) {
+    public static @Nullable ICustomInputCategory fromString(String name) {
         return name != null ? CATEGORIES.get(name) : null;
     }
 

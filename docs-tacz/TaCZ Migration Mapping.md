@@ -738,7 +738,7 @@ Notation:
 > package com.tacz.guns.api.client.other;
 > ```
 
-|com.tacz.guns.api.client.|xiao.customgun.client.api.|
+|com.tacz.guns.api.client.other| |
 |---|---|
 |`GunModelTypeManager`||
 |`IThirdPersonAnimation`||

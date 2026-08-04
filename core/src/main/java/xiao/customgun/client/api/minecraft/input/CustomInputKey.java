@@ -19,7 +19,7 @@ import java.util.Map;
 
 public enum CustomInputKey implements ICustomInputKey {
     // config
-    CONFIG(CustomInputKeyTag.CONFIG),
+    @Deprecated(forRemoval = true) CONFIG(CustomInputKeyTag.CONFIG),
     // player
     INTERACT(CustomInputKeyTag.INTERACT),
     REFIT(CustomInputKeyTag.REFIT),

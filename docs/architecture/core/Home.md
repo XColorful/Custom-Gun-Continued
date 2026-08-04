@@ -204,6 +204,7 @@
 > 
 > 当存在对应工具时，必须优先使用工具提供的统一接口，而非直接调用平台或 Minecraft API，以保持一致性与兼容性
 
+- ChatUtils：聊天栏消息、标题、动作栏统一发送入口
 - ClassUtils：基本数据结构，用于简化算法
 	- 已封装组合数据结构：`ArraySet`、`QueueSet`、`ArrayMap`
 - ColorUtils：处理颜色字符串、游戏内颜色等
@@ -425,6 +426,7 @@ Module division based on the `xiao.customgun.core` top-level package
 >
 > When an equivalent utility exists, it must be used instead of calling platform or Minecraft APIs directly, to preserve consistency and compatibility.
 
+- ChatUtils: Unified entry point for sending chat messages, titles, action bars
 - ClassUtils: Basic data structures, used to simplify algorithms
 	- Encapsulates combined data structures: `ArraySet`, `QueueSet`, `ArrayMap`
 - ColorUtils: Utilities for color strings and in-game colors

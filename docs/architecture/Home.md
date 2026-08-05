@@ -13,7 +13,7 @@
 
 ## 项目结构
 
-基于`xiao.customgun`顶层包的模块划分
+基于`dev.xcolorful.customgun`顶层包的模块划分
 - [client架构总览](./client/Home.md)
 - [core架构总览](./core/Home.md)
 
@@ -30,6 +30,6 @@ Core architectural ideas and development principles
 
 ## Project Structure
 
-Module division based on the `xiao.customgun` top-level package
+Module division based on the `dev.xcolorful.customgun` top-level package
 - [client Architecture Overview](./client/Home.md#English)
 - [core Architecture Overview](./core/Home.md#English)

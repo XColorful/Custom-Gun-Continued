@@ -9,17 +9,17 @@ package xiao.customgun.client.api.minecraft.input;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import xiao.customgun.CustomGun;
 import xiao.customgun.core.api.minecraft.input.CustomInputKeyTag;
-import xiao.customgun.core.api.resource.ResourceTag;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public enum CustomInputKey implements ResourceTag.CategoryTag, ResourceTag.RegistryTag {
+public enum CustomInputKey implements ICustomInputKey {
     // config
-    CONFIG(CustomInputKeyTag.CONFIG),
+    @Deprecated(forRemoval = true) CONFIG(CustomInputKeyTag.CONFIG),
     // player
     INTERACT(CustomInputKeyTag.INTERACT),
     REFIT(CustomInputKeyTag.REFIT),
@@ -60,22 +60,27 @@ public enum CustomInputKey implements ResourceTag.CategoryTag, ResourceTag.Regis
     @Override public ResourceLocation getRegistryLocation() {
         return this.registryLocation;
     }
-    
+
+    @Override
     public Component getCategoryLang() {
         return this.categoryLang;
     }
 
-    private static final Map<String, CustomInputKey> INPUT_KEYS = new HashMap<>();
+    private static final Map<String, ICustomInputKey> INPUT_KEYS = new HashMap<>();
+    @ApiStatus.Internal
+    public static void registerInputKey(ICustomInputKey key) {
+        INPUT_KEYS.put(key.getTagName(), key);
+        INPUT_KEYS.put(key.getCategoryName(), key);
+        INPUT_KEYS.put(key.getRegistryName(), key);
+    }
 
     static {
-        for (CustomInputKey key : values()) {
-            INPUT_KEYS.put(key.tagName, key);
-            INPUT_KEYS.put(key.categoryName, key);
-            INPUT_KEYS.put(key.registryName, key);
+        for (ICustomInputKey key : values()) {
+            registerInputKey(key);
         }
     }
 
-    public static @Nullable CustomInputKey fromString(String name) {
+    public static @Nullable ICustomInputKey fromString(String name) {
         return name != null ? INPUT_KEYS.get(name) : null;
     }
 

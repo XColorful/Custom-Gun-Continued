@@ -6,7 +6,7 @@ import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraftforge.event.AddReloadListenerEvent;

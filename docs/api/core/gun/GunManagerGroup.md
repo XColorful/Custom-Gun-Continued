@@ -1,5 +1,5 @@
 ```java
-package xiao.customgun.core.api.gun;
+package dev.xcolorful.customgun.core.api.gun;
 
 public record GunManagerGroup(String managerGroupTag,
                               @NotNull IGunActionManager gunActionManager,

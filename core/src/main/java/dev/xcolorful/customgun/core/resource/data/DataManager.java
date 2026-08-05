@@ -1,0 +1,72 @@
+/*
+ * Copyright (c) 2024-2026 MCModderAnchor (https://github.com/MCModderAnchor)
+ * SPDX-License-Identifier: GPL-3.0-only
+ *
+ * Source: https://github.com/MCModderAnchor/TACZ
+ */
+
+package dev.xcolorful.customgun.core.resource.data;
+
+import dev.xcolorful.customgun.core.api.resource.FileExtensionType;
+import dev.xcolorful.customgun.core.api.resource.INetworkCacheReloadListener;
+import dev.xcolorful.customgun.core.api.resource.data.DataFolderName;
+import dev.xcolorful.customgun.core.api.resource.data.DataFolderType;
+import dev.xcolorful.customgun.core.api.resource.data.data.DataSubFolderType;
+import dev.xcolorful.customgun.core.resource.ResourcePojo;
+import dev.xcolorful.customgun.core.resource.ResourcePojoManager;
+import dev.xcolorful.customgun.core.resource.data.data.AttachmentData;
+import dev.xcolorful.customgun.core.resource.data.data.BlockData;
+import dev.xcolorful.customgun.core.resource.data.data.GunData;
+import dev.xcolorful.customgun.core.resource.network.SyncDataType;
+import dev.xcolorful.customgun.core.util.JsonUtils;
+import net.minecraft.server.packs.PackType;
+import org.jetbrains.annotations.ApiStatus;
+
+import java.util.Arrays;
+
+/**
+ * 目录名称{@link DataFolderType} + 子目录名称{@link DataSubFolderType}
+ */
+public abstract class DataManager<T extends ResourcePojo<T>> extends ResourcePojoManager<T> {
+
+    public DataManager(String subPrefix, String extension, JsonUtils.ReadFunction<T> fromJson) {
+        super(PackType.SERVER_DATA, Arrays.asList(DataFolderType.DATA.getFolderName() + "/" + subPrefix, DataFolderName.DATA_OLD1 + "/" + subPrefix),
+                extension, fromJson);
+    }
+
+    public static final class GunDataManager extends DataManager<GunData> implements INetworkCacheReloadListener {
+        @ApiStatus.Internal
+        public GunDataManager() {
+            super(DataSubFolderType.GUN.getFolderName(),
+                    FileExtensionType.JSON.getExtensionNameWithDot(),
+                    GunData::fromJson);
+        }
+        @Override public SyncDataType getSyncDataType() {
+            return SyncDataType.GUN_DATA;
+        }
+    }
+
+    public static final class AttachmentDataManager extends DataManager<AttachmentData> implements INetworkCacheReloadListener {
+        @ApiStatus.Internal
+        public AttachmentDataManager() {
+            super(DataSubFolderType.ATTACHMENT.getFolderName(),
+                    FileExtensionType.JSON.getExtensionNameWithDot(),
+                    AttachmentData::fromJson);
+        }
+        @Override public SyncDataType getSyncDataType() {
+            return SyncDataType.ATTACHMENT_DATA;
+        }
+    }
+
+    public static final class BlockDataManager extends DataManager<BlockData> implements INetworkCacheReloadListener {
+        @ApiStatus.Internal
+        public BlockDataManager() {
+            super(DataSubFolderType.BLOCK.getFolderName(),
+                    FileExtensionType.JSON.getExtensionNameWithDot(),
+                    BlockData::fromJson);
+        }
+        @Override public SyncDataType getSyncDataType() {
+            return SyncDataType.BLOCK_DATA;
+        }
+    }
+}

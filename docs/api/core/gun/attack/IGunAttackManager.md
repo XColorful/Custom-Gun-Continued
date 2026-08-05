@@ -1,5 +1,5 @@
 ```java
-package xiao.customgun.core.api.gun.attack;
+package dev.xcolorful.customgun.core.api.gun.attack;
 
 public interface IGunAttackManager extends IGunSubManager, IGunAttackRuntime {
 }

@@ -23,6 +23,10 @@ import xiao.customgun.client.init.registry.ClientInputCategory;
 import xiao.customgun.client.input.InputKey;
 import xiao.customgun.client.util.ClientInputUtils;
 
+/**
+ * 已移至{@code dev.xcolorful.cgcconfig.client.input.config.ConfigKey}
+ */
+@Deprecated(forRemoval = true)
 public final class ConfigKey extends InputKey {
 
     private static final class ConfigKeyHolder {
@@ -76,12 +80,5 @@ public final class ConfigKey extends InputKey {
 
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return;
-
-        if (true) {
-            // TODO Cloth compat
-            // 做成事件钩子或mixin
-            // 事件钩子就支持不同config模组
-        } else {
-        }
     }
 }

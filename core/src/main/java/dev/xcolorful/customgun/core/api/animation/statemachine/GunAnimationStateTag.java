@@ -1,0 +1,31 @@
+/*
+ * Copyright (c) 2024-2026 MCModderAnchor (https://github.com/MCModderAnchor)
+ * SPDX-License-Identifier: GPL-3.0-only
+ *
+ * Source: https://github.com/MCModderAnchor/TACZ
+ */
+
+package dev.xcolorful.customgun.core.api.animation.statemachine;
+
+/**
+ * 枪械动画状态机常用的常量，如状态转移的输入值
+ */
+public class GunAnimationStateTag {
+
+    public static final String INPUT_BOLT = "blot";
+    public static final String INPUT_DRAW = "draw";
+    public static final String INPUT_PUT_AWAY = "put_away";
+    public static final String INPUT_SWITCH_FIRE_MODE = "switch_fire_mode"; public static final String INPUT_SWITCH_FIRE_MODE_OLD1 = "fire_select";
+    public static final String INPUT_INSPECT = "inspect";
+    public static final String INPUT_BAYONET_MUZZLE = "bayonet_muzzle";
+    public static final String INPUT_BAYONET_STOCK = "bayonet_stock";
+    public static final String INPUT_BAYONET_PUSH = "bayonet_push";
+    public static final String INPUT_RELOAD = "reload";
+    public static final String INPUT_CANCEL_RELOAD = "cancel_reload";
+    public static final String INPUT_SHOOT = "shoot";
+    public static final String INPUT_WALK = "walk";
+    public static final String INPUT_RUN = "run";
+    public static final String INPUT_IDLE = "idle";
+
+    private GunAnimationStateTag() {}
+}

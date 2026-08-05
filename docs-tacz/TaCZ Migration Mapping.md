@@ -27,16 +27,16 @@ Notation:
 |`@CacheModifiableByScript`|_Deprecated_|
 |`@ValueModifiableAtRuntime`|_Deprecated_|
 
-|com.tacz.guns.api|xiao.customgun.core.api.resource|
+|com.tacz.guns.api|dev.xcolorful.customgun.core.api.resource|
 |---|---|
 |`DefaultAssets`.\*|`ResourceTag`.NULL_LOCATION|
 |`TimelessAPI`|`ResourceApi`|
 
-|com.tacz.guns.api|xiao.customgun.client.api.resource|
+|com.tacz.guns.api|dev.xcolorful.customgun.client.api.resource|
 |---|---|
 |`TimelessAPI`|`ClientResourceApi`|
 
-|com.tacz.guns.api|xiao.customgun.core.api.item|
+|com.tacz.guns.api|dev.xcolorful.customgun.core.api.item|
 |---|---|
 |`GunProperties`.\*|gun.modifier.`GunModifierType`.\*|
 |`GunProperties`.`RumtimeOnly`.\*|gun.modifier.`GunModifierType`.\*|
@@ -45,7 +45,7 @@ Notation:
 
 #### Common API
 
-| |xiao.customgun.core.api.common|
+| |dev.xcolorful.customgun.core.api.common|
 |---|---|
 |net.minecraftforge.fml.`LogicalSide`|`McLogicalSide`|
 |net.minecraftforge.api.distmarker.`Dist`|`McSide`|
@@ -55,7 +55,7 @@ Notation:
 > package com.tacz.guns.api.entity;
 > ```
 
-|com.tacz.guns.api.entity|xiao.customgun.core.api.entity|
+|com.tacz.guns.api.entity|dev.xcolorful.customgun.core.api.entity|
 |---|---|
 |`IGunOperator`|`ILivingShooter`|
 |`ITargetEntity`|`IBulletVictimEntity`|
@@ -68,7 +68,7 @@ Notation:
 > package com.tacz.guns.api.event;
 > ```
 
-|com.tacz.guns.api.event|xiao.customgun.core.api.event|
+|com.tacz.guns.api.event|dev.xcolorful.customgun.core.api.event|
 |---|---|
 |common.`AttachmentPropertyEvent`|shooter.`ShooterGunModifierCacheEvent`|
 |common.`EntityHurtByGunEvent`.`Pre`|projectile.`ProjectileHitEntityEvent`|
@@ -84,7 +84,7 @@ Notation:
 |common.`KubeJSGunEventPoster`|_Deprecated_|
 |server.`AmmoHitBlockEvent`|projectile.`ProjectileHitBlockEvent`|
 
-|com.tacz.guns.api.event|xiao.customgun.core.api.minecraft|
+|com.tacz.guns.api.event|dev.xcolorful.customgun.core.api.minecraft|
 |---|---|
 |common.`GunDamageSourcePart`|damage.`CustomDamageType`.isPierce|
 
@@ -93,7 +93,7 @@ Notation:
 > package com.tacz.guns.api.item;
 > ```
 
-|com.tacz.guns.api.item|xiao.customgun.core.api.item|
+|com.tacz.guns.api.item|dev.xcolorful.customgun.core.api.item|
 |---|---|
 |attachment.`AttachmentType`|attachment.`AttachmentCategory`|
 |builder.`*Builder`|builder.`*Builder`|
@@ -110,7 +110,7 @@ Notation:
 |`IBlock`|`IBlock`|
 |`IGun`|`IGun`|
 
-|com.tacz.guns.api.item|xiao.customgun.core.api.item|
+|com.tacz.guns.api.item|dev.xcolorful.customgun.core.api.item|
 |---|---|
 ||ammo.`AmmoCategory`|
 ||ammobox.`AmmoBoxStatus`|
@@ -130,15 +130,15 @@ Notation:
 |`ParameterizedCache`|_Deprecated_|
 |`ParameterizedCachePair`|_Deprecated_|
 
-|com.tacz.guns.api.modifier|xiao.customgun.core.api.item|
+|com.tacz.guns.api.modifier|dev.xcolorful.customgun.core.api.item|
 |---|---|
 |`IAttachmentModifier`|attachment.modifier.`IAttachmentModifier`|
 
-|com.tacz.guns.api.modifier|xiao.customgun.core.api.item|
+|com.tacz.guns.api.modifier|dev.xcolorful.customgun.core.api.item|
 |---|---|
 |`IAttachmentModifier`.readJson|`IItemModifier`.getModifier|
 
-|com.tacz.guns.api.modifier|xiao.customgun.core.api.item|
+|com.tacz.guns.api.modifier|dev.xcolorful.customgun.core.api.item|
 |---|---|
 |`IAttachmentModifier`.initCache|gun.modifier.`IGunModifier`.getBase|
 
@@ -146,7 +146,7 @@ Notation:
 |---|---|
 |`IAttachmentModifier`.`DiagramsData`||
 
-|com.tacz.guns.api.modifier|xiao.customgun.core.resource|
+|com.tacz.guns.api.modifier|dev.xcolorful.customgun.core.resource|
 |---|---|
 |`JsonProperty`|data.data.`AttachmentData`.\*|
 
@@ -155,7 +155,7 @@ Notation:
 > package com.tacz.guns.api.resource;
 > ```
 
-|com.tacz.guns.api.resource|xiao.customgun.core.api.resource|
+|com.tacz.guns.api.resource|dev.xcolorful.customgun.core.api.resource|
 |---|---|
 |`ResourceManager`|_Deprecated_|
 
@@ -164,7 +164,7 @@ Notation:
 > package com.tacz.guns.api.util;
 > ```
 
-|com.tacz.guns.util|xiao.customgun.core.api.gun|
+|com.tacz.guns.util|dev.xcolorful.customgun.core.api.gun|
 |---|---|
 |`LuaEntityAccessor`|script.`_LuaEntityAccessor`|
 |`LuaNbtAccessor`|script.`_LuaNbtAccessor`|
@@ -174,12 +174,12 @@ Notation:
 > package com.tacz.guns.api.vmlib;
 > ```
 
-|com.tacz.guns.api.vmlib|xiao.customgun.core.api.script|
+|com.tacz.guns.api.vmlib|dev.xcolorful.customgun.core.api.script|
 |---|---|
 |`LuaGunLogicConstant`|`LuaGunLogicLib`|
 |`LuaLibrary`|`LuaLibrary`|
 
-|com.tacz.guns.api.vmlib|xiao.customgun.client.api.script|
+|com.tacz.guns.api.vmlib|dev.xcolorful.customgun.client.api.script|
 |---|---|
 |`LuaAnimationConstant`|`LuaAnimationLib`|
 |`LuaGunAnimationConstant`|`LuaGunAnimationLib`|
@@ -189,7 +189,7 @@ Notation:
 > package com.tacz.guns.block;
 > ```
 
-|com.tacz.guns.block|xiao.customgun.core.api.block|
+|com.tacz.guns.block|dev.xcolorful.customgun.core.api.block|
 |---|---|
 |`TargetBlock`.onProjectileHit|`IBulletVictimBlock`.cgc$onProjectileImpact|
 
@@ -198,13 +198,13 @@ Notation:
 > package com.tacz.guns.command;
 > ```
 
-|com.tacz.guns.command|xiao.customgun.core.command|
+|com.tacz.guns.command|dev.xcolorful.customgun.core.command|
 |---|---|
 |`RootCommand`|`ServerCommand`|
 |sub.`*Command`|sub.`*Command`|
 |sub.`*`.String|`CommandArg`.String|
 
-|com.tacz.guns.command|xiao.customgun.client.command|
+|com.tacz.guns.command|dev.xcolorful.customgun.client.command|
 |---|---|
 ||`ClientCommand`|
 
@@ -213,7 +213,7 @@ Notation:
 > package com.tacz.guns.compat;
 > ```
 
-|com.tacz.guns.compat|xiao.customgun.core.compat|
+|com.tacz.guns.compat|dev.xcolorful.customgun.core.compat|
 |---|---|
 |cloth|_Deprecated_|
 |carryon||
@@ -221,7 +221,7 @@ Notation:
 |jei||
 |kubejs|_Deprecated_|
 
-|com.tacz.guns.compat|xiao.customgun.client.compat|
+|com.tacz.guns.compat|dev.xcolorful.customgun.client.compat|
 |---|---|
 |ar||
 |oculus||
@@ -234,7 +234,7 @@ Notation:
 > package com.tacz.guns.config;
 > ```
 
-|com.tacz.guns.config|xiao.customgun.core.config|
+|com.tacz.guns.config|dev.xcolorful.customgun.core.config|
 |---|---|
 |common.`AmmoConfig`|`AmmoConfig`|
 |common.`GunConfig`|`GunConfig`|
@@ -243,7 +243,7 @@ Notation:
 |util.`HeadShotAABBConfigRead`|sync.`HeadAABBData`|
 |`PreLoadConfig`|_Deprecated_|
 
-|com.tacz.guns.config|xiao.customgun.client.config|
+|com.tacz.guns.config|dev.xcolorful.customgun.client.config|
 |---|---|
 |client.`KeyConfig`|`KeyConfig`|
 |client.`RenderConfig`|`RenderConfig`|
@@ -257,7 +257,7 @@ Notation:
 > package com.tacz.guns.crafting;
 > ```
 
-|com.tacz.guns.crafting.result|package xiao.customgun.core.recipe|
+|com.tacz.guns.crafting.result|package dev.xcolorful.customgun.core.recipe|
 |---|---|
 |result.`GunSmithTableResult`|`TableResult`|
 |result.`RawGunTableResult`|`_TableResultRaw`|
@@ -280,7 +280,7 @@ Notation:
 > package com.tacz.guns.entity;
 > ```
 
-|com.tacz.guns.entity|xiao.customgun.core.entity|
+|com.tacz.guns.entity|dev.xcolorful.customgun.core.entity|
 |---|---|
 |shooter.`LivingEntity*`|shooter.`LivingShooter*`|
 |shooter.`LivingEntityCrawl`|shooter.`LivingShooterProne`|
@@ -297,22 +297,22 @@ Notation:
 |`EntityKineticBullet`.setShotDamageMultiplier||
 |`EntityKineticBullet`.IEntityAdditionalSpawnData|projectile.`GunProjectile`.constructInitData|
 
-|com.tacz.guns.entity|xiao.customgun.core.api.entity|
+|com.tacz.guns.entity|dev.xcolorful.customgun.core.api.entity|
 |---|---|
 |shooter.`ShooterDataHolder`|`ShooterProperty`|
 |`EntityKineticBullet`|`IGunProjectile`|
 |`EntityKineticBullet`.shootFromRotation|projectile.physics.`IProjectilePhysicsExtension`.shootFromRotation|
 |`TargetMinecart`.onProjectileHit|`IBulletVictimEntity`.cgc$onProjectileImpact|
 
-|com.tacz.guns.entity|xiao.customgun.forge.minecraft|
+|com.tacz.guns.entity|dev.xcolorful.customgun.forge.minecraft|
 |---|---|
 |sync.core.`DataHolderCapabilityProvider`|capability.`SyncDataCapabilityProvider`|
 
-|com.tacz.guns.entity|xiao.customgun.core.api.entity|
+|com.tacz.guns.entity|dev.xcolorful.customgun.core.api.entity|
 |---|---|
 |`EntityKineticBullet`|`IGunProjectile`|
 
-|com.tacz.guns.entity.`EntityKineticBullet`|xiao.customgun.core.projectile|
+|com.tacz.guns.entity.`EntityKineticBullet`|dev.xcolorful.customgun.core.projectile|
 |---|---|
 ||effect.`ProjectileEffectManager`|
 ||impact.`ProjectileImpactManager`|
@@ -320,7 +320,7 @@ Notation:
 ||process.`ProjectileProcessManager`|
 ||`ProjectileManager`|
 
-|com.tacz.guns.entity|xiao.customgun.client.api.entity|
+|com.tacz.guns.entity|dev.xcolorful.customgun.client.api.entity|
 |---|---|
 |`EntityKineticBullet`.\*|`IClientGunProjectile`.\*|
 
@@ -329,7 +329,7 @@ Notation:
 > package com.tacz.guns.event;
 > ```
 
-|com.tacz.guns.event|xiao.customgun.core.projectile|
+|com.tacz.guns.event|dev.xcolorful.customgun.core.projectile|
 |---|---|
 |ammo.`BellRing`.onAmmoHitBlock|impact.`_WorldImpactHandler`.onHitBell|
 |ammo.`DestroyGlassBlock`.onAmmoHitBlock|impact.`_WorldImpactHandler`.onHitGlass|
@@ -339,44 +339,44 @@ Notation:
 |---|---|
 |`CommonLoadPack`|_Deprecated_|
 
-|com.tacz.guns.event|xiao.customgun.core.mixin|
+|com.tacz.guns.event|dev.xcolorful.customgun.core.mixin|
 |---|---|
 |`HitboxHelperEvent`.onPlayerTick|entity.`ServerPlayerMixin`.cgc$tickHitboxHistory|
 |`HitboxHelperEvent`.onPlayerLoggedOut|_Deprecated_|
 
-|com.tacz.guns.event|xiao.customgun.core.init|
+|com.tacz.guns.event|dev.xcolorful.customgun.core.init|
 |---|---|
 |`LoadingConfigEvent`.\*|`ModConfig`.`Event`.\*|
 
-|com.tacz.guns.event|xiao.customgun.client.init|
+|com.tacz.guns.event|dev.xcolorful.customgun.client.init|
 |---|---|
 |`LoadingConfigEvent`.\*|`ClientModConfig`.`Event`.\*|
 
-|com.tacz.guns.event|xiao.customgun.core.entity|
+|com.tacz.guns.event|dev.xcolorful.customgun.core.entity|
 |---|---|
 |`PlayerRespawnEvent`.onPlayerRespawn|shooter.player.`_PlayerShooterHandler`.autoReload|
 |`PreventGunClick`.onLeftClickBlock|shooter.player.`_PlayerShooterHandler`.preventShootInteraction|
 |`SyncBaseTimestamp`|`LivingShooterSyncHandler`.onPlayerJoinWorld|
 |`TravelToDimensionEvent`.onTravelToDimension|shooter.world.`_WorldShooterHandler`.onTravelDimension|
 
-|com.tacz.guns.event|xiao.customgun.core.api.event|
+|com.tacz.guns.event|dev.xcolorful.customgun.core.api.event|
 |---|---|
 |`ServerTickEvent`.onServerTick|`CycledEvent`.`Handler`.static|
 
-|com.tacz.guns.event|xiao.customgun.core.entity|
+|com.tacz.guns.event|dev.xcolorful.customgun.core.entity|
 |---|---|
 |`ChangeGunPropertyEvent`.internalOnAttachmentPropertyEvent|shooter.modifier.`ShooterGunModifierCache`.initAttachmentModifiers|
 |`KnockbackChange`.onKnockback|victim.`BulletVictimKnockback`.onLivingKnockback|
 
-|com.tacz.guns.event|xiao.customgun.core.entity|
+|com.tacz.guns.event|dev.xcolorful.customgun.core.entity|
 |---|---|
 |`SyncedEntityDataEvent`|`LivingShooterSyncHandler`|
 
-|com.tacz.guns.event|xiao.customgun.forge.entity|
+|com.tacz.guns.event|dev.xcolorful.customgun.forge.entity|
 |---|---|
 |`SyncedEntityDataEvent`.attachCapabilities|`_LivingShooterSyncData`.onAttachCapabilities|
 
-| |xiao.customgun.core.event|
+| |dev.xcolorful.customgun.core.event|
 |---|---|
 |net.minecraftforge.eventbus.api.`@SubscribeEvent`|custom.`CoreEventHandlers`|
 |net.minecraftforge.common.`MinecraftForge`.EVENT_BUS.post|`EventPoster`.postCustomEvent|
@@ -387,7 +387,7 @@ Notation:
 > package com.tacz.guns.init;
 > ```
 
-|com.tacz.guns.init|xiao.customgun.core.init|
+|com.tacz.guns.init|dev.xcolorful.customgun.core.init|
 |---|---|
 |`CapabilityRegistry`|`CapabilityRegistry`|
 |`CommandRegistry`|`CommandRegistry`|
@@ -415,7 +415,7 @@ Notation:
 > package com.tacz.guns.inventory;
 > ```
 
-|com.tacz.guns.inventory|xiao.customgun.core.gui|
+|com.tacz.guns.inventory|dev.xcolorful.customgun.core.gui|
 |---|---|
 |`GunSmithTableMenu`|_Deprecated_|
 |tooltip.`AmmoBoxTooltip`|tooltip.ammobox.`AmmoBoxTooltip`|
@@ -428,7 +428,7 @@ Notation:
 > package com.tacz.guns.item;
 > ```
 
-|com.tacz.guns.item|xiao.customgun.core.item|
+|com.tacz.guns.item|dev.xcolorful.customgun.core.item|
 |---|---|
 |`AmmoBoxItem`|ammobox.`AmmoBoxItem`|
 |`AmmoItem`|ammo.`AmmoItem`|
@@ -440,16 +440,16 @@ Notation:
 |`ModernKineticGunItem`.`DefaultPropertyModification`|_Deprecated_|
 |`TargetMinecartItem`|_Deprecated_|
 
-|com.tacz.guns.item|xiao.customgun.client.api.item|
+|com.tacz.guns.item|dev.xcolorful.customgun.client.api.item|
 |---|---|
 |`GunTooltipPart`|gun.`GunTooltipMask`|
 
-|com.tacz.guns.item|xiao.customgun.core.api.gun|
+|com.tacz.guns.item|dev.xcolorful.customgun.core.api.gun|
 |---|---|
 |`ModernKineticGunItem`|`IGunManager`|
 |`ModernKineticGunScriptAPI`|script.`GunScriptApi`|
 
-|com.tacz.guns.item.`ModernKineticGunItem`|xiao.customgun.core.gun|
+|com.tacz.guns.item.`ModernKineticGunItem`|dev.xcolorful.customgun.core.gun|
 |---|---|
 ||action.`GunActionManager`|
 ||attack.`GunAttackManager`|
@@ -471,7 +471,7 @@ Notation:
 > package com.tacz.guns.mixin;
 > ```
 
-|com.tacz.guns.mixin|xiao.customgun.core.mixin|
+|com.tacz.guns.mixin|dev.xcolorful.customgun.core.mixin|
 |---|---|
 |common.`LivingEntityMixin`|entity.`LivingEntityMixin`|
 |common.`ServerGamePacketListenerImplMixin`|network.`ServerGamePacketListenerImplMixin`|
@@ -483,7 +483,7 @@ Notation:
 > package com.tacz.guns.network;
 > ```
 
-|com.tacz.guns.network|xiao.customgun.core.network|
+|com.tacz.guns.network|dev.xcolorful.customgun.core.network|
 |---|---|
 |message.event.`*`|message.event.`*`|
 |message.handshake.`*`|message.handshake.`*`|
@@ -492,16 +492,16 @@ Notation:
 |`LoginIndexHolder`|`LoginIndexHolder`|
 |`NetworkHandler`|`NetworkHandler`|
 
-|com.tacz.guns.network|xiao.customgun.client.network|
+|com.tacz.guns.network|dev.xcolorful.customgun.client.network|
 |---|---|
 |message.event.`*`|message.event.`_*`|
 |message.`*Message*`|message.`_*Message*`|
 
-|com.tacz.guns.network|xiao.customgun.core.api.network|
+|com.tacz.guns.network|dev.xcolorful.customgun.core.api.network|
 |---|---|
 |`IMessage`|message.`IMessage`|
 
-|com.tacz.guns.network|xiao.customgun.core.util|
+|com.tacz.guns.network|dev.xcolorful.customgun.core.util|
 |---|---|
 |`NetworkHandler`|`SendUtils`|
 
@@ -510,7 +510,7 @@ Notation:
 > package com.tacz.guns.particles;
 > ```
 
-|com.tacz.guns.particles|xiao.customgun.core.particle|
+|com.tacz.guns.particles|dev.xcolorful.customgun.core.particle|
 |---|---|
 |`BulletHoleOption`|`BulletHoleOption`|
 
@@ -519,7 +519,7 @@ Notation:
 > package com.tacz.guns.resource;
 > ```
 
-|com.tacz.guns.resource|xiao.customgun.core.resource|
+|com.tacz.guns.resource|dev.xcolorful.customgun.core.resource|
 |---|---|
 |filter.`*Filter`|data.recipefilter.`RecipeFilterData`|
 |index.`Common*Index`|instance.data.`*IndexInstance`|
@@ -557,54 +557,54 @@ Notation:
 |`PackMeta`|data.meta.`GunpackMeta`|
 |`VersionChecker`|_Deprecated_|
 
-|com.tacz.guns.resource|xiao.customgun.core.api.resource|
+|com.tacz.guns.resource|dev.xcolorful.customgun.core.api.resource|
 |---|---|
 |manager.`INetworkCacheReloadListener`|`INetworkCacheReloadListener`|
 |`ICommonResourceProvider`|`ResourceApi`|
 
-|com.tacz.guns.resource|xiao.customgun.core.item|
+|com.tacz.guns.resource|dev.xcolorful.customgun.core.item|
 |---|---|
 |modifier.custom.`*Modifier`|attachment.modifier.`*Modifier`|
 |modifier.custom.`ExtraMovementModifier`|_Deprecated_|
 |modifier.`AttachmentPropertyManager`.eval|attachment.modifier.`AttachmentModifier`.evalSimpleModifierData|
 
-|com.tacz.guns.resource|xiao.customgun.core.api.entity|
+|com.tacz.guns.resource|dev.xcolorful.customgun.core.api.entity|
 |---|---|
 |modifier.`AttachmentCacheProperty`|shooter.modifier.`ShooterGunModifierCache`|
 
-|com.tacz.guns.resource|xiao.customgun.core.entity|
+|com.tacz.guns.resource|dev.xcolorful.customgun.core.entity|
 |---|---|
 |modifier.`AttachmentPropertyManager`|shooter.modifier.`ShooterGunModifierManager`|
 
-|com.tacz.guns.resource|xiao.customgun.core.api.item|
+|com.tacz.guns.resource|dev.xcolorful.customgun.core.api.item|
 |---|---|
 |modifier.`AttachmentPropertyManager`.MODIFIERS|attachment.modifier.`AttachmentModifierType`|
 
-|com.tacz.guns.resource|xiao.customgun.core.util|
+|com.tacz.guns.resource|dev.xcolorful.customgun.core.util|
 |---|---|
 |modifier.`AttachmentPropertyManager`.functionEval|`ScriptUtils`.eval|
 
-|com.tacz.guns.resource|xiao.customgun.client.resource|
+|com.tacz.guns.resource|dev.xcolorful.customgun.client.resource|
 |---|---|
 |network.`CommonNetworkCache`|network.`SyncDataCache`|
 
-|com.tacz.guns.resource|xiao.customgun.core.api.item|
+|com.tacz.guns.resource|dev.xcolorful.customgun.core.api.item|
 |---|---|
 |pojo.data.gun.`Bolt`|gun.`BoltType`|
 |pojo.data.gun.`ChargeType`|gun.`ChargeType`|
 |pojo.data.gun.`FeedType`|gun.`AmmoFeedType`|
 
-|com.tacz.guns.resource|xiao.customgun.core.api.entity|
+|com.tacz.guns.resource|dev.xcolorful.customgun.core.api.entity|
 |---|---|
 |pojo.data.gun.`InaccuracyType`|`ShootState`|
 |pojo.data.gun.`InaccuracyType`.getInaccuracyType|shooter.`IShooterState`.cgc$getShootState|
 
-|com.tacz.guns.resource|xiao.customgun.core.util|
+|com.tacz.guns.resource|dev.xcolorful.customgun.core.util|
 |---|---|
 |serialize.`PairSerializer`.deserialize|`JsonUtils`.readFloatArrayFast|
 |serialize.`Vec3Serializer`.deserialize|_Deprecated_|
 
-|com.tacz.guns.resource|xiao.customgun.core.resource|
+|com.tacz.guns.resource|dev.xcolorful.customgun.core.resource|
 |---|---|
 ||`ResourceFile`|
 ||`ResourceFileManager`|
@@ -616,7 +616,7 @@ Notation:
 > package com.tacz.guns.sound;
 > ```
 
-|com.tacz.guns.sound|xiao.customgun.core.sound|
+|com.tacz.guns.sound|dev.xcolorful.customgun.core.sound|
 |---|---|
 |`SoundManager`|`SoundManager`|
 
@@ -625,7 +625,7 @@ Notation:
 > package com.tacz.guns.util;
 > ```
 
-|com.tacz.guns.util|xiao.customgun.core.util|
+|com.tacz.guns.util|dev.xcolorful.customgun.core.util|
 |---|---|
 |block.`BlockRayTrace`|`RayTraceUtils`|
 |block.`ProjectileExplosion`||
@@ -645,45 +645,45 @@ Notation:
 |`ResourceScanner`|_Deprecated_|
 |`TacPathVisitor`|_Deprecated_|
 
-|com.tacz.guns.util|xiao.customgun.core.api.resource|
+|com.tacz.guns.util|dev.xcolorful.customgun.core.api.resource|
 |---|---|
 |`AttachmentDataUtils`.getAllAttachmentData|`ResourceApi`.getAllAttachmentIndexInstance|
 
-|com.tacz.guns.util|xiao.customgun.core.api.event|
+|com.tacz.guns.util|dev.xcolorful.customgun.core.api.event|
 |---|---|
 |`CycleTaskHelper`|`CycledEvent`|
 
-|com.tacz.guns.util|xiao.customgun.core.resource|
+|com.tacz.guns.util|dev.xcolorful.customgun.core.resource|
 |---|---|
 |`AllowAttachmentTagMatcher`|network.`_AttachmentInstallabilityCache`|
 |`AttachmentDataUtils`.getMagExtendLevel|data.data.`AttachmentData`.getMagazineCategory|
 |`AttachmentDataUtils`.\*||
 
-|com.tacz.guns.util|xiao.customgun.client.api.event|
+|com.tacz.guns.util|dev.xcolorful.customgun.client.api.event|
 |---|---|
 |`DelayedTask`|`ClientDelayedEvent`|
 
-|com.tacz.guns.util|xiao.customgun.core.mixin|
+|com.tacz.guns.util|dev.xcolorful.customgun.core.mixin|
 |---|---|
 |`HitboxHelper`.onPlayerTick|entity.`ServerPlayerMixin`.cgc$tickHitboxHistory|
 
-|com.tacz.guns.util|xiao.customgun.core.api.entity|
+|com.tacz.guns.util|dev.xcolorful.customgun.core.api.entity|
 |---|---|
 |`HitboxHelper`.getPlayerVelocity|_Deprecated_|
 |`HitboxHelper`.getBoundingBox|hitbox.`IEntityHitboxAccess`.cgc$getHistoryHitbox|
 |`HitboxHelper`.getVelocity|hitbox.`IEntityHitboxAccess`.cgc$getHistoryVelocity|
 
-|com.tacz.guns.util|xiao.customgun.client.util|
+|com.tacz.guns.util|dev.xcolorful.customgun.client.util|
 |---|---|
 |`InputExtraCheck`|`ClientInputUtils`|
 |`RenderDistance`||
 |`RenderHelper`||
 
-|com.tacz.guns.util|xiao.customgun.core.api.item|
+|com.tacz.guns.util|dev.xcolorful.customgun.core.api.item|
 |---|---|
 |`LaserColorUtil`|`IAttachment`.getLaserColor|
 
-|com.tacz.guns.util|xiao.customgun.core.api.projectile|
+|com.tacz.guns.util|dev.xcolorful.customgun.core.api.projectile|
 |---|---|
 |`TacHitResult`|physics.`IProjectilePhysicsRuntime`.`EntityHitResult`|
 
@@ -699,7 +699,7 @@ Notation:
 > package com.tacz.guns.api.client.animation;
 > ```
 
-|com.tacz.guns.api.client.animation|xiao.customgun.client.api.animation|
+|com.tacz.guns.api.client.animation|dev.xcolorful.customgun.client.api.animation|
 |---|---|
 |gltf||
 |interpolator||
@@ -711,7 +711,7 @@ Notation:
 > package com.tacz.guns.api.client.event;
 > ```
 
-|com.tacz.guns.api.client.event|xiao.customgun.client.api.event|
+|com.tacz.guns.api.client.event|dev.xcolorful.customgun.client.api.event|
 |---|---|
 |`BeforeRenderHandEvent`|render.`BeforeRenderHandEvent`|
 |`RenderItemInHandBobEvent`.`BobHurt`|render.`ItemInHandBobEvent`.`Hurt`|
@@ -725,11 +725,11 @@ Notation:
 > package com.tacz.guns.api.client.gameplay;
 > ```
 
-|com.tacz.guns.api.client.gameplay|xiao.customgun.client.api.entity|
+|com.tacz.guns.api.client.gameplay|dev.xcolorful.customgun.client.api.entity|
 |---|---|
 |`IClientPlayerGunOperator`|`ILocalShooter`|
 
-|com.tacz.guns.api.client.gameplay|xiao.customgun.client.api.item|
+|com.tacz.guns.api.client.gameplay|dev.xcolorful.customgun.client.api.item|
 |---|---|
 |`LocalPlayerMelee`.MELEE_STOCK_ANIMATION|gun.`MeleeType`|
 
@@ -744,11 +744,11 @@ Notation:
 |`IThirdPersonAnimation`||
 |`ThirdPersonManager`||
 
-|com.tacz.guns.api.client.other|xiao.customgun.client.api.renderer|
+|com.tacz.guns.api.client.other|dev.xcolorful.customgun.client.api.renderer|
 |---|---|
 |`KeepingItemRenderer`|`KeepingItemRenderer`|
 
-|com.tacz.guns.api.client.other|xiao.customgun.client.api.item|
+|com.tacz.guns.api.client.other|dev.xcolorful.customgun.client.api.item|
 |---|---|
 |`ThirdPersonManager`.\*|gun.`ThirdPersonAnimationType`.\*|
 
@@ -757,7 +757,7 @@ Notation:
 > package com.tacz.guns.client.animation;
 > ```
 
-|com.tacz.guns.client.animation|xiao.customgun.client.animation|
+|com.tacz.guns.client.animation|dev.xcolorful.customgun.client.animation|
 |---|---|
 |screen.`RefitTransform`||
 |statemachine.`GunAnimationConstant`|statemachine.`GunAnimationState`|
@@ -766,7 +766,7 @@ Notation:
 
 ### Command (Client)
 
-| |xiao.customgun.client.command|
+| |dev.xcolorful.customgun.client.command|
 |---|---|
 ||sub.`_*Command`|
 ||`ClientCommand`|
@@ -787,37 +787,37 @@ Notation:
 |`ReloadResourceEvent`|_Deprecated_|
 |`TickAnimationEvent`||
 
-|com.tacz.guns.client.event|xiao.customgun.client.entity|
+|com.tacz.guns.client.event|dev.xcolorful.customgun.client.entity|
 |---|---|
 |`ClientHitMark`|`ClientHitMarkHandler`|
 |`InventoryEvent`.onPlayerSwapMainHand|shooter.player.`_LocalMessageHandler`.onSwapItemWithOffhand|
 |`RefreshClonePlayerDataEvent`|shooter.player.`_LocalPlayerHandler`.onClientPlayerClone|
 |`RefreshClonePlayerDataEvent`.onClientTick|_Deprecated_|
 
-|com.tacz.guns.client.event|xiao.customgun.client.mixin|
+|com.tacz.guns.client.event|dev.xcolorful.customgun.client.mixin|
 |---|---|
 |`InventoryEvent`.onPlayerChangeSelect|entity.`LocalPlayerMixin`.cgc$tickHotbarSelection|
 |`InventoryEvent`.onPlayerLoggedOut|entity.`LocalPlayerMixin`.cgc$resetHotbarSelection|
 
-|com.tacz.guns.client.event|xiao.customgun.client.input|
+|com.tacz.guns.client.event|dev.xcolorful.customgun.client.input|
 |---|---|
 |`ClientPreventGunClick`.onClickInput|player.`InteractKey`.onInteractionMapping|
 
-|com.tacz.guns.client.event|xiao.customgun.client.init|
+|com.tacz.guns.client.event|dev.xcolorful.customgun.client.init|
 |---|---|
 |`CommonNetworkCacheEvent`.onClientPlayerLoggingIn|`ClientModEvent`.onClientLoggingIn|
 
-|com.tacz.guns.client.event|xiao.customgun.client.renderer|
+|com.tacz.guns.client.event|dev.xcolorful.customgun.client.renderer|
 |---|---|
 |`PlayerHurtByGunEvent`.onPlayerHurtByGun|victim.onProjectileHit|
 |`RenderHeadShotAABB`|entity.`HeadAABBRender`|
 
-|com.tacz.guns.client.event|xiao.customgun.client.gui|
+|com.tacz.guns.client.event|dev.xcolorful.customgun.client.gui|
 |---|---|
 |`RenderCrosshairEvent`|crosshair.`CrosshairRender`|
 |`TooltipEvent`.onTooltip|tooltip.`PojoLocationTooltip`.addPojoLocationTooltip|
 
-| |xiao.customgun.client.event|
+| |dev.xcolorful.customgun.client.event|
 |---|---|
 |net.minecraftforge.eventbus.api.`@SubscribeEvent`|custom.`ClientEventHandlers`|
 
@@ -826,13 +826,13 @@ Notation:
 > package com.tacz.guns.client.gameplay;
 > ```
 
-|com.tacz.guns.client.gameplay|xiao.customgun.client.entity|
+|com.tacz.guns.client.gameplay|dev.xcolorful.customgun.client.entity|
 |---|---|
 |`LocalPlayer*`|shooter.`LocalShooter*`|
 |`LocalPlayerCrawl`|shooter.`LocalShooterProne`|
 |`LocalPlayerFireSelect`|shooter.`LocalShooterSwitchFireMode`|
 
-|com.tacz.guns.client.gameplay|xiao.customgun.client.api.entity|
+|com.tacz.guns.client.gameplay|dev.xcolorful.customgun.client.api.entity|
 |---|---|
 |`LocalPlayerDataHolder`|`LocalShooterProperty*`|
 
@@ -841,7 +841,7 @@ Notation:
 > package com.tacz.guns.client.gui;
 > ```
 
-|com.tacz.guns.client.gui|xiao.customgun.client.gui|
+|com.tacz.guns.client.gui|dev.xcolorful.customgun.client.gui|
 |---|---|
 |components.refit||
 |components.smith||
@@ -852,7 +852,7 @@ Notation:
 |`GunRefitScreen`|`GunRefitScreen`|
 |`GunSmithTableScreen`|_Deprecated_|
 
-|com.tacz.guns.client.gui|xiao.customgun.client.compat|
+|com.tacz.guns.client.gui|dev.xcolorful.customgun.client.compat|
 |---|---|
 |compat.`ClothConfigScreen`|_Deprecated_|
 
@@ -861,7 +861,7 @@ Notation:
 > package com.tacz.guns.client.init;
 > ```
 
-|com.tacz.guns.client.init|xiao.customgun.client.init|
+|com.tacz.guns.client.init|dev.xcolorful.customgun.client.init|
 |---|---|
 |`ClientSetupEvent`.onClientSetup(FMLClientSetupEvent)||
 |`ClientSetupEvent`.onClientSetup(RegisterClientTooltipComponentFactoriesEvent)|`ClientTooltipRegistry`.registerTooltips|
@@ -871,7 +871,7 @@ Notation:
 |`ModEntitiesRender`||
 |`ParticleFactoryRegistry`|`ClientModParticles`|
 
-|com.tacz.guns.client.init|xiao.customgun.client.resource|
+|com.tacz.guns.client.init|dev.xcolorful.customgun.client.resource|
 |---|---|
 |`ClientSetupEvent`.onClientResourceReload|`_AllAssetsManager`.onAddClientReloadListenerEvent|
 
@@ -880,7 +880,7 @@ Notation:
 > package com.tacz.guns.client.input;
 > ```
 
-|com.tacz.guns.client.input|xiao.customgun.client.input|
+|com.tacz.guns.client.input|dev.xcolorful.customgun.client.input|
 |---|---|
 |`AimKey`|shooter.`AimKey`|
 |`ConfigKey`|_Deprecated_|
@@ -899,7 +899,7 @@ Notation:
 > package com.tacz.guns.mixin.client;
 > ```
 
-|com.tacz.guns.mixin.client|xiao.customgun.client.mixin|
+|com.tacz.guns.mixin.client|dev.xcolorful.customgun.client.mixin|
 |---|---|
 |ar||
 |`AbstractButtonMixin`|gui.`AbstractButtonMixin`|
@@ -919,7 +919,7 @@ Notation:
 > package com.tacz.guns.client.model;
 > ```
 
-|com.tacz.guns.client.model|xiao.customgun.client.model|
+|com.tacz.guns.client.model|dev.xcolorful.customgun.client.model|
 |---|---|
 |bedrock||
 |bedrock.`BedrockModel`|`ModelObject`|
@@ -932,7 +932,7 @@ Notation:
 |`GunModelConstant`||
 |`SlotModel`||
 
-|com.tacz.guns.client.model|xiao.customgun.client.renderer|
+|com.tacz.guns.client.model|dev.xcolorful.customgun.client.renderer|
 |---|---|
 |functional.`AttachmentRender`||
 |functional.`BeamRenderer`||
@@ -942,7 +942,7 @@ Notation:
 |functional.`ShellRender`||
 |functional.`TextShowRender`||
 
-|com.tacz.guns.client.model|xiao.customgun.client.api.model|
+|com.tacz.guns.client.model|dev.xcolorful.customgun.client.api.model|
 |---|---|
 |`IFunctionalRenderer`|`IModelComponentRenderer`|
 
@@ -951,7 +951,7 @@ Notation:
 > package com.tacz.guns.client.particle;
 > ```
 
-|com.tacz.guns.client.particle|xiao.customgun.client.particle|
+|com.tacz.guns.client.particle|dev.xcolorful.customgun.client.particle|
 |---|---|
 |`AmmoParticleSpawner`|`AmmoParticleSpawner`|
 |`BulletHoleParticle`|`BulletHoleParticle`|
@@ -961,7 +961,7 @@ Notation:
 > package com.tacz.guns.client.renderer;
 > ```
 
-|com.tacz.guns.client.renderer|xiao.customgun.client.renderer|
+|com.tacz.guns.client.renderer|dev.xcolorful.customgun.client.renderer|
 |---|---|
 |block|_Deprecated_|
 |entity.`EntityBulletRenderer`||
@@ -972,7 +972,7 @@ Notation:
 |other.`GunHurtBobTweak`|victim.`GunHurtBobTweak`|
 |other.`HumanoidOffhandRender`|shooter.`HumanoidOffhandRender`|
 
-|com.tacz.guns.client.renderer|xiao.customgun.client.api.textures|
+|com.tacz.guns.client.renderer|dev.xcolorful.customgun.client.api.textures|
 |---|---|
 |crosshair.`CrosshairType`|crosshair.`CrosshairType`|
 
@@ -981,7 +981,7 @@ Notation:
 > package com.tacz.guns.client.resource;
 > ```
 
-|com.tacz.guns.client.resource|xiao.customgun.client.resource|
+|com.tacz.guns.client.resource|dev.xcolorful.customgun.client.resource|
 |---|---|
 |index.`Client*Index`|instance.data.`Client*IndexInstance`|
 |manager.`DisplayManager`|assets.`DisplayManager`|
@@ -1017,12 +1017,12 @@ Notation:
 |`GunDisplayInstance`|instance.assets.`GunDisplayInstance`|
 |`InternalAssetLoader`|_Deprecated_|
 
-|com.tacz.guns.client.resource|xiao.customgun.core.api.item|
+|com.tacz.guns.client.resource|dev.xcolorful.customgun.core.api.item|
 |---|---|
 |pojo.display.gun.`AmmoCountStyle`|gun.`AmmoCountType`|
 |pojo.display.gun.`DamageStyle`|gun.`DamageDisplayType`|
 
-|com.tacz.guns.client.resource|xiao.customgun.client.util|
+|com.tacz.guns.client.resource|dev.xcolorful.customgun.client.util|
 |---|---|
 |serialize.`AnimationKeyframesSerializer`.deserialize|`ClientJsonUtils`.readKeyFrames|
 
@@ -1031,7 +1031,7 @@ Notation:
 > package com.tacz.guns.client.sound;
 > ```
 
-|com.tacz.guns.client.sound|xiao.customgun.client.sound|
+|com.tacz.guns.client.sound|dev.xcolorful.customgun.client.sound|
 |---|---|
 |`EntityTrackingGunSoundInstance`|`EntityTrackingSoundInstance`|
 |`GunSoundInstance`|`ResourceSoundInstance`|
@@ -1039,7 +1039,7 @@ Notation:
 |`GunSoundPreload`|_Deprecated_|
 |`SoundPlayManager`|`SoundPlayManager`|
 
-|com.tacz.guns.client.sound|xiao.customgun.client.resource|
+|com.tacz.guns.client.sound|dev.xcolorful.customgun.client.resource|
 |---|---|
 |`SoundPlayManager`.clearSoundResourceCache|assets.`SoundManager`.clearCacheOnReload|
 
@@ -1048,6 +1048,6 @@ Notation:
 > package com.tacz.guns.client.tooltip;
 > ```
 
-|com.tacz.guns.client.tooltip|xiao.customgun.client.gui|
+|com.tacz.guns.client.tooltip|dev.xcolorful.customgun.client.gui|
 |---|---|
 |`Client*Tooltip`|tooltip.\*.`Client*Tooltip`|

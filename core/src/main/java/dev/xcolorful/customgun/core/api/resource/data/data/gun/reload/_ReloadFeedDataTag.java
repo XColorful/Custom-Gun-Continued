@@ -1,0 +1,18 @@
+/*
+ * Copyright (c) 2024-2026 MCModderAnchor (https://github.com/MCModderAnchor)
+ * SPDX-License-Identifier: GPL-3.0-only
+ *
+ * Source: https://github.com/MCModderAnchor/TACZ
+ */
+
+package dev.xcolorful.customgun.core.api.resource.data.data.gun.reload;
+
+import dev.xcolorful.customgun.core.api.item.gun.ReloadTypeTag;
+
+public class _ReloadFeedDataTag {
+
+    public static final String EMPTY = ReloadTypeTag.EMPTY;
+    public static final String TACTICAL = ReloadTypeTag.TACTICAL;
+
+    private _ReloadFeedDataTag() {}
+}

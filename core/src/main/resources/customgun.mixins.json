@@ -1,5 +1,5 @@
 {
-  "package": "xiao.customgun.core.mixin",
+  "package": "dev.xcolorful.customgun.core.mixin",
   "minVersion": "0.8",
   "compatibilityLevel": "JAVA_21",
   "refmap": "customgun.refmap.json",

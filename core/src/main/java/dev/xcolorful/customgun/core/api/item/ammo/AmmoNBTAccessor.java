@@ -1,0 +1,50 @@
+/*
+ * Copyright (c) 2024-2026 MCModderAnchor (https://github.com/MCModderAnchor)
+ * SPDX-License-Identifier: GPL-3.0-only
+ *
+ * Source: https://github.com/MCModderAnchor/TACZ
+ */
+
+package dev.xcolorful.customgun.core.api.item.ammo;
+
+import dev.xcolorful.customgun.core.api.item.AmmoProperty;
+import dev.xcolorful.customgun.core.api.resource.ResourceTag;
+import dev.xcolorful.customgun.core.util.NBTUtils;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.NotNull;
+
+public interface AmmoNBTAccessor extends IAmmoNBTAccess {
+
+    AmmoNBTAccessor INSTANCE = new AmmoNBTAccessor() {};
+
+    // --------IAmmoNBTAccess--------
+
+    @Override
+    default @NotNull ResourceLocation getAmmoLocation(CompoundTag ammoItemCustomDataTag) {
+        var ammoLocation = NBTUtils.getResourceLocation(ammoItemCustomDataTag, AmmoProperty.AMMO_LOCATION.getTagName());
+        return ammoLocation != null ? ammoLocation : ResourceTag.NULL_LOCATION;
+    }
+    @Override
+    default void setAmmoLocation(CompoundTag ammoItemCustomDataTag, ResourceLocation ammoLocation) {
+        NBTUtils.setResourceLocation(ammoItemCustomDataTag, AmmoProperty.AMMO_LOCATION.getTagName(), ammoLocation);
+    }
+
+    @Override
+    default boolean hasInfiniteFeed(CompoundTag ammoItemCustomDataTag) {
+        return NBTUtils.getBoolean(ammoItemCustomDataTag, AmmoProperty.INFINITE_FEED.getTagName());
+    }
+    @Override
+    default void setInfiniteFeed(CompoundTag ammoItemCustomDataTag, boolean infiniteFeed) {
+        NBTUtils.setBoolean(ammoItemCustomDataTag, AmmoProperty.INFINITE_FEED.getTagName(), infiniteFeed);
+    }
+
+    @Override
+    default boolean isAlmightyAmmo(CompoundTag ammoItemCustomDataTag) {
+        return NBTUtils.getBoolean(ammoItemCustomDataTag, AmmoProperty.ALMIGHTY_AMMO.getTagName());
+    }
+    @Override
+    default void setAlmightyAmmo(CompoundTag ammoItemCustomDataTag, boolean almighty) {
+        NBTUtils.setBoolean(ammoItemCustomDataTag, AmmoProperty.ALMIGHTY_AMMO.getTagName(), almighty);
+    }
+}

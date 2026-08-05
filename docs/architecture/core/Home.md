@@ -6,7 +6,7 @@
 
 ## 项目结构
 
-基于`xiao.customgun.core`顶层包的模块划分
+基于`dev.xcolorful.customgun.core`顶层包的模块划分
 
 ### API
 > _./core/api_
@@ -230,7 +230,7 @@
 
 ## Project Structure
 
-Module division based on the `xiao.customgun.core` top-level package
+Module division based on the `dev.xcolorful.customgun.core` top-level package
 
 ### API
 > _./core/api_

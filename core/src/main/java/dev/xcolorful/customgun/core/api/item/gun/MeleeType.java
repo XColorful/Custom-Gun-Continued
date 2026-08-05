@@ -1,0 +1,61 @@
+/*
+ * Copyright (c) 2024-2026 MCModderAnchor (https://github.com/MCModderAnchor)
+ * SPDX-License-Identifier: GPL-3.0-only
+ *
+ * Source: https://github.com/MCModderAnchor/TACZ
+ */
+
+package dev.xcolorful.customgun.core.api.item.gun;
+
+import dev.xcolorful.customgun.core.api.resource.ResourceTag;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public enum MeleeType implements ResourceTag.CategoryTag {
+    /**
+     * 刺刀
+     */
+    BAYONET(MeleeTypeTag.BAYONET, MeleeTypeTag.BAYONET_OLD1),
+    /**
+     * 枪托
+     */
+    STOCK(MeleeTypeTag.STOCK, MeleeTypeTag.STOCK_OLD1),
+    /**
+     * 枪推
+     */
+    PUSH(MeleeTypeTag.PUSH, MeleeTypeTag.PUSH_OLD1);
+
+    public final String typeName;
+    public final String typeNameOld;
+    MeleeType(String name, String nameOld) {
+        this.typeName = name;
+        this.typeNameOld = nameOld;
+    }
+
+    @Override public String getTagName() {
+        return this.typeName;
+    }
+    @Override public String getCategoryName() {
+        return this.typeName;
+    }
+
+    private static final Map<String, MeleeType> MELEE_TYPES = new HashMap<>();
+
+    static {
+        for (MeleeType type : values()) {
+            MELEE_TYPES.put(type.typeName, type);
+            MELEE_TYPES.put(type.typeNameOld, type);
+        }
+    }
+
+    public static @Nullable MeleeType fromString(String name) {
+        return name != null ? MELEE_TYPES.get(name) : null;
+    }
+
+    @Override
+    public String toString() {
+        return this.typeName;
+    }
+}

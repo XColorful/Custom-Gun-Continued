@@ -51,10 +51,7 @@ public class ClientPlayerTickEventManager {
             return new ForgeClientPlayerTickEvent(event);
         }
 
-        protected void handle(TickEvent.PlayerTickEvent event) {
-            if (event.phase != TickEvent.Phase.END) {
-                return;
-            }
+        protected void handle(TickEvent.PlayerTickEvent.Post event) {
             if (event.side.isClient()) {
                 super.onEvent(event);
             }
@@ -64,30 +61,30 @@ public class ClientPlayerTickEventManager {
     public static class ClientPlayerTickProxyHighest extends ClientPlayerTickProxy {
         static final ClientPlayerTickProxyHighest INSTANCE = new ClientPlayerTickProxyHighest();
         @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.HIGHEST, receiveCanceled = true)
-        public void onEvent(TickEvent.PlayerTickEvent e) { handle(e); }
+        public void onEvent(TickEvent.PlayerTickEvent.Post e) { handle(e); }
     }
 
     public static class ClientPlayerTickProxyHigh extends ClientPlayerTickProxy {
         static final ClientPlayerTickProxyHigh INSTANCE = new ClientPlayerTickProxyHigh();
         @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.HIGH, receiveCanceled = true)
-        public void onEvent(TickEvent.PlayerTickEvent e) { handle(e); }
+        public void onEvent(TickEvent.PlayerTickEvent.Post e) { handle(e); }
     }
 
     public static class ClientPlayerTickProxyNormal extends ClientPlayerTickProxy {
         static final ClientPlayerTickProxyNormal INSTANCE = new ClientPlayerTickProxyNormal();
         @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.NORMAL, receiveCanceled = true)
-        public void onEvent(TickEvent.PlayerTickEvent e) { handle(e); }
+        public void onEvent(TickEvent.PlayerTickEvent.Post e) { handle(e); }
     }
 
     public static class ClientPlayerTickProxyLow extends ClientPlayerTickProxy {
         static final ClientPlayerTickProxyLow INSTANCE = new ClientPlayerTickProxyLow();
         @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.LOW, receiveCanceled = true)
-        public void onEvent(TickEvent.PlayerTickEvent e) { handle(e); }
+        public void onEvent(TickEvent.PlayerTickEvent.Post e) { handle(e); }
     }
 
     public static class ClientPlayerTickProxyLowest extends ClientPlayerTickProxy {
         static final ClientPlayerTickProxyLowest INSTANCE = new ClientPlayerTickProxyLowest();
         @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.LOWEST, receiveCanceled = true)
-        public void onEvent(TickEvent.PlayerTickEvent e) { handle(e); }
+        public void onEvent(TickEvent.PlayerTickEvent.Post e) { handle(e); }
     }
 }

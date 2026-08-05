@@ -17,7 +17,6 @@ import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Matrix4f;
 
 public class ClientAmmoBoxTooltip implements ClientTooltipComponent {
 

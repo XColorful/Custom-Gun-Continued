@@ -93,7 +93,7 @@
 - [InputKeyManager](./input/input-key-manager.md)：输入键管理器
 
 🤔深度定制输入键：[注册输入键](./input/register-input-key.md)
-- config：配置按键
+- ~~config：配置按键~~
 - player：玩家按键
 - shooter：射手按键
 
@@ -269,7 +269,7 @@ Module division based on the `xiao.customgun.client` top-level package
 - [InputKeyManager](./input/input-key-manager.md): Input key manager
 
 🤔Deeply customized input key: [Register input key](./input/register-input-key.md)
-- config: Config keys
+- ~~config: Config keys~~
 - player: Player keys
 - shooter: Shooter keys
 

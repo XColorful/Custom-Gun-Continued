@@ -9,8 +9,7 @@ flowchart RL
 				IInputKeyManager
 			end
 			
-			IConfigKey & IInteractKey & IRefitKey & IAimKey & IInspectKey & IMeleeKey & IProneKey & IReloadKey & IShootKey & ISwitchFireModeKey & IZoomKey <--> IInputKeyManager
-			IConfigKey@{ shape: f-circ }
+			IInteractKey & IRefitKey & IAimKey & IInspectKey & IMeleeKey & IProneKey & IReloadKey & IShootKey & ISwitchFireModeKey & IZoomKey <--> IInputKeyManager
 			IInteractKey@{ shape: f-circ }
 			IRefitKey@{ shape: f-circ }
 			IAimKey@{ shape: f-circ }
@@ -25,7 +24,6 @@ flowchart RL
 		
 		%% --------实现类--------
 		InputKeyManager ==> IInputKeyManager@{ shape: fr-rect }
-		ConfigKey ==> IConfigKey@{ shape: f-circ }
 		InteractKey ==> IInteractKey@{ shape: f-circ }
 		RefitKey ==> IRefitKey@{ shape: f-circ }
 		AimKey ==> IAimKey@{ shape: f-circ }
@@ -38,9 +36,6 @@ flowchart RL
 		ZoomKey ==> IZoomKey@{ shape: f-circ }
 		
 		%% ----分类----
-		subgraph Config
-			ConfigKey
-		end
 		subgraph Player
 			InteractKey
 			RefitKey
@@ -58,7 +53,6 @@ flowchart RL
 		
 		%% --------切面父类（可选）--------
 		InputKey@{ shape: lean-l, label: "_InputKey_ (Optional)" }
-		InputKey -.-> ConfigKey@{ shape: lean-l }
 		InputKey -.-> InteractKey@{ shape: lean-l }
 		InputKey -.-> RefitKey@{ shape: lean-l }
 		InputKey -.-> AimKey@{ shape: lean-l }

@@ -7,7 +7,6 @@ package xiao.customgun.client.init;
 import net.minecraft.client.KeyMapping;
 import org.jetbrains.annotations.ApiStatus;
 import xiao.customgun.client.init.registry.ClientInputCategory;
-import xiao.customgun.client.input.config.ConfigKey;
 import xiao.customgun.client.input.player.InteractKey;
 import xiao.customgun.client.input.player.RefitKey;
 import xiao.customgun.client.input.shooter.*;
@@ -23,8 +22,6 @@ public class ClientKeyMappingRegistry {
     private ClientKeyMappingRegistry() {}
 
     public void registerKeyMappings(Consumer<KeyMapping> register) {
-        // config
-        register.accept(ConfigKey.get().getKeyMapping().get());
         // player
         register.accept(InteractKey.get().getKeyMapping().get());
         register.accept(RefitKey.get().getKeyMapping().get());
@@ -40,7 +37,6 @@ public class ClientKeyMappingRegistry {
     }
     @ApiStatus.AvailableSince("1.21.10")
     public void registerInputCategories(Consumer<String> register) { // Consumer<KeyMapping.Category> register
-        register.accept(ClientInputCategory.CONFIG);
         register.accept(ClientInputCategory.PLAYER);
         register.accept(ClientInputCategory.SHOOTER);
     }

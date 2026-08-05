@@ -1,0 +1,55 @@
+/*
+ * Copyright (c) 2025-2026 XiaoColorful (https://github.com/XColorful)
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ *
+ * Source: https://github.com/XColorful/BattleRoyale
+ */
+
+package dev.xcolorful.customgun.neoforgeclient.event;
+
+import dev.xcolorful.customgun.client.api.event.RenderLevelStage;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public enum NeoRenderLevelStage {
+    AFTER_SKY(RenderLevelStageEvent.AfterSky.class, RenderLevelStage.AFTER_SKY),
+    AFTER_OPAQUE_BLOCKS(RenderLevelStageEvent.AfterOpaqueBlocks.class, RenderLevelStage.AFTER_SOLID_BLOCKS),
+    //    AFTER_CUTOUT_MIPPED_BLOCKS_BLOCKS(RenderLevelStageEvent.AfterCutoutMippedBlocks.class, RenderLevelStage.AFTER_CUTOUT_MIPPED_BLOCKS_BLOCKS),
+//    AFTER_CUTOUT_BLOCKS(RenderLevelStageEvent.AftetCutoutBlocks.class, RenderLevelStage.AFTER_CUTOUT_BLOCKS),
+    AFTER_ENTITIES(RenderLevelStageEvent.AfterOpaqueFeatures.class, RenderLevelStage.AFTER_ENTITIES),
+    //    AFTER_BLOCK_ENTITIES(RenderLevelStageEvent.AfterBlockEntities.class, RenderLevelStage.AFTER_BLOCK_ENTITIES),
+    AFTER_TRANSLUCENT_BLOCKS(RenderLevelStageEvent.AfterTranslucentBlocks.class, RenderLevelStage.AFTER_TRANSLUCENT_BLOCKS),
+    //    AFTER_TRIPWIRE_BLOCKS(RenderLevelStageEvent.AfterTripwireBlocks.class, RenderLevelStage.AFTER_TRIPWIRE_BLOCKS),
+    AFTER_PARTICLES(RenderLevelStageEvent.AfterTranslucentParticles.class, RenderLevelStage.AFTER_PARTICLES),
+    AFTER_WEATHER(RenderLevelStageEvent.AfterWeather.class, RenderLevelStage.AFTER_WEATHER),
+    AFTER_LEVEL(RenderLevelStageEvent.AfterLevel.class, RenderLevelStage.AFTER_LEVEL);
+
+    private final Class<? extends RenderLevelStageEvent> neoForgeEventClass;
+    private final RenderLevelStage renderLevelStage;
+
+    NeoRenderLevelStage(Class<? extends RenderLevelStageEvent> neoForgeEventClass, RenderLevelStage renderLevelStage) {
+        this.neoForgeEventClass = neoForgeEventClass;
+        this.renderLevelStage = renderLevelStage;
+    }
+
+    public Class<? extends RenderLevelStageEvent> getNeoForgeEventClass() {
+        return neoForgeEventClass;
+    }
+    public RenderLevelStage getRenderLevelStage() {
+        return renderLevelStage;
+    }
+
+    private static final Map<Class<? extends RenderLevelStageEvent>, RenderLevelStage> NEOFORGE_TO_CORE = new HashMap<>(); // 静态映射名可以更新
+
+    static {
+        for (NeoRenderLevelStage type : values()) {
+            NEOFORGE_TO_CORE.put(type.neoForgeEventClass, type.renderLevelStage);
+        }
+    }
+
+    public static RenderLevelStage fromEventClass(Class<? extends RenderLevelStageEvent> eventClass) {
+        return NEOFORGE_TO_CORE.get(eventClass);
+    }
+}

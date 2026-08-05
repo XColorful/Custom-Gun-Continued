@@ -1,5 +1,5 @@
 ```java
-package xiao.customgun.core.api.projectile;
+package dev.xcolorful.customgun.core.api.projectile;
 
 public interface IProjectileRuntime extends IProjectileEffectRuntime, IProjectileImpactRuntime, IProjectilePhysicsRuntime, IProjectileProcessRuntime {
     final class DataCache {

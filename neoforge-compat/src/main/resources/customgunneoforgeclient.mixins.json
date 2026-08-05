@@ -1,5 +1,5 @@
 {
-  "package": "xiao.customgun.neoforgeclient.mixin",
+  "package": "dev.xcolorful.customgun.neoforgeclient.mixin",
   "minVersion": "0.8",
   "compatibilityLevel": "JAVA_17",
   "refmap": "customgun.refmap.json",

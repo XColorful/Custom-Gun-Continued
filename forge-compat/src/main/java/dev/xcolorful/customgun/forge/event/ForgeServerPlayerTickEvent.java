@@ -14,14 +14,14 @@ import org.jetbrains.annotations.Nullable;
 
 public class ForgeServerPlayerTickEvent extends ForgeEvent implements IServerPlayerTickEvent {
 
-    protected TickEvent.PlayerTickEvent playerTickEvent;
+    protected TickEvent.PlayerTickEvent.Post playerTickEvent;
 
     public ForgeServerPlayerTickEvent(Event event) {
         super(event);
-        if (event instanceof TickEvent.PlayerTickEvent eventIn) {
+        if (event instanceof TickEvent.PlayerTickEvent.Post eventIn) {
             this.playerTickEvent = eventIn;
         } else {
-            throw new RuntimeException("Expected PlayerTickEvent but received: " + event.getClass().getName());
+            throw new RuntimeException("Expected PlayerTickEvent.Post but received: " + event.getClass().getName());
         }
     }
     @Override public EventType getType() {

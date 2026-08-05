@@ -1,5 +1,8 @@
 ### 0.0.x
 
+#### 0.0.4
+- Rename package xiao.customgun to dev.xcolorful.customgun
+
 #### 0.0.3
 - Remove client-side config key
 

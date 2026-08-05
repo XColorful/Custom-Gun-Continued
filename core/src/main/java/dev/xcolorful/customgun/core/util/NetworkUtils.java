@@ -1,5 +1,6 @@
 package dev.xcolorful.customgun.core.util;
 
+import dev.xcolorful.customgun.CustomGun;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamDecoder;
@@ -7,7 +8,6 @@ import net.minecraft.network.codec.StreamEncoder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import xiao.customgun.CustomGun;
 
 import java.util.Map;
 

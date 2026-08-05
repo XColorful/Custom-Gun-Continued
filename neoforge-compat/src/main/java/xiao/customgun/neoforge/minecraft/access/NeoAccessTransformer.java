@@ -1,6 +1,6 @@
-package xiao.customgun.neoforge.minecraft.access;
+package dev.xcolorful.customgun.neoforge.minecraft.access;
 
-import xiao.customgun.core.api.minecraft.access.ICoreAccessTransformer;
+import dev.xcolorful.customgun.core.api.minecraft.access.ICoreAccessTransformer;
 
 public class NeoAccessTransformer implements ICoreAccessTransformer {
 }

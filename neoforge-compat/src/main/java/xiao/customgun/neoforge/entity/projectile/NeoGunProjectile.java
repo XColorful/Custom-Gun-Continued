@@ -1,9 +1,9 @@
-package xiao.customgun.neoforge.entity.projectile;
+package dev.xcolorful.customgun.neoforge.entity.projectile;
 
+import dev.xcolorful.customgun.core.entity.projectile.GunProjectile;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
-import xiao.customgun.core.entity.projectile.GunProjectile;
 
 public class NeoGunProjectile extends GunProjectile {
 

@@ -1,9 +1,9 @@
-package xiao.customgun.neoforge.common;
+package dev.xcolorful.customgun.neoforge.common;
 
+import dev.xcolorful.customgun.core.api.common.McLogicalSide;
+import dev.xcolorful.customgun.core.api.common.McSide;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.LogicalSide;
-import xiao.customgun.core.api.common.McLogicalSide;
-import xiao.customgun.core.api.common.McSide;
 
 public class McSideHelper {
 

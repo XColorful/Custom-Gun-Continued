@@ -1,15 +1,15 @@
-package xiao.customgun.neoforgeclient.mixin.entity;
+package dev.xcolorful.customgun.neoforgeclient.mixin.entity;
 
+import dev.xcolorful.customgun.client.api.entity.IClientGunProjectile;
+import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
+import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
+import dev.xcolorful.customgun.client.resource.instance.data.ClientGunIndexInstance;
+import dev.xcolorful.customgun.core.entity.projectile.GunProjectile;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import xiao.customgun.client.api.resource.ClientResourceApi;
-import xiao.customgun.client.api.entity.IClientGunProjectile;
-import xiao.customgun.client.resource.instance.assets.GunDisplayInstance;
-import xiao.customgun.client.resource.instance.data.ClientGunIndexInstance;
-import xiao.customgun.core.entity.projectile.GunProjectile;
 
 @Mixin(GunProjectile.class)
 public abstract class GunProjectileMixin implements IClientGunProjectile {

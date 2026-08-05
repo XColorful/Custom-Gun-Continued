@@ -5,13 +5,13 @@
  * Source: https://github.com/XColorful/BattleRoyale
  */
 
-package xiao.customgun.neoforge.init.registry;
+package dev.xcolorful.customgun.neoforge.init.registry;
 
+import dev.xcolorful.customgun.core.api.init.registry.IMenuTypeFactory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.network.IContainerFactory;
-import xiao.customgun.core.api.init.registry.IMenuTypeFactory;
 
 /**
  * IMenuTypeFactory 的 NeoForge 实现，使用 MenuType 的构造函数来适配网络菜单创建。

@@ -1,11 +1,11 @@
-package xiao.customgun.neoforge.common;
+package dev.xcolorful.customgun.neoforge.common;
 
+import dev.xcolorful.customgun.core.api.common.ISideExecutor;
+import dev.xcolorful.customgun.core.api.common.McLogicalSide;
+import dev.xcolorful.customgun.core.api.common.McSide;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.util.thread.EffectiveSide;
 import net.neoforged.neoforge.common.util.LogicalSidedProvider;
-import xiao.customgun.core.api.common.ISideExecutor;
-import xiao.customgun.core.api.common.McLogicalSide;
-import xiao.customgun.core.api.common.McSide;
 
 import java.util.concurrent.Executor;
 import java.util.function.Supplier;

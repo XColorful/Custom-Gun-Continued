@@ -1,12 +1,12 @@
-package xiao.customgun.neoforgeclient.input;
+package dev.xcolorful.customgun.neoforgeclient.input;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import dev.xcolorful.customgun.client.api.input.IKeyConflictContext;
+import dev.xcolorful.customgun.client.api.input.IKeyMapping;
+import dev.xcolorful.customgun.client.api.input.IKeyModifier;
 import net.minecraft.client.KeyMapping;
 import net.neoforged.neoforge.client.settings.KeyConflictContext;
 import net.neoforged.neoforge.client.settings.KeyModifier;
-import xiao.customgun.client.api.input.IKeyConflictContext;
-import xiao.customgun.client.api.input.IKeyMapping;
-import xiao.customgun.client.api.input.IKeyModifier;
 
 public class NeoKeyMapping implements IKeyMapping {
 

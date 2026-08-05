@@ -1,5 +1,7 @@
-package xiao.customgun.neoforge.event;
+package dev.xcolorful.customgun.neoforge.event;
 
+import dev.xcolorful.customgun.core.api.event.EventType;
+import dev.xcolorful.customgun.core.api.event.IDatapackSyncEvent;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
@@ -8,8 +10,6 @@ import net.minecraft.server.players.PlayerList;
 import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import org.jetbrains.annotations.Nullable;
-import xiao.customgun.core.api.event.EventType;
-import xiao.customgun.core.api.event.IDatapackSyncEvent;
 
 import java.util.stream.Stream;
 

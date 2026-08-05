@@ -12,33 +12,33 @@
  * Source: https://github.com/XColorful/BattleRoyale
  */
 
-package xiao.customgun.neoforge;
+package dev.xcolorful.customgun.neoforge;
 
+import dev.xcolorful.customgun.CustomGun;
+import dev.xcolorful.customgun.core.api.common.ISideExecutor;
+import dev.xcolorful.customgun.core.api.common.McSide;
+import dev.xcolorful.customgun.core.api.config.IModConfigSpecBuilder;
+import dev.xcolorful.customgun.core.api.event.IEventRegister;
+import dev.xcolorful.customgun.core.api.init.registry.IRegistrarFactory;
+import dev.xcolorful.customgun.core.api.minecraft.ICapabilityProvider;
+import dev.xcolorful.customgun.core.api.minecraft.IMcRegistry;
+import dev.xcolorful.customgun.core.api.network.INetworkAdapter;
+import dev.xcolorful.customgun.core.api.network.INetworkHook;
+import dev.xcolorful.customgun.core.init.registry.*;
+import dev.xcolorful.customgun.neoforge.common.NeoSideExecutor;
+import dev.xcolorful.customgun.neoforge.config.NeoModConfigSpecBuilder;
+import dev.xcolorful.customgun.neoforge.event.NeoEventRegister;
+import dev.xcolorful.customgun.neoforge.init.registry.NeoRegistrarFactory;
+import dev.xcolorful.customgun.neoforge.minecraft.NeoCapabilityProvider;
+import dev.xcolorful.customgun.neoforge.minecraft.NeoRegistry;
+import dev.xcolorful.customgun.neoforge.minecraft.access.NeoAccessTransformer;
+import dev.xcolorful.customgun.neoforge.network.NeoNetworkAdapter;
+import dev.xcolorful.customgun.neoforge.network.NeoNetworkHook;
+import dev.xcolorful.customgun.neoforgeclient.CustomGunNeoforgeClient;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLLoader;
-import xiao.customgun.CustomGun;
-import xiao.customgun.core.api.common.ISideExecutor;
-import xiao.customgun.core.api.common.McSide;
-import xiao.customgun.core.api.config.IModConfigSpecBuilder;
-import xiao.customgun.core.api.event.IEventRegister;
-import xiao.customgun.core.api.init.registry.IRegistrarFactory;
-import xiao.customgun.core.api.minecraft.ICapabilityProvider;
-import xiao.customgun.core.api.minecraft.IMcRegistry;
-import xiao.customgun.core.api.network.INetworkAdapter;
-import xiao.customgun.core.api.network.INetworkHook;
-import xiao.customgun.core.init.registry.*;
-import xiao.customgun.neoforge.common.NeoSideExecutor;
-import xiao.customgun.neoforge.config.NeoModConfigSpecBuilder;
-import xiao.customgun.neoforge.event.NeoEventRegister;
-import xiao.customgun.neoforge.init.registry.NeoRegistrarFactory;
-import xiao.customgun.neoforge.minecraft.NeoCapabilityProvider;
-import xiao.customgun.neoforge.minecraft.NeoRegistry;
-import xiao.customgun.neoforge.minecraft.access.NeoAccessTransformer;
-import xiao.customgun.neoforge.network.NeoNetworkAdapter;
-import xiao.customgun.neoforge.network.NeoNetworkHook;
-import xiao.customgun.neoforgeclient.CustomGunNeoforgeClient;
 
 import java.util.function.Supplier;
 

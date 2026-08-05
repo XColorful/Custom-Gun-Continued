@@ -5,11 +5,11 @@
  * Source: https://github.com/XColorful/BattleRoyale
  */
 
-package xiao.customgun.neoforge.init.registry;
+package dev.xcolorful.customgun.neoforge.init.registry;
 
+import dev.xcolorful.customgun.core.api.init.registry.IRegistryObject;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.registries.DeferredHolder;
-import xiao.customgun.core.api.init.registry.IRegistryObject;
 
 public class NeoRegistryObject<R, T extends R> implements IRegistryObject<T> {
 

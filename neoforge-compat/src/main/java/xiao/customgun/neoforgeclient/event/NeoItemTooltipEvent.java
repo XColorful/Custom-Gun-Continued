@@ -5,8 +5,11 @@
  * Source: https://github.com/XColorful/BattleRoyale
  */
 
-package xiao.customgun.neoforgeclient.event;
+package dev.xcolorful.customgun.neoforgeclient.event;
 
+import dev.xcolorful.customgun.client.api.event.IItemTooltipEvent;
+import dev.xcolorful.customgun.core.api.event.EventType;
+import dev.xcolorful.customgun.neoforge.event.NeoEvent;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
@@ -17,9 +20,6 @@ import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import xiao.customgun.client.api.event.IItemTooltipEvent;
-import xiao.customgun.core.api.event.EventType;
-import xiao.customgun.neoforge.event.NeoEvent;
 
 import java.util.List;
 

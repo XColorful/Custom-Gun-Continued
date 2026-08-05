@@ -5,15 +5,15 @@
  * Source: https://github.com/XColorful/BattleRoyale
  */
 
-package xiao.customgun.neoforge.event.events;
+package dev.xcolorful.customgun.neoforge.event.events;
 
+import dev.xcolorful.customgun.core.api.event.EventPriority;
+import dev.xcolorful.customgun.core.api.event.EventType;
+import dev.xcolorful.customgun.core.api.event.IEvent;
+import dev.xcolorful.customgun.core.api.event.IEventHandler;
+import dev.xcolorful.customgun.core.event.EventDispatcher;
+import dev.xcolorful.customgun.neoforge.event.NeoEvent;
 import net.neoforged.bus.api.Event;
-import xiao.customgun.core.api.event.EventPriority;
-import xiao.customgun.core.api.event.EventType;
-import xiao.customgun.core.api.event.IEvent;
-import xiao.customgun.core.api.event.IEventHandler;
-import xiao.customgun.core.event.EventDispatcher;
-import xiao.customgun.neoforge.event.NeoEvent;
 
 /**
  * 负责单个优先级的处理

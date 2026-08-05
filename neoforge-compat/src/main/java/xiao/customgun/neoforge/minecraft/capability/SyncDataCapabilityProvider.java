@@ -5,8 +5,11 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package xiao.customgun.neoforge.minecraft.capability;
+package dev.xcolorful.customgun.neoforge.minecraft.capability;
 
+import dev.xcolorful.customgun.core.api.minecraft.capability.ISyncDataCapabilityProvider;
+import dev.xcolorful.customgun.core.entity.sync.*;
+import dev.xcolorful.customgun.neoforge.CustomGunNeoforge;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -18,9 +21,6 @@ import net.neoforged.neoforge.common.capabilities.ICapabilitySerializable;
 import net.neoforged.neoforge.common.util.LazyOptional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import xiao.customgun.core.api.minecraft.capability.ISyncDataCapabilityProvider;
-import xiao.customgun.core.entity.sync.*;
-import xiao.customgun.neoforge.CustomGunNeoforge;
 
 /**
  * 原 DataHolderCapabilityProvider

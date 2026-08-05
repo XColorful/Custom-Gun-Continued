@@ -5,17 +5,17 @@
  * Source: https://github.com/XColorful/BattleRoyale
  */
 
-package xiao.customgun.neoforge.init.registry;
+package dev.xcolorful.customgun.neoforge.init.registry;
 
+import dev.xcolorful.customgun.CustomGun;
+import dev.xcolorful.customgun.core.api.init.registry.IRegistrar;
+import dev.xcolorful.customgun.core.api.init.registry.IRegistryObject;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import xiao.customgun.CustomGun;
-import xiao.customgun.core.api.init.registry.IRegistrar;
-import xiao.customgun.core.api.init.registry.IRegistryObject;
 
 import java.util.function.Function;
 import java.util.function.Supplier;

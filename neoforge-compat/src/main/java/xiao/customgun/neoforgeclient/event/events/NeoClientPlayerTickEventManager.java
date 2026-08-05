@@ -1,15 +1,15 @@
-package xiao.customgun.neoforgeclient.event.events;
+package dev.xcolorful.customgun.neoforgeclient.event.events;
 
+import dev.xcolorful.customgun.core.api.event.EventPriority;
+import dev.xcolorful.customgun.core.api.event.EventType;
+import dev.xcolorful.customgun.core.api.event.IEventHandler;
+import dev.xcolorful.customgun.neoforge.event.NeoEvent;
+import dev.xcolorful.customgun.neoforge.event.events.AbstractNeoEventCommon;
+import dev.xcolorful.customgun.neoforgeclient.event.NeoClientPlayerTickEvent;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.TickEvent;
-import xiao.customgun.core.api.event.EventPriority;
-import xiao.customgun.core.api.event.EventType;
-import xiao.customgun.core.api.event.IEventHandler;
-import xiao.customgun.neoforge.event.NeoEvent;
-import xiao.customgun.neoforge.event.events.AbstractNeoEventCommon;
-import xiao.customgun.neoforgeclient.event.NeoClientPlayerTickEvent;
 
 public class NeoClientPlayerTickEventManager {
 

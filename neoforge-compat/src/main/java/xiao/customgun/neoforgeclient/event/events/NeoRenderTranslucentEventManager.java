@@ -5,20 +5,20 @@
  * Source: https://github.com/XColorful/BattleRoyale
  */
 
-package xiao.customgun.neoforgeclient.event.events;
+package dev.xcolorful.customgun.neoforgeclient.event.events;
 
+import dev.xcolorful.customgun.client.api.event.RenderLevelStage;
+import dev.xcolorful.customgun.core.api.event.EventPriority;
+import dev.xcolorful.customgun.core.api.event.EventType;
+import dev.xcolorful.customgun.core.api.event.IEventHandler;
+import dev.xcolorful.customgun.neoforge.event.NeoEvent;
+import dev.xcolorful.customgun.neoforge.event.events.AbstractNeoEventCommon;
+import dev.xcolorful.customgun.neoforgeclient.event.NeoRenderLevelStage;
+import dev.xcolorful.customgun.neoforgeclient.event.NeoRenderLevelStageEvent;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import xiao.customgun.client.api.event.RenderLevelStage;
-import xiao.customgun.core.api.event.EventPriority;
-import xiao.customgun.core.api.event.EventType;
-import xiao.customgun.core.api.event.IEventHandler;
-import xiao.customgun.neoforge.event.NeoEvent;
-import xiao.customgun.neoforge.event.events.AbstractNeoEventCommon;
-import xiao.customgun.neoforgeclient.event.NeoRenderLevelStage;
-import xiao.customgun.neoforgeclient.event.NeoRenderLevelStageEvent;
 
 public class NeoRenderTranslucentEventManager {
 

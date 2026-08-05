@@ -2,16 +2,16 @@
  * 跟 BattleRoyale 同构
  */
 
-package xiao.customgun.neoforgeclient.init;
+package dev.xcolorful.customgun.neoforgeclient.init;
 
+import dev.xcolorful.customgun.CustomGun;
+import dev.xcolorful.customgun.client.init.ClientModConfig;
+import dev.xcolorful.customgun.neoforge.CustomGunNeoforge;
+import dev.xcolorful.customgun.neoforge.config.ModConfigTypeHelper;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.config.ModConfigEvent;
-import xiao.customgun.CustomGun;
-import xiao.customgun.client.init.ClientModConfig;
-import xiao.customgun.neoforge.CustomGunNeoforge;
-import xiao.customgun.neoforge.config.ModConfigTypeHelper;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = CustomGun.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class NeoClientModConfigEvent {

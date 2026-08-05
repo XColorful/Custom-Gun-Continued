@@ -1,11 +1,11 @@
-package xiao.customgun.neoforge.config;
+package dev.xcolorful.customgun.neoforge.config;
 
+import dev.xcolorful.customgun.core.api.config.IModConfigSpec;
+import dev.xcolorful.customgun.core.api.config.IModConfigSpecBuilder;
+import dev.xcolorful.customgun.core.api.config.ModConfigType;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.ModConfigSpec;
-import xiao.customgun.core.api.config.IModConfigSpec;
-import xiao.customgun.core.api.config.IModConfigSpecBuilder;
-import xiao.customgun.core.api.config.ModConfigType;
 
 public class NeoModConfigSpecBuilder implements IModConfigSpecBuilder {
     private final ModConfigSpec.Builder builder;

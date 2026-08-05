@@ -1,7 +1,7 @@
-package xiao.customgun.neoforgeclient.input;
+package dev.xcolorful.customgun.neoforgeclient.input;
 
+import dev.xcolorful.customgun.client.api.input.IKeyConflictContext;
 import net.neoforged.neoforge.client.settings.KeyConflictContext;
-import xiao.customgun.client.api.input.IKeyConflictContext;
 
 public abstract class NeoKeyConflictContext implements IKeyConflictContext {
 

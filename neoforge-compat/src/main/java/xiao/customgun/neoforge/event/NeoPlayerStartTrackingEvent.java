@@ -1,5 +1,8 @@
-package xiao.customgun.neoforge.event;
+package dev.xcolorful.customgun.neoforge.event;
 
+import dev.xcolorful.customgun.core.api.event.EventType;
+import dev.xcolorful.customgun.core.api.event.IPlayerStartTrackingEvent;
+import dev.xcolorful.customgun.core.api.minecraft.CommandLevel;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
@@ -12,9 +15,6 @@ import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import xiao.customgun.core.api.event.EventType;
-import xiao.customgun.core.api.event.IPlayerStartTrackingEvent;
-import xiao.customgun.core.api.minecraft.CommandLevel;
 
 public class NeoPlayerStartTrackingEvent extends NeoEvent implements IPlayerStartTrackingEvent {
 

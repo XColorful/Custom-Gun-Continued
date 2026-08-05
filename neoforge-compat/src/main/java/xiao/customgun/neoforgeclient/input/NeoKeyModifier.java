@@ -1,10 +1,10 @@
-package xiao.customgun.neoforgeclient.input;
+package dev.xcolorful.customgun.neoforgeclient.input;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import dev.xcolorful.customgun.client.api.input.IKeyConflictContext;
+import dev.xcolorful.customgun.client.api.input.IKeyModifier;
 import net.neoforged.neoforge.client.settings.KeyModifier;
 import org.jetbrains.annotations.Nullable;
-import xiao.customgun.client.api.input.IKeyConflictContext;
-import xiao.customgun.client.api.input.IKeyModifier;
 
 public abstract class NeoKeyModifier implements IKeyModifier {
 

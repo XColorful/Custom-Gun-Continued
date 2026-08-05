@@ -5,13 +5,13 @@
  * Source: https://github.com/XColorful/BattleRoyale
  */
 
-package xiao.customgun.neoforge.network;
+package dev.xcolorful.customgun.neoforge.network;
 
+import dev.xcolorful.customgun.core.api.network.INetworkHook;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.MenuProvider;
 import net.neoforged.neoforge.network.NetworkHooks;
-import xiao.customgun.core.api.network.INetworkHook;
 
 import java.util.function.Consumer;
 

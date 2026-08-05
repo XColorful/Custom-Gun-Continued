@@ -1,17 +1,17 @@
-package xiao.customgun.neoforgeclient.event;
+package dev.xcolorful.customgun.neoforgeclient.event;
 
+import dev.xcolorful.customgun.client.api.event.IClientPlayerTickEvent;
+import dev.xcolorful.customgun.core.api.common.McLogicalSide;
+import dev.xcolorful.customgun.core.api.event.EventType;
+import dev.xcolorful.customgun.neoforge.common.McSideHelper;
+import dev.xcolorful.customgun.neoforge.event.NeoEvent;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.event.TickEvent;
 import net.neoforged.bus.api.Event;
+import net.neoforged.neoforge.event.TickEvent;
 import org.jetbrains.annotations.Nullable;
-import xiao.customgun.client.api.event.IClientPlayerTickEvent;
-import xiao.customgun.core.api.common.McLogicalSide;
-import xiao.customgun.core.api.event.EventType;
-import xiao.customgun.neoforge.common.McSideHelper;
-import xiao.customgun.neoforge.event.NeoEvent;
 
 public class NeoClientPlayerTickEvent extends NeoEvent implements IClientPlayerTickEvent {
 

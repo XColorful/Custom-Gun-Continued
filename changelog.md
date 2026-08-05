@@ -1,5 +1,8 @@
 ### 0.0.x
 
+#### 0.0.3
+- Remove client-side config key
+
 #### 0.0.2
 Living Shooter:
 - Add Living Shooter aspects (bolt, melee, aim, prone, etc.)

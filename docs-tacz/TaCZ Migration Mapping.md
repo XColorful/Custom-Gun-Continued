@@ -738,7 +738,7 @@ Notation:
 > package com.tacz.guns.api.client.other;
 > ```
 
-|com.tacz.guns.api.client.|xiao.customgun.client.api.|
+|com.tacz.guns.api.client.other| |
 |---|---|
 |`GunModelTypeManager`||
 |`IThirdPersonAnimation`||
@@ -880,10 +880,10 @@ Notation:
 > package com.tacz.guns.client.input;
 > ```
 
-|com.tacz.guns.client.input| |
+|com.tacz.guns.client.input|xiao.customgun.client.input|
 |---|---|
 |`AimKey`|shooter.`AimKey`|
-|`ConfigKey`|config.`ConfigKey`|
+|`ConfigKey`|_Deprecated_|
 |`CrawlKey`|shooter.`ProneKey`|
 |`FireSelectKey`|shooter.`SwitchFireModeKey`|
 |`InspectKey`|shooter.`InspectKey`|

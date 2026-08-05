@@ -14,7 +14,7 @@ public class CustomInputKeyTag {
     public static final String PREFIX = "key." + CustomGun.MOD_ID + ".";
 
     // config
-    public static final String CONFIG = "config";
+    @Deprecated(forRemoval = true) public static final String CONFIG = "config";
     // player
     public static final String INTERACT = "interact";
     public static final String REFIT = "refit";

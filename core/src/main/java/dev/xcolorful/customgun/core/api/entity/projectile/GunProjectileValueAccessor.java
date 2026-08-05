@@ -1,5 +1,11 @@
 package dev.xcolorful.customgun.core.api.entity.projectile;
 
+import dev.xcolorful.customgun.core.api.entity.GunProjectileProperty;
+import dev.xcolorful.customgun.core.api.resource.ResourceTag;
+import dev.xcolorful.customgun.core.resource.data.data.gun.bullet._ExplosionData;
+import dev.xcolorful.customgun.core.resource.data.data.gun.bullet.damage._DistanceDamageData;
+import dev.xcolorful.customgun.core.util.JsonUtils;
+import dev.xcolorful.customgun.core.util.NBTUtils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.storage.ValueInput;
@@ -8,12 +14,6 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import xiao.customgun.core.api.entity.GunProjectileProperty;
-import xiao.customgun.core.api.resource.ResourceTag;
-import xiao.customgun.core.resource.data.data.gun.bullet._ExplosionData;
-import xiao.customgun.core.resource.data.data.gun.bullet.damage._DistanceDamageData;
-import xiao.customgun.core.util.JsonUtils;
-import xiao.customgun.core.util.NBTUtils;
 
 import java.util.List;
 

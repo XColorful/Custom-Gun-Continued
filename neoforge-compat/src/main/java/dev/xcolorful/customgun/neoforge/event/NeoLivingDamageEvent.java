@@ -1,0 +1,87 @@
+/*
+ * Copyright (c) 2025-2026 XiaoColorful (https://github.com/XColorful)
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ *
+ * Source: https://github.com/XColorful/BattleRoyale
+ */
+
+package dev.xcolorful.customgun.neoforge.event;
+
+import dev.xcolorful.customgun.core.api.event.EventType;
+import dev.xcolorful.customgun.core.api.event.ILivingDamageEvent;
+import dev.xcolorful.customgun.core.api.minecraft.CommandLevel;
+import net.minecraft.commands.CommandSource;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec2;
+import net.neoforged.bus.api.Event;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+public class NeoLivingDamageEvent extends NeoEvent implements ILivingDamageEvent {
+
+    protected LivingDamageEvent.Post livingDamageEvent;
+
+    public NeoLivingDamageEvent(Event event) {
+        super(event);
+        if (event instanceof LivingDamageEvent.Post eventIn) {
+            this.livingDamageEvent = eventIn;
+        } else {
+            throw new RuntimeException("Expected LivingDamageEvent.Post but received: " + event.getClass().getName());
+        }
+    }
+    @Override public EventType getType() {
+        return EventType.LIVING_DAMAGE_EVENT;
+    }
+
+    @Deprecated
+    @Override
+    public void setCanceled(boolean cancel) {
+        super.setCanceled(cancel);
+    }
+
+    @Override
+    public @NotNull LivingEntity getEntity() {
+        return livingDamageEvent.getEntity();
+    }
+
+    @Override
+    public @NotNull DamageSource getSource() {
+        return livingDamageEvent.getSource();
+    }
+
+    @Override
+    public float getDamageAmount() {
+        return livingDamageEvent.getInflictedDamage();
+    }
+
+    @Override
+    public @Nullable CommandSourceStack createCommandSourceStack(@Nullable CommandSource source) {
+        @NotNull LivingEntity entity = this.getEntity();
+        Level level = entity.level();
+        if (level != null && level.isClientSide()) return null;
+        return new CommandSourceStack(
+                source != null ? source : CommandSource.NULL,
+                entity.position(),
+                entity != null ? entity.getRotationVector() : Vec2.ZERO,
+                (ServerLevel) level,
+                CommandLevel.permission(4),
+                this.getTextName(),
+                this.getDisplayName(),
+                level.getServer(),
+                entity
+        );
+    }
+
+    @Override public String getTextName() {
+        return this.getEntity().getName().getString();
+    }
+    @Override public Component getDisplayName() {
+        return this.getEntity().getDisplayName();
+    }
+}

@@ -23,7 +23,6 @@ import dev.xcolorful.customgun.core.resource.instance.PojoInstance;
 import dev.xcolorful.customgun.core.util.ComponentUtils;
 import net.minecraft.commands.arguments.ParticleArgument;
 import net.minecraft.core.particles.ParticleOptions;
-import net.minecraft.core.registries.BuiltInRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

@@ -2,14 +2,14 @@
  * 跟 BattleRoyale 同构
  */
 
-package dev.xcolorful.customgun.neoforge.init;
+package xiao.customgun.neoforge.init;
 
-import dev.xcolorful.customgun.CustomGun;
-import dev.xcolorful.customgun.core.init.CommonSetup;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
+import xiao.customgun.CustomGun;
+import xiao.customgun.core.init.CommonSetup;
 
 @Mod.EventBusSubscriber(modid = CustomGun.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class NeoCommonSetup {

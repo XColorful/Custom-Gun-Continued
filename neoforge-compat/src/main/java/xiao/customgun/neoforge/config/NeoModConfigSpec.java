@@ -1,7 +1,7 @@
-package dev.xcolorful.customgun.neoforge.config;
+package xiao.customgun.neoforge.config;
 
-import dev.xcolorful.customgun.core.api.config.IModConfigSpec;
 import net.neoforged.neoforge.common.ModConfigSpec;
+import xiao.customgun.core.api.config.IModConfigSpec;
 
 public class NeoModConfigSpec<T> implements IModConfigSpec<T> {
     private final ModConfigSpec.ConfigValue<T> configValue;

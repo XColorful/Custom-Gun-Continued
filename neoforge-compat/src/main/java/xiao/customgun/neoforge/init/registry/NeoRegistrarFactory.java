@@ -5,11 +5,8 @@
  * Source: https://github.com/XColorful/BattleRoyale
  */
 
-package dev.xcolorful.customgun.neoforge.init.registry;
+package xiao.customgun.neoforge.init.registry;
 
-import dev.xcolorful.customgun.core.api.init.registry.IMenuTypeFactory;
-import dev.xcolorful.customgun.core.api.init.registry.IRegistrar;
-import dev.xcolorful.customgun.core.api.init.registry.IRegistrarFactory;
 import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.registries.Registries;
@@ -23,6 +20,9 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import xiao.customgun.core.api.init.registry.IMenuTypeFactory;
+import xiao.customgun.core.api.init.registry.IRegistrar;
+import xiao.customgun.core.api.init.registry.IRegistrarFactory;
 
 /**
  * IRegistrarFactory 的 NeoForge 实现，负责创建基于 NeoForge API 的注册器。

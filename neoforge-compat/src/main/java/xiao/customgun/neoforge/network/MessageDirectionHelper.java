@@ -1,9 +1,9 @@
-package dev.xcolorful.customgun.neoforge.network;
+package xiao.customgun.neoforge.network;
 
-import dev.xcolorful.customgun.core.api.network.MessageDirection;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.network.INetworkDirection;
 import net.neoforged.neoforge.network.PlayNetworkDirection;
+import xiao.customgun.core.api.network.MessageDirection;
 
 public class MessageDirectionHelper {
 

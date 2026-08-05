@@ -1,7 +1,5 @@
-package dev.xcolorful.customgun.neoforge.event;
+package xiao.customgun.neoforge.event;
 
-import dev.xcolorful.customgun.core.api.event.EventType;
-import dev.xcolorful.customgun.core.api.event.IAddServerReloadListenerEvent;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.RegistryAccess;
@@ -12,6 +10,8 @@ import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import org.jetbrains.annotations.Nullable;
+import xiao.customgun.core.api.event.EventType;
+import xiao.customgun.core.api.event.IAddServerReloadListenerEvent;
 
 public class NeoAddServerReloadListenerEvent extends NeoEvent implements IAddServerReloadListenerEvent {
 

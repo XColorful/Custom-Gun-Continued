@@ -1,7 +1,7 @@
-package dev.xcolorful.customgun.neoforgeclient.minecraft.access;
+package xiao.customgun.neoforgeclient.minecraft.access;
 
-import dev.xcolorful.customgun.client.api.minecraft.access.IClientAccessTransformer;
 import net.minecraft.client.Minecraft;
+import xiao.customgun.client.api.minecraft.access.IClientAccessTransformer;
 
 public class NeoClientAccessTransformer implements IClientAccessTransformer {
 

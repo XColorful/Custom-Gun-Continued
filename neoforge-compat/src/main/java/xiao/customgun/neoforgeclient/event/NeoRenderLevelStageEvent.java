@@ -5,12 +5,8 @@
  * Source: https://github.com/XColorful/BattleRoyale
  */
 
-package dev.xcolorful.customgun.neoforgeclient.event;
+package xiao.customgun.neoforgeclient.event;
 
-import dev.xcolorful.customgun.client.api.event.IRenderLevelStageEvent;
-import dev.xcolorful.customgun.client.api.event.RenderLevelStage;
-import dev.xcolorful.customgun.core.api.event.EventType;
-import dev.xcolorful.customgun.neoforge.event.NeoEvent;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
@@ -18,6 +14,10 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
+import xiao.customgun.client.api.event.IRenderLevelStageEvent;
+import xiao.customgun.client.api.event.RenderLevelStage;
+import xiao.customgun.core.api.event.EventType;
+import xiao.customgun.neoforge.event.NeoEvent;
 
 public class NeoRenderLevelStageEvent extends NeoEvent implements IRenderLevelStageEvent {
 

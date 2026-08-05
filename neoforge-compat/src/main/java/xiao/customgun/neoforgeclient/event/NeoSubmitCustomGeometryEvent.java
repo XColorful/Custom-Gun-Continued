@@ -5,12 +5,9 @@
  * Source: https://github.com/XColorful/BattleRoyale
  */
 
-package dev.xcolorful.customgun.neoforgeclient.event;
+package xiao.customgun.neoforgeclient.event;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import dev.xcolorful.customgun.client.api.event.ISubmitCustomGeometryEvent;
-import dev.xcolorful.customgun.core.api.event.EventType;
-import dev.xcolorful.customgun.neoforge.event.NeoEvent;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
@@ -18,6 +15,9 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.Event;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
+import xiao.customgun.client.api.event.ISubmitCustomGeometryEvent;
+import xiao.customgun.core.api.event.EventType;
+import xiao.customgun.neoforge.event.NeoEvent;
 
 @ApiStatus.AvailableSince("neoforge26.2")
 public class NeoSubmitCustomGeometryEvent extends NeoEvent implements ISubmitCustomGeometryEvent {

@@ -5,18 +5,18 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package dev.xcolorful.customgun.neoforge.entity;
+package xiao.customgun.neoforge.entity;
 
-import dev.xcolorful.customgun.CustomGun;
-import dev.xcolorful.customgun.core.entity.sync.SyncedEntityData;
-import dev.xcolorful.customgun.neoforge.CustomGunNeoforge;
-import dev.xcolorful.customgun.neoforge.minecraft.capability.SyncDataCapabilityProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.event.AttachCapabilitiesEvent;
+import xiao.customgun.CustomGun;
+import xiao.customgun.core.entity.sync.SyncedEntityData;
+import xiao.customgun.neoforge.CustomGunNeoforge;
+import xiao.customgun.neoforge.minecraft.capability.SyncDataCapabilityProvider;
 
 /**
  * 1.20.4+ NeoForge 不兼容

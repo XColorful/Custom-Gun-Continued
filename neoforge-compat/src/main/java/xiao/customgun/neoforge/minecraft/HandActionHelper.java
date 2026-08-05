@@ -5,10 +5,10 @@
  * Source: https://github.com/XColorful/BattleRoyale
  */
 
-package dev.xcolorful.customgun.neoforge.minecraft;
+package xiao.customgun.neoforge.minecraft;
 
-import dev.xcolorful.customgun.core.api.minecraft.HandAction;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.LeftClickBlock.Action;
+import xiao.customgun.core.api.minecraft.HandAction;
 
 public class HandActionHelper {
 

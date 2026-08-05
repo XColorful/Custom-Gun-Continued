@@ -1,8 +1,5 @@
-package dev.xcolorful.customgun.neoforgeclient.event;
+package xiao.customgun.neoforgeclient.event;
 
-import dev.xcolorful.customgun.client.api.event.IAddClientReloadListenerEvent;
-import dev.xcolorful.customgun.core.api.event.EventType;
-import dev.xcolorful.customgun.neoforge.event.NeoEvent;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
@@ -11,6 +8,9 @@ import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import org.jetbrains.annotations.Nullable;
+import xiao.customgun.client.api.event.IAddClientReloadListenerEvent;
+import xiao.customgun.core.api.event.EventType;
+import xiao.customgun.neoforge.event.NeoEvent;
 
 public class NeoAddClientReloadListenerEvent extends NeoEvent implements IAddClientReloadListenerEvent {
 

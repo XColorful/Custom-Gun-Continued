@@ -1,6 +1,5 @@
-package dev.xcolorful.customgun.neoforge.minecraft.capability;
+package xiao.customgun.neoforge.minecraft.capability;
 
-import dev.xcolorful.customgun.core.api.minecraft.capability.IInventoryCapability;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
@@ -8,6 +7,7 @@ import net.neoforged.neoforge.common.capabilities.Capabilities;
 import net.neoforged.neoforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import xiao.customgun.core.api.minecraft.capability.IInventoryCapability;
 
 public class NeoInventoryCapability implements IInventoryCapability {
 

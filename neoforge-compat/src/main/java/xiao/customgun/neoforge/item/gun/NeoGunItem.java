@@ -5,12 +5,12 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package dev.xcolorful.customgun.neoforge.item.gun;
+package xiao.customgun.neoforge.item.gun;
 
-import dev.xcolorful.customgun.core.item.gun.GunItem;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
+import xiao.customgun.core.item.gun.GunItem;
 
 import java.util.function.Consumer;
 

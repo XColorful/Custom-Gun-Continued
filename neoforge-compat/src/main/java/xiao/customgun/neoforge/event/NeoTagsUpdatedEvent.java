@@ -5,12 +5,8 @@
  * Source: https://github.com/XColorful/BattleRoyale
  */
 
-package dev.xcolorful.customgun.neoforge.event;
+package xiao.customgun.neoforge.event;
 
-import dev.xcolorful.customgun.core.api.common.McLogicalSide;
-import dev.xcolorful.customgun.core.api.event.EventType;
-import dev.xcolorful.customgun.core.api.event.ITagsUpdatedEvent;
-import dev.xcolorful.customgun.neoforge.CustomGunNeoforge;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.HolderLookup;
@@ -19,6 +15,9 @@ import net.minecraft.network.chat.Component;
 import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.event.TagsUpdatedEvent;
 import org.jetbrains.annotations.Nullable;
+import xiao.customgun.core.api.event.EventType;
+import xiao.customgun.core.api.event.ITagsUpdatedEvent;
+import xiao.customgun.neoforge.CustomGunNeoforge;
 
 public class NeoTagsUpdatedEvent extends NeoEvent implements ITagsUpdatedEvent {
 
@@ -37,7 +36,7 @@ public class NeoTagsUpdatedEvent extends NeoEvent implements ITagsUpdatedEvent {
     }
 
     @Override
-    public McLogicalSide getLogicalSide() {
+    public xiao.customgun.core.api.common.McLogicalSide getLogicalSide() {
         return CustomGunNeoforge.sideExecutor.getLogicalSide();
     }
 

@@ -1,10 +1,10 @@
-package dev.xcolorful.customgun.neoforge.init.registry;
+package xiao.customgun.neoforge.init.registry;
 
-import dev.xcolorful.customgun.core.entity.projectile.GunProjectile;
-import dev.xcolorful.customgun.core.init.registry.ModEntities;
-import dev.xcolorful.customgun.neoforge.entity.projectile.NeoGunProjectile;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import xiao.customgun.core.entity.projectile.GunProjectile;
+import xiao.customgun.core.init.registry.ModEntities;
+import xiao.customgun.neoforge.entity.projectile.NeoGunProjectile;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -2,13 +2,13 @@
  * 跟 BattleRoyale 同构
  */
 
-package dev.xcolorful.customgun.neoforgeclient.init;
+package xiao.customgun.neoforgeclient.init;
 
-import dev.xcolorful.customgun.CustomGun;
-import dev.xcolorful.customgun.client.init.ClientKeyMappingRegistry;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.fml.common.Mod;
+import xiao.customgun.CustomGun;
+import xiao.customgun.client.init.ClientKeyMappingRegistry;
 
 @Mod.EventBusSubscriber(value = net.neoforged.api.distmarker.Dist.CLIENT, modid = CustomGun.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class NeoClientKeyMappingRegistry {

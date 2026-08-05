@@ -1,13 +1,13 @@
-package dev.xcolorful.customgun.neoforge.init.registry;
+package xiao.customgun.neoforge.init.registry;
 
-import dev.xcolorful.customgun.core.init.registry.ModItems;
-import dev.xcolorful.customgun.core.item.ammo.AmmoItem;
-import dev.xcolorful.customgun.core.item.attachment.AttachmentItem;
-import dev.xcolorful.customgun.core.item.gun.GunItem;
-import dev.xcolorful.customgun.neoforge.item.ammo.NeoAmmoItem;
-import dev.xcolorful.customgun.neoforge.item.attachment.NeoAttachmentItem;
-import dev.xcolorful.customgun.neoforge.item.gun.NeoGunItem;
 import net.minecraft.world.item.Item;
+import xiao.customgun.core.init.registry.ModItems;
+import xiao.customgun.core.item.ammo.AmmoItem;
+import xiao.customgun.core.item.attachment.AttachmentItem;
+import xiao.customgun.core.item.gun.GunItem;
+import xiao.customgun.neoforge.item.ammo.NeoAmmoItem;
+import xiao.customgun.neoforge.item.attachment.NeoAttachmentItem;
+import xiao.customgun.neoforge.item.gun.NeoGunItem;
 
 import java.util.HashMap;
 import java.util.Map;

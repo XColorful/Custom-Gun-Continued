@@ -1,10 +1,5 @@
-package dev.xcolorful.customgun.neoforge.event;
+package xiao.customgun.neoforge.event;
 
-import dev.xcolorful.customgun.core.api.common.McLogicalSide;
-import dev.xcolorful.customgun.core.api.event.EventType;
-import dev.xcolorful.customgun.core.api.event.IEntityJoinLevelEvent;
-import dev.xcolorful.customgun.core.api.minecraft.CommandLevel;
-import dev.xcolorful.customgun.neoforge.CustomGunNeoforge;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
@@ -15,6 +10,11 @@ import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import xiao.customgun.core.api.common.McLogicalSide;
+import xiao.customgun.core.api.event.EventType;
+import xiao.customgun.core.api.event.IEntityJoinLevelEvent;
+import xiao.customgun.core.api.minecraft.CommandLevel;
+import xiao.customgun.neoforge.CustomGunNeoforge;
 
 public class NeoEntityJoinLevelEvent extends NeoEvent implements IEntityJoinLevelEvent {
 

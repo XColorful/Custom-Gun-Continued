@@ -5,10 +5,10 @@
  * Source: https://github.com/XColorful/BattleRoyale
  */
 
-package dev.xcolorful.customgun.neoforge.minecraft;
+package xiao.customgun.neoforge.minecraft;
 
-import dev.xcolorful.customgun.core.api.minecraft.TriResult;
 import net.neoforged.bus.api.Event;
+import xiao.customgun.core.api.minecraft.TriResult;
 
 public class TriResultHelper {
 

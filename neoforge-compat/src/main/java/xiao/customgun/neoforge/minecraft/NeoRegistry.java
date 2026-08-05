@@ -5,9 +5,8 @@
  * Source: https://github.com/XColorful/BattleRoyale
  */
 
-package dev.xcolorful.customgun.neoforge.minecraft;
+package xiao.customgun.neoforge.minecraft;
 
-import dev.xcolorful.customgun.core.api.minecraft.IMcRegistry;
 import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -21,6 +20,7 @@ import net.minecraft.world.level.block.Block;
 import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.Nullable;
+import xiao.customgun.core.api.minecraft.IMcRegistry;
 
 public class NeoRegistry implements IMcRegistry {
 

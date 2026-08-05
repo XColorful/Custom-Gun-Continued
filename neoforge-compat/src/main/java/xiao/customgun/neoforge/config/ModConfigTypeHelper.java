@@ -1,7 +1,7 @@
-package dev.xcolorful.customgun.neoforge.config;
+package xiao.customgun.neoforge.config;
 
-import dev.xcolorful.customgun.core.api.config.ModConfigType;
 import net.neoforged.fml.config.ModConfig;
+import xiao.customgun.core.api.config.ModConfigType;
 
 public class ModConfigTypeHelper {
 

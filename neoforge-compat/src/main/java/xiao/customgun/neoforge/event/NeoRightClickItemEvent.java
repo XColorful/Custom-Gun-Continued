@@ -5,14 +5,8 @@
  * Source: https://github.com/XColorful/BattleRoyale
  */
 
-package dev.xcolorful.customgun.neoforge.event;
+package xiao.customgun.neoforge.event;
 
-import dev.xcolorful.customgun.core.api.common.McLogicalSide;
-import dev.xcolorful.customgun.core.api.event.EventType;
-import dev.xcolorful.customgun.core.api.event.IRightClickItemEvent;
-import dev.xcolorful.customgun.core.api.minecraft.CommandLevel;
-import dev.xcolorful.customgun.core.util.Vec3Utils;
-import dev.xcolorful.customgun.neoforge.common.McSideHelper;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
@@ -26,6 +20,12 @@ import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import org.jetbrains.annotations.Nullable;
+import xiao.customgun.core.api.common.McLogicalSide;
+import xiao.customgun.core.api.event.EventType;
+import xiao.customgun.core.api.event.IRightClickItemEvent;
+import xiao.customgun.core.api.minecraft.CommandLevel;
+import xiao.customgun.core.util.Vec3Utils;
+import xiao.customgun.neoforge.common.McSideHelper;
 
 public class NeoRightClickItemEvent extends NeoEvent implements IRightClickItemEvent {
 

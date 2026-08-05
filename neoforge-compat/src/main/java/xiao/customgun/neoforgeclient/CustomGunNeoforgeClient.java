@@ -12,15 +12,15 @@
  * Source: https://github.com/XColorful/BattleRoyale
  */
 
-package dev.xcolorful.customgun.neoforgeclient;
+package xiao.customgun.neoforgeclient;
 
-import dev.xcolorful.customgun.client.CustomGunClient;
-import dev.xcolorful.customgun.client.api.input.IKeyMapping;
-import dev.xcolorful.customgun.client.api.minecraft.access.IClientAccessTransformer;
-import dev.xcolorful.customgun.core.api.event.IEventRegister;
-import dev.xcolorful.customgun.neoforgeclient.event.NeoClientEventRegister;
-import dev.xcolorful.customgun.neoforgeclient.input.NeoKeyMapping;
-import dev.xcolorful.customgun.neoforgeclient.minecraft.access.NeoClientAccessTransformer;
+import xiao.customgun.client.CustomGunClient;
+import xiao.customgun.client.api.input.IKeyMapping;
+import xiao.customgun.client.api.minecraft.access.IClientAccessTransformer;
+import xiao.customgun.core.api.event.IEventRegister;
+import xiao.customgun.neoforgeclient.event.NeoClientEventRegister;
+import xiao.customgun.neoforgeclient.input.NeoKeyMapping;
+import xiao.customgun.neoforgeclient.minecraft.access.NeoClientAccessTransformer;
 
 public class CustomGunNeoforgeClient {
 

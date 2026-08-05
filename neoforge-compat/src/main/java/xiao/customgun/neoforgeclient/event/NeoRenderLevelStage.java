@@ -5,10 +5,10 @@
  * Source: https://github.com/XColorful/BattleRoyale
  */
 
-package dev.xcolorful.customgun.neoforgeclient.event;
+package xiao.customgun.neoforgeclient.event;
 
-import dev.xcolorful.customgun.client.api.event.RenderLevelStage;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage;
+import xiao.customgun.client.api.event.RenderLevelStage;
 
 import java.util.HashMap;
 import java.util.Map;

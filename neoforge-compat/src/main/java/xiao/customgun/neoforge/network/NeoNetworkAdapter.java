@@ -2,15 +2,8 @@
  * 改成跟 BattleRoyale 同构的写法
  */
 
-package dev.xcolorful.customgun.neoforge.network;
+package xiao.customgun.neoforge.network;
 
-import dev.xcolorful.customgun.CustomGun;
-import dev.xcolorful.customgun.core.api.network.INetworkAdapter;
-import dev.xcolorful.customgun.core.api.network.MessageDirection;
-import dev.xcolorful.customgun.core.api.network.message.IMessage;
-import dev.xcolorful.customgun.core.network.LoginIndexHolder;
-import dev.xcolorful.customgun.core.network.NetworkHandler;
-import dev.xcolorful.customgun.neoforge.CustomGunNeoforge;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -19,6 +12,13 @@ import net.neoforged.neoforge.network.NetworkRegistry;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.PlayNetworkDirection;
 import net.neoforged.neoforge.network.simple.SimpleChannel;
+import xiao.customgun.CustomGun;
+import xiao.customgun.core.api.network.INetworkAdapter;
+import xiao.customgun.core.api.network.MessageDirection;
+import xiao.customgun.core.api.network.message.IMessage;
+import xiao.customgun.core.network.LoginIndexHolder;
+import xiao.customgun.core.network.NetworkHandler;
+import xiao.customgun.neoforge.CustomGunNeoforge;
 
 import java.util.function.Function;
 

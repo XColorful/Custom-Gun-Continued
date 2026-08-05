@@ -1,0 +1,161 @@
+/*
+ * Copyright (c) 2024-2026 MCModderAnchor (https://github.com/MCModderAnchor)
+ * SPDX-License-Identifier: GPL-3.0-only
+ *
+ * Source: https://github.com/MCModderAnchor/TACZ
+ */
+
+package dev.xcolorful.customgun.client.input.player;
+
+import com.mojang.blaze3d.platform.InputConstants;
+import dev.xcolorful.customgun.CustomGun;
+import dev.xcolorful.customgun.client.CustomGunClient;
+import dev.xcolorful.customgun.client.api.event.IInputKeyEvent;
+import dev.xcolorful.customgun.client.api.event.IInteractionMappingEvent;
+import dev.xcolorful.customgun.client.api.event.IMouseButtonEvent;
+import dev.xcolorful.customgun.client.api.input.IInputKeyManager;
+import dev.xcolorful.customgun.client.api.input.IKeyConflictContext;
+import dev.xcolorful.customgun.client.api.input.IKeyMapping;
+import dev.xcolorful.customgun.client.api.input.IKeyModifier;
+import dev.xcolorful.customgun.client.api.minecraft.input.CustomInputKey;
+import dev.xcolorful.customgun.client.config.sync.InteractFilterData;
+import dev.xcolorful.customgun.client.init.registry.ClientInputCategory;
+import dev.xcolorful.customgun.client.input.InputKey;
+import dev.xcolorful.customgun.client.util.ClientInputUtils;
+import dev.xcolorful.customgun.core.api.event.*;
+import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
+import org.lwjgl.glfw.GLFW;
+
+public final class InteractKey extends InputKey implements IEventHandler {
+
+    private static final class InteractKeyHolder {
+        private static final InteractKey INSTANCE = new InteractKey();
+    }
+
+    public static InteractKey get() {
+        return InteractKeyHolder.INSTANCE;
+    }
+
+    private InteractKey() {
+        super(CustomInputKey.INTERACT);
+    }
+    @Override protected IKeyMapping createKeyMapping(IKeyMapping.Creator creator) {
+        return creator.create(this.key.getCategoryLang().getString(),
+                IKeyConflictContext.Type.IN_GAME,
+                IKeyModifier.Type.NONE,
+                InputConstants.Type.KEYSYM,
+                GLFW.GLFW_KEY_O,
+                ClientInputCategory.PLAYER);
+    }
+
+    public static final String _MANAGER_NAME = String.format("%s:%s", CustomGun.MOD_ID, InteractKey.class.getSimpleName());
+    @Override public String getManagerName() {
+        return _MANAGER_NAME;
+    }
+
+    @Override
+    public boolean registerEventHandler() {
+        ICustomEventRegister customEventRegister = CustomGun.getEventRegister();
+        customEventRegister.register(this, EventType.INTERACTION_MAPPING_EVENT, EventPriority.NORMAL, false);
+        return true;
+    }
+    @Override
+    public boolean unregisterEventHandler() {
+        ICustomEventRegister customEventRegister = CustomGun.getEventRegister();
+        customEventRegister.unregister(this, EventType.INTERACTION_MAPPING_EVENT, EventPriority.NORMAL, false);
+        return true;
+    }
+
+    @Override public String getEventHandlerName() {
+        return this.getClass().getName();
+    }
+    @Override
+    public void handleEvent(EventType eventType, IEvent event) {
+        if (eventType == EventType.INTERACTION_MAPPING_EVENT) {
+            onInteractionMapping((IInteractionMappingEvent) event);
+        } else {
+            onReceiveWrongEvent(eventType);
+        }
+    }
+
+    // --------IInputHandler--------
+
+    @Override
+    public void onKeyInput(IInputKeyManager inputKeyManager, IInputKeyEvent event) {
+        this.onInteractKeyInput(event.getAction());
+    }
+    @Override
+    public void onMouseInput(IInputKeyManager inputKeyManager, IMouseButtonEvent event) {
+        this.onInteractKeyInput(event.getAction());
+    }
+    private void onInteractKeyInput(int action) {
+        if (action != GLFW.GLFW_PRESS) return;
+
+        if (!ClientInputUtils.isGameplayFocused()) return; // 不在焦点
+
+        Minecraft mc = Minecraft.getInstance();
+        LocalPlayer player = mc.player;
+        if (IGunGetter.fromMainHand(player) == null // 主手没枪
+                || player.isSpectator() // 旁观模式
+        ) return;
+
+        HitResult hitResult = mc.hitResult;
+        if (hitResult == null) return;
+
+        // 方块交互
+        if (hitResult instanceof BlockHitResult blockHitResult) {
+            BlockPos blockPos = blockHitResult.getBlockPos();
+            BlockState blockState = player.level().getBlockState(blockPos);
+            if (InteractFilterData.canInteract(blockState)) {
+                CustomGunClient.getAccessTransformer().startUseItem(mc);
+            }
+        }
+        // 实体交互
+        else if (hitResult instanceof EntityHitResult entityHitResult) {
+            Entity entity = entityHitResult.getEntity();
+            if (InteractFilterData.canInteract(entity)) {
+                CustomGunClient.getAccessTransformer().startUseItem(mc);
+            }
+        }
+    }
+
+    private void onInteractionMapping(IInteractionMappingEvent event) {
+        Minecraft mc = Minecraft.getInstance();
+        LocalPlayer player = mc.player;
+        if (player == null) return;
+
+        if (this.keyMapping.get().isDown()) return; // 按了交互键
+
+        if (IGunGetter.fromMainHand(player) == null) return; // 主手没枪
+
+        HitResult hitResult = mc.hitResult;
+        if (hitResult == null) return;
+
+        // 方块交互
+        if (hitResult instanceof BlockHitResult blockHitResult) {
+            BlockPos blockPos = blockHitResult.getBlockPos();
+            BlockState blockState = player.level().getBlockState(blockPos);
+            if (InteractFilterData.canInteract(blockState)) {
+                return;
+            }
+        }
+        // 实体交互
+        else if (hitResult instanceof EntityHitResult entityHitResult) {
+            Entity entity = entityHitResult.getEntity();
+            if (InteractFilterData.canInteract(entity)) {
+                return;
+            }
+        }
+
+        event.setSwingHand(false); // 阻止客户端粒子生成
+        event.setCanceled(true);
+    }
+}

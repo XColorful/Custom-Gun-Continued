@@ -1,5 +1,5 @@
 ```java
-package xiao.customgun.core.api.gun.inventory;
+package dev.xcolorful.customgun.core.api.gun.inventory;
 
 public interface IGunInventoryManager extends IGunSubManager, IGunInventoryRuntime {
 }

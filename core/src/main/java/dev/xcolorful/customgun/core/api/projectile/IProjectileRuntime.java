@@ -1,0 +1,59 @@
+package dev.xcolorful.customgun.core.api.projectile;
+
+import dev.xcolorful.customgun.core.api.entity.GunProjectileProperty;
+import dev.xcolorful.customgun.core.api.entity.projectile.IGunProjectileDataAccess;
+import dev.xcolorful.customgun.core.api.entity.projectile.IGunProjectileStateAccess;
+import dev.xcolorful.customgun.core.api.projectile.effect.IProjectileEffectRuntime;
+import dev.xcolorful.customgun.core.api.projectile.impact.IProjectileImpactRuntime;
+import dev.xcolorful.customgun.core.api.projectile.physics.IProjectilePhysicsRuntime;
+import dev.xcolorful.customgun.core.api.projectile.process.IProjectileProcessRuntime;
+import dev.xcolorful.customgun.core.resource.data.data.gun.bullet._ExplosionData;
+import dev.xcolorful.customgun.core.resource.data.data.gun.bullet.damage._DistanceDamageData;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
+
+public interface IProjectileRuntime extends
+        IProjectileEffectRuntime,
+        IProjectileImpactRuntime,
+        IProjectilePhysicsRuntime,
+        IProjectileProcessRuntime {
+
+    /**
+     * {@link GunProjectileProperty} {@link IGunProjectileDataAccess}
+     */
+    final class DataCache {
+        public @Nullable String managerGroupTag;
+        public @Nullable ResourceLocation gunLocation;
+        public @Nullable ResourceLocation gunDisplayLocation;
+        public @Nullable ResourceLocation ammoLocation;
+        public @Nullable CompoundTag extraDataTag;
+        public DataCache() {
+        }
+    }
+    /**
+     * {@link GunProjectileProperty} {@link IGunProjectileStateAccess}
+     */
+    final class StateCache {
+        public Vec3 shootPos;
+        public float armorIgnorePercent = 0;
+        public float headshotMultiplier = 1;
+        public List<_DistanceDamageData> damageCalculation;
+        public int lifetimeTicks = 0;
+        public float bulletSpeed = 0; // TODO 原模组逻辑是直接在shootFromRotation里setDeltaMovement
+        public float gravity = 0;
+        public float friction = 0;
+        public int pierce = 0;
+        public boolean isTracer = false;
+        public boolean fireAspect = false;
+        public int fireAspectSeconds = 1;
+        public float knockbackStrength = 0;
+        public @Nullable CompoundTag extraStateTag;
+        public @Nullable _ExplosionData explosionData;
+        public StateCache() {
+        }
+    }
+}

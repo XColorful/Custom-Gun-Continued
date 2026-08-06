@@ -10,7 +10,7 @@
 - [x] [2. 动画 POJO 层](#2) — 动画数据的解析入口
 - [x] [3. Display POJO 层](#3) — 显示配置的数据结构
 - [x] [4. 资源加载与索引层](#4) — 资源管道和 Instance 构建
-- [ ] [5. 几何运行时层](#5) — 将 POJO 数据转换为可渲染的场景图
+- [x] [5. 几何运行时层](#5) — 将 POJO 数据转换为可渲染的场景图
 - [ ] [6. 模型对象层](#6) — 场景图之上构建分类型的模型对象（枪械/配件/弹药），注册动画监听器和功能性渲染器
 - [ ] [7. 模型监听器层](#7) — 动画数据写入场景图的桥梁
 - [ ] [8. 动画 API 层](#8) — 动画实例、控制器、状态机、glTF 支持
@@ -153,14 +153,14 @@
 
 |TaCZ `com.tacz.guns.client.model.bedrock`|CGC 目标|状态|
 |---|---|---|
-|`BedrockModel`|（待移植——基岩版场景图构建与渲染根类）||
-|`BedrockPart`|（待移植——场景图节点）||
-|`BedrockCube` (interface)|（待移植——立方体面几何接口）||
-|`BedrockCubeBox`|（待移植——统一 UV 立方体）||
-|`BedrockCubePerFace`|（待移植——逐面 UV 立方体）||
-|`BedrockPolygon`|（待移植——单个面四边形）||
-|`BedrockVertex`|（待移植——顶点数据）||
-|`ModelRendererWrapper`|（待移植——BedrockPart 动画属性包装器）||
+|`BedrockModel`|`client.model.ModelObject`||
+|`BedrockPart`|`client.model.BedrockPart`||
+|`BedrockCube` (interface)|`api.model.bedrock.IBedrockCube`||
+|`BedrockCubeBox`|`client.model.BedrockCubeBox`||
+|`BedrockCubePerFace`|`client.model.BedrockCubePerFace`||
+|`BedrockPolygon`|`client.model.BedrockPolygon`||
+|`BedrockVertex`|`client.model.BedrockVertex`||
+|`ModelRendererWrapper`|`api.model.bedrock.IBedrockRenderer`||
 
 > **注意**：此层是 POJO 到运行时模型的桥梁。CGC 的 `client.model.ModelObject` 及其子类在概念上对应 TaCZ 的 `BedrockAnimatedModel` 体系（见第 6 节），但 `BedrockModel` 的场景图构建逻辑（`loadNewModel` / `loadLegacyModel` / 坐标转换）尚未移植到 CGC。
 

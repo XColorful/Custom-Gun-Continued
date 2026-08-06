@@ -17,4 +17,6 @@ public class _BoneTag {
     public static final String MIRROR = "mirror";
 
     private _BoneTag() {}
+
+    public static final String ILLUMINATE_SUFFIX = "_illuminated";
 }

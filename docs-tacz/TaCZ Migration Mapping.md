@@ -919,10 +919,20 @@ Notation:
 > package com.tacz.guns.client.model;
 > ```
 
+|com.tacz.guns.client.model|dev.xcolorful.customgun.client.api.model|
+|---|---|
+|bedrock.`BedrockCube`|bedrock.`IBedrockCube`|
+|bedrock.`ModelRendererWrapper`|bedrock.`IBedrockRenderer`|
+
 |com.tacz.guns.client.model|dev.xcolorful.customgun.client.model|
 |---|---|
-|bedrock||
+|bedrock|bedrock|
+|bedrock.`BedrockCubeBox`|bedrock.`BedrockCubeBox`|
+|bedrock.`BedrockCubePerFace`|bedrock.`BedrockCubePerFace`|
 |bedrock.`BedrockModel`|`ModelObject`|
+|bedrock.`BedrockPart`|bedrock.`BedrockPart`|
+|bedrock.`BedrockPolygon`|bedrock.`BedrockPolygon`|
+|bedrock.`BedrockVertex`|bedrock.`BedrockVertex`|
 |listener.camera||
 |listener.constraint||
 |listener.model||
@@ -931,6 +941,12 @@ Notation:
 |`FunctionalBedrockPart`||
 |`GunModelConstant`||
 |`SlotModel`||
+
+|com.tacz.guns.client.model|dev.xcolorful.customgun.client.util|
+|---|---|
+|bedrock.`BedrockModel`.convertPivot|`ClientModelUtils`.pivot_BEtoJE|
+|bedrock.`BedrockModel`.convertRotation|`ClientModelUtils`.rotation_BEtoJE|
+|bedrock.`BedrockModel`.convertOrigin|`ClientModelUtils`.origin_BEtoJE|
 
 |com.tacz.guns.client.model|dev.xcolorful.customgun.client.renderer|
 |---|---|
@@ -941,10 +957,7 @@ Notation:
 |functional.`RightHandRender`||
 |functional.`ShellRender`||
 |functional.`TextShowRender`||
-
-|com.tacz.guns.client.model|dev.xcolorful.customgun.client.api.model|
-|---|---|
-|`IFunctionalRenderer`|`IModelComponentRenderer`|
+|`IFunctionalRenderer`|model.`IModelComponentRenderer`|
 
 ### Particle (Client)
 > ```java
@@ -1004,6 +1017,9 @@ Notation:
 |pojo.display.`LaserConfig`|assets.display.`_LaserDisplay`|
 |pojo.model.`BedrockModelPOJO`|assets.model.`BedrockModel`|
 |pojo.model.`BedrockVersion`|_Deprecated_|
+|pojo.model.`CubesItem`.uv|assets.model.bedrock.geometry.bone.cube.`_Uv`.uv|
+|pojo.model.`CubesItem`.faceUv|assets.model.bedrock.geometry.bone.`_Cube`.uv|
+|pojo.model.`FaceUVsItem`|assets.model.bedrock.geometry.bone.cube.`_Uv`|
 |pojo.model.`*`|assets.model.bedrock|
 |pojo.skin|_Deprecated|
 |pojo.`CommonTransformObject`|_Deprecated_|

@@ -8,17 +8,20 @@
 package dev.xcolorful.customgun.client.resource.assets.model.bedrock.geometry.bone.cube;
 
 import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import dev.xcolorful.customgun.client.resource.assets.model.bedrock.geometry.bone.cube.uv._FaceUv;
 import dev.xcolorful.customgun.core.api.resource.assets.model.bedrock.geometry.bone.cube._UvTag;
 import dev.xcolorful.customgun.core.resource.ResourcePojo;
 import dev.xcolorful.customgun.core.util.JsonUtils;
 import net.minecraft.core.Direction;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 
 public class _Uv extends ResourcePojo<_Uv> {
 
+    private float @Nullable [] uv;
     private _FaceUv north;
     private _FaceUv south;
     private _FaceUv east;
@@ -33,6 +36,11 @@ public class _Uv extends ResourcePojo<_Uv> {
     @Override
     protected _Uv fromJsonReader(JsonReader reader) throws IOException {
         _Uv pojo = new _Uv();
+        if (reader.peek() == JsonToken.BEGIN_ARRAY) {
+            pojo.uv = JsonUtils.readFloatArray(reader);
+            return pojo;
+        }
+
         reader.beginObject(); {
             while (reader.hasNext()) {
                 String key = reader.nextName();
@@ -56,6 +64,14 @@ public class _Uv extends ResourcePojo<_Uv> {
     }
     @Override
     public void toJson(JsonWriter writer) throws IOException {
+        if (this.uv != null) {
+            writer.beginArray(); {
+                for (float f : this.uv) writer.value(f);
+            }
+            writer.endArray();
+            return;
+        }
+
         writer.beginObject(); {
             JsonUtils.write(writer, _UvTag.NORTH, this.north, _FaceUv::toJson);
             JsonUtils.write(writer, _UvTag.SOUTH, this.south, _FaceUv::toJson);
@@ -74,6 +90,9 @@ public class _Uv extends ResourcePojo<_Uv> {
 
     // --------Getter & Setter--------
 
+    public float @Nullable [] getUv() {
+        return uv;
+    }
     public _FaceUv getNorth() {
         return north;
     }
@@ -93,6 +112,9 @@ public class _Uv extends ResourcePojo<_Uv> {
         return down;
     }
 
+    public void setUv(float[] uv) {
+        this.uv = uv;
+    }
     public void setNorth(_FaceUv north) {
         this.north = north;
     }

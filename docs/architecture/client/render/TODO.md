@@ -42,7 +42,7 @@
 |`GeometryModelLegacy`|_Deprecated_（由 format_version 统一）|
 |`GeometryModelNew`|`bedrock._GeometryModel`|
 |`FaceItem`|（合并至 `_FaceUv`）|
-|`FaceUVsItem`|`bedrock.geometry.bone.cube._FaceUv`|
+|`FaceUVsItem`|`bedrock.geometry.bone.cube._Uv`|
 
 [↑ 回到移植顺序](#移植顺序)
 
@@ -132,7 +132,7 @@
 |`index.ClientAttachmentIndex`|`instance.data.ClientAttachmentIndexInstance`|已完成|
 |`index.ClientAmmoIndex`|`instance.data.ClientAmmoIndexInstance`|已完成|
 |`index.ClientBlockIndex`|`instance.data.ClientBlockIndexInstance`|已完成|
-|`index.ClientAttachmentSkinIndex`|（待确定）||
+|`index.ClientAttachmentSkinIndex`|_Deprecated_||
 
 |TaCZ `com.tacz.guns.client.resource.manager`|CGC `client.resource.assets`|状态|
 |---|---|---|

@@ -984,6 +984,7 @@ Notation:
 |com.tacz.guns.client.resource|dev.xcolorful.customgun.client.resource|
 |---|---|
 |index.`Client*Index`|instance.data.`Client*IndexInstance`|
+|index.`ClientAttachmentSkinIndex`|_Deprecated_|
 |manager.`DisplayManager`|assets.`DisplayManager`|
 |manager.`GltfManager`|assets.`AnimationManager`.`GltfAnimationManager`|
 |manager.`PackInfoManager`|assets.`GunpackInfoManager`|

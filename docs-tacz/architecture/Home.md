@@ -136,6 +136,8 @@
 #### 渲染器
 > _./client/renderer_
 
+[渲染框架](./client/render/Home.md)
+
 - item：物品渲染器
 - entity：实体渲染器
 - block：方块渲染器
@@ -534,6 +536,8 @@ Client local player aspect implementations, handling player input-driven shootin
 
 #### Renderer
 > _./client/renderer_
+
+[Render franework](./client/render/Home.md#English)
 
 - item: Item renderers
 - entity: Entity renderers

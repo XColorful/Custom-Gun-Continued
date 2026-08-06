@@ -143,6 +143,8 @@
 ### 渲染器
 > _./client/renderer_
 
+[渲染框架](./render/Home.md)
+
 - Entity：实体
 - Item：物品
 - Model：模型
@@ -318,6 +320,8 @@ Module division based on the `dev.xcolorful.customgun.client` top-level package
 
 ### Renderer
 > _./client/renderer_
+
+[Render framework](./render/Home.md#English)
 
 - Entity
 - Item

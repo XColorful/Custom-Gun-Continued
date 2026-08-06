@@ -6,25 +6,26 @@
 
 ## 移植顺序
 
-- [x] [1. 几何 POJO 层](#1-几何-pojo-层--clientresourcepojomodel) — 所有渲染器的基础数据结构
-- [x] [2. 动画 POJO 层](#2-动画-pojo-层--clientresourcepojoanimation) — 动画数据的解析入口
-- [x] [3. Display POJO 层](#3-display-pojo-层--clientresourcepojodisplay) — 显示配置的数据结构
-- [x] [4. 资源加载与索引层](#4-资源加载与索引层--clientresource) — 资源管道和 Instance 构建
-- [ ] [5. 几何运行时层](#5-几何运行时层--clientmodelbedrock) — 将 POJO 数据转换为可渲染的场景图
-- [ ] [6. 模型对象层](#6-模型对象层--clientmodel) — 场景图之上构建分类型的模型对象（枪械/配件/弹药），注册动画监听器和功能性渲染器
-- [ ] [7. 模型监听器层](#7-模型监听器层--clientmodellistener) — 动画数据写入场景图的桥梁
-- [ ] [8. 动画 API 层](#8-动画-api-层--apiclientanimation) — 动画实例、控制器、状态机、glTF 支持
-- [ ] [9. 动画实现层](#9-动画实现层--clientanimation) — 枪械专用的状态上下文和第三人称管理器
-- [ ] [10. PAPI 层](#10-papi-层--clientmodelpapi) — 模型文字覆盖的占位符系统
-- [ ] [11. 功能性渲染器](#11-功能性渲染器--clientmodelfunctional) — 枪口火焰、抛壳、激光束、配件渲染、手臂渲染
-- [ ] [12. 物品渲染器](#12-物品渲染器--clientrendereritem) — BEWLR 渲染器（AnimateGeoItemRenderer 及其枪械子类）
-- [ ] [13. 实体/方块渲染器](#13-实体方块渲染器--clientrendererentity--block--other) — EntityBulletRenderer、StatueRenderer、TargetRenderer
-- [ ] [14. 客户端事件层](#14-客户端事件层--clientevent) — 第一人称渲染事件、相机事件、动画 Tick
-- [x] [15. Mixin 层](#15-mixin-层--clientmixin) — 对 MC 渲染管线的注入点
-- [ ] [16. 其他 API](#16-其他-api--apiclientother) — 模型类型管理、第三人称动画接口
+- [x] [1. 几何 POJO 层](#1) — 所有渲染器的基础数据结构
+- [x] [2. 动画 POJO 层](#2) — 动画数据的解析入口
+- [x] [3. Display POJO 层](#3) — 显示配置的数据结构
+- [x] [4. 资源加载与索引层](#4) — 资源管道和 Instance 构建
+- [ ] [5. 几何运行时层](#5) — 将 POJO 数据转换为可渲染的场景图
+- [ ] [6. 模型对象层](#6) — 场景图之上构建分类型的模型对象（枪械/配件/弹药），注册动画监听器和功能性渲染器
+- [ ] [7. 模型监听器层](#7) — 动画数据写入场景图的桥梁
+- [ ] [8. 动画 API 层](#8) — 动画实例、控制器、状态机、glTF 支持
+- [ ] [9. 动画实现层](#9) — 枪械专用的状态上下文和第三人称管理器
+- [ ] [10. PAPI 层](#10) — 模型文字覆盖的占位符系统
+- [ ] [11. 功能性渲染器](#11) — 枪口火焰、抛壳、激光束、配件渲染、手臂渲染
+- [ ] [12. 物品渲染器](#12) — BEWLR 渲染器（AnimateGeoItemRenderer 及其枪械子类）
+- [ ] [13. 实体/方块渲染器](#13) — EntityBulletRenderer、StatueRenderer、TargetRenderer
+- [ ] [14. 客户端事件层](#14) — 第一人称渲染事件、相机事件、动画 Tick
+- [x] [15. Mixin 层](#15) — 对 MC 渲染管线的注入点
+- [ ] [16. 其他 API](#16) — 模型类型管理、第三人称动画接口
 
 ---
 
+## 1
 ## 1. 几何 POJO 层 — client.resource.pojo.model
 
 对应文档：[TaCZ 客户端资源 POJO](/docs-tacz/architecture/client/render/client-resource-pojos.md) 模型 POJO 章节。
@@ -47,6 +48,7 @@
 
 ---
 
+## 2
 ## 2. 动画 POJO 层 — client.resource.pojo.animation
 
 对应文档：[TaCZ 客户端资源 POJO](/docs-tacz/architecture/client/render/client-resource-pojos.md) 动画 POJO 章节。
@@ -73,6 +75,7 @@
 
 ---
 
+## 3
 ## 3. Display POJO 层 — client.resource.pojo.display
 
 对应文档：[TaCZ 客户端资源 POJO](/docs-tacz/architecture/client/render/client-resource-pojos.md) Display 数据章节。
@@ -111,6 +114,7 @@
 
 ---
 
+## 4
 ## 4. 资源加载与索引层 — client.resource
 
 对应文档：[TaCZ 渲染体系 Home](/docs-tacz/architecture/client/render/Home.md) 资源加载层 + 数据索引层。
@@ -140,6 +144,7 @@
 
 ---
 
+## 5
 ## 5. 几何运行时层 — client.model.bedrock
 
 对应文档：[TaCZ 基岩版模型与几何系统](/docs-tacz/architecture/client/render/bedrock-model-geometry.md) 场景图章节。
@@ -163,6 +168,7 @@
 
 ---
 
+## 6
 ## 6. 模型对象层 — client.model
 
 对应文档：[TaCZ 基岩版模型与几何系统](/docs-tacz/architecture/client/render/bedrock-model-geometry.md) 模型类型层次章节。
@@ -186,6 +192,7 @@
 
 ---
 
+## 7
 ## 7. 模型监听器层 — client.model.listener
 
 对应文档：[TaCZ 动画系统](/docs-tacz/architecture/client/render/animation-system.md) AnimationListener 章节。
@@ -208,6 +215,7 @@
 
 ---
 
+## 8
 ## 8. PAPI 层 — client.model.papi
 
 对应文档：[TaCZ 功能性渲染器](/docs-tacz/architecture/client/render/functional-renderers.md) 文字覆盖章节。
@@ -222,6 +230,7 @@
 
 ---
 
+## 9
 ## 9. 功能性渲染器 — client.model.functional
 
 对应文档：[TaCZ 功能性渲染器](/docs-tacz/architecture/client/render/functional-renderers.md)。
@@ -240,6 +249,7 @@
 
 ---
 
+## 10
 ## 10. 动画 API 层 — api.client.animation
 
 对应文档：[TaCZ 动画系统](/docs-tacz/architecture/client/render/animation-system.md)。
@@ -294,6 +304,7 @@ CGC 中 `ObjectAnimation` 和 `ObjectAnimationSoundChannel` 为占位骨架。
 
 ---
 
+## 11
 ## 11. 动画实现层 — client.animation
 
 对应文档：[TaCZ 动画系统](/docs-tacz/architecture/client/render/animation-system.md) 触发条件与状态上下文章节。
@@ -311,6 +322,7 @@ CGC 中 `ObjectAnimation` 和 `ObjectAnimationSoundChannel` 为占位骨架。
 
 ---
 
+## 12
 ## 12. 物品渲染器 — client.renderer.item
 
 对应文档：[TaCZ 渲染管线](/docs-tacz/architecture/client/render/render-pipeline.md) 物品渲染器章节。
@@ -327,6 +339,7 @@ CGC 中 `ObjectAnimation` 和 `ObjectAnimationSoundChannel` 为占位骨架。
 
 ---
 
+## 13
 ## 13. 实体/方块渲染器 — client.renderer.entity / block / other
 
 对应文档：[TaCZ 渲染管线](/docs-tacz/architecture/client/render/render-pipeline.md) 实体/方块渲染器章节。
@@ -346,6 +359,7 @@ CGC 中 `ObjectAnimation` 和 `ObjectAnimationSoundChannel` 为占位骨架。
 
 ---
 
+## 14
 ## 14. 客户端事件层 — client.event
 
 对应文档：[TaCZ 渲染管线](/docs-tacz/architecture/client/render/render-pipeline.md) Mixin 钩子章节（渲染相关事件）。
@@ -382,6 +396,7 @@ CGC 中 `ObjectAnimation` 和 `ObjectAnimationSoundChannel` 为占位骨架。
 
 ---
 
+## 15
 ## 15. Mixin 层 — client.mixin
 
 对应文档：[TaCZ 渲染管线](/docs-tacz/architecture/client/render/render-pipeline.md) Mixin 钩子章节。
@@ -406,6 +421,7 @@ CGC 中 `ObjectAnimation` 和 `ObjectAnimationSoundChannel` 为占位骨架。
 
 ---
 
+## 16
 ## 16. 其他 API — api.client.other
 
 对应文档：跨文档引用（`KeepingItemRenderer` 等）。

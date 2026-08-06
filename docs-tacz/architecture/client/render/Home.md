@@ -6,7 +6,7 @@
 
 ```mermaid
 graph TB
-    subgraph "资源加载层 — client.resource"
+    subgraph g1["资源加载层 — client.resource"]
         direction LR
         RES_MGR["ClientAssetsManager<br/>资源包加载调度"]
         DISPLAY_MGR["DisplayManager<br/>AmmoDisplay / AttachmentDisplay<br/>GunDisplay / BlockDisplay"]
@@ -22,13 +22,13 @@ graph TB
         ANIM_MGR --> INSTANCE
     end
 
-    subgraph "数据索引层 — client.resource.index"
+    subgraph g2["数据索引层 — client.resource.index"]
         GUN_IDX["ClientGunIndex<br/>模型 + 纹理 + 数据"]
         ATCH_IDX["ClientAttachmentIndex<br/>模型 + 纹理 + LOD"]
         AMMO_IDX["ClientAmmoIndex<br/>弹药模型 + 弹壳模型"]
     end
 
-    subgraph "模型层 — client.model"
+    subgraph g3["模型层 — client.model"]
         BM["BedrockModel<br/>基岩版几何模型"]
         BAM["BedrockAnimatedModel<br/>动画模型 (AnimationListenerSupplier)"]
         BAT["BedrockAttachmentModel<br/>配件模型 + 模板缓冲瞄具"]
@@ -36,20 +36,20 @@ graph TB
         AM["BedrockAmmoModel<br/>弹药模型 + 定位组"]
         FP["FunctionalBedrockPart<br/>可替换渲染逻辑的模型部件"]
 
-        BM --> BAM
+        BM ---> BAM
         BAM --> BAT
         BAM --> BGM
         BM --> AM
         BM --> FP
     end
 
-    subgraph "几何层 — client.model.bedrock"
+    subgraph g4["几何层 — client.model.bedrock"]
         BP["BedrockPart<br/>场景图节点"]
         BC["BedrockCube Box/PerFace<br/>立方体面几何"]
         MRW["ModelRendererWrapper<br/>动画属性包装"]
     end
 
-    subgraph "功能性渲染器 — client.model.functional"
+    subgraph g5["功能性渲染器 — client.model.functional"]
         MFR["MuzzleFlashRender<br/>枪口火焰"]
         SR["ShellRender<br/>抛壳动画"]
         BR["BeamRenderer<br/>激光束"]
@@ -59,7 +59,7 @@ graph TB
         TSR["TextShowRender<br/>模型文字"]
     end
 
-    subgraph "动画系统 — api.client.animation"
+    subgraph g6["动画系统 — api.client.animation"]
         direction LR
         OA["ObjectAnimation<br/>动画实例"]
         OAR["ObjectAnimationRunner<br/>动画运行器"]
@@ -68,7 +68,7 @@ graph TB
         ALS["AnimationListenerSupplier<br/>模型 -> 动画监听器"]
     end
 
-    subgraph "物品渲染器 — client.renderer.item"
+    subgraph g7["物品渲染器 — client.renderer.item"]
         GW["GunItemRendererWrapper<br/>枪械渲染 (BEWLR)"]
         AGR["AnimateGeoItemRenderer<br/>动画物品基类"]
         ATTR["AttachmentItemRenderer<br/>配件物品渲染"]
@@ -76,14 +76,14 @@ graph TB
         GSTR["GunSmithTableItemRenderer<br/>工作台物品渲染"]
     end
 
-    subgraph "实体/方块渲染器 — client.renderer"
+    subgraph g8["实体/方块渲染器 — client.renderer"]
         EBR["EntityBulletRenderer<br/>子弹 + 曳光弹"]
         TR["TargetRenderer<br/>射击靶"]
         SR2["StatueRenderer<br/>雕像方块"]
         GSTR2["GunSmithTableRenderer<br/>工作台方块"]
     end
 
-    subgraph "事件与 Mixin — client.event / client.mixin"
+    subgraph g9["事件与 Mixin — client.event / client.mixin"]
         FPRE["FirstPersonRenderGunEvent<br/>第一人称变换编排"]
         CS["CameraSetupEvent<br/>FOV + 后坐力"]
         TAE["TickAnimationEvent<br/>动画 Tick 驱动"]
@@ -107,7 +107,7 @@ graph TB
     BGM --> AR
     BGM --> LHR
     BGM --> RHR
-    BGM --> TSR
+    BGM ---> TSR
 
     GUN_IDX --> GW
     ATCH_IDX --> ATTR
@@ -161,6 +161,13 @@ graph TB
     style EBR fill:#fff9c4
     style FPRE fill:#ede7f6
     style CS fill:#ede7f6
+    
+    %% ----调整Mermaid外观（与体系无关）----
+    AMMO_IDX ~~~ ATCH_IDX
+    AMMO_IDX ~~~ GUN_IDX ~~~ ATCH_IDX
+    g1 ~~~ g4 ~~~ g8
+    g1 ~~~ g3 ~~~ g2 ~~~ g7
+    FPRE ~~~ CS
 ```
 
 ## 体系概要

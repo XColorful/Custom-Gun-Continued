@@ -50,7 +50,11 @@ graph TB
     ENTITY --> EBR
     BLOCK --> TR
     BLOCK --> SR
-    BLOCK --> GSTR2
+    BLOCK ----> GSTR2
+    
+    %% ----调整Mermaid外观（与体系无关）----
+    TP ~~~ FP
+    GROUND ~~~ FIXED ~~~ GUI
 ```
 
 物品渲染全部通过 `BlockEntityWithoutLevelRenderer`（BEWLR）体系实现，绕过 MC 原版的 JSON 模型系统，直接操作 Bedrock 模型。

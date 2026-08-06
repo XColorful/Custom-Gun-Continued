@@ -76,10 +76,10 @@ graph TB
         GHT["victim.GunHurtBobTweak<br/>枪击受伤晃动"]
     end
 
+    INSTANCE --> GUN_DISP
     INSTANCE --> GUN_IDX
     INSTANCE --> ATCH_IDX
     INSTANCE --> AMMO_IDX
-    INSTANCE --> GUN_DISP
 
     GUN_DISP --> GMO
 

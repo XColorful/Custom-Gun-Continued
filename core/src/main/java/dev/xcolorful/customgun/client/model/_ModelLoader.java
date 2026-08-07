@@ -26,16 +26,6 @@ import static dev.xcolorful.customgun.client.util.ClientModelUtils.*;
 
 public class _ModelLoader {
 
-    protected static void loadModel(ModelObject _this, BedrockModel pojo) {
-        String formatVersion = pojo.getFormatVersion();
-
-        if (true) {
-            loadNewModel(_this, pojo);
-        } else {
-            loadLegacyModel(_this, pojo);
-        }
-    }
-
     protected static void loadNewModel(ModelObject _this, BedrockModel pojo) {
         List<_GeometryModel> geometryModels = pojo.getGeometryModels();
         assert !geometryModels.isEmpty();
@@ -63,7 +53,7 @@ public class _ModelLoader {
                     _this.indexBones.putIfAbsent(bone.getName(), bone);
                     // 塞入新建的空 BedrockPart 实例
                     // 因为后面添加 parent 需要，所以先塞空对象，然后二次遍历再进行数据存储
-                    _this.modelMap.putIfAbsent(bone.getName(), IBedrockRenderer.of(new BedrockPart(bone.getName())));
+                    _this.modelMap_putIfAbsent(bone.getName(), IBedrockRenderer.of(new BedrockPart(bone.getName())));
                 }
             }
 
@@ -77,7 +67,7 @@ public class _ModelLoader {
                     String name = bone.getName(); // 骨骼名称
                     float @Nullable [] rotation = bone.getRotation(); // 旋转
                     @Nullable String parent = bone.getParent(); // 父骨骼的名称
-                    BedrockPart model = _this.modelMap.get(name).getModelRenderer(); // 塞进 HashMap 里面的模型对象
+                    BedrockPart model = _this.modelMap_get(name).getModelRenderer(); // 塞进 HashMap 里面的模型对象
 
                     // 镜像参数
                     model.mirror = bone.getMirror();
@@ -91,7 +81,7 @@ public class _ModelLoader {
                     }
                     // 进行父骨骼绑定
                     if (parent != null) {
-                        BedrockPart _parent = _this.modelMap.get(parent).getModelRenderer();
+                        BedrockPart _parent = _this.modelMap_get(parent).getModelRenderer();
                         _parent.addChild(model);
                         model.setParent(_parent);
                     } else {

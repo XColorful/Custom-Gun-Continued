@@ -274,7 +274,7 @@ public final class SoundPlayManager implements IEventHandler {
 
     // --------Deprecated--------
 
-    // --------“大便类”--------
+    // --------闲人勿入（内部实现类型）--------
 
     private record _EntitySoundEntry(int entityId, ResourceLocation soundLocation) {
     }

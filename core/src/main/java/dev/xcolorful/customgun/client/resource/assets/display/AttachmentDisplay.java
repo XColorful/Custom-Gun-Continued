@@ -24,7 +24,7 @@ public final class AttachmentDisplay extends _AssetsDisplay<AttachmentDisplay> {
 
     // 模型
     private @Nullable _LodDisplay lodDisplay;
-    private String adapterNodeName;
+    private @Nullable String adapterNodeName;
 
     // 显示
     private boolean enableSight = false;
@@ -108,9 +108,8 @@ public final class AttachmentDisplay extends _AssetsDisplay<AttachmentDisplay> {
         super.validatePojo();
         if (!this.isValid()) return;
 
-        boolean n1 = (this.getSlotTextureLocation() == null | this.adapterNodeName == null | this.modelNodeTextDisplay == null | this.laserDisplay == null);
-        boolean n2 = (this.attachmentSounds == null);
-        if (n1 | n2) {
+        boolean n1 = (this.getSlotTextureLocation() == null | this.modelNodeTextDisplay == null | this.laserDisplay == null | this.attachmentSounds == null);
+        if (n1) {
             this.setValid(false);
             return;
         }
@@ -144,7 +143,7 @@ public final class AttachmentDisplay extends _AssetsDisplay<AttachmentDisplay> {
     public @Nullable _LodDisplay getLodDisplay() {
         return lodDisplay;
     }
-    public String getAdapterNodeName() {
+    public @Nullable String getAdapterNodeName() {
         return adapterNodeName;
     }
     public float @Nullable [] getScopeZoomScale() {

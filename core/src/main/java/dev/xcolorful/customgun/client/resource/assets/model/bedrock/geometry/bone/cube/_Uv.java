@@ -136,6 +136,17 @@ public class _Uv extends ResourcePojo<_Uv> {
 
     // --------Special--------
 
+    public static _Uv singleSouthFace() {
+        _Uv uv = new _Uv();
+        uv.north = _FaceUv.EMPTY;
+        uv.south = _FaceUv.EMPTY;
+        uv.east = _FaceUv.EMPTY;
+        uv.west = _FaceUv.EMPTY;
+        uv.up = _FaceUv.EMPTY;
+        uv.down = _FaceUv.EMPTY;
+        return uv;
+    }
+
     public _FaceUv getFaceUv(Direction direction) {
         _FaceUv faceUv = switch (direction) {
             case NORTH -> this.north;

@@ -59,7 +59,7 @@ public class BedrockPart implements IBedrockCubeCompile, IBedrockRenderer {
     private float initRotY;
     private float initRotZ;
 
-    public void translateAndRotateAndScale(PoseStack poseStack) {
+    public void translate_rotate_scale(PoseStack poseStack) {
         poseStack.translate(this.offsetX, this.offsetY, this.offsetZ);
         poseStack.translate((this.x / 16.0F), (this.y / 16.0F), (this.z / 16.0F));
         if (this.zRot != 0.0F) {
@@ -231,19 +231,19 @@ public class BedrockPart implements IBedrockCubeCompile, IBedrockRenderer {
 
         if (this.visible) {
             if (!this.cubes.isEmpty() || !this.children.isEmpty()) {
-                poseStack.pushPose();
-                this.translateAndRotateAndScale(poseStack);
-                this.compile(poseStack.last(), consumer, cubePackedLight, overlay, red, green, blue, alpha);
+                poseStack.pushPose(); {
+                    this.translate_rotate_scale(poseStack);
+                    this.compile(poseStack.last(), consumer, cubePackedLight, overlay, red, green, blue, alpha);
 
-                for (int i = 0; i < this.children.size(); i++) {
-                    this.children.get(i)
-                            .render(poseStack,
-                                    transformType,
-                                    consumer,
-                                    cubePackedLight, overlay,
-                                    red, green, blue, alpha);
+                    for (int i = 0; i < this.children.size(); i++) {
+                        this.children.get(i)
+                                .render(poseStack,
+                                        transformType,
+                                        consumer,
+                                        cubePackedLight, overlay,
+                                        red, green, blue, alpha);
+                    }
                 }
-
                 poseStack.popPose();
             }
         }
@@ -266,5 +266,8 @@ public class BedrockPart implements IBedrockCubeCompile, IBedrockRenderer {
     }
     @Deprecated public float getInitRotZ() {
         return this.getInitRotateAngleZ();
+    }
+    @Deprecated(forRemoval = true) public void translateAndRotateAndScale(PoseStack poseStack) {
+        this.translate_rotate_scale(poseStack);
     }
 }

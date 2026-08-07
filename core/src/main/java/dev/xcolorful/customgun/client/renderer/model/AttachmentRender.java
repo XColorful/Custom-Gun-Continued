@@ -11,23 +11,18 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import dev.xcolorful.customgun.client.api.renderer.model.IModelComponentRenderer;
 import dev.xcolorful.customgun.client.model.GunModelObject;
+import dev.xcolorful.customgun.core.api.item.attachment.AttachmentCategory;
 import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
 
-import java.util.concurrent.ConcurrentLinkedQueue;
-
-public class ShellRender implements IModelComponentRenderer {
-    public static class State {
-        public static boolean isSelf = false;
-    }
+public class AttachmentRender implements IModelComponentRenderer {
 
     private final GunModelObject gunModelObject;
-    /**
-     * 抛壳队列
-     */
-    private final ConcurrentLinkedQueue<_Data> shellQueue = new ConcurrentLinkedQueue<>();
+    private final AttachmentCategory category;
 
-    public ShellRender(GunModelObject gunModelObject) {
+    public AttachmentRender(GunModelObject gunModelObject, AttachmentCategory category) {
         this.gunModelObject = gunModelObject;
+        this.category = category;
     }
 
     @Override
@@ -38,9 +33,10 @@ public class ShellRender implements IModelComponentRenderer {
         // TODO
     }
 
-    // --------闲人勿入（内部实现类型）--------
-
-    public static class _Data {
-        // TODO
+    public static void renderAttachment(PoseStack poseStack,
+                                        ItemDisplayContext transformType,
+                                        int light, int overlay,
+                                        ItemStack gunItem,
+                                        ItemStack attachmentItem) {
     }
 }

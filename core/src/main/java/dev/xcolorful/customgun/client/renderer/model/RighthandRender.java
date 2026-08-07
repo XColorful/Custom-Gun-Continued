@@ -10,24 +10,15 @@ package dev.xcolorful.customgun.client.renderer.model;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import dev.xcolorful.customgun.client.api.renderer.model.IModelComponentRenderer;
-import dev.xcolorful.customgun.client.model.GunModelObject;
+import dev.xcolorful.customgun.client.model.AnimatedModelObject;
 import net.minecraft.world.item.ItemDisplayContext;
 
-import java.util.concurrent.ConcurrentLinkedQueue;
+public class RighthandRender implements IModelComponentRenderer {
 
-public class ShellRender implements IModelComponentRenderer {
-    public static class State {
-        public static boolean isSelf = false;
-    }
+    private final AnimatedModelObject animatedModelObject;
 
-    private final GunModelObject gunModelObject;
-    /**
-     * 抛壳队列
-     */
-    private final ConcurrentLinkedQueue<_Data> shellQueue = new ConcurrentLinkedQueue<>();
-
-    public ShellRender(GunModelObject gunModelObject) {
-        this.gunModelObject = gunModelObject;
+    public RighthandRender(AnimatedModelObject animatedModelObject) {
+        this.animatedModelObject = animatedModelObject;
     }
 
     @Override
@@ -35,12 +26,6 @@ public class ShellRender implements IModelComponentRenderer {
                        VertexConsumer vertexBuffer,
                        ItemDisplayContext transformType,
                        int light, int overlay) {
-        // TODO
-    }
-
-    // --------闲人勿入（内部实现类型）--------
-
-    public static class _Data {
         // TODO
     }
 }

@@ -13,5 +13,8 @@ import net.minecraft.world.item.ItemDisplayContext;
 
 public interface IModelComponentRenderer {
 
-    void render(PoseStack poseStack, VertexConsumer vertexBuffer, ItemDisplayContext transformType, int light, int overlay);
+    void render(PoseStack poseStack,
+                VertexConsumer vertexBuffer,
+                ItemDisplayContext transformType,
+                int light, int overlay);
 }

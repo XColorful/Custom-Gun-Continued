@@ -12,11 +12,11 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import dev.xcolorful.customgun.client.api.model.IModelObjectRender;
 import dev.xcolorful.customgun.client.api.model.bedrock.IBedrockRenderer;
 import dev.xcolorful.customgun.client.api.renderer.model.IModelComponentRenderer;
+import dev.xcolorful.customgun.core.api.resource.assets.model.bedrock.geometry.NodeName;
 import dev.xcolorful.customgun.client.model.bedrock.BedrockPart;
 import dev.xcolorful.customgun.client.resource.assets.model.BedrockModel;
 import dev.xcolorful.customgun.client.resource.assets.model.bedrock.geometry._Bone;
 import dev.xcolorful.customgun.client.util.ClientModelUtils;
-import dev.xcolorful.customgun.core.api.resource.assets.model.bedrock.geometry._BoneTag;
 import dev.xcolorful.customgun.core.resource.instance.PojoInstance;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -37,8 +37,10 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
 
     /**
      * 存储 ModelRender 子模型的 HashMap
+     * <br>
+     * private只是为了集中看方法引用，如{@link #modelMap_put}
      */
-    protected final HashMap<String, IBedrockRenderer> modelMap = new HashMap<>();
+    private final HashMap<String, IBedrockRenderer> modelMap = new HashMap<>();
     /**
      * 存储 Bones 的 HashMap，主要是给后面寻找父骨骼进行坐标转换用的
      */
@@ -74,13 +76,19 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
 
     @Override public boolean resetCache() {
         { // 加载模型
-            _ModelLoader.loadModel(this, this.getPojo());
+            BedrockModel pojo = this.getPojo();
+            String formatVersion = pojo.getFormatVersion();
+            if (true) {
+                this.loadNewModel(pojo);
+            } else {
+                this.loadLegacyModel(pojo);
+            }
         }
 
         { // 应用发光
-            for (IBedrockRenderer iRenderer : this.modelMap.values()) {
+            for (IBedrockRenderer iRenderer : this.modelMap_values()) {
                 var renderer = iRenderer.getModelRenderer();
-                if (renderer.name != null && renderer.name.endsWith(_BoneTag.ILLUMINATE_SUFFIX)) {
+                if (NodeName.Suffix.ILLUMINATE.matches(renderer.name)) {
                     renderer.illuminated = true;
                 }
             }
@@ -95,6 +103,13 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
         if (!resetCache()) return false;
 
         return true;
+    }
+
+    protected void loadNewModel(BedrockModel pojo) {
+        _ModelLoader.loadNewModel(this, pojo);
+    }
+    protected void loadLegacyModel(BedrockModel pojo) {
+        _ModelLoader.loadLegacyModel(this, pojo);
     }
 
     protected List<BedrockPart> getPath(@Nullable IBedrockRenderer renderer) {
@@ -126,7 +141,7 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
         return this.height;
     }
     public BedrockPart getNode(String nodeName) {
-        IBedrockRenderer renderer = modelMap.get(nodeName);
+        @Nullable IBedrockRenderer renderer = this.modelMap.get(nodeName);
         return renderer != null ? renderer.getModelRenderer() : null;
     }
     public _Bone getBone(String name) {
@@ -137,6 +152,16 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
     }
     public HashMap<String, _Bone> getIndexBones() {
         return this.indexBones;
+    }
+
+    @ApiStatus.Internal protected @Nullable IBedrockRenderer modelMap_get(String nodeName) {
+        return this.modelMap.get(nodeName);
+    }
+    @ApiStatus.Internal protected Collection<IBedrockRenderer> modelMap_values() {
+        return this.modelMap.values();
+    }
+    @ApiStatus.Internal protected Set<Map.Entry<String, IBedrockRenderer>> modelMap_entrySet() {
+        return this.modelMap.entrySet();
     }
 
     // --------Setter--------
@@ -151,6 +176,13 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
         modelRenderer.yRot = y;
         modelRenderer.zRot = z;
         modelRenderer.setInitRotationAngle(x, y, z);
+    }
+
+    @ApiStatus.Internal protected IBedrockRenderer modelMap_put(String key, IBedrockRenderer renderer) {
+        return this.modelMap.put(key, renderer);
+    }
+    @ApiStatus.Internal protected IBedrockRenderer modelMap_putIfAbsent(String key, IBedrockRenderer renderer) {
+        return this.modelMap.putIfAbsent(key, renderer);
     }
 
     // --------IRenderObject--------
@@ -191,10 +223,6 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
     }
 
     // --------Deprecated--------
-
-    @Deprecated(forRemoval = true) protected void loadNewModel(BedrockModel pojo) {
-        _ModelLoader.loadModel(this, pojo);
-    }
 
     /*
     原模组不仅整了个隐藏width/height说明的Vec2，还可能因为@Nullable亮了灯所以忘了

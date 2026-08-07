@@ -677,7 +677,7 @@ Notation:
 |---|---|
 |`InputExtraCheck`|`ClientInputUtils`|
 |`RenderDistance`||
-|`RenderHelper`||
+|`RenderHelper`|`ClientRenderHelper`|
 
 |com.tacz.guns.util|dev.xcolorful.customgun.core.api.item|
 |---|---|
@@ -705,6 +705,8 @@ Notation:
 |interpolator||
 |statemachine||
 |`ObjectAnimation`|`ObjectAnimation`|
+|`ObjectAnimationChannel`|`ObjectAnimationChannel`|
+|`ObjectAnimationSoundChannel`|`ObjectAnimationSoundChannel`|
 
 #### Event API (Client)
 > ```java
@@ -933,14 +935,12 @@ Notation:
 |bedrock.`BedrockPart`|bedrock.`BedrockPart`|
 |bedrock.`BedrockPolygon`|bedrock.`BedrockPolygon`|
 |bedrock.`BedrockVertex`|bedrock.`BedrockVertex`|
-|listener.camera||
-|listener.constraint||
-|listener.model||
 |papi||
 |`Bedrock*Model`|`*ModelObject`|
-|`FunctionalBedrockPart`||
-|`GunModelConstant`||
-|`SlotModel`||
+|`BedrockAttachmentModel`.render|`_AttachmentModelRender`.render|
+|`BedrockGunModel`.render|`_GunModelRender`.render|
+|`FunctionalBedrockPart`|bedrock.`FunctionalBedrockPart`|
+|`SlotModel`|bedrock.`SlotModel`|
 
 |com.tacz.guns.client.model|dev.xcolorful.customgun.client.util|
 |---|---|
@@ -948,16 +948,28 @@ Notation:
 |bedrock.`BedrockModel`.convertRotation|`ClientModelUtils`.rotation_BEtoJE|
 |bedrock.`BedrockModel`.convertOrigin|`ClientModelUtils`.origin_BEtoJE|
 
+|com.tacz.guns.client.model|dev.xcolorful.customgun.client.animation|
+|---|---|
+|listener.camera|listener.camera|
+|listener.constraint|listener.constraint|
+|listener.model|listener.model|
+
 |com.tacz.guns.client.model|dev.xcolorful.customgun.client.renderer|
 |---|---|
-|functional.`AttachmentRender`||
-|functional.`BeamRenderer`||
-|functional.`LeftHandRender`||
+|functional.`AttachmentRender`|model.`AttachmentRender`|
+|functional.`BeamRenderer`|model.`BeamRender`|
+|functional.`LeftHandRender`|model.`LefthandRender`|
 |functional.`MuzzleFlashRender`|model.`MuzzleFlashRender`|
-|functional.`RightHandRender`||
+|functional.`RightHandRender`|model.`RighthandRender`|
 |functional.`ShellRender`||
-|functional.`TextShowRender`||
+|functional.`TextShowRender`|model.`TextRender`|
 |`IFunctionalRenderer`|model.`IModelComponentRenderer`|
+
+|com.tacz.guns.client.model|dev.xcolorful.customgun.client.api.resource|
+|---|---|
+|`GunModelConstant`|assets.model.bedrock.geometry.`NodeName`|
+|`GunModelConstant`|assets.model.bedrock.geometry.`NodeName`.`Prefix`|
+|`GunModelConstant`|assets.model.bedrock.geometry.`NodeName`.`Suffix`|
 
 ### Particle (Client)
 > ```java

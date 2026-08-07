@@ -10,24 +10,21 @@ package dev.xcolorful.customgun.client.renderer.model;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import dev.xcolorful.customgun.client.api.renderer.model.IModelComponentRenderer;
-import dev.xcolorful.customgun.client.model.GunModelObject;
+import dev.xcolorful.customgun.client.model.ModelObject;
+import dev.xcolorful.customgun.client.resource.assets.display._ModelNodeTextDisplay;
 import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
 
-import java.util.concurrent.ConcurrentLinkedQueue;
+public class TextRender implements IModelComponentRenderer {
 
-public class ShellRender implements IModelComponentRenderer {
-    public static class State {
-        public static boolean isSelf = false;
-    }
+    private final ModelObject modelObject;
+    private final _ModelNodeTextDisplay modelNodeTextDisplay;
+    private final ItemStack gunItem;
 
-    private final GunModelObject gunModelObject;
-    /**
-     * 抛壳队列
-     */
-    private final ConcurrentLinkedQueue<_Data> shellQueue = new ConcurrentLinkedQueue<>();
-
-    public ShellRender(GunModelObject gunModelObject) {
-        this.gunModelObject = gunModelObject;
+    public TextRender(ModelObject modelObject, _ModelNodeTextDisplay modelNodeTextDisplay, ItemStack gunItem) {
+        this.modelObject = modelObject;
+        this.modelNodeTextDisplay = modelNodeTextDisplay;
+        this.gunItem = gunItem;
     }
 
     @Override
@@ -35,12 +32,6 @@ public class ShellRender implements IModelComponentRenderer {
                        VertexConsumer vertexBuffer,
                        ItemDisplayContext transformType,
                        int light, int overlay) {
-        // TODO
-    }
-
-    // --------闲人勿入（内部实现类型）--------
-
-    public static class _Data {
         // TODO
     }
 }

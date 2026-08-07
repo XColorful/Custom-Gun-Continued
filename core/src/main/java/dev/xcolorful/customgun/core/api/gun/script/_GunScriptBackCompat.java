@@ -490,7 +490,7 @@ public class _GunScriptBackCompat {
     }
 
     protected static void setItemStack(GunScriptApi _this, ItemStack itemStack) {
-        IGun iGun = IGunGetter.fromItemStack(itemStack);
+        @Nullable IGun iGun = IGunGetter.fromItemStack(itemStack);
         if (iGun == null) {
             CustomGun.LOGGER.warn("_GunScriptBackCompat: itemStack {} is not IGun", itemStack.toString());
             return;

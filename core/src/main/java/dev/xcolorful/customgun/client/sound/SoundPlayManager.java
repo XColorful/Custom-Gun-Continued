@@ -240,7 +240,7 @@ public final class SoundPlayManager implements IEventHandler {
     }
 
     public void playerRefitSound(ItemStack attachmentItem, LivingEntity player, AttachmentSoundType soundType) {
-        IAttachment iAttachment = IAttachmentGetter.fromItemStack(attachmentItem);
+        @Nullable IAttachment iAttachment = IAttachmentGetter.fromItemStack(attachmentItem);
         if (iAttachment == null) return;
         ClientAttachmentIndexInstance pojoInstance = ClientResourceApi.getClientAttachmentIndexInstance(iAttachment.getAttachmentLocation(attachmentItem));
         if (pojoInstance == null) return;

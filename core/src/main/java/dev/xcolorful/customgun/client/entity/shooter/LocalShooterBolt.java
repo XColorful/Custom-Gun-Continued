@@ -34,7 +34,7 @@ public final class LocalShooterBolt extends LocalShooterAspect {
     public void bolt() {
         // 1. 手持枪械检查
         ItemStack gunItem = this.localShooter.getMainHandItem();
-        IGun iGun = IGunGetter.fromItemStack(gunItem);
+        @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return;
 
         if ( // 2.1 检查状态锁
@@ -66,7 +66,7 @@ public final class LocalShooterBolt extends LocalShooterAspect {
      */
     public void tickAutoBolt() {
         ItemStack gunItem = this.localShooter.getMainHandItem();
-        IGun iGun = IGunGetter.fromItemStack(gunItem);
+        @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) {
             this.localShooterProperty.isBolting = false;
             return;

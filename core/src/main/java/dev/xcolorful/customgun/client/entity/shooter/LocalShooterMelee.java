@@ -33,7 +33,7 @@ public final class LocalShooterMelee extends LocalShooterAspect {
     public void prepareMelee() {
         // 1. 手持枪械检查
         ItemStack gunItem = this.localShooter.getMainHandItem();
-        IGun iGun = IGunGetter.fromItemStack(gunItem);
+        @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return;
 
         if ( // 2.1 检查状态锁

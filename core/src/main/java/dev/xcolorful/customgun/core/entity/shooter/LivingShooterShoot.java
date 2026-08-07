@@ -78,7 +78,7 @@ public final class LivingShooterShoot extends LivingShooterAspect {
         // 1. 手持枪械检查
         if (this.shooterProperty.currentGunItem == null) return ShootResult.NOT_DRAW;
         ItemStack gunItem = this.shooterProperty.currentGunItem.get();
-        IGun iGun = IGunGetter.fromItemStack(gunItem);
+        @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return ShootResult.NOT_GUN;
 
         final long currentTimeMillis = System.currentTimeMillis();
@@ -139,7 +139,7 @@ public final class LivingShooterShoot extends LivingShooterAspect {
     public boolean isInServerShootCooldown(long currentTimeMillis, long clientFromBaseToCurrentTimeMs) {
         if (this.shooterProperty.currentGunItem == null) return false;
         ItemStack gunItem = this.shooterProperty.currentGunItem.get();
-        IGun iGun = IGunGetter.fromItemStack(gunItem);
+        @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return false;
 
         return this.isInServerShootCooldown(iGun, gunItem, currentTimeMillis, clientFromBaseToCurrentTimeMs);
@@ -176,7 +176,7 @@ public final class LivingShooterShoot extends LivingShooterAspect {
         if (this.shooterProperty.currentGunItem == null) return 0;
 
         ItemStack gunItem = this.shooterProperty.currentGunItem.get();
-        IGun iGun = IGunGetter.fromItemStack(gunItem);
+        @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return 0;
 
         return _getShootCooldown(iGun, gunItem, System.currentTimeMillis() - this.shooterProperty.baseTimestamp);

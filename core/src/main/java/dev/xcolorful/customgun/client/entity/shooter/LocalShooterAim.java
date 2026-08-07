@@ -33,7 +33,7 @@ public final class LocalShooterAim extends LocalShooterAspect {
     public void aim(boolean isAim) {
         // 1. 手持枪械检查
         ItemStack gunItem = this.localShooter.getMainHandItem();
-        IGun iGun = IGunGetter.fromItemStack(gunItem);
+        @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return;
 
         this.localShooterProperty.clientIsAiming = isAim;
@@ -58,7 +58,7 @@ public final class LocalShooterAim extends LocalShooterAspect {
     public void tickAimingProgress() {
         // 1. 手持枪械检查
         ItemStack gunItem = this.localShooter.getMainHandItem();
-        IGun iGun = IGunGetter.fromItemStack(gunItem);
+        @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) {
             _resetAiming();
             return;

@@ -318,7 +318,7 @@ public interface GunDataAccessor extends IGunDataAccess {
     }
     @Override
     default boolean hasInventoryAmmo(LivingEntity livingEntity, ItemStack gunItem) {
-        IGun iGun = IGunGetter.fromItemStack(gunItem);
+        @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return false;
 
         @Nullable IInventoryCapability inventoryCapability = CustomGun.getCapabilityProvider().getItemHandler(livingEntity, null);
@@ -335,7 +335,7 @@ public interface GunDataAccessor extends IGunDataAccess {
     }
     @Override
     default int getInventoryAmmoCount(LivingEntity livingEntity, ItemStack gunItem) {
-        IGun iGun = IGunGetter.fromItemStack(gunItem);
+        @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return 0;
 
         @Nullable IInventoryCapability inventoryCapability = CustomGun.getCapabilityProvider().getItemHandler(livingEntity, null);
@@ -459,7 +459,7 @@ public interface GunDataAccessor extends IGunDataAccess {
     @Override
     default boolean isAttachmentEnabled(ItemStack gunItem, AttachmentCategory attachmentCategory) {
         if (attachmentCategory == AttachmentCategory.NONE) return false;
-        IGun iGun = IGunGetter.fromItemStack(gunItem);
+        @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return false;
 
         @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(iGun.getGunLocation(gunItem));
@@ -469,10 +469,10 @@ public interface GunDataAccessor extends IGunDataAccess {
     }
     @Override
     default boolean canInstallAttachment(ItemStack gunItem, ItemStack attachmentItem) {
-        IAttachment iAttachment = IAttachmentGetter.fromItemStack(attachmentItem);
+        @Nullable IAttachment iAttachment = IAttachmentGetter.fromItemStack(attachmentItem);
         if (iAttachment == null) return false;
 
-        IGun iGun = IGunGetter.fromItemStack(gunItem);
+        @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return false;
 
         var gunLocation = iGun.getGunLocation(gunItem);
@@ -503,7 +503,7 @@ public interface GunDataAccessor extends IGunDataAccess {
     }
     @Override
     default @NotNull ItemStack getBuiltinAttachment(ItemStack gunItem, AttachmentCategory attachmentCategory) {
-        IGun iGun = IGunGetter.fromItemStack(gunItem);
+        @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return ItemStack.EMPTY;
 
         @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(iGun.getGunLocation(gunItem));
@@ -573,7 +573,7 @@ public interface GunDataAccessor extends IGunDataAccess {
 
     @Override
     default boolean installAttachment(ItemStack gunItem, ItemStack attachmentItem) {
-        IAttachment iAttachment = IAttachmentGetter.fromItemStack(attachmentItem);
+        @Nullable IAttachment iAttachment = IAttachmentGetter.fromItemStack(attachmentItem);
         if (iAttachment == null) return false;
 
         if (!this.canInstallAttachment(gunItem, attachmentItem)) {

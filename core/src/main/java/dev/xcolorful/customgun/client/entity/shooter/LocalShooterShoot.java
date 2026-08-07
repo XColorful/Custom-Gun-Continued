@@ -60,7 +60,7 @@ public final class LocalShooterShoot extends LocalShooterAspect {
     public boolean doCharge_isChargeEnough(boolean doShoot) {
         // 1. 手持枪械检查
         ItemStack gunItem = this.localShooter.getMainHandItem();
-        IGun iGun = IGunGetter.fromItemStack(gunItem);
+        @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) {
             this.localShooterProperty.chargeProgress = 0f;
             return false;
@@ -118,7 +118,7 @@ public final class LocalShooterShoot extends LocalShooterAspect {
     public ShootResult shoot() {
         // 1. 手持枪械检查
         ItemStack gunItem = this.localShooter.getMainHandItem();
-        IGun iGun = IGunGetter.fromItemStack(gunItem);
+        @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return ShootResult.NOT_GUN;
 
         var gunLocation = iGun.getGunLocation(gunItem);
@@ -347,7 +347,7 @@ public final class LocalShooterShoot extends LocalShooterAspect {
 
     public long getClientShootCooldown() {
         ItemStack gunItem = this.localShooter.getMainHandItem();
-        IGun iGun = IGunGetter.fromItemStack(gunItem);
+        @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return -1;
 
         var gunLocation = iGun.getGunLocation(gunItem);

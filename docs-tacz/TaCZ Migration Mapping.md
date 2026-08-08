@@ -785,7 +785,7 @@ Notation:
 
 |com.tacz.guns.client.animation|dev.xcolorful.customgun.client.animation|
 |---|---|
-|screen.`RefitTransform`||
+|screen.`RefitTransform`|screen.`RefitScreenTransformState`|
 |statemachine.`GunAnimationStateContext`|statemachine.`GunAnimStateContext`|
 |statemachine.`ItemAnimationStateContext`|statemachine.`ItemAnimStateContext`|
 |statemachine.`ThrowableAnimationStateContext`|_Deprecated_|
@@ -880,7 +880,7 @@ Notation:
 |overlay.`*Overlay`||
 |toast.`GunLevelUpToast`|_Deprecated_|
 |`GunPackProgressScreen`|_Deprecated_|
-|`GunRefitScreen`|`GunRefitScreen`|
+|`GunRefitScreen`|screen.`GunRefitScreen`|
 |`GunSmithTableScreen`|_Deprecated_|
 
 |com.tacz.guns.client.gui|dev.xcolorful.customgun.client.compat|

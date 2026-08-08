@@ -5,8 +5,9 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package dev.xcolorful.customgun.client.gui;
+package dev.xcolorful.customgun.client.gui.screen;
 
+import dev.xcolorful.customgun.client.animation.screen.RefitScreenTransformState;
 import dev.xcolorful.customgun.client.api.sound.attachment.AttachmentSoundType;
 import dev.xcolorful.customgun.client.sound.SoundPlayManager;
 import dev.xcolorful.customgun.core.developer.PlannedRefactor;
@@ -19,7 +20,7 @@ public class GunRefitScreen extends Screen {
 
     public GunRefitScreen() {
         super(Component.literal("Gun Refit Screen"));
-        // TODO
+        RefitScreenTransformState.get().reset();
     }
 
     @Override

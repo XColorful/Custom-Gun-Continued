@@ -315,7 +315,7 @@ CGC 中 `ObjectAnimation` 和 `ObjectAnimationSoundChannel` 为占位骨架。
 |`statemachine.GunAnimationStateContext`|`statemachine.GunAnimStateContext`||
 |`statemachine.ItemAnimationStateContext`|`statemachine.ItemAnimStateContext`||
 |`statemachine.ThrowableAnimationStateContext`|_Deprecated_||
-|`screen.RefitTransform`|（待确定）||
+|`screen.RefitTransform`|`screen.RefitScreenTransformState`||
 |`third.InnerThirdPersonManager`|`third.InnerThirdPersonManager`|已完成（占位）||
 
 [↑ 回到移植顺序](#移植顺序)

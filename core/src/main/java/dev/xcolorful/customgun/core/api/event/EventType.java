@@ -55,6 +55,8 @@ public enum EventType {
     TAGS_UPDATED_EVENT(false),
     DATAPACK_SYNC_EVENT(false),
     // render
+    RENDER_FRAME_EVENT(true),
+    PREPARE_RENDER_FRAME_EVENT(true),
     RENDER_LEVEL_STAGE_EVENT(true),
     RENDER_TRANSLUCENT_EVENT(true), // 单独拆一个事件，减少一点不必要的转发开销
     @ApiStatus.AvailableSince("neoforge26.2")

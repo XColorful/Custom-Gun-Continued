@@ -7,7 +7,7 @@
 
 package dev.xcolorful.customgun.client.animation.listener.model;
 
-import dev.xcolorful.customgun.client.api.animation.ObjectAnimationChannel;
+import dev.xcolorful.customgun.client.api.animation.AnimationChannelType;
 import dev.xcolorful.customgun.client.api.animation.listener.IAnimationListener;
 import dev.xcolorful.customgun.client.api.model.bedrock.IBedrockRenderer;
 
@@ -19,8 +19,8 @@ public class ModelScaleListener implements IAnimationListener {
         this.renderer = renderer;
     }
     @Override
-    public ObjectAnimationChannel.ChannelType getType() {
-        return ObjectAnimationChannel.ChannelType.SCALE;
+    public AnimationChannelType getType() {
+        return AnimationChannelType.SCALE;
     }
 
     @Override

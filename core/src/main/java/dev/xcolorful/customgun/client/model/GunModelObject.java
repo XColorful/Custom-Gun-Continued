@@ -9,7 +9,7 @@ package dev.xcolorful.customgun.client.model;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.xcolorful.customgun.client.animation.listener.model.ModelAdditionalMagazineListener;
-import dev.xcolorful.customgun.client.api.animation.ObjectAnimationChannel;
+import dev.xcolorful.customgun.client.api.animation.AnimationChannelType;
 import dev.xcolorful.customgun.client.api.animation.listener.IAnimationListener;
 import dev.xcolorful.customgun.client.api.model.IGunModelObjectRenderer;
 import dev.xcolorful.customgun.client.api.model.IModelTextConsumer;
@@ -164,7 +164,7 @@ public final class GunModelObject extends AnimatedModelObject implements IGunMod
     // --------IAnimationListenerSupplier--------
 
     @Override
-    public @Nullable IAnimationListener supplyListeners(String nodeName, ObjectAnimationChannel.ChannelType type) {
+    public @Nullable IAnimationListener supplyListeners(String nodeName, AnimationChannelType type) {
         @Nullable IAnimationListener listener = super.supplyListeners(nodeName, type);
         if (listener == null) return null;
 

@@ -7,7 +7,7 @@
 
 package dev.xcolorful.customgun.client.animation.listener.constraint;
 
-import dev.xcolorful.customgun.client.api.animation.ObjectAnimationChannel;
+import dev.xcolorful.customgun.client.api.animation.AnimationChannelType;
 import dev.xcolorful.customgun.client.api.animation.listener.IAnimationListener;
 import dev.xcolorful.customgun.client.api.animation.listener.IAnimationListenerSupplier;
 import dev.xcolorful.customgun.client.model.bedrock.BedrockPart;
@@ -32,7 +32,7 @@ public class ConstraintObject implements IAnimationListenerSupplier {
 
     @Nullable
     @Override
-    public IAnimationListener supplyListeners(String nodeName, ObjectAnimationChannel.ChannelType type) {
+    public IAnimationListener supplyListeners(String nodeName, AnimationChannelType type) {
         if (!NodeName.CONSTRAINT.matches(nodeName)) return null;
 
         return switch (type) {

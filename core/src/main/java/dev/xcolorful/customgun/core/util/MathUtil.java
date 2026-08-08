@@ -73,6 +73,10 @@ public class MathUtil {
         return dest;
     }
 
+    public static Vector3f toAngle(Vector3f vector3f) {
+        return vector3f.set((float) Math.toRadians(vector3f.x()), (float) Math.toRadians(vector3f.y()), (float) Math.toRadians(vector3f.z()));
+    }
+
     public static float[] solveEquations(float[][] coefficients, float[] constants) {
         int n = constants.length;
         // 高斯消元

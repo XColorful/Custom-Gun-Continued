@@ -256,30 +256,30 @@
 
 CGC 中 `ObjectAnimation` 和 `ObjectAnimationSoundChannel` 为占位骨架。
 
-|TaCZ `com.tacz.guns.api.client.animation`|CGC `client.api.animation`|状态|
+|TaCZ `com.tacz.guns.api.client.animation`|CGC `client.animation`|状态|
 |---|---|---|
 |`ObjectAnimation`|`ObjectAnimation`|已完成（占位）|
-|`ObjectAnimationChannel`|（待确定）||
-|`ObjectAnimationRunner`|（待确定）||
+|`ObjectAnimationChannel`|`ObjectAnimationChannel`||
+|`ObjectAnimationRunner`|`ObjectAnimationRunner`||
 |`ObjectAnimationSoundChannel`|`ObjectAnimationSoundChannel`|已完成（占位）|
-|`AnimationController`|（待确定）||
-|`AnimationPlan`|（待确定）||
-|`Animations`|（待确定）||
-|`AnimationListener`|（待确定）||
-|`AnimationListenerSupplier`|（待确定）||
-|`AnimationChannelContent`|（待确定）||
-|`AnimationSoundChannelContent`|（待确定）||
-|`DiscreteTrackArray`|（待确定）||
+|`AnimationController`|`controller.AnimController`||
+|`AnimationPlan`|`controller.AnimPlan`||
+|`Animations`|`AnimationHelper`||
+|`AnimationListener`|`api.animation.listener.IAnimationListener`||
+|`AnimationListenerSupplier`|`api.animation.listener.IAnimationListenerSupplier`||
+|`AnimationChannelContent`|`channel.AnimChannelContent`||
+|`AnimationSoundChannelContent`|`channel.SoundChannelContent`||
+|`DiscreteTrackArray`|`statemachine.DiscreteTrackArray`||
 
-|TaCZ `com.tacz.guns.api.client.animation.interpolator`|CGC 目标|状态|
+|TaCZ `com.tacz.guns.api.client.animation.interpolator`|CGC `client.animation.interpolator`|状态|
 |---|---|---|
-|`Interpolator`|（待确定）||
-|`InterpolatorUtil`|（待确定）||
-|`Linear`|（待确定）||
-|`Step`|（待确定）||
-|`Spline`|（待确定）||
-|`SLerp`|（待确定）||
-|`CustomInterpolator`|（待确定）||
+|`Interpolator`|`api.animation.interpolator.IInterpolator`||
+|`InterpolatorUtil`|`api.animation.interpolator.interpolator.InterpolatorType`||
+|`Linear`|`Linear`||
+|`Step`|`Step`||
+|`Spline`|`Spline`||
+|`SLerp`|`SLerp`||
+|`CustomInterpolator`|`CompositeInterpolator`||
 
 |TaCZ `com.tacz.guns.api.client.animation.gltf`|CGC 目标|状态|
 |---|---|---|

@@ -12,7 +12,7 @@ import dev.xcolorful.customgun.client.animation.listener.constraint.ConstraintOb
 import dev.xcolorful.customgun.client.animation.listener.model.ModelRotateListener;
 import dev.xcolorful.customgun.client.animation.listener.model.ModelScaleListener;
 import dev.xcolorful.customgun.client.animation.listener.model.ModelTranslateListener;
-import dev.xcolorful.customgun.client.api.animation.ObjectAnimationChannel;
+import dev.xcolorful.customgun.client.api.animation.AnimationChannelType;
 import dev.xcolorful.customgun.client.api.animation.listener.IAnimationListener;
 import dev.xcolorful.customgun.client.api.animation.listener.IAnimationListenerSupplier;
 import dev.xcolorful.customgun.client.api.model.bedrock.IBedrockRenderer;
@@ -174,7 +174,7 @@ public class AnimatedModelObject extends ModelObject implements IAnimationListen
     // --------IAnimationListenerSupplier--------
 
     @Override
-    public @Nullable IAnimationListener supplyListeners(String nodeName, ObjectAnimationChannel.ChannelType type) {
+    public @Nullable IAnimationListener supplyListeners(String nodeName, AnimationChannelType type) {
         IBedrockRenderer renderer = this.modelMap_get(nodeName);
         if (renderer == null) return null;
 

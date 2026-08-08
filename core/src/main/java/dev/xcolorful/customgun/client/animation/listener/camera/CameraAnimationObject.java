@@ -7,7 +7,7 @@
 
 package dev.xcolorful.customgun.client.animation.listener.camera;
 
-import dev.xcolorful.customgun.client.api.animation.ObjectAnimationChannel;
+import dev.xcolorful.customgun.client.api.animation.AnimationChannelType;
 import dev.xcolorful.customgun.client.api.animation.listener.IAnimationListener;
 import dev.xcolorful.customgun.client.api.animation.listener.IAnimationListenerSupplier;
 import dev.xcolorful.customgun.client.api.model.bedrock.IBedrockRenderer;
@@ -27,10 +27,10 @@ public class CameraAnimationObject implements IAnimationListenerSupplier {
 
     @Override
     public IAnimationListener supplyListeners(String nodeName,
-                                              ObjectAnimationChannel.ChannelType type) {
+                                              AnimationChannelType type) {
         if (!NodeName.CAMERA.matches(nodeName)) return null;
 
-        if (type == ObjectAnimationChannel.ChannelType.ROTATION) return new CameraRotateListener(this);
+        if (type == AnimationChannelType.ROTATION) return new CameraRotateListener(this);
         else return null;
     }
 }

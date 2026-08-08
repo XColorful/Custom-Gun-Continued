@@ -5,7 +5,7 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package dev.xcolorful.customgun.client.animation.statemachine;
+package dev.xcolorful.customgun.client.api.animation.statemachine;
 
 import dev.xcolorful.customgun.core.api.animation.statemachine.GunAnimationStateTag;
 import dev.xcolorful.customgun.core.api.resource.ResourceTag;

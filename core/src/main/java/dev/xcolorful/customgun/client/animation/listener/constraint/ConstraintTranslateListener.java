@@ -7,7 +7,7 @@
 
 package dev.xcolorful.customgun.client.animation.listener.constraint;
 
-import dev.xcolorful.customgun.client.api.animation.ObjectAnimationChannel;
+import dev.xcolorful.customgun.client.api.animation.AnimationChannelType;
 import dev.xcolorful.customgun.client.api.animation.listener.IAnimationListener;
 
 public class ConstraintTranslateListener implements IAnimationListener {
@@ -18,8 +18,8 @@ public class ConstraintTranslateListener implements IAnimationListener {
         this.constraint = constraint;
     }
     @Override
-    public ObjectAnimationChannel.ChannelType getType() {
-        return ObjectAnimationChannel.ChannelType.TRANSLATION;
+    public AnimationChannelType getType() {
+        return AnimationChannelType.TRANSLATION;
     }
 
     @Override

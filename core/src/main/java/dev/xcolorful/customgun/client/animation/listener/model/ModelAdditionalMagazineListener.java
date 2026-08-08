@@ -7,7 +7,7 @@
 
 package dev.xcolorful.customgun.client.animation.listener.model;
 
-import dev.xcolorful.customgun.client.api.animation.ObjectAnimationChannel;
+import dev.xcolorful.customgun.client.api.animation.AnimationChannelType;
 import dev.xcolorful.customgun.client.api.animation.listener.IAnimationListener;
 import dev.xcolorful.customgun.client.model.GunModelObject;
 
@@ -21,7 +21,7 @@ public class ModelAdditionalMagazineListener implements IAnimationListener {
         this.model = model;
     }
     @Override
-    public ObjectAnimationChannel.ChannelType getType() {
+    public AnimationChannelType getType() {
         return this.listener.getType();
     }
 

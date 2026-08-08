@@ -7,7 +7,7 @@
 
 package dev.xcolorful.customgun.client.animation.listener.model;
 
-import dev.xcolorful.customgun.client.api.animation.ObjectAnimationChannel;
+import dev.xcolorful.customgun.client.api.animation.AnimationChannelType;
 import dev.xcolorful.customgun.client.api.animation.listener.IAnimationListener;
 import dev.xcolorful.customgun.client.api.model.bedrock.IBedrockRenderer;
 import dev.xcolorful.customgun.client.model.AnimatedModelObject;
@@ -30,8 +30,8 @@ public class ModelTranslateListener implements IAnimationListener {
         }
     }
     @Override
-    public ObjectAnimationChannel.ChannelType getType() {
-        return ObjectAnimationChannel.ChannelType.TRANSLATION;
+    public AnimationChannelType getType() {
+        return AnimationChannelType.TRANSLATION;
     }
 
     @Override

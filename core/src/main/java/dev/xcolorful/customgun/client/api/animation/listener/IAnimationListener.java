@@ -7,11 +7,11 @@
 
 package dev.xcolorful.customgun.client.api.animation.listener;
 
-import dev.xcolorful.customgun.client.api.animation.ObjectAnimationChannel;
+import dev.xcolorful.customgun.client.api.animation.AnimationChannelType;
 
 public interface IAnimationListener {
 
-    ObjectAnimationChannel.ChannelType getType();
+    AnimationChannelType getType();
 
     /**
      * @param values 根据 ChannelType 而变化

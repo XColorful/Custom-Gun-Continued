@@ -7,7 +7,7 @@
 
 package dev.xcolorful.customgun.client.animation.listener.constraint;
 
-import dev.xcolorful.customgun.client.api.animation.ObjectAnimationChannel;
+import dev.xcolorful.customgun.client.api.animation.AnimationChannelType;
 import dev.xcolorful.customgun.client.api.animation.listener.IAnimationListener;
 import dev.xcolorful.customgun.core.util.MathUtil;
 
@@ -19,8 +19,8 @@ public class ConstraintRotateListener implements IAnimationListener {
         this.constraint = constraint;
     }
     @Override
-    public ObjectAnimationChannel.ChannelType getType() {
-        return ObjectAnimationChannel.ChannelType.ROTATION;
+    public AnimationChannelType getType() {
+        return AnimationChannelType.ROTATION;
     }
 
     @Override

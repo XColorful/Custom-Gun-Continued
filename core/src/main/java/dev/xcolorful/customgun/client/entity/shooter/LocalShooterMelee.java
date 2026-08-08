@@ -7,7 +7,7 @@
 
 package dev.xcolorful.customgun.client.entity.shooter;
 
-import dev.xcolorful.customgun.client.animation.statemachine.GunAnimationState;
+import dev.xcolorful.customgun.client.api.animation.statemachine.GunAnimationState;
 import dev.xcolorful.customgun.client.api.entity.LocalShooterProperty;
 import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
 import dev.xcolorful.customgun.client.api.sound.gun.GunSoundType;

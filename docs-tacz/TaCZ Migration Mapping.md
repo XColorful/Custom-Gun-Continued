@@ -699,14 +699,31 @@ Notation:
 > package com.tacz.guns.api.client.animation;
 > ```
 
-|com.tacz.guns.api.client.animation|dev.xcolorful.customgun.client.api.animation|
+|com.tacz.guns.api.client.animation|dev.xcolorful.customgun.client.animation|
 |---|---|
-|gltf||
-|interpolator||
+|gltf|gltf|
+|gltf.`AnimationStructure`|gltf.`GltfStructure`|
+|interpolator.`*`|interpolator.`*`|
+|interpolator.`CustomInterpolator`|interpolator.`CompositeInterpolator`|
 |statemachine||
+|`AnimationChannelContent`|channel.`AnimChannelContent`|
+|`AnimationController`|controller.`AnimController`|
+|`AnimationPlan`|controller.`AnimPlan`|
+|`AnimationSoundChannelContent`|channel.`SoundChannelContent`|
+|`Animations`|`AnimationHelper`|
+|`DiscreteTrackArray`|statemachine.`DiscreteTrackArray`|
 |`ObjectAnimation`|`ObjectAnimation`|
 |`ObjectAnimationChannel`|`ObjectAnimationChannel`|
 |`ObjectAnimationSoundChannel`|`ObjectAnimationSoundChannel`|
+
+|com.tacz.guns.api.client.animation|dev.xcolorful.customgun.client.api.animation|
+|---|---|
+|interpolator.`Interpolator`|interpolator.`IInterpolator`|
+|interpolator.`InterpolatorUtil`.fromInterpolation|interpolator.`InterpolatorType`.create|
+|interpolator.`InterpolatorUtil`.`InterpolatorType`|interpolator.`InterpolatorType`|
+|`AnimationSoundChannelContent`.`LerpMode`|interpolator.`LerpMode`|
+|`ObjectAnimation`.`PlayType`|`AnimationPlayType`|
+|`ObjectAnimationChannel`.`ChannelType`|`AnimationChannelType`|
 
 #### Event API (Client)
 > ```java
@@ -762,9 +779,12 @@ Notation:
 |com.tacz.guns.client.animation|dev.xcolorful.customgun.client.animation|
 |---|---|
 |screen.`RefitTransform`||
-|statemachine.`GunAnimationConstant`|statemachine.`GunAnimationState`|
 |statemachine.`ThrowableAnimationStateContext`|_Deprecated_|
 |third.`InnerThirdPersonManager`|third.`InnerThirdPersonManager`|
+
+|com.tacz.guns.client.animation|dev.xcolorful.customgun.client.api.animation|
+|---|---|
+|statemachine.`GunAnimationConstant`|statemachine.`GunAnimationState`|
 
 ### Command (Client)
 

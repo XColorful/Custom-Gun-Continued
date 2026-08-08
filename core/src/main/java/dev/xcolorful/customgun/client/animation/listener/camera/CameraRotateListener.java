@@ -7,7 +7,7 @@
 
 package dev.xcolorful.customgun.client.animation.listener.camera;
 
-import dev.xcolorful.customgun.client.api.animation.ObjectAnimationChannel;
+import dev.xcolorful.customgun.client.api.animation.AnimationChannelType;
 import dev.xcolorful.customgun.client.api.animation.listener.IAnimationListener;
 import dev.xcolorful.customgun.core.util.MathUtil;
 import org.joml.Quaternionf;
@@ -20,8 +20,8 @@ public class CameraRotateListener implements IAnimationListener {
         this.camera = camera;
     }
     @Override
-    public ObjectAnimationChannel.ChannelType getType() {
-        return ObjectAnimationChannel.ChannelType.ROTATION;
+    public AnimationChannelType getType() {
+        return AnimationChannelType.ROTATION;
     }
 
     @Override

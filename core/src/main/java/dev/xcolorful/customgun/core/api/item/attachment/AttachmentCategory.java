@@ -59,14 +59,14 @@ public enum AttachmentCategory implements ResourceTag.CategoryTag, ResourceTag.C
     public final String tagName;
     public final String categoryName;
     public final String categoryNameOld;
-    public final String constrantName;
+    public final String constantName;
     public final MutableComponent categoryLang;
     AttachmentCategory(String name, String nameOld, MutableComponent lang) {
         this.tagName = GunProperty.ATTACHMENT_PREFIX.getTagName() + name;
         this.categoryName = name;
         this.categoryNameOld = nameOld;
         this.categoryLang = lang;
-        this.constrantName = name;
+        this.constantName = name;
     }
     @Override public String getTagName() {
         return this.tagName;
@@ -75,7 +75,7 @@ public enum AttachmentCategory implements ResourceTag.CategoryTag, ResourceTag.C
         return this.categoryName;
     }
     @Override public String getConstantName() {
-        return this.constrantName;
+        return this.constantName;
     }
 
     public final MutableComponent getCategoryLang() {

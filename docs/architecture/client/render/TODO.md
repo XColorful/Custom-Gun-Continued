@@ -430,7 +430,7 @@ CGC 中 `ObjectAnimation` 和 `ObjectAnimationSoundChannel` 为占位骨架。
 |---|---|---|
 |`KeepingItemRenderer`|`client.api.renderer.KeepingItemRenderer`|已完成|
 |`GunModelTypeManager`|（待确定）||
-|`IThirdPersonAnimation`|（待确定）||
+|`IThirdPersonAnimation`|`client.api.animation.shooter.IShooterAnimator`||
 |`ThirdPersonManager`|`client.api.item.gun.ThirdPersonAnimationType`|已完成|
 
 [↑ 回到移植顺序](#移植顺序)

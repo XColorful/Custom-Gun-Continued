@@ -767,8 +767,10 @@ Notation:
 |com.tacz.guns.api.client.other| |
 |---|---|
 |`GunModelTypeManager`||
-|`IThirdPersonAnimation`||
-|`ThirdPersonManager`||
+
+|com.tacz.guns.api.client.other|dev.xcolorful.customgun.client.api.animation|
+|---|---|
+|`IThirdPersonAnimation`|shooter.`IShooterAnimator`|
 
 |com.tacz.guns.api.client.other|dev.xcolorful.customgun.client.api.renderer|
 |---|---|
@@ -776,7 +778,10 @@ Notation:
 
 |com.tacz.guns.api.client.other|dev.xcolorful.customgun.client.api.item|
 |---|---|
-|`ThirdPersonManager`.\*|gun.`ThirdPersonAnimationType`.\*|
+|`ThirdPersonManager`.RESERVED_DEFAULT_NAME|gun.`ShooterAnimationCategory`.DEFAULT|
+|`ThirdPersonManager`.DEFAULT|_Deprecated_|
+|`ThirdPersonManager`.MINI_GUN_NAME|gun.`ShooterAnimationCategory`.MINI_GUN_NAME|
+|`ThirdPersonManager`.MINI_GUN|_Deprecated_|
 
 ### Animation (Client)
 > ```java
@@ -789,7 +794,7 @@ Notation:
 |statemachine.`GunAnimationStateContext`|statemachine.`GunAnimStateContext`|
 |statemachine.`ItemAnimationStateContext`|statemachine.`ItemAnimStateContext`|
 |statemachine.`ThrowableAnimationStateContext`|_Deprecated_|
-|third.`InnerThirdPersonManager`|third.`InnerThirdPersonManager`|
+|third.`InnerThirdPersonManager`|shooter.`ShooterAnimationManager`|
 
 |com.tacz.guns.client.animation|dev.xcolorful.customgun.client.api.animation|
 |---|---|

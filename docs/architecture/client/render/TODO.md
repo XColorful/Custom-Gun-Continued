@@ -16,7 +16,7 @@
 - [x] [8. PAPI 层](#8) — 模型文字覆盖的占位符系统
 - [x] [9. 功能性渲染器](#9) — 枪口火焰、抛壳、激光束、配件渲染、手臂渲染
 - [x] [10. 动画 API 层](#10) — 动画实例、控制器、状态机、glTF 支持
-- [ ] [11. 动画实现层](#11) — 枪械专用的状态上下文和第三人称管理器
+- [x] [11. 动画实现层](#11) — 枪械专用的状态上下文和第三人称管理器
 - [ ] [12. 物品渲染器](#12) — BEWLR 渲染器（AnimateGeoItemRenderer 及其枪械子类）
 - [ ] [13. 实体/方块渲染器](#13) — EntityBulletRenderer、StatueRenderer、TargetRenderer
 - [ ] [14. 客户端事件层](#14) — 第一人称渲染事件、相机事件、动画 Tick
@@ -316,7 +316,7 @@ CGC 中 `ObjectAnimation` 和 `ObjectAnimationSoundChannel` 为占位骨架。
 |`statemachine.ItemAnimationStateContext`|`statemachine.ItemAnimStateContext`||
 |`statemachine.ThrowableAnimationStateContext`|_Deprecated_||
 |`screen.RefitTransform`|`screen.RefitScreenTransformState`||
-|`third.InnerThirdPersonManager`|`third.InnerThirdPersonManager`|已完成（占位）||
+|`third.InnerThirdPersonManager`|`shooter.ShooterAnimationManager`|已完成（占位）||
 
 [↑ 回到移植顺序](#移植顺序)
 

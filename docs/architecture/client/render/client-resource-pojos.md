@@ -137,7 +137,7 @@ graph TB
 |显示|`ammoDisplayOverride`|曳光弹颜色和弹药粒子覆盖|
 |动画|`gunAnimationLocation`|Bedrock 动画文件路径|
 |动画|`scriptLocation` / `scriptParam`|Lua 状态机脚本及参数|
-|动画|`thirdPersonAnimationType` / `playerAnimatorLocation`|第三人称动画|
+|动画|`shooterAnimationCategory` / `playerAnimatorLocation`|第三人称动画|
 |动画|`shellEjectionParam`|抛壳物理参数|
 |声音|`gunSounds` / `preloadSoundLocation`|声音映射和预加载|
 |操控|`controllableData`|手柄震动配置|

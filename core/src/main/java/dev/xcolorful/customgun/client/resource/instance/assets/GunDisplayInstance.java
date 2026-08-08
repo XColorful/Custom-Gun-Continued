@@ -304,7 +304,7 @@ public final class GunDisplayInstance extends PojoInstance<GunDisplay> {
         return this.getPojo().getShellEjectionParam();
     }
     @Deprecated public String getThirdPersonAnimation() {
-        return this.getPojo().getThirdPersonAnimationType().getCategoryName();
+        return this.getPojo().getShooterAnimationCategory().getCategoryName();
     }
     @Deprecated public @Nullable ResourceLocation getPlayerAnimator3rd() {
         return this.getPojo().getPlayerAnimatorLocation();

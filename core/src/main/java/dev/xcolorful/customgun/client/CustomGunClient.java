@@ -15,6 +15,8 @@
 package dev.xcolorful.customgun.client;
 
 import dev.xcolorful.customgun.CustomGun;
+import dev.xcolorful.customgun.client.animation.shooter.ShooterAnimationManager;
+import dev.xcolorful.customgun.client.api.animation.shooter.IShooterAnimationManager;
 import dev.xcolorful.customgun.client.api.input.IInputKeyManager;
 import dev.xcolorful.customgun.client.api.input.IKeyMapping;
 import dev.xcolorful.customgun.client.api.minecraft.access.IClientAccessTransformer;
@@ -39,6 +41,8 @@ public class CustomGunClient {
 
         setInputKeyManagerInternal(InputKeyManager.INSTANCE);
         InputKeyManager.init(CustomGun.getMcSide());
+        shooterAnimationManager = ShooterAnimationManager.INSTANCE;
+        ShooterAnimationManager.init(CustomGun.getMcSide());
 
         ClientEventHandlers.registerAll(CustomGun.getEventRegister());
         initialized = true;
@@ -55,12 +59,20 @@ public class CustomGunClient {
     public static IInputKeyManager getInputKeyManager() {
         return CustomGunClient.inputKeyManager;
     }
+    private static IShooterAnimationManager shooterAnimationManager;
+    public static IShooterAnimationManager getShooterAnimationManager() {
+        return CustomGunClient.shooterAnimationManager;
+    }
     /**
      * @deprecated 除非需要深度定制, 否则不应该调用
      */
     @Deprecated(forRemoval = false)
     public static void setInputKeyManager(IInputKeyManager inputKeyManager) {
         setInputKeyManagerInternal(inputKeyManager);
+    }
+    @Deprecated(forRemoval = false)
+    public static void setShooterAnimationManager(IShooterAnimationManager shooterAnimationManager) {
+        CustomGunClient.shooterAnimationManager = shooterAnimationManager;
     }
 
     // 跟IInpuKeySubManager同样的机制

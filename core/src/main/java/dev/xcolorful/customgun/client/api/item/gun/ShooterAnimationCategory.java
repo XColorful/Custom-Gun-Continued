@@ -8,18 +8,18 @@
 package dev.xcolorful.customgun.client.api.item.gun;
 
 import dev.xcolorful.customgun.core.api.item.gun.ThirdPersonAnimationTypeTag;
-import dev.xcolorful.customgun.core.api.resource.ResourceTag;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public enum ThirdPersonAnimationType implements ResourceTag.CategoryTag {
+public enum ShooterAnimationCategory implements IShooterAnimationCategory {
     DEFAULT(ThirdPersonAnimationTypeTag.DEFAULT),
     MINIGUN(ThirdPersonAnimationTypeTag.MINIGUN);
 
     public final String typeName;
-    ThirdPersonAnimationType(String name) {
+    ShooterAnimationCategory(String name) {
         this.typeName = name;
     }
 
@@ -30,15 +30,19 @@ public enum ThirdPersonAnimationType implements ResourceTag.CategoryTag {
         return this.typeName;
     }
 
-    private static final Map<String, ThirdPersonAnimationType> ANIMATION_TYPES = new HashMap<>();
+    private static final Map<String, IShooterAnimationCategory> ANIMATION_TYPES = new HashMap<>();
+    @ApiStatus.Internal
+    public static void registerAnimationCategory(IShooterAnimationCategory category) {
+        ANIMATION_TYPES.put(category.getName(), category);
+    }
 
     static {
-        for (ThirdPersonAnimationType type : values()) {
-            ANIMATION_TYPES.put(type.typeName, type);
+        for (ShooterAnimationCategory type : values()) {
+            registerAnimationCategory(type);
         }
     }
 
-    public static @Nullable ThirdPersonAnimationType fromString(String name) {
+    public static @Nullable IShooterAnimationCategory fromString(String name) {
         return name != null ? ANIMATION_TYPES.get(name) : null;
     }
 

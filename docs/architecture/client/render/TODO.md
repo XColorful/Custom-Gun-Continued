@@ -12,7 +12,7 @@
 - [x] [4. 资源加载与索引层](#4) — 资源管道和 Instance 构建
 - [x] [5. 几何运行时层](#5) — 将 POJO 数据转换为可渲染的场景图
 - [x] [6. 模型对象层](#6) — 场景图之上构建分类型的模型对象（枪械/配件/弹药），注册动画监听器和功能性渲染器
-- [ ] [7. 模型监听器层](#7) — 动画数据写入场景图的桥梁
+- [x] [7. 模型监听器层](#7) — 动画数据写入场景图的桥梁
 - [ ] [8. PAPI 层](#8) — 模型文字覆盖的占位符系统
 - [ ] [9. 功能性渲染器](#9) — 枪口火焰、抛壳、激光束、配件渲染、手臂渲染
 - [ ] [10. 动画 API 层](#10) — 动画实例、控制器、状态机、glTF 支持
@@ -201,15 +201,15 @@
 
 |TaCZ `com.tacz.guns.client.model.listener`|CGC 目标|状态|
 |---|---|---|
-|`camera.CameraAnimationObject`|（待确定）||
-|`camera.CameraRotateListener`|（待确定）||
-|`constraint.ConstraintObject`|（待确定）||
-|`constraint.ConstraintRotateListener`|（待确定）||
-|`constraint.ConstraintTranslateListener`|（待确定）||
-|`model.ModelRotateListener`|（待确定）||
-|`model.ModelScaleListener`|（待确定）||
-|`model.ModelTranslateListener`|（待确定）||
-|`model.ModelAdditionalMagazineListener`|（待确定）||
+|`camera.CameraAnimationObject`|`animation.listener.camera.CameraAnimationObject`||
+|`camera.CameraRotateListener`|`animation.listener.camera.CameraRotateListener`||
+|`constraint.ConstraintObject`|`animation.listener.constraint.ConstraintObject`||
+|`constraint.ConstraintRotateListener`|`animation.listener.constraint.ConstraintRotateListener`||
+|`constraint.ConstraintTranslateListener`|`animation.listener.constraint.ConstraintTranslateListener`||
+|`model.ModelRotateListener`|`animation.listener.model.ModelRotateListener`||
+|`model.ModelScaleListener`|`animation.listener.model.ModelScaleListener`||
+|`model.ModelTranslateListener`|`animation.listener.model.ModelTranslateListener`||
+|`model.ModelAdditionalMagazineListener`|`animation.listener.model.ModelAdditionalMagazineListener`||
 
 [↑ 回到移植顺序](#移植顺序)
 

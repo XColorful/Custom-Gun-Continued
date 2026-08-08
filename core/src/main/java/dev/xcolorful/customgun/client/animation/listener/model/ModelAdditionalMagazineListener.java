@@ -28,10 +28,9 @@ public class ModelAdditionalMagazineListener implements IAnimationListener {
     @Override
     public void update(float[] values, boolean blend) {
         listener.update(values, blend);
-        // TODO
-//        if (model.getAdditionalMagazineNode() != null) {
-//            model.getAdditionalMagazineNode().visible = true;
-//        }
+        if (model.getAdditionalMagazineNode() != null) {
+            model.getAdditionalMagazineNode().visible = true;
+        }
     }
 
     @Override

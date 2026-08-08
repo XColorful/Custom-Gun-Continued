@@ -35,7 +35,7 @@ public final class AttachmentDisplay extends _AssetsDisplay<AttachmentDisplay> {
     private boolean showMuzzle = false;
     private boolean showMount = true;
     private Map<String, _ModelNodeTextDisplay> modelNodeTextDisplay;
-    private _LaserDisplay laserDisplay;
+    private @Nullable _LaserDisplay laserDisplay;
     private Map<AttachmentSoundType, ResourceLocation> attachmentSounds;
 
     private static final AttachmentDisplay PARSER = new AttachmentDisplay();
@@ -108,7 +108,7 @@ public final class AttachmentDisplay extends _AssetsDisplay<AttachmentDisplay> {
         super.validatePojo();
         if (!this.isValid()) return;
 
-        boolean n1 = (this.getSlotTextureLocation() == null | this.modelNodeTextDisplay == null | this.laserDisplay == null | this.attachmentSounds == null);
+        boolean n1 = (this.getSlotTextureLocation() == null | this.modelNodeTextDisplay == null | this.attachmentSounds == null);
         if (n1) {
             this.setValid(false);
             return;
@@ -164,7 +164,7 @@ public final class AttachmentDisplay extends _AssetsDisplay<AttachmentDisplay> {
     public Map<String, _ModelNodeTextDisplay> getModelNodeTextDisplay() {
         return modelNodeTextDisplay;
     }
-    public _LaserDisplay getLaserDisplay() {
+    public @Nullable _LaserDisplay getLaserDisplay() {
         return laserDisplay;
     }
     public Map<AttachmentSoundType, ResourceLocation> getAttachmentSounds() {
@@ -221,7 +221,6 @@ public final class AttachmentDisplay extends _AssetsDisplay<AttachmentDisplay> {
         if (this.modelNodeTextDisplay == null) this.modelNodeTextDisplay = new HashMap<>();
         else this.modelNodeTextDisplay.values().forEach(_ModelNodeTextDisplay::applyBackCompatibility);
 
-        this.laserDisplay = this.laserDisplay == null ? new _LaserDisplay().applyBackCompatibility() : this.laserDisplay.applyBackCompatibility();
         this.attachmentSounds = this.attachmentSounds == null ? new HashMap<>() : this.attachmentSounds;
         return this;
     }

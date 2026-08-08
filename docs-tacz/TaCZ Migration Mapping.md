@@ -223,9 +223,9 @@ Notation:
 
 |com.tacz.guns.compat|dev.xcolorful.customgun.client.compat|
 |---|---|
-|ar||
-|oculus||
-|optifine||
+|ar|ar|
+|oculus|oculus|
+|optifine|optifine|
 |playeranimator|playeranimator|
 |shouldersurfing||
 
@@ -676,7 +676,7 @@ Notation:
 |com.tacz.guns.util|dev.xcolorful.customgun.client.util|
 |---|---|
 |`InputExtraCheck`|`ClientInputUtils`|
-|`RenderDistance`||
+|`RenderDistance`|`ClientRenderDistance`|
 |`RenderHelper`|`ClientRenderHelper`|
 
 |com.tacz.guns.util|dev.xcolorful.customgun.core.api.item|
@@ -963,12 +963,16 @@ Notation:
 |---|---|
 |functional.`AttachmentRender`|model.`AttachmentRender`|
 |functional.`BeamRenderer`|model.`BeamRender`|
-|functional.`LeftHandRender`|model.`LefthandRender`|
+|functional.`LeftHandRender`|model.`HandRender`.`Left`|
 |functional.`MuzzleFlashRender`|model.`MuzzleFlashRender`|
-|functional.`RightHandRender`|model.`RighthandRender`|
+|functional.`RightHandRender`|model.`HandRender`.`Right`|
 |functional.`ShellRender`||
 |functional.`TextShowRender`|model.`TextRender`|
 |`IFunctionalRenderer`|model.`IModelComponentRenderer`|
+
+|com.tacz.guns.client.model|dev.xcolorful.customgun.client.init|
+|---|---|
+|functional.`BeamRenderer`.`LaserBeamRenderState`|registry.`ClientRenderRegistry`.`LaserBeamRenderState`|
 
 |com.tacz.guns.client.model|dev.xcolorful.customgun.client.api.resource|
 |---|---|
@@ -996,7 +1000,7 @@ Notation:
 |block|_Deprecated_|
 |entity.`EntityBulletRenderer`||
 |entity.`TargetMinecartRenderer`|_Deprecated_|
-|item.`*ItemRenderer`||
+|item.`*ItemRenderer`|item.`*ItemRenderer`|
 |item.`AnimateGeoItemRenderer`|item.`AnimateGeoItemRenderer`|
 |item.`GunSmithTableItemRenderer`|_Deprecated_|
 |other.`GunHurtBobTweak`|victim.`GunHurtBobTweak`|

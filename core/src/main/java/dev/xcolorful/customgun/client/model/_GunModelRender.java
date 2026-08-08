@@ -133,7 +133,7 @@ public class _GunModelRender {
                 BedrockPart bedrockPart = _this.scopePosPath.get(i);
                 bedrockPart.translate_rotate_scale(matrixStack);
             }
-            AttachmentRender.renderAttachment(matrixStack, transformType, light, overlay, gunItem, attachmentItem);
+            AttachmentRender.renderAttachment(matrixStack, transformType, light, overlay, gunItem, iAttachment, attachmentItem);
         }
         matrixStack.popPose();
 

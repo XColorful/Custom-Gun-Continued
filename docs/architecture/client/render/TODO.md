@@ -14,7 +14,7 @@
 - [x] [6. 模型对象层](#6) — 场景图之上构建分类型的模型对象（枪械/配件/弹药），注册动画监听器和功能性渲染器
 - [x] [7. 模型监听器层](#7) — 动画数据写入场景图的桥梁
 - [x] [8. PAPI 层](#8) — 模型文字覆盖的占位符系统
-- [ ] [9. 功能性渲染器](#9) — 枪口火焰、抛壳、激光束、配件渲染、手臂渲染
+- [x] [9. 功能性渲染器](#9) — 枪口火焰、抛壳、激光束、配件渲染、手臂渲染
 - [ ] [10. 动画 API 层](#10) — 动画实例、控制器、状态机、glTF 支持
 - [ ] [11. 动画实现层](#11) — 枪械专用的状态上下文和第三人称管理器
 - [ ] [12. 物品渲染器](#12) — BEWLR 渲染器（AnimateGeoItemRenderer 及其枪械子类）
@@ -239,11 +239,11 @@
 |---|---|---|
 |`MuzzleFlashRender`|`renderer.model.MuzzleFlashRender`|已完成（占位）|
 |`ShellRender`|`renderer.model.ShellRender`|已完成（占位）|
-|`AttachmentRender`|（待确定）||
-|`BeamRenderer`|（待确定）||
-|`LeftHandRender`|（待确定）||
-|`RightHandRender`|（待确定）||
-|`TextShowRender`|（待确定）||
+|`AttachmentRender`|`renderer.model.AttachmentRender`||
+|`BeamRenderer`|`renderer.model.BeamRender`||
+|`LeftHandRender`|`renderer.model.HandRender`.`Left`||
+|`RightHandRender`|`renderer.model.HandRender`.`Right`||
+|`TextShowRender`|`renderer.model.TextRender`||
 
 [↑ 回到移植顺序](#移植顺序)
 

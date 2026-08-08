@@ -45,7 +45,7 @@ public class ClientMessageLaserColor implements IMessage<ClientMessageLaserColor
             if (iAttachment == null) continue;
 
             if (iAttachment.hasLaserColor(attachment)) {
-                this.colorMap.put(category, iAttachment.getLaserColor(attachment));
+                this.colorMap.put(category, iAttachment.getLaserColorInt(attachment));
             }
         }
 
@@ -91,7 +91,7 @@ public class ClientMessageLaserColor implements IMessage<ClientMessageLaserColor
                     ItemStack attachment = iGun.getAttachment(gunItem, category);
                     @Nullable IAttachment iAttachment = IAttachmentGetter.fromItemStack(attachment);
                     if (iAttachment != null) {
-                        iAttachment.setLaserColor(attachment, colorInt);
+                        iAttachment.setLaserColorInt(attachment, colorInt);
                     }
                 }
 

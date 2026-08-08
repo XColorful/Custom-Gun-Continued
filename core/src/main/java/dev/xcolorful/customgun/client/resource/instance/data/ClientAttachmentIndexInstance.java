@@ -175,7 +175,7 @@ public final class ClientAttachmentIndexInstance extends PojoInstance<Attachment
     @Deprecated public boolean isShowMount() {
         return this.attachmentDisplayCache.getShowMount();
     }
-    @Deprecated public _LaserDisplay getLaserConfig() {
+    @Deprecated public @Nullable _LaserDisplay getLaserConfig() {
         return this.attachmentDisplayCache.getLaserDisplay();
     }
     @Deprecated public Map<AttachmentSoundType, ResourceLocation> getSounds() {

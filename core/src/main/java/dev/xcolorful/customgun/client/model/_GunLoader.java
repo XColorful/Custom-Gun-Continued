@@ -40,9 +40,9 @@ public class _GunLoader {
      */
     protected static void constructFunctionalRenderer(GunModelObject _this) {
         // 左手手臂LeftHandRender
-        _this.setFunctionalRenderer(NodeName.LEFTHAND_POS.getName(), bedrockPart -> new LefthandRender(_this));
+        _this.setFunctionalRenderer(NodeName.LEFTHAND_POS.getName(), bedrockPart -> new HandRender.Left(_this));
         // 右手手臂
-        _this.setFunctionalRenderer(NodeName.RIGHTHAND_POS.getName(), bedrockPart -> new RighthandRender(_this));
+        _this.setFunctionalRenderer(NodeName.RIGHTHAND_POS.getName(), bedrockPart -> new HandRender.Right(_this));
         // 枪口火焰
         _this.setFunctionalRenderer(NodeName.MUZZLE_FLASH_ORIGIN.getName(), bedrockPart -> new MuzzleFlashRender(_this));
         // 枪管内的子弹，用于闭膛待机枪械

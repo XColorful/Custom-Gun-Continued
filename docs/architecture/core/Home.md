@@ -197,6 +197,11 @@
 
 - SoundManager：声音管理器
 
+### 文本
+> _./core/text_
+
+- Placeholder：占位符
+
 ### 工具
 > _./core/util_
 
@@ -418,6 +423,11 @@ Module division based on the `dev.xcolorful.customgun.core` top-level package
 > _./core/sound_
 
 - SoundManager: Sound manager
+
+### Text
+> _./core/text_
+
+- Placeholder
 
 ### Utility
 > _./core/util_

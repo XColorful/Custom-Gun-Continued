@@ -935,7 +935,6 @@ Notation:
 |bedrock.`BedrockPart`|bedrock.`BedrockPart`|
 |bedrock.`BedrockPolygon`|bedrock.`BedrockPolygon`|
 |bedrock.`BedrockVertex`|bedrock.`BedrockVertex`|
-|papi||
 |`Bedrock*Model`|`*ModelObject`|
 |`BedrockAttachmentModel`.render|`_AttachmentModelRender`.render|
 |`BedrockGunModel`.render|`_GunModelRender`.render|
@@ -947,6 +946,12 @@ Notation:
 |bedrock.`BedrockModel`.convertPivot|`ClientModelUtils`.pivot_BEtoJE|
 |bedrock.`BedrockModel`.convertRotation|`ClientModelUtils`.rotation_BEtoJE|
 |bedrock.`BedrockModel`.convertOrigin|`ClientModelUtils`.origin_BEtoJE|
+
+|com.tacz.guns.client.model|dev.xcolorful.customgun.core.text|
+|---|---|
+|papi.`AmmoCountPapi`|_Deprecated_|
+|papi.`PapiManager`|placeholder.`PlaceholderManager`|
+|papi.`PlayerNamePapi`|_Deprecated_|
 
 |com.tacz.guns.client.model|dev.xcolorful.customgun.client.animation|
 |---|---|

@@ -10,11 +10,16 @@ package dev.xcolorful.customgun.client.resource.instance.assets;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.xcolorful.customgun.CustomGun;
+import dev.xcolorful.customgun.client.animation.AnimationHelper;
+import dev.xcolorful.customgun.client.animation.controller.AnimController;
+import dev.xcolorful.customgun.client.animation.statemachine.GunAnimStateContext;
+import dev.xcolorful.customgun.client.animation.statemachine.LuaAnimStateMachine;
 import dev.xcolorful.customgun.client.api.item.gun.DamageDisplayType;
 import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
 import dev.xcolorful.customgun.client.api.sound.gun.GunSoundType;
 import dev.xcolorful.customgun.client.model.GunModelObject;
 import dev.xcolorful.customgun.client.model.ModelObject;
+import dev.xcolorful.customgun.client.resource.assets.animation.BedrockAnimation;
 import dev.xcolorful.customgun.client.resource.assets.display.GunDisplay;
 import dev.xcolorful.customgun.client.resource.assets.display._LaserDisplay;
 import dev.xcolorful.customgun.client.resource.assets.display._LodDisplay;
@@ -36,6 +41,7 @@ import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -53,8 +59,14 @@ public final class GunDisplayInstance extends PojoInstance<GunDisplay> {
     private @Nullable ParticleOptions ammoParticleOptionsCache;
     private Map<GunSoundType, ResourceLocation> gunSoundsCache;
 
-    private @Nullable LuaTable script = null;
-    private @Nullable LuaTable scriptParamCache = null;
+    /**
+     * 状态机脚本
+     */
+    private LuaAnimStateMachine<GunAnimStateContext> animStateMachine = null;
+    /**
+     * 状态机脚本参数
+     */
+    private @Nullable LuaTable animStateMachineParams = null;
 
     private GunDisplayInstance(@NotNull GunDisplay pojo) {
         super(pojo);
@@ -116,13 +128,33 @@ public final class GunDisplayInstance extends PojoInstance<GunDisplay> {
         }
         this.gunSoundsCache = this.getPojo().getGunSounds();
 
-        var scriptLocation = this.getPojo().getScriptLocation();
-        if (scriptLocation != null) {
-            AssetsScript assetsScript = ClientResourceApi.getAssetsScript(scriptLocation);
-            if (assetsScript == null) CustomGun.LOGGER.debug("GunDisplayInstance: AssetsScript {} not found", scriptLocation);
-            else if (!assetsScript.isValid()) CustomGun.LOGGER.debug("GunDisplayInstance: AssetsScript {} not valid", scriptLocation);
-            else this.script = assetsScript.getResultTable();
+        AnimController animController;
+        { // 动画控制器
+            animController = loadAnimController(this.gunModel);
+            if (animController == null) return false;
         }
+
+        { // 状态机脚本
+            var scriptLocation = this.getPojo().getScriptLocation();
+            if (scriptLocation == null) {
+                CustomGun.LOGGER.debug("GunDisplayInstance: GunDisplay missing scriptLocation");
+                return false;
+            }
+            AssetsScript assetsScript = ClientResourceApi.getAssetsScript(scriptLocation);
+            if (assetsScript == null) {
+                CustomGun.LOGGER.debug("GunDisplayInstance: AssetsScript {} not found", scriptLocation);
+                return false;
+            } else if (!assetsScript.isValid()) {
+                CustomGun.LOGGER.debug("GunDisplayInstance: AssetsScript {} not valid", scriptLocation);
+                return false;
+            }
+            this.animStateMachine = new LuaAnimStateMachine.Builder<GunAnimStateContext>()
+                    .setController(animController)
+                    .setLuaScripts(assetsScript.getResultTable())
+                    .build();
+        }
+
+        // 加载状态机参数
         this.reloadScriptParams();
 
         return true;
@@ -160,13 +192,29 @@ public final class GunDisplayInstance extends PojoInstance<GunDisplay> {
         if ((errorMask & ERR_IRON_VIEW_FOV) != 0) sb.append("\n\t- ironViewFov > 70");
         CustomGun.LOGGER.debug(sb.toString());
     }
+    private @Nullable AnimController loadAnimController(GunModelObject gunModel) {
+        var animationLocation = this.getPojo().getGunAnimationLocation();
+        if (animationLocation != null) {
+            @Nullable BedrockAnimation bedrockAnimation = ClientResourceApi.getBedrockAnimation(animationLocation);
+            if (bedrockAnimation != null) {
+                // 用 bedrock 动画资源创建动画控制器
+                return AnimationHelper.createControllerFromBedrock(bedrockAnimation, gunModel);
+            }
+            // TODO glTF
+            CustomGun.LOGGER.debug("GunDisplayInstance: Animation {} not found", animationLocation);
+            return null;
+
+            // TODO 将默认动画填入动画控制器?
+        } else {
+            return new AnimController(new ArrayList<>(), gunModel);
+        }
+    }
     private void reloadScriptParams() {
-        // 加载状态机参数
         Map<String, Object> params = this.getPojo().getScriptParam();
         if (params != null) {
-            this.scriptParamCache = new LuaTable();
+            this.animStateMachineParams = new LuaTable();
             for (Map.Entry<String, Object> entry : params.entrySet()) {
-                this.scriptParamCache.set(entry.getKey(), CoerceJavaToLua.coerce(entry.getValue()));
+                this.animStateMachineParams.set(entry.getKey(), CoerceJavaToLua.coerce(entry.getValue()));
             }
         }
     }
@@ -195,11 +243,11 @@ public final class GunDisplayInstance extends PojoInstance<GunDisplay> {
     public @Nullable ResourceLocation getGunSound(GunSoundType gunSoundType) {
         return this.gunSoundsCache.get(gunSoundType);
     }
-    public @Nullable LuaTable getScript() {
-        return this.script;
+    public LuaAnimStateMachine<GunAnimStateContext> getAnimStateMachine() {
+        return this.animStateMachine;
     }
-    public @Nullable LuaTable getScriptParams() {
-        return this.scriptParamCache;
+    public @Nullable LuaTable getAnimStateMachineParams() {
+        return this.animStateMachineParams;
     }
 
     // --------Deprecated--------

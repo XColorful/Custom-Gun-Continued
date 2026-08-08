@@ -15,7 +15,7 @@
 - [x] [7. 模型监听器层](#7) — 动画数据写入场景图的桥梁
 - [x] [8. PAPI 层](#8) — 模型文字覆盖的占位符系统
 - [x] [9. 功能性渲染器](#9) — 枪口火焰、抛壳、激光束、配件渲染、手臂渲染
-- [ ] [10. 动画 API 层](#10) — 动画实例、控制器、状态机、glTF 支持
+- [x] [10. 动画 API 层](#10) — 动画实例、控制器、状态机、glTF 支持
 - [ ] [11. 动画实现层](#11) — 枪械专用的状态上下文和第三人称管理器
 - [ ] [12. 物品渲染器](#12) — BEWLR 渲染器（AnimateGeoItemRenderer 及其枪械子类）
 - [ ] [13. 实体/方块渲染器](#13) — EntityBulletRenderer、StatueRenderer、TargetRenderer
@@ -289,16 +289,16 @@ CGC 中 `ObjectAnimation` 和 `ObjectAnimationSoundChannel` 为占位骨架。
 |`accessor.*`（AccessorData / AccessorFloatData 等）|（待确定）||
 |`ElementType` / `GltfConstants` / `Buffers` / `NumberArrays`|（待确定）||
 
-|TaCZ `com.tacz.guns.api.client.animation.statemachine`|CGC 目标|状态|
+|TaCZ `com.tacz.guns.api.client.animation.statemachine`|CGC `client.animation.statemachine`|状态|
 |---|---|---|
-|`AnimationStateMachine`|（待确定）||
-|`AnimationState`|（待确定）||
-|`AnimationStateContext`|（待确定）||
-|`AnimationConstant`|（待确定）||
-|`LuaAnimationStateMachine`|（待确定）||
-|`LuaAnimationState`|（待确定）||
-|`LuaStateMachineFactory`|（待确定）||
-|`TrackArrayMismatchException`|（待确定）||
+|`AnimationStateMachine`|`AnimStateMachine`||
+|`AnimationState`|`api.animation.statemachine.IAnimationStateContext`||
+|`AnimationStateContext`|`api.animation.statemachine.AnimStateContext`||
+|`AnimationConstant`|_Deprecated_||
+|`LuaAnimationStateMachine`|`LuaAnimStateMachine`||
+|`LuaAnimationState`|`LuaAnimStateContext`||
+|`LuaStateMachineFactory`|`LuaAnimStateContext.Builder`||
+|`TrackArrayMismatchException`|`api.animation.statemachine.TrackArrayMismatchException`||
 
 [↑ 回到移植顺序](#移植顺序)
 
@@ -312,8 +312,8 @@ CGC 中 `ObjectAnimation` 和 `ObjectAnimationSoundChannel` 为占位骨架。
 |TaCZ `com.tacz.guns.client.animation`|CGC `client.animation`|状态|
 |---|---|---|
 |`statemachine.GunAnimationConstant`|`statemachine.GunAnimationState`|已完成|
-|`statemachine.GunAnimationStateContext`|（待确定）||
-|`statemachine.ItemAnimationStateContext`|（待确定）||
+|`statemachine.GunAnimationStateContext`|`statemachine.GunAnimStateContext`||
+|`statemachine.ItemAnimationStateContext`|`statemachine.ItemAnimStateContext`||
 |`statemachine.ThrowableAnimationStateContext`|_Deprecated_||
 |`screen.RefitTransform`|（待确定）||
 |`third.InnerThirdPersonManager`|`third.InnerThirdPersonManager`|已完成（占位）||

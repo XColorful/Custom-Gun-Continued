@@ -705,7 +705,9 @@ Notation:
 |gltf.`AnimationStructure`|gltf.`GltfStructure`|
 |interpolator.`*`|interpolator.`*`|
 |interpolator.`CustomInterpolator`|interpolator.`CompositeInterpolator`|
-|statemachine||
+|statemachine.`LuaAnimationState`|statemachine.`LuaAnimStateContext`|
+|statemachine.`LuaAnimationStateMachine`|statemachine.`LuaAnimStateMachine`|
+|statemachine.`LuaStateMachineFactory`|statemachine.`LuaAnimStateMachine`.`Builder`|
 |`AnimationChannelContent`|channel.`AnimChannelContent`|
 |`AnimationController`|controller.`AnimController`|
 |`AnimationPlan`|controller.`AnimPlan`|
@@ -721,6 +723,11 @@ Notation:
 |interpolator.`Interpolator`|interpolator.`IInterpolator`|
 |interpolator.`InterpolatorUtil`.fromInterpolation|interpolator.`InterpolatorType`.create|
 |interpolator.`InterpolatorUtil`.`InterpolatorType`|interpolator.`InterpolatorType`|
+|statemachine.`AnimationConstant`|_Deprecated_|
+|statemachine.`AnimationState`|statemachine.`IAnimationStateContext`|
+|statemachine.`AnimationStateContext`|statemachine.`AnimStateContext`|
+|statemachine.`AnimationStateMachine`|statemachine.`AnimStateMachine`|
+|statemachine.`TrackArrayMismatchException`|statemachine.`TrackArrayMismatchException`|
 |`AnimationSoundChannelContent`.`LerpMode`|interpolator.`LerpMode`|
 |`ObjectAnimation`.`PlayType`|`AnimationPlayType`|
 |`ObjectAnimationChannel`.`ChannelType`|`AnimationChannelType`|
@@ -779,6 +786,8 @@ Notation:
 |com.tacz.guns.client.animation|dev.xcolorful.customgun.client.animation|
 |---|---|
 |screen.`RefitTransform`||
+|statemachine.`GunAnimationStateContext`|statemachine.`GunAnimStateContext`|
+|statemachine.`ItemAnimationStateContext`|statemachine.`ItemAnimStateContext`|
 |statemachine.`ThrowableAnimationStateContext`|_Deprecated_|
 |third.`InnerThirdPersonManager`|third.`InnerThirdPersonManager`|
 

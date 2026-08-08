@@ -404,7 +404,7 @@ public class _GunScriptBackCompat {
 
         GunData gunData = gunIndexInstance.getGunData();
         BoltType boltType = gunData.getBoltType();
-        return boltType != BoltType.OPEN_BOLT && _this.iGun.hasBarrelAmmo(_this.gunItem);
+        return boltType.useBarrelAmmo() && _this.iGun.hasBarrelAmmo(_this.gunItem);
     }
 
     protected static void setAmmoInBarrel(GunScriptApi _this, boolean ammoInBarrel) {

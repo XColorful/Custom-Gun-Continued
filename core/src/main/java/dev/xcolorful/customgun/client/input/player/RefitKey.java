@@ -16,7 +16,7 @@ import dev.xcolorful.customgun.client.api.input.IKeyConflictContext;
 import dev.xcolorful.customgun.client.api.input.IKeyMapping;
 import dev.xcolorful.customgun.client.api.input.IKeyModifier;
 import dev.xcolorful.customgun.client.api.minecraft.input.CustomInputKey;
-import dev.xcolorful.customgun.client.gui.GunRefitScreen;
+import dev.xcolorful.customgun.client.gui.screen.GunRefitScreen;
 import dev.xcolorful.customgun.client.init.registry.ClientInputCategory;
 import dev.xcolorful.customgun.client.input.InputKey;
 import dev.xcolorful.customgun.client.util.ClientGuiUtils;

@@ -246,7 +246,7 @@ public interface GunDataAccessor extends IGunDataAccess {
     }
     @Override
     default int consumableAmmoCount(ItemStack gunItem, ItemStack ammoItem) {
-        IAmmo iAmmo = IAmmoGetter.fromItemStack(ammoItem);
+        @Nullable IAmmo iAmmo = IAmmoGetter.fromItemStack(ammoItem);
         if (iAmmo == null) return 0;
 
         @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(this.getGunLocation(gunItem));

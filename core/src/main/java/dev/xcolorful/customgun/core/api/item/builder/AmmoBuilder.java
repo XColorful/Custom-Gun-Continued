@@ -13,6 +13,8 @@ import dev.xcolorful.customgun.core.api.item.ammo.IAmmoGetter;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 
+import javax.annotation.Nullable;
+
 public final class AmmoBuilder extends ItemBuilder<AmmoBuilder> {
 
     private final IAmmo iAmmo;
@@ -23,7 +25,7 @@ public final class AmmoBuilder extends ItemBuilder<AmmoBuilder> {
     }
     public static AmmoBuilder create(ItemLike ammo) {
         ItemStack ammoItem = new ItemStack(ammo);
-        IAmmo iAmmo = IAmmoGetter.fromItemStack(ammoItem);
+        @Nullable IAmmo iAmmo = IAmmoGetter.fromItemStack(ammoItem);
         if (iAmmo != null) return new AmmoBuilder(iAmmo, ammoItem);
         else throw new IllegalArgumentException("Item is not a IAmmo");
     }

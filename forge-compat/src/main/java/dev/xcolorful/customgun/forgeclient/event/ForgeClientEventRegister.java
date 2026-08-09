@@ -33,8 +33,8 @@ public final class ForgeClientEventRegister implements IEventRegister {
             // resource
             case ADD_CLIENT_RELOAD_LISTENER_EVENT -> AddClientReloadListenerEventManager.register(eventHandler, priority, receiveCanceled);
             // render
-            case RENDER_FRAME_EVENT -> RenderFrameEventManager.register(eventHandler, priority, receiveCanceled);
             case PREPARE_RENDER_FRAME_EVENT -> PrepareRenderFrameEventManager.register(eventHandler, priority, receiveCanceled);
+            case RENDER_FRAME_EVENT -> RenderFrameEventManager.register(eventHandler, priority, receiveCanceled);
             case RENDER_LEVEL_STAGE_EVENT -> RenderLevelStageEventManager.register(eventHandler, priority, receiveCanceled);
             case RENDER_TRANSLUCENT_EVENT -> RenderTranslucentEventManager.register(eventHandler, priority, receiveCanceled);
             case SUBMIT_CUSTOM_GEOMETRY_EVENT -> SubmitCustomGeometryEventManager.register(eventHandler, priority, receiveCanceled);
@@ -64,8 +64,8 @@ public final class ForgeClientEventRegister implements IEventRegister {
             // resource
             case ADD_CLIENT_RELOAD_LISTENER_EVENT -> AddClientReloadListenerEventManager.unregister(eventHandler, priority, receiveCanceled);
             // render
-            case RENDER_FRAME_EVENT -> RenderFrameEventManager.unregister(eventHandler, priority, receiveCanceled);
             case PREPARE_RENDER_FRAME_EVENT -> PrepareRenderFrameEventManager.unregister(eventHandler, priority, receiveCanceled);
+            case RENDER_FRAME_EVENT -> RenderFrameEventManager.unregister(eventHandler, priority, receiveCanceled);
             case RENDER_LEVEL_STAGE_EVENT -> RenderLevelStageEventManager.unregister(eventHandler, priority, receiveCanceled);
             case RENDER_TRANSLUCENT_EVENT -> RenderTranslucentEventManager.unregister(eventHandler, priority, receiveCanceled);
             case SUBMIT_CUSTOM_GEOMETRY_EVENT -> SubmitCustomGeometryEventManager.unregister(eventHandler, priority, receiveCanceled);

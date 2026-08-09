@@ -57,6 +57,9 @@ public enum EventType {
     // render
     PREPARE_RENDER_FRAME_EVENT(true),
     RENDER_FRAME_EVENT(true),
+    COMPUTE_CAMERA_ANGLES_EVENT(true),
+    COMPUTE_FOV_EVENT(true),
+    COMPUTE_FOV_MODIFIER_EVENT(true),
     RENDER_LEVEL_STAGE_EVENT(true),
     RENDER_TRANSLUCENT_EVENT(true), // 单独拆一个事件，减少一点不必要的转发开销
     @ApiStatus.AvailableSince("neoforge26.2")

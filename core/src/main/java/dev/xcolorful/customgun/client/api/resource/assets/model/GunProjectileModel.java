@@ -7,6 +7,7 @@ import dev.xcolorful.customgun.client.resource.assets.model.bedrock.geometry._Bo
 import dev.xcolorful.customgun.client.resource.assets.model.bedrock.geometry._Description;
 import dev.xcolorful.customgun.client.resource.assets.model.bedrock.geometry.bone._Cube;
 import dev.xcolorful.customgun.client.resource.assets.model.bedrock.geometry.bone.cube._Uv;
+import dev.xcolorful.customgun.client.resource.assets.model.bedrock.geometry.bone.cube.uv._FaceUv;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ public class GunProjectileModel {
                         description.setIdentifier("geometry.customgun:gun_projectile");
                         description.setTextureWidth(16);
                         description.setTextureHeight(16);
-                        description.setVisibleBoundsWidth(3);
+                        description.setVisibleBoundsWidth(2);
                         description.setVisibleBoundsHeight(2.5f);
                         description.setVisibleBoundsOffset(new float[]{0, 0.75f, 0});
                     }
@@ -43,7 +44,41 @@ public class GunProjectileModel {
                                     cube.setOrigin(new float[]{-8, 0, -8});
                                     cube.setSize(new float[]{16, 16, 16});
                                     _Uv uv = new _Uv(); {
-                                        uv.setUv(new float[]{-28, -14});
+                                        _FaceUv north = new _FaceUv(); {
+                                            north.setUv(new float[]{0.25f, 0.25f});
+                                            north.setUvSize(new float[]{0.5f, 0.5f});
+                                        }
+                                        uv.setNorth(north);
+
+                                        _FaceUv east = new _FaceUv(); {
+                                            east.setUv(new float[]{1.25f, 0.25f});
+                                            east.setUvSize(new float[]{0.5f, 0.5f});
+                                        }
+                                        uv.setEast(east);
+
+                                        _FaceUv south = new _FaceUv(); {
+                                            south.setUv(new float[]{2.25f, 0.25f});
+                                            south.setUvSize(new float[]{0.5f, 0.5f});
+                                        }
+                                        uv.setSouth(south);
+
+                                        _FaceUv west = new _FaceUv(); {
+                                            west.setUv(new float[]{3.25f, 0.25f});
+                                            west.setUvSize(new float[]{0.5f, 0.5f});
+                                        }
+                                        uv.setWest(west);
+
+                                        _FaceUv up = new _FaceUv(); {
+                                            up.setUv(new float[]{4.75f, 0.75f});
+                                            up.setUvSize(new float[]{-0.5f, -0.5f});
+                                        }
+                                        uv.setUp(up);
+
+                                        _FaceUv down = new _FaceUv(); {
+                                            down.setUv(new float[]{5.75f, 0.75f});
+                                            down.setUvSize(new float[]{-0.5f, -0.5f});
+                                        }
+                                        uv.setDown(down);
                                     }
                                     cube.setUv(uv);
                                 }

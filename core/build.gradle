@@ -21,6 +21,9 @@ dependencies {
     compileOnly "${luaj_figuramc_core}"
     compileOnly "${luaj_figuramc_jse}"
     compileOnly "${luaj_bcel}"
+
+    // Apache Commons Math3
+    compileOnly "${apache_commons_math3}"
 }
 
 jar {

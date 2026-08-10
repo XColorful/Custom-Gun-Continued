@@ -60,9 +60,9 @@ public class MuzzleFlashRender implements IModelComponentRenderer {
         this.gunModelObject = gunModelObject;
     }
 
-    public static void onShoot() {
+    public static void onShoot(long currentTimeMillis) {
         // 记录开火时间戳
-        State.lastShootTimestamp = System.currentTimeMillis();
+        State.lastShootTimestamp = currentTimeMillis;
         // 记录枪口火焰启动标记
         State.muzzleFlashStartMark = true;
         // 随机给予枪口火焰的旋转

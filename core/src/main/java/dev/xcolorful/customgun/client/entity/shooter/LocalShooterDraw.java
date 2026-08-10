@@ -78,7 +78,7 @@ public final class LocalShooterDraw extends LocalShooterAspect {
     }
     private long _updateDrawTime(long currentTimeMillis, ItemStack lastItem, IGun lastGun, long drawTime) {
         if (true) {
-            // TODO AnimateGeoItemRenderer getPutAwayTime
+            // TODO IClientItemExtensions, AnimateGeoItemRenderer getPutAwayTime
             this.localShooterProperty.clientDrawFinishTimestamp = currentTimeMillis + drawTime;
         } else {
             drawTime = 0;
@@ -104,6 +104,6 @@ public final class LocalShooterDraw extends LocalShooterAspect {
 //        });
      }
      private void _doPutAway(ItemStack lastItem, long putAwayTime) {
-        // TODO
+        // TODO IClientItemExtensions
      }
 }

@@ -257,7 +257,7 @@ public class GunItemRenderer extends AnimateGeoItemRenderer<GunModelObject, GunA
             poseStack.mulPose(Axis.ZP.rotationDegrees(180f));
 
             // 应用持枪姿态变换，如第一人称摄像机定位
-            GunRendererAddon.applyFirstPersonGunTransform(poseStack, partialTick, gunModelObject, player, gunItem);
+            GunRendererAddon.get().applyFirstPersonGunTransform(poseStack, partialTick, gunModelObject, player, gunItem);
 
             // 开启第一人称弹壳和火焰渲染
             MuzzleFlashRender.State.isSelf = true;

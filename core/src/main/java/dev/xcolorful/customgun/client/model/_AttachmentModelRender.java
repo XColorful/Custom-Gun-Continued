@@ -285,7 +285,8 @@ public class _AttachmentModelRender {
         float rad = 80 * _this.getScopeViewRadiusModifier(); // 80是一个随便找的大小合适的数值
         LocalPlayer player = Minecraft.getInstance().player;
         if (player != null) {
-            rad *= ILocalShooterGetter.fromLocalPlayer(player).cgc$getRenderAimingProgress(ClientRenderUtils.getRenderFrameTime());
+            float partialTick = ClientRenderUtils.getRenderFrameTime();
+            rad *= ILocalShooterGetter.fromLocalPlayer(player).cgc$getRenderAimingProgress(partialTick);
         }
 
         // 遍历 divisionOcularEntries

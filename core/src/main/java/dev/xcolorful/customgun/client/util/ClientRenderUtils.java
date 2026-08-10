@@ -21,6 +21,9 @@ public class ClientRenderUtils {
         return MissingTextureAtlasSprite.getLocation();
     }
 
+    /**
+     * @return partialTick
+     */
     public static float getRenderFrameTime() {
         // 1.20.1-1.20.4
         return Minecraft.getInstance().getFrameTime();

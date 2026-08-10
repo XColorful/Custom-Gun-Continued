@@ -32,7 +32,7 @@ public final class LocalShooterInspect extends LocalShooterAspect {
         ItemStack gunItem = this.localShooter.getMainHandItem();
         @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) {
-            // TODO AnimateGeoItemRenderer
+            // TODO IClientItemExtensions, AnimateGeoItemRenderer
             return;
         }
 

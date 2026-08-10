@@ -15,6 +15,18 @@ import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
+import java.util.Random;
+
+/**
+ * 数学工具就没必要拆到{@code util.math}包下了
+ * <ul>
+ *     <li>每段工具能排在一起/用内部类隔离，就足够维护了</li>
+ *     <li>Util类本身就相当于"全能易用门面"，内部排列/代理对调用方都是一样的</li>
+ *     <li>类名直接带{@code MathUtil}有强调属性更好，比如{@link MathUtil.Quaternion}</li>
+ *     <li>Math是大家都认识的，但是Math的词汇不一定 (悲报：啥是四元数)</li>
+ *     <li>当MathUtil里出现多个内部类的时候，IDE可以折叠，从而看到内部类列表，diff也隔离在不同区域，缺点是从网页看blame很痛苦</li>
+ * </ul>
+ */
 public class MathUtil {
 
     public static double magnificationToFovMultiplier(double magnification, double currentFov) {
@@ -509,6 +521,102 @@ public class MathUtil {
     }
 
     /**
+     * 基于随机关键点和 smoothstep 插值的平滑随机噪声生成器
+     * <ul>
+     *     <li>在指定范围内生成随机目标值，并通过三次平滑插值生成连续变化的输出</li>
+     *     <li>适用于枪械后坐力、镜头晃动等需要自然随机扰动的动画效果</li>
+     * </ul>
+     */
+    public static class SmoothRandomNoise {
+
+        private final Random random = new Random();
+        private final float rangeDown;
+        private final float rangeUp;
+        private final long periodMs;
+
+        private float prevNum;
+        private float num;
+        private float value;
+
+        private long prevTime;
+        private boolean reverse = false;
+
+        public SmoothRandomNoise(float rangeDown, float rangeUp, long periodMs) {
+            this.rangeDown = rangeDown;
+            this.rangeUp = rangeUp;
+            this.periodMs = periodMs;
+            this.reset(0);
+        }
+
+        private static double easeInterpolate(double x) {
+            return (3 * Math.pow(x, 2) - 2 * Math.pow(x, 3));
+        }
+
+        public void setReverse(boolean reverse) {
+            this.reverse = reverse;
+        }
+
+        /**
+         * 重置噪声状态。
+         */
+        public void reset(long currentTimeMs) {
+            prevTime = currentTimeMs;
+
+            prevNum = random.nextFloat() * (rangeUp - rangeDown) + rangeDown;
+            num = random.nextFloat() * (rangeUp - rangeDown) + rangeDown;
+
+            if (reverse && prevNum * num > 0) {
+                num = -num;
+            }
+
+            value = prevNum;
+        }
+
+        /**
+         * 根据当前时间推进噪声状态。
+         */
+        public void tick(long currentTimeMs) {
+            long periodTime = currentTimeMs - prevTime;
+            long repeat = periodTime / periodMs;
+            long partialTime = periodTime % periodMs;
+
+            if (repeat == 1) {
+                prevNum = num;
+                num = random.nextFloat() * (rangeUp - rangeDown) + rangeDown;
+                if (reverse && prevNum * num > 0) {
+                    num = -num;
+                }
+                prevTime += periodMs;
+            } else if (repeat > 1) {
+                prevNum = random.nextFloat() * (rangeUp - rangeDown) + rangeDown;
+                num = random.nextFloat() * (rangeUp - rangeDown) + rangeDown;
+                if (reverse && prevNum * num > 0) {
+                    num = -num;
+                }
+                prevTime = currentTimeMs - partialTime;
+            }
+
+            double x = easeInterpolate((double) partialTime / (double) periodMs);
+            value = (float) (prevNum * (1 - x) + num * x);
+        }
+
+        /**
+         * 推进噪声状态并获取当前值
+         */
+        public float update_tick_get(long currentTimeMs) {
+            tick(currentTimeMs);
+            return get();
+        }
+
+        /**
+         * 获取当前噪声值
+         */
+        public float get() {
+            return value;
+        }
+    }
+
+    /**
      * 基于二阶微分方程的动态响应计算器
      * <ul>
      *     <li>根据自然频率、阻尼系数和初始响应速度计算系统状态，产生带有惯性和阻尼效果的平滑输出</li>
@@ -623,6 +731,29 @@ public class MathUtil {
         @Deprecated public float tick_get() {
             this.tick();
             return this.get();
+        }
+    }
+
+    /**
+     * 基于缓动曲线的插值计算器
+     * <ul>
+     *     <li>提供非线性插值函数，将线性变化转换为具有不同速度曲线的平滑过渡</li>
+     *     <li>适用于动画、镜头移动、物体运动等需要自然过渡效果的场景</li>
+     * </ul>
+     */
+    public static class Easing {
+
+        /**
+         * 计算三次缓出曲线的插值结果
+         * <ul>
+         *     <li>输入值从 0 到 1 变化时，输出值会以较快速度开始，并逐渐减速接近目标值</li>
+         *     <li>适用于需要自然减速效果的动画过渡</li>
+         * </ul>
+         * @param x 归一化输入值，通常范围为 0 到 1
+         * @return 缓动后的归一化输出值
+         */
+        public static double easeOutCubic(double x) {
+            return 1 - Math.pow(1 - x, 3);
         }
     }
 

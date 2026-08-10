@@ -227,7 +227,7 @@ Notation:
 |oculus|oculus|
 |optifine|optifine|
 |playeranimator|playeranimator|
-|shouldersurfing||
+|shouldersurfing|shouldersurfing|
 
 ### Config
 > ```java
@@ -594,6 +594,10 @@ Notation:
 |pojo.data.gun.`ChargeType`|gun.`ChargeType`|
 |pojo.data.gun.`FeedType`|gun.`AmmoFeedType`|
 
+|com.tacz.guns.resource|dev.xcolorful.customgun.client.renderer|
+|---|---|
+|pojo.data.gun.`GunRecoil`.getSplineFunction|item.gun.`GunRecoilCalculator`.getSplineFunction|
+
 |com.tacz.guns.resource|dev.xcolorful.customgun.core.api.entity|
 |---|---|
 |pojo.data.gun.`InaccuracyType`|`ShootState`|
@@ -630,9 +634,9 @@ Notation:
 |block.`BlockRayTrace`|`RayTraceUtils`|
 |block.`ProjectileExplosion`||
 |dafafixer.`AttachmentIdFix`|_Deprecated_|
-|math.`Easing`||
+|math.`Easing`|`MathUtil`.`Easing`|
 |math.`MathUtil`|`MathUtil`|
-|math.`PerlinNoise`||
+|math.`PerlinNoise`|`MathUtil`.`SmoothRandomNoise`|
 |math.`SecondOrderDynamics`|`MathUtil`.`SecondOrderDynamics`|
 |`ColorHex`|`ColorUtils`|
 |`EntityUtil`|`RayTraceUtils`|

@@ -142,9 +142,13 @@ public final class LivingShooterAim extends LivingShooterAspect {
             if (PlannedRefactor.MOVE_SCOPE_VIEW_INDEX_TO_CORE) {}
             scopeViewIndex = 0;
         }
-        AttachmentNBTAccessor.INSTANCE.setScopeViewIndex(scopeCustomDataTag, scopeViewIndex);
 
+        { // 写入操作需要保存
+            AttachmentNBTAccessor.INSTANCE.setScopeViewIndex(scopeCustomDataTag, scopeViewIndex);
+        }
         iGun.setAttachmentCustomDataTag(gunItem, SCOPE, scopeCustomDataTag);
+
+        return;
     }
 
     /**

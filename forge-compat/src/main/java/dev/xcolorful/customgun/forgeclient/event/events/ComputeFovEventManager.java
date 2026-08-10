@@ -33,7 +33,7 @@ public class ComputeFovEventManager {
 
     private static abstract class ComputeFovProxy extends AbstractEventCommon {
         public ComputeFovProxy() {
-            super(EventType.COMPUTE_CAMERA_ANGLES_EVENT);
+            super(EventType.COMPUTE_FOV_EVENT);
         }
 
         @Override

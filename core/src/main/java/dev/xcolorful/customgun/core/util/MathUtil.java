@@ -508,6 +508,124 @@ public class MathUtil {
         }
     }
 
+    /**
+     * 基于二阶微分方程的动态响应计算器
+     * <ul>
+     *     <li>根据自然频率、阻尼系数和初始响应速度计算系统状态，产生带有惯性和阻尼效果的平滑输出</li>
+     *     <li>适用于相机移动、FOV变化、动画插值等需要自然响应效果的场景</li>
+     * </ul>
+     */
+    public static class SecondOrderDynamics {
+
+        private final float k1;
+        private final float k2;
+        private final float k3;
+
+        private float py;
+        private float pyd;
+        private float px;
+
+        private float target;
+
+        private long lastTimeNs;
+
+        /**
+         * 创建一个二阶动态系统
+         * @param f  自然频率，决定系统响应速度
+         * @param z  阻尼系数，决定系统震荡程度
+         * @param r  初始响应速度，影响目标变化时的跟随程度
+         * @param x0 初始位置
+         */
+        public SecondOrderDynamics(float f, float z, float r, float x0) {
+            k1 = (float) (z / (Math.PI * f));
+            k2 = (float) (1 / ((2 * Math.PI * f) * (2 * Math.PI * f)));
+            k3 = (float) (r * z / (2 * Math.PI * f));
+
+            py = px = x0;
+            pyd = 0;
+
+            target = x0;
+
+            lastTimeNs = System.nanoTime();
+        }
+
+        /**
+         * 更新目标值
+         * @param x 当前目标值
+         * @return 平滑处理后的结果
+         */
+        public float update_tick_get(float x) {
+            target = x;
+            this.tick();
+            return this.get();
+        }
+
+        /**
+         * 执行一次二阶动态计算
+         */
+        public void tick() {
+            // 修正罕见的 NAN 错误
+            if (Float.isNaN(py)) {
+                py = 0;
+            }
+            if (Float.isNaN(pyd)) {
+                pyd = 0;
+            }
+
+            long currentTimeNs = System.nanoTime();
+            float t = (currentTimeNs - lastTimeNs) / 1_000_000_000.0f;
+            lastTimeNs = currentTimeNs;
+
+            // 防止首次调用或卡顿导致时间步过大
+            if (t <= 0) {
+                t = 0.001f;
+            } else if (t > 0.05f) {
+                t = 0.05f;
+            }
+
+            float xd = (target - px) / t;
+            float y = py + t * pyd;
+
+            pyd = pyd + t * (px + k3 * xd - py - k1 * pyd) / k2;
+            px = target;
+            py = y;
+        }
+
+        /**
+         * 获取当前二阶动态系统输出值
+         * <ul>
+         *     <li>输出值会根据当前位置和速度进行少量预测，用于减少视觉响应延迟</li>
+         * </ul>
+         * @return 当前处理的值，不会推进计算进度
+         */
+        public float get() {
+            // 修正罕见的 NAN 错误
+            if (Float.isNaN(py)) {
+                py = 0;
+            }
+            if (Float.isNaN(pyd)) {
+                pyd = 0;
+            }
+
+            return py + 0.05f * pyd;
+        }
+
+        // --------Deprecated--------
+
+        @Deprecated(forRemoval = true) public float update(float x) {
+            return this.update_tick_get(x);
+        }
+
+        /**
+         * 执行一次二阶动态计算，返回目标值
+         * @deprecated 该操作会手动推进计算进度，非状态维护方手动tick，会导致效果不一致
+         */
+        @Deprecated public float tick_get() {
+            this.tick();
+            return this.get();
+        }
+    }
+
     // --------Deprecated--------
 
     @Deprecated public static final float[] QUATERNION_ONE = Quaternion.QUATERNION_ONE;

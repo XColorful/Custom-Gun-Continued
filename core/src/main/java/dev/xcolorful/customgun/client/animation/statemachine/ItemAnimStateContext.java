@@ -45,7 +45,7 @@ public class ItemAnimStateContext extends AnimStateContext {
      * 状态机脚本请不要调用此方法。此方法用于状态机更新时设置 partialTicks
      */
     @ApiStatus.Internal
-    protected void setPartialTicks(float partialTicks) {
+    public void setPartialTicks(float partialTicks) {
         this.partialTicks = partialTicks;
     }
 }

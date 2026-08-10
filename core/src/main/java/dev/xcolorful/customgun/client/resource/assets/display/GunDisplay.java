@@ -30,11 +30,11 @@ import java.util.Map;
 public final class GunDisplay extends _AssetsDisplay<GunDisplay> {
 
     // 材质
-    private ResourceLocation hudTextureLocation;
-    private ResourceLocation hudEmptyTextureLocation;
+    private @Nullable ResourceLocation hudTextureLocation;
+    private @Nullable ResourceLocation hudEmptyTextureLocation;
 
     // 模型
-    private GunModelType gunModelType;
+    private @Nullable GunModelType gunModelType;
     private @Nullable _LodDisplay lodDisplay;
     private boolean enableTransparency = false;
 
@@ -211,13 +211,13 @@ public final class GunDisplay extends _AssetsDisplay<GunDisplay> {
 
     // --------Getter & Setter--------
 
-    public ResourceLocation getHudTextureLocation() {
+    public @Nullable ResourceLocation getHudTextureLocation() {
         return hudTextureLocation;
     }
-    public ResourceLocation getHudEmptyTextureLocation() {
+    public @Nullable ResourceLocation getHudEmptyTextureLocation() {
         return hudEmptyTextureLocation;
     }
-    public GunModelType getGunModelType() {
+    public @Nullable GunModelType getGunModelType() {
         return gunModelType;
     }
     public @Nullable _LodDisplay getLodDisplay() {
@@ -376,9 +376,6 @@ public final class GunDisplay extends _AssetsDisplay<GunDisplay> {
         super.applyBackCompatibility();
         this.setModelTransform(this.getModelTransform() == null ? new _ModelTransform().applyBackCompatibility() : this.getModelTransform().applyBackCompatibility());
         this.setSlotTextureLocation(this.getSlotTextureLocation() == null ? ResourceTag.NULL_LOCATION : this.getSlotTextureLocation());
-
-        this.hudTextureLocation = this.hudTextureLocation == null ? ResourceTag.NULL_LOCATION : this.hudTextureLocation;
-        this.hudEmptyTextureLocation = this.hudEmptyTextureLocation == null ? ResourceTag.NULL_LOCATION : this.hudEmptyTextureLocation;
 
         if (this.lodDisplay != null) this.lodDisplay.applyBackCompatibility();
         if (this.muzzleFlashDisplay != null) this.muzzleFlashDisplay.applyBackCompatibility();

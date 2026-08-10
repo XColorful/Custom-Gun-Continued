@@ -135,7 +135,7 @@ public class ShellRender implements IModelComponentRenderer {
                                     AmmoModelObject ammoModelObject,
                                     _ShellDisplay shellDisplay,
                                     _ShellEjectionParam shellEjectionParam) {
-        var shellTextureLocation = shellDisplay.getTextureLocation();
+        @Nullable var shellTextureLocation = shellDisplay.getTextureLocation();
         if (shellTextureLocation == null) return;
 
         // 清理抛壳队列

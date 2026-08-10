@@ -18,13 +18,13 @@ import dev.xcolorful.customgun.client.resource.assets.display.AttachmentDisplay;
 import dev.xcolorful.customgun.client.resource.assets.display._LodDisplay;
 import dev.xcolorful.customgun.client.resource.instance.data.ClientAttachmentIndexInstance;
 import dev.xcolorful.customgun.client.util.ClientRenderDistance;
+import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import dev.xcolorful.customgun.core.api.item.IAttachment;
 import dev.xcolorful.customgun.core.api.item.attachment.AttachmentCategory;
 import dev.xcolorful.customgun.core.api.item.attachment.IAttachmentGetter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -55,14 +55,14 @@ public class AttachmentRender implements IModelComponentRenderer {
             // 没有对应的 attachmentIndex，渲染黑紫材质以提醒
             Minecraft mc = Minecraft.getInstance();
             MultiBufferSource bufferSource = mc.renderBuffers().bufferSource();
-            VertexConsumer buffer = bufferSource.getBuffer(RenderType.entityTranslucent(MissingTextureAtlasSprite.getLocation()));
+            VertexConsumer buffer = bufferSource.getBuffer(RenderType.entityTranslucent(ClientRenderUtils.getMissingTextureLocation()));
             AttachmentItemRenderer.SLOT_ATTACHMENT_MODEL.renderToBuffer(poseStack, buffer, light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
             return;
         }
 
         AttachmentModelObject attachmentModelObject = clientAttachmentIndexInstance.getAttachmentModel();
         AttachmentDisplay attachmentDisplay = clientAttachmentIndexInstance.getAttachmentDisplay();
-        var attachmentTextureLocation = attachmentDisplay.getTextureLocation();
+        @Nullable var attachmentTextureLocation = attachmentDisplay.getTextureLocation();
 
         // 这里是枪械里的配件渲染，没有模型材质就不渲染
         if (attachmentModelObject == null || attachmentTextureLocation == null) return;
@@ -80,6 +80,7 @@ public class AttachmentRender implements IModelComponentRenderer {
                 }
             }
         }
+        if (attachmentTextureLocation == null) attachmentTextureLocation = ClientRenderUtils.getMissingTextureLocation();
 
         RenderType renderType = RenderType.entityCutout(attachmentTextureLocation);
         attachmentModelObject.render(poseStack, transformType, renderType, light, overlay, gunItem, attachmentItem);

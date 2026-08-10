@@ -15,6 +15,7 @@ import dev.xcolorful.customgun.client.compat.oculus.OculusCompat;
 import dev.xcolorful.customgun.client.model.bedrock.BedrockPart;
 import dev.xcolorful.customgun.client.renderer.model.BeamRender;
 import dev.xcolorful.customgun.client.util.ClientRenderHelper;
+import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -40,7 +41,7 @@ public class _AttachmentModelRender {
                                  ItemDisplayContext transformType,
                                  RenderType renderType,
                                  int light, int overlay,
-                                 ItemStack gunItem, @Nullable ItemStack attachmentItem) {
+                                 @Nullable ItemStack gunItem, @Nullable ItemStack attachmentItem) {
         _this.currentGunItem = gunItem;
         _this.attachmentItem = attachmentItem;
 
@@ -284,7 +285,7 @@ public class _AttachmentModelRender {
         float rad = 80 * _this.getScopeViewRadiusModifier(); // 80是一个随便找的大小合适的数值
         LocalPlayer player = Minecraft.getInstance().player;
         if (player != null) {
-            rad *= ILocalShooterGetter.fromLocalPlayer(player).cgc$getRenderAimingProgress(Minecraft.getInstance().getFrameTime());
+            rad *= ILocalShooterGetter.fromLocalPlayer(player).cgc$getRenderAimingProgress(ClientRenderUtils.getRenderFrameTime());
         }
 
         // 遍历 divisionOcularEntries

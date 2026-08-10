@@ -221,10 +221,10 @@ public final class GunDisplayInstance extends PojoInstance<GunDisplay> {
 
     // --------Getter--------
 
-    public @Nullable ModelObject getGunModel() {
+    public @Nullable GunModelObject getGunModel() {
         return this.gunModel;
     }
-    public @Nullable ModelObject getGunModelLod() {
+    public @Nullable GunModelObject getGunModelLod() {
         return this.gunModelLod;
     }
 
@@ -255,16 +255,16 @@ public final class GunDisplayInstance extends PojoInstance<GunDisplay> {
     @Deprecated public @Nullable _ModelTransform getTransform() {
         return this.getPojo().getModelTransform();
     }
-    @Deprecated public ResourceLocation getModelTexture() {
+    @Deprecated public @Nullable ResourceLocation getModelTexture() {
         return this.getPojo().getTextureLocation();
     }
     @Deprecated public ResourceLocation getSlotTexture() {
         return this.getPojo().getSlotTextureLocation();
     }
-    @Deprecated public ResourceLocation getHUDTexture() {
+    @Deprecated public @Nullable ResourceLocation getHUDTexture() {
         return this.getPojo().getHudTextureLocation();
     }
-    @Deprecated public ResourceLocation getHudEmptyTexture() {
+    @Deprecated public @Nullable ResourceLocation getHudEmptyTexture() {
         return this.getPojo().getHudEmptyTextureLocation();
     }
     @Deprecated public boolean enablesTransparency() {

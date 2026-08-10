@@ -633,7 +633,7 @@ Notation:
 |math.`Easing`||
 |math.`MathUtil`|`MathUtil`|
 |math.`PerlinNoise`||
-|math.`SecondOrderDynamics`||
+|math.`SecondOrderDynamics`|`MathUtil`.`SecondOrderDynamics`|
 |`ColorHex`|`ColorUtils`|
 |`EntityUtil`|`RayTraceUtils`|
 |`ExplodeUtil`||
@@ -815,9 +815,7 @@ Notation:
 
 |com.tacz.guns.client.event| |
 |---|---|
-|`CameraSetupEvent`||
 |`FirstPersonRenderEvent`||
-|`FirstPersonRenderGunEvent`||
 |`PlayerEnterWorld`|_Deprecated_|
 |`PreventsHotbarEvent`|_Deprecated_|
 |`ReloadResourceEvent`|_Deprecated_|
@@ -829,6 +827,13 @@ Notation:
 |`InventoryEvent`.onPlayerSwapMainHand|shooter.player.`_LocalMessageHandler`.onSwapItemWithOffhand|
 |`RefreshClonePlayerDataEvent`|shooter.player.`_LocalPlayerHandler`.onClientPlayerClone|
 |`RefreshClonePlayerDataEvent`.onClientTick|_Deprecated_|
+
+|com.tacz.guns.client.event|dev.xcolorful.customgun.client.renderer|
+|---|---|
+|`CameraSetupEvent`|item.gun.`GunCameraHelper`|
+|`FirstPersonRenderGunEvent`|item.gun.`GunRendererAddon`|
+|`PlayerHurtByGunEvent`.onPlayerHurtByGun|victim.onProjectileHit|
+|`RenderHeadShotAABB`|entity.`HeadAABBRender`|
 
 |com.tacz.guns.client.event|dev.xcolorful.customgun.client.mixin|
 |---|---|
@@ -842,11 +847,6 @@ Notation:
 |com.tacz.guns.client.event|dev.xcolorful.customgun.client.init|
 |---|---|
 |`CommonNetworkCacheEvent`.onClientPlayerLoggingIn|`ClientModEvent`.onClientLoggingIn|
-
-|com.tacz.guns.client.event|dev.xcolorful.customgun.client.renderer|
-|---|---|
-|`PlayerHurtByGunEvent`.onPlayerHurtByGun|victim.onProjectileHit|
-|`RenderHeadShotAABB`|entity.`HeadAABBRender`|
 
 |com.tacz.guns.client.event|dev.xcolorful.customgun.client.gui|
 |---|---|
@@ -1035,6 +1035,7 @@ Notation:
 |entity.`EntityBulletRenderer`||
 |entity.`TargetMinecartRenderer`|_Deprecated_|
 |item.`*ItemRenderer`|item.`*ItemRenderer`|
+|item.`GunItemRendererWrapper`|item.`GunItemRenderer`|
 |item.`AnimateGeoItemRenderer`|item.`AnimateGeoItemRenderer`|
 |item.`GunSmithTableItemRenderer`|_Deprecated_|
 |other.`GunHurtBobTweak`|victim.`GunHurtBobTweak`|

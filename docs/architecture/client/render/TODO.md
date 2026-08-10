@@ -17,7 +17,7 @@
 - [x] [9. 功能性渲染器](#9) — 枪口火焰、抛壳、激光束、配件渲染、手臂渲染
 - [x] [10. 动画 API 层](#10) — 动画实例、控制器、状态机、glTF 支持
 - [x] [11. 动画实现层](#11) — 枪械专用的状态上下文和第三人称管理器
-- [ ] [12. 物品渲染器](#12) — BEWLR 渲染器（AnimateGeoItemRenderer 及其枪械子类）
+- [x] [12. 物品渲染器](#12) — BEWLR 渲染器（AnimateGeoItemRenderer 及其枪械子类）
 - [ ] [13. 实体/方块渲染器](#13) — EntityBulletRenderer、StatueRenderer、TargetRenderer
 - [ ] [14. 客户端事件层](#14) — 第一人称渲染事件、相机事件、动画 Tick
 - [x] [15. Mixin 层](#15) — 对 MC 渲染管线的注入点
@@ -330,9 +330,9 @@ CGC 中 `ObjectAnimation` 和 `ObjectAnimationSoundChannel` 为占位骨架。
 |TaCZ `com.tacz.guns.client.renderer.item`|CGC `client.renderer.item`|状态|
 |---|---|---|
 |`AnimateGeoItemRenderer`|`AnimateGeoItemRenderer`|已完成（占位）|
-|`GunItemRendererWrapper`|（待确定）||
-|`AmmoItemRenderer`|（待确定）||
-|`AttachmentItemRenderer`|（待确定）||
+|`GunItemRendererWrapper`|`GunItemRenderer`||
+|`AmmoItemRenderer`|`AmmoItemRenderer`||
+|`AttachmentItemRenderer`|`AttachmentItemRenderer`||
 |`GunSmithTableItemRenderer`|_Deprecated_||
 
 [↑ 回到移植顺序](#移植顺序)
@@ -367,7 +367,7 @@ CGC 中 `ObjectAnimation` 和 `ObjectAnimationSoundChannel` 为占位骨架。
 |TaCZ `com.tacz.guns.client.event`|CGC 目标|状态|
 |---|---|---|
 |`FirstPersonRenderEvent`|（待确定）||
-|`FirstPersonRenderGunEvent`|（待确定）||
+|`FirstPersonRenderGunEvent`|`renderer.item.gun.GunRendererAddon`||
 |`CameraSetupEvent`|（待确定）||
 |`TickAnimationEvent`|（待确定）||
 |`RenderCrosshairEvent`|`gui.crosshair.CrosshairRender`|已完成|

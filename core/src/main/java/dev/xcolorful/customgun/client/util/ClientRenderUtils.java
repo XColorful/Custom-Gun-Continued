@@ -8,10 +8,31 @@
 package dev.xcolorful.customgun.client.util;
 
 import dev.xcolorful.customgun.client.api.event.IRenderLevelStageEvent;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 
 public class ClientRenderUtils {
+
+    public static @NotNull ResourceLocation getMissingTextureLocation() {
+        return MissingTextureAtlasSprite.getLocation();
+    }
+
+    public static float getRenderFrameTime() {
+        // 1.20.1-1.20.4
+        return Minecraft.getInstance().getFrameTime();
+        // 1.21.1
+//        return Minecraft.getInstance()
+//                .getTimer()
+//                .getGameTimeDeltaPartialTick(false);
+        // 1.21.4
+//        return Minecraft.getInstance()
+//                .getDeltaTracker()
+//                .getGameTimeDeltaPartialTick(false);
+    }
 
     /**
      * 创建一个新的模型视图矩阵

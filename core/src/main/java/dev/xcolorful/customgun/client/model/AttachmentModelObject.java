@@ -205,7 +205,7 @@ public final class AttachmentModelObject extends AnimatedModelObject implements 
                        ItemDisplayContext transformType,
                        RenderType renderType,
                        int light, int overlay,
-                       ItemStack gunItem, @Nullable ItemStack attachmentItem) {
+                       @Nullable ItemStack gunItem, @Nullable ItemStack attachmentItem) {
         _AttachmentModelRender.render(this,
                 matrixStack,
                 transformType,

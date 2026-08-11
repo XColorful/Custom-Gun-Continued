@@ -25,7 +25,9 @@ import dev.xcolorful.customgun.core.api.entity.shooter.modifier.ShooterGunModifi
 import dev.xcolorful.customgun.core.api.event.gun.GunFireEvent;
 import dev.xcolorful.customgun.core.api.gun.attack.IGunAttackRuntime;
 import dev.xcolorful.customgun.core.api.item.IGun;
+import dev.xcolorful.customgun.core.api.item.attachment.modifier.AttachmentModifierType;
 import dev.xcolorful.customgun.core.api.item.gun.*;
+import dev.xcolorful.customgun.core.api.item.gun.modifier.IMuzzleModifier;
 import dev.xcolorful.customgun.core.api.resource.ResourceApi;
 import dev.xcolorful.customgun.core.config.GunConfig;
 import dev.xcolorful.customgun.core.entity.shooter.LivingShooterShoot;
@@ -344,8 +346,8 @@ public final class LocalShooterShoot extends LocalShooterAspect {
         ShooterGunModifierCache shooterGunModifierCache = ILivingShooterGetter.cgc$fromLivingEntity(this.localShooter).cgc$getGunModifierCache();
         if (shooterGunModifierCache == null) return false;
 
-        // TODO GunPropertyCache SilenceModifier.ID
-        return false;
+        @Nullable FireSoundType fireSoundType = IMuzzleModifier.getValue(shooterGunModifierCache, AttachmentModifierType.MUZZLE);
+        return fireSoundType != null && fireSoundType.isSoundSuppressed();
     }
 
     public long getClientShootCooldown() {

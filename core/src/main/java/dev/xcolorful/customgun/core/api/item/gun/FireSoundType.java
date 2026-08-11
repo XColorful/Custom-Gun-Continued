@@ -14,20 +14,28 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum FireSoundType implements ResourceTag.CategoryTag {
-    NORMAL(FireSoundTypeTag.NORMAL),
-    SILENCED(FireSoundTypeTag.SILENCED),
-    MUTED(FireSoundTypeTag.MUTED);
+    NORMAL(FireSoundTypeTag.NORMAL, false),
+    SILENCED(FireSoundTypeTag.SILENCED, true),
+    MUTED(FireSoundTypeTag.MUTED, true);
 
     public final String typeName;
-    FireSoundType(String name) {
+    public final boolean isSuppressed;
+    FireSoundType(String name, boolean isSuppressed) {
         this.typeName = name;
+        this.isSuppressed = isSuppressed;
     }
-
     @Override public String getTagName() {
         return this.typeName;
     }
     @Override public String getCategoryName() {
         return this.typeName;
+    }
+
+    public boolean isSoundSuppressed() {
+        return this.isSuppressed;
+    }
+    public boolean isMuzzleFlashSuppressed() {
+        return this.isSoundSuppressed();
     }
 
     private static final Map<String, FireSoundType> FIRE_SOUND_TYPES = new HashMap<>();

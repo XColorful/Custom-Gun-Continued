@@ -111,13 +111,7 @@ public class MuzzleFlashRender implements IModelComponentRenderer {
             if (muzzleModifierData == null) return;
 
             FireSoundType fireSoundType = muzzleModifierData.getFireSoundType();
-            switch (fireSoundType) {
-                case NORMAL -> {}
-                case SILENCED, MUTED -> { // 消音或无声武器
-                    return;
-                }
-                // 增加类型使此处强制编译不通过
-            }
+            if (fireSoundType.isMuzzleFlashSuppressed()) return;
         }
 
         this.renderMuzzleFlash(poseStack, currentTimeMillis, gunModelObject, muzzleFlashDisplay);

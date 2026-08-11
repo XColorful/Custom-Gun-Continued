@@ -25,8 +25,15 @@
 	- DebugCommand：[客户端调试指令](/docs/wiki/command/Debug%20command.md#客户端指令)
 	- ReloadCommand：[客户端重载指令](/docs/wiki/command/Reload%20command.md#客户端指令)
 
-### 模组联动
+### 模组兼容
 > _./client/compat_
+
+[模组兼容框架](/docs/architecture/core/compat/mod-compat-framework.md)
+- ar：加速渲染
+- oculus：Oculus
+- optifine：Optifine
+- playeranimator：Player Animator
+- shouldersurfing：越肩视角
 
 ### 配置
 > _./client/config_
@@ -206,6 +213,13 @@ Module division based on the `dev.xcolorful.customgun.client` top-level package
 
 ### Mod Compat
 > _./client/compat_
+
+[Mod compat framework](/docs/architecture/core/compat/mod-compat-framework.md#English)
+- ar: Accelerated Rendering
+- oculus: Oculus
+- optifine: Optifine
+- playeranimator: Player Animator
+- shouldersurfing: Shoulder Surfing Reloaded
 
 ### Config
 > _./client/config_

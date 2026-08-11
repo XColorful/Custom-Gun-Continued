@@ -29,7 +29,7 @@
 	- ListPackCommand：[枪包列表指令](/docs/wiki/command/List%20pack%20command.md)
 	- ReloadCommand：[重载指令](/docs/wiki/command/Reload%20command.md)
 
-### 模组联动
+### 模组兼容
 > _./core/compat_
 
 ### 配置

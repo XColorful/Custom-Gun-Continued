@@ -94,7 +94,7 @@ public final class _ModelNodeTextDisplay extends ResourcePojo<_ModelNodeTextDisp
     public int getTextLight() {
         return textLight;
     }
-    public boolean isEnableTextShadow() {
+    public boolean getEnableTextShadow() {
         return enableTextShadow;
     }
     public float getXOffsetScale() {

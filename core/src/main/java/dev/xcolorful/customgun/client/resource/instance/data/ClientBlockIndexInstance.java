@@ -82,7 +82,7 @@ public final class ClientBlockIndexInstance extends PojoInstance<BlockIndex> {
     @Deprecated public String getTooltipKey() {
         return ComponentUtils.toTranslatableKey(this.getPojo().getTooltipLang());
     }
-    @Deprecated public ResourceLocation getTexture() {
+    @Deprecated public @Nullable ResourceLocation getTexture() {
         return this.blockDisplayCache.getTextureLocation();
     }
     @Deprecated public Transformation getTransforms() {

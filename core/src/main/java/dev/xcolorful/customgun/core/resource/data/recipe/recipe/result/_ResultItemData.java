@@ -14,12 +14,12 @@ import dev.xcolorful.customgun.core.resource.ResourcePojo;
 import dev.xcolorful.customgun.core.util.JsonUtils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.common.crafting.CraftingHelper;
 
 import java.io.IOException;
 
 /**
- * 手动解析 1.20.1 原版{@link CraftingHelper#getItemStack}格式，不属于 TaCZ
+ * 手动解析 1.20.1 原版{@code net.minecraftforge.common.crafting.CraftingHelper#getItemStack}格式，不属于 TaCZ
+ * <br>
  * 即不支持 1.21.1 组件系统，但是高版本实际也只用了 CustomData，从而换取全版本兼容的格式
  */
 public class _ResultItemData extends ResourcePojo<_ResultItemData> {

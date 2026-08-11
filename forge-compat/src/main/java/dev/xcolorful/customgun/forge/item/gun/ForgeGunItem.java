@@ -7,7 +7,9 @@
 
 package dev.xcolorful.customgun.forge.item.gun;
 
+import dev.xcolorful.customgun.client.renderer.item.GunItemRenderer;
 import dev.xcolorful.customgun.core.item.gun.GunItem;
+import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
@@ -32,5 +34,17 @@ public class ForgeGunItem extends GunItem {
      */
     @OnlyIn(Dist.CLIENT)
     public static void registerClientExtension(Consumer<IClientItemExtensions> consumer) {
+        consumer.accept(new IClientItemExtensions() {
+            GunItemRenderer gunItemRenderer;
+
+            @Override
+            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
+                if (this.gunItemRenderer == null) {
+                    this.gunItemRenderer = new GunItemRenderer();
+                }
+
+                return this.gunItemRenderer;
+            }
+        });
     }
 }

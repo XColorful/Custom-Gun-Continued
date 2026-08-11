@@ -20,6 +20,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,16 +36,16 @@ public class ClientMessageLaserColor implements IMessage<ClientMessageLaserColor
     }
 
     public ClientMessageLaserColor(@NotNull ItemStack gunItem, int gunSlotIndex) {
-        IGun iGun = IGunGetter.fromItemStack(gunItem);
+        @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return;
 
         for (AttachmentCategory category : AttachmentCategory.values()) {
             ItemStack attachment = iGun.getAttachment(gunItem, category);
-            IAttachment iAttachment = IAttachmentGetter.fromItemStack(attachment);
+            @Nullable IAttachment iAttachment = IAttachmentGetter.fromItemStack(attachment);
             if (iAttachment == null) continue;
 
             if (iAttachment.hasLaserColor(attachment)) {
-                this.colorMap.put(category, iAttachment.getLaserColor(attachment));
+                this.colorMap.put(category, iAttachment.getLaserColorInt(attachment));
             }
         }
 
@@ -81,16 +82,16 @@ public class ClientMessageLaserColor implements IMessage<ClientMessageLaserColor
                 }
                 Inventory inventory = player.getInventory();
                 ItemStack gunItem = inventory.getItem(message.gunSlotIndex);
-                IGun iGun = IGunGetter.fromItemStack(gunItem);
+                @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
                 if (iGun == null) return;
 
                 for (Map.Entry<AttachmentCategory, Integer> entry : message.colorMap.entrySet()) {
                     AttachmentCategory category = entry.getKey();
                     int colorInt = entry.getValue();
                     ItemStack attachment = iGun.getAttachment(gunItem, category);
-                    IAttachment iAttachment = IAttachmentGetter.fromItemStack(attachment);
+                    @Nullable IAttachment iAttachment = IAttachmentGetter.fromItemStack(attachment);
                     if (iAttachment != null) {
-                        iAttachment.setLaserColor(attachment, colorInt);
+                        iAttachment.setLaserColorInt(attachment, colorInt);
                     }
                 }
 

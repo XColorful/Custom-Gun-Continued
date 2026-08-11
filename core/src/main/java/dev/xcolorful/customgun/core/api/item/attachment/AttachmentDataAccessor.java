@@ -73,14 +73,14 @@ public interface AttachmentDataAccessor extends AttachmentNBTAccessor, IAttachme
         return this.hasLaserColor(customDataTag);
     }
     @Override
-    default int getLaserColor(ItemStack attachmentItem) {
+    default int getLaserColorInt(ItemStack attachmentItem) {
         @Nullable var customData = NBTUtils.getCustomData(attachmentItem);
         if (customData == null) return 0;
         @NotNull CompoundTag customDataTag = NBTUtils.getCustomDataTag(customData);
         return this.getLaserColor(customDataTag);
     }
     @Override
-    default void setLaserColor(ItemStack attachmentItem, int laserColor) {
+    default void setLaserColorInt(ItemStack attachmentItem, int laserColor) {
         var customData = NBTUtils.getOrCreateCustomData(attachmentItem);
         @NotNull CompoundTag customDataTag = NBTUtils.getCustomDataTag(customData);
         this.setLaserColor(customDataTag, laserColor);

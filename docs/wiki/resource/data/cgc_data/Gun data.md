@@ -1,7 +1,7 @@
 [English](#English)
 
 # 枪械数据
-> wiki 版本：`0.0.1`.7
+> wiki 版本：`0.0.4`.8
 
 - `bullet_data`/`bullet`（\_BulletData）：
 	- `display_damage`/`damage`（float）：
@@ -48,10 +48,10 @@
 - `recoil_data`/`recoil`（\_RecoilData）：
 	- `pitch_recoil`/`pitch`（List\<\_RecoilEntryData>）：
 		- `time`（float）：
-		- `value`（float[]）：
+		- `range`/`value`（float[]）：
 	- `yaw_recoil`/`yaw`（List\<\_RecoilEntryData>）：
 		- `time`（float）：
-		- `value`（float[]）：
+		- `range`/`value`（float[]）：
 - `prone_recoil_multiplier`/`crawl_recoil_multiplier`（float）：
 - 
 - ~~`weight`~~
@@ -200,13 +200,13 @@
 		"pitch_recoil": [
 			{
 				"time": 0.0,
-				"value": [0.0, 0.0]
+				"range": [0.0, 0.0]
 			}
 		],
 		"yaw_recoil": [
 			{
 				"time": 0.0,
-				"value": [0.0, 0.0]
+				"range": [0.0, 0.0]
 			}
 		]
 	},
@@ -325,7 +325,7 @@
 ```
 
 # English
-> wiki verison: `0.0.1`.7
+> wiki verison: `0.0.4`.8
 
 - `bullet_data`/`bullet`( \_BulletData):
 	- `display_damage`/`damage`(float):
@@ -372,10 +372,10 @@
 - `recoil_data`/`recoil`( \_RecoilData):
 	- `pitch_recoil`/`pitch`(List\< \_RecoilEntryData>):
 		- `time`(float):
-		- `value`(float[]):
+		- `range`/`value`(float[]):
 	- `yaw_recoil`/`yaw`(List\< \_RecoilEntryData>):
 		- `time`(float):
-		- `value`(float[]):
+		- `range`/`value`(float[]):
 - `prone_recoil_multiplier`/`crawl_recoil_multiplier`(float):
 - 
 - ~~`weight`~~
@@ -524,13 +524,13 @@
 		"pitch_recoil": [
 			{
 				"time": 0.0,
-				"value": [0.0, 0.0]
+				"range": [0.0, 0.0]
 			}
 		],
 		"yaw_recoil": [
 			{
 				"time": 0.0,
-				"value": [0.0, 0.0]
+				"range": [0.0, 0.0]
 			}
 		]
 	},

@@ -10,7 +10,7 @@ import java.util.Map;
 public class NetworkUtils {
 
     public static void writeItem(FriendlyByteBuf buffer, ItemStack item){
-        buffer.writeItem(item);
+        buffer.writeItemStack(item, false);
     }
     public static ItemStack readItem(FriendlyByteBuf buffer){
         return buffer.readItem();

@@ -10,6 +10,7 @@ package dev.xcolorful.customgun.core.network.message;
 import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.core.api.entity.shooter.ILivingShooterGetter;
 import dev.xcolorful.customgun.core.api.network.message.IMessage;
+import dev.xcolorful.customgun.core.util.InventoryUtils;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
@@ -38,7 +39,7 @@ public class ClientMessagePlayerDrawGun implements IMessage<ClientMessagePlayerD
                 }
 
                 Inventory inventory = player.getInventory();
-                int selected = inventory.selected;
+                int selected = InventoryUtils.getSelectedSlot(inventory);
                 ILivingShooterGetter.cgc$fromLivingEntity(player).cgc$draw(() -> inventory.getItem(selected));
             });
         }

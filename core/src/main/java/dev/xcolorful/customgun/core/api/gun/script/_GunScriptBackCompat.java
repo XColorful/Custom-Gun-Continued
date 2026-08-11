@@ -404,7 +404,7 @@ public class _GunScriptBackCompat {
 
         GunData gunData = gunIndexInstance.getGunData();
         BoltType boltType = gunData.getBoltType();
-        return boltType != BoltType.OPEN_BOLT && _this.iGun.hasBarrelAmmo(_this.gunItem);
+        return boltType.useBarrelAmmo() && _this.iGun.hasBarrelAmmo(_this.gunItem);
     }
 
     protected static void setAmmoInBarrel(GunScriptApi _this, boolean ammoInBarrel) {
@@ -490,7 +490,7 @@ public class _GunScriptBackCompat {
     }
 
     protected static void setItemStack(GunScriptApi _this, ItemStack itemStack) {
-        IGun iGun = IGunGetter.fromItemStack(itemStack);
+        @Nullable IGun iGun = IGunGetter.fromItemStack(itemStack);
         if (iGun == null) {
             CustomGun.LOGGER.warn("_GunScriptBackCompat: itemStack {} is not IGun", itemStack.toString());
             return;

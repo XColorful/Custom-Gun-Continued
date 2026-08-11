@@ -13,9 +13,9 @@ import dev.xcolorful.customgun.core.entity.shooter.LivingShooterAim;
 import dev.xcolorful.customgun.core.entity.shooter.LivingShooterDraw;
 import dev.xcolorful.customgun.core.entity.shooter.LivingShooterProne;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import org.luaj.vm2.LuaValue;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
@@ -79,8 +79,7 @@ public class ShooterProperty {
     /**
      * 装填状态的缓存。会在每个 tick 进行更新。
      */
-    @Nonnull
-    public ReloadState.StateType reloadStateType = ReloadState.StateType.NOT_RELOADING;
+    public @NotNull ReloadState.StateType reloadStateType = ReloadState.StateType.NOT_RELOADING;
     /**
      * 当前操作的枪械物品的 Supplier。在切枪时 (draw 方法) 更新。
      */

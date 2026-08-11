@@ -31,8 +31,8 @@ public enum AttachmentProperty implements ResourceTag {
             IAttachmentDataAccess::getScopeViewIndex,
             IAttachmentDataAccess::setScopeViewIndex),
     LASER_COLOR(AttachmentPropertyTag.LASER_COLOR,
-            IAttachmentDataAccess::getLaserColor,
-            IAttachmentDataAccess::setLaserColor),
+            IAttachmentDataAccess::getLaserColorInt,
+            IAttachmentDataAccess::setLaserColorInt),
 
     // IAttachmentStateAccess
     TOOLTIP_MASK(AttachmentPropertyTag.TOOLTIP_MASK,

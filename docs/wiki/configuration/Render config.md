@@ -1,7 +1,7 @@
 [English](#English)
 
 # 渲染配置
-> wiki 版本：`0.0.1`.1
+> wiki 版本：`0.0.4`.2
 
 路径：`render`
 - `EnableLaserFadeOut`（bool）：是否对激光应用淡出效果
@@ -22,7 +22,7 @@
 - `KillAmountEnable`（bool）：是否显示击杀数
 - `KillAmountDurationSecond`（浮点）：击杀数显示持续时间（秒）
 - `TargetRenderDistance`（整数）：目标最远渲染距离
-- `FirstPersonBulletTracerEnable`（bool）：是否渲染第一人称曳光弹轨迹
+- `EnableFirstPersonBulletTracer`（bool）：是否渲染第一人称曳光弹轨迹
 - `DisableInteractHudText`（bool）：禁用屏幕中央的交互HUD文本
 - `AutoSelectGunSmithTableFilter`（bool）：手持枪械/配件/子弹打开改装台时是否自动选择过滤
 - `DamageCounterResetTime`（整数，≥10）：伤害计数器重置时间（毫秒）
@@ -42,7 +42,7 @@
 	KillAmountEnable = true
 	KillAmountDurationSecond = 3.0
 	TargetRenderDistance = 128
-	FirstPersonBulletTracerEnable = true
+	EnableFirstPersonBulletTracer = true
 	DisableInteractHudText = false
 	AutoSelectGunSmithTableFilter = true
 	DamageCounterResetTime = 2000
@@ -52,7 +52,7 @@
 ```
 
 # English
-> wiki verison: `0.0.1`.1
+> wiki verison: `0.0.4`.2
 
 ## Render Config
 
@@ -75,7 +75,7 @@ Path: `render`
 - `KillAmountEnable` (bool): Whether to display the kill amount
 - `KillAmountDurationSecond` (float): The duration of the kill amount, in seconds
 - `TargetRenderDistance` (integer): The farthest render distance of the target, including minecarts type
-- `FirstPersonBulletTracerEnable` (bool): Whether to render first person bullet trail
+- `EnableFirstPersonBulletTracer` (bool): Whether to render first person bullet trail
 - `DisableInteractHudText` (bool): Disable the interact HUD text in the center of the screen
 - `AutoSelectGunSmithTableFilter` (bool): Whether to automatically select the gun smith table's held item filter
 - `DamageCounterResetTime` (integer, ≥10): Max time the damage counter will reset
@@ -95,7 +95,7 @@ Path: `render`
 	KillAmountEnable = true
 	KillAmountDurationSecond = 3.0
 	TargetRenderDistance = 128
-	FirstPersonBulletTracerEnable = true
+	EnableFirstPersonBulletTracer = true
 	DisableInteractHudText = false
 	AutoSelectGunSmithTableFilter = true
 	DamageCounterResetTime = 2000

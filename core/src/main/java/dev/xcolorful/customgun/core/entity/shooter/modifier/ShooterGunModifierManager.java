@@ -30,7 +30,7 @@ public class ShooterGunModifierManager {
         postChangeEvent(livingShooter, livingShooter.getMainHandItem());
     }
     public static void postChangeEvent(@NotNull LivingEntity livingShooter, @NotNull ItemStack gunItem) {
-        IGun iGun = IGunGetter.fromItemStack(gunItem);
+        @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return;
 
         var gunLocation = iGun.getGunLocation(gunItem);

@@ -10,8 +10,10 @@ package dev.xcolorful.customgun.client.resource.assets.display;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import dev.xcolorful.customgun.client.api.item.gun.DamageDisplayType;
-import dev.xcolorful.customgun.client.api.item.gun.ThirdPersonAnimationType;
+import dev.xcolorful.customgun.client.api.item.gun.IShooterAnimationCategory;
+import dev.xcolorful.customgun.client.api.item.gun.ShooterAnimationCategory;
 import dev.xcolorful.customgun.client.api.model.gun.GunModelType;
+import dev.xcolorful.customgun.client.api.model.gun.IGunModelType;
 import dev.xcolorful.customgun.client.api.sound.gun.GunSoundType;
 import dev.xcolorful.customgun.client.resource.assets.display.gun.*;
 import dev.xcolorful.customgun.core.api.item.gun.AmmoCountType;
@@ -29,11 +31,11 @@ import java.util.Map;
 public final class GunDisplay extends _AssetsDisplay<GunDisplay> {
 
     // 材质
-    private ResourceLocation hudTextureLocation;
-    private ResourceLocation hudEmptyTextureLocation;
+    private @Nullable ResourceLocation hudTextureLocation;
+    private @Nullable ResourceLocation hudEmptyTextureLocation;
 
     // 模型
-    private GunModelType gunModelType;
+    private @Nullable IGunModelType gunModelType;
     private @Nullable _LodDisplay lodDisplay;
     private boolean enableTransparency = false;
 
@@ -55,7 +57,7 @@ public final class GunDisplay extends _AssetsDisplay<GunDisplay> {
     private @Nullable ResourceLocation scriptLocation;
     private @Nullable Map<String, Object> scriptParam;
     private @Nullable _ShellEjectionParam shellEjectionParam;
-    private ThirdPersonAnimationType thirdPersonAnimationType;
+    private IShooterAnimationCategory shooterAnimationCategory;
     private @Nullable ResourceLocation playerAnimatorLocation;
     private boolean playerAnimatorFixedHand = false;
     private Map<GunSoundType, ResourceLocation> gunSounds;
@@ -102,7 +104,7 @@ public final class GunDisplay extends _AssetsDisplay<GunDisplay> {
                     case GunDisplayTag.SCRIPT_LOCATION, GunDisplayTag.SCRIPT_LOCATION_OLD1 -> pojo.scriptLocation = JsonUtils.readResourceLocation(reader);
                     case GunDisplayTag.SCRIPT_PARAM, GunDisplayTag.SCRIPT_PARAM_OLD1 -> pojo.scriptParam = JsonUtils.readString2ObjectMap(reader, JsonUtils::readObject);
                     case GunDisplayTag.SHELL_EJECTION_PARAM, GunDisplayTag.SHELL_EJECTION_PARAM_OLD1 -> pojo.shellEjectionParam = JsonUtils.read(reader, _ShellEjectionParam::fromJson);
-                    case GunDisplayTag.THIRD_PERSON_ANIMATION_TYPE, GunDisplayTag.THIRD_PERSON_ANIMATION_TYPE_OLD1 -> pojo.thirdPersonAnimationType = JsonUtils.readFromString(reader, ThirdPersonAnimationType::fromString);
+                    case GunDisplayTag.SHOOTER_ANIMATION_CATEGORY, GunDisplayTag.SHOOTER_ANIMATION_CATEGORY_OLD1 -> pojo.shooterAnimationCategory = JsonUtils.readFromString(reader, ShooterAnimationCategory::fromString);
                     case GunDisplayTag.PLAYER_ANIMATOR_LOCATION, GunDisplayTag.PLAYER_ANIMATOR_LOCATION_OLD1 -> pojo.playerAnimatorLocation = JsonUtils.readResourceLocation(reader);
                     case GunDisplayTag.PLAYER_ANIMATOR_FIXED_HAND, GunDisplayTag.PLAYER_ANIMATOR_FIXED_HAND_OLD1 -> pojo.playerAnimatorFixedHand = JsonUtils.readBoolean(reader);
                     case GunDisplayTag.GUN_SOUNDS, GunDisplayTag.GUN_SOUNDS_OLD1 -> pojo.gunSounds = JsonUtils.readObject2ObjectMap(reader, GunSoundType::fromString, JsonUtils::readResourceLocation);
@@ -151,7 +153,7 @@ public final class GunDisplay extends _AssetsDisplay<GunDisplay> {
             JsonUtils.writeResourceLocation(writer, GunDisplayTag.SCRIPT_LOCATION, this.scriptLocation);
             JsonUtils.writeString2ObjectMap(writer, GunDisplayTag.SCRIPT_PARAM, this.scriptParam, JsonUtils::writeObject);
             JsonUtils.write(writer, GunDisplayTag.SHELL_EJECTION_PARAM, this.shellEjectionParam, _ShellEjectionParam::toJson);
-            JsonUtils.writeToString(writer, GunDisplayTag.THIRD_PERSON_ANIMATION_TYPE, this.thirdPersonAnimationType);
+            JsonUtils.writeToString(writer, GunDisplayTag.SHOOTER_ANIMATION_CATEGORY, this.shooterAnimationCategory);
             JsonUtils.writeResourceLocation(writer, GunDisplayTag.PLAYER_ANIMATOR_LOCATION, this.playerAnimatorLocation);
             JsonUtils.writeBoolean(writer, GunDisplayTag.PLAYER_ANIMATOR_FIXED_HAND, this.playerAnimatorFixedHand);
             JsonUtils.writeObject2ObjectMap(writer, GunDisplayTag.GUN_SOUNDS, this.gunSounds, GunSoundType::toString, JsonUtils::writeResourceLocationValue);
@@ -210,13 +212,13 @@ public final class GunDisplay extends _AssetsDisplay<GunDisplay> {
 
     // --------Getter & Setter--------
 
-    public ResourceLocation getHudTextureLocation() {
+    public @Nullable ResourceLocation getHudTextureLocation() {
         return hudTextureLocation;
     }
-    public ResourceLocation getHudEmptyTextureLocation() {
+    public @Nullable ResourceLocation getHudEmptyTextureLocation() {
         return hudEmptyTextureLocation;
     }
-    public GunModelType getGunModelType() {
+    public @Nullable IGunModelType getGunModelType() {
         return gunModelType;
     }
     public @Nullable _LodDisplay getLodDisplay() {
@@ -270,8 +272,8 @@ public final class GunDisplay extends _AssetsDisplay<GunDisplay> {
     public @Nullable _ShellEjectionParam getShellEjectionParam() {
         return shellEjectionParam;
     }
-    public ThirdPersonAnimationType getThirdPersonAnimationType() {
-        return thirdPersonAnimationType;
+    public IShooterAnimationCategory getShooterAnimationCategory() {
+        return shooterAnimationCategory;
     }
     public @Nullable ResourceLocation getPlayerAnimatorLocation() {
         return playerAnimatorLocation;
@@ -295,7 +297,7 @@ public final class GunDisplay extends _AssetsDisplay<GunDisplay> {
     public void setHudEmptyTextureLocation(ResourceLocation hudEmptyTextureLocation) {
         this.hudEmptyTextureLocation = hudEmptyTextureLocation;
     }
-    public void setGunModelType(GunModelType gunModelType) {
+    public void setGunModelType(IGunModelType gunModelType) {
         this.gunModelType = gunModelType;
     }
     public void setLodDisplay(_LodDisplay lodDisplay) {
@@ -349,8 +351,8 @@ public final class GunDisplay extends _AssetsDisplay<GunDisplay> {
     public void setShellEjectionParam(_ShellEjectionParam shellEjectionParam) {
         this.shellEjectionParam = shellEjectionParam;
     }
-    public void setThirdPersonAnimationType(ThirdPersonAnimationType thirdPersonAnimationType) {
-        this.thirdPersonAnimationType = thirdPersonAnimationType;
+    public void setShooterAnimationCategory(IShooterAnimationCategory shooterAnimationCategory) {
+        this.shooterAnimationCategory = shooterAnimationCategory;
     }
     public void setPlayerAnimatorLocation(ResourceLocation playerAnimatorLocation) {
         this.playerAnimatorLocation = playerAnimatorLocation;
@@ -375,9 +377,6 @@ public final class GunDisplay extends _AssetsDisplay<GunDisplay> {
         super.applyBackCompatibility();
         this.setModelTransform(this.getModelTransform() == null ? new _ModelTransform().applyBackCompatibility() : this.getModelTransform().applyBackCompatibility());
         this.setSlotTextureLocation(this.getSlotTextureLocation() == null ? ResourceTag.NULL_LOCATION : this.getSlotTextureLocation());
-
-        this.hudTextureLocation = this.hudTextureLocation == null ? ResourceTag.NULL_LOCATION : this.hudTextureLocation;
-        this.hudEmptyTextureLocation = this.hudEmptyTextureLocation == null ? ResourceTag.NULL_LOCATION : this.hudEmptyTextureLocation;
 
         if (this.lodDisplay != null) this.lodDisplay.applyBackCompatibility();
         if (this.muzzleFlashDisplay != null) this.muzzleFlashDisplay.applyBackCompatibility();

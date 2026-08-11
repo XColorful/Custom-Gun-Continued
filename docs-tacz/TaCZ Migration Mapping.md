@@ -941,7 +941,8 @@ Notation:
 
 |com.tacz.guns.mixin.client|dev.xcolorful.customgun.client.mixin|
 |---|---|
-|ar||
+|ar.`ARCompatMixinPlugin`|_Deprecated_|
+|ar.`BedrockPartMixin`|_Deprecated_|
 |`AbstractButtonMixin`|gui.`AbstractButtonMixin`|
 |`GameRendererMixin`|renderer.`GameRendererMixin`|
 |`HumanoidModelMixin`|model.`HumanoidModelMixin`|
@@ -952,7 +953,7 @@ Notation:
 |`MouseHandlerMixin`|`MouseHandlerMixin`|
 |`PlayerModelMixin`|model.`PlayerModelMixin`|
 |`SoundManagerPreparationsMixin`|sound.`SoundManagerMixin`|
-|`StairBlockAccessor`||
+|`StairBlockAccessor`|_Deprecated_|
 
 ### Model (Client)
 > ```java

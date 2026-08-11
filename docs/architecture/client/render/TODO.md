@@ -413,9 +413,9 @@ CGC 中 `ObjectAnimation` 和 `ObjectAnimationSoundChannel` 为占位骨架。
 |`AbstractButtonMixin`|`gui.AbstractButtonMixin`|已完成|
 |`SoundManagerPreparationsMixin`|`sound.SoundManagerMixin`|已完成|
 |`LanguageMixin`|_Deprecated_||
-|`ar.ARCompatMixinPlugin`|（待确定）||
-|`ar.BedrockPartMixin`|（待确定）||
-|`StairBlockAccessor`|（待确定）||
+|`ar.ARCompatMixinPlugin`|_Deprecated_||
+|`ar.BedrockPartMixin`|_Deprecated_||
+|`StairBlockAccessor`|_Deprecated_||
 
 [↑ 回到移植顺序](#移植顺序)
 

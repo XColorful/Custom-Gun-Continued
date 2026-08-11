@@ -35,13 +35,13 @@ public final class ForgeClientEventRegister implements IEventRegister {
             // render
             case PREPARE_RENDER_FRAME_EVENT -> PrepareRenderFrameEventManager.register(eventHandler, priority, receiveCanceled);
             case RENDER_FRAME_EVENT -> RenderFrameEventManager.register(eventHandler, priority, receiveCanceled);
+            case COMPUTE_CAMERA_ANGLES_EVENT -> ComputeCameraAnglesEventManager.register(eventHandler, priority, receiveCanceled);
+            case COMPUTE_FOV_EVENT -> ComputeFovEventManager.register(eventHandler, priority, receiveCanceled);
+            case COMPUTE_FOV_MODIFIER_EVENT -> ComputeFovModifierEventManager.register(eventHandler, priority, receiveCanceled);
             case RENDER_LEVEL_STAGE_EVENT -> RenderLevelStageEventManager.register(eventHandler, priority, receiveCanceled);
             case RENDER_TRANSLUCENT_EVENT -> RenderTranslucentEventManager.register(eventHandler, priority, receiveCanceled);
             case SUBMIT_CUSTOM_GEOMETRY_EVENT -> SubmitCustomGeometryEventManager.register(eventHandler, priority, receiveCanceled);
             case RENDER_GUI_EVENT -> RenderGuiEventManager.register(eventHandler, priority, receiveCanceled);
-            case COMPUTE_CAMERA_ANGLES_EVENT -> ComputeCameraAnglesEventManager.register(eventHandler, priority, receiveCanceled);
-            case COMPUTE_FOV_EVENT -> ComputeFovEventManager.register(eventHandler, priority, receiveCanceled);
-            case COMPUTE_FOV_MODIFIER_EVENT -> ComputeFovModifierEventManager.register(eventHandler, priority, receiveCanceled);
             // display
             case ITEM_TOOLTIP_EVENT -> ItemTooltipEventManager.register(eventHandler, priority, receiveCanceled);
             default -> {
@@ -69,13 +69,13 @@ public final class ForgeClientEventRegister implements IEventRegister {
             // render
             case PREPARE_RENDER_FRAME_EVENT -> PrepareRenderFrameEventManager.unregister(eventHandler, priority, receiveCanceled);
             case RENDER_FRAME_EVENT -> RenderFrameEventManager.unregister(eventHandler, priority, receiveCanceled);
+            case COMPUTE_CAMERA_ANGLES_EVENT -> ComputeCameraAnglesEventManager.unregister(eventHandler, priority, receiveCanceled);
+            case COMPUTE_FOV_EVENT -> ComputeFovEventManager.unregister(eventHandler, priority, receiveCanceled);
+            case COMPUTE_FOV_MODIFIER_EVENT -> ComputeFovModifierEventManager.unregister(eventHandler, priority, receiveCanceled);
             case RENDER_LEVEL_STAGE_EVENT -> RenderLevelStageEventManager.unregister(eventHandler, priority, receiveCanceled);
             case RENDER_TRANSLUCENT_EVENT -> RenderTranslucentEventManager.unregister(eventHandler, priority, receiveCanceled);
             case SUBMIT_CUSTOM_GEOMETRY_EVENT -> SubmitCustomGeometryEventManager.unregister(eventHandler, priority, receiveCanceled);
             case RENDER_GUI_EVENT -> RenderGuiEventManager.unregister(eventHandler, priority, receiveCanceled);
-            case COMPUTE_CAMERA_ANGLES_EVENT -> ComputeCameraAnglesEventManager.unregister(eventHandler, priority, receiveCanceled);
-            case COMPUTE_FOV_EVENT -> ComputeFovEventManager.unregister(eventHandler, priority, receiveCanceled);
-            case COMPUTE_FOV_MODIFIER_EVENT -> ComputeFovModifierEventManager.unregister(eventHandler, priority, receiveCanceled);
             // display
             case ITEM_TOOLTIP_EVENT -> ItemTooltipEventManager.unregister(eventHandler, priority, receiveCanceled);
             default -> {

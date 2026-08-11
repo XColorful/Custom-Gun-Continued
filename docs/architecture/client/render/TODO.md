@@ -19,7 +19,7 @@
 - [x] [11. 动画实现层](#11) — 枪械专用的状态上下文和第三人称管理器
 - [x] [12. 物品渲染器](#12) — BEWLR 渲染器（AnimateGeoItemRenderer 及其枪械子类）
 - [x] [13. 实体/方块渲染器](#13) — EntityBulletRenderer、StatueRenderer、TargetRenderer
-- [ ] [14. 客户端事件层](#14) — 第一人称渲染事件、相机事件、动画 Tick
+- [x] [14. 客户端事件层](#14) — 第一人称渲染事件、相机事件、动画 Tick
 - [x] [15. Mixin 层](#15) — 对 MC 渲染管线的注入点
 - [ ] [16. 其他 API](#16) — 模型类型管理、第三人称动画接口
 
@@ -366,7 +366,7 @@ CGC 中 `ObjectAnimation` 和 `ObjectAnimationSoundChannel` 为占位骨架。
 
 |TaCZ `com.tacz.guns.client.event`|CGC 目标|状态|
 |---|---|---|
-|`FirstPersonRenderEvent`|（待确定）||
+|`FirstPersonRenderEvent`|`renderer.shooter.FirstPersonRender`||
 |`FirstPersonRenderGunEvent`|`renderer.item.gun.GunRendererAddon`||
 |`CameraSetupEvent`|`renderer.item.gun.GunCameraHelper`||
 |`TickAnimationEvent`|`entity.shooter.player._LocalAnimHandler`||

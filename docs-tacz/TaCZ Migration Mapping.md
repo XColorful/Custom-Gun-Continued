@@ -819,7 +819,6 @@ Notation:
 
 |com.tacz.guns.client.event| |
 |---|---|
-|`FirstPersonRenderEvent`||
 |`PlayerEnterWorld`|_Deprecated_|
 |`PreventsHotbarEvent`|_Deprecated_|
 |`ReloadResourceEvent`|_Deprecated_|
@@ -830,6 +829,7 @@ Notation:
 |`InventoryEvent`.onPlayerSwapMainHand|shooter.player.`_LocalMessageHandler`.onSwapItemWithOffhand|
 |`RefreshClonePlayerDataEvent`|shooter.player.`_LocalPlayerHandler`.onClientPlayerClone|
 |`RefreshClonePlayerDataEvent`.onClientTick|_Deprecated_|
+|`TickAnimationEvent`|shooter.player.`_LocalAnimHandler`|
 
 |com.tacz.guns.client.event|dev.xcolorful.customgun.client.renderer|
 |---|---|

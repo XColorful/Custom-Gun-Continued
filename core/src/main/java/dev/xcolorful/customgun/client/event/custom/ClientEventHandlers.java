@@ -26,18 +26,12 @@ public class ClientEventHandlers {
 
         CoreEventHandlers.register(customEventRegister, SoundPlayManager.get(), EventType.CLIENT_TICK_EVENT, EventPriority.NORMAL, false);
         CoreEventHandlers.register(customEventRegister, _AllAssetsManager.INSTANCE, EventType.ADD_CLIENT_RELOAD_LISTENER_EVENT, EventPriority.NORMAL, false);
+        CoreEventHandlers.register(customEventRegister, PojoLocationTooltip.get(), EventType.ITEM_TOOLTIP_EVENT, EventPriority.NORMAL, false);
         CoreEventHandlers.register(customEventRegister, GunCameraHelper.get(), EventType.COMPUTE_CAMERA_ANGLES_EVENT, EventPriority.NORMAL, false);
         CoreEventHandlers.register(customEventRegister, GunCameraHelper.get(), EventType.COMPUTE_FOV_EVENT, EventPriority.NORMAL, false);
         CoreEventHandlers.register(customEventRegister, GunCameraHelper.get(), EventType.COMPUTE_FOV_MODIFIER_EVENT, EventPriority.LOW, false);
         CoreEventHandlers.register(customEventRegister, _LocalAnimHandler.get(), EventType.CLIENT_TICK_EVENT, EventPriority.NORMAL, false);
         CoreEventHandlers.register(customEventRegister, _LocalAnimHandler.get(), EventType.RENDER_FRAME_EVENT, EventPriority.NORMAL, false);
-
-        // ----input----
-        CoreEventHandlers.register(customEventRegister, AimKey.get(), EventType.PREPARE_CLIENT_TICK_EVENT, EventPriority.NORMAL, false);
-        CoreEventHandlers.register(customEventRegister, AimKey.get(), EventType.CLIENT_TICK_EVENT, EventPriority.NORMAL, false);
-        CoreEventHandlers.register(customEventRegister, ReloadKey.get(), EventType.PREPARE_CLIENT_PLAYER_TICK_EVENT, EventPriority.NORMAL, false);
-        CoreEventHandlers.register(customEventRegister, ShootKey.get(), EventType.CLIENT_TICK_EVENT, EventPriority.NORMAL, false);
-        CoreEventHandlers.register(customEventRegister, PojoLocationTooltip.get(), EventType.ITEM_TOOLTIP_EVENT, EventPriority.NORMAL, false);
 
         // ----custom event type----
         CoreEventHandlers.register(customEventRegister, _LocalMessageHandler.get(), CustomEventType.SWAP_ITEM_WITH_OFFHAND_EVENT, EventPriority.NORMAL, false);

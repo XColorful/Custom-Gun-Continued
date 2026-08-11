@@ -16,6 +16,7 @@ import dev.xcolorful.customgun.core.network.message.event.ServerMessageGunSwitch
 import dev.xcolorful.customgun.core.util.SendUtils;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 public final class LivingShooterSwitchFireMode extends LivingShooterAspect {
 
@@ -27,7 +28,7 @@ public final class LivingShooterSwitchFireMode extends LivingShooterAspect {
         // 1. 手持枪械检查
         if (this.shooterProperty.currentGunItem == null) return;
         ItemStack gunItem = this.shooterProperty.currentGunItem.get();
-        IGun iGun = IGunGetter.fromItemStack(gunItem);
+        @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return;
 
         if ( // 2.2 检查状态锁

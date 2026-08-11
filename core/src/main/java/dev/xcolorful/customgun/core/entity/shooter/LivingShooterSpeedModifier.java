@@ -42,7 +42,7 @@ public final class LivingShooterSpeedModifier extends LivingShooterAspect {
         var speedModifier = this.livingShooter.getAttributes().getInstance(Attributes.MOVEMENT_SPEED);
         if (speedModifier == null) return;
 
-        IGun iGun = IGunGetter.fromItemStack(stack);
+        @Nullable IGun iGun = IGunGetter.fromItemStack(stack);
         if (iGun == null) {
             speedModifier.removeModifier(WEIGHT_SPEED_MODIFIER);
             speedModifier.removeModifier(EXTRA_SPEED_MODIFIER);

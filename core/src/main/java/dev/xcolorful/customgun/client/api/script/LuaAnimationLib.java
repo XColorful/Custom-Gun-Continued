@@ -8,7 +8,7 @@
 package dev.xcolorful.customgun.client.api.script;
 
 import com.google.common.collect.Maps;
-import dev.xcolorful.customgun.client.api.animation.ObjectAnimation;
+import dev.xcolorful.customgun.client.api.animation.AnimationPlayType;
 import dev.xcolorful.customgun.core.api.script.LuaLibrary;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
@@ -22,7 +22,7 @@ public class LuaAnimationLib implements LuaLibrary {
     public LuaAnimationLib() {
 
         // 映射 PlayType 枚举
-        for (var playType : ObjectAnimation.PlayType.values()) {
+        for (var playType : AnimationPlayType.values()) {
             constantMap.put(playType.name(), playType.ordinal());
         }
     }

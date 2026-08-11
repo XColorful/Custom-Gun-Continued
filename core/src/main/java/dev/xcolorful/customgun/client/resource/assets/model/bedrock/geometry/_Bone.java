@@ -13,6 +13,7 @@ import dev.xcolorful.customgun.client.resource.assets.model.bedrock.geometry.bon
 import dev.xcolorful.customgun.core.api.resource.assets.model.bedrock.geometry._BoneTag;
 import dev.xcolorful.customgun.core.resource.ResourcePojo;
 import dev.xcolorful.customgun.core.util.JsonUtils;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.List;
@@ -83,10 +84,10 @@ public final class _Bone extends ResourcePojo<_Bone> {
     public float[] getPivot() {
         return pivot;
     }
-    public float[] getRotation() {
+    public float @Nullable [] getRotation() {
         return rotation;
     }
-    public List<_Cube> getCubes() {
+    public @Nullable List<_Cube> getCubes() {
         return cubes;
     }
     public boolean getMirror() {

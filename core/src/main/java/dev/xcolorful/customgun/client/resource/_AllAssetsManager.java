@@ -11,6 +11,7 @@ import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.api.event.IAddClientReloadListenerEvent;
 import dev.xcolorful.customgun.client.api.resource.assets.AssetsFolderType;
 import dev.xcolorful.customgun.client.compat.playeranimator.PlayerAnimator;
+import dev.xcolorful.customgun.client.compat.playeranimator.PlayerAnimatorCompat;
 import dev.xcolorful.customgun.client.resource.assets.*;
 import dev.xcolorful.customgun.core.api.common.McSide;
 import dev.xcolorful.customgun.core.api.event.EventType;
@@ -115,9 +116,11 @@ public class _AllAssetsManager implements IEventHandler {
     private static void onAddClientReloadListenerEvent(IAddClientReloadListenerEvent event) {
         SoundManager.clearCacheOnReload();
 
-        // TODO PlayerAnimatorCompat.init()
+        PlayerAnimatorCompat.init();
+
         _AllAssetsManager.INSTANCE.reloadAndRegister(event);
-        // TODO PlayerAnimatorCompat
+        PlayerAnimatorCompat.registerReloadListener(event);
+
         if (CustomGun.getMcRegistry().isModLoaded(PlayerAnimator.MOD_ID)) {
             INSTANCE.playerAnimationManager = INSTANCE.addToListener(INSTANCE.reloadListeners, new AnimationManager.PlayerAnimationManager());
             event.addListener(INSTANCE.playerAnimationManager.getRegistryName(), INSTANCE.playerAnimationManager);

@@ -78,7 +78,6 @@ public void bolt() {
     if (gunDisplayInstance != null) {
         var soundLocation = gunDisplayInstance.getGunSound(GunSoundType.BOLT_SOUND);
         SoundPlayManager.get().playGunSound(soundLocation, this.localShooter);
-        // TODO AnimationStateMachine trigger INPUT_BOLT
     }
 }
 ```

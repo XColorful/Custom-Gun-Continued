@@ -43,6 +43,9 @@ public final class LocalShooterAim extends LocalShooterAspect {
 
     public float getRenderAimingProgress(float partialTicks) {
         // TODO 非线性映射
+        /**
+         * ↑可能不需要了，功能可以在{@link dev.xcolorful.customgun.client.renderer.item.gun.GunRendererAddon}调整
+         */
         return Mth.lerp(partialTicks, LocalShooterProperty.oldAimingProgress, this.localShooterProperty.clientAimingProgress);
     }
 

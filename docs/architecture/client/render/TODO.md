@@ -346,11 +346,11 @@ CGC 中 `ObjectAnimation` 和 `ObjectAnimationSoundChannel` 为占位骨架。
 
 |TaCZ `com.tacz.guns.client.renderer`|CGC `client.renderer`|状态|
 |---|---|---|
-|`entity.EntityBulletRenderer`|（待确定）||
+|`entity.EntityBulletRenderer`|`entity.GunProjectileRenderer`||
 |`entity.TargetMinecartRenderer`|_Deprecated_||
 |`block.GunSmithTableRenderer`|_Deprecated_||
-|`block.StatueRenderer`|（待确定）||
-|`block.TargetRenderer`|（待确定）||
+|`block.StatueRenderer`|_Deprecated_||
+|`block.TargetRenderer`|_Deprecated_||
 |`other.GunHurtBobTweak`|`victim.GunHurtBobTweak`|已完成|
 |`other.HumanoidOffhandRender`|`shooter.HumanoidOffhandRender`|已完成（占位）|
 |`crosshair.CrosshairType`|`api.textures.crosshair.CrosshairType`|已完成|

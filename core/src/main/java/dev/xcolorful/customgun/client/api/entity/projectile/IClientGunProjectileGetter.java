@@ -6,7 +6,7 @@ import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public interface IClientProjectileGetter {
+public interface IClientGunProjectileGetter {
 
     /**
      * mixin实现的扩展接口

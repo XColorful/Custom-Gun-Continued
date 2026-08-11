@@ -1036,7 +1036,7 @@ Notation:
 |com.tacz.guns.client.renderer|dev.xcolorful.customgun.client.renderer|
 |---|---|
 |block|_Deprecated_|
-|entity.`EntityBulletRenderer`||
+|entity.`EntityBulletRenderer`|entity.`GunProjectileRenderer`|
 |entity.`TargetMinecartRenderer`|_Deprecated_|
 |item.`*ItemRenderer`|item.`*ItemRenderer`|
 |item.`GunItemRendererWrapper`|item.`GunItemRenderer`|

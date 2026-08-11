@@ -158,7 +158,7 @@ public final class ShootKey extends InputKey implements IEventHandler {
         if (player == null || player.isSpectator()) return false; // 旁观模式
 
         ItemStack gunItem = player.getMainHandItem();
-        IGun iGun = IGunGetter.fromItemStack(gunItem);
+        @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return false; // 主手没枪
 
         // --------shoot--------

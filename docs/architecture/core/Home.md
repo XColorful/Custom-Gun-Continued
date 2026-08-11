@@ -29,7 +29,7 @@
 	- ListPackCommand：[枪包列表指令](/docs/wiki/command/List%20pack%20command.md)
 	- ReloadCommand：[重载指令](/docs/wiki/command/Reload%20command.md)
 
-### 模组联动
+### 模组兼容
 > _./core/compat_
 
 ### 配置
@@ -197,6 +197,11 @@
 
 - SoundManager：声音管理器
 
+### 文本
+> _./core/text_
+
+- Placeholder：占位符
+
 ### 工具
 > _./core/util_
 
@@ -211,13 +216,14 @@
 - ComponentUtils：文本组件工具
 - FileUtils：文件工具
 - IngredientUtils：`Ingredient.of()` 重载工具
+- InventoryUtils：`Inventory`相关兼容封装
 - JsonUtils：JSON 序列化封装
 - MathUtil：数学工具
 - NBTUtils：NBT 统一封装
 	- 必须使用此处而非直接调用 Minecraft `CompoundTag` API，以保持兼容性
-- NetworkUtils：`FriendlyByteBuf` 相关兼容封装
-	- 对于已封装的 `FriendlyByteBuf` 操作，必须使用此处
-	- 未封装的方法直接调用 `FriendlyByteBuf` 即可
+- NetworkUtils：`FriendlyByteBuf`相关兼容封装
+	- 对于已封装的 `FriendlyByteBuf`操作，必须使用此处
+	- 未封装的方法直接调用 `FriendlyByteBuf`即可
 - RayTraceUtils：射线追踪工具
 - ScriptUtils：LuaJ工具
 - SendUtils：网络消息统一发送入口
@@ -419,6 +425,11 @@ Module division based on the `dev.xcolorful.customgun.core` top-level package
 
 - SoundManager: Sound manager
 
+### Text
+> _./core/text_
+
+- Placeholder
+
 ### Utility
 > _./core/util_
 
@@ -433,6 +444,7 @@ Module division based on the `dev.xcolorful.customgun.core` top-level package
 - ComponentUtils: Text component utilities
 - FileUtils: File utilities
 - IngredientUtils: Utilities for `Ingredient.of()` overloads
+- InventoryUtils: Compatibility wrappers for `Inventory`
 - JsonUtils: JSON serialization wrapper
 - MathUtil: Math utilities
 - NBTUtils: Unified NBT wrapper

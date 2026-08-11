@@ -7,7 +7,9 @@
 
 package dev.xcolorful.customgun.client.entity.shooter;
 
-import dev.xcolorful.customgun.client.animation.statemachine.GunAnimationState;
+import dev.xcolorful.customgun.client.animation.statemachine.GunAnimStateContext;
+import dev.xcolorful.customgun.client.animation.statemachine.LuaAnimStateMachine;
+import dev.xcolorful.customgun.client.api.animation.statemachine.GunAnimationState;
 import dev.xcolorful.customgun.client.api.entity.LocalShooterProperty;
 import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
 import dev.xcolorful.customgun.client.api.sound.gun.GunSoundType;
@@ -33,7 +35,7 @@ public final class LocalShooterMelee extends LocalShooterAspect {
     public void prepareMelee() {
         // 1. 手持枪械检查
         ItemStack gunItem = this.localShooter.getMainHandItem();
-        IGun iGun = IGunGetter.fromItemStack(gunItem);
+        @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return;
 
         if ( // 2.1 检查状态锁
@@ -67,7 +69,9 @@ public final class LocalShooterMelee extends LocalShooterAspect {
                 this.localShooter);
         // 发送执行近战的数据包，通知服务器
         SendUtils.sendMessageToServer(new ClientMessagePlayerMelee());
+
         // 动画状态机转移状态
-        // TODO GunDisplayInstance AnimationStateMachine
+        LuaAnimStateMachine<GunAnimStateContext> animStateMachine = gunDisplayInstance.getAnimStateMachine();
+        animStateMachine.trigger(gunAnimationState.getConstantName());
     }
 }

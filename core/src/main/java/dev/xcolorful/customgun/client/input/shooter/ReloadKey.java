@@ -104,7 +104,7 @@ public final class ReloadKey extends InputKey implements IEventHandler {
         if (player == null || player.isSpectator()) return; // 旁观模式
 
         ItemStack gunItem = player.getMainHandItem();
-        IGun iGun = IGunGetter.fromItemStack(gunItem);
+        @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return; // 主手没枪
 
         if (iGun.useInventoryAmmo(gunItem)) return; // 背包直读 -> 不需要装弹
@@ -121,7 +121,7 @@ public final class ReloadKey extends InputKey implements IEventHandler {
                 || player.tickCount % AUTO_RELOAD_FREQUENCY != 0) return;
 
         ItemStack gunItem = player.getMainHandItem();
-        IGun iGun = IGunGetter.fromItemStack(gunItem);
+        @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return; // 主手没枪
 
         if (iGun.useInventoryAmmo(gunItem)) return; // 背包直读 -> 不需要装弹

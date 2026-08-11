@@ -40,7 +40,7 @@ public class GunDisplayTag extends _AssetsDisplayTag {
     public static final String SCRIPT_LOCATION = GunDataTag.SCRIPT_LOCATION; public static final String SCRIPT_LOCATION_OLD1 = "state_machine";
     public static final String SCRIPT_PARAM = GunDataTag.SCRIPT_PARAM; public static final String SCRIPT_PARAM_OLD1 = "state_machine_param";
     public static final String SHELL_EJECTION_PARAM = "shell_ejection_param"; public static final String SHELL_EJECTION_PARAM_OLD1 = "shell";
-    public static final String THIRD_PERSON_ANIMATION_TYPE = "third_person_animation_type"; public static final String THIRD_PERSON_ANIMATION_TYPE_OLD1 = "third_person_animation";
+    public static final String SHOOTER_ANIMATION_CATEGORY = "shooter_animation_category"; public static final String SHOOTER_ANIMATION_CATEGORY_OLD1 = "third_person_animation";
     public static final String PLAYER_ANIMATOR_LOCATION = "player_animator_location"; public static final String PLAYER_ANIMATOR_LOCATION_OLD1 = "player_animator_3rd";
     public static final String PLAYER_ANIMATOR_FIXED_HAND = "player_animator_fixed_hand"; public static final String PLAYER_ANIMATOR_FIXED_HAND_OLD1 = "3rd_fixed_hand";
     public static final String GUN_SOUNDS = "gun_sounds"; public static final String GUN_SOUNDS_OLD1 = "sounds";

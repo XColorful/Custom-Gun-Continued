@@ -39,7 +39,7 @@ public final class LivingShooterReload extends LivingShooterAspect {
         // 1. 手持枪械检查
         if (this.shooterProperty.currentGunItem == null) return;
         ItemStack gunItem = this.shooterProperty.currentGunItem.get();
-        IGun iGun = IGunGetter.fromItemStack(gunItem);
+        @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return;
 
         long currentTimeMillis = System.currentTimeMillis();
@@ -104,7 +104,7 @@ public final class LivingShooterReload extends LivingShooterAspect {
         if (this.shooterProperty.currentGunItem != null) {
             ItemStack currentGunItem = this.shooterProperty.currentGunItem.get();
             if (currentGunItem != null) {
-                IGun iGun = IGunGetter.fromItemStack(currentGunItem);
+                @Nullable IGun iGun = IGunGetter.fromItemStack(currentGunItem);
                 if (iGun != null) {
                     result = iGun.tickReload(this.shooterProperty, iGun, currentGunItem, ILivingShooterGetter.cgc$fromLivingEntity(this.livingShooter), this.livingShooter);
                 }
@@ -123,7 +123,7 @@ public final class LivingShooterReload extends LivingShooterAspect {
         // 1. 手持枪械检查
         if (this.shooterProperty.currentGunItem == null) return;
         ItemStack currentGunItem = this.shooterProperty.currentGunItem.get();
-        IGun iGun = IGunGetter.fromItemStack(currentGunItem);
+        @Nullable IGun iGun = IGunGetter.fromItemStack(currentGunItem);
         if (iGun == null) return;
 
         else if ( // 2.2 检查状态

@@ -16,7 +16,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.crafting.CraftingHelper;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -501,7 +500,7 @@ public class NBTUtils {
             }
         }
         /**
-         * {@link CraftingHelper#getNBT(JsonElement)}
+         * {@code net.minecraftforge.common.crafting.CraftingHelper#getNBT(JsonElement)}
          */
         public static @Nullable CompoundTag fromJson(JsonElement json) {
             return fromString(json.toString());

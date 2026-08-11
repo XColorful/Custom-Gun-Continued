@@ -39,6 +39,7 @@ public class CustomGunClient {
         if (initialized) return;
         CustomGunClient.keyMappingCreator = keyMappingCreator;
         CustomGunClient.accessTransformer = accessTransformer;
+        CustomGunClient.clientItemExtensionProvider = clientItemExtensionProvider;
 
         ClientModConfig.init();
 

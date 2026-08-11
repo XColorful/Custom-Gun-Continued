@@ -11,9 +11,12 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import dev.xcolorful.customgun.client.resource.assets.model.bedrock.geometry._Bone;
 import dev.xcolorful.customgun.client.resource.assets.model.bedrock.geometry._Description;
+import dev.xcolorful.customgun.client.resource.assets.model.bedrock.geometry.bone._Cube;
 import dev.xcolorful.customgun.core.api.resource.assets.model.bedrock._GeometryModelTag;
 import dev.xcolorful.customgun.core.resource.ResourcePojo;
 import dev.xcolorful.customgun.core.util.JsonUtils;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.List;
@@ -66,7 +69,7 @@ public class _GeometryModel extends ResourcePojo<_GeometryModel> {
     public _Description getDescription() {
         return description;
     }
-    public List<_Bone> getBones() {
+    public @Nullable List<_Bone> getBones() {
         return bones;
     }
 
@@ -75,5 +78,25 @@ public class _GeometryModel extends ResourcePojo<_GeometryModel> {
     }
     public void setBones(List<_Bone> bones) {
         this.bones = bones;
+    }
+
+    // --------Special--------
+
+    @ApiStatus.Internal
+    public void deco() { // decode?
+        if (this.bones == null) return;
+
+        for (int i = 0; i < this.bones.size(); i++) {
+            _Bone bone = this.bones.get(i);
+            List<_Cube> cubes = bone.getCubes();
+            if (cubes == null) continue;
+
+            for (int j = 0; j < cubes.size(); j++) {
+                _Cube cube = cubes.get(j);
+                if (!cube.hasMirror()) {
+                    cube.setMirror(bone.getMirror());
+                }
+            }
+        }
     }
 }

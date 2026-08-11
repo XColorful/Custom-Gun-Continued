@@ -55,6 +55,11 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
     // --------Mixin--------
 //    private @Nullable ClientGunIndexInstance cgc$clientGunIndexInstanceCache;
 //    private @Nullable GunDisplayInstance cgc$gunDisplayInstanceCache;
+//    private @Nullable ClientAmmoIndexInstance cgc$clientAmmoIndexInstance;
+//    private @Nullable AmmoModelObject cgc$clientAmmoEntityModelObjectCache;
+//    private float cgc$cameraXRot;
+//    private float cgc$cameraYRot;
+//    private float @Nullable [] cgc$firstPersonRenderOffset;
 
     public GunProjectile(EntityType<? extends Projectile> entityType, Level level) {
         super(entityType, level);

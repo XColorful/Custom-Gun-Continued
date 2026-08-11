@@ -33,7 +33,7 @@ public final class LocalShooterAim extends LocalShooterAspect {
     public void aim(boolean isAim) {
         // 1. 手持枪械检查
         ItemStack gunItem = this.localShooter.getMainHandItem();
-        IGun iGun = IGunGetter.fromItemStack(gunItem);
+        @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return;
 
         this.localShooterProperty.clientIsAiming = isAim;
@@ -43,6 +43,9 @@ public final class LocalShooterAim extends LocalShooterAspect {
 
     public float getRenderAimingProgress(float partialTicks) {
         // TODO 非线性映射
+        /**
+         * ↑可能不需要了，功能可以在{@link dev.xcolorful.customgun.client.renderer.item.gun.GunRendererAddon}调整
+         */
         return Mth.lerp(partialTicks, LocalShooterProperty.oldAimingProgress, this.localShooterProperty.clientAimingProgress);
     }
 
@@ -58,7 +61,7 @@ public final class LocalShooterAim extends LocalShooterAspect {
     public void tickAimingProgress() {
         // 1. 手持枪械检查
         ItemStack gunItem = this.localShooter.getMainHandItem();
-        IGun iGun = IGunGetter.fromItemStack(gunItem);
+        @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) {
             _resetAiming();
             return;

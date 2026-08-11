@@ -16,7 +16,7 @@ import dev.xcolorful.customgun.client.api.input.IKeyConflictContext;
 import dev.xcolorful.customgun.client.api.input.IKeyMapping;
 import dev.xcolorful.customgun.client.api.input.IKeyModifier;
 import dev.xcolorful.customgun.client.api.minecraft.input.CustomInputKey;
-import dev.xcolorful.customgun.client.gui.GunRefitScreen;
+import dev.xcolorful.customgun.client.gui.screen.GunRefitScreen;
 import dev.xcolorful.customgun.client.init.registry.ClientInputCategory;
 import dev.xcolorful.customgun.client.input.InputKey;
 import dev.xcolorful.customgun.client.util.ClientGuiUtils;
@@ -26,6 +26,7 @@ import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
 public final class RefitKey extends InputKey {
@@ -84,7 +85,7 @@ public final class RefitKey extends InputKey {
 
         if (ClientInputUtils.isGameplayFocused()) {
             ItemStack gunItem = player.getMainHandItem();
-            IGun iGun = IGunGetter.fromItemStack(gunItem);
+            @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
             if (iGun == null || ClientGuiUtils.getCurrentScreen(mc) == null) return;
             if (iGun.hasAttachmentLock(gunItem)) return;
 

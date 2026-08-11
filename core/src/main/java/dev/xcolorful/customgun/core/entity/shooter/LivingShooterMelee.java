@@ -38,7 +38,7 @@ public final class LivingShooterMelee extends LivingShooterAspect {
         // 1. 手持枪械检查
         if (this.shooterProperty.currentGunItem == null) return;
         ItemStack gunItem = this.shooterProperty.currentGunItem.get();
-        IGun iGun = IGunGetter.fromItemStack(gunItem);
+        @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return;
 
         if ( // 2.1 检查状态锁
@@ -72,7 +72,7 @@ public final class LivingShooterMelee extends LivingShooterAspect {
     public long getMeleeCooldownMs(long currentTimeMillis) {
         if (this.shooterProperty.currentGunItem == null) return -1;
         ItemStack gunItem = this.shooterProperty.currentGunItem.get();
-        IGun iGun = IGunGetter.fromItemStack(gunItem);
+        @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return -1;
 
         return _getMeleeCooldownMs(currentTimeMillis, iGun, gunItem);
@@ -113,7 +113,7 @@ public final class LivingShooterMelee extends LivingShooterAspect {
             if (this.shooterProperty.currentGunItem == null) return;
 
             ItemStack gunItem = this.shooterProperty.currentGunItem.get();
-            IGun iGun = IGunGetter.fromItemStack(gunItem);
+            @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
             if (iGun == null) return;
 
             @Nullable MeleeType preparingMeleeType = this.shooterProperty.preparingMeleeType;

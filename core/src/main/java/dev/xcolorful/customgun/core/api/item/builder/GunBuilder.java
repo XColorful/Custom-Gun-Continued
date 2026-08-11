@@ -12,6 +12,7 @@ import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
+import org.jetbrains.annotations.Nullable;
 
 public final class GunBuilder extends ItemBuilder<GunBuilder> {
 
@@ -23,7 +24,7 @@ public final class GunBuilder extends ItemBuilder<GunBuilder> {
     }
     public static GunBuilder create(ItemLike gun) {
         ItemStack gunItem = new ItemStack(gun);
-        IGun iGun = IGunGetter.fromItemStack(gunItem);
+        @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun != null) return new GunBuilder(iGun, gunItem);
         else throw new IllegalArgumentException("Item is not a IGun");
     }

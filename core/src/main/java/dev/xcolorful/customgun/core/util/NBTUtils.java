@@ -504,6 +504,7 @@ public class NBTUtils {
             }
         }
         /**
+         * {@code net.minecraftforge.common.crafting.CraftingHelper#getNBT(JsonElement)}
          * {@link CompoundTag#CODEC parse}
          */
         public static @Nullable CompoundTag fromJson(JsonElement json) {

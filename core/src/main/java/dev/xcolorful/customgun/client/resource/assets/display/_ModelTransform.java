@@ -65,7 +65,7 @@ public final class _ModelTransform extends ResourcePojo<_ModelTransform> {
 
     // --------Getter & Setter--------
 
-    public @Nullable  _ModelTransformScale getScale() {
+    public @Nullable _ModelTransformScale getScale() {
         return scale;
     }
 

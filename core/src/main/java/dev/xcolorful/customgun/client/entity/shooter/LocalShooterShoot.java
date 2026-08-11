@@ -8,6 +8,9 @@
 package dev.xcolorful.customgun.client.entity.shooter;
 
 import dev.xcolorful.customgun.CustomGun;
+import dev.xcolorful.customgun.client.animation.statemachine.GunAnimStateContext;
+import dev.xcolorful.customgun.client.animation.statemachine.LuaAnimStateMachine;
+import dev.xcolorful.customgun.client.api.animation.statemachine.GunAnimationState;
 import dev.xcolorful.customgun.client.api.entity.LocalShooterProperty;
 import dev.xcolorful.customgun.client.api.entity.shooter.ILocalShooterGetter;
 import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
@@ -311,9 +314,9 @@ public final class LocalShooterShoot extends LocalShooterAspect {
 //                }
 
                 // 动画和声音循环播放
-                // TODO GunDisplayInstance AnimationStateMachine
-                if (false) {
-                }
+                LuaAnimStateMachine<GunAnimStateContext> animStateMachine = gunDisplayInstance.getAnimStateMachine();
+                animStateMachine.trigger(GunAnimationState.INPUT_SHOOT.getConstantName());
+
                 // 开火需要打断检视
                 SoundPlayManager.get().stopCurrentSound(gunDisplayInstance, GunSoundType.INSPECT_SOUND);
 

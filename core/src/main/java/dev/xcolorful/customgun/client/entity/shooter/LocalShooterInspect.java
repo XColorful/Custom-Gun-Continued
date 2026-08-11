@@ -64,6 +64,8 @@ public final class LocalShooterInspect extends LocalShooterAspect {
         var soundLocation = gunDisplayInstance.getGunSound(!hasInspectAmmo ? GunSoundType.INSPECT_EMPTY_SOUND : GunSoundType.INSPECT_SOUND);
         SoundPlayManager.get().playGunSound(soundLocation,
                 this.localShooter);
-        // TODO GunDisplayInstance AnimationStateMachine
+
+        LuaAnimStateMachine<GunAnimStateContext> animStateMachine = gunDisplayInstance.getAnimStateMachine();
+        animStateMachine.trigger(GunAnimationState.INPUT_INSPECT.getConstantName());
     }
 }

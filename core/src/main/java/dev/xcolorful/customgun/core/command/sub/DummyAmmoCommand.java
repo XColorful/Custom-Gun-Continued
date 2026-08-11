@@ -19,6 +19,7 @@ import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 import static dev.xcolorful.customgun.core.command.CommandArg.*;
 
@@ -38,7 +39,7 @@ public class DummyAmmoCommand {
         for (Entity entity : entities) {
             if (entity instanceof LivingEntity living) {
                 ItemStack gunItem = living.getMainHandItem();
-                IGun iGun = IGunGetter.fromItemStack(gunItem);
+                @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
                 if (iGun != null) {
                     iGun.setDummyAmmoCount(gunItem, amount);
                     cnt++;

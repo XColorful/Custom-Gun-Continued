@@ -16,6 +16,7 @@ import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
 import dev.xcolorful.customgun.core.config.GunConfig;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 public class _PlayerShooterHandler implements IEventHandler {
     private static class _PlayerShooterHandlerHoler {
@@ -49,7 +50,7 @@ public class _PlayerShooterHandler implements IEventHandler {
     }
     private void autoReload(Player player) {
         ItemStack gunItem = player.getMainHandItem();
-        IGun iGun = IGunGetter.fromItemStack(gunItem);
+        @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return;
 
         ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(player);

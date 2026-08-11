@@ -22,7 +22,7 @@ public record AttachmentTooltip(ItemStack attachmentItem, IAttachment iAttachmen
         implements TooltipComponent {
 
     public static @Nullable AttachmentTooltip fromItem(@Nullable ItemStack attachmentItem) {
-        IAttachment iAttachment = IAttachmentGetter.fromItemStack(attachmentItem);
+        @Nullable IAttachment iAttachment = IAttachmentGetter.fromItemStack(attachmentItem);
         if (iAttachment == null) return null;
 
         var attachmentLocation = iAttachment.getAttachmentLocation(attachmentItem);

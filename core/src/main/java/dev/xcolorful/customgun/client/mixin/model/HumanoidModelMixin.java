@@ -7,7 +7,8 @@
 
 package dev.xcolorful.customgun.client.mixin.model;
 
-import dev.xcolorful.customgun.client.animation.third.InnerThirdPersonManager;
+import dev.xcolorful.customgun.client.CustomGunClient;
+import dev.xcolorful.customgun.client.animation.shooter.ShooterAnimationManager;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
@@ -38,6 +39,6 @@ public class HumanoidModelMixin<T extends HumanoidRenderState> {
 //        if (ageInTicks == 0) {
 //            return;
 //        }
-        InnerThirdPersonManager.setRotationAnglesHead(renderState, head, body, leftArm, rightArm);
+        CustomGunClient.getShooterAnimationManager().setRotationAnglesHead(renderState, head, body, leftArm, rightArm);
     }
 }

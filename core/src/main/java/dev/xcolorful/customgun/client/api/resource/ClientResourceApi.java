@@ -156,7 +156,7 @@ public class ClientResourceApi {
     // --------assets instance--------
 
     public static @Nullable GunDisplayInstance getGunDisplayInstance(ItemStack gunItem) {
-        IGun iGun = IGunGetter.fromItemStack(gunItem);
+        @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return null;
 
         var displayLocation = iGun.getGunDisplayLocation(gunItem);

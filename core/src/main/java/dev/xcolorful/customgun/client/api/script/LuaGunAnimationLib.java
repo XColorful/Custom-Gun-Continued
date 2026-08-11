@@ -8,7 +8,7 @@
 package dev.xcolorful.customgun.client.api.script;
 
 import com.google.common.collect.Maps;
-import dev.xcolorful.customgun.client.animation.statemachine.GunAnimationState;
+import dev.xcolorful.customgun.client.api.animation.statemachine.GunAnimationState;
 import dev.xcolorful.customgun.core.api.entity.ReloadState;
 import dev.xcolorful.customgun.core.api.item.gun.FireModeType;
 import dev.xcolorful.customgun.core.api.script.LuaLibrary;

@@ -1,6 +1,7 @@
 package dev.xcolorful.customgun.client.event.custom;
 
 import dev.xcolorful.customgun.client.api.event._CustomEventType;
+import dev.xcolorful.customgun.client.entity.shooter.player._LocalAnimHandler;
 import dev.xcolorful.customgun.client.entity.shooter.player._LocalMessageHandler;
 import dev.xcolorful.customgun.client.gui.tooltip.PojoLocationTooltip;
 import dev.xcolorful.customgun.client.input.shooter.AimKey;
@@ -28,6 +29,8 @@ public class ClientEventHandlers {
         CoreEventHandlers.register(customEventRegister, GunCameraHelper.get(), EventType.COMPUTE_CAMERA_ANGLES_EVENT, EventPriority.NORMAL, false);
         CoreEventHandlers.register(customEventRegister, GunCameraHelper.get(), EventType.COMPUTE_FOV_EVENT, EventPriority.NORMAL, false);
         CoreEventHandlers.register(customEventRegister, GunCameraHelper.get(), EventType.COMPUTE_FOV_MODIFIER_EVENT, EventPriority.LOW, false);
+        CoreEventHandlers.register(customEventRegister, _LocalAnimHandler.get(), EventType.CLIENT_TICK_EVENT, EventPriority.NORMAL, false);
+        CoreEventHandlers.register(customEventRegister, _LocalAnimHandler.get(), EventType.RENDER_FRAME_EVENT, EventPriority.NORMAL, false);
 
         // ----input----
         CoreEventHandlers.register(customEventRegister, AimKey.get(), EventType.PREPARE_CLIENT_TICK_EVENT, EventPriority.NORMAL, false);

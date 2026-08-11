@@ -823,7 +823,6 @@ Notation:
 |`PlayerEnterWorld`|_Deprecated_|
 |`PreventsHotbarEvent`|_Deprecated_|
 |`ReloadResourceEvent`|_Deprecated_|
-|`TickAnimationEvent`||
 
 |com.tacz.guns.client.event|dev.xcolorful.customgun.client.entity|
 |---|---|
@@ -835,6 +834,7 @@ Notation:
 |com.tacz.guns.client.event|dev.xcolorful.customgun.client.renderer|
 |---|---|
 |`CameraSetupEvent`|item.gun.`GunCameraHelper`|
+|`FirstPersonRenderEvent`|shooter.`FirstPersonRender`|
 |`FirstPersonRenderGunEvent`|item.gun.`GunRendererAddon`|
 |`PlayerHurtByGunEvent`.onPlayerHurtByGun|victim.`GunHurtBobTweak`.onProjectileHit|
 |`RenderHeadShotAABB`|entity.`HeadAABBRender`|

@@ -368,8 +368,8 @@ CGC 中 `ObjectAnimation` 和 `ObjectAnimationSoundChannel` 为占位骨架。
 |---|---|---|
 |`FirstPersonRenderEvent`|（待确定）||
 |`FirstPersonRenderGunEvent`|`renderer.item.gun.GunRendererAddon`||
-|`CameraSetupEvent`|（待确定）||
-|`TickAnimationEvent`|（待确定）||
+|`CameraSetupEvent`|`renderer.item.gun.GunCameraHelper`||
+|`TickAnimationEvent`|`entity.shooter.player._LocalAnimHandler`||
 |`RenderCrosshairEvent`|`gui.crosshair.CrosshairRender`|已完成|
 |`ClientHitMark`|`entity.ClientHitMarkHandler`|已完成|
 |`RenderHeadShotAABB`|`renderer.entity.HeadAABBRender`（已弃用）|已完成|

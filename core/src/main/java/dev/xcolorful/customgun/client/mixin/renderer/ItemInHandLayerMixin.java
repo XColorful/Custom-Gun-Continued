@@ -47,6 +47,7 @@ public class ItemInHandLayerMixin<S extends ArmedEntityRenderState, M extends En
             at = @At(value = "HEAD"), cancellable = true)
     private void cgc$renderArmWithItemHead(S renderState,
                                            ItemStackRenderState itemStackRenderState,
+                                           ItemStack itemStack,
                                            HumanoidArm arm,
                                            PoseStack poseStack,
                                            SubmitNodeCollector submitNodeCollector,
@@ -66,6 +67,7 @@ public class ItemInHandLayerMixin<S extends ArmedEntityRenderState, M extends En
             at = @At(value = "TAIL"))
     private void cgc$renderArmWithItemTail(S renderState,
                                            ItemStackRenderState itemStackRenderState,
+                                           ItemStack itemStack,
                                            HumanoidArm arm, PoseStack poseStack,
                                            SubmitNodeCollector submitNodeCollector,
                                            int lightCoords, CallbackInfo ci) {

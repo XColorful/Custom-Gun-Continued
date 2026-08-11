@@ -110,10 +110,10 @@ public class _DefaultGunFire {
                     switch (fireSoundType) {
                         case SILENCED -> {
                             context.soundDistance = fireSoundData.getSilencedMultiplier();
-                            context.silenceSound = true;
                         }
                         case MUTED -> context.soundDistance = 0;
                     }
+                    context.silenceSound = fireSoundType.isSoundSuppressed();
                 }
             }
         }

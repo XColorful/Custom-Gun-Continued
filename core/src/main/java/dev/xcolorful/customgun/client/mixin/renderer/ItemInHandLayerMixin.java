@@ -31,27 +31,31 @@ public class ItemInHandLayerMixin {
     @Inject(method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/LivingEntity;FFFFFF)V",
             at = @At(value = "TAIL"))
     private void cgc$render(PoseStack poseStack,
-                        MultiBufferSource buffer,
-                        int lightCoords,
-                        LivingEntity livingEntity, float limbSwing, float limbSwingAmount,
-                        float partialTicks, float ageInTicks,
-                        float pNetHeadYaw, float pHeadPitch,
-                        CallbackInfo ci) {
-        MuzzleFlashRender.isSelf = false;
-        ShellRender.isSelf = false;
-        HumanoidOffhandRender.renderGun(livingEntity, poseStack, buffer, lightCoords);
+                            MultiBufferSource buffer,
+                            int lightCoords,
+                            LivingEntity livingEntity, float limbSwing, float limbSwingAmount,
+                            float partialTicks, float ageInTicks,
+                            float pNetHeadYaw, float pHeadPitch,
+                            CallbackInfo ci) {
+        MuzzleFlashRender.State.isSelf = false;
+        ShellRender.State.isSelf = false;
+        HumanoidOffhandRender.renderGun(poseStack, buffer, lightCoords, livingEntity);
     }
 
     @Inject(method = "renderArmWithItem(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemDisplayContext;Lnet/minecraft/world/entity/HumanoidArm;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
             at = @At(value = "HEAD"), cancellable = true)
     private void cgc$renderArmWithItemHead(LivingEntity livingEntity,
-                                       ItemStack itemStack, ItemDisplayContext pDisplayContext,
-                                       HumanoidArm arm, PoseStack poseStack, MultiBufferSource buffer, int packedLight,
-                                       CallbackInfo ci) {
+                                           ItemStack itemStack,
+                                           ItemDisplayContext pDisplayContext,
+                                           HumanoidArm arm,
+                                           PoseStack poseStack,
+                                           MultiBufferSource buffer,
+                                           int packedLight,
+                                           CallbackInfo ci) {
         LocalPlayer player = Minecraft.getInstance().player;
         if (livingEntity.equals(player)) {
-            MuzzleFlashRender.isSelf = true;
-            ShellRender.isSelf = true;
+            MuzzleFlashRender.State.isSelf = true;
+            ShellRender.State.isSelf = true;
         }
         if (IGunGetter.fromMainHand(livingEntity) != null && arm == HumanoidArm.LEFT) {
             ci.cancel();
@@ -61,12 +65,12 @@ public class ItemInHandLayerMixin {
     @Inject(method = "renderArmWithItem(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemDisplayContext;Lnet/minecraft/world/entity/HumanoidArm;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
             at = @At(value = "TAIL"))
     private void cgc$renderArmWithItemTail(LivingEntity livingEntity,
-                                       ItemStack itemStack,
-                                       ItemDisplayContext pDisplayContext,
-                                       HumanoidArm arm, PoseStack poseStack,
-                                       MultiBufferSource buffer,
-                                       int lightCoords, CallbackInfo ci) {
-        MuzzleFlashRender.isSelf = false;
-        ShellRender.isSelf = false;
+                                           ItemStack itemStack,
+                                           ItemDisplayContext pDisplayContext,
+                                           HumanoidArm arm, PoseStack poseStack,
+                                           MultiBufferSource buffer,
+                                           int lightCoords, CallbackInfo ci) {
+        MuzzleFlashRender.State.isSelf = false;
+        ShellRender.State.isSelf = false;
     }
 }

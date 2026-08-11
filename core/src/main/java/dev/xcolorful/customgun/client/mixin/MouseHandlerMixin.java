@@ -19,6 +19,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
@@ -28,7 +29,7 @@ public class MouseHandlerMixin {
     @WrapOperation(method = "turnPlayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;turn(DD)V"))
     public void cgc$adjustSensitivity(LocalPlayer player, double yaw, double pitch, Operation<Void> original) {
         ItemStack gunItem = player.getMainHandItem();
-        IGun iGun= IGunGetter.fromItemStack(gunItem);
+        @Nullable IGun iGun= IGunGetter.fromItemStack(gunItem);
         if (iGun == null) {
             original.call(player, yaw, pitch);
             return;

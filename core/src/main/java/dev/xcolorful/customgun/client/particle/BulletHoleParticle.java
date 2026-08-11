@@ -9,6 +9,7 @@ package dev.xcolorful.customgun.client.particle;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import dev.xcolorful.customgun.client.config.RenderConfig;
+import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import dev.xcolorful.customgun.core.developer.PlannedRefactor;
 import dev.xcolorful.customgun.core.particle.BulletHoleOption;
 import net.minecraft.client.Camera;
@@ -18,7 +19,6 @@ import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
@@ -141,7 +141,7 @@ public class BulletHoleParticle extends TextureSheetParticle {
             BlockState state = world.getBlockState(pos);
             return minecraft.getBlockRenderer().getBlockModelShaper().getTexture(state, world, pos);
         }
-        return minecraft.getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(MissingTextureAtlasSprite.getLocation());
+        return minecraft.getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(ClientRenderUtils.getMissingTextureLocation());
     }
 
     @Override

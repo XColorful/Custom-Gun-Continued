@@ -13,6 +13,7 @@ import dev.xcolorful.customgun.client.api.item.gun.DamageDisplayType;
 import dev.xcolorful.customgun.client.api.item.gun.IShooterAnimationCategory;
 import dev.xcolorful.customgun.client.api.item.gun.ShooterAnimationCategory;
 import dev.xcolorful.customgun.client.api.model.gun.GunModelType;
+import dev.xcolorful.customgun.client.api.model.gun.IGunModelType;
 import dev.xcolorful.customgun.client.api.sound.gun.GunSoundType;
 import dev.xcolorful.customgun.client.resource.assets.display.gun.*;
 import dev.xcolorful.customgun.core.api.item.gun.AmmoCountType;
@@ -34,7 +35,7 @@ public final class GunDisplay extends _AssetsDisplay<GunDisplay> {
     private @Nullable ResourceLocation hudEmptyTextureLocation;
 
     // 模型
-    private @Nullable GunModelType gunModelType;
+    private @Nullable IGunModelType gunModelType;
     private @Nullable _LodDisplay lodDisplay;
     private boolean enableTransparency = false;
 
@@ -217,7 +218,7 @@ public final class GunDisplay extends _AssetsDisplay<GunDisplay> {
     public @Nullable ResourceLocation getHudEmptyTextureLocation() {
         return hudEmptyTextureLocation;
     }
-    public @Nullable GunModelType getGunModelType() {
+    public @Nullable IGunModelType getGunModelType() {
         return gunModelType;
     }
     public @Nullable _LodDisplay getLodDisplay() {
@@ -296,7 +297,7 @@ public final class GunDisplay extends _AssetsDisplay<GunDisplay> {
     public void setHudEmptyTextureLocation(ResourceLocation hudEmptyTextureLocation) {
         this.hudEmptyTextureLocation = hudEmptyTextureLocation;
     }
-    public void setGunModelType(GunModelType gunModelType) {
+    public void setGunModelType(IGunModelType gunModelType) {
         this.gunModelType = gunModelType;
     }
     public void setLodDisplay(_LodDisplay lodDisplay) {

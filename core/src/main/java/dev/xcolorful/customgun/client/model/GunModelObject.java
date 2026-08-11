@@ -13,6 +13,7 @@ import dev.xcolorful.customgun.client.api.animation.AnimationChannelType;
 import dev.xcolorful.customgun.client.api.animation.listener.IAnimationListener;
 import dev.xcolorful.customgun.client.api.model.IGunModelObjectRenderer;
 import dev.xcolorful.customgun.client.api.model.IModelTextConsumer;
+import dev.xcolorful.customgun.client.api.model.gun.GunModelType;
 import dev.xcolorful.customgun.client.api.renderer.model.IModelComponentRenderer;
 import dev.xcolorful.customgun.client.model.bedrock.BedrockPart;
 import dev.xcolorful.customgun.client.renderer.model.ShellRender;
@@ -32,7 +33,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.function.Predicate;
 
-public final class GunModelObject extends AnimatedModelObject implements IGunModelObjectRenderer, IModelTextConsumer {
+public class GunModelObject extends AnimatedModelObject implements IGunModelObjectRenderer, IModelTextConsumer {
 
     /**
      * 在改装界面，点击各个配件时的摄像机视角
@@ -103,6 +104,10 @@ public final class GunModelObject extends AnimatedModelObject implements IGunMod
     ItemStack currentGunItem;
     MagazineCategory currentMagazineCategory = MagazineCategory.NONE;
 
+    /**
+     * {@link GunModelType}需要开放继承
+     */
+    protected
     GunModelObject(@NotNull BedrockModel pojo) {
         super(pojo);
     }

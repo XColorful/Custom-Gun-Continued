@@ -15,10 +15,11 @@ import dev.xcolorful.customgun.client.animation.controller.AnimController;
 import dev.xcolorful.customgun.client.animation.statemachine.GunAnimStateContext;
 import dev.xcolorful.customgun.client.animation.statemachine.LuaAnimStateMachine;
 import dev.xcolorful.customgun.client.api.item.gun.DamageDisplayType;
+import dev.xcolorful.customgun.client.api.model.gun.GunModelType;
+import dev.xcolorful.customgun.client.api.model.gun.IGunModelType;
 import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
 import dev.xcolorful.customgun.client.api.sound.gun.GunSoundType;
 import dev.xcolorful.customgun.client.model.GunModelObject;
-import dev.xcolorful.customgun.client.model.ModelObject;
 import dev.xcolorful.customgun.client.resource.assets.animation.BedrockAnimation;
 import dev.xcolorful.customgun.client.resource.assets.display.GunDisplay;
 import dev.xcolorful.customgun.client.resource.assets.display._LaserDisplay;
@@ -80,10 +81,12 @@ public final class GunDisplayInstance extends PojoInstance<GunDisplay> {
     }
 
     @Override public boolean resetCache() {
+        @Nullable IGunModelType gunModelType = this.getPojo().getGunModelType();
+        if (gunModelType == null) gunModelType = GunModelType.DEFAULT;
         {
             BedrockModel bedrockModel = ClientResourceApi.getBedrockModel(this.getPojo().getModelLocation());
             if (bedrockModel != null) {
-                this.gunModel = GunModelObject.fromPojo(bedrockModel);
+                this.gunModel = gunModelType.create(bedrockModel);
                 if (this.gunModel == null) CustomGun.LOGGER.debug("GunDisplayInstance: Failed to create GunModelObject {}", this.getPojo().getModelLocation());
             } else {
                 CustomGun.LOGGER.debug("GunDisplayInstance: BedrockModel {} not found", this.getPojo().getModelLocation());
@@ -93,7 +96,7 @@ public final class GunDisplayInstance extends PojoInstance<GunDisplay> {
         if (lodDisplay != null) {
             BedrockModel bedrockModel = ClientResourceApi.getBedrockModel(lodDisplay.getModelLocation());
             if (bedrockModel != null) {
-                this.gunModelLod = GunModelObject.fromPojo(bedrockModel);
+                this.gunModelLod = gunModelType.create(bedrockModel);
                 if (this.gunModelLod == null) CustomGun.LOGGER.debug("GunDisplayInstance: Failed to create GunModelObject (for lod) {}", lodDisplay.getModelLocation());
             } else {
                 CustomGun.LOGGER.debug("GunDisplayInstance: BedrockModel (for lod) {} not found", lodDisplay.getModelLocation());

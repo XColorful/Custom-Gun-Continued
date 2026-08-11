@@ -21,7 +21,7 @@
 - [x] [13. 实体/方块渲染器](#13) — EntityBulletRenderer、StatueRenderer、TargetRenderer
 - [x] [14. 客户端事件层](#14) — 第一人称渲染事件、相机事件、动画 Tick
 - [x] [15. Mixin 层](#15) — 对 MC 渲染管线的注入点
-- [ ] [16. 其他 API](#16) — 模型类型管理、第三人称动画接口
+- [x] [16. 其他 API](#16) — 模型类型管理、第三人称动画接口
 
 ---
 
@@ -429,7 +429,7 @@ CGC 中 `ObjectAnimation` 和 `ObjectAnimationSoundChannel` 为占位骨架。
 |TaCZ `com.tacz.guns.api.client.other`|CGC 目标|状态|
 |---|---|---|
 |`KeepingItemRenderer`|`client.api.renderer.KeepingItemRenderer`|已完成|
-|`GunModelTypeManager`|（待确定）||
+|`GunModelTypeManager`|`client.api.model.gun.GunModelType`||
 |`IThirdPersonAnimation`|`client.api.animation.shooter.IShooterAnimator`||
 |`ThirdPersonManager`|`client.api.item.gun.ThirdPersonAnimationType`|已完成|
 

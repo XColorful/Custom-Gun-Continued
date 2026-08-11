@@ -768,9 +768,9 @@ Notation:
 > package com.tacz.guns.api.client.other;
 > ```
 
-|com.tacz.guns.api.client.other| |
+|com.tacz.guns.api.client.other|dev.xcolorful.customgun.client.api.model|
 |---|---|
-|`GunModelTypeManager`||
+|`GunModelTypeManager`|gun.`GunModelType`|
 
 |com.tacz.guns.api.client.other|dev.xcolorful.customgun.client.api.animation|
 |---|---|

@@ -33,42 +33,43 @@ public class ItemInHandLayerMixin<S extends ArmedEntityRenderState, M extends En
     @Inject(method = "submit(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;ILnet/minecraft/client/renderer/entity/state/ArmedEntityRenderState;FF)V",
             at = @At(value = "TAIL"))
     private void cgc$render(PoseStack poseStack,
-                        SubmitNodeCollector submitNodeCollector,
-                        int lightCoords,
-                        S renderState,
-                        float partialTicks, float ageInTicks,
-                        CallbackInfo ci) {
-        MuzzleFlashRender.isSelf = false;
-        ShellRender.isSelf = false;
-        HumanoidOffhandRender.renderGun(renderState, poseStack, submitNodeCollector, lightCoords);
+                            SubmitNodeCollector submitNodeCollector,
+                            int lightCoords,
+                            S renderState,
+                            float partialTicks, float ageInTicks,
+                            CallbackInfo ci) {
+        MuzzleFlashRender.State.isSelf = false;
+        ShellRender.State.isSelf = false;
+        HumanoidOffhandRender.renderGun(poseStack, buffer, lightCoords, renderState);
     }
 
     @Inject(method = "submitArmWithItem(Lnet/minecraft/client/renderer/entity/state/ArmedEntityRenderState;Lnet/minecraft/client/renderer/item/ItemStackRenderState;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/entity/HumanoidArm;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;I)V",
             at = @At(value = "HEAD"), cancellable = true)
     private void cgc$renderArmWithItemHead(S renderState,
-                                       ItemStackRenderState itemStackRenderState,
-                                       ItemStack itemStack,
-                                       HumanoidArm arm, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int packedLight,
-                                       CallbackInfo ci) {
+                                           ItemStackRenderState itemStackRenderState,
+                                           HumanoidArm arm,
+                                           PoseStack poseStack,
+                                           SubmitNodeCollector submitNodeCollector,
+                                           int packedLight,
+                                           CallbackInfo ci) {
         LocalPlayer player = Minecraft.getInstance().player;
 //        if (livingEntity.equals(player)) {
-//            MuzzleFlashRender.isSelf = true;
-//            ShellRender.isSelf = true;
+//            MuzzleFlashRender.State.isSelf = true;
+//            ShellRender.State.isSelf = true;
 //        }
-        if (IGunGetter.fromItemStack(itemStack) != null && arm == HumanoidArm.LEFT) {
-            ci.cancel();
-        }
+//        if (IGunGetter.fromMainHand(livingEntity) != null && arm == HumanoidArm.LEFT) {
+//            ci.cancel();
+//        }
     }
 
     @Inject(method = "submitArmWithItem(Lnet/minecraft/client/renderer/entity/state/ArmedEntityRenderState;Lnet/minecraft/client/renderer/item/ItemStackRenderState;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/entity/HumanoidArm;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;I)V",
             at = @At(value = "TAIL"))
     private void cgc$renderArmWithItemTail(S renderState,
-                                       ItemStackRenderState itemStackRenderState,
-                                       ItemStack itemStack,
-                                       HumanoidArm arm, PoseStack poseStack,
-                                       SubmitNodeCollector submitNodeCollector,
-                                       int lightCoords, CallbackInfo ci) {
-        MuzzleFlashRender.isSelf = false;
-        ShellRender.isSelf = false;
+                                           ItemStackRenderState itemStackRenderState,
+                                           HumanoidArm arm, PoseStack poseStack,
+                                           SubmitNodeCollector submitNodeCollector,
+                                           int lightCoords, CallbackInfo ci) {
+        MuzzleFlashRender.State.isSelf = false;
+        ShellRender.State.isSelf = false;
     }
 }

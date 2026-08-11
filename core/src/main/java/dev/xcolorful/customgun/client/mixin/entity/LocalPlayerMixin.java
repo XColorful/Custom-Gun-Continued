@@ -15,9 +15,11 @@ import dev.xcolorful.customgun.client.entity.shooter.*;
 import dev.xcolorful.customgun.core.api.entity.ShootResult;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
+import dev.xcolorful.customgun.core.util.InventoryUtils;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -76,7 +78,7 @@ public class LocalPlayerMixin implements ILocalShooter {
 
     private void cgc$tickHotbarSelection() {
         Inventory inventory = this.cgc$localShooter.getInventory();
-        int currentIndex = inventory.getSelectedSlot();
+        int currentIndex = InventoryUtils.getSelectedSlot(inventory);
 
         // 玩家切换选中物品
         if (this.cgc$previousHotbarIndex != currentIndex) {
@@ -88,7 +90,7 @@ public class LocalPlayerMixin implements ILocalShooter {
 
         // 选中物品本身进行了NBT更新
         ItemStack currentItem = inventory.getItem(currentIndex);
-        IGun iGun = IGunGetter.fromItemStack(currentItem);
+        @Nullable IGun iGun = IGunGetter.fromItemStack(currentItem);
         boolean tagMatch = ItemStack.matches(this.cgc$previousHotbarItem, currentItem);
         if (
                 (iGun != null && iGun.switchItemNeedReset(this.cgc$previousHotbarItem, currentItem))

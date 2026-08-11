@@ -13,6 +13,7 @@ import dev.xcolorful.customgun.client.resource.assets.model.bedrock._GeometryMod
 import dev.xcolorful.customgun.core.api.resource.assets.model.BedrockModelTag;
 import dev.xcolorful.customgun.core.resource.ResourcePojo;
 import dev.xcolorful.customgun.core.util.JsonUtils;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.List;
@@ -74,5 +75,12 @@ public class BedrockModel extends ResourcePojo<BedrockModel> {
     }
     public void setGeometryModels(List<_GeometryModel> geometryModels) {
         this.geometryModels = geometryModels;
+    }
+
+    // --------Special--------
+
+    @Deprecated(forRemoval = true) public @Nullable _GeometryModel getGeometryModelNew() {
+        if (this.geometryModels == null) return null;
+        return this.geometryModels.get(0);
     }
 }

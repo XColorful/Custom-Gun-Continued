@@ -80,6 +80,7 @@ public final class ClientAttachmentIndexInstance extends PojoInstance<Attachment
     private static final int ERR_SCOPE_VIEW_FOV = 1;
     private static final int ERR_SCOPE_ZOOM_SCALE = 1 << 1;
     private static final int ERR_SCOPE_VIEW_INDEX = 1 << 2;
+    private static final int ERR_SCOPE_LENGTH_MATCH = 1 << 3;
     @Override protected boolean isPojoValid() {
         var pojo = this.getPojo();
         if (!pojo.isValid()) return false;
@@ -90,6 +91,7 @@ public final class ClientAttachmentIndexInstance extends PojoInstance<Attachment
         errorMask |= checkScopeViewFov(this.attachmentDisplayCache) ? ERR_SCOPE_VIEW_FOV : 0;
         errorMask |= checkScopeZoomScale(this.attachmentDisplayCache) ? ERR_SCOPE_ZOOM_SCALE : 0;
         errorMask |= checkScopeViewIndex(this.attachmentDisplayCache) ? ERR_SCOPE_VIEW_INDEX : 0;
+        errorMask |= checkScopeLengthMatch(this.attachmentDisplayCache) ? ERR_SCOPE_LENGTH_MATCH : 0;
         if (errorMask != 0) {
             this.logAllErrors(errorMask);
             return false;
@@ -102,10 +104,11 @@ public final class ClientAttachmentIndexInstance extends PojoInstance<Attachment
         if ((errorMask & ERR_SCOPE_VIEW_FOV) != 0) sb.append("\n\t- scopeViewFov <= 0");
         if ((errorMask & ERR_SCOPE_ZOOM_SCALE) != 0) sb.append("\n\t- scopeZoomScale < 1");
         if ((errorMask & ERR_SCOPE_VIEW_INDEX) != 0) sb.append("\n\t- scopeViewIndex < 1");
+        if ((errorMask & ERR_SCOPE_LENGTH_MATCH) != 0) sb.append("\n\t- scopeViewFov, scopeZoomScale, scopeViewIndex length not match");
         CustomGun.LOGGER.debug(sb.toString());
     }
     public static boolean checkScopeViewFov(@NotNull AttachmentDisplay pojo) {
-        float[] scopeViewFov = pojo.getScopeViewFov();
+        float @Nullable [] scopeViewFov = pojo.getScopeViewFov();
         if (scopeViewFov == null || scopeViewFov.length == 0) return false;
         for (int i = 0; i < scopeViewFov.length; i++) {
             if (scopeViewFov[i] <= 0) return true;
@@ -113,7 +116,7 @@ public final class ClientAttachmentIndexInstance extends PojoInstance<Attachment
         return false;
     }
     public static boolean checkScopeZoomScale(@NotNull AttachmentDisplay pojo) {
-        float[] scopeZoomScale = pojo.getScopeZoomScale();
+        float @Nullable [] scopeZoomScale = pojo.getScopeZoomScale();
         if (scopeZoomScale == null || scopeZoomScale.length == 0) return false;
         for (int i = 0; i < scopeZoomScale.length; i++) {
             if (scopeZoomScale[i] < 1) return true;
@@ -121,11 +124,20 @@ public final class ClientAttachmentIndexInstance extends PojoInstance<Attachment
         return false;
     }
     public static boolean checkScopeViewIndex(@NotNull AttachmentDisplay pojo) {
-        int[] scopeViewIndex = pojo.getScopeViewIndex();
+        int @Nullable [] scopeViewIndex = pojo.getScopeViewIndex();
         if (scopeViewIndex == null || scopeViewIndex.length == 0) return false;
         for (int i = 0; i < scopeViewIndex.length; i++) {
             if (scopeViewIndex[i] < 1) return true;
         }
+        return false;
+    }
+    public static boolean checkScopeLengthMatch(@NotNull AttachmentDisplay pojo) {
+        float @Nullable [] scopeViewFov = pojo.getScopeViewFov();
+        int length = scopeViewFov != null ? scopeViewFov.length : 0;
+        float @Nullable [] scopeZoomScale = pojo.getScopeZoomScale();
+        if (length != (scopeZoomScale != null ? scopeZoomScale.length : 0)) return true;
+        int @Nullable [] scopeViewIndex = pojo.getScopeViewIndex();
+        if (length != (scopeViewIndex != null ? scopeViewIndex.length : 0)) return true;
         return false;
     }
 
@@ -175,7 +187,7 @@ public final class ClientAttachmentIndexInstance extends PojoInstance<Attachment
     @Deprecated public boolean isShowMount() {
         return this.attachmentDisplayCache.getShowMount();
     }
-    @Deprecated public _LaserDisplay getLaserConfig() {
+    @Deprecated public @Nullable _LaserDisplay getLaserConfig() {
         return this.attachmentDisplayCache.getLaserDisplay();
     }
     @Deprecated public Map<AttachmentSoundType, Identifier> getSounds() {

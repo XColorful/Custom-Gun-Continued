@@ -78,8 +78,8 @@ public class _FaceUv extends ResourcePojo<_FaceUv> {
     public static final _FaceUv EMPTY = empty();
     public static _FaceUv empty() {
         _FaceUv face = new _FaceUv();
-        face.uv = new float[]{};
-        face.uvSize = new float[]{};
+        face.uv = new float[]{0, 0};
+        face.uvSize = new float[]{0, 0};
         return face;
     }
     public static _FaceUv single16X() {

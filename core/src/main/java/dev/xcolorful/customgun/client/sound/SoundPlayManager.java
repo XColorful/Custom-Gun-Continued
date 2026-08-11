@@ -240,7 +240,7 @@ public final class SoundPlayManager implements IEventHandler {
     }
 
     public void playerRefitSound(ItemStack attachmentItem, LivingEntity player, AttachmentSoundType soundType) {
-        IAttachment iAttachment = IAttachmentGetter.fromItemStack(attachmentItem);
+        @Nullable IAttachment iAttachment = IAttachmentGetter.fromItemStack(attachmentItem);
         if (iAttachment == null) return;
         ClientAttachmentIndexInstance pojoInstance = ClientResourceApi.getClientAttachmentIndexInstance(iAttachment.getAttachmentLocation(attachmentItem));
         if (pojoInstance == null) return;
@@ -274,7 +274,7 @@ public final class SoundPlayManager implements IEventHandler {
 
     // --------Deprecated--------
 
-    // --------“大便类”--------
+    // --------闲人勿入（内部实现类型）--------
 
     private record _EntitySoundEntry(int entityId, Identifier soundLocation) {
     }

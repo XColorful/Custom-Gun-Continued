@@ -13,6 +13,7 @@ import dev.xcolorful.customgun.client.resource.assets.model.bedrock.geometry.bon
 import dev.xcolorful.customgun.core.api.resource.assets.model.bedrock.geometry.bone._CubeTag;
 import dev.xcolorful.customgun.core.resource.ResourcePojo;
 import dev.xcolorful.customgun.core.util.JsonUtils;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.io.IOException;
 
@@ -24,6 +25,7 @@ public final class _Cube extends ResourcePojo<_Cube> {
     private float[] pivot;
     private float[] rotation;
     private _Uv uv;
+    private boolean mirror = false;
 
     private static final _Cube PARSER = new _Cube();
     public static _Cube fromJson(JsonReader reader) throws IOException {
@@ -42,6 +44,7 @@ public final class _Cube extends ResourcePojo<_Cube> {
                     case _CubeTag.PIVOT -> pojo.pivot = JsonUtils.readFloatArrayFast(reader, 3);
                     case _CubeTag.ROTATION -> pojo.rotation = JsonUtils.readFloatArrayFast(reader, 3);
                     case _CubeTag.UV -> pojo.uv = JsonUtils.read(reader, _Uv::fromJson);
+                    case _CubeTag.MIRROR -> { pojo.mirror = JsonUtils.readBoolean(reader); pojo.hasMirror = true; }
                     default -> reader.skipValue();
                 }
             }
@@ -91,6 +94,9 @@ public final class _Cube extends ResourcePojo<_Cube> {
     public _Uv getUv() {
         return uv;
     }
+    public boolean getMirror() {
+        return mirror;
+    }
 
     public void setOrigin(float[] origin) {
         this.origin = origin;
@@ -109,5 +115,16 @@ public final class _Cube extends ResourcePojo<_Cube> {
     }
     public void setUv(_Uv uv) {
         this.uv = uv;
+    }
+    public void setMirror(boolean mirror) {
+        this.mirror = mirror;
+    }
+
+    // --------Special--------
+
+    @ApiStatus.Internal
+    private boolean hasMirror = false;
+    public boolean hasMirror() {
+        return hasMirror;
     }
 }

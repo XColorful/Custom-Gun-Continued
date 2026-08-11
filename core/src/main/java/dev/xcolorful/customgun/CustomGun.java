@@ -29,6 +29,7 @@ import dev.xcolorful.customgun.core.api.minecraft.access.ICoreAccessTransformer;
 import dev.xcolorful.customgun.core.api.network.INetworkAdapter;
 import dev.xcolorful.customgun.core.api.network.INetworkHook;
 import dev.xcolorful.customgun.core.api.projectile.IProjectileManager;
+import dev.xcolorful.customgun.core.api.text.placeholder.IPlaceholderManager;
 import dev.xcolorful.customgun.core.event.EventPoster;
 import dev.xcolorful.customgun.core.event.EventRegister;
 import dev.xcolorful.customgun.core.event.custom.CoreEventHandlers;
@@ -37,6 +38,7 @@ import dev.xcolorful.customgun.core.init.ModConfig;
 import dev.xcolorful.customgun.core.network.NetworkHandler;
 import dev.xcolorful.customgun.core.network.NetworkHook;
 import dev.xcolorful.customgun.core.projectile.ProjectileManager;
+import dev.xcolorful.customgun.core.text.placeholder.PlaceholderManager;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.server.MinecraftServer;
 import org.jetbrains.annotations.ApiStatus;
@@ -88,6 +90,8 @@ public class CustomGun {
         GunManager.init(mcSide);
         projectileManager = ProjectileManager.INSTANCE;
         ProjectileManager.init(mcSide);
+        placeholderManager = PlaceholderManager.INSTANCE;
+        PlaceholderManager.init(mcSide);
 
         CoreEventHandlers.registerAll(getEventRegister());
         initialized = true;
@@ -131,6 +135,7 @@ public class CustomGun {
     private final @NotNull static ICustomEventPoster eventPoster = EventPoster.get(); // 在模组加载前就能触发
     private static IGunManager gunManager;
     private static IProjectileManager projectileManager;
+    private static IPlaceholderManager placeholderManager;
     public @NotNull static ICustomEventRegister getEventRegister() {
         return CustomGun.eventRegister;
     }
@@ -143,6 +148,9 @@ public class CustomGun {
     public static IProjectileManager getProjectileManager() {
         return CustomGun.projectileManager;
     }
+    public static IPlaceholderManager getPlaceholderManager() {
+        return CustomGun.placeholderManager;
+    }
     /**
      * @deprecated 除非需要深度定制, 否则不应该调用
      */
@@ -154,6 +162,11 @@ public class CustomGun {
     public static void setProjectileManager(@NotNull IProjectileManager projectileManager) {
         CustomGun.projectileManager = projectileManager;
     }
+    @Deprecated(forRemoval = false)
+    public static void setPlaceholderManager(@NotNull IPlaceholderManager placeholderManager) {
+        CustomGun.placeholderManager = placeholderManager;
+    }
+
     @ApiStatus.AvailableSince("1.21.1")
     public static @Nullable RegistryAccess getRegistryAccess() {
         RegistryAccess registryAccess = getMcRegistry().getRegistryAccess();

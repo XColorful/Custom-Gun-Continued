@@ -27,7 +27,7 @@ public record GunTooltip(ItemStack gunItem, IGun iGun,
         implements TooltipComponent {
 
     public static @Nullable GunTooltip fromItem(@Nullable ItemStack gunItem) {
-        IGun iGun = IGunGetter.fromItemStack(gunItem);
+        @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return null;
 
         var gunLocation = iGun.getGunLocation(gunItem);

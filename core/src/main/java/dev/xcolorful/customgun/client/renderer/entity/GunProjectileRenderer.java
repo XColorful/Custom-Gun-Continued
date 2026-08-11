@@ -46,7 +46,7 @@ import java.awt.*;
 
 public class GunProjectileRenderer extends EntityRenderer<GunProjectile> {
 
-    protected GunProjectileRenderer(EntityRendererProvider.Context providerContext) {
+    public GunProjectileRenderer(EntityRendererProvider.Context providerContext) {
         super(providerContext);
     }
 

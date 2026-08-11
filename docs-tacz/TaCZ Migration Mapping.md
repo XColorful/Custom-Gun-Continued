@@ -908,7 +908,7 @@ Notation:
 |`ClientSetupEvent`.onClientSetup(RegisterKeyMappingsEvent)|`ClientKeyMappingRegistry`.registerKeyMappings|
 |`ClientSetupEvent`.onRegisterGuiOverlays||
 |`ModContainerScreen`|_Deprecated_|
-|`ModEntitiesRender`||
+|`ModEntitiesRender`|`ClientEntityRendererRegistry`|
 |`ParticleFactoryRegistry`|`ClientModParticles`|
 
 |com.tacz.guns.client.init|dev.xcolorful.customgun.client.resource|

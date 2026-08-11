@@ -28,6 +28,7 @@ import dev.xcolorful.customgun.core.resource.instance.data.BlockIndexInstance;
 import dev.xcolorful.customgun.core.resource.instance.data.GunIndexInstance;
 import dev.xcolorful.customgun.core.resource.network.SyncDataType;
 import dev.xcolorful.customgun.core.resource.network._AttachmentInstallabilityCache;
+import dev.xcolorful.customgun.core.resource.network._AttachmentModifierCache;
 import dev.xcolorful.customgun.core.resource.network._GunSortCache;
 import dev.xcolorful.customgun.core.util.JsonUtils;
 import net.minecraft.resources.ResourceLocation;
@@ -71,6 +72,7 @@ public final class SyncDataCache {
     public final Map<ResourceLocation, GunIndexInstance> GUN_INDEX = new HashMap<>();
     public final _GunSortCache GUN_SORT = new _GunSortCache();
     public final Map<ResourceLocation, AttachmentIndexInstance> ATTACHMENT_INDEX = new HashMap<>();
+    public final _AttachmentModifierCache ATTACHMENT_MODIFIER = new _AttachmentModifierCache();
     public final Map<ResourceLocation, AmmoIndexInstance> AMMO_INDEX = new HashMap<>();
     public final Map<ResourceLocation, BlockIndexInstance> BLOCK_INDEX = new HashMap<>();
     public final _AttachmentInstallabilityCache ATTACHMENT_INSTALLABILITY = new _AttachmentInstallabilityCache();

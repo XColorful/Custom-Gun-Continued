@@ -19,7 +19,7 @@ import java.util.Map;
 /*
  * 按从枪口到枪托的顺序排 (枪口 - 激光指示器 - 握把 - 弹匣 - 瞄准镜 - 枪托)
  */
-public enum AttachmentCategory implements ResourceTag.CategoryTag {
+public enum AttachmentCategory implements ResourceTag.CategoryTag, ResourceTag.ConstantTag {
     /**
      * 枪口组件
      */
@@ -59,19 +59,23 @@ public enum AttachmentCategory implements ResourceTag.CategoryTag {
     public final String tagName;
     public final String categoryName;
     public final String categoryNameOld;
+    public final String constantName;
     public final MutableComponent categoryLang;
     AttachmentCategory(String name, String nameOld, MutableComponent lang) {
         this.tagName = GunProperty.ATTACHMENT_PREFIX.getTagName() + name;
         this.categoryName = name;
         this.categoryNameOld = nameOld;
         this.categoryLang = lang;
+        this.constantName = name;
     }
-
     @Override public String getTagName() {
         return this.tagName;
     }
     @Override public String getCategoryName() {
         return this.categoryName;
+    }
+    @Override public String getConstantName() {
+        return this.constantName;
     }
 
     public final MutableComponent getCategoryLang() {

@@ -19,6 +19,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 
@@ -45,7 +46,7 @@ public record ClientMessageUnloadAttachment(int gunSlotIndex,
                 }
                 Inventory inventory = player.getInventory();
                 ItemStack gunItem = inventory.getItem(message.gunSlotIndex);
-                IGun iGun = IGunGetter.fromItemStack(gunItem);
+                @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
                 if (iGun == null) return;
 
                 // 服务端校验配件锁

@@ -223,11 +223,11 @@ Notation:
 
 |com.tacz.guns.compat|dev.xcolorful.customgun.client.compat|
 |---|---|
-|ar||
-|oculus||
-|optifine||
+|ar|ar|
+|oculus|oculus|
+|optifine|optifine|
 |playeranimator|playeranimator|
-|shouldersurfing||
+|shouldersurfing|shouldersurfing|
 
 ### Config
 > ```java
@@ -594,6 +594,10 @@ Notation:
 |pojo.data.gun.`ChargeType`|gun.`ChargeType`|
 |pojo.data.gun.`FeedType`|gun.`AmmoFeedType`|
 
+|com.tacz.guns.resource|dev.xcolorful.customgun.client.renderer|
+|---|---|
+|pojo.data.gun.`GunRecoil`.getSplineFunction|item.gun.`GunRecoilCalculator`.getSplineFunction|
+
 |com.tacz.guns.resource|dev.xcolorful.customgun.core.api.entity|
 |---|---|
 |pojo.data.gun.`InaccuracyType`|`ShootState`|
@@ -630,10 +634,10 @@ Notation:
 |block.`BlockRayTrace`|`RayTraceUtils`|
 |block.`ProjectileExplosion`||
 |dafafixer.`AttachmentIdFix`|_Deprecated_|
-|math.`Easing`||
+|math.`Easing`|`MathUtil`.`Easing`|
 |math.`MathUtil`|`MathUtil`|
-|math.`PerlinNoise`||
-|math.`SecondOrderDynamics`||
+|math.`PerlinNoise`|`MathUtil`.`SmoothRandomNoise`|
+|math.`SecondOrderDynamics`|`MathUtil`.`SecondOrderDynamics`|
 |`ColorHex`|`ColorUtils`|
 |`EntityUtil`|`RayTraceUtils`|
 |`ExplodeUtil`||
@@ -676,8 +680,8 @@ Notation:
 |com.tacz.guns.util|dev.xcolorful.customgun.client.util|
 |---|---|
 |`InputExtraCheck`|`ClientInputUtils`|
-|`RenderDistance`||
-|`RenderHelper`||
+|`RenderDistance`|`ClientRenderDistance`|
+|`RenderHelper`|`ClientRenderHelper`|
 
 |com.tacz.guns.util|dev.xcolorful.customgun.core.api.item|
 |---|---|
@@ -699,12 +703,38 @@ Notation:
 > package com.tacz.guns.api.client.animation;
 > ```
 
+|com.tacz.guns.api.client.animation|dev.xcolorful.customgun.client.animation|
+|---|---|
+|gltf|gltf|
+|gltf.`AnimationStructure`|gltf.`GltfStructure`|
+|interpolator.`*`|interpolator.`*`|
+|interpolator.`CustomInterpolator`|interpolator.`CompositeInterpolator`|
+|statemachine.`LuaAnimationState`|statemachine.`LuaAnimStateContext`|
+|statemachine.`LuaAnimationStateMachine`|statemachine.`LuaAnimStateMachine`|
+|statemachine.`LuaStateMachineFactory`|statemachine.`LuaAnimStateMachine`.`Builder`|
+|`AnimationChannelContent`|channel.`AnimChannelContent`|
+|`AnimationController`|controller.`AnimController`|
+|`AnimationPlan`|controller.`AnimPlan`|
+|`AnimationSoundChannelContent`|channel.`SoundChannelContent`|
+|`Animations`|`AnimationHelper`|
+|`DiscreteTrackArray`|statemachine.`DiscreteTrackArray`|
+|`ObjectAnimation`|`ObjectAnimation`|
+|`ObjectAnimationChannel`|`ObjectAnimationChannel`|
+|`ObjectAnimationSoundChannel`|`ObjectAnimationSoundChannel`|
+
 |com.tacz.guns.api.client.animation|dev.xcolorful.customgun.client.api.animation|
 |---|---|
-|gltf||
-|interpolator||
-|statemachine||
-|`ObjectAnimation`|`ObjectAnimation`|
+|interpolator.`Interpolator`|interpolator.`IInterpolator`|
+|interpolator.`InterpolatorUtil`.fromInterpolation|interpolator.`InterpolatorType`.create|
+|interpolator.`InterpolatorUtil`.`InterpolatorType`|interpolator.`InterpolatorType`|
+|statemachine.`AnimationConstant`|_Deprecated_|
+|statemachine.`AnimationState`|statemachine.`IAnimationStateContext`|
+|statemachine.`AnimationStateContext`|statemachine.`AnimStateContext`|
+|statemachine.`AnimationStateMachine`|statemachine.`AnimStateMachine`|
+|statemachine.`TrackArrayMismatchException`|statemachine.`TrackArrayMismatchException`|
+|`AnimationSoundChannelContent`.`LerpMode`|interpolator.`LerpMode`|
+|`ObjectAnimation`.`PlayType`|`AnimationPlayType`|
+|`ObjectAnimationChannel`.`ChannelType`|`AnimationChannelType`|
 
 #### Event API (Client)
 > ```java
@@ -738,11 +768,13 @@ Notation:
 > package com.tacz.guns.api.client.other;
 > ```
 
-|com.tacz.guns.api.client.other| |
+|com.tacz.guns.api.client.other|dev.xcolorful.customgun.client.api.model|
 |---|---|
-|`GunModelTypeManager`||
-|`IThirdPersonAnimation`||
-|`ThirdPersonManager`||
+|`GunModelTypeManager`|gun.`GunModelType`|
+
+|com.tacz.guns.api.client.other|dev.xcolorful.customgun.client.api.animation|
+|---|---|
+|`IThirdPersonAnimation`|shooter.`IShooterAnimator`|
 
 |com.tacz.guns.api.client.other|dev.xcolorful.customgun.client.api.renderer|
 |---|---|
@@ -750,7 +782,10 @@ Notation:
 
 |com.tacz.guns.api.client.other|dev.xcolorful.customgun.client.api.item|
 |---|---|
-|`ThirdPersonManager`.\*|gun.`ThirdPersonAnimationType`.\*|
+|`ThirdPersonManager`.RESERVED_DEFAULT_NAME|gun.`ShooterAnimationCategory`.DEFAULT|
+|`ThirdPersonManager`.DEFAULT|_Deprecated_|
+|`ThirdPersonManager`.MINI_GUN_NAME|gun.`ShooterAnimationCategory`.MINI_GUN_NAME|
+|`ThirdPersonManager`.MINI_GUN|_Deprecated_|
 
 ### Animation (Client)
 > ```java
@@ -759,10 +794,15 @@ Notation:
 
 |com.tacz.guns.client.animation|dev.xcolorful.customgun.client.animation|
 |---|---|
-|screen.`RefitTransform`||
-|statemachine.`GunAnimationConstant`|statemachine.`GunAnimationState`|
+|screen.`RefitTransform`|screen.`RefitScreenTransformState`|
+|statemachine.`GunAnimationStateContext`|statemachine.`GunAnimStateContext`|
+|statemachine.`ItemAnimationStateContext`|statemachine.`ItemAnimStateContext`|
 |statemachine.`ThrowableAnimationStateContext`|_Deprecated_|
-|third.`InnerThirdPersonManager`|third.`InnerThirdPersonManager`|
+|third.`InnerThirdPersonManager`|shooter.`ShooterAnimationManager`|
+
+|com.tacz.guns.client.animation|dev.xcolorful.customgun.client.api.animation|
+|---|---|
+|statemachine.`GunAnimationConstant`|statemachine.`GunAnimationState`|
 
 ### Command (Client)
 
@@ -779,13 +819,9 @@ Notation:
 
 |com.tacz.guns.client.event| |
 |---|---|
-|`CameraSetupEvent`||
-|`FirstPersonRenderEvent`||
-|`FirstPersonRenderGunEvent`||
 |`PlayerEnterWorld`|_Deprecated_|
 |`PreventsHotbarEvent`|_Deprecated_|
 |`ReloadResourceEvent`|_Deprecated_|
-|`TickAnimationEvent`||
 
 |com.tacz.guns.client.event|dev.xcolorful.customgun.client.entity|
 |---|---|
@@ -793,6 +829,15 @@ Notation:
 |`InventoryEvent`.onPlayerSwapMainHand|shooter.player.`_LocalMessageHandler`.onSwapItemWithOffhand|
 |`RefreshClonePlayerDataEvent`|shooter.player.`_LocalPlayerHandler`.onClientPlayerClone|
 |`RefreshClonePlayerDataEvent`.onClientTick|_Deprecated_|
+|`TickAnimationEvent`|shooter.player.`_LocalAnimHandler`|
+
+|com.tacz.guns.client.event|dev.xcolorful.customgun.client.renderer|
+|---|---|
+|`CameraSetupEvent`|item.gun.`GunCameraHelper`|
+|`FirstPersonRenderEvent`|shooter.`FirstPersonRender`|
+|`FirstPersonRenderGunEvent`|item.gun.`GunRendererAddon`|
+|`PlayerHurtByGunEvent`.onPlayerHurtByGun|victim.`GunHurtBobTweak`.onProjectileHit|
+|`RenderHeadShotAABB`|entity.`HeadAABBRender`|
 
 |com.tacz.guns.client.event|dev.xcolorful.customgun.client.mixin|
 |---|---|
@@ -806,11 +851,6 @@ Notation:
 |com.tacz.guns.client.event|dev.xcolorful.customgun.client.init|
 |---|---|
 |`CommonNetworkCacheEvent`.onClientPlayerLoggingIn|`ClientModEvent`.onClientLoggingIn|
-
-|com.tacz.guns.client.event|dev.xcolorful.customgun.client.renderer|
-|---|---|
-|`PlayerHurtByGunEvent`.onPlayerHurtByGun|victim.onProjectileHit|
-|`RenderHeadShotAABB`|entity.`HeadAABBRender`|
 
 |com.tacz.guns.client.event|dev.xcolorful.customgun.client.gui|
 |---|---|
@@ -849,7 +889,7 @@ Notation:
 |overlay.`*Overlay`||
 |toast.`GunLevelUpToast`|_Deprecated_|
 |`GunPackProgressScreen`|_Deprecated_|
-|`GunRefitScreen`|`GunRefitScreen`|
+|`GunRefitScreen`|screen.`GunRefitScreen`|
 |`GunSmithTableScreen`|_Deprecated_|
 
 |com.tacz.guns.client.gui|dev.xcolorful.customgun.client.compat|
@@ -868,7 +908,7 @@ Notation:
 |`ClientSetupEvent`.onClientSetup(RegisterKeyMappingsEvent)|`ClientKeyMappingRegistry`.registerKeyMappings|
 |`ClientSetupEvent`.onRegisterGuiOverlays||
 |`ModContainerScreen`|_Deprecated_|
-|`ModEntitiesRender`||
+|`ModEntitiesRender`|`ClientEntityRendererRegistry`|
 |`ParticleFactoryRegistry`|`ClientModParticles`|
 
 |com.tacz.guns.client.init|dev.xcolorful.customgun.client.resource|
@@ -901,7 +941,8 @@ Notation:
 
 |com.tacz.guns.mixin.client|dev.xcolorful.customgun.client.mixin|
 |---|---|
-|ar||
+|ar.`ARCompatMixinPlugin`|_Deprecated_|
+|ar.`BedrockPartMixin`|_Deprecated_|
 |`AbstractButtonMixin`|gui.`AbstractButtonMixin`|
 |`GameRendererMixin`|renderer.`GameRendererMixin`|
 |`HumanoidModelMixin`|model.`HumanoidModelMixin`|
@@ -912,39 +953,71 @@ Notation:
 |`MouseHandlerMixin`|`MouseHandlerMixin`|
 |`PlayerModelMixin`|model.`PlayerModelMixin`|
 |`SoundManagerPreparationsMixin`|sound.`SoundManagerMixin`|
-|`StairBlockAccessor`||
+|`StairBlockAccessor`|_Deprecated_|
 
 ### Model (Client)
 > ```java
 > package com.tacz.guns.client.model;
 > ```
 
+|com.tacz.guns.client.model|dev.xcolorful.customgun.client.api.model|
+|---|---|
+|bedrock.`BedrockCube`|bedrock.`IBedrockCube`|
+|bedrock.`ModelRendererWrapper`|bedrock.`IBedrockRenderer`|
+
 |com.tacz.guns.client.model|dev.xcolorful.customgun.client.model|
 |---|---|
-|bedrock||
+|bedrock|bedrock|
+|bedrock.`BedrockCubeBox`|bedrock.`BedrockCubeBox`|
+|bedrock.`BedrockCubePerFace`|bedrock.`BedrockCubePerFace`|
 |bedrock.`BedrockModel`|`ModelObject`|
-|listener.camera||
-|listener.constraint||
-|listener.model||
-|papi||
+|bedrock.`BedrockPart`|bedrock.`BedrockPart`|
+|bedrock.`BedrockPolygon`|bedrock.`BedrockPolygon`|
+|bedrock.`BedrockVertex`|bedrock.`BedrockVertex`|
 |`Bedrock*Model`|`*ModelObject`|
-|`FunctionalBedrockPart`||
-|`GunModelConstant`||
-|`SlotModel`||
+|`BedrockAttachmentModel`.render|`_AttachmentModelRender`.render|
+|`BedrockGunModel`.render|`_GunModelRender`.render|
+|`FunctionalBedrockPart`|bedrock.`FunctionalBedrockPart`|
+|`SlotModel`|bedrock.`SlotModel`|
+
+|com.tacz.guns.client.model|dev.xcolorful.customgun.client.util|
+|---|---|
+|bedrock.`BedrockModel`.convertPivot|`ClientModelUtils`.pivot_BEtoJE|
+|bedrock.`BedrockModel`.convertRotation|`ClientModelUtils`.rotation_BEtoJE|
+|bedrock.`BedrockModel`.convertOrigin|`ClientModelUtils`.origin_BEtoJE|
+
+|com.tacz.guns.client.model|dev.xcolorful.customgun.core.text|
+|---|---|
+|papi.`AmmoCountPapi`|_Deprecated_|
+|papi.`PapiManager`|placeholder.`PlaceholderManager`|
+|papi.`PlayerNamePapi`|_Deprecated_|
+
+|com.tacz.guns.client.model|dev.xcolorful.customgun.client.animation|
+|---|---|
+|listener.camera|listener.camera|
+|listener.constraint|listener.constraint|
+|listener.model|listener.model|
 
 |com.tacz.guns.client.model|dev.xcolorful.customgun.client.renderer|
 |---|---|
-|functional.`AttachmentRender`||
-|functional.`BeamRenderer`||
-|functional.`LeftHandRender`||
+|functional.`AttachmentRender`|model.`AttachmentRender`|
+|functional.`BeamRenderer`|model.`BeamRender`|
+|functional.`LeftHandRender`|model.`HandRender`.`Left`|
 |functional.`MuzzleFlashRender`|model.`MuzzleFlashRender`|
-|functional.`RightHandRender`||
+|functional.`RightHandRender`|model.`HandRender`.`Right`|
 |functional.`ShellRender`||
-|functional.`TextShowRender`||
+|functional.`TextShowRender`|model.`TextRender`|
+|`IFunctionalRenderer`|model.`IModelComponentRenderer`|
 
-|com.tacz.guns.client.model|dev.xcolorful.customgun.client.api.model|
+|com.tacz.guns.client.model|dev.xcolorful.customgun.client.init|
 |---|---|
-|`IFunctionalRenderer`|`IModelComponentRenderer`|
+|functional.`BeamRenderer`.`LaserBeamRenderState`|registry.`ClientRenderRegistry`.`LaserBeamRenderState`|
+
+|com.tacz.guns.client.model|dev.xcolorful.customgun.client.api.resource|
+|---|---|
+|`GunModelConstant`|assets.model.bedrock.geometry.`NodeName`|
+|`GunModelConstant`|assets.model.bedrock.geometry.`NodeName`.`Prefix`|
+|`GunModelConstant`|assets.model.bedrock.geometry.`NodeName`.`Suffix`|
 
 ### Particle (Client)
 > ```java
@@ -964,9 +1037,10 @@ Notation:
 |com.tacz.guns.client.renderer|dev.xcolorful.customgun.client.renderer|
 |---|---|
 |block|_Deprecated_|
-|entity.`EntityBulletRenderer`||
+|entity.`EntityBulletRenderer`|entity.`GunProjectileRenderer`|
 |entity.`TargetMinecartRenderer`|_Deprecated_|
-|item.`*ItemRenderer`||
+|item.`*ItemRenderer`|item.`*ItemRenderer`|
+|item.`GunItemRendererWrapper`|item.`GunItemRenderer`|
 |item.`AnimateGeoItemRenderer`|item.`AnimateGeoItemRenderer`|
 |item.`GunSmithTableItemRenderer`|_Deprecated_|
 |other.`GunHurtBobTweak`|victim.`GunHurtBobTweak`|
@@ -984,6 +1058,7 @@ Notation:
 |com.tacz.guns.client.resource|dev.xcolorful.customgun.client.resource|
 |---|---|
 |index.`Client*Index`|instance.data.`Client*IndexInstance`|
+|index.`ClientAttachmentSkinIndex`|_Deprecated_|
 |manager.`DisplayManager`|assets.`DisplayManager`|
 |manager.`GltfManager`|assets.`AnimationManager`.`GltfAnimationManager`|
 |manager.`PackInfoManager`|assets.`GunpackInfoManager`|
@@ -1003,6 +1078,9 @@ Notation:
 |pojo.display.`LaserConfig`|assets.display.`_LaserDisplay`|
 |pojo.model.`BedrockModelPOJO`|assets.model.`BedrockModel`|
 |pojo.model.`BedrockVersion`|_Deprecated_|
+|pojo.model.`CubesItem`.uv|assets.model.bedrock.geometry.bone.cube.`_Uv`.uv|
+|pojo.model.`CubesItem`.faceUv|assets.model.bedrock.geometry.bone.`_Cube`.uv|
+|pojo.model.`FaceUVsItem`|assets.model.bedrock.geometry.bone.cube.`_Uv`|
 |pojo.model.`*`|assets.model.bedrock|
 |pojo.skin|_Deprecated|
 |pojo.`CommonTransformObject`|_Deprecated_|

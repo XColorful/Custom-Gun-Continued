@@ -12,6 +12,7 @@ import dev.xcolorful.customgun.core.api.item.IAttachment;
 import dev.xcolorful.customgun.core.api.item.attachment.IAttachmentGetter;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
+import org.jetbrains.annotations.Nullable;
 
 public final class AttachmentBuilder extends ItemBuilder<AttachmentBuilder> {
 
@@ -23,7 +24,7 @@ public final class AttachmentBuilder extends ItemBuilder<AttachmentBuilder> {
     }
     public static AttachmentBuilder create(ItemLike attachment) {
         ItemStack attachmentItem = new ItemStack(attachment);
-        IAttachment iAttachment = IAttachmentGetter.fromItemStack(attachmentItem);
+        @Nullable IAttachment iAttachment = IAttachmentGetter.fromItemStack(attachmentItem);
         if(iAttachment != null) return new AttachmentBuilder(iAttachment, attachmentItem);
         else throw new IllegalArgumentException("Item is not a IAttachment");
     }

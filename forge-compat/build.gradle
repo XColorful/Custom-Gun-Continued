@@ -103,6 +103,11 @@ dependencies {
         exclude group: 'org.apache.commons', module: 'commons-lang3'
         jarJar.ranged(it, "[${luaj_bcel_version},)")
     }
+
+    // Apache Commons Math3
+    minecraftLibrary(jarJar("${apache_commons_math3}")) {
+        jarJar.ranged(it, "[${apache_commons_math3_version},)")
+    }
 }
 
 tasks.named('jar', Jar).configure {

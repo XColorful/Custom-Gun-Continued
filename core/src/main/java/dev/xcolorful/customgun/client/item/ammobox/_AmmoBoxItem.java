@@ -37,7 +37,7 @@ public class _AmmoBoxItem {
     }
 
     public static float getStatus(ItemStack ammoItem, @Nullable ClientLevel level, @Nullable LivingEntity entity, int seed) {
-        IAmmoBox iAmmoBox = IAmmoBoxGetter.fromItemStack(ammoItem);
+        @Nullable IAmmoBox iAmmoBox = IAmmoBoxGetter.fromItemStack(ammoItem);
         if (iAmmoBox == null) return -1;
         return iAmmoBox.getStatusMask(ammoItem);
     }

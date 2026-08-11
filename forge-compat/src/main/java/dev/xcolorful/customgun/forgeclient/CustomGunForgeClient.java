@@ -17,9 +17,11 @@ package dev.xcolorful.customgun.forgeclient;
 import dev.xcolorful.customgun.client.CustomGunClient;
 import dev.xcolorful.customgun.client.api.input.IKeyMapping;
 import dev.xcolorful.customgun.client.api.minecraft.access.IClientAccessTransformer;
+import dev.xcolorful.customgun.client.api.minecraft.item.IClientItemExtensionProvider;
 import dev.xcolorful.customgun.core.api.event.IEventRegister;
 import dev.xcolorful.customgun.forgeclient.event.ForgeClientEventRegister;
 import dev.xcolorful.customgun.forgeclient.input.ForgeKeyMapping;
+import dev.xcolorful.customgun.forgeclient.item.ForgeClientItemExtensionProvider;
 import dev.xcolorful.customgun.forgeclient.minecraft.access.ForgeClientAccessTransformer;
 
 public class CustomGunForgeClient {
@@ -28,15 +30,18 @@ public class CustomGunForgeClient {
     public static IEventRegister eventRegister;
     public static IKeyMapping.Creator keyMappingCreator;
     public static IClientAccessTransformer accessTransformer;
+    public static IClientItemExtensionProvider clientItemExtensionProvider;
 
     public static void init() {
         if (initialized) return;
         CustomGunForgeClient.eventRegister = new ForgeClientEventRegister();
         CustomGunForgeClient.keyMappingCreator = new ForgeKeyMapping.Creator();
         CustomGunForgeClient.accessTransformer = new ForgeClientAccessTransformer();
+        CustomGunForgeClient.clientItemExtensionProvider = new ForgeClientItemExtensionProvider();
 
         CustomGunClient.init(CustomGunForgeClient.keyMappingCreator,
-                CustomGunForgeClient.accessTransformer);
+                CustomGunForgeClient.accessTransformer,
+                CustomGunForgeClient.clientItemExtensionProvider);
         initialized = true;
     }
 }

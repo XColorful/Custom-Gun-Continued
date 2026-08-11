@@ -55,10 +55,16 @@ public enum EventType {
     TAGS_UPDATED_EVENT(false),
     DATAPACK_SYNC_EVENT(false),
     // render
+    PREPARE_RENDER_FRAME_EVENT(true),
+    RENDER_FRAME_EVENT(true),
+    COMPUTE_CAMERA_ANGLES_EVENT(true),
+    COMPUTE_FOV_EVENT(true),
+    COMPUTE_FOV_MODIFIER_EVENT(true),
     RENDER_LEVEL_STAGE_EVENT(true),
     RENDER_TRANSLUCENT_EVENT(true), // 单独拆一个事件，减少一点不必要的转发开销
     @ApiStatus.AvailableSince("neoforge26.2")
     SUBMIT_CUSTOM_GEOMETRY_EVENT(true),
+    RENDER_HAND_EVENT(true),
     RENDER_GUI_EVENT(true),
     // display
     ITEM_TOOLTIP_EVENT(true);

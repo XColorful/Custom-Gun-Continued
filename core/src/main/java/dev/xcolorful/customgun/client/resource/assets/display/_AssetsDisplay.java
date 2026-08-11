@@ -16,14 +16,14 @@ public abstract class _AssetsDisplay<T extends _AssetsDisplay<T>> extends Resour
 
     private ResourceLocation modelLocation;
     private @Nullable _ModelTransform modelTransform;
-    private ResourceLocation textureLocation;
+    private @Nullable ResourceLocation textureLocation;
     private @Nullable ResourceLocation slotTextureLocation;
 
     @Override
     protected void validatePojo() {
         if (ENABLE_BACK_COMPATIBILITY) this.applyBackCompatibility();
 
-        boolean n1 = (this.modelLocation == null | this.textureLocation == null);
+        boolean n1 = (this.modelLocation == null);
         if (n1) {
             this.setValid(false);
             return;
@@ -40,7 +40,7 @@ public abstract class _AssetsDisplay<T extends _AssetsDisplay<T>> extends Resour
     public final @Nullable _ModelTransform getModelTransform() {
         return modelTransform;
     }
-    public final ResourceLocation getTextureLocation() {
+    public final @Nullable ResourceLocation getTextureLocation() {
         return textureLocation;
     }
     public final @Nullable ResourceLocation getSlotTextureLocation() {
@@ -66,7 +66,6 @@ public abstract class _AssetsDisplay<T extends _AssetsDisplay<T>> extends Resour
     @Override
     public T applyBackCompatibility() {
         this.modelLocation = this.modelLocation == null ? ResourceTag.NULL_LOCATION : this.modelLocation;
-        this.textureLocation = this.textureLocation == null ? ResourceTag.NULL_LOCATION : this.textureLocation;
         return (T) this;
     }
 }

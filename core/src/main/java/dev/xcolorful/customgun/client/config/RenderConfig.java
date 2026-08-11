@@ -24,7 +24,7 @@ public class RenderConfig {
     public static IModConfigSpec<Boolean> KILL_AMOUNT_ENABLE;
     public static IModConfigSpec<Double> KILL_AMOUNT_DURATION_SECOND;
     public static IModConfigSpec<Integer> TARGET_RENDER_DISTANCE;
-    public static IModConfigSpec<Boolean> FIRST_PERSON_BULLET_TRACER_ENABLE;
+    public static IModConfigSpec<Boolean> ENABLE_FIRST_PERSON_BULLET_TRACER;
     public static IModConfigSpec<Boolean> DISABLE_INTERACT_HUD_TEXT;
     public static IModConfigSpec<Boolean> AUTO_SELECT_GUN_SMITH_TABLE_FILTER;
     public static IModConfigSpec<Integer> DAMAGE_COUNTER_RESET_TIME;
@@ -68,8 +68,9 @@ public class RenderConfig {
         builder.addComment(ClientModConfigTag.targetRenderDistance_comment);
         TARGET_RENDER_DISTANCE = builder.addConfig(ClientModConfigTag.targetRenderDistance_path, 128, 0, Integer.MAX_VALUE);
 
-        builder.addComment(ClientModConfigTag.firstPersonBulletTracerEnable_comment);
-        FIRST_PERSON_BULLET_TRACER_ENABLE = builder.addConfig(ClientModConfigTag.firstPersonBulletTracerEnable_path, true);
+        builder.addComment(ClientModConfigTag.enableFirstPersonBulletTracer_comment);
+        ENABLE_FIRST_PERSON_BULLET_TRACER = builder.addConfig(ClientModConfigTag.enableFirstPersonBulletTracer_path, true);
+        FIRST_PERSON_BULLET_TRACER_ENABLE = ENABLE_FIRST_PERSON_BULLET_TRACER;
 
         builder.addComment(ClientModConfigTag.disableInteractHudText_comment);
         DISABLE_INTERACT_HUD_TEXT = builder.addConfig(ClientModConfigTag.disableInteractHudText_path, false);
@@ -91,4 +92,8 @@ public class RenderConfig {
 
         builder.finishBuild();
     }
+
+    // --------Deprecated--------
+
+    @Deprecated(forRemoval = true) public static IModConfigSpec<Boolean> FIRST_PERSON_BULLET_TRACER_ENABLE;
 }

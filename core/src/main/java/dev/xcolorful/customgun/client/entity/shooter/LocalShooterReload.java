@@ -7,6 +7,9 @@
 
 package dev.xcolorful.customgun.client.entity.shooter;
 
+import dev.xcolorful.customgun.client.animation.statemachine.GunAnimStateContext;
+import dev.xcolorful.customgun.client.animation.statemachine.LuaAnimStateMachine;
+import dev.xcolorful.customgun.client.api.animation.statemachine.GunAnimationState;
 import dev.xcolorful.customgun.client.api.entity.LocalShooterProperty;
 import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
 import dev.xcolorful.customgun.client.api.sound.gun.GunSoundType;
@@ -40,7 +43,7 @@ public final class LocalShooterReload extends LocalShooterAspect {
     public void reload() {
         // 1. 手持枪械检查
         ItemStack gunItem = this.localShooter.getMainHandItem();
-        IGun iGun = IGunGetter.fromItemStack(gunItem);
+        @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return;
 
         if ( // 2.1 检查状态锁
@@ -76,6 +79,9 @@ public final class LocalShooterReload extends LocalShooterAspect {
         @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(gunLocation);
         if (gunIndexInstance == null) return;
 
+        LuaAnimStateMachine<GunAnimStateContext> animStateMachine = gunDisplayInstance.getAnimStateMachine();
+        animStateMachine.trigger(GunAnimationState.INPUT_RELOAD.getConstantName());
+
         GunData gunData = gunIndexInstance.getGunData();
         BoltType boltType = gunData.getBoltType();
         boolean hasAmmo = iGun.getMagAmmoCountWithBarrel(gunItem, boltType) > 0;
@@ -85,13 +91,12 @@ public final class LocalShooterReload extends LocalShooterAspect {
         var soundLocation = !hasAmmo ? GunSoundType.RELOAD_EMPTY_SOUND : GunSoundType.RELOAD_TACTICAL_SOUND;
         SoundPlayManager.get().playGunSound(gunDisplayInstance.getGunSound(soundLocation),
                 this.localShooter);
-        // TODO AnimationStateMachine
     }
 
     public void cancelReload() {
         // 1. 手持枪械检查
         ItemStack gunItem = this.localShooter.getMainHandItem();
-        IGun iGun = IGunGetter.fromItemStack(gunItem);
+        @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return;
 
         else if ( // 2.2 检查状态
@@ -109,6 +114,8 @@ public final class LocalShooterReload extends LocalShooterAspect {
     private void doCancelReload(ItemStack gunItem) {
         @Nullable GunDisplayInstance gunDisplayInstance = ClientResourceApi.getGunDisplayInstance(gunItem);
         if (gunDisplayInstance == null) return;
-        // TODO GunDisplayInstance AnimationStateMachine
+
+        LuaAnimStateMachine<GunAnimStateContext> animStateMachine = gunDisplayInstance.getAnimStateMachine();
+        animStateMachine.trigger(GunAnimationState.INPUT_CANCEL_RELOAD.getConstantName());
     }
 }

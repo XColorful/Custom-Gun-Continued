@@ -13,6 +13,7 @@ import dev.xcolorful.customgun.core.api.resource.ResourceTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public interface IAmmoDataAccess extends IAmmoStateAccess,
         IAmmoNBTAccess,
@@ -70,7 +71,7 @@ public interface IAmmoDataAccess extends IAmmoStateAccess,
     }
 
     @Deprecated default boolean isAmmoOfGun(ItemStack gunItem, ItemStack ammoItem) {
-        IGun iGun = IGunGetter.fromItemStack(gunItem);
+        @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return false;
         return iGun.isMatchedAmmo(gunItem, ammoItem);
     }

@@ -7,9 +7,12 @@
 
 package dev.xcolorful.customgun.client.renderer.shooter;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import dev.xcolorful.customgun.client.CustomGunClient;
 import dev.xcolorful.customgun.client.api.animation.statemachine.AnimStateMachine;
 import dev.xcolorful.customgun.client.api.event.IRenderHandEvent;
 import dev.xcolorful.customgun.client.api.renderer.KeepingItemRenderer;
+import dev.xcolorful.customgun.client.compat.oculus.OculusCompat;
 import dev.xcolorful.customgun.client.renderer.item.AnimateGeoItemRenderer;
 import dev.xcolorful.customgun.core.api.event.EventType;
 import dev.xcolorful.customgun.core.api.event.IEvent;
@@ -78,6 +81,33 @@ public class FirstPersonRender implements IEventHandler {
         ItemDisplayContext transformType = event.getHand() == InteractionHand.MAIN_HAND ? ItemDisplayContext.FIRST_PERSON_RIGHT_HAND : ItemDisplayContext.FIRST_PERSON_LEFT_HAND;
 
         // 渲染相关内容整理到物品的IClientItemExtensions了，这个接口有待进一步抽象
-        // TODO IClientItemExtensions, AnimateGeoItemRenderer
+        if (!(CustomGunClient.getClientItemExtensionProvider().getBEWLR(gunItem)
+                instanceof AnimateGeoItemRenderer<?, ?> renderer)) return;
+
+        // 如果旧的状态机已经不再使用且未正常退出，使其静默退出
+        AnimStateMachine<?> stateMachine = renderer.getStateMachine(gunItem);
+        if (stateMachine != this.lastStateMachine) {
+            if (this.lastStateMachine != null && this.lastStateMachine.isInitialized()) {
+                this.lastStateMachine.exit();
+            }
+
+            this.lastStateMachine = stateMachine;
+        }
+
+        // 物品处于后台时，阻止状态机初始化
+        if (!iGun.switchItemNeedReset(player.getMainHandItem(), gunItem) && renderer.needReInit(gunItem)) {
+            renderer.tryInit(gunItem, player, event.getPartialTick());
+        }
+
+        // 防止内存泄漏
+        OculusCompat.endBatch(mc.renderBuffers().bufferSource());
+
+        renderer.renderFirstPerson(event.getPoseStack(),
+                event.getMultiBufferSource_SubmitNodeCollector(),
+                transformType,
+                event.getPackedLight(),
+                event.getPartialTick(),
+                player, gunItem);
+        event.setCanceled(true);
     }
 }

@@ -230,8 +230,8 @@ public abstract class AnimateGeoItemRenderer<M extends AnimatedModelObject, CTX 
     public void applyItemInHandCameraAnimation(BeforeRenderHandEvent event, ItemStack pojoItem, LocalPlayer player) {
         applyItemInHandCameraAnimation(event, pojoItem, 1);
     }
-    public void applyItemInHandCameraAnimation(BeforeRenderHandEvent event, ItemStack stack, float multiplier) {
-        @Nullable M modelObject = this.getModel(stack);
+    public void applyItemInHandCameraAnimation(BeforeRenderHandEvent event, ItemStack pojoItem, float multiplier) {
+        @Nullable M modelObject = this.getModel(pojoItem);
         if (modelObject == null) return;
 
         Quaternionf quaternion = MathUtil.Quaternion.multiply(modelObject.getCameraAnimationObject().rotationQuaternion, multiplier);

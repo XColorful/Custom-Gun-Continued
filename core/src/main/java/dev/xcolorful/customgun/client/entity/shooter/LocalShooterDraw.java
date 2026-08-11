@@ -8,15 +8,21 @@
 package dev.xcolorful.customgun.client.entity.shooter;
 
 import dev.xcolorful.customgun.CustomGun;
+import dev.xcolorful.customgun.client.CustomGunClient;
 import dev.xcolorful.customgun.client.api.entity.LocalShooterProperty;
 import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
+import dev.xcolorful.customgun.client.api.sound.gun.GunSoundType;
+import dev.xcolorful.customgun.client.config.SoundConfig;
+import dev.xcolorful.customgun.client.renderer.item.AnimateGeoItemRenderer;
 import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
+import dev.xcolorful.customgun.client.sound.SoundPlayManager;
 import dev.xcolorful.customgun.core.api.common.McLogicalSide;
 import dev.xcolorful.customgun.core.api.entity.ILivingShooter;
 import dev.xcolorful.customgun.core.api.entity.shooter.ILivingShooterGetter;
 import dev.xcolorful.customgun.core.api.event.shooter.ShooterDrawEvent;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
+import dev.xcolorful.customgun.core.config.GunConfig;
 import dev.xcolorful.customgun.core.entity.shooter.modifier.ShooterGunModifierManager;
 import dev.xcolorful.customgun.core.network.message.ClientMessagePlayerDrawGun;
 import dev.xcolorful.customgun.core.util.SendUtils;
@@ -77,8 +83,13 @@ public final class LocalShooterDraw extends LocalShooterAspect {
         }
     }
     private long _updateDrawTime(long currentTimeMillis, ItemStack lastItem, IGun lastGun, long drawTime) {
-        if (true) {
-            // TODO IClientItemExtensions, AnimateGeoItemRenderer getPutAwayTime
+        if (CustomGunClient.getClientItemExtensionProvider().getBEWLR(lastItem)
+                instanceof AnimateGeoItemRenderer<?, ?> renderer) {
+            long putAwayTime = renderer.getPutAwayTime(lastItem);
+            if (drawTime > putAwayTime) {
+                drawTime = putAwayTime;
+            }
+
             this.localShooterProperty.clientDrawFinishTimestamp = currentTimeMillis + drawTime;
         } else {
             drawTime = 0;
@@ -104,6 +115,19 @@ public final class LocalShooterDraw extends LocalShooterAspect {
 //        });
      }
      private void _doPutAway(ItemStack lastItem, long putAwayTime) {
-        // TODO IClientItemExtensions
+        if (!(CustomGunClient.getClientItemExtensionProvider().getBEWLR(lastItem)
+                instanceof AnimateGeoItemRenderer<?,?> renderer)) return;
+
+        renderer.tryExit(lastItem, putAwayTime);
+
+        @Nullable GunDisplayInstance gunDisplayInstance = ClientResourceApi.getGunDisplayInstance(lastItem);
+        if (gunDisplayInstance == null) return;
+
+        SoundPlayManager.get().stopCurrentSound();
+        SoundPlayManager.get().playClientSound(gunDisplayInstance.getGunSound(GunSoundType.PUT_AWAY_SOUND),
+                1.0f, 1.0f,
+                this.localShooter, false,
+                GunConfig.DEFAULT_GUN_OTHER_SOUND_DISTANCE.get(),
+                true, SoundConfig.DEFAULT_SOUND_CONCURRENCY_LIMIT.get());
      }
 }

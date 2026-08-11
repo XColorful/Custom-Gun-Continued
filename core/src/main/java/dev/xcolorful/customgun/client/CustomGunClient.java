@@ -20,6 +20,7 @@ import dev.xcolorful.customgun.client.api.animation.shooter.IShooterAnimationMan
 import dev.xcolorful.customgun.client.api.input.IInputKeyManager;
 import dev.xcolorful.customgun.client.api.input.IKeyMapping;
 import dev.xcolorful.customgun.client.api.minecraft.access.IClientAccessTransformer;
+import dev.xcolorful.customgun.client.api.minecraft.item.IClientItemExtensionProvider;
 import dev.xcolorful.customgun.client.event.custom.ClientEventHandlers;
 import dev.xcolorful.customgun.client.init.ClientModConfig;
 import dev.xcolorful.customgun.client.input.InputKeyManager;
@@ -30,9 +31,11 @@ public class CustomGunClient {
     protected static boolean initialized;
     private static IKeyMapping.Creator keyMappingCreator;
     private static IClientAccessTransformer accessTransformer;
+    private static IClientItemExtensionProvider clientItemExtensionProvider;
 
     public static void init(IKeyMapping.Creator keyMappingCreator,
-                            IClientAccessTransformer accessTransformer) {
+                            IClientAccessTransformer accessTransformer,
+                            IClientItemExtensionProvider clientItemExtensionProvider) {
         if (initialized) return;
         CustomGunClient.keyMappingCreator = keyMappingCreator;
         CustomGunClient.accessTransformer = accessTransformer;
@@ -53,6 +56,9 @@ public class CustomGunClient {
     }
     public static IClientAccessTransformer getAccessTransformer() {
         return accessTransformer;
+    }
+    public static IClientItemExtensionProvider getClientItemExtensionProvider() {
+        return clientItemExtensionProvider;
     }
 
     private static IInputKeyManager inputKeyManager;

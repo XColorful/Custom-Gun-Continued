@@ -7,6 +7,7 @@
 
 package dev.xcolorful.customgun.client.entity.shooter.player;
 
+import dev.xcolorful.customgun.client.CustomGunClient;
 import dev.xcolorful.customgun.client.animation.statemachine.GunAnimStateContext;
 import dev.xcolorful.customgun.client.animation.statemachine.LuaAnimStateMachine;
 import dev.xcolorful.customgun.client.api.animation.statemachine.GunAnimationState;
@@ -117,6 +118,15 @@ public class _LocalAnimHandler implements IEventHandler {
         @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return;
 
-        // TODO IClientItemExtensions, AnimateGeoItemRenderer
+        // 渲染相关内容整理到物品的IClientItemExtensions了，这个接口有待进一步抽象
+        if (!(CustomGunClient.getClientItemExtensionProvider().getBEWLR(gunItem)
+                instanceof AnimateGeoItemRenderer<?, ?> renderer)) return;
+
+        // 如果物品不一样了，先尝试初始化状态机
+        if (renderer.needReInit(gunItem)) {
+            renderer.tryInit(gunItem, player, event.getPartialTick());
+        }
+
+        renderer.visualUpdate(gunItem);
     }
 }

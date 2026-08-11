@@ -39,8 +39,8 @@ public interface IAttachmentDataAccess extends IAttachmentStateAccess,
      * {@link AttachmentDisplay#getLaserDisplay()}
      */
     boolean hasLaserColor(ItemStack attachmentItem);
-    int getLaserColor(ItemStack attachmentItem);
-    void setLaserColor(ItemStack attachmentItem, int laserColor);
+    int getLaserColorInt(ItemStack attachmentItem);
+    void setLaserColorInt(ItemStack attachmentItem, int laserColor);
 
     // --------Deprecated--------
 

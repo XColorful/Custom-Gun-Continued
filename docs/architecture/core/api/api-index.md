@@ -201,6 +201,12 @@
 ## 声音
 > _./core/api/sound_
 
+## 文本
+> _./core/api/text_
+
+- placeholder
+	- IPlaceholderManager：占位符管理器
+
 # English
 
 ## Block
@@ -400,3 +406,9 @@ Post Event:
 
 ## Sound
 > _./core/api/sound_
+
+## Text
+> _./core/api/text_
+
+- placeholder
+	- IPlaceholderManager: Placeholder manager

@@ -8,6 +8,8 @@
 package dev.xcolorful.customgun.client.mixin.renderer;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import dev.xcolorful.customgun.CustomGun;
+import dev.xcolorful.customgun.client.api.event.render.BeforeRenderHandEvent;
 import dev.xcolorful.customgun.client.api.renderer.KeepingItemRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -38,7 +40,7 @@ public class ItemInHandRendererMixin implements KeepingItemRenderer {
                                    SubmitNodeCollector nodeCollector,
                                    LocalPlayer player, int lightCoords,
                                    CallbackInfo ci) {
-        // TODO BeforeRenderHandEvent
+        CustomGun.getEventPoster().postCustomEvent(new BeforeRenderHandEvent(poseStack));
     }
 
     // --------KeepItemRenderer--------

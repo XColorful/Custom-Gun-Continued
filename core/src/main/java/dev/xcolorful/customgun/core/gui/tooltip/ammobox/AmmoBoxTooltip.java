@@ -25,7 +25,7 @@ public record AmmoBoxTooltip(ItemStack ammoBoxItem, IAmmoBox iAmmoBox,
         implements TooltipComponent {
 
     public static @Nullable AmmoBoxTooltip fromItem(@Nullable ItemStack ammoBoxItem) {
-        IAmmoBox iAmmoBox = IAmmoBoxGetter.fromItemStack(ammoBoxItem);
+        @Nullable IAmmoBox iAmmoBox = IAmmoBoxGetter.fromItemStack(ammoBoxItem);
         if (iAmmoBox == null) return null;
 
         var ammoLocation = iAmmoBox.getAmmoLocation(ammoBoxItem);

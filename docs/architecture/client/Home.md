@@ -25,8 +25,15 @@
 	- DebugCommand：[客户端调试指令](/docs/wiki/command/Debug%20command.md#客户端指令)
 	- ReloadCommand：[客户端重载指令](/docs/wiki/command/Reload%20command.md#客户端指令)
 
-### 模组联动
+### 模组兼容
 > _./client/compat_
+
+[模组兼容框架](/docs/architecture/core/compat/mod-compat-framework.md)
+- ar：加速渲染
+- oculus：Oculus
+- optifine：Optifine
+- playeranimator：Player Animator
+- shouldersurfing：越肩视角
 
 ### 配置
 > _./client/config_
@@ -81,6 +88,8 @@
 > _./client/init_
 
 - ClientCommandRegistry：客户端指令注册
+- ClientEntityRendererRegistry：客户端实体渲染注册
+- ClientKeyMappingRegistry：客户端按键注册
 - ClientModConfig：客户端配置初始化
 - ClientModEvent：客户端事件
 - ClientModParticles：客户端粒子注册
@@ -143,6 +152,8 @@
 ### 渲染器
 > _./client/renderer_
 
+[渲染框架](./render/Home.md)
+
 - Entity：实体
 - Item：物品
 - Model：模型
@@ -173,6 +184,7 @@
 
 - ClientGuiUtils：客户端 GUI 操作封装
 - ClientJsonUtils：客户端 JSON 序列化封装
+- ClientModelUtils：客户端几何模型操作封装
 - ClientRenderUtils：客户端渲染操作封装
 - ClientWorldUtils：客户端游戏内世界相关操作
 
@@ -203,6 +215,13 @@ Module division based on the `dev.xcolorful.customgun.client` top-level package
 
 ### Mod Compat
 > _./client/compat_
+
+[Mod compat framework](/docs/architecture/core/compat/mod-compat-framework.md#English)
+- ar: Accelerated Rendering
+- oculus: Oculus
+- optifine: Optifine
+- playeranimator: Player Animator
+- shouldersurfing: Shoulder Surfing Reloaded
 
 ### Config
 > _./client/config_
@@ -257,6 +276,8 @@ Module division based on the `dev.xcolorful.customgun.client` top-level package
 > _./client/init_
 
 - ClientCommandRegistry: Client command registration
+- ClientEntityRendererRegistry: Client entity renderer registration
+- ClientKeyMappingRegistry: Client input key registration
 - ClientModConfig: Client config initialization
 - ClientModEvent: Client events
 - ClientModParticles: Client particle registration
@@ -319,6 +340,8 @@ Module division based on the `dev.xcolorful.customgun.client` top-level package
 ### Renderer
 > _./client/renderer_
 
+[Render framework](./render/Home.md#English)
+
 - Entity
 - Item
 - Model
@@ -349,5 +372,6 @@ Module division based on the `dev.xcolorful.customgun.client` top-level package
 
 - ClientGuiUtils: Client GUI operations wrapper
 - ClientJsonUtils: Client JSON serialization wrapper
+- ClientModelUtils: Client geometry model operations wrapper
 - ClientRenderUtils: Client render operations wrapper
 - ClientWorldUtils: Client in-game world related operations

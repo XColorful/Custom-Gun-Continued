@@ -8,6 +8,9 @@
 package dev.xcolorful.customgun.client.entity.shooter;
 
 import dev.xcolorful.customgun.CustomGun;
+import dev.xcolorful.customgun.client.animation.statemachine.GunAnimStateContext;
+import dev.xcolorful.customgun.client.animation.statemachine.LuaAnimStateMachine;
+import dev.xcolorful.customgun.client.api.animation.statemachine.GunAnimationState;
 import dev.xcolorful.customgun.client.api.entity.LocalShooterProperty;
 import dev.xcolorful.customgun.client.api.entity.shooter.ILocalShooterGetter;
 import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
@@ -22,7 +25,9 @@ import dev.xcolorful.customgun.core.api.entity.shooter.modifier.ShooterGunModifi
 import dev.xcolorful.customgun.core.api.event.gun.GunFireEvent;
 import dev.xcolorful.customgun.core.api.gun.attack.IGunAttackRuntime;
 import dev.xcolorful.customgun.core.api.item.IGun;
+import dev.xcolorful.customgun.core.api.item.attachment.modifier.AttachmentModifierType;
 import dev.xcolorful.customgun.core.api.item.gun.*;
+import dev.xcolorful.customgun.core.api.item.gun.modifier.IMuzzleModifier;
 import dev.xcolorful.customgun.core.api.resource.ResourceApi;
 import dev.xcolorful.customgun.core.config.GunConfig;
 import dev.xcolorful.customgun.core.entity.shooter.LivingShooterShoot;
@@ -60,7 +65,7 @@ public final class LocalShooterShoot extends LocalShooterAspect {
     public boolean doCharge_isChargeEnough(boolean doShoot) {
         // 1. 手持枪械检查
         ItemStack gunItem = this.localShooter.getMainHandItem();
-        IGun iGun = IGunGetter.fromItemStack(gunItem);
+        @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) {
             this.localShooterProperty.chargeProgress = 0f;
             return false;
@@ -118,7 +123,7 @@ public final class LocalShooterShoot extends LocalShooterAspect {
     public ShootResult shoot() {
         // 1. 手持枪械检查
         ItemStack gunItem = this.localShooter.getMainHandItem();
-        IGun iGun = IGunGetter.fromItemStack(gunItem);
+        @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return ShootResult.NOT_GUN;
 
         var gunLocation = iGun.getGunLocation(gunItem);
@@ -311,9 +316,9 @@ public final class LocalShooterShoot extends LocalShooterAspect {
 //                }
 
                 // 动画和声音循环播放
-                // TODO GunDisplayInstance AnimationStateMachine
-                if (false) {
-                }
+                LuaAnimStateMachine<GunAnimStateContext> animStateMachine = gunDisplayInstance.getAnimStateMachine();
+                animStateMachine.trigger(GunAnimationState.INPUT_SHOOT.getConstantName());
+
                 // 开火需要打断检视
                 SoundPlayManager.get().stopCurrentSound(gunDisplayInstance, GunSoundType.INSPECT_SOUND);
 
@@ -341,13 +346,13 @@ public final class LocalShooterShoot extends LocalShooterAspect {
         ShooterGunModifierCache shooterGunModifierCache = ILivingShooterGetter.cgc$fromLivingEntity(this.localShooter).cgc$getGunModifierCache();
         if (shooterGunModifierCache == null) return false;
 
-        // TODO GunPropertyCache SilenceModifier.ID
-        return false;
+        @Nullable FireSoundType fireSoundType = IMuzzleModifier.getValue(shooterGunModifierCache, AttachmentModifierType.MUZZLE);
+        return fireSoundType != null && fireSoundType.isSoundSuppressed();
     }
 
     public long getClientShootCooldown() {
         ItemStack gunItem = this.localShooter.getMainHandItem();
-        IGun iGun = IGunGetter.fromItemStack(gunItem);
+        @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return -1;
 
         var gunLocation = iGun.getGunLocation(gunItem);

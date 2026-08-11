@@ -40,7 +40,7 @@ public final class LivingShooterAim extends LivingShooterAspect {
         // 1. 手持枪械检查
         if (this.shooterProperty.currentGunItem == null) return;
         ItemStack gunItem = this.shooterProperty.currentGunItem.get();
-        IGun iGun = IGunGetter.fromItemStack(gunItem);
+        @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) {
             this.shooterProperty.isAiming = false;
             return;
@@ -60,7 +60,7 @@ public final class LivingShooterAim extends LivingShooterAspect {
             return;
         }
         ItemStack gunItem = this.shooterProperty.currentGunItem.get();
-        IGun iGun = IGunGetter.fromItemStack(gunItem);
+        @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) {
             _resetAiming();
             return;
@@ -121,7 +121,7 @@ public final class LivingShooterAim extends LivingShooterAspect {
         // 1. 手持枪械检查
         if (this.shooterProperty.currentGunItem == null) return;
         ItemStack gunItem = this.shooterProperty.currentGunItem.get();
-        IGun iGun = IGunGetter.fromItemStack(gunItem);
+        @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return;
 
         _doZoom(iGun, gunItem);
@@ -142,9 +142,13 @@ public final class LivingShooterAim extends LivingShooterAspect {
             if (PlannedRefactor.MOVE_SCOPE_VIEW_INDEX_TO_CORE) {}
             scopeViewIndex = 0;
         }
-        AttachmentNBTAccessor.INSTANCE.setScopeViewIndex(scopeCustomDataTag, scopeViewIndex);
 
+        { // 写入操作需要保存
+            AttachmentNBTAccessor.INSTANCE.setScopeViewIndex(scopeCustomDataTag, scopeViewIndex);
+        }
         iGun.setAttachmentCustomDataTag(gunItem, SCOPE, scopeCustomDataTag);
+
+        return;
     }
 
     /**
@@ -166,7 +170,7 @@ public final class LivingShooterAim extends LivingShooterAspect {
         // 1. 手持枪械检查
         if (this.shooterProperty.currentGunItem == null) return;
         ItemStack currentGunItem = this.shooterProperty.currentGunItem.get();
-        IGun iGun = IGunGetter.fromItemStack(currentGunItem);
+        @Nullable IGun iGun = IGunGetter.fromItemStack(currentGunItem);
         if (iGun == null) return;
 
         ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(this.livingShooter);

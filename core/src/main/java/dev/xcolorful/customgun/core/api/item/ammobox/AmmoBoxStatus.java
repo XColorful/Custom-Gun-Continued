@@ -10,6 +10,7 @@ package dev.xcolorful.customgun.core.api.item.ammobox;
 import dev.xcolorful.customgun.core.api.item.IAmmoBox;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public enum AmmoBoxStatus {
     /*
@@ -53,7 +54,7 @@ public enum AmmoBoxStatus {
         }
         public static @NotNull StatusMask fromAmmoBox(ItemStack ammoItem) {
             StatusMask statusMask = new StatusMask(0);
-            IAmmoBox iAmmoBox = IAmmoBoxGetter.fromItemStack(ammoItem);
+            @Nullable IAmmoBox iAmmoBox = IAmmoBoxGetter.fromItemStack(ammoItem);
             if (iAmmoBox == null) return statusMask;
 
             statusMask.setMask(FULL, iAmmoBox.getAmmoCount(ammoItem) > 0 ? 1 : 0);

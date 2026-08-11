@@ -7,7 +7,10 @@
 
 package dev.xcolorful.customgun.forge.item.ammo;
 
+import dev.xcolorful.customgun.client.renderer.item.AmmoItemRenderer;
 import dev.xcolorful.customgun.core.item.ammo.AmmoItem;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
@@ -24,5 +27,18 @@ public class ForgeAmmoItem extends AmmoItem {
 
     @OnlyIn(Dist.CLIENT)
     public static void registerClientExtension(Consumer<IClientItemExtensions> consumer) {
+        consumer.accept(new IClientItemExtensions() {
+            AmmoItemRenderer ammoItemRenderer;
+
+            @Override
+            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
+                if (this.ammoItemRenderer == null) {
+                    Minecraft mc = Minecraft.getInstance();
+                    this.ammoItemRenderer = new AmmoItemRenderer(mc.getBlockEntityRenderDispatcher(), mc.getEntityModels());
+                }
+
+                return this.ammoItemRenderer;
+            }
+        });
     }
 }

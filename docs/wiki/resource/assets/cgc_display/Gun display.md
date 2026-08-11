@@ -1,7 +1,7 @@
 [English](#English)
 
 # 枪械显示
-> wiki 版本：`0.0.0`.0
+> wiki 版本：`0.0.4`.2
 
 - `model_location`/`model`（ResourceLocation）：
 - `model_transform`/`transform`（\_ModelTransform）：
@@ -15,7 +15,7 @@
 - `hud_texture_location`/`hud`（ResourceLocation）：
 - `hud_empty_texture_location`/`hud_empty`（ResourceLocation）：
 ---
-- `gun_model_type`/`type`（GunModelType）：
+- `gun_model_type`/`model_type`（GunModelType）：
 - `lod_display`/`lod`（\_LodDisplay）：
 	- `model_location`/`model`（ResourceLocation）：
 	- `texture_location`/`texture`（ResourceLocation）：
@@ -69,7 +69,7 @@
 	- `acceleration`（float[]）：
 	- `angular_velocity`（float[]）：
 	- `lifetime_seconds`/`living_time`（float）：
-- `third_person_animation_type`/`third_person_animation`（ThirdPersonAnimationType）：
+- `shooter_animation_category`/`third_person_animation`（IShooterAnimationCategory）：
 - `player_animator_location`/`player_animator`（ResourceLocation）：
 - `player_animator_fixed_hand`/`player_animator_fixed`（boolean）：
 - `gun_sounds`/`sounds`（Map\<GunSoundType, ResourceLocation>）：
@@ -164,7 +164,7 @@
 		"angular_velocity": [0.0, 0.0, 0.0],
 		"lifetime_seconds": 0.0
 	},
-	"third_person_animation_type": "",
+	"shooter_animation_category": "",
 	"player_animator_location": "namespace:location",
 	"player_animator_fixed_hand": false,
 	"gun_sounds": {
@@ -180,7 +180,7 @@
 ```
 
 # English
-> wiki verison: `0.0.0`.0
+> wiki verison: `0.0.4`.2
 
 - `model_location`/`model`(ResourceLocation):
 - `model_transform`/`transform`(\_ModelTransform):
@@ -194,7 +194,7 @@
 - `hud_texture_location`/`hud`(ResourceLocation):
 - `hud_empty_texture_location`/`hud_empty`(ResourceLocation):
 ---
-- `gun_model_type`/`type`(GunModelType):
+- `gun_model_type`/`model_type`(GunModelType):
 - `lod_display`/`lod`(\_LodDisplay):
 	- `model_location`/`model`(ResourceLocation):
 	- `texture_location`/`texture`(ResourceLocation):
@@ -248,7 +248,7 @@
 	- `acceleration`(float[]):
 	- `angular_velocity`(float[]):
 	- `lifetime_seconds`/`living_time`(float):
-- `third_person_animation_type`/`third_person_animation`(ThirdPersonAnimationType):
+- `shooter_animation_category`/`third_person_animation`(IShooterAnimationCategory):
 - `player_animator_location`/`player_animator`(ResourceLocation):
 - `player_animator_fixed_hand`/`player_animator_fixed`(boolean):
 - `gun_sounds`/`sounds`(Map\<GunSoundType, ResourceLocation>):
@@ -343,7 +343,7 @@
 		"angular_velocity": [0.0, 0.0, 0.0],
 		"lifetime_seconds": 0.0
 	},
-	"third_person_animation_type": "",
+	"shooter_animation_category": "",
 	"player_animator_location": "namespace:location",
 	"player_animator_fixed_hand": false,
 	"gun_sounds": {

@@ -836,7 +836,7 @@ Notation:
 |---|---|
 |`CameraSetupEvent`|item.gun.`GunCameraHelper`|
 |`FirstPersonRenderGunEvent`|item.gun.`GunRendererAddon`|
-|`PlayerHurtByGunEvent`.onPlayerHurtByGun|victim.onProjectileHit|
+|`PlayerHurtByGunEvent`.onPlayerHurtByGun|victim.`GunHurtBobTweak`.onProjectileHit|
 |`RenderHeadShotAABB`|entity.`HeadAABBRender`|
 
 |com.tacz.guns.client.event|dev.xcolorful.customgun.client.mixin|

@@ -324,13 +324,17 @@ public class GunCameraHelper implements IEventHandler {
                                        @NotNull IGun iGun, @NotNull ItemStack gunItem,
                                        @NotNull LocalPlayer localPlayer,
                                        @NotNull GunData gunData) {
-            float aimingRecoilModifier = 1; { // TODO 直接移除高倍镜减后坐
-                ILocalShooter iLocalShooter = ILocalShooterGetter.fromLocalPlayer(localPlayer);
-                float partialTicks = ClientRenderUtils.getRenderFrameTime();
-                float aimingProgress = iLocalShooter.cgc$getRenderAimingProgress(partialTicks);
-                float scopeZoomScale = iGun.getScopeZoomScale(gunItem);
-                // ↓根据开镜进度，对高倍镜减后坐
-                aimingRecoilModifier = 1 - aimingProgress + aimingProgress / (float) Math.min(Math.sqrt(scopeZoomScale), 1.5);
+            float aimingRecoilModifier = 1; {
+                /*
+                以下是高倍镜减后坐，这个一般来说不需要
+                并且原模组默认的后坐力非常小，几乎没用
+                 */
+//                ILocalShooter iLocalShooter = ILocalShooterGetter.fromLocalPlayer(localPlayer);
+//                float partialTicks = ClientRenderUtils.getRenderFrameTime();
+//                float aimingProgress = iLocalShooter.cgc$getRenderAimingProgress(partialTicks);
+//                float scopeZoomScale = iGun.getScopeZoomScale(gunItem);
+//                // ↓根据开镜进度，对高倍镜减后坐
+//                aimingRecoilModifier = 1 - aimingProgress + aimingProgress / (float) Math.min(Math.sqrt(scopeZoomScale), 1.5);
             }
 
             ShootState shootState = ShootState.fromLivingShooter(iLivingShooter, livingShooter);

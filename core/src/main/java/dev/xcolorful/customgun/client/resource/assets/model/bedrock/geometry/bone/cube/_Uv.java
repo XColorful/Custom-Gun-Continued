@@ -15,6 +15,7 @@ import dev.xcolorful.customgun.core.api.resource.assets.model.bedrock.geometry.b
 import dev.xcolorful.customgun.core.resource.ResourcePojo;
 import dev.xcolorful.customgun.core.util.JsonUtils;
 import net.minecraft.core.Direction;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -148,6 +149,10 @@ public class _Uv extends ResourcePojo<_Uv> {
     }
 
     public _FaceUv getFaceUv(Direction direction) {
+        if (this.uv != null) {
+            return getSimpleUv(this.uv);
+        }
+
         _FaceUv faceUv = switch (direction) {
             case NORTH -> this.north;
             case SOUTH -> this.south;
@@ -157,5 +162,19 @@ public class _Uv extends ResourcePojo<_Uv> {
             case DOWN -> this.down;
         };
         return faceUv != null ? faceUv : _FaceUv.EMPTY;
+    }
+
+    private _FaceUv getSimpleUv(float @NotNull [] this_uv) {
+        _FaceUv face = new _FaceUv(); {
+            face.setUv(new float[]{this_uv[0], this_uv[1]});
+
+            if (this_uv.length >= 4) {
+                face.setUvSize(new float[]{this_uv[2], this_uv[3]});
+            } else {
+                face.setUvSize(new float[]{16, 16});
+            }
+        }
+
+        return face;
     }
 }

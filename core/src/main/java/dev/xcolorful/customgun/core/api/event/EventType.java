@@ -64,6 +64,7 @@ public enum EventType {
     RENDER_TRANSLUCENT_EVENT(true), // 单独拆一个事件，减少一点不必要的转发开销
     @ApiStatus.AvailableSince("neoforge26.2")
     SUBMIT_CUSTOM_GEOMETRY_EVENT(true),
+    RENDER_HAND_EVENT(true),
     RENDER_GUI_EVENT(true),
     // display
     ITEM_TOOLTIP_EVENT(true);

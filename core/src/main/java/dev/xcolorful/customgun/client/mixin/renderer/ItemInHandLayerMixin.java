@@ -39,7 +39,7 @@ public class ItemInHandLayerMixin {
                             CallbackInfo ci) {
         MuzzleFlashRender.State.isSelf = false;
         ShellRender.State.isSelf = false;
-        HumanoidOffhandRender.renderGun(livingEntity, poseStack, buffer, lightCoords);
+        HumanoidOffhandRender.renderGun(poseStack, buffer, lightCoords, livingEntity);
     }
 
     @Inject(method = "renderArmWithItem(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemDisplayContext;Lnet/minecraft/world/entity/HumanoidArm;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",

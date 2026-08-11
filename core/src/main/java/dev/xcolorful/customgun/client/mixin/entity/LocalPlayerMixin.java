@@ -15,6 +15,7 @@ import dev.xcolorful.customgun.client.entity.shooter.*;
 import dev.xcolorful.customgun.core.api.entity.ShootResult;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
+import dev.xcolorful.customgun.core.util.InventoryUtils;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -77,7 +78,7 @@ public class LocalPlayerMixin implements ILocalShooter {
 
     private void cgc$tickHotbarSelection() {
         Inventory inventory = this.cgc$localShooter.getInventory();
-        int currentIndex = inventory.selected;
+        int currentIndex = InventoryUtils.getSelectedSlot(inventory);
 
         // 玩家切换选中物品
         if (this.cgc$previousHotbarIndex != currentIndex) {

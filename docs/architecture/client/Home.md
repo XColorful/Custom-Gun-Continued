@@ -88,6 +88,8 @@
 > _./client/init_
 
 - ClientCommandRegistry：客户端指令注册
+- ClientEntityRendererRegistry：客户端实体渲染注册
+- ClientKeyMappingRegistry：客户端按键注册
 - ClientModConfig：客户端配置初始化
 - ClientModEvent：客户端事件
 - ClientModParticles：客户端粒子注册
@@ -274,6 +276,8 @@ Module division based on the `dev.xcolorful.customgun.client` top-level package
 > _./client/init_
 
 - ClientCommandRegistry: Client command registration
+- ClientEntityRendererRegistry: Client entity renderer registration
+- ClientKeyMappingRegistry: Client input key registration
 - ClientModConfig: Client config initialization
 - ClientModEvent: Client events
 - ClientModParticles: Client particle registration

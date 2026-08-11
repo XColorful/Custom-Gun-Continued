@@ -1,7 +1,7 @@
 [English](#English)
 
 # 枪械显示
-> wiki 版本：`0.0.4`.1
+> wiki 版本：`0.0.4`.2
 
 - `model_location`/`model`（ResourceLocation）：
 - `model_transform`/`transform`（\_ModelTransform）：
@@ -15,7 +15,7 @@
 - `hud_texture_location`/`hud`（ResourceLocation）：
 - `hud_empty_texture_location`/`hud_empty`（ResourceLocation）：
 ---
-- `gun_model_type`/`type`（GunModelType）：
+- `gun_model_type`/`model_type`（GunModelType）：
 - `lod_display`/`lod`（\_LodDisplay）：
 	- `model_location`/`model`（ResourceLocation）：
 	- `texture_location`/`texture`（ResourceLocation）：
@@ -180,7 +180,7 @@
 ```
 
 # English
-> wiki verison: `0.0.4`.1
+> wiki verison: `0.0.4`.2
 
 - `model_location`/`model`(ResourceLocation):
 - `model_transform`/`transform`(\_ModelTransform):
@@ -194,7 +194,7 @@
 - `hud_texture_location`/`hud`(ResourceLocation):
 - `hud_empty_texture_location`/`hud_empty`(ResourceLocation):
 ---
-- `gun_model_type`/`type`(GunModelType):
+- `gun_model_type`/`model_type`(GunModelType):
 - `lod_display`/`lod`(\_LodDisplay):
 	- `model_location`/`model`(ResourceLocation):
 	- `texture_location`/`texture`(ResourceLocation):

@@ -13,6 +13,7 @@ import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 public final class LivingShooterHeat extends LivingShooterAspect {
 
@@ -24,7 +25,7 @@ public final class LivingShooterHeat extends LivingShooterAspect {
         // 1. 手持枪械检查
         if (this.shooterProperty.currentGunItem == null) return;
         ItemStack currentGunItem = this.shooterProperty.currentGunItem.get();
-        IGun iGun = IGunGetter.fromItemStack(currentGunItem);
+        @Nullable IGun iGun = IGunGetter.fromItemStack(currentGunItem);
         if (iGun == null) return;
 
         { // 3. IGunRuntime操作结果 -> Shooter状态

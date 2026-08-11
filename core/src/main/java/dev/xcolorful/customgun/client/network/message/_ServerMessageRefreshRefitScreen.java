@@ -7,7 +7,7 @@
 
 package dev.xcolorful.customgun.client.network.message;
 
-import dev.xcolorful.customgun.client.gui.GunRefitScreen;
+import dev.xcolorful.customgun.client.gui.screen.GunRefitScreen;
 import dev.xcolorful.customgun.client.util.ClientGuiUtils;
 import dev.xcolorful.customgun.core.entity.shooter.modifier.ShooterGunModifierManager;
 import net.minecraft.client.Minecraft;

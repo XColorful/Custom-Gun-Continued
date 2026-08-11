@@ -10,10 +10,12 @@ package dev.xcolorful.customgun.client.resource.assets.animation.bedrock.animati
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
+import dev.xcolorful.customgun.client.api.animation.interpolator.LerpMode;
 import dev.xcolorful.customgun.client.util.ClientJsonUtils;
 import dev.xcolorful.customgun.core.api.resource.assets.animation.bedrock.animation.bone._KeyFrameTag;
 import dev.xcolorful.customgun.core.resource.ResourcePojo;
 import dev.xcolorful.customgun.core.util.JsonUtils;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 
@@ -22,7 +24,7 @@ public final class _KeyFrame extends ResourcePojo<_KeyFrame> {
     private float[] pre;
     private float[] post;
     private float[] data;
-    private String lerpMode;
+    private @Nullable LerpMode lerpMode;
 
     private static final _KeyFrame PARSER = new _KeyFrame();
     public static _KeyFrame fromJson(JsonReader reader) throws IOException {
@@ -46,7 +48,7 @@ public final class _KeyFrame extends ResourcePojo<_KeyFrame> {
                     case _KeyFrameTag.PRE -> pojo.pre = ClientJsonUtils.readFloatArrayWithMolangTolerance(reader, 3);
                     case _KeyFrameTag.POST -> pojo.post = ClientJsonUtils.readFloatArrayWithMolangTolerance(reader, 3);
                     case _KeyFrameTag.DATA -> pojo.data = ClientJsonUtils.readFloatArrayWithMolangTolerance(reader, 3);
-                    case _KeyFrameTag.LERP_MODE -> pojo.lerpMode = JsonUtils.readString(reader);
+                    case _KeyFrameTag.LERP_MODE -> pojo.lerpMode = JsonUtils.readFromString(reader, LerpMode::fromString);
                     default -> reader.skipValue();
                 }
             }
@@ -77,7 +79,7 @@ public final class _KeyFrame extends ResourcePojo<_KeyFrame> {
             JsonUtils.writeFloatArray(writer, _KeyFrameTag.PRE, this.pre);
             JsonUtils.writeFloatArray(writer, _KeyFrameTag.POST, this.post);
             JsonUtils.writeFloatArray(writer, _KeyFrameTag.DATA, this.data);
-            JsonUtils.writeString(writer, _KeyFrameTag.LERP_MODE, this.lerpMode);
+            JsonUtils.writeToString(writer, _KeyFrameTag.LERP_MODE, this.lerpMode);
         }
         writer.endObject();
     }
@@ -98,7 +100,7 @@ public final class _KeyFrame extends ResourcePojo<_KeyFrame> {
     public float[] getData() {
         return data;
     }
-    public String getLerpMode() {
+    public @Nullable LerpMode getLerpMode() {
         return lerpMode;
     }
 
@@ -111,7 +113,7 @@ public final class _KeyFrame extends ResourcePojo<_KeyFrame> {
     public void setData(float[] data) {
         this.data = data;
     }
-    public void setLerpMode(String lerpMode) {
+    public void setLerpMode(LerpMode lerpMode) {
         this.lerpMode = lerpMode;
     }
 

@@ -15,6 +15,7 @@ import dev.xcolorful.customgun.core.resource.instance.data.AttachmentIndexInstan
 import dev.xcolorful.customgun.core.resource.instance.data.BlockIndexInstance;
 import dev.xcolorful.customgun.core.resource.instance.data.GunIndexInstance;
 import dev.xcolorful.customgun.core.resource.network._AttachmentInstallabilityCache;
+import dev.xcolorful.customgun.core.resource.network._AttachmentModifierCache;
 import dev.xcolorful.customgun.core.resource.network._GunSortCache;
 import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.ApiStatus;
@@ -37,6 +38,7 @@ public class _DataInstanceManager {
     public static final Map<Identifier, GunIndexInstance> GUN_INDEX = new HashMap<>();
     public static final _GunSortCache GUN_SORT = new _GunSortCache();
     public static final Map<Identifier, AttachmentIndexInstance> ATTACHMENT_INDEX = new HashMap<>();
+    public static final _AttachmentModifierCache ATTACHMENT_MODIFIER = new _AttachmentModifierCache();
     public static final Map<Identifier, AmmoIndexInstance> AMMO_INDEX = new HashMap<>();
     public static final Map<Identifier, BlockIndexInstance> BLOCK_INDEX = new HashMap<>();
     public static final _AttachmentInstallabilityCache ATTACHMENT_INSTALLABILITY = new _AttachmentInstallabilityCache();

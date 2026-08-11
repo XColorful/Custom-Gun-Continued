@@ -21,6 +21,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 
@@ -50,7 +51,7 @@ public record ClientMessageRefitGun(int attachmentSlotIndex,
                 Inventory inventory = player.getInventory();
                 ItemStack attachmentItem = inventory.getItem(message.attachmentSlotIndex);
                 ItemStack gunItem = inventory.getItem(message.gunSlotIndex);
-                IGun iGun = IGunGetter.fromItemStack(gunItem);
+                @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
                 if (iGun == null) return;
 
                 // 服务端校验配件锁
@@ -59,7 +60,7 @@ public record ClientMessageRefitGun(int attachmentSlotIndex,
                 }
 
                 // 检查是否是配件
-                IAttachment iAttachment = IAttachmentGetter.fromItemStack(attachmentItem);
+                @Nullable IAttachment iAttachment = IAttachmentGetter.fromItemStack(attachmentItem);
                 if (iAttachment == null) {
                     return;
                 }

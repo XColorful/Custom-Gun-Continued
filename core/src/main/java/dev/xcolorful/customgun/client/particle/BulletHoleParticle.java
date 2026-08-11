@@ -9,6 +9,7 @@ package dev.xcolorful.customgun.client.particle;
 
 import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.config.RenderConfig;
+import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import dev.xcolorful.customgun.core.developer.PlannedRefactor;
 import dev.xcolorful.customgun.core.particle.BulletHoleOption;
 import net.minecraft.client.Camera;

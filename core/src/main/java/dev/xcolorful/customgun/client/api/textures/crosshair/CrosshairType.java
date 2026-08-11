@@ -48,7 +48,7 @@ public enum CrosshairType implements ResourceTag {
     TRIDENT_1(CrosshairFolderType.NORMAL, CrosshairTag.TRIDENT_1),
     TRIDENT_2(CrosshairFolderType.NORMAL, CrosshairTag.TRIDENT_2);
 
-    // {namespace}:textures/{crosshair}/{crosshair_type}/{filename}.png
+    // {namespace}:textures/{crosshair}/{CrosshairType.folderType}/{filename}.png
     public static final String LOCATION_FORMAT = "%s:textures/%s/%s/%s.png";
 
     public final CrosshairFolderType folderType;
@@ -90,6 +90,7 @@ public enum CrosshairType implements ResourceTag {
     public static Identifier addCrosshairType(String folderType, String crosshair) {
         var location = CustomGun.getMcRegistry().createResourceLocation(String.format(LOCATION_FORMAT,
                 CustomGun.MOD_ID,
+                TextureSubFolderType.CROSSHAIR.getFolderName(),
                 folderType,
                 crosshair));
         CACHE.put(crosshair, location); // 返回的是旧值

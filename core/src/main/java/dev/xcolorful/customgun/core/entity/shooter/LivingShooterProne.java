@@ -93,7 +93,7 @@ public final class LivingShooterProne extends LivingShooterAspect {
         // 1. 手持枪械检查
         if (this.shooterProperty.currentGunItem == null) return false;
         ItemStack currentGunItem = this.shooterProperty.currentGunItem.get();
-        IGun iGun = IGunGetter.fromItemStack(currentGunItem);
+        @Nullable IGun iGun = IGunGetter.fromItemStack(currentGunItem);
         if (iGun == null) return false;
 
         @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(iGun.getGunLocation(currentGunItem));

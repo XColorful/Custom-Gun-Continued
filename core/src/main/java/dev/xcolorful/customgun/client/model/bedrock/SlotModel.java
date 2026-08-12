@@ -38,6 +38,7 @@ public class SlotModel {
         this.part.render(poseStack,
                 ItemDisplayContext.GUI,
                 buffer,
-                packedLight, packedOverlay);
+                packedLight, packedOverlay,
+                red, green, blue, alpha);
     }
 }

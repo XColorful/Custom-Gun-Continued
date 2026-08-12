@@ -10,8 +10,8 @@ package dev.xcolorful.customgun.client.model.bedrock;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import dev.xcolorful.customgun.client.api.model.bedrock.IBedrockCube;
+import dev.xcolorful.customgun.core.util.ColorUtils;
 import net.minecraft.core.Direction;
-import net.minecraft.util.FastColor;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -113,7 +113,7 @@ public class BedrockCubeBox implements IBedrockCube {
                 Vector4f vector4f = new Vector4f(x, y, z, 1.0F);
                 vector4f.mul(matrix4f);
                 consumer.addVertex(vector4f.x(), vector4f.y(), vector4f.z(),
-                        FastColor.ARGB32.colorFromFloat(alpha, red, green, blue),
+                        ColorUtils.ARGB32.of(alpha, red, green, blue),
                         vertex.u(), vertex.v(), overlay, light, nx, ny, nz);
             }
         }

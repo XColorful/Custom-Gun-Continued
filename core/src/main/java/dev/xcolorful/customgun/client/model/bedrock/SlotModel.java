@@ -39,20 +39,7 @@ public class SlotModel extends EntityModel<Entity> {
                           float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
     }
 
-    /**
-     * 这个方法在1.21.1被移除，改用{@link #renderToBuffer(PoseStack, VertexConsumer, int, int, int)}来兼容
-     */
-    @Deprecated(forRemoval = true)
     @Override
-    public void renderToBuffer(@NotNull PoseStack poseStack,
-                               @NotNull VertexConsumer buffer,
-                               int packedLight, int packedOverlay,
-                               float red, float green, float blue, float alpha) {
-        this.part.render(poseStack,
-                ItemDisplayContext.GUI,
-                buffer,
-                packedLight, packedOverlay);
-    }
     public void renderToBuffer(@NotNull PoseStack poseStack,
                                @NotNull VertexConsumer buffer,
                                int packedLight, int packedOverlay,

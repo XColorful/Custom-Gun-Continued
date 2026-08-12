@@ -37,13 +37,12 @@ public class ClientRenderHelper {
 
     private static void innerBlit(Matrix4f matrix, float x1, float x2, float y1, float y2, float blitOffset, float minU, float maxU, float minV, float maxV) {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
-        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-        bufferbuilder.vertex(matrix, x1, y2, blitOffset).uv(minU, maxV).endVertex();
-        bufferbuilder.vertex(matrix, x2, y2, blitOffset).uv(maxU, maxV).endVertex();
-        bufferbuilder.vertex(matrix, x2, y1, blitOffset).uv(maxU, minV).endVertex();
-        bufferbuilder.vertex(matrix, x1, y1, blitOffset).uv(minU, minV).endVertex();
-        BufferUploader.draw(bufferbuilder.end());
+        BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        bufferbuilder.addVertex(matrix, x1, y2, blitOffset).setUv(minU, maxV);
+        bufferbuilder.addVertex(matrix, x2, y2, blitOffset).setUv(maxU, maxV);
+        bufferbuilder.addVertex(matrix, x2, y1, blitOffset).setUv(maxU, minV);
+        bufferbuilder.addVertex(matrix, x1, y1, blitOffset).setUv(minU, minV);
+        BufferUploader.draw(bufferbuilder.buildOrThrow());
     }
 
     public static void enableItemEntityStencilTest() {

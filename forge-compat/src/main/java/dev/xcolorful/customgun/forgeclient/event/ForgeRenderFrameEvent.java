@@ -28,7 +28,7 @@ public class ForgeRenderFrameEvent extends ForgeEvent implements IRenderFrameEve
 
     @Override
     public float getPartialTick() {
-        return renderTickEvent.renderTickTime;
+        return renderTickEvent.getTimer().getGameTimeDeltaPartialTick(false);
     }
 
     @Override

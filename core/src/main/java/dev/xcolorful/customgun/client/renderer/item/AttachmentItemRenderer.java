@@ -83,7 +83,7 @@ public class AttachmentItemRenderer extends BlockEntityWithoutLevelRenderer {
             if (slotTexture == null) slotTexture = ClientRenderUtils.getMissingTextureLocation();
 
             VertexConsumer buffer = pBuffer.getBuffer(RenderType.entityTranslucent(slotTexture));
-            SLOT_ATTACHMENT_MODEL.renderToBuffer(poseStack, buffer, pPackedLight, pPackedOverlay, -1);
+            SLOT_ATTACHMENT_MODEL.renderToBuffer(poseStack, buffer, pPackedLight, pPackedOverlay, 1.0f, 1.0f, 1.0f, 1.0f);
         }
     }
 
@@ -112,7 +112,7 @@ public class AttachmentItemRenderer extends BlockEntityWithoutLevelRenderer {
                     if (slotTexture == null) slotTexture = ClientRenderUtils.getMissingTextureLocation();
 
                     VertexConsumer buffer = pBuffer.getBuffer(RenderType.entityTranslucent(slotTexture));
-                    SLOT_ATTACHMENT_MODEL.renderToBuffer(poseStack, buffer, pPackedLight, pPackedOverlay, -1);
+                    SLOT_ATTACHMENT_MODEL.renderToBuffer(poseStack, buffer, pPackedLight, pPackedOverlay, 1.0f, 1.0f, 1.0f, 1.0f);
                 } else {
                     poseStack.translate(0.5, 2, 0.5);
 
@@ -132,7 +132,7 @@ public class AttachmentItemRenderer extends BlockEntityWithoutLevelRenderer {
                 poseStack.translate(0.5, 1.5, 0.5);
                 poseStack.mulPose(Axis.ZN.rotationDegrees(180));
                 VertexConsumer buffer = pBuffer.getBuffer(RenderType.entityTranslucent(ClientRenderUtils.getMissingTextureLocation()));
-                SLOT_ATTACHMENT_MODEL.renderToBuffer(poseStack, buffer, pPackedLight, pPackedOverlay, -1);
+                SLOT_ATTACHMENT_MODEL.renderToBuffer(poseStack, buffer, pPackedLight, pPackedOverlay, 1.0f, 1.0f, 1.0f, 1.0f);
             }
             poseStack.popPose();
         }

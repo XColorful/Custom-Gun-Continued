@@ -453,6 +453,6 @@ public class GunItemRenderer extends AnimateGeoItemRenderer<GunModelObject, GunA
         poseStack.translate(0.5, 1.5, 0.5);
         poseStack.mulPose(Axis.ZN.rotationDegrees(180));
         VertexConsumer buffer = bufferSource.getBuffer(RenderType.entityTranslucent(texture));
-        SLOT_GUN_MODEL.renderToBuffer(poseStack, buffer, packedLight, packedOverlay, 1.0F, 1.0F, 1.0F, 1.0F);
+        SLOT_GUN_MODEL.renderToBuffer(poseStack, buffer, packedLight, packedOverlay);
     }
 }

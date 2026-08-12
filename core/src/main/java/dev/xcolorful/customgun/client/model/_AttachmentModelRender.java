@@ -276,7 +276,9 @@ public class _AttachmentModelRender {
                                                 boolean selective) {
         if (_this.divisionOcularEntries.isEmpty() || _this.divisionOcularEntries.get(0).getOcularNodePath() == null) return;
 
-        BufferBuilder builder = Tesselator.getInstance().getBuilder();
+        Tesselator tesselator = Tesselator.getInstance();
+        BufferBuilder builder;
+        builder = tesselator.getBuilder();
 
         // 准备渲染圆形模板层
         RenderSystem.stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_INVERT);
@@ -304,12 +306,16 @@ public class _AttachmentModelRender {
             float centerX = ocularCenter.x() * 16 * 90;
             float centerY = ocularCenter.y() * 16 * 90;
             builder.begin(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR);
-            builder.vertex(centerX, centerY, -90.0D).color(255, 255, 255, 255).endVertex();
+            builder.vertex(centerX, centerY, -90.0f)
+                    .color(255, 255, 255, 255)
+                    .endVertex();
             for (int j = 0; j <= 90; j++) {
                 float angle = (float) j * ((float) Math.PI * 2F) / 90.0F;
                 float sin = Mth.sin(angle);
                 float cos = Mth.cos(angle);
-                builder.vertex(centerX + cos * rad, centerY + sin * rad, -90.0D).color(255, 255, 255, 255).endVertex();
+                builder.vertex(centerX + cos * rad, centerY + sin * rad, -90.0f)
+                        .color(255, 255, 255, 255)
+                        .endVertex();
             }
             BufferUploader.drawWithShader(builder.end());
         }

@@ -8,8 +8,8 @@ import dev.xcolorful.customgun.neoforge.event.events.AbstractNeoEventCommon;
 import dev.xcolorful.customgun.neoforgeclient.event.NeoPrepareRenderFrameEvent;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.client.event.RenderFrameEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.TickEvent;
 
 public class NeoPrepareRenderFrameEventManager {
 
@@ -51,40 +51,38 @@ public class NeoPrepareRenderFrameEventManager {
             return new NeoPrepareRenderFrameEvent(event);
         }
 
-        protected void handle(TickEvent.RenderTickEvent event) {
-            if (event.phase == TickEvent.Phase.START) {
-                super.onEvent(event);
-            }
+        protected void handle(RenderFrameEvent.Pre event) {
+            super.onEvent(event);
         }
     }
 
     public static class PrepareRenderFrameProxyHighest extends RenderFrameProxy {
         static final PrepareRenderFrameProxyHighest INSTANCE = new PrepareRenderFrameProxyHighest();
         @SubscribeEvent(priority = net.neoforged.bus.api.EventPriority.HIGHEST, receiveCanceled = true)
-        public void onEvent(TickEvent.RenderTickEvent e) { handle(e); }
+        public void onEvent(RenderFrameEvent.Pre e) { handle(e); }
     }
 
     public static class PrepareRenderFrameProxyHigh extends RenderFrameProxy {
         static final PrepareRenderFrameProxyHigh INSTANCE = new PrepareRenderFrameProxyHigh();
         @SubscribeEvent(priority = net.neoforged.bus.api.EventPriority.HIGH, receiveCanceled = true)
-        public void onEvent(TickEvent.RenderTickEvent e) { handle(e); }
+        public void onEvent(RenderFrameEvent.Pre e) { handle(e); }
     }
 
     public static class PrepareRenderFrameProxyNormal extends RenderFrameProxy {
         static final PrepareRenderFrameProxyNormal INSTANCE = new PrepareRenderFrameProxyNormal();
         @SubscribeEvent(priority = net.neoforged.bus.api.EventPriority.NORMAL, receiveCanceled = true)
-        public void onEvent(TickEvent.RenderTickEvent e) { handle(e); }
+        public void onEvent(RenderFrameEvent.Pre e) { handle(e); }
     }
 
     public static class PrepareRenderFrameProxyLow extends RenderFrameProxy {
         static final PrepareRenderFrameProxyLow INSTANCE = new PrepareRenderFrameProxyLow();
         @SubscribeEvent(priority = net.neoforged.bus.api.EventPriority.LOW, receiveCanceled = true)
-        public void onEvent(TickEvent.RenderTickEvent e) { handle(e); }
+        public void onEvent(RenderFrameEvent.Pre e) { handle(e); }
     }
 
     public static class PrepareRenderFrameProxyLowest extends RenderFrameProxy {
         static final PrepareRenderFrameProxyLowest INSTANCE = new PrepareRenderFrameProxyLowest();
         @SubscribeEvent(priority = net.neoforged.bus.api.EventPriority.LOWEST, receiveCanceled = true)
-        public void onEvent(TickEvent.RenderTickEvent e) { handle(e); }
+        public void onEvent(RenderFrameEvent.Pre e) { handle(e); }
     }
 }

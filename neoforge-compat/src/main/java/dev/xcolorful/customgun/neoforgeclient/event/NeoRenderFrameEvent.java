@@ -7,19 +7,19 @@ import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.neoforged.bus.api.Event;
-import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.neoforge.client.event.RenderFrameEvent;
 import org.jetbrains.annotations.Nullable;
 
 public class NeoRenderFrameEvent extends NeoEvent implements IRenderFrameEvent {
 
-    protected TickEvent.RenderTickEvent renderTickEvent;
+    protected RenderFrameEvent.Post renderTickEvent;
 
     public NeoRenderFrameEvent(Event event) {
         super(event);
-        if (event instanceof TickEvent.RenderTickEvent eventIn) {
+        if (event instanceof RenderFrameEvent.Post eventIn) {
             this.renderTickEvent = eventIn;
         } else {
-            throw new RuntimeException("Expected RenderTickEvent but received: " + event.getClass().getName());
+            throw new RuntimeException("Expected RenderFrameEvent.Post but received: " + event.getClass().getName());
         }
     }
     @Override public EventType getType() {
@@ -28,7 +28,7 @@ public class NeoRenderFrameEvent extends NeoEvent implements IRenderFrameEvent {
 
     @Override
     public float getPartialTick() {
-        return renderTickEvent.renderTickTime;
+        return renderTickEvent.getPartialTick().getGameTimeDeltaPartialTick(false);
     }
 
     @Override

@@ -14,7 +14,8 @@ import dev.xcolorful.customgun.core.api.event.IEventHandler;
 import dev.xcolorful.customgun.core.api.event.IEventRegister;
 import dev.xcolorful.customgun.neoforgeclient.event.events.*;
 
-public class NeoClientEventRegister implements IEventRegister {
+// ↓加个final只是为了在IDEA左边显眼一点, 枚举写死了也没啥好继承的
+public final class NeoClientEventRegister implements IEventRegister {
 
     @Override
     public boolean register(IEventHandler eventHandler, EventType eventType, EventPriority priority, boolean receiveCanceled) {
@@ -32,9 +33,15 @@ public class NeoClientEventRegister implements IEventRegister {
             // resource
             case ADD_CLIENT_RELOAD_LISTENER_EVENT -> NeoAddClientReloadListenerEventManager.register(eventHandler, priority, receiveCanceled);
             // render
+            case PREPARE_RENDER_FRAME_EVENT -> NeoPrepareRenderFrameEventManager.register(eventHandler, priority, receiveCanceled);
+            case RENDER_FRAME_EVENT -> NeoRenderFrameEventManager.register(eventHandler, priority, receiveCanceled);
+            case COMPUTE_CAMERA_ANGLES_EVENT -> NeoComputeCameraAnglesEventManager.register(eventHandler, priority, receiveCanceled);
+            case COMPUTE_FOV_EVENT -> NeoComputeFovEventManager.register(eventHandler, priority, receiveCanceled);
+            case COMPUTE_FOV_MODIFIER_EVENT -> NeoComputeFovModifierEventManager.register(eventHandler, priority, receiveCanceled);
             case RENDER_LEVEL_STAGE_EVENT -> NeoRenderLevelStageEventManager.register(eventHandler, priority, receiveCanceled);
             case RENDER_TRANSLUCENT_EVENT -> NeoRenderTranslucentEventManager.register(eventHandler, priority, receiveCanceled);
             case SUBMIT_CUSTOM_GEOMETRY_EVENT -> NeoSubmitCustomGeometryEventManager.register(eventHandler, priority, receiveCanceled);
+            case RENDER_HAND_EVENT -> NeoRenderHandEventManager.register(eventHandler, priority, receiveCanceled);
             case RENDER_GUI_EVENT -> NeoRenderGuiEventManager.register(eventHandler, priority, receiveCanceled);
             // display
             case ITEM_TOOLTIP_EVENT -> NeoItemTooltipEventManager.register(eventHandler, priority, receiveCanceled);
@@ -61,9 +68,15 @@ public class NeoClientEventRegister implements IEventRegister {
             // resource
             case ADD_CLIENT_RELOAD_LISTENER_EVENT -> NeoAddClientReloadListenerEventManager.unregister(eventHandler, priority, receiveCanceled);
             // render
+            case PREPARE_RENDER_FRAME_EVENT -> NeoPrepareRenderFrameEventManager.unregister(eventHandler, priority, receiveCanceled);
+            case RENDER_FRAME_EVENT -> NeoRenderFrameEventManager.unregister(eventHandler, priority, receiveCanceled);
+            case COMPUTE_CAMERA_ANGLES_EVENT -> NeoComputeCameraAnglesEventManager.unregister(eventHandler, priority, receiveCanceled);
+            case COMPUTE_FOV_EVENT -> NeoComputeFovEventManager.unregister(eventHandler, priority, receiveCanceled);
+            case COMPUTE_FOV_MODIFIER_EVENT -> NeoComputeFovModifierEventManager.unregister(eventHandler, priority, receiveCanceled);
             case RENDER_LEVEL_STAGE_EVENT -> NeoRenderLevelStageEventManager.unregister(eventHandler, priority, receiveCanceled);
             case RENDER_TRANSLUCENT_EVENT -> NeoRenderTranslucentEventManager.unregister(eventHandler, priority, receiveCanceled);
             case SUBMIT_CUSTOM_GEOMETRY_EVENT -> NeoSubmitCustomGeometryEventManager.unregister(eventHandler, priority, receiveCanceled);
+            case RENDER_HAND_EVENT -> NeoRenderHandEventManager.unregister(eventHandler, priority, receiveCanceled);
             case RENDER_GUI_EVENT -> NeoRenderGuiEventManager.unregister(eventHandler, priority, receiveCanceled);
             // display
             case ITEM_TOOLTIP_EVENT -> NeoItemTooltipEventManager.unregister(eventHandler, priority, receiveCanceled);

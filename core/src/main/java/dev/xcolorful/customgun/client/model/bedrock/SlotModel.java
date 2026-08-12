@@ -48,4 +48,13 @@ public class SlotModel extends EntityModel<Entity> {
                 buffer,
                 packedLight, packedOverlay);
     }
+    public void renderToBuffer(@NotNull PoseStack poseStack,
+                               @NotNull VertexConsumer buffer,
+                               int packedLight, int packedOverlay) {
+        this.renderToBuffer(poseStack,
+                buffer,
+                packedLight,
+                packedOverlay,
+                1, 1, 1, 1);
+    }
 }

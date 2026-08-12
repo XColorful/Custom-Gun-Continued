@@ -10,13 +10,10 @@ package dev.xcolorful.customgun.client.model.bedrock;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import dev.xcolorful.customgun.client.resource.assets.model.bedrock.geometry.bone.cube._Uv;
-import net.minecraft.client.model.EntityModel;
-import net.minecraft.util.FastColor;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemDisplayContext;
 import org.jetbrains.annotations.NotNull;
 
-public class SlotModel extends EntityModel<Entity> {
+public class SlotModel {
 
     private final BedrockPart part;
 
@@ -34,20 +31,13 @@ public class SlotModel extends EntityModel<Entity> {
         this(false);
     }
 
-    @Override
-    public void setupAnim(@NotNull Entity entity,
-                          float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-    }
-
-    @Override
     public void renderToBuffer(@NotNull PoseStack poseStack,
                                @NotNull VertexConsumer buffer,
                                int packedLight, int packedOverlay,
-                               int argb32) {
+                               float red, float green, float blue, float alpha) {
         this.part.render(poseStack,
                 ItemDisplayContext.GUI,
                 buffer,
-                packedLight, packedOverlay,
-                FastColor.ABGR32.red(argb32), FastColor.ABGR32.green(argb32), FastColor.ABGR32.blue(argb32), FastColor.ABGR32.alpha(argb32));
+                packedLight, packedOverlay);
     }
 }

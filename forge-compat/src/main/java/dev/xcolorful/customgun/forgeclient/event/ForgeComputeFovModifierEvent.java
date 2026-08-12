@@ -25,7 +25,7 @@ public class ForgeComputeFovModifierEvent extends ForgeEvent implements ICompute
         }
     }
     @Override public EventType getType() {
-        return EventType.COMPUTE_CAMERA_ANGLES_EVENT;
+        return EventType.COMPUTE_FOV_MODIFIER_EVENT;
     }
 
     @Override public Player getPlayer() {

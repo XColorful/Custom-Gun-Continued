@@ -4,10 +4,10 @@ import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.init.ClientEntityRendererRegistry;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 
-@Mod.EventBusSubscriber(value = Dist.CLIENT, modid = CustomGun.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(value = Dist.CLIENT, modid = CustomGun.MOD_ID)
 public class NeoClientEntityRendererRegistry {
 
     private static final ClientEntityRendererRegistry CLIENT_ENTITY_RENDERER_REGISTRY = ClientEntityRendererRegistry.get();

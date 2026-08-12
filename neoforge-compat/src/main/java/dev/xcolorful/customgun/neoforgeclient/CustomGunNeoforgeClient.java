@@ -17,9 +17,11 @@ package dev.xcolorful.customgun.neoforgeclient;
 import dev.xcolorful.customgun.client.CustomGunClient;
 import dev.xcolorful.customgun.client.api.input.IKeyMapping;
 import dev.xcolorful.customgun.client.api.minecraft.access.IClientAccessTransformer;
+import dev.xcolorful.customgun.client.api.minecraft.item.IClientItemExtensionProvider;
 import dev.xcolorful.customgun.core.api.event.IEventRegister;
 import dev.xcolorful.customgun.neoforgeclient.event.NeoClientEventRegister;
 import dev.xcolorful.customgun.neoforgeclient.input.NeoKeyMapping;
+import dev.xcolorful.customgun.neoforgeclient.item.NeoClientItemExtensionProvider;
 import dev.xcolorful.customgun.neoforgeclient.minecraft.access.NeoClientAccessTransformer;
 
 public class CustomGunNeoforgeClient {
@@ -28,15 +30,18 @@ public class CustomGunNeoforgeClient {
     public static IEventRegister eventRegister;
     public static IKeyMapping.Creator keyMappingCreator;
     public static IClientAccessTransformer accessTransformer;
+    public static IClientItemExtensionProvider clientItemExtensionProvider;
 
     public static void init() {
         if (initialized) return;
         CustomGunNeoforgeClient.eventRegister = new NeoClientEventRegister();
         CustomGunNeoforgeClient.keyMappingCreator = new NeoKeyMapping.Creator();
         CustomGunNeoforgeClient.accessTransformer = new NeoClientAccessTransformer();
+        CustomGunNeoforgeClient.clientItemExtensionProvider = new NeoClientItemExtensionProvider();
 
         CustomGunClient.init(CustomGunNeoforgeClient.keyMappingCreator,
-                CustomGunNeoforgeClient.accessTransformer);
+                CustomGunNeoforgeClient.accessTransformer,
+                CustomGunNeoforgeClient.clientItemExtensionProvider);
         initialized = true;
     }
 }

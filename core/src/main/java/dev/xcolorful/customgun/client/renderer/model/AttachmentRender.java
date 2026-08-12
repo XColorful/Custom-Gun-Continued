@@ -56,7 +56,7 @@ public class AttachmentRender implements IModelComponentRenderer {
             Minecraft mc = Minecraft.getInstance();
             MultiBufferSource bufferSource = mc.renderBuffers().bufferSource();
             VertexConsumer buffer = bufferSource.getBuffer(RenderType.entityTranslucent(ClientRenderUtils.getMissingTextureLocation()));
-            AttachmentItemRenderer.SLOT_ATTACHMENT_MODEL.renderToBuffer(poseStack, buffer, light, overlay, -1);
+            AttachmentItemRenderer.SLOT_ATTACHMENT_MODEL.renderToBuffer(poseStack, buffer, light, overlay, 1.0f, 1.0f, 1.0f, 1.0f);
             return;
         }
 

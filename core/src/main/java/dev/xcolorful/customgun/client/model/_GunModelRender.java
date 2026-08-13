@@ -114,7 +114,7 @@ public class _GunModelRender {
             _this.super_render(matrixStack, transformType, renderType, light, overlay);
             ClientRenderHelper.disableItemEntityStencilTest();
             RenderSystem.clearStencil(0);
-            RenderSystem.clear(GL11.GL_STENCIL_BUFFER_BIT, Minecraft.ON_OSX);
+            ClientRenderHelper.clearStencilBuffer();
         }
     }
 

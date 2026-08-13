@@ -157,6 +157,8 @@ public class _GunModelRender {
     }
 
     private static void _clearStencilBuffer() {
+        ClientRenderHelper.GL._stencilMask(0xFF);
+        ClientRenderHelper.GL.glClearStencil(0);
         ClientRenderHelper.GL._clear(GL11.GL_STENCIL_BUFFER_BIT);
     }
 }

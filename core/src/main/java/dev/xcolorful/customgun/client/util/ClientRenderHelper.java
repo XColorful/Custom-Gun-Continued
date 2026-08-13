@@ -7,6 +7,7 @@
 
 package dev.xcolorful.customgun.client.util;
 
+import com.mojang.blaze3d.opengl.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import dev.xcolorful.customgun.client.compat.ar.ARCompat;
@@ -42,7 +43,8 @@ public class ClientRenderHelper {
         bufferbuilder.addVertex(matrix, x2, y2, blitOffset).setUv(maxU, maxV);
         bufferbuilder.addVertex(matrix, x2, y1, blitOffset).setUv(maxU, minV);
         bufferbuilder.addVertex(matrix, x1, y1, blitOffset).setUv(minU, minV);
-        BufferUploader.draw(bufferbuilder.buildOrThrow());
+        bufferbuilder.buildOrThrow();
+//        BufferUploader.draw();
     }
 
     public static void enableItemEntityStencilTest() {
@@ -102,41 +104,41 @@ public class ClientRenderHelper {
     public static class GL {
 
         public static void _stencilFunc(int func, int ref, int readMask) {
-            RenderSystem.stencilFunc(func, ref, readMask);
+            GlStateManager._stencilFunc(func, ref, readMask);
         }
         public static void _stencilOp(int stencilFail, int depthFail, int pass) {
-            RenderSystem.stencilOp(stencilFail, depthFail, pass);
+            GlStateManager._stencilOp(stencilFail, depthFail, pass);
         }
 
         public static void _colorMask(boolean red, boolean green, boolean blue, boolean alpha) {
-            RenderSystem.colorMask(red, green, blue, alpha);
+            GlStateManager._colorMask(red, green, blue, alpha);
         }
         public static void _depthMask(boolean flag) {
-            RenderSystem.depthMask(flag);
+            GlStateManager._depthMask(flag);
         }
         public static void _stencilMask(int mask) {
-            RenderSystem.stencilMask(mask);
+            GlStateManager._stencilMask(mask);
         }
 
         public static void _clear(int mask) {
             // 1.20.1-1.21.1
-            RenderSystem.clear(mask, Minecraft.ON_OSX);
+//          RenderSystem.clear(mask, Minecraft.ON_OSX);
 
             // 1.21.4
 //          RenderSystem.clear(GL11.GL_STENCIL_BUFFER_BIT);
 
             // 1.21.6
-//          GlStateManager._clear(mask);
+            GlStateManager._clear(mask);
         }
         public static void glClearStencil(int s) {
-            RenderSystem.clearStencil(s);
+            GL11.glClearStencil(s);
         }
 
         public static void _disableDepthTest() {
-            RenderSystem.disableDepthTest();
+            GlStateManager._disableDepthTest();
         }
         public static void _enableDepthTest() {
-            RenderSystem.enableDepthTest();
+            GlStateManager._enableDepthTest();
         }
     }
 }

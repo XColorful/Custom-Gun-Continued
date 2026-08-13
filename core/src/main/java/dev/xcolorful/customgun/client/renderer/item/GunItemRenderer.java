@@ -18,6 +18,7 @@ import dev.xcolorful.customgun.client.api.animation.statemachine.GunAnimationSta
 import dev.xcolorful.customgun.client.api.entity.ILocalShooter;
 import dev.xcolorful.customgun.client.api.entity.shooter.ILocalShooterGetter;
 import dev.xcolorful.customgun.client.api.event.IComputeCameraAnglesEvent;
+import dev.xcolorful.customgun.client.api.event.IRenderHandEvent;
 import dev.xcolorful.customgun.client.api.event.render.BeforeRenderHandEvent;
 import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
 import dev.xcolorful.customgun.client.model.GunModelObject;
@@ -33,6 +34,7 @@ import dev.xcolorful.customgun.client.resource.assets.display._ModelTransform;
 import dev.xcolorful.customgun.client.resource.assets.display._ModelTransformScale;
 import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
 import dev.xcolorful.customgun.client.util.ClientRenderDistance;
+import dev.xcolorful.customgun.client.util.ClientRenderHelper;
 import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
@@ -208,7 +210,7 @@ public class GunItemRenderer extends AnimateGeoItemRenderer<GunModelObject, GunA
 
     @Override
     public void renderFirstPerson(PoseStack poseStack,
-                                  MultiBufferSource bufferSource,
+                                  IRenderHandEvent event,
                                   ItemDisplayContext ctx,
                                   int light, float partialTick,
                                   LocalPlayer player, ItemStack gunItem) {
@@ -277,7 +279,13 @@ public class GunItemRenderer extends AnimateGeoItemRenderer<GunModelObject, GunA
             RenderType renderType = gunDisplay.getEnableTransparency()
                     ? RenderType.entityTranslucent(textureLocation)
                     : RenderType.entityCutout(textureLocation);
-            gunModelObject.render(poseStack, ctx, renderType, light, OverlayTexture.NO_OVERLAY, gunItem);
+
+            try {
+                ClientRenderHelper.FirstPersonArmHelper.setFirstPersonArmCollector(event.getMultiBufferSource_SubmitNodeCollector());
+                gunModelObject.render(poseStack, ctx, renderType, light, OverlayTexture.NO_OVERLAY, gunItem);
+            } finally {
+                ClientRenderHelper.FirstPersonArmHelper.setFirstPersonArmCollector(null);
+            }
 
             // 缓存枪口位置，为第一人称曳光弹渲染作准备
             cacheMuzzlePosition(poseStack, gunModelObject);

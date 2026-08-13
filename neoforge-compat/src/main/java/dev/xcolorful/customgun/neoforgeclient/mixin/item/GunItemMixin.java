@@ -5,7 +5,7 @@ import dev.xcolorful.customgun.client.api.item.IAnimateGeoItem;
 import dev.xcolorful.customgun.client.model.GunModelObject;
 import dev.xcolorful.customgun.client.renderer.item.GunItemRenderer;
 import dev.xcolorful.customgun.client.api.renderer.item.IAnimateGeoItemRenderer;
-import dev.xcolorful.customgun.core.item.gun.GunItem;;
+import dev.xcolorful.customgun.core.item.gun.GunItem;
 import net.minecraft.world.item.Item;
 import org.spongepowered.asm.mixin.Mixin;
 

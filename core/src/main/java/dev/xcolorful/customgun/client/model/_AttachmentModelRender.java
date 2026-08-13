@@ -7,6 +7,8 @@
 
 package dev.xcolorful.customgun.client.model;
 
+import com.mojang.blaze3d.pipeline.RenderTarget;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import dev.xcolorful.customgun.client.api.entity.shooter.ILocalShooterGetter;
 import dev.xcolorful.customgun.client.compat.ar.AttachmentModelAR;
@@ -310,7 +312,7 @@ public class _AttachmentModelRender {
                 builder.addVertex(centerX + cos * rad, centerY + sin * rad, -90.0f)
                         .setColor(255, 255, 255, 255);
             }
-            BufferUploader.drawWithShader(builder.buildOrThrow());
+            renderType.draw(builder.buildOrThrow());
         }
 
         ClientRenderHelper.GL._depthMask(true);
@@ -375,7 +377,9 @@ public class _AttachmentModelRender {
     }
     
     private static void _clearStencilBuffer() {
-        ClientRenderHelper.GL.glClearStencil(0);
-        ClientRenderHelper.GL._clear(GL11.GL_STENCIL_BUFFER_BIT);
+        RenderTarget target = Minecraft.getInstance().getMainRenderTarget();
+        if (target.useStencil && target.getDepthTexture() != null) {
+            RenderSystem.getDevice().createCommandEncoder().clearStencilTexture(target.getDepthTexture(), 0);
+        }
     }
 }

@@ -36,7 +36,7 @@ public class NeoRenderHandEvent extends NeoEvent implements IRenderHandEvent {
     }
 
     @Override public @Nullable MultiBufferSource getMultiBufferSource() {
-        return null;
+        return renderHandEvent.getMultiBufferSource();
     }
     @Override public @Nullable Object getSubmitNodeCollector() {
         return null;

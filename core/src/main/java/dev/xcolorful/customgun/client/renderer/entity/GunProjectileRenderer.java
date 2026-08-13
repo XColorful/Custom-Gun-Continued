@@ -75,6 +75,21 @@ public class GunProjectileRenderer extends EntityRenderer<GunProjectile, GunProj
         state.gunProjectile = gunProjectile;
     }
 
+    @ApiStatus.AvailableSince("1.21.10")
+//    @Override
+    public void submit(@NotNull GunProjectileRenderer.State state,
+                       @NotNull PoseStack poseStack,
+                       @NotNull Object submitNodeCollector,
+                       @NotNull Object cameraRenderState) {
+//        super.submit(state, poseStack, submitNodeCollector, cameraRenderState);
+        if (state.gunProjectile == null) return;
+
+//        this.render(state,
+//                poseStack,
+//                Minecraft.getInstance().renderBuffers().bufferSource(),
+//                state.lightCoords);
+    }
+
     @Override
     public void render(@NotNull GunProjectileRenderer.State renderState,
 //                       @NotNull GunProjectile gunProjectile,

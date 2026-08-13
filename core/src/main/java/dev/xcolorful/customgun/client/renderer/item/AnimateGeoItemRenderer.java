@@ -13,6 +13,7 @@ import dev.xcolorful.customgun.client.animation.statemachine.ItemAnimStateContex
 import dev.xcolorful.customgun.client.animation.statemachine.LuaAnimStateMachine;
 import dev.xcolorful.customgun.client.api.animation.statemachine.GunAnimationState;
 import dev.xcolorful.customgun.client.api.event.IComputeCameraAnglesEvent;
+import dev.xcolorful.customgun.client.api.event.IRenderHandEvent;
 import dev.xcolorful.customgun.client.api.event.render.BeforeRenderHandEvent;
 import dev.xcolorful.customgun.client.api.renderer.item.IAnimateGeoItemRenderer;
 import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
@@ -240,8 +241,9 @@ public abstract class AnimateGeoItemRenderer<M extends AnimatedModelObject, CTX 
     /**
      * 渲染第一人称，暂时只用于玩家
      */
+    @Override
     public void renderFirstPerson(PoseStack poseStack,
-                                  SubmitNodeCollector bufferSource,
+                                  IRenderHandEvent event,
                                   ItemDisplayContext ctx,
                                   int light, float partialTick,
                                   LocalPlayer player, ItemStack pojoItem) {

@@ -9,6 +9,7 @@ package dev.xcolorful.customgun.client.api.renderer.item;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.xcolorful.customgun.client.api.event.IComputeCameraAnglesEvent;
+import dev.xcolorful.customgun.client.api.event.IRenderHandEvent;
 import dev.xcolorful.customgun.client.api.event.render.BeforeRenderHandEvent;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -31,7 +32,7 @@ public interface IAnimateGeoItemRendererOperator {
      * 渲染第一人称，暂时只用于玩家
      */
     void renderFirstPerson(PoseStack poseStack,
-                           MultiBufferSource bufferSource,
+                           IRenderHandEvent event,
                            ItemDisplayContext ctx,
                            int light, float partialTick,
                            LocalPlayer player, ItemStack pojoItem);

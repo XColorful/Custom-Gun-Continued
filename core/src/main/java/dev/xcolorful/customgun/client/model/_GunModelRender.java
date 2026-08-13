@@ -7,7 +7,6 @@
 
 package dev.xcolorful.customgun.client.model;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
 import dev.xcolorful.customgun.client.compat.ar.GunModelAR;
@@ -25,7 +24,6 @@ import dev.xcolorful.customgun.core.api.item.attachment.MagazineCategory;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
 import dev.xcolorful.customgun.core.developer.PlannedRefactor;
 import dev.xcolorful.customgun.core.resource.data.data.AttachmentData;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -110,10 +108,9 @@ public class _GunModelRender {
         { // 渲染
             renderScope(_this, matrixStack, transformType, renderType, light, overlay, gunItem);
 
-            RenderSystem.stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
+            ClientRenderHelper.GL._stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
             _this.super_render(matrixStack, transformType, renderType, light, overlay);
             ClientRenderHelper.disableItemEntityStencilTest();
-            RenderSystem.clearStencil(0);
             _GunModelRender._clearStencilBuffer();
         }
     }
@@ -151,22 +148,15 @@ public class _GunModelRender {
         if (enableScope & attachmentDisplay.getEnableSight()) {
             // 组合镜
             ClientRenderHelper.enableItemEntityStencilTest();
-            RenderSystem.stencilFunc(GL11.GL_GREATER, 127, 0xFF);
+            ClientRenderHelper.GL._stencilFunc(GL11.GL_GREATER, 127, 0xFF);
         } else {
             // 长筒镜
             ClientRenderHelper.enableItemEntityStencilTest();
-            RenderSystem.stencilFunc(GL11.GL_EQUAL, 0, 0xFF);
+            ClientRenderHelper.GL._stencilFunc(GL11.GL_EQUAL, 0, 0xFF);
         }
     }
 
     private static void _clearStencilBuffer() {
-        // 1.20.1-1.21.1
-        RenderSystem.clear(GL11.GL_STENCIL_BUFFER_BIT, Minecraft.ON_OSX);
-
-        // 1.21.4
-//      RenderSystem.clear(GL11.GL_STENCIL_BUFFER_BIT);
-
-        // 1.21.6
-
+        ClientRenderHelper.GL._clear(GL11.GL_STENCIL_BUFFER_BIT);
     }
 }

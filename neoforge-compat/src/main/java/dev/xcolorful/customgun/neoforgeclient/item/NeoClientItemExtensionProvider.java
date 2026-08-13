@@ -1,5 +1,6 @@
 package dev.xcolorful.customgun.neoforgeclient.item;
 
+import dev.xcolorful.customgun.client.api.item.IAnimateGeoItem;
 import dev.xcolorful.customgun.client.api.minecraft.item.IClientItemExtensionProvider;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -17,7 +18,6 @@ public class NeoClientItemExtensionProvider implements IClientItemExtensionProvi
     }
 
     @Override public @Nullable Object getBEWLR(ItemStack itemStack) {
-        return IClientItemExtensions.of(itemStack)
-                .getCustomRenderer();
+        return IAnimateGeoItem.cgc$getCustomRenderer(itemStack);
     }
 }

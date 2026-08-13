@@ -5,10 +5,15 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import dev.xcolorful.customgun.CustomGun;
+import dev.xcolorful.customgun.client.api.item.IAnimateGeoItem;
+import dev.xcolorful.customgun.client.api.renderer.item.IAnimateGeoItemRenderer;
+import dev.xcolorful.customgun.core.init.registry.ModItems;
+import dev.xcolorful.customgun.core.item.gun.GunItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.Nullable;
 
 import static dev.xcolorful.customgun.client.command.ClientCommandArg.DEBUG;
 import static dev.xcolorful.customgun.client.resource.assets.SoundManager.MOD_SOUNDS;
@@ -18,6 +23,9 @@ public class _DebugCommand {
 
     public static LiteralArgumentBuilder<CommandSourceStack> getClient() {
         return Commands.literal(DEBUG)
+                .then(Commands.literal("clientMixinTest")
+                        .then(Commands.literal("IAnimateGeoItem")
+                                .executes(_DebugCommand::testIAnimateGeoItemMixin)))
                 .then(Commands.literal("testGetSound")
                         .then(Commands.argument("rl", StringArgumentType.string())
                                 .executes(_DebugCommand::testGetSound)
@@ -35,6 +43,18 @@ public class _DebugCommand {
         boolean location1 = resourceManager.getResource(rl1).isPresent();
         boolean location2 = resourceManager.getResource(rl2).isPresent();
         context.getSource().sendSuccess(() -> Component.literal(String.format("rl: %s, loaded %s, location1 %s, location2 %s", rl, loaded, location1, location2)), false);
+        return Command.SINGLE_SUCCESS;
+    }
+    private static int testIAnimateGeoItemMixin(CommandContext<CommandSourceStack> context) {
+        GunItem gunItem = ModItems.GUN.get();
+        @Nullable IAnimateGeoItem iAnimateGeoItem = IAnimateGeoItem.cgc$fromItem(gunItem);
+        if (iAnimateGeoItem != null) {
+            context.getSource().sendSuccess(() -> Component.literal("GunItem is IAnimateGeoItem"), false);
+            IAnimateGeoItemRenderer<?, ?> renderer = iAnimateGeoItem.cgc$getCustomRenderer();
+            context.getSource().sendSuccess(() -> Component.literal("IAnimateGeoItem.cgc$getCustomRenderer() is " + (renderer != null ? renderer.getClass().getName() : "null")), false);
+        } else {
+            context.getSource().sendFailure(Component.literal("GunItem is not IAnimateGeoItem"));
+        }
         return Command.SINGLE_SUCCESS;
     }
 }

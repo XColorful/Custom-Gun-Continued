@@ -380,10 +380,10 @@ public class _AttachmentModelRender {
     
     private static void _clearStencilBuffer() {
         // 1.20.1-1.21.1
-        RenderSystem.clear(GL11.GL_STENCIL_BUFFER_BIT, Minecraft.ON_OSX);
+//      RenderSystem.clear(GL11.GL_STENCIL_BUFFER_BIT, Minecraft.ON_OSX);
 
         // 1.21.4
-//      RenderSystem.clear(GL11.GL_STENCIL_BUFFER_BIT);
+        RenderSystem.clear(GL11.GL_STENCIL_BUFFER_BIT);
 
         // 1.21.6
 

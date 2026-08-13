@@ -1,10 +1,10 @@
 package dev.xcolorful.customgun.neoforgeclient.item;
 
 import dev.xcolorful.customgun.client.api.minecraft.item.IClientItemExtensionProvider;
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
+import org.jetbrains.annotations.Nullable;
 
 public class NeoClientItemExtensionProvider implements IClientItemExtensionProvider {
 
@@ -16,7 +16,7 @@ public class NeoClientItemExtensionProvider implements IClientItemExtensionProvi
         return IClientItemExtensions.of(item);
     }
 
-    @Override public BlockEntityWithoutLevelRenderer getBEWLR(ItemStack itemStack) {
+    @Override public @Nullable Object getBEWLR(ItemStack itemStack) {
         return IClientItemExtensions.of(itemStack)
                 .getCustomRenderer();
     }

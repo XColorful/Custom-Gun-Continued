@@ -318,7 +318,7 @@ public class GunItemRenderer extends AnimateGeoItemRenderer<GunModelObject, GunA
         poseStack.popPose();
     }
 
-    // --------BlockEntityWithoutLevelRenderer--------
+    // --------IBlockEntityWithoutLevelRenderer--------
 
     @Override
     public void renderByItem(@NotNull ItemStack gunItem,

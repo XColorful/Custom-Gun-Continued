@@ -27,7 +27,7 @@ import dev.xcolorful.customgun.core.api.resource.ResourceApi;
 import dev.xcolorful.customgun.core.resource.data.data.GunData;
 import dev.xcolorful.customgun.core.resource.instance.data.GunIndexInstance;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -168,7 +168,7 @@ public class ShellRender implements IModelComponentRenderer {
     private void renderSingleShell(ItemDisplayContext transformType,
                                    int light, int overlay,
                                    AmmoModelObject ammoModelObject,
-                                   ResourceLocation shellTextureLocation,
+                                   Identifier shellTextureLocation,
                                    _Data data,
                                    float[] baseVelocity, float[] acceleration, float[] angularVelocity) {
         // 再检查一次

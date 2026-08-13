@@ -14,7 +14,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
@@ -25,11 +25,11 @@ import org.joml.Matrix4f;
 
 public class ClientRenderUtils {
 
-    public static @NotNull ResourceLocation getMissingTextureLocation() {
+    public static @NotNull Identifier getMissingTextureLocation() {
         return MissingTextureAtlasSprite.getLocation();
     }
 
-    public static ResourceLocation getSkinTextureLocation(LocalPlayer clientPlayer) {
+    public static Identifier getSkinTextureLocation(LocalPlayer clientPlayer) {
         return clientPlayer.getSkin().body().texturePath();
     }
 

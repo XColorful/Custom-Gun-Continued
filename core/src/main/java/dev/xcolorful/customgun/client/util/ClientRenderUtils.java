@@ -26,7 +26,7 @@ public class ClientRenderUtils {
     }
 
     public static ResourceLocation getSkinTextureLocation(LocalPlayer clientPlayer) {
-        return clientPlayer.getSkinTextureLocation();
+        return clientPlayer.getSkin().texture();
     }
 
     /**

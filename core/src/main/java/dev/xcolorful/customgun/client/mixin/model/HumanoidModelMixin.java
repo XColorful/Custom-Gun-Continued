@@ -8,7 +8,6 @@
 package dev.xcolorful.customgun.client.mixin.model;
 
 import dev.xcolorful.customgun.client.CustomGunClient;
-import dev.xcolorful.customgun.client.animation.shooter.ShooterAnimationManager;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;

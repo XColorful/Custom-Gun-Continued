@@ -18,6 +18,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.world.entity.HumanoidArm;
+import net.minecraft.world.entity.player.PlayerModelPart;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 
@@ -68,14 +69,26 @@ public class ClientRenderHelper {
         PlayerRenderer renderer = (PlayerRenderer) renderManager.getRenderer(player);
         MultiBufferSource buffer = Minecraft.getInstance().renderBuffers().bufferSource();
         // int oldId = RenderSystem.getShaderTexture(0);
-        // RenderSystem.setShaderTexture(0, player.getSkinTextureLocation());
+        // RenderSystem.setShaderTexture(0, ClientRenderUtils.getSkinTextureLocation(player));
 
         ARCompat.setRenderingLevel();
 
+        var skinLocation = ClientRenderUtils.getSkinTextureLocation(player);
+        boolean isSleeveVisible;
         if (hand == HumanoidArm.RIGHT) {
-            renderer.renderRightHand(matrixStack, buffer, combinedLight, player);
+            isSleeveVisible = player.isModelPartShown(PlayerModelPart.RIGHT_SLEEVE);
+
+            renderer.renderRightHand(matrixStack,
+                    buffer,
+                    combinedLight,
+                    player);
         } else {
-            renderer.renderLeftHand(matrixStack, buffer, combinedLight, player);
+            isSleeveVisible = player.isModelPartShown(PlayerModelPart.LEFT_SLEEVE);
+
+            renderer.renderLeftHand(matrixStack,
+                    buffer,
+                    combinedLight,
+                    player);
         }
 
         ARCompat.resetRenderingLevel();

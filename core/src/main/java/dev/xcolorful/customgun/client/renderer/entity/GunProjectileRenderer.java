@@ -35,7 +35,7 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.state.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -233,7 +233,7 @@ public class GunProjectileRenderer extends EntityRenderer<GunProjectile, GunProj
     }
 
 //    @Override
-    public @NotNull ResourceLocation getTextureLocation(@NotNull GunProjectile gunProjectile) {
+    public @NotNull Identifier getTextureLocation(@NotNull GunProjectile gunProjectile) {
         return CustomTexture.GUN_PROJECTILE.getLocation();
     }
 

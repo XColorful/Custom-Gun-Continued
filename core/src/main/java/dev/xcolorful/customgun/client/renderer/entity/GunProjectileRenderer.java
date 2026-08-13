@@ -31,6 +31,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -44,7 +45,7 @@ import org.joml.Vector3f;
 
 import java.awt.*;
 
-public class GunProjectileRenderer extends EntityRenderer<GunProjectile> {
+public class GunProjectileRenderer extends EntityRenderer<GunProjectile, GunProjectileRenderer.State> {
 
     public GunProjectileRenderer(EntityRendererProvider.Context providerContext) {
         super(providerContext);
@@ -60,13 +61,13 @@ public class GunProjectileRenderer extends EntityRenderer<GunProjectile> {
     // --------EntityRenderer--------
 
     @ApiStatus.AvailableSince("1.21.4")
-//    @Override
+    @Override
     public @NotNull GunProjectileRenderer.State createRenderState() {
         return new GunProjectileRenderer.State();
     }
 
     @ApiStatus.AvailableSince("1.21.4")
-//    @Override
+    @Override
     public void extractRenderState(@NotNull GunProjectile gunProjectile,
                                    @NotNull GunProjectileRenderer.State state,
                                    float partialTicks) {
@@ -75,12 +76,15 @@ public class GunProjectileRenderer extends EntityRenderer<GunProjectile> {
     }
 
     @Override
-    public void render( // @NotNull GunProjectileRenderer.State renderState,
-                       @NotNull GunProjectile gunProjectile,
-                       float entityYaw, float partialTicks,
+    public void render(@NotNull GunProjectileRenderer.State renderState,
+//                       @NotNull GunProjectile gunProjectile,
+//                       float entityYaw, float partialTicks,
                        @NotNull PoseStack poseStack,
                        @NotNull MultiBufferSource buffer,
                        int packedLight) {
+        GunProjectile gunProjectile = renderState.gunProjectile;
+        float partialTicks = renderState.partialTick;
+        float entityYaw = Mth.lerp(partialTicks, gunProjectile.yRotO, gunProjectile.getYRot());
         float entityPitch = Mth.lerp(partialTicks, gunProjectile.xRotO, gunProjectile.getXRot());
 
         IClientGunProjectile iClientGunProjectile = IClientGunProjectileGetter.fromGunProjectile(gunProjectile);
@@ -139,7 +143,7 @@ public class GunProjectileRenderer extends EntityRenderer<GunProjectile> {
             poseStack.scale(-1, -1, 1);
             ammoEntityModelObject.render(poseStack,
                     ItemDisplayContext.GROUND,
-                    RenderType.entityTranslucentCull(textureLocation),
+                    RenderType.itemEntityTranslucentCull(textureLocation),
                     packedLight,
                     OverlayTexture.NO_OVERLAY);
         }
@@ -211,13 +215,13 @@ public class GunProjectileRenderer extends EntityRenderer<GunProjectile> {
         poseStack.popPose();
     }
 
-    @Override
+//    @Override
     public @NotNull ResourceLocation getTextureLocation(@NotNull GunProjectile gunProjectile) {
         return CustomTexture.GUN_PROJECTILE.getLocation();
     }
 
     @ApiStatus.AvailableSince("1.21.4")
-    public static class State {
+    public static class State extends EntityRenderState {
         private GunProjectile gunProjectile;
 
         public State() {

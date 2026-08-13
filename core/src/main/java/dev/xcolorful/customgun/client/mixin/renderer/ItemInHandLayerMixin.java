@@ -11,6 +11,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import dev.xcolorful.customgun.client.renderer.model.MuzzleFlashRender;
 import dev.xcolorful.customgun.client.renderer.model.ShellRender;
 import dev.xcolorful.customgun.client.renderer.shooter.HumanoidOffhandRender;
+import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ArmedModel;
@@ -22,6 +23,8 @@ import net.minecraft.client.renderer.entity.state.ArmedEntityRenderState;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.entity.LivingEntity;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -40,7 +43,9 @@ public class ItemInHandLayerMixin<S extends ArmedEntityRenderState, M extends En
                             CallbackInfo ci) {
         MuzzleFlashRender.State.isSelf = false;
         ShellRender.State.isSelf = false;
-        HumanoidOffhandRender.renderGun(poseStack, buffer, lightCoords, renderState);
+        @Nullable LivingEntity livingEntity = ClientRenderUtils.RenderState.getLivingEntity(renderState);
+        if (livingEntity == null) return;
+        HumanoidOffhandRender.renderGun(renderState, poseStack, buffer, lightCoords, livingEntity);
     }
 
     @Inject(method = "submitArmWithItem(Lnet/minecraft/client/renderer/entity/state/ArmedEntityRenderState;Lnet/minecraft/client/renderer/item/ItemStackRenderState;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/entity/HumanoidArm;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;I)V",
@@ -54,6 +59,7 @@ public class ItemInHandLayerMixin<S extends ArmedEntityRenderState, M extends En
                                            int packedLight,
                                            CallbackInfo ci) {
         LocalPlayer player = Minecraft.getInstance().player;
+        @Nullable LivingEntity livingEntity = ClientRenderUtils.RenderState.getLivingEntity(renderState);
         if (livingEntity != null && livingEntity.equals(player)) {
             MuzzleFlashRender.State.isSelf = true;
             ShellRender.State.isSelf = true;
@@ -68,9 +74,11 @@ public class ItemInHandLayerMixin<S extends ArmedEntityRenderState, M extends En
     private void cgc$renderArmWithItemTail(S renderState,
                                            ItemStackRenderState itemStackRenderState,
                                            ItemStack itemStack,
-                                           HumanoidArm arm, PoseStack poseStack,
+                                           HumanoidArm arm,
+                                           PoseStack poseStack,
                                            SubmitNodeCollector submitNodeCollector,
-                                           int lightCoords, CallbackInfo ci) {
+                                           int lightCoords,
+                                           CallbackInfo ci) {
         MuzzleFlashRender.State.isSelf = false;
         ShellRender.State.isSelf = false;
     }

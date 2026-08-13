@@ -10,7 +10,10 @@ package dev.xcolorful.customgun.client.util;
 import dev.xcolorful.customgun.client.api.event.IRenderLevelStageEvent;
 import dev.xcolorful.customgun.client.api.event.ISubmitCustomGeometryEvent;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import net.minecraft.client.renderer.entity.state.PlayerRenderState;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.LivingEntity;
@@ -27,7 +30,7 @@ public class ClientRenderUtils {
     }
 
     public static ResourceLocation getSkinTextureLocation(LocalPlayer clientPlayer) {
-        return clientPlayer.getSkinTextureLocation();
+        return clientPlayer.getSkin().texture();
     }
 
     /**
@@ -86,8 +89,15 @@ public class ClientRenderUtils {
     @ApiStatus.AvailableSince("1.21.4")
     public static class RenderState {
 
-        public static @Nullable LivingEntity getLivingEntity(Object renderState) {
-            return null;
+        public static @Nullable LivingEntity getLivingEntity(EntityRenderState renderState) {
+            // 1.21.4只在 PlayerRenderState 和 SheepRenderState 搜到了"public int id"
+            if (!(renderState instanceof PlayerRenderState playerRenderState)) return null;
+
+            ClientLevel level = Minecraft.getInstance().level;
+            if (level == null) return null;
+
+            // TODO 这么搞会CME吗？貌似没办法了
+            return ClientWorldUtils.getLivingEntityById(level, playerRenderState.id);
         }
     }
 }

@@ -19,10 +19,11 @@ import dev.xcolorful.customgun.core.util.InventoryUtils;
 import dev.xcolorful.customgun.core.util.MathUtil;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.entity.state.ArmedEntityRenderState;
+import net.minecraft.client.renderer.item.ItemModelResolver;
+import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
@@ -38,18 +39,18 @@ public class HumanoidOffhandRender {
     <S extends ArmedEntityRenderState>
     void renderGun(S renderState,
                    PoseStack matrixStack,
-                   MultiBufferSource buffer,
+                   SubmitNodeCollector submitNodeCollector,
                    int lightCoords,
                    LivingEntity entity) {
-        renderOffhandGun(renderState, matrixStack, buffer, lightCoords, entity);
-        renderHotbarGun(renderState, matrixStack, buffer, lightCoords, entity);
+        renderOffhandGun(renderState, matrixStack, submitNodeCollector, lightCoords, entity);
+        renderHotbarGun(renderState, matrixStack, submitNodeCollector, lightCoords, entity);
     }
 
     private static
     <S extends ArmedEntityRenderState>
     void renderOffhandGun(S renderState,
                           PoseStack matrixStack,
-                          MultiBufferSource buffer,
+                          SubmitNodeCollector submitNodeCollector,
                           int lightCoords,
                           LivingEntity entity) {
         ItemStack gunItem = entity.getOffhandItem();
@@ -63,14 +64,14 @@ public class HumanoidOffhandRender {
 
         GunDisplay gunDisplay = gunDisplayInstance.getPojo();
         _SurroundDisplay surroundDisplay = gunDisplay.getSurroundDisplayByOffhand();
-        _renderGunItem(renderState, matrixStack, buffer, lightCoords, entity, gunItem, surroundDisplay);
+        _renderGunItem(renderState, matrixStack, submitNodeCollector, lightCoords, entity, gunItem, surroundDisplay);
     }
 
     private static
     <S extends ArmedEntityRenderState>
     void renderHotbarGun(S renderState,
                          PoseStack matrixStack,
-                         MultiBufferSource buffer,
+                         SubmitNodeCollector submitNodeCollector,
                          int lightCoords,
                          LivingEntity entity) {
         if (!(entity instanceof Player player)) return;
@@ -95,7 +96,7 @@ public class HumanoidOffhandRender {
             if (!surroundDisplayList.containsKey(i)) continue;
 
             _SurroundDisplay surroundDisplay = surroundDisplayList.get(i);
-            _renderGunItem(renderState, matrixStack, buffer, lightCoords, entity, gunItem, surroundDisplay);
+            _renderGunItem(renderState, matrixStack, submitNodeCollector, lightCoords, entity, gunItem, surroundDisplay);
         }
     }
 
@@ -103,7 +104,7 @@ public class HumanoidOffhandRender {
     <S extends ArmedEntityRenderState>
     void _renderGunItem(S renderState,
                         PoseStack matrixStack,
-                        MultiBufferSource buffer,
+                        SubmitNodeCollector submitNodeCollector,
                         int lightCoords,
                         LivingEntity entity,
                         ItemStack gunItem,
@@ -119,8 +120,20 @@ public class HumanoidOffhandRender {
             MathUtil.Quaternion.set(rotation, (float) Math.toRadians(rotate[0]), (float) Math.toRadians(rotate[1]), (float) Math.toRadians(rotate[2]));
             matrixStack.mulPose(rotation);
 
-            ItemRenderer renderer = Minecraft.getInstance().getItemRenderer();
-            renderer.renderStatic(gunItem, ItemDisplayContext.FIXED, lightCoords, OverlayTexture.NO_OVERLAY, matrixStack, buffer, entity.level(), entity.getId());
+//            ItemRenderer renderer = Minecraft.getInstance().getItemRenderer();
+//            renderer.renderStatic(gunItem, ItemDisplayContext.FIXED, lightCoords, OverlayTexture.NO_OVERLAY, matrixStack, buffer, entity.level(), entity.getId());
+
+            // 以下临时照搬xiao.battleroyale.client.renderer.block.LootContainerRenderer#renderItems的渲染方式
+            // 如果渲染有问题再改
+            ItemModelResolver itemModelResolver = Minecraft.getInstance().getItemModelResolver();
+            ItemStackRenderState itemStackRenderState = new ItemStackRenderState();
+            itemModelResolver.updateForTopItem(itemStackRenderState,
+                    gunItem,
+                    ItemDisplayContext.GROUND,
+                    entity.level(),
+                    null,
+                    0); // 这应该不需要随机种子
+            itemStackRenderState.submit(matrixStack, submitNodeCollector, renderState.lightCoords, OverlayTexture.NO_OVERLAY, 0);
         }
         matrixStack.popPose();
     }

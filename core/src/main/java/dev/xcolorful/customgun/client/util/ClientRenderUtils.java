@@ -11,10 +11,11 @@ import dev.xcolorful.customgun.client.api.event.IRenderLevelStageEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
-import net.minecraft.client.renderer.entity.state.PlayerRenderState;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.ApiStatus;
@@ -29,7 +30,7 @@ public class ClientRenderUtils {
     }
 
     public static ResourceLocation getSkinTextureLocation(LocalPlayer clientPlayer) {
-        return clientPlayer.getSkin().texture();
+        return clientPlayer.getSkin().body().texturePath();
     }
 
     /**
@@ -84,7 +85,8 @@ public class ClientRenderUtils {
 
         public static @Nullable LivingEntity getLivingEntity(EntityRenderState renderState) {
             // 1.21.4只在 PlayerRenderState 和 SheepRenderState 搜到了"public int id"
-            if (!(renderState instanceof PlayerRenderState playerRenderState)) return null;
+            // 1.21.10只在 AvatarRenderState 搜到了"public int id"
+            if (!(renderState instanceof AvatarRenderState playerRenderState)) return null;
 
             ClientLevel level = Minecraft.getInstance().level;
             if (level == null) return null;

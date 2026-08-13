@@ -37,6 +37,8 @@ public class ClientRenderRegistry {
             RenderSystem.defaultBlendFunc();
         });
 
+        protected static final boolean enableBlur = false; // TriState.FALSE
+
         protected static final RenderType LASER_BEAM = RenderType.create("laser_beam", DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP,
                 VertexFormat.Mode.QUADS, 256, true, true,
                 RenderType.CompositeState.builder()
@@ -47,7 +49,9 @@ public class ClientRenderRegistry {
                         .setLightmapState(LIGHTMAP)
                         .setWriteMaskState(COLOR_DEPTH_WRITE)
                         .setCullState(NO_CULL)
-                        .setTextureState(new RenderStateShard.TextureStateShard(LASER_BEAM_TEXTURE, false, false))
+                        .setTextureState(new RenderStateShard.TextureStateShard(LASER_BEAM_TEXTURE,
+                                enableBlur,
+                                false))
                         .createCompositeState(false));
 
         protected static final RenderType LASER_BEAM_ENTITY = RenderType.create("laser_beam_entity", DefaultVertexFormat.NEW_ENTITY,
@@ -61,7 +65,9 @@ public class ClientRenderRegistry {
                         .setOverlayState(OVERLAY)
                         .setWriteMaskState(COLOR_DEPTH_WRITE)
                         .setCullState(NO_CULL)
-                        .setTextureState(new RenderStateShard.TextureStateShard(LASER_BEAM_TEXTURE, false, false))
+                        .setTextureState(new RenderStateShard.TextureStateShard(LASER_BEAM_TEXTURE,
+                                enableBlur,
+                                false))
                         .createCompositeState(false));
 
         public static RenderType getLaserBeam() {

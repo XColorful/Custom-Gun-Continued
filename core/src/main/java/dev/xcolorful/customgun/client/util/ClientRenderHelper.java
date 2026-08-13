@@ -82,4 +82,13 @@ public class ClientRenderHelper {
 
         // RenderSystem.setShaderTexture(0, oldId);
     }
+
+    public static void clearStencilBuffer() {
+        // 1.20.1-1.21.1
+        RenderSystem.clear(GL11.GL_STENCIL_BUFFER_BIT, Minecraft.ON_OSX);
+        // 1.21.4
+//        RenderSystem.clear(GL11.GL_STENCIL_BUFFER_BIT);
+        // 1.21.6
+
+    }
 }

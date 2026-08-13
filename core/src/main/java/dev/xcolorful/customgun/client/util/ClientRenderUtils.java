@@ -30,7 +30,7 @@ public class ClientRenderUtils {
         return MissingTextureAtlasSprite.getLocation();
     }
 
-    public static ResourceLocation getSkinTextureLocation(LocalPlayer clientPlayer) {
+    public static Identifier getSkinTextureLocation(LocalPlayer clientPlayer) {
         return clientPlayer.getSkin().body().texturePath();
     }
 

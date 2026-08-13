@@ -22,7 +22,7 @@ import dev.xcolorful.customgun.client.resource.assets.animation.bedrock.animatio
 import dev.xcolorful.customgun.core.util.MathUtil;
 import it.unimi.dsi.fastutil.doubles.Double2ObjectMap;
 import it.unimi.dsi.fastutil.doubles.Double2ObjectRBTreeMap;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
@@ -90,9 +90,9 @@ public class AnimationHelper {
                 soundChannel.content = new SoundChannelContent();
                 int keyframeNum = soundEffectKeyframes.getKeyframes().size();
                 soundChannel.content.keyframeTimeS = new double[keyframeNum];
-                soundChannel.content.keyframeSoundName = new ResourceLocation[keyframeNum];
+                soundChannel.content.keyframeSoundName = new Identifier[keyframeNum];
                 int i = 0;
-                for (Map.Entry<Double, ResourceLocation> _entry : soundEffectKeyframes.getKeyframes().double2ObjectEntrySet()) {
+                for (Map.Entry<Double, Identifier> _entry : soundEffectKeyframes.getKeyframes().double2ObjectEntrySet()) {
                     soundChannel.content.keyframeTimeS[i] = _entry.getKey();
                     soundChannel.content.keyframeSoundName[i] = _entry.getValue();
                     i++;

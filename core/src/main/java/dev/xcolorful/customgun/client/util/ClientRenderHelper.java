@@ -13,7 +13,6 @@ import dev.xcolorful.customgun.client.compat.ar.ARCompat;
 import dev.xcolorful.customgun.client.compat.optifine.OptifineCompat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
@@ -37,7 +36,7 @@ public class ClientRenderHelper {
     }
 
     private static void innerBlit(Matrix4f matrix, float x1, float x2, float y1, float y2, float blitOffset, float minU, float maxU, float minV, float maxV) {
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+//        RenderSystem.setShader(GameRenderer::getPositionTexShader);
         BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
         bufferbuilder.addVertex(matrix, x1, y2, blitOffset).setUv(minU, maxV);
         bufferbuilder.addVertex(matrix, x2, y2, blitOffset).setUv(maxU, maxV);
@@ -52,7 +51,7 @@ public class ClientRenderHelper {
         boolean handled = OptifineCompat.onEnableItemEntityStencilTest();
         if (!handled) {
             Minecraft mc = Minecraft.getInstance();
-            mc.getMainRenderTarget().enableStencil();
+//            mc.getMainRenderTarget().enableStencil();
         }
 
         GL11.glEnable(GL11.GL_STENCIL_TEST);
@@ -81,6 +80,8 @@ public class ClientRenderHelper {
             renderer.renderRightHand(matrixStack,
                     buffer,
                     combinedLight,
+                    skinLocation,
+                    isSleeveVisible,
                     player);
         } else {
             isSleeveVisible = player.isModelPartShown(PlayerModelPart.LEFT_SLEEVE);
@@ -88,6 +89,8 @@ public class ClientRenderHelper {
             renderer.renderLeftHand(matrixStack,
                     buffer,
                     combinedLight,
+                    skinLocation,
+                    isSleeveVisible,
                     player);
         }
 
@@ -98,9 +101,9 @@ public class ClientRenderHelper {
 
     public static void clearStencilBuffer() {
         // 1.20.1-1.21.1
-        RenderSystem.clear(GL11.GL_STENCIL_BUFFER_BIT, Minecraft.ON_OSX);
+//        RenderSystem.clear(GL11.GL_STENCIL_BUFFER_BIT, Minecraft.ON_OSX);
         // 1.21.4
-//        RenderSystem.clear(GL11.GL_STENCIL_BUFFER_BIT);
+        RenderSystem.clear(GL11.GL_STENCIL_BUFFER_BIT);
         // 1.21.6
 
     }

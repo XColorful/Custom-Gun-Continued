@@ -10,6 +10,7 @@ package dev.xcolorful.customgun.client.util;
 import dev.xcolorful.customgun.client.api.event.IRenderLevelStageEvent;
 import dev.xcolorful.customgun.client.api.event.ISubmitCustomGeometryEvent;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.LivingEntity;
@@ -23,6 +24,10 @@ public class ClientRenderUtils {
 
     public static @NotNull Identifier getMissingTextureLocation() {
         return MissingTextureAtlasSprite.getLocation();
+    }
+
+    public static ResourceLocation getSkinTextureLocation(LocalPlayer clientPlayer) {
+        return clientPlayer.getSkinTextureLocation();
     }
 
     /**

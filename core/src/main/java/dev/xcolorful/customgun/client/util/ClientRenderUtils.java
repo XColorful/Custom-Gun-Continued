@@ -11,8 +11,11 @@ import dev.xcolorful.customgun.client.api.event.IRenderLevelStageEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 
 public class ClientRenderUtils {
@@ -64,5 +67,13 @@ public class ClientRenderUtils {
     }
     public static Matrix4f createCenterOffsetMatrix(IRenderLevelStageEvent event, double centerX, double centerY, double centerZ, Vec3 cameraPos) {
         return createCenterOffsetMatrix(event.getModelViewMatrix(), centerX, centerY, centerZ, cameraPos);
+    }
+
+    @ApiStatus.AvailableSince("1.21.4")
+    public static class RenderState {
+
+        @Nullable LivingEntity getLivingEntity(Object renderState) {
+            return null;
+        }
     }
 }

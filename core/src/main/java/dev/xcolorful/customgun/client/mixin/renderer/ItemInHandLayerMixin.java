@@ -53,7 +53,7 @@ public class ItemInHandLayerMixin {
                                            int packedLight,
                                            CallbackInfo ci) {
         LocalPlayer player = Minecraft.getInstance().player;
-        if (livingEntity.equals(player)) {
+        if (livingEntity != null && livingEntity.equals(player)) {
             MuzzleFlashRender.State.isSelf = true;
             ShellRender.State.isSelf = true;
         }

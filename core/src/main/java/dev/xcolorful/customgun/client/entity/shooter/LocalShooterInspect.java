@@ -7,14 +7,14 @@
 
 package dev.xcolorful.customgun.client.entity.shooter;
 
-import dev.xcolorful.customgun.client.CustomGunClient;
 import dev.xcolorful.customgun.client.animation.statemachine.GunAnimStateContext;
 import dev.xcolorful.customgun.client.animation.statemachine.LuaAnimStateMachine;
 import dev.xcolorful.customgun.client.api.animation.statemachine.GunAnimationState;
 import dev.xcolorful.customgun.client.api.entity.LocalShooterProperty;
+import dev.xcolorful.customgun.client.api.item.IAnimateGeoItem;
+import dev.xcolorful.customgun.client.api.renderer.item.IAnimateGeoItemRenderer;
 import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
 import dev.xcolorful.customgun.client.api.sound.gun.GunSoundType;
-import dev.xcolorful.customgun.client.renderer.item.AnimateGeoItemRenderer;
 import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
 import dev.xcolorful.customgun.client.sound.SoundPlayManager;
 import dev.xcolorful.customgun.core.api.item.IGun;
@@ -37,8 +37,8 @@ public final class LocalShooterInspect extends LocalShooterAspect {
         ItemStack gunItem = this.localShooter.getMainHandItem();
         @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) {
-            if (CustomGunClient.getClientItemExtensionProvider().getBEWLR(gunItem)
-                    instanceof AnimateGeoItemRenderer<?,?> renderer) {
+            @Nullable IAnimateGeoItemRenderer<?, ?> renderer = IAnimateGeoItem.cgc$getCustomRenderer(gunItem);
+            if (renderer != null) {
                 renderer.triggerAnimation(gunItem, GunAnimationState.INPUT_INSPECT.getConstantName());
             }
             return;

@@ -16,7 +16,10 @@ import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.TriState;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.function.Consumer;
 
 public class ClientRenderRegistry {
 
@@ -78,5 +81,13 @@ public class ClientRenderRegistry {
         public static RenderType getLaserBeamEntity() {
             return LASER_BEAM_ENTITY;
         }
+    }
+
+    @ApiStatus.AvailableSince("1.21.6")
+    public static void onRegisterRenderPipelines(Consumer<Object> registrar) { // 1.21.4没有RenderPipeline
+//        registrar.accept(LaserBeamRenderState.LASER_BEAM_PIPELINE);
+//        registrar.accept(LaserBeamRenderState.LASER_BEAM_ENTITY_PIPELINE);
+
+        // TODO IrisShaders register
     }
 }

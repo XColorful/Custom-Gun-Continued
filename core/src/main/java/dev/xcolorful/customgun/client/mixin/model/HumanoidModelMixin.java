@@ -8,9 +8,12 @@
 package dev.xcolorful.customgun.client.mixin.model;
 
 import dev.xcolorful.customgun.client.CustomGunClient;
+import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
+import net.minecraft.world.entity.LivingEntity;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -34,10 +37,12 @@ public class HumanoidModelMixin<T extends HumanoidRenderState> {
 
     @Inject(method = "setupAnim(Lnet/minecraft/client/renderer/entity/state/HumanoidRenderState;)V", at = @At(value = "TAIL"))
     private void cgc$setRotationAnglesHead(T renderState,
-                                       CallbackInfo ci) {
+                                           CallbackInfo ci) {
+        @Nullable LivingEntity entityIn = ClientRenderUtils.RenderState.getLivingEntity(renderState);
+        if (entityIn == null) return;
 //        if (ageInTicks == 0) {
 //            return;
 //        }
-        CustomGunClient.getShooterAnimationManager().setRotationAnglesHead(entityIn, head, body, leftArm, rightArm, limbSwingAmount);
+        CustomGunClient.getShooterAnimationManager().setRotationAnglesHead(entityIn, head, body, leftArm, rightArm, renderState.walkAnimationSpeed);
     }
 }

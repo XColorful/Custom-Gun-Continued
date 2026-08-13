@@ -14,8 +14,10 @@ import dev.xcolorful.customgun.client.animation.statemachine.LuaAnimStateMachine
 import dev.xcolorful.customgun.client.api.animation.statemachine.GunAnimationState;
 import dev.xcolorful.customgun.client.api.event.IComputeCameraAnglesEvent;
 import dev.xcolorful.customgun.client.api.event.render.BeforeRenderHandEvent;
+import dev.xcolorful.customgun.client.api.renderer.item.IAnimateGeoItemRenderer;
 import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
 import dev.xcolorful.customgun.client.api.sound.gun.GunSoundType;
+import dev.xcolorful.customgun.client.compat.minecraft.BlockEntityWithoutLevelRenderer;
 import dev.xcolorful.customgun.client.config.SoundConfig;
 import dev.xcolorful.customgun.client.model.AnimatedModelObject;
 import dev.xcolorful.customgun.client.model.bedrock.BedrockPart;
@@ -26,7 +28,6 @@ import dev.xcolorful.customgun.core.config.GunConfig;
 import dev.xcolorful.customgun.core.util.MathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -50,7 +51,7 @@ import java.util.List;
  */
 public abstract class AnimateGeoItemRenderer<M extends AnimatedModelObject, CTX extends ItemAnimStateContext>
         extends BlockEntityWithoutLevelRenderer
-        implements IAnimateGeoItemRenderer {
+        implements IAnimateGeoItemRenderer<M, CTX> {
 
     public ResourceLocation textureLocation;
 
@@ -116,10 +117,6 @@ public abstract class AnimateGeoItemRenderer<M extends AnimatedModelObject, CTX 
     }
 
     // --------AnimateGeoItemRenderer--------
-
-    public abstract CTX initContext(ItemStack pojoItem, Player player, float partialTick);
-
-    public abstract void updateContext(CTX context, ItemStack pojoItem, Player player, float partialTick);
 
     // ----Getter----
 
@@ -291,7 +288,7 @@ public abstract class AnimateGeoItemRenderer<M extends AnimatedModelObject, CTX 
         poseStack.popPose();
     }
 
-    // --------BlockEntityWithoutLevelRenderer--------
+    // --------IBlockEntityWithoutLevelRenderer--------
 
     @Override
     public void renderByItem(@NotNull ItemStack pojoItem,

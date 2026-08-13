@@ -7,13 +7,14 @@
 
 package dev.xcolorful.customgun.client.entity.shooter.player;
 
-import dev.xcolorful.customgun.client.CustomGunClient;
 import dev.xcolorful.customgun.client.animation.statemachine.GunAnimStateContext;
 import dev.xcolorful.customgun.client.animation.statemachine.LuaAnimStateMachine;
 import dev.xcolorful.customgun.client.api.animation.statemachine.GunAnimationState;
 import dev.xcolorful.customgun.client.api.event.IClientTickEvent;
 import dev.xcolorful.customgun.client.api.event.IPrepareClientTickEvent;
 import dev.xcolorful.customgun.client.api.event.IRenderFrameEvent;
+import dev.xcolorful.customgun.client.api.item.IAnimateGeoItem;
+import dev.xcolorful.customgun.client.api.renderer.item.IAnimateGeoItemRenderer;
 import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
 import dev.xcolorful.customgun.client.renderer.item.AnimateGeoItemRenderer;
 import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
@@ -119,8 +120,8 @@ public class _LocalAnimHandler implements IEventHandler {
         if (iGun == null) return;
 
         // 渲染相关内容整理到物品的IClientItemExtensions了，这个接口有待进一步抽象
-        if (!(CustomGunClient.getClientItemExtensionProvider().getBEWLR(gunItem)
-                instanceof AnimateGeoItemRenderer<?, ?> renderer)) return;
+        @Nullable IAnimateGeoItemRenderer<?, ?> renderer = IAnimateGeoItem.cgc$getCustomRenderer(gunItem);
+        if (renderer == null) return;
 
         // 如果物品不一样了，先尝试初始化状态机
         if (renderer.needReInit(gunItem)) {

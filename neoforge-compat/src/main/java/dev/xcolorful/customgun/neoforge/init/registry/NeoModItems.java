@@ -1,6 +1,5 @@
 package dev.xcolorful.customgun.neoforge.init.registry;
 
-import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.core.init.registry.ModItems;
 import dev.xcolorful.customgun.core.item.ammo.AmmoItem;
 import dev.xcolorful.customgun.core.item.attachment.AttachmentItem;
@@ -9,9 +8,6 @@ import dev.xcolorful.customgun.neoforge.item.ammo.NeoAmmoItem;
 import dev.xcolorful.customgun.neoforge.item.attachment.NeoAttachmentItem;
 import dev.xcolorful.customgun.neoforge.item.gun.NeoGunItem;
 import net.minecraft.world.item.Item;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -22,7 +18,6 @@ import java.util.function.Supplier;
 /**
  * 处理需要hack的{@link ModItems}注册类型
  */
-@EventBusSubscriber(value = Dist.CLIENT, modid = CustomGun.MOD_ID)
 public class NeoModItems {
 
     private static final Map<Class<? extends Item>, Supplier<? extends Item>> NEO_ITEM_MAP = new HashMap<>();
@@ -50,16 +45,9 @@ public class NeoModItems {
      * 手动添加{@link #NEO_ITEM_MAP}新增的{@link #_put}
      */
     @ApiStatus.AvailableSince("1.21.1")
-    @SubscribeEvent
     public static void registerClientExtensions(RegisterClientExtensionsEvent event) {
         if (NEO_ITEM_MAP.size() != 3) {
             throw new IllegalStateException("NEO_ITEM_MAP size mismatch! Extensions registration is missing.");
         }
-        if (!(ModItems.GUN.get() instanceof NeoGunItem neoGunItem)) throw new IllegalArgumentException("ModItems.GUN.get() is not NeoGunItem!");
-        NeoGunItem.registerClientExtension(extensions -> event.registerItem(extensions, neoGunItem));
-        if (!(ModItems.ATTACHMENT.get() instanceof NeoAttachmentItem neoAttachmentItem)) throw new IllegalArgumentException("ModItems.ATTACHMENT.get() is not NeoAttachmentItem!");
-        NeoAttachmentItem.registerClientExtension(extensions -> event.registerItem(extensions, neoAttachmentItem));
-        if (!(ModItems.AMMO.get() instanceof NeoAmmoItem neoAmmoItem)) throw new IllegalArgumentException("ModItems.AMMO.get() is not NeoAmmoItem!");
-        NeoAmmoItem.registerClientExtension(extensions -> event.registerItem(extensions, neoAmmoItem));
     }
 }

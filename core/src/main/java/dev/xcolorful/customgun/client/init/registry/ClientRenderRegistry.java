@@ -8,15 +8,15 @@
 package dev.xcolorful.customgun.client.init.registry;
 
 import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.pipeline.BlendFunction;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.api.minecraft.texture.CustomTexture;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.TriState;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
@@ -32,47 +32,48 @@ public class ClientRenderRegistry {
             super(pName, pSetupState, pClearState);
         }
 
-        public static final RenderStateShard.TransparencyStateShard LIGHTNING_ADDITIVE_TRANSPARENCY = new RenderStateShard.TransparencyStateShard(
-                "lightning_transparency", () -> {
-            RenderSystem.enableBlend();
-            RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE,
-                    GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-        }, () -> {
-            RenderSystem.disableBlend();
-            RenderSystem.defaultBlendFunc();
-        });
+        public static final RenderPipeline LASER_BEAM_PIPELINE = RenderPipeline.builder(RenderPipelines.MATRICES_PROJECTION_SNIPPET)
+                .withLocation(CustomGun.getMcRegistry().createResourceLocation(String.format("%s:laser_beam", CustomGun.MOD_ID)))
+                .withVertexShader("core/position_color_tex_lightmap")
+                .withFragmentShader("core/position_color_tex_lightmap")
+                .withSampler("Sampler0")
+                .withSampler("Sampler2")
+                .withBlend(BlendFunction.LIGHTNING)
+                .withCull(false)
+                .withVertexFormat(DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS)
+                .build();
 
-        protected static final TriState enableBlur = TriState.FALSE;
+        public static final RenderPipeline LASER_BEAM_ENTITY_PIPELINE = RenderPipeline.builder(RenderPipelines.ENTITY_EMISSIVE_SNIPPET)
+                .withLocation(CustomGun.getMcRegistry().createResourceLocation(String.format("%s:laser_beam_entity", CustomGun.MOD_ID)))
+                .withBlend(BlendFunction.LIGHTNING)
+                .withCull(false)
+                .build();
 
-        protected static final RenderType LASER_BEAM = RenderType.create("laser_beam", DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP,
-                VertexFormat.Mode.QUADS, 256, true, true,
+        protected static final RenderType LASER_BEAM = RenderType.create(
+                "laser_beam",
+                256,
+                true,
+                true,
+                LASER_BEAM_PIPELINE,
                 RenderType.CompositeState.builder()
-                        .setShaderState(RenderStateShard.POSITION_COLOR_TEX_LIGHTMAP_SHADER)
                         .setLayeringState(VIEW_OFFSET_Z_LAYERING)
-                        .setTransparencyState(LIGHTNING_ADDITIVE_TRANSPARENCY)
                         .setOutputState(ITEM_ENTITY_TARGET)
                         .setLightmapState(LIGHTMAP)
-                        .setWriteMaskState(COLOR_DEPTH_WRITE)
-                        .setCullState(NO_CULL)
-                        .setTextureState(new RenderStateShard.TextureStateShard(LASER_BEAM_TEXTURE,
-                                enableBlur,
-                                false))
+                        .setTextureState(new RenderStateShard.TextureStateShard(LASER_BEAM_TEXTURE, false))
                         .createCompositeState(false));
 
-        protected static final RenderType LASER_BEAM_ENTITY = RenderType.create("laser_beam_entity", DefaultVertexFormat.NEW_ENTITY,
-                VertexFormat.Mode.QUADS, 256, true, true,
+        protected static final RenderType LASER_BEAM_ENTITY = RenderType.create(
+                "laser_beam_entity",
+                256,
+                true,
+                true,
+                LASER_BEAM_ENTITY_PIPELINE,
                 RenderType.CompositeState.builder()
-                        .setShaderState(RenderStateShard.RENDERTYPE_ENTITY_TRANSLUCENT_EMISSIVE_SHADER)
                         .setLayeringState(VIEW_OFFSET_Z_LAYERING)
-                        .setTransparencyState(LIGHTNING_ADDITIVE_TRANSPARENCY)
                         .setOutputState(ITEM_ENTITY_TARGET)
                         .setLightmapState(LIGHTMAP)
                         .setOverlayState(OVERLAY)
-                        .setWriteMaskState(COLOR_DEPTH_WRITE)
-                        .setCullState(NO_CULL)
-                        .setTextureState(new RenderStateShard.TextureStateShard(LASER_BEAM_TEXTURE,
-                                enableBlur,
-                                false))
+                        .setTextureState(new RenderStateShard.TextureStateShard(LASER_BEAM_TEXTURE, false))
                         .createCompositeState(false));
 
         public static RenderType getLaserBeam() {
@@ -86,8 +87,8 @@ public class ClientRenderRegistry {
 
     @ApiStatus.AvailableSince("1.21.6")
     public static void onRegisterRenderPipelines(Consumer<RenderPipeline> registrar) {
-//        registrar.accept(LaserBeamRenderState.LASER_BEAM_PIPELINE);
-//        registrar.accept(LaserBeamRenderState.LASER_BEAM_ENTITY_PIPELINE);
+        registrar.accept(LaserBeamRenderState.LASER_BEAM_PIPELINE);
+        registrar.accept(LaserBeamRenderState.LASER_BEAM_ENTITY_PIPELINE);
 
         // TODO IrisShaders register
     }

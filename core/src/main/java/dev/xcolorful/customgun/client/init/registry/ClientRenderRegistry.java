@@ -15,6 +15,7 @@ import dev.xcolorful.customgun.client.api.minecraft.texture.CustomTexture;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.TriState;
 import org.jetbrains.annotations.NotNull;
 
 public class ClientRenderRegistry {
@@ -37,7 +38,7 @@ public class ClientRenderRegistry {
             RenderSystem.defaultBlendFunc();
         });
 
-        protected static final boolean enableBlur = false; // TriState.FALSE
+        protected static final TriState enableBlur = TriState.FALSE;
 
         protected static final RenderType LASER_BEAM = RenderType.create("laser_beam", DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP,
                 VertexFormat.Mode.QUADS, 256, true, true,

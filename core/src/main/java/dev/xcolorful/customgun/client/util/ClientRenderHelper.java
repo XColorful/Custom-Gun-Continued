@@ -19,6 +19,7 @@ import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.PlayerModelPart;
+import org.jetbrains.annotations.ApiStatus;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 
@@ -135,6 +136,20 @@ public class ClientRenderHelper {
         }
         public static void _enableDepthTest() {
             RenderSystem.enableDepthTest();
+        }
+    }
+
+    @ApiStatus.AvailableSince("1.21.10")
+    public static class FirstPersonArmHelper {
+
+        private static final ThreadLocal<Object> FIRST_PERSON_ARM_COLLECTOR = new ThreadLocal<>();
+
+        public static void setFirstPersonArmCollector(Object collector) {
+            if (collector == null) {
+                FIRST_PERSON_ARM_COLLECTOR.remove();
+            } else {
+                FIRST_PERSON_ARM_COLLECTOR.set(collector);
+            }
         }
     }
 }

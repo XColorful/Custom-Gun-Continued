@@ -5,6 +5,7 @@ import dev.xcolorful.customgun.client.api.event.IRenderHandEvent;
 import dev.xcolorful.customgun.core.api.event.EventType;
 import dev.xcolorful.customgun.neoforge.event.NeoEvent;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
@@ -36,14 +37,14 @@ public class NeoRenderHandEvent extends NeoEvent implements IRenderHandEvent {
     }
 
     @Override public @Nullable MultiBufferSource getMultiBufferSource() {
-        return renderHandEvent.getMultiBufferSource();
-    }
-    @Override public @Nullable Object getSubmitNodeCollector() {
         return null;
     }
+    @Override public @Nullable SubmitNodeCollector getSubmitNodeCollector() {
+        return renderHandEvent.getSubmitNodeCollector();
+    }
 
-    @Override public @NotNull MultiBufferSource getMultiBufferSource_SubmitNodeCollector() {
-        return renderHandEvent.getMultiBufferSource();
+    @Override public @NotNull SubmitNodeCollector getMultiBufferSource_SubmitNodeCollector() {
+        return renderHandEvent.getSubmitNodeCollector();
     }
 
     @Override public int getPackedLight() {

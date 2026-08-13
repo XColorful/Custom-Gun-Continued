@@ -29,9 +29,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import net.minecraft.client.renderer.state.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -76,21 +78,21 @@ public class GunProjectileRenderer extends EntityRenderer<GunProjectile, GunProj
     }
 
     @ApiStatus.AvailableSince("1.21.10")
-//    @Override
+    @Override
     public void submit(@NotNull GunProjectileRenderer.State state,
                        @NotNull PoseStack poseStack,
-                       @NotNull Object submitNodeCollector,
-                       @NotNull Object cameraRenderState) {
-//        super.submit(state, poseStack, submitNodeCollector, cameraRenderState);
+                       @NotNull SubmitNodeCollector submitNodeCollector,
+                       @NotNull CameraRenderState cameraRenderState) {
+        super.submit(state, poseStack, submitNodeCollector, cameraRenderState);
         if (state.gunProjectile == null) return;
 
-//        this.render(state,
-//                poseStack,
-//                Minecraft.getInstance().renderBuffers().bufferSource(),
-//                state.lightCoords);
+        this.render(state,
+                poseStack,
+                Minecraft.getInstance().renderBuffers().bufferSource(),
+                state.lightCoords);
     }
 
-    @Override
+//    @Override
     public void render(@NotNull GunProjectileRenderer.State renderState,
 //                       @NotNull GunProjectile gunProjectile,
 //                       float entityYaw, float partialTicks,

@@ -7,17 +7,17 @@
 
 package dev.xcolorful.customgun.client.renderer.item.gun;
 
-import dev.xcolorful.customgun.client.CustomGunClient;
 import dev.xcolorful.customgun.client.api.entity.shooter.ILocalShooterGetter;
 import dev.xcolorful.customgun.client.api.event.IComputeCameraAnglesEvent;
 import dev.xcolorful.customgun.client.api.event.IComputeFovEvent;
 import dev.xcolorful.customgun.client.api.event.IComputeFovModifierEvent;
 import dev.xcolorful.customgun.client.api.event.render.BeforeRenderHandEvent;
+import dev.xcolorful.customgun.client.api.item.IAnimateGeoItem;
 import dev.xcolorful.customgun.client.api.renderer.KeepingItemRenderer;
+import dev.xcolorful.customgun.client.api.renderer.item.IAnimateGeoItemRenderer;
 import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
 import dev.xcolorful.customgun.client.compat.shouldersurfing.ShoulderSurfingCompat;
 import dev.xcolorful.customgun.client.config.RenderConfig;
-import dev.xcolorful.customgun.client.renderer.item.AnimateGeoItemRenderer;
 import dev.xcolorful.customgun.client.resource.assets.display.AttachmentDisplay;
 import dev.xcolorful.customgun.client.resource.assets.display.GunDisplay;
 import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
@@ -116,8 +116,8 @@ public class GunCameraHelper implements IEventHandler {
         ItemStack currentItem = KeepingItemRenderer.cgc$getRenderer().cgc$getCurrentItem();
 
         // 尝试调用物品的自定义相机动画
-        if (!(CustomGunClient.getClientItemExtensionProvider().getBEWLR(currentItem)
-                instanceof AnimateGeoItemRenderer<?,?> renderer)) return;
+        @Nullable IAnimateGeoItemRenderer<?, ?> renderer = IAnimateGeoItem.cgc$getCustomRenderer(currentItem);
+        if (renderer == null) return;
 
         renderer.applyLevelCameraAnimation(event, currentItem, player);
     }
@@ -377,8 +377,8 @@ public class GunCameraHelper implements IEventHandler {
             ItemStack currentItem = KeepingItemRenderer.cgc$getRenderer().cgc$getCurrentItem();
 
             // 尝试调用物品的自定义相机动画
-            if (!(CustomGunClient.getClientItemExtensionProvider().getBEWLR(currentItem)
-                    instanceof AnimateGeoItemRenderer<?,?> renderer)) return;
+            @Nullable IAnimateGeoItemRenderer<?, ?> renderer = IAnimateGeoItem.cgc$getCustomRenderer(currentItem);
+            if (renderer == null) return;
 
             renderer.applyItemInHandCameraAnimation(event, currentItem, player);
         }

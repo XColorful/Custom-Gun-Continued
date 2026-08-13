@@ -5,7 +5,7 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package dev.xcolorful.customgun.client.renderer.item;
+package dev.xcolorful.customgun.client.api.renderer.item;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.xcolorful.customgun.client.api.event.IComputeCameraAnglesEvent;

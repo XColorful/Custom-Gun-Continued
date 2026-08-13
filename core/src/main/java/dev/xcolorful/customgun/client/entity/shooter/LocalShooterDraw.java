@@ -8,12 +8,12 @@
 package dev.xcolorful.customgun.client.entity.shooter;
 
 import dev.xcolorful.customgun.CustomGun;
-import dev.xcolorful.customgun.client.CustomGunClient;
 import dev.xcolorful.customgun.client.api.entity.LocalShooterProperty;
+import dev.xcolorful.customgun.client.api.item.IAnimateGeoItem;
+import dev.xcolorful.customgun.client.api.renderer.item.IAnimateGeoItemRenderer;
 import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
 import dev.xcolorful.customgun.client.api.sound.gun.GunSoundType;
 import dev.xcolorful.customgun.client.config.SoundConfig;
-import dev.xcolorful.customgun.client.renderer.item.AnimateGeoItemRenderer;
 import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
 import dev.xcolorful.customgun.client.sound.SoundPlayManager;
 import dev.xcolorful.customgun.core.api.common.McLogicalSide;
@@ -83,8 +83,8 @@ public final class LocalShooterDraw extends LocalShooterAspect {
         }
     }
     private long _updateDrawTime(long currentTimeMillis, ItemStack lastItem, IGun lastGun, long drawTime) {
-        if (CustomGunClient.getClientItemExtensionProvider().getBEWLR(lastItem)
-                instanceof AnimateGeoItemRenderer<?, ?> renderer) {
+        @Nullable IAnimateGeoItemRenderer<?, ?> renderer = IAnimateGeoItem.cgc$getCustomRenderer(lastItem);
+        if (renderer != null) {
             long putAwayTime = renderer.getPutAwayTime(lastItem);
             if (drawTime > putAwayTime) {
                 drawTime = putAwayTime;
@@ -115,8 +115,8 @@ public final class LocalShooterDraw extends LocalShooterAspect {
 //        });
      }
      private void _doPutAway(ItemStack lastItem, long putAwayTime) {
-        if (!(CustomGunClient.getClientItemExtensionProvider().getBEWLR(lastItem)
-                instanceof AnimateGeoItemRenderer<?,?> renderer)) return;
+        @Nullable IAnimateGeoItemRenderer<?, ?> renderer = IAnimateGeoItem.cgc$getCustomRenderer(lastItem);
+        if (renderer == null) return;
 
         renderer.tryExit(lastItem, putAwayTime);
 

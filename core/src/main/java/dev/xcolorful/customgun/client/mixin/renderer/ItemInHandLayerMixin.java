@@ -44,7 +44,7 @@ public class ItemInHandLayerMixin<S extends ArmedEntityRenderState, M extends En
         ShellRender.State.isSelf = false;
         @Nullable LivingEntity livingEntity = ClientRenderUtils.RenderState.getLivingEntity(renderState);
         if (livingEntity == null) return;
-        HumanoidOffhandRender.renderGun(renderState, poseStack, buffer, lightCoords, livingEntity);
+        HumanoidOffhandRender.renderGun(renderState, poseStack, submitNodeCollector, lightCoords, livingEntity);
     }
 
     @Inject(method = "submitArmWithItem(Lnet/minecraft/client/renderer/entity/state/ArmedEntityRenderState;Lnet/minecraft/client/renderer/item/ItemStackRenderState;Lnet/minecraft/world/entity/HumanoidArm;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;I)V",

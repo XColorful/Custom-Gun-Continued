@@ -15,8 +15,9 @@ import dev.xcolorful.customgun.client.compat.optifine.OptifineCompat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
-import net.minecraft.client.renderer.entity.player.PlayerRenderer;
+import net.minecraft.client.renderer.entity.player.AvatarRenderer;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.PlayerModelPart;
 import org.jetbrains.annotations.ApiStatus;
@@ -66,9 +67,14 @@ public class ClientRenderHelper {
     }
 
     public static void renderFirstPersonArm(LocalPlayer player, HumanoidArm hand, PoseStack matrixStack, int combinedLight) {
+        SubmitNodeCollector collector = FirstPersonArmHelper.FIRST_PERSON_ARM_COLLECTOR.get();
+        if (collector == null) return;
+
+        if (player == null) return;
+
         Minecraft mc = Minecraft.getInstance();
         EntityRenderDispatcher renderManager = mc.getEntityRenderDispatcher();
-        PlayerRenderer renderer = (PlayerRenderer) renderManager.getRenderer(player);
+        AvatarRenderer<?> renderer = renderManager.getPlayerRenderer(player);
         MultiBufferSource buffer = Minecraft.getInstance().renderBuffers().bufferSource();
         // int oldId = RenderSystem.getShaderTexture(0);
         // RenderSystem.setShaderTexture(0, ClientRenderUtils.getSkinTextureLocation(player));
@@ -81,7 +87,7 @@ public class ClientRenderHelper {
             isSleeveVisible = player.isModelPartShown(PlayerModelPart.RIGHT_SLEEVE);
 
             renderer.renderRightHand(matrixStack,
-                    buffer,
+                    collector,
                     combinedLight,
                     skinLocation,
                     isSleeveVisible,
@@ -90,7 +96,7 @@ public class ClientRenderHelper {
             isSleeveVisible = player.isModelPartShown(PlayerModelPart.LEFT_SLEEVE);
 
             renderer.renderLeftHand(matrixStack,
-                    buffer,
+                    collector,
                     combinedLight,
                     skinLocation,
                     isSleeveVisible,
@@ -146,9 +152,9 @@ public class ClientRenderHelper {
     @ApiStatus.AvailableSince("1.21.10")
     public static class FirstPersonArmHelper {
 
-        private static final ThreadLocal<Object> FIRST_PERSON_ARM_COLLECTOR = new ThreadLocal<>();
+        private static final ThreadLocal<SubmitNodeCollector> FIRST_PERSON_ARM_COLLECTOR = new ThreadLocal<>();
 
-        public static void setFirstPersonArmCollector(Object collector) {
+        public static void setFirstPersonArmCollector(SubmitNodeCollector collector) {
             if (collector == null) {
                 FIRST_PERSON_ARM_COLLECTOR.remove();
             } else {

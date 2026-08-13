@@ -3,6 +3,7 @@ package dev.xcolorful.customgun.client.api.event;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.xcolorful.customgun.core.api.event.IEvent;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
@@ -16,12 +17,12 @@ public interface IRenderHandEvent extends IEvent {
     @Deprecated(since = "1.21.10")
     @Nullable MultiBufferSource getMultiBufferSource();
     @ApiStatus.AvailableSince("1.21.10")
-    @Nullable Object getSubmitNodeCollector();
+    @Nullable SubmitNodeCollector getSubmitNodeCollector();
 
     /**
      * @return 1.21.10以前返回{@code MultiBufferSource}，1.21.10及以后返回{@code SubmitNodeCollector}
      */
-    @NotNull MultiBufferSource getMultiBufferSource_SubmitNodeCollector();
+    @NotNull SubmitNodeCollector getMultiBufferSource_SubmitNodeCollector();
 
     int getPackedLight();
     float getPartialTick();

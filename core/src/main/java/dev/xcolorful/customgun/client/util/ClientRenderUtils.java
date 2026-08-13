@@ -72,7 +72,7 @@ public class ClientRenderUtils {
     @ApiStatus.AvailableSince("1.21.4")
     public static class RenderState {
 
-        @Nullable LivingEntity getLivingEntity(Object renderState) {
+        public static @Nullable LivingEntity getLivingEntity(Object renderState) {
             return null;
         }
     }

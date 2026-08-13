@@ -7,7 +7,6 @@
 
 package dev.xcolorful.customgun.client.model;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import dev.xcolorful.customgun.client.api.entity.shooter.ILocalShooterGetter;
 import dev.xcolorful.customgun.client.compat.ar.AttachmentModelAR;
@@ -95,11 +94,10 @@ public class _AttachmentModelRender {
         ClientRenderHelper.enableItemEntityStencilTest();
 
         // 清空模板缓冲区、准备绘制模板缓冲
-        RenderSystem.clearStencil(0);
         _AttachmentModelRender._clearStencilBuffer();
         if (_this.ocularRingPath != null) {
-            RenderSystem.stencilFunc(GL11.GL_ALWAYS, 0, 0xFF);
-            RenderSystem.stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
+            ClientRenderHelper.GL._stencilFunc(GL11.GL_ALWAYS, 0, 0xFF);
+            ClientRenderHelper.GL._stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
 
             // 渲染目镜外环
             renderModelPart(_this, matrixStack, transformType, renderType, light, overlay, _this.ocularRingPath);
@@ -110,7 +108,7 @@ public class _AttachmentModelRender {
 
         // 渲染镜身
         if (_this.scopeBodyPath != null) {
-            RenderSystem.stencilFunc(GL11.GL_EQUAL, 0, 0xFF);
+            ClientRenderHelper.GL._stencilFunc(GL11.GL_EQUAL, 0, 0xFF);
             renderModelPart(_this, matrixStack, transformType, renderType, light, overlay, _this.scopeBodyPath);
         }
 
@@ -121,7 +119,7 @@ public class _AttachmentModelRender {
         renderOcularAndDivision(_this, matrixStack, transformType, renderType, light, overlay, true);
 
         // 关闭模板缓冲
-        RenderSystem.stencilFunc(GL11.GL_ALWAYS, 0, 0xFF);
+        ClientRenderHelper.GL._stencilFunc(GL11.GL_ALWAYS, 0, 0xFF);
         ClientRenderHelper.disableItemEntityStencilTest();
 
         // 渲染其他部分
@@ -140,13 +138,12 @@ public class _AttachmentModelRender {
         ClientRenderHelper.enableItemEntityStencilTest();
 
         // 清空模板缓冲区、准备绘制模板缓冲
-        RenderSystem.clearStencil(0);
         _AttachmentModelRender._clearStencilBuffer();
 
         // 渲染目镜外环
         if (_this.ocularRingPath != null) {
-            RenderSystem.stencilFunc(GL11.GL_ALWAYS, 0, 0xFF);
-            RenderSystem.stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
+            ClientRenderHelper.GL._stencilFunc(GL11.GL_ALWAYS, 0, 0xFF);
+            ClientRenderHelper.GL._stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
             renderModelPart(_this, matrixStack, transformType, renderType, light, overlay, _this.ocularRingPath);
         }
 
@@ -155,7 +152,7 @@ public class _AttachmentModelRender {
 
         // 渲染镜身
         if (_this.scopeBodyPath != null) {
-            RenderSystem.stencilFunc(GL11.GL_EQUAL, 0, 0xFF);
+            ClientRenderHelper.GL._stencilFunc(GL11.GL_EQUAL, 0, 0xFF);
             renderModelPart(_this, matrixStack, transformType, renderType, light, overlay, _this.scopeBodyPath);
         }
 
@@ -163,7 +160,7 @@ public class _AttachmentModelRender {
         renderOcularAndDivision(_this, matrixStack, transformType, renderType, light, overlay, false);
 
         // 关闭模板缓冲
-        RenderSystem.stencilFunc(GL11.GL_ALWAYS, 0, 0xFF);
+        ClientRenderHelper.GL._stencilFunc(GL11.GL_ALWAYS, 0, 0xFF);
         ClientRenderHelper.disableItemEntityStencilTest();
 
         // 渲染其他部分
@@ -182,7 +179,6 @@ public class _AttachmentModelRender {
         ClientRenderHelper.enableItemEntityStencilTest();
 
         // 清空模板缓冲区、准备绘制模板缓冲
-        RenderSystem.clearStencil(0);
         _AttachmentModelRender._clearStencilBuffer();
 
         // 渲染目镜以写入模板桓冲值
@@ -192,7 +188,7 @@ public class _AttachmentModelRender {
         renderDivisionOnly(_this, matrixStack, transformType, renderType, light, overlay);
 
         // 关闭模板缓冲
-        RenderSystem.stencilFunc(GL11.GL_ALWAYS, 0, 0xFF);
+        ClientRenderHelper.GL._stencilFunc(GL11.GL_ALWAYS, 0, 0xFF);
         ClientRenderHelper.disableItemEntityStencilTest();
 
         // 渲染其他部分
@@ -245,10 +241,10 @@ public class _AttachmentModelRender {
                                             boolean enableScope) {
         if (_this.ocularRingPath.isEmpty()) return;
 
-        RenderSystem.colorMask(false, false, false, false);
-        RenderSystem.depthMask(false);
-        RenderSystem.stencilMask(0xFF);
-        RenderSystem.stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_REPLACE);
+        ClientRenderHelper.GL._colorMask(false, false, false, false);
+        ClientRenderHelper.GL._depthMask(false);
+        ClientRenderHelper.GL._stencilMask(0xFF);
+        ClientRenderHelper.GL._stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_REPLACE);
 
         // 绘制目镜
         for (int i = _this.divisionOcularEntries.size() - 1; i >= 0; i--) {
@@ -257,15 +253,15 @@ public class _AttachmentModelRender {
             if (ocularNodePath == null) continue; // 倒序，所以不break
 
             if (enableScope == entry.getEnableScope()) {
-                RenderSystem.stencilFunc(GL11.GL_GREATER, i + 1, 0xFF);
+                ClientRenderHelper.GL._stencilFunc(GL11.GL_GREATER, i + 1, 0xFF);
                 renderModelPart(_this, matrixStack, transformType, renderType, light, overlay, ocularNodePath);
             }
         }
 
         // 恢复渲染状态
-        RenderSystem.stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
-        RenderSystem.depthMask(true);
-        RenderSystem.colorMask(true, true, true, true);
+        ClientRenderHelper.GL._stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
+        ClientRenderHelper.GL._depthMask(true);
+        ClientRenderHelper.GL._colorMask(true, true, true, true);
     }
 
     private static void renderOcularAndDivision(AttachmentModelObject _this,
@@ -280,9 +276,9 @@ public class _AttachmentModelRender {
         BufferBuilder builder;
 
         // 准备渲染圆形模板层
-        RenderSystem.stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_INVERT);
-        RenderSystem.colorMask(false, false, false, false);
-        RenderSystem.depthMask(false);
+        ClientRenderHelper.GL._stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_INVERT);
+        ClientRenderHelper.GL._colorMask(false, false, false, false);
+        ClientRenderHelper.GL._depthMask(false);
         float rad = 80 * _this.getScopeViewRadiusModifier(); // 80是一个随便找的大小合适的数值
         LocalPlayer player = Minecraft.getInstance().player;
         if (player != null) {
@@ -300,7 +296,7 @@ public class _AttachmentModelRender {
                 continue;
             }
 
-            RenderSystem.stencilFunc(GL11.GL_EQUAL, i + 1, 0xFF);
+            ClientRenderHelper.GL._stencilFunc(GL11.GL_EQUAL, i + 1, 0xFF);
             Vector3f ocularCenter = getBedrockPartCenter(matrixStack, ocularNodePath);
             float centerX = ocularCenter.x() * 16 * 90;
             float centerY = ocularCenter.y() * 16 * 90;
@@ -317,9 +313,9 @@ public class _AttachmentModelRender {
             BufferUploader.drawWithShader(builder.buildOrThrow());
         }
 
-        RenderSystem.depthMask(true);
-        RenderSystem.colorMask(true, true, true, true);
-        RenderSystem.stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
+        ClientRenderHelper.GL._depthMask(true);
+        ClientRenderHelper.GL._colorMask(true, true, true, true);
+        ClientRenderHelper.GL._stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
 
         // 遍历 divisionOcularEntries
         for (int i = 0; i < _this.divisionOcularEntries.size(); i++) {
@@ -332,15 +328,15 @@ public class _AttachmentModelRender {
                 throw new IllegalArgumentException("Index of oculus is out of range for 127");
             }
             if (selective && !entry.getEnableScope()) {
-                RenderSystem.stencilFunc(GL11.GL_EQUAL, i + 1, 0xFF);
+                ClientRenderHelper.GL._stencilFunc(GL11.GL_EQUAL, i + 1, 0xFF);
                 renderModelPart(_this, matrixStack, transformType, renderType, light, overlay, divisionNodePath);
             } else {
                 // 渲染目镜黑色遮罩
-                RenderSystem.stencilFunc(GL11.GL_EQUAL, i + 1, 0xFF);
+                ClientRenderHelper.GL._stencilFunc(GL11.GL_EQUAL, i + 1, 0xFF);
                 renderModelPart(_this, matrixStack, transformType, renderType, light, overlay, ocularNodePath);
                 // 渲染准心 (划分?)
                 int b = ~(i+1) & 0xFF;
-                RenderSystem.stencilFunc(GL11.GL_EQUAL, b, 0xFF);
+                ClientRenderHelper.GL._stencilFunc(GL11.GL_EQUAL, b, 0xFF);
                 renderModelPart(_this, matrixStack, transformType, renderType, light, overlay, divisionNodePath);
             }
         }
@@ -352,16 +348,16 @@ public class _AttachmentModelRender {
                                            int light, int overlay) {
         if (_this.divisionOcularEntries.isEmpty() || _this.divisionOcularEntries.get(0).getDivisionNodePath() == null) return;
 
-        RenderSystem.disableDepthTest();
+        ClientRenderHelper.GL._disableDepthTest();
         for (int i = 0; i < _this.divisionOcularEntries.size(); i++) {
             AttachmentModelObject._Division_Ocular_Entry entry = _this.divisionOcularEntries.get(i);
             @Nullable List<BedrockPart> divisionNodePath = entry.getDivisionNodePath();
             if (divisionNodePath == null) break; // 正序遍历，所以直接结束
 
-            RenderSystem.stencilFunc(GL11.GL_EQUAL, i + 1, 0xFF);
+            ClientRenderHelper.GL._stencilFunc(GL11.GL_EQUAL, i + 1, 0xFF);
             renderModelPart(_this, matrixStack, transformType, renderType, light, overlay, divisionNodePath);
         }
-        RenderSystem.enableDepthTest();
+        ClientRenderHelper.GL._enableDepthTest();
     }
 
     private static Vector3f getBedrockPartCenter(PoseStack poseStack, @NotNull List<BedrockPart> path) {
@@ -379,13 +375,7 @@ public class _AttachmentModelRender {
     }
     
     private static void _clearStencilBuffer() {
-        // 1.20.1-1.21.1
-//      RenderSystem.clear(GL11.GL_STENCIL_BUFFER_BIT, Minecraft.ON_OSX);
-
-        // 1.21.4
-        RenderSystem.clear(GL11.GL_STENCIL_BUFFER_BIT);
-
-        // 1.21.6
-
+        ClientRenderHelper.GL.glClearStencil(0);
+        ClientRenderHelper.GL._clear(GL11.GL_STENCIL_BUFFER_BIT);
     }
 }

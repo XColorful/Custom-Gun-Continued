@@ -96,7 +96,7 @@ public class _AttachmentModelRender {
 
         // 清空模板缓冲区、准备绘制模板缓冲
         RenderSystem.clearStencil(0);
-        ClientRenderHelper.clearStencilBuffer();
+        _AttachmentModelRender._clearStencilBuffer();
         if (_this.ocularRingPath != null) {
             RenderSystem.stencilFunc(GL11.GL_ALWAYS, 0, 0xFF);
             RenderSystem.stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
@@ -141,7 +141,7 @@ public class _AttachmentModelRender {
 
         // 清空模板缓冲区、准备绘制模板缓冲
         RenderSystem.clearStencil(0);
-        ClientRenderHelper.clearStencilBuffer();
+        _AttachmentModelRender._clearStencilBuffer();
 
         // 渲染目镜外环
         if (_this.ocularRingPath != null) {
@@ -183,7 +183,7 @@ public class _AttachmentModelRender {
 
         // 清空模板缓冲区、准备绘制模板缓冲
         RenderSystem.clearStencil(0);
-        ClientRenderHelper.clearStencilBuffer();
+        _AttachmentModelRender._clearStencilBuffer();
 
         // 渲染目镜以写入模板桓冲值
         renderOcularStencil(_this, matrixStack, transformType, renderType, light, overlay, false);
@@ -379,5 +379,16 @@ public class _AttachmentModelRender {
         }
         poseStack.popPose();
         return result;
+    }
+    
+    private static void _clearStencilBuffer() {
+        // 1.20.1-1.21.1
+        RenderSystem.clear(GL11.GL_STENCIL_BUFFER_BIT, Minecraft.ON_OSX);
+
+        // 1.21.4
+//      RenderSystem.clear(GL11.GL_STENCIL_BUFFER_BIT);
+
+        // 1.21.6
+
     }
 }

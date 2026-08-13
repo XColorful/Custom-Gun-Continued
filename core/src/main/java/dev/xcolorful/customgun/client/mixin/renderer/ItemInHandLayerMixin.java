@@ -54,11 +54,11 @@ public class ItemInHandLayerMixin<S extends ArmedEntityRenderState, M extends En
                                            int packedLight,
                                            CallbackInfo ci) {
         LocalPlayer player = Minecraft.getInstance().player;
-//        if (livingEntity.equals(player)) {
-//            MuzzleFlashRender.State.isSelf = true;
-//            ShellRender.State.isSelf = true;
-//        }
-        if (IGunGetter.fromItemStack(itemStack) != null && arm == HumanoidArm.LEFT) {
+        if (livingEntity != null && livingEntity.equals(player)) {
+            MuzzleFlashRender.State.isSelf = true;
+            ShellRender.State.isSelf = true;
+        }
+        if (IGunGetter.fromMainHand(livingEntity) != null && arm == HumanoidArm.LEFT) {
             ci.cancel();
         }
     }

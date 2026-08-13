@@ -36,7 +36,7 @@ public class ForgeRenderHandEvent extends ForgeEvent implements IRenderHandEvent
     }
 
     @Override public @Nullable MultiBufferSource getMultiBufferSource() {
-        return null;
+        return renderHandEvent.getMultiBufferSource();
     }
     @Override public @Nullable Object getSubmitNodeCollector() {
         return null;

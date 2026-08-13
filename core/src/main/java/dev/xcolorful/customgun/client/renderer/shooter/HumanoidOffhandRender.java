@@ -39,12 +39,13 @@ public class HumanoidOffhandRender {
                    MultiBufferSource buffer,
                    int lightCoords,
                    LivingEntity entity) {
-        renderOffhandGun(matrixStack, buffer, lightCoords, entity);
-        renderHotbarGun(matrixStack, buffer, lightCoords, entity);
+        renderOffhandGun(renderState, matrixStack, buffer, lightCoords, entity);
+        renderHotbarGun(renderState, matrixStack, buffer, lightCoords, entity);
     }
 
     private static
-    void renderOffhandGun( // S renderState,
+    <S extends ArmedEntityRenderState>
+    void renderOffhandGun(S renderState,
                           PoseStack matrixStack,
                           MultiBufferSource buffer,
                           int lightCoords,
@@ -60,11 +61,12 @@ public class HumanoidOffhandRender {
 
         GunDisplay gunDisplay = gunDisplayInstance.getPojo();
         _SurroundDisplay surroundDisplay = gunDisplay.getSurroundDisplayByOffhand();
-        _renderGunItem(matrixStack, buffer, lightCoords, entity, gunItem, surroundDisplay);
+        _renderGunItem(renderState, matrixStack, buffer, lightCoords, entity, gunItem, surroundDisplay);
     }
 
     private static
-    void renderHotbarGun( // S renderState,
+    <S extends ArmedEntityRenderState>
+    void renderHotbarGun(S renderState,
                          PoseStack matrixStack,
                          MultiBufferSource buffer,
                          int lightCoords,
@@ -91,7 +93,7 @@ public class HumanoidOffhandRender {
             if (!surroundDisplayList.containsKey(i)) continue;
 
             _SurroundDisplay surroundDisplay = surroundDisplayList.get(i);
-            _renderGunItem(matrixStack, buffer, lightCoords, entity, gunItem, surroundDisplay);
+            _renderGunItem(renderState, matrixStack, buffer, lightCoords, entity, gunItem, surroundDisplay);
         }
     }
 

@@ -114,7 +114,7 @@ public class _GunModelRender {
             _this.super_render(matrixStack, transformType, renderType, light, overlay);
             ClientRenderHelper.disableItemEntityStencilTest();
             RenderSystem.clearStencil(0);
-            ClientRenderHelper.clearStencilBuffer();
+            _GunModelRender._clearStencilBuffer();
         }
     }
 
@@ -157,5 +157,16 @@ public class _GunModelRender {
             ClientRenderHelper.enableItemEntityStencilTest();
             RenderSystem.stencilFunc(GL11.GL_EQUAL, 0, 0xFF);
         }
+    }
+
+    private static void _clearStencilBuffer() {
+        // 1.20.1-1.21.1
+        RenderSystem.clear(GL11.GL_STENCIL_BUFFER_BIT, Minecraft.ON_OSX);
+
+        // 1.21.4
+//      RenderSystem.clear(GL11.GL_STENCIL_BUFFER_BIT);
+
+        // 1.21.6
+
     }
 }

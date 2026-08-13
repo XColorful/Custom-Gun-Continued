@@ -71,7 +71,7 @@ public class GunProjectileRenderer extends EntityRenderer<GunProjectile, GunProj
     public void extractRenderState(@NotNull GunProjectile gunProjectile,
                                    @NotNull GunProjectileRenderer.State state,
                                    float partialTicks) {
-//        super.extractRenderState(gunProjectile, state, partialTicks);
+        super.extractRenderState(gunProjectile, state, partialTicks);
         state.gunProjectile = gunProjectile;
     }
 

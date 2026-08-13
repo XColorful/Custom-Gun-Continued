@@ -103,7 +103,7 @@ public class FirstPersonRender implements IEventHandler {
         OculusCompat.endBatch(mc.renderBuffers().bufferSource());
 
         renderer.renderFirstPerson(event.getPoseStack(),
-                event.getMultiBufferSource_SubmitNodeCollector(),
+                event,
                 transformType,
                 event.getPackedLight(),
                 event.getPartialTick(),

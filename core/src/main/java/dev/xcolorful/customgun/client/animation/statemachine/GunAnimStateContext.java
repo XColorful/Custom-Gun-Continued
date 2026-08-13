@@ -88,7 +88,7 @@ public class GunAnimStateContext extends ItemAnimStateContext {
      * @return 射击间隔
      */
     @Deprecated public long getShootInterval() {
-        Entity entity = Minecraft.getInstance().cameraEntity;
+        Entity entity = Minecraft.getInstance().getCameraEntity();
         if (!(entity instanceof LivingEntity livingEntity)) return 0;
 
         FireModeType fireModeType = iGun.getFireModeType(this.currentGunItem);

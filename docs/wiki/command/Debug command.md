@@ -1,7 +1,7 @@
 [English](#English)
 
 # 调试指令
-> wiki 版本：`0.0.1`.1
+> wiki 版本：`0.0.4`.2
 
 ## 服务端指令
 
@@ -44,8 +44,14 @@
 测试指定声音文件是否可被资源管理器加载
 - `rl`（字符串）：声音文件的ResourceLocation
 
+### 测试客户端Mixin
+> _/customgun debug clientMixinTest [target]_
+
+验证客户端Mixin是否正确应用
+- `target`（字面量）：测试目标，可选值为`IAnimateGeoItem`
+
 # English
-> wiki verison: `0.0.1`.1
+> wiki verison: `0.0.4`.2
 
 ## Server command
 
@@ -87,3 +93,9 @@ Verify that Mixin is correctly applied
 
 Test whether the specified sound file can be loaded by the resource manager
 - `rl` (string): ResourceLocation of the sound file
+
+### Test client Mixin
+> _/customgun debug clientMixinTest [target]_
+
+Verify that client Mixin is correctly applied
+- `target` (literal): Test target, options are `IAnimateGeoItem`

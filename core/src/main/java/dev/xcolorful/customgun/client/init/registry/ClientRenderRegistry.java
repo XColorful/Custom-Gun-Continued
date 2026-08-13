@@ -7,6 +7,7 @@
 
 package dev.xcolorful.customgun.client.init.registry;
 
+import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
@@ -15,7 +16,10 @@ import dev.xcolorful.customgun.client.api.minecraft.texture.CustomTexture;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.function.Consumer;
 
 public class ClientRenderRegistry {
 
@@ -77,5 +81,13 @@ public class ClientRenderRegistry {
         public static RenderType getLaserBeamEntity() {
             return LASER_BEAM_ENTITY;
         }
+    }
+
+    @ApiStatus.AvailableSince("1.21.6")
+    public static void onRegisterRenderPipelines(Consumer<RenderPipeline> registrar) {
+//        registrar.accept(LaserBeamRenderState.LASER_BEAM_PIPELINE);
+//        registrar.accept(LaserBeamRenderState.LASER_BEAM_ENTITY_PIPELINE);
+
+        // TODO IrisShaders register
     }
 }

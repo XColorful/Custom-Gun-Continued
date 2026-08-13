@@ -96,4 +96,45 @@ public class ClientRenderHelper {
 
         // RenderSystem.setShaderTexture(0, oldId);
     }
+
+    public static class GL {
+
+        public static void _stencilFunc(int func, int ref, int readMask) {
+            RenderSystem.stencilFunc(func, ref, readMask);
+        }
+        public static void _stencilOp(int stencilFail, int depthFail, int pass) {
+            RenderSystem.stencilOp(stencilFail, depthFail, pass);
+        }
+
+        public static void _colorMask(boolean red, boolean green, boolean blue, boolean alpha) {
+            RenderSystem.colorMask(red, green, blue, alpha);
+        }
+        public static void _depthMask(boolean flag) {
+            RenderSystem.depthMask(flag);
+        }
+        public static void _stencilMask(int mask) {
+            RenderSystem.stencilMask(mask);
+        }
+
+        public static void _clear(int mask) {
+            // 1.20.1-1.21.1
+            RenderSystem.clear(mask, Minecraft.ON_OSX);
+
+            // 1.21.4
+//          RenderSystem.clear(GL11.GL_STENCIL_BUFFER_BIT);
+
+            // 1.21.6
+//          GlStateManager._clear(mask);
+        }
+        public static void glClearStencil(int s) {
+            RenderSystem.clearStencil(s);
+        }
+
+        public static void _disableDepthTest() {
+            RenderSystem.disableDepthTest();
+        }
+        public static void _enableDepthTest() {
+            RenderSystem.enableDepthTest();
+        }
+    }
 }

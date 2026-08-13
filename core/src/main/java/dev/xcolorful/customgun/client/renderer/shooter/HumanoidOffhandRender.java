@@ -34,18 +34,23 @@ import org.joml.Quaternionf;
 
 public class HumanoidOffhandRender {
 
-    public static <S extends ArmedEntityRenderState> void renderGun(S renderState,
-                                                                    PoseStack matrixStack,
-                                                                    SubmitNodeCollector submitNodeCollector,
-                                                                    int lightCoords) {
+    public static
+    <S extends ArmedEntityRenderState>
+    void renderGun(S renderState,
+                   PoseStack matrixStack,
+                   MultiBufferSource buffer,
+                   int lightCoords,
+                   LivingEntity entity) {
         renderOffhandGun(matrixStack, buffer, lightCoords, entity);
         renderHotbarGun(matrixStack, buffer, lightCoords, entity);
     }
 
-    private static void renderOffhandGun(PoseStack matrixStack,
-                                         MultiBufferSource buffer,
-                                         int lightCoords,
-                                         LivingEntity entity) {
+    private static
+    void renderOffhandGun( // S renderState,
+                          PoseStack matrixStack,
+                          MultiBufferSource buffer,
+                          int lightCoords,
+                          LivingEntity entity) {
         ItemStack gunItem = entity.getOffhandItem();
         if (gunItem.isEmpty()) return;
 
@@ -60,10 +65,12 @@ public class HumanoidOffhandRender {
         _renderGunItem(matrixStack, buffer, lightCoords, entity, gunItem, surroundDisplay);
     }
 
-    private static void renderHotbarGun(PoseStack matrixStack,
-                                        MultiBufferSource buffer,
-                                        int lightCoords,
-                                        LivingEntity entity) {
+    private static
+    void renderHotbarGun( // S renderState,
+                         PoseStack matrixStack,
+                         MultiBufferSource buffer,
+                         int lightCoords,
+                         LivingEntity entity) {
         if (!(entity instanceof Player player)) return;
 
         Inventory inventory = player.getInventory();
@@ -90,12 +97,15 @@ public class HumanoidOffhandRender {
         }
     }
 
-    private static void _renderGunItem(PoseStack matrixStack,
-                                       MultiBufferSource buffer,
-                                       int lightCoords,
-                                       LivingEntity entity,
-                                       ItemStack gunItem,
-                                       _SurroundDisplay surroundDisplay) {
+    private static
+    <S extends ArmedEntityRenderState>
+    void _renderGunItem(S renderState,
+                        PoseStack matrixStack,
+                        MultiBufferSource buffer,
+                        int lightCoords,
+                        LivingEntity entity,
+                        ItemStack gunItem,
+                        _SurroundDisplay surroundDisplay) {
         float[] pos = surroundDisplay.getPos();
         float[] rotate = surroundDisplay.getRotate();
         float[] scale = surroundDisplay.getScale();

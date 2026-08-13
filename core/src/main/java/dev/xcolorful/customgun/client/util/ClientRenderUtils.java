@@ -30,14 +30,16 @@ public class ClientRenderUtils {
     public static float getRenderFrameTime() {
         // 1.20.1-1.20.4
         return Minecraft.getInstance().getFrameTime();
+
         // 1.21.1
-//        return Minecraft.getInstance()
-//                .getTimer()
-//                .getGameTimeDeltaPartialTick(false);
+//      return Minecraft.getInstance()
+//              .getTimer()
+//              .getGameTimeDeltaPartialTick(false);
+
         // 1.21.4
-//        return Minecraft.getInstance()
-//                .getDeltaTracker()
-//                .getGameTimeDeltaPartialTick(false);
+//      return Minecraft.getInstance()
+//              .getDeltaTracker()
+//              .getGameTimeDeltaPartialTick(false);
     }
 
     /**

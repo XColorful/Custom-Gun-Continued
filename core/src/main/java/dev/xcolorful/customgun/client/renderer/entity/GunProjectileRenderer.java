@@ -59,18 +59,36 @@ public class GunProjectileRenderer extends EntityRenderer<GunProjectile> {
 
     // --------EntityRenderer--------
 
+    @ApiStatus.AvailableSince("1.21.4")
+//    @Override
+    public @NotNull GunProjectileRenderer.State createRenderState() {
+        return new GunProjectileRenderer.State();
+    }
+
+    @ApiStatus.AvailableSince("1.21.4")
+//    @Override
+    public void extractRenderState(@NotNull GunProjectile gunProjectile,
+                                   @NotNull GunProjectileRenderer.State state,
+                                   float partialTicks) {
+//        super.extractRenderState(gunProjectile, state, partialTicks);
+        state.gunProjectile = gunProjectile;
+    }
+
     @Override
-    public void render(@NotNull GunProjectile gunProjectile,
+    public void render( // @NotNull GunProjectileRenderer.State renderState,
+                       @NotNull GunProjectile gunProjectile,
                        float entityYaw, float partialTicks,
                        @NotNull PoseStack poseStack,
                        @NotNull MultiBufferSource buffer,
                        int packedLight) {
+        float entityPitch = Mth.lerp(partialTicks, gunProjectile.xRotO, gunProjectile.getXRot());
+
         IClientGunProjectile iClientGunProjectile = IClientGunProjectileGetter.fromGunProjectile(gunProjectile);
         @Nullable GunDisplayInstance gunDisplayInstance = iClientGunProjectile.cgc$getClientGunDisplayInstanceCache();
         if (gunDisplayInstance == null) return;
 
         // 渲染子弹模型
-        this._renderAmmoObject(poseStack, buffer, entityYaw, partialTicks, packedLight, gunProjectile);
+        this._renderAmmoObject(poseStack, buffer, entityYaw, entityPitch, partialTicks, packedLight, gunProjectile);
 
         // 渲染曳光弹
         if (gunProjectile.getIsTracer(gunProjectile)) {
@@ -91,12 +109,12 @@ public class GunProjectileRenderer extends EntityRenderer<GunProjectile> {
                 }
             }
 
-            this._renderTracer(poseStack, buffer, entityYaw, partialTicks, packedLight, iClientGunProjectile, gunProjectile, tracerColor);
+            this._renderTracer(poseStack, buffer, entityYaw, entityPitch, partialTicks, packedLight, iClientGunProjectile, gunProjectile, tracerColor);
         }
     }
     private void _renderAmmoObject(@NotNull PoseStack poseStack,
                                    @NotNull MultiBufferSource buffer,
-                                   float entityYaw, float partialTicks,
+                                   float entityYaw, float entityPitch, float partialTicks,
                                    int packedLight,
                                    @NotNull GunProjectile gunProjectile) {
         var ammoLocation = gunProjectile.getAmmoLocation(gunProjectile);
@@ -113,19 +131,23 @@ public class GunProjectileRenderer extends EntityRenderer<GunProjectile> {
         @Nullable var textureLocation = ammoEntityDisplay.getTextureLocation();
         if (textureLocation == null) textureLocation = ClientRenderUtils.getMissingTextureLocation();
 
-        poseStack.mulPose(Axis.YP.rotationDegrees(Mth.lerp(partialTicks, gunProjectile.yRotO, gunProjectile.getYRot()) - 180.0F));
-        poseStack.mulPose(Axis.XP.rotationDegrees(Mth.lerp(partialTicks, gunProjectile.xRotO, gunProjectile.getXRot())));
+        poseStack.mulPose(Axis.YP.rotationDegrees(entityYaw - 180.0F));
+        poseStack.mulPose(Axis.XP.rotationDegrees(entityPitch));
 
         poseStack.pushPose(); {
             poseStack.translate(0, 1.5, 0);
             poseStack.scale(-1, -1, 1);
-            ammoEntityModelObject.render(poseStack, ItemDisplayContext.GROUND, RenderType.entityTranslucentCull(textureLocation), packedLight, OverlayTexture.NO_OVERLAY);
+            ammoEntityModelObject.render(poseStack,
+                    ItemDisplayContext.GROUND,
+                    RenderType.entityTranslucentCull(textureLocation),
+                    packedLight,
+                    OverlayTexture.NO_OVERLAY);
         }
         poseStack.popPose();
     }
     private void _renderTracer(@NotNull PoseStack poseStack,
                                @NotNull MultiBufferSource buffer,
-                               float entityYaw, float partialTicks,
+                               float entityYaw, float entityPitch, float partialTicks,
                                int packedLight,
                                IClientGunProjectile iClientGunProjectile, @NotNull GunProjectile gunProjectile,
                                float @NotNull [] tracerColor) {
@@ -177,8 +199,8 @@ public class GunProjectileRenderer extends EntityRenderer<GunProjectile> {
             // 所以这里直接乘也没关系
             scale *= iClientGunProjectile.cgc$getTracerScaleModifier(gunProjectile);
             scale *= (float) Math.max(1.0, disToEye / 3.5);
-            poseStack.mulPose(Axis.YP.rotationDegrees(Mth.lerp(partialTicks, gunProjectile.yRotO, gunProjectile.getYRot()) - 180.0F));
-            poseStack.mulPose(Axis.XP.rotationDegrees(Mth.lerp(partialTicks, gunProjectile.xRotO, gunProjectile.getXRot())));
+            poseStack.mulPose(Axis.YP.rotationDegrees(entityYaw - 180.0F));
+            poseStack.mulPose(Axis.XP.rotationDegrees(entityPitch));
             poseStack.translate(0, isFirstPerson ? 0 : -0.2, trailLength / 2.0);
             poseStack.scale(scale, scale, (float) trailLength);
 
@@ -192,5 +214,13 @@ public class GunProjectileRenderer extends EntityRenderer<GunProjectile> {
     @Override
     public @NotNull ResourceLocation getTextureLocation(@NotNull GunProjectile gunProjectile) {
         return CustomTexture.GUN_PROJECTILE.getLocation();
+    }
+
+    @ApiStatus.AvailableSince("1.21.4")
+    public static class State {
+        private GunProjectile gunProjectile;
+
+        public State() {
+        }
     }
 }

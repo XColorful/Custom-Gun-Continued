@@ -7,44 +7,13 @@
 
 package dev.xcolorful.customgun.forge.item.gun;
 
-import dev.xcolorful.customgun.client.renderer.item.GunItemRenderer;
 import dev.xcolorful.customgun.core.item.gun.GunItem;
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 
-import java.util.function.Consumer;
-
+/**
+ * 由于已经不需要注入BEWLR，为了{@link IClientItemExtensions}而使用的注册黑魔法已经不需要了
+ * <br>
+ * 但还是保留这个实现，以便浏览演变历史，以及以后可能需要重载平台接口
+ */
 public class ForgeGunItem extends GunItem {
-
-    @OnlyIn(Dist.CLIENT)
-    @Override
-    public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-        registerClientExtension(consumer);
-    }
-
-    /**
-     * 预留给扩展模组用:
-     * <ul>
-     *     <li>扩展模组core模块只能继承{@link GunItem}而不是{@link ForgeGunItem} (除非不想做平台抽象层)</li>
-     *     <li>因而留一个static接口</li>
-     * </ul>
-     * 比如注册<code>MyGunItem extends GunItem</code>并重载final getter/setter来锁定子Manager
-     */
-    @OnlyIn(Dist.CLIENT)
-    public static void registerClientExtension(Consumer<IClientItemExtensions> consumer) {
-        consumer.accept(new IClientItemExtensions() {
-            GunItemRenderer gunItemRenderer;
-
-            @Override
-            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
-                if (this.gunItemRenderer == null) {
-                    this.gunItemRenderer = new GunItemRenderer();
-                }
-
-                return this.gunItemRenderer;
-            }
-        });
-    }
 }

@@ -16,7 +16,7 @@ import dev.xcolorful.customgun.client.api.minecraft.texture.CustomTexture;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
@@ -26,7 +26,7 @@ public class ClientRenderRegistry {
 
     public static class LaserBeamRenderState extends RenderStateShard {
 
-        public static final @NotNull ResourceLocation LASER_BEAM_TEXTURE = CustomTexture.WHITE_8x8.getLocation();
+        public static final @NotNull Identifier LASER_BEAM_TEXTURE = CustomTexture.WHITE_8x8.getLocation();
 
         public LaserBeamRenderState(String pName, Runnable pSetupState, Runnable pClearState) {
             super(pName, pSetupState, pClearState);

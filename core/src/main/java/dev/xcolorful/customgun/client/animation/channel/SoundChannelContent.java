@@ -7,14 +7,14 @@
 
 package dev.xcolorful.customgun.client.animation.channel;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.Arrays;
 
 public class SoundChannelContent {
 
     public double[] keyframeTimeS;
-    public ResourceLocation[] keyframeSoundName;
+    public Identifier[] keyframeSoundName;
 
     public SoundChannelContent() {
     }

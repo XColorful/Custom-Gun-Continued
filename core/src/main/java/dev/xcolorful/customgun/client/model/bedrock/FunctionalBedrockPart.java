@@ -10,7 +10,7 @@ package dev.xcolorful.customgun.client.model.bedrock;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import dev.xcolorful.customgun.client.api.renderer.model.IModelComponentRenderer;
-import net.minecraft.client.renderer.LightTexture;
+import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import net.minecraft.world.item.ItemDisplayContext;
 import org.jetbrains.annotations.NotNull;
 
@@ -58,7 +58,7 @@ public class FunctionalBedrockPart extends BedrockPart {
                        VertexConsumer consumer,
                        int light, int overlay,
                        float red, float green, float blue, float alpha) {
-        int cubePackedLight = this.illuminated ? LightTexture.pack(15, 15)
+        int cubePackedLight = this.illuminated ? ClientRenderUtils.LightTexture_.pack(15, 15)
                 : light;
 
         poseStack.pushPose(); {

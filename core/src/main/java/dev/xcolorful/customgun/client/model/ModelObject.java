@@ -13,6 +13,7 @@ import dev.xcolorful.customgun.client.api.model.IModelObjectRender;
 import dev.xcolorful.customgun.client.api.model.bedrock.IBedrockRenderer;
 import dev.xcolorful.customgun.client.api.renderer.model.IModelComponentRenderer;
 import dev.xcolorful.customgun.client.compat.oculus.OculusCompat;
+import dev.xcolorful.customgun.client.util.ClientRenderHelper;
 import dev.xcolorful.customgun.core.api.resource.assets.model.bedrock.geometry.NodeName;
 import dev.xcolorful.customgun.client.model.bedrock.BedrockPart;
 import dev.xcolorful.customgun.client.resource.assets.model.BedrockModel;
@@ -193,36 +194,39 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
                        RenderType renderType,
                        int light, int overlay,
                        float red, float green, float blue, float alpha) {
-        Minecraft mc = Minecraft.getInstance();
+        @Nullable Object collector = ClientRenderHelper.FirstPersonArmHelper.getFirstPersonArmCollector();
+        if (collector == null) return;
 
+        Minecraft mc = Minecraft.getInstance();
         MultiBufferSource.BufferSource bufferSource = mc.renderBuffers().bufferSource();
         VertexConsumer builder = bufferSource.getBuffer(renderType);
 
-
-        matrixStack.pushPose(); {
-            for (int i = 0; i < this.shouldRender.size(); i++) {
-                this.shouldRender.get(i)
-                        .render(matrixStack,
-                                transformType,
-                                builder,
-                                light, overlay,
-                                red, green, blue, alpha);
+        {
+            matrixStack.pushPose(); {
+                for (int i = 0; i < this.shouldRender.size(); i++) {
+                    this.shouldRender.get(i)
+                            .render(matrixStack,
+                                    transformType,
+                                    builder,
+                                    light, overlay,
+                                    red, green, blue, alpha);
+                }
             }
-        }
-        matrixStack.popPose();
+            matrixStack.popPose();
 
-        if (!OculusCompat.endBatch(bufferSource)) {
-            bufferSource.endBatch();
-        }
+            if (!OculusCompat.endBatch(bufferSource)) {
+                bufferSource.endBatch();
+            }
 
-        for (int i = 0; i < this.delegateRenderers.size(); i++) {
-            IModelComponentRenderer renderer = delegateRenderers.get(i);
-            renderer.render(matrixStack,
-                    builder,
-                    transformType,
-                    light, overlay);
+            for (int i = 0; i < this.delegateRenderers.size(); i++) {
+                IModelComponentRenderer renderer = delegateRenderers.get(i);
+                renderer.render(matrixStack,
+                        builder,
+                        transformType,
+                        light, overlay);
+            }
+            this.delegateRenderers = new ArrayList<>();
         }
-        this.delegateRenderers = new ArrayList<>();
     }
 
     // --------Deprecated--------

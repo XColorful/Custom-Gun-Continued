@@ -209,26 +209,31 @@ public class _AttachmentModelRender {
                                         @Nullable List<BedrockPart> path) {
         if (path == null) return;
 
+        @Nullable Object collector = ClientRenderHelper.FirstPersonArmHelper.getFirstPersonArmCollector();
+        if (collector == null) return;
+
         poseStack.pushPose(); {
             for (int i = 0; i < path.size(); i++) {
                 path.get(i).translate_rotate_scale(poseStack);
             }
             BedrockPart part = path.get(path.size() - 1);
-            part.visible = true; {
-                Minecraft mc = Minecraft.getInstance();
+            {
+                part.visible = true; {
+                    Minecraft mc = Minecraft.getInstance();
 
-                MultiBufferSource.BufferSource bufferSource = mc.renderBuffers().bufferSource();
-                VertexConsumer vertexConsumer = bufferSource.getBuffer(renderType);
-                part.render(poseStack,
-                        transformType,
-                        vertexConsumer,
-                        light, overlay);
+                    MultiBufferSource.BufferSource bufferSource = mc.renderBuffers().bufferSource();
+                    VertexConsumer vertexConsumer = bufferSource.getBuffer(renderType);
+                    part.render(poseStack,
+                            transformType,
+                            vertexConsumer,
+                            light, overlay);
 
-                if (!OculusCompat.endBatch(bufferSource)) {
-                    bufferSource.endBatch();
+                    if (!OculusCompat.endBatch(bufferSource)) {
+                        bufferSource.endBatch();
+                    }
                 }
+                part.visible = false;
             }
-            part.visible = false;
         }
         poseStack.popPose();
     }
@@ -272,6 +277,9 @@ public class _AttachmentModelRender {
                                                 boolean selective) {
         if (_this.divisionOcularEntries.isEmpty() || _this.divisionOcularEntries.get(0).getOcularNodePath() == null) return;
 
+        @Nullable Object collector = ClientRenderHelper.FirstPersonArmHelper.getFirstPersonArmCollector();
+        if (collector == null) return;
+
         Tesselator tesselator = Tesselator.getInstance();
         BufferBuilder builder;
         builder = tesselator.getBuilder();
@@ -286,6 +294,7 @@ public class _AttachmentModelRender {
             float partialTick = ClientRenderUtils.getRenderFrameTime();
             rad *= ILocalShooterGetter.fromLocalPlayer(player).cgc$getRenderAimingProgress(partialTick);
         }
+        final float finalRad = rad;
 
         // 遍历 divisionOcularEntries
         for (int i = 0; i < _this.divisionOcularEntries.size(); i++) {
@@ -301,19 +310,22 @@ public class _AttachmentModelRender {
             Vector3f ocularCenter = getBedrockPartCenter(matrixStack, ocularNodePath);
             float centerX = ocularCenter.x() * 16 * 90;
             float centerY = ocularCenter.y() * 16 * 90;
-            builder.begin(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR);
-            builder.vertex(centerX, centerY, -90.0f)
-                    .color(255, 255, 255, 255)
-                    .endVertex();
-            for (int j = 0; j <= 90; j++) {
-                float angle = (float) j * ((float) Math.PI * 2F) / 90.0F;
-                float sin = Mth.sin(angle);
-                float cos = Mth.cos(angle);
-                builder.vertex(centerX + cos * rad, centerY + sin * rad, -90.0f)
+
+            {
+                builder.begin(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR);
+                builder.vertex(centerX, centerY, -90.0f)
                         .color(255, 255, 255, 255)
                         .endVertex();
+                for (int j = 0; j <= 90; j++) {
+                    float angle = (float) j * ((float) Math.PI * 2F) / 90.0F;
+                    float sin = Mth.sin(angle);
+                    float cos = Mth.cos(angle);
+                    builder.vertex(centerX + cos * finalRad, centerY + sin * finalRad, -90.0f)
+                            .color(255, 255, 255, 255)
+                            .endVertex();
+                }
+                BufferUploader.drawWithShader(builder.end());
             }
-            BufferUploader.drawWithShader(builder.end());
         }
 
         ClientRenderHelper.GL._depthMask(true);

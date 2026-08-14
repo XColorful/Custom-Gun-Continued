@@ -9,7 +9,7 @@ package dev.xcolorful.customgun.client.compat.ar;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.xcolorful.customgun.client.model.AttachmentModelObject;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.world.item.ItemDisplayContext;
 import org.jetbrains.annotations.ApiStatus;
 

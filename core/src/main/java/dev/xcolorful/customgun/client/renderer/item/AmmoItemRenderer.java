@@ -24,7 +24,7 @@ import dev.xcolorful.customgun.core.api.item.IAmmo;
 import dev.xcolorful.customgun.core.api.item.ammo.IAmmoGetter;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;

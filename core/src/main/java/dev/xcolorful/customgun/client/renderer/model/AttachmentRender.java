@@ -55,7 +55,7 @@ public class AttachmentRender implements IModelComponentRenderer {
             // 没有对应的 attachmentIndex，渲染黑紫材质以提醒
             Minecraft mc = Minecraft.getInstance();
             MultiBufferSource bufferSource = mc.renderBuffers().bufferSource();
-            VertexConsumer buffer = bufferSource.getBuffer(RenderType.entityTranslucent(ClientRenderUtils.getMissingTextureLocation()));
+            VertexConsumer buffer = bufferSource.getBuffer(ClientRenderUtils.RenderType_.entityTranslucent(ClientRenderUtils.getMissingTextureLocation()));
             AttachmentItemRenderer.SLOT_ATTACHMENT_MODEL.renderToBuffer(poseStack, buffer, light, overlay, 1.0f, 1.0f, 1.0f, 1.0f);
             return;
         }

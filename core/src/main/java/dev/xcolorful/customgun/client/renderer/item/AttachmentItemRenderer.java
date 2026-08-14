@@ -68,7 +68,7 @@ public class AttachmentItemRenderer extends BlockEntityWithoutLevelRenderer {
             }
             if (attachmentTextureLocation == null) attachmentTextureLocation = ClientRenderUtils.getMissingTextureLocation();
 
-            RenderType renderType = RenderType.entityCutout(attachmentTextureLocation);
+            RenderType renderType = ClientRenderUtils.RenderType_.entityCutout(attachmentTextureLocation);
             attachmentModelObject.render(poseStack, transformType, renderType, pPackedLight, pPackedOverlay, null, null);
         } else {
             // 渲染 GUI
@@ -82,7 +82,7 @@ public class AttachmentItemRenderer extends BlockEntityWithoutLevelRenderer {
             @Nullable var slotTexture = attachmentDisplay.getSlotTextureLocation();
             if (slotTexture == null) slotTexture = ClientRenderUtils.getMissingTextureLocation();
 
-            VertexConsumer buffer = pBuffer.getBuffer(RenderType.entityTranslucent(slotTexture));
+            VertexConsumer buffer = pBuffer.getBuffer(ClientRenderUtils.RenderType_.entityTranslucent(slotTexture));
             SLOT_ATTACHMENT_MODEL.renderToBuffer(poseStack, buffer, pPackedLight, pPackedOverlay, 1.0f, 1.0f, 1.0f, 1.0f);
         }
     }
@@ -111,7 +111,7 @@ public class AttachmentItemRenderer extends BlockEntityWithoutLevelRenderer {
                     @Nullable var slotTexture = attachmentDisplay.getSlotTextureLocation();
                     if (slotTexture == null) slotTexture = ClientRenderUtils.getMissingTextureLocation();
 
-                    VertexConsumer buffer = pBuffer.getBuffer(RenderType.entityTranslucent(slotTexture));
+                    VertexConsumer buffer = pBuffer.getBuffer(ClientRenderUtils.RenderType_.entityTranslucent(slotTexture));
                     SLOT_ATTACHMENT_MODEL.renderToBuffer(poseStack, buffer, pPackedLight, pPackedOverlay, 1.0f, 1.0f, 1.0f, 1.0f);
                 } else {
                     poseStack.translate(0.5, 2, 0.5);
@@ -131,7 +131,7 @@ public class AttachmentItemRenderer extends BlockEntityWithoutLevelRenderer {
                 // 没有这个 attachmentLocation，渲染黑紫材质以提醒
                 poseStack.translate(0.5, 1.5, 0.5);
                 poseStack.mulPose(Axis.ZN.rotationDegrees(180));
-                VertexConsumer buffer = pBuffer.getBuffer(RenderType.entityTranslucent(ClientRenderUtils.getMissingTextureLocation()));
+                VertexConsumer buffer = pBuffer.getBuffer(ClientRenderUtils.RenderType_.entityTranslucent(ClientRenderUtils.getMissingTextureLocation()));
                 SLOT_ATTACHMENT_MODEL.renderToBuffer(poseStack, buffer, pPackedLight, pPackedOverlay, 1.0f, 1.0f, 1.0f, 1.0f);
             }
             poseStack.popPose();

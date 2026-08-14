@@ -111,7 +111,7 @@ public class ClientRenderUtils {
             return RenderType.entityTranslucent(textureLocation);
         }
         public static RenderType entityTranslucentCull(ResourceLocation textureLocation) {
-            return RenderType.entityTranslucentCull(textureLocation);
+            return RenderType.itemEntityTranslucentCull(textureLocation);
         }
         public static RenderType itemEntityTranslucentCull(ResourceLocation textureLocation) {
             return RenderType.itemEntityTranslucentCull(textureLocation);

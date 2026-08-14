@@ -142,11 +142,11 @@ public class AmmoItemRenderer extends BlockEntityWithoutLevelRenderer {
 
                     // 渲染子弹盒模型
                     RenderType renderType = ClientRenderUtils.RenderType_.entityCutout(modelTextureLocation);
-                    ClientRenderHelper.FirstPersonArmHelper.setFirstPersonArmCollector(pBuffer);
+                    ClientRenderHelper.FirstPersonArmHelper.setFirstPersonArmCollector_(pBuffer);
                     try {
                         ammoModel.render(poseStack, transformType, renderType, pPackedLight, pPackedOverlay);
                     } finally {
-                        ClientRenderHelper.FirstPersonArmHelper.setFirstPersonArmCollector(null);
+                        ClientRenderHelper.FirstPersonArmHelper.setFirstPersonArmCollector_(null);
                     }
                 }
             }

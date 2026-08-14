@@ -21,6 +21,7 @@ import dev.xcolorful.customgun.client.resource.assets.display.ammo._ShellDisplay
 import dev.xcolorful.customgun.client.resource.assets.display.gun._ShellEjectionParam;
 import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
 import dev.xcolorful.customgun.client.resource.instance.data.ClientAmmoIndexInstance;
+import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
 import dev.xcolorful.customgun.core.api.resource.ResourceApi;
@@ -199,7 +200,7 @@ public class ShellRender implements IModelComponentRenderer {
         poseStack.mulPose(Axis.ZP.rotationDegrees((float) zw));
         poseStack.translate(0, -1.5, 0);
 
-        ammoModelObject.render(poseStack, transformType, RenderType.entityCutout(shellTextureLocation), light, overlay);
+        ammoModelObject.render(poseStack, transformType, ClientRenderUtils.RenderType_.entityCutout(shellTextureLocation), light, overlay);
     }
 
     // --------闲人勿入（内部实现类型）--------

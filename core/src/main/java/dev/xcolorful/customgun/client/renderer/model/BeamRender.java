@@ -19,6 +19,7 @@ import dev.xcolorful.customgun.client.resource.assets.display.GunDisplay;
 import dev.xcolorful.customgun.client.resource.assets.display._LaserDisplay;
 import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
 import dev.xcolorful.customgun.client.resource.instance.data.ClientAttachmentIndexInstance;
+import dev.xcolorful.customgun.client.util.ClientRenderHelper;
 import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import dev.xcolorful.customgun.core.api.item.IAttachment;
 import dev.xcolorful.customgun.core.api.item.IGun;
@@ -54,6 +55,8 @@ public class BeamRender {
 
         if (BeamRenderAR.render(poseStack, transformType, path, pojoItem)) return;
 
+        @Nullable Object collector = ClientRenderHelper.FirstPersonArmHelper.getFirstPersonArmCollector();
+        if (collector == null) return;
 
         MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
         VertexConsumer builder = bufferSource.getBuffer(ClientRenderRegistry.LaserBeamRenderState.getLaserBeam());
@@ -78,7 +81,9 @@ public class BeamRender {
             float z = transformType.firstPerson() ? -finalLaserDisplay.getLaserLength() : -finalLaserDisplay.getThirdPersonLaserLength();
             float width = transformType.firstPerson() ? finalLaserDisplay.getLaserWidth() : finalLaserDisplay.getThirdPersonLaserWidth();
 
-            _stringVertex(builder, poseStack.last(), z, width, r, g, b, RenderConfig.ENABLE_LASER_FADE_OUT.get());
+            {
+                _stringVertex(builder, poseStack.last(), z, width, r, g, b, RenderConfig.ENABLE_LASER_FADE_OUT.get());
+            }
         }
         poseStack.popPose();
     }

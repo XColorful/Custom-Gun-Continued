@@ -19,6 +19,7 @@ import dev.xcolorful.customgun.client.resource.assets.display.AttachmentDisplay;
 import dev.xcolorful.customgun.client.resource.assets.display._LodDisplay;
 import dev.xcolorful.customgun.client.resource.instance.data.ClientAttachmentIndexInstance;
 import dev.xcolorful.customgun.client.util.ClientRenderDistance;
+import dev.xcolorful.customgun.client.util.ClientRenderHelper;
 import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import dev.xcolorful.customgun.core.api.item.IAttachment;
 import dev.xcolorful.customgun.core.api.item.attachment.IAttachmentGetter;
@@ -69,7 +70,12 @@ public class AttachmentItemRenderer extends BlockEntityWithoutLevelRenderer {
             if (attachmentTextureLocation == null) attachmentTextureLocation = ClientRenderUtils.getMissingTextureLocation();
 
             RenderType renderType = ClientRenderUtils.RenderType_.entityCutout(attachmentTextureLocation);
-            attachmentModelObject.render(poseStack, transformType, renderType, pPackedLight, pPackedOverlay, null, null);
+            ClientRenderHelper.FirstPersonArmHelper.setFirstPersonArmCollector_(pBuffer);
+            try {
+                attachmentModelObject.render(poseStack, transformType, renderType, pPackedLight, pPackedOverlay, null, null);
+            } finally {
+                ClientRenderHelper.FirstPersonArmHelper.setFirstPersonArmCollector_(null);
+            }
         } else {
             // 渲染 GUI
             poseStack.translate(0, 0.5, 0);
@@ -82,8 +88,10 @@ public class AttachmentItemRenderer extends BlockEntityWithoutLevelRenderer {
             @Nullable var slotTexture = attachmentDisplay.getSlotTextureLocation();
             if (slotTexture == null) slotTexture = ClientRenderUtils.getMissingTextureLocation();
 
-            VertexConsumer buffer = pBuffer.getBuffer(ClientRenderUtils.RenderType_.entityTranslucent(slotTexture));
-            SLOT_ATTACHMENT_MODEL.renderToBuffer(poseStack, buffer, pPackedLight, pPackedOverlay, 1.0f, 1.0f, 1.0f, 1.0f);
+            {
+                VertexConsumer buffer = pBuffer.getBuffer(ClientRenderUtils.RenderType_.entityTranslucent(slotTexture));
+                SLOT_ATTACHMENT_MODEL.renderToBuffer(poseStack, buffer, pPackedLight, pPackedOverlay, 1.0f, 1.0f, 1.0f, 1.0f);
+            }
         }
     }
 
@@ -111,8 +119,10 @@ public class AttachmentItemRenderer extends BlockEntityWithoutLevelRenderer {
                     @Nullable var slotTexture = attachmentDisplay.getSlotTextureLocation();
                     if (slotTexture == null) slotTexture = ClientRenderUtils.getMissingTextureLocation();
 
-                    VertexConsumer buffer = pBuffer.getBuffer(ClientRenderUtils.RenderType_.entityTranslucent(slotTexture));
-                    SLOT_ATTACHMENT_MODEL.renderToBuffer(poseStack, buffer, pPackedLight, pPackedOverlay, 1.0f, 1.0f, 1.0f, 1.0f);
+                    {
+                        VertexConsumer buffer = pBuffer.getBuffer(ClientRenderUtils.RenderType_.entityTranslucent(slotTexture));
+                        SLOT_ATTACHMENT_MODEL.renderToBuffer(poseStack, buffer, pPackedLight, pPackedOverlay, 1.0f, 1.0f, 1.0f, 1.0f);
+                    }
                 } else {
                     poseStack.translate(0.5, 2, 0.5);
 
@@ -131,8 +141,11 @@ public class AttachmentItemRenderer extends BlockEntityWithoutLevelRenderer {
                 // 没有这个 attachmentLocation，渲染黑紫材质以提醒
                 poseStack.translate(0.5, 1.5, 0.5);
                 poseStack.mulPose(Axis.ZN.rotationDegrees(180));
-                VertexConsumer buffer = pBuffer.getBuffer(ClientRenderUtils.RenderType_.entityTranslucent(ClientRenderUtils.getMissingTextureLocation()));
-                SLOT_ATTACHMENT_MODEL.renderToBuffer(poseStack, buffer, pPackedLight, pPackedOverlay, 1.0f, 1.0f, 1.0f, 1.0f);
+
+                {
+                    VertexConsumer buffer = pBuffer.getBuffer(ClientRenderUtils.RenderType_.entityTranslucent(ClientRenderUtils.getMissingTextureLocation()));
+                    SLOT_ATTACHMENT_MODEL.renderToBuffer(poseStack, buffer, pPackedLight, pPackedOverlay, 1.0f, 1.0f, 1.0f, 1.0f);
+                }
             }
             poseStack.popPose();
         }

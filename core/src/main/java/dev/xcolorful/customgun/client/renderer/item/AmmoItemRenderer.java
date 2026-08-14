@@ -19,6 +19,7 @@ import dev.xcolorful.customgun.client.resource.assets.display.AmmoDisplay;
 import dev.xcolorful.customgun.client.resource.assets.display._ModelTransform;
 import dev.xcolorful.customgun.client.resource.assets.display._ModelTransformScale;
 import dev.xcolorful.customgun.client.resource.instance.data.ClientAmmoIndexInstance;
+import dev.xcolorful.customgun.client.util.ClientRenderHelper;
 import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import dev.xcolorful.customgun.core.api.item.IAmmo;
 import dev.xcolorful.customgun.core.api.item.ammo.IAmmoGetter;
@@ -141,7 +142,12 @@ public class AmmoItemRenderer extends BlockEntityWithoutLevelRenderer {
 
                     // 渲染子弹盒模型
                     RenderType renderType = ClientRenderUtils.RenderType_.entityCutout(modelTextureLocation);
-                    ammoModel.render(poseStack, transformType, renderType, pPackedLight, pPackedOverlay);
+                    ClientRenderHelper.FirstPersonArmHelper.setFirstPersonArmCollector_(pBuffer);
+                    try {
+                        ammoModel.render(poseStack, transformType, renderType, pPackedLight, pPackedOverlay);
+                    } finally {
+                        ClientRenderHelper.FirstPersonArmHelper.setFirstPersonArmCollector_(null);
+                    }
                 }
             }
             poseStack.popPose();
@@ -150,8 +156,11 @@ public class AmmoItemRenderer extends BlockEntityWithoutLevelRenderer {
                 // 没有这个 ammoID，渲染个错误材质提醒别人
                 poseStack.translate(0.5, 1.5, 0.5);
                 poseStack.mulPose(Axis.ZN.rotationDegrees(180));
-                VertexConsumer buffer = pBuffer.getBuffer(ClientRenderUtils.RenderType_.entityTranslucent(ClientRenderUtils.getMissingTextureLocation()));
-                SLOT_AMMO_MODEL.renderToBuffer(poseStack, buffer, pPackedLight, pPackedOverlay, 1.0f, 1.0f, 1.0f, 1.0f);
+
+                {
+                    VertexConsumer buffer = pBuffer.getBuffer(ClientRenderUtils.RenderType_.entityTranslucent(ClientRenderUtils.getMissingTextureLocation()));
+                    SLOT_AMMO_MODEL.renderToBuffer(poseStack, buffer, pPackedLight, pPackedOverlay, 1.0f, 1.0f, 1.0f, 1.0f);
+                }
             }
             poseStack.popPose();
         }

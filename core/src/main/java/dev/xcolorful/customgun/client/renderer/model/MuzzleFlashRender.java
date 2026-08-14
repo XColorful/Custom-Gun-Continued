@@ -18,6 +18,7 @@ import dev.xcolorful.customgun.client.model.bedrock.SlotModel;
 import dev.xcolorful.customgun.client.resource.assets.display.GunDisplay;
 import dev.xcolorful.customgun.client.resource.assets.display.gun._MuzzleFlashDisplay;
 import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
+import dev.xcolorful.customgun.client.util.ClientRenderHelper;
 import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import dev.xcolorful.customgun.core.api.item.IAttachment;
 import dev.xcolorful.customgun.core.api.item.attachment.AttachmentCategory;
@@ -132,6 +133,9 @@ public class MuzzleFlashRender implements IModelComponentRenderer {
     private void doRender(int light, int overlay, long currentTimeMillis, _MuzzleFlashDisplay muzzleFlashDisplay) {
         if (State.muzzleFlashNormal == null || State.muzzleFlashPose == null) return;
 
+        @Nullable Object collector = ClientRenderHelper.FirstPersonArmHelper.getFirstPersonArmCollector();
+        if (collector == null) return;
+
         float scale = 0.5f * muzzleFlashDisplay.getTextureScale();
         float scaleTime = TIME_RANGE / 2.0f;
         scale = currentTimeMillis < scaleTime ? (scale * (currentTimeMillis / scaleTime)) : scale;
@@ -149,7 +153,9 @@ public class MuzzleFlashRender implements IModelComponentRenderer {
             poseStack2.mulPose(Axis.ZP.rotationDegrees(State.muzzleFlashRandomRotate));
             poseStack2.translate(0, -1, 0);
             RenderType renderTypeBg = ClientRenderUtils.RenderType_.entityTranslucent(muzzleFlashDisplay.getTextureLocation());
-            MUZZLE_FLASH_MODEL.renderToBuffer(poseStack2, multiBufferSource.getBuffer(renderTypeBg), light, overlay, 1.0f, 1.0f, 1.0f, 1.0f);
+            {
+                MUZZLE_FLASH_MODEL.renderToBuffer(poseStack2, multiBufferSource.getBuffer(renderTypeBg), light, overlay, 1.0f, 1.0f, 1.0f, 1.0f);
+            }
         }
         poseStack2.popPose();
 
@@ -159,7 +165,9 @@ public class MuzzleFlashRender implements IModelComponentRenderer {
             poseStack2.mulPose(Axis.ZP.rotationDegrees(State.muzzleFlashRandomRotate));
             poseStack2.translate(0, -0.9, 0);
             RenderType renderTypeLight = ClientRenderUtils.RenderType_.energySwirl(muzzleFlashDisplay.getTextureLocation(), 1, 1);
-            MUZZLE_FLASH_MODEL.renderToBuffer(poseStack2, multiBufferSource.getBuffer(renderTypeLight), light, overlay, 1.0f, 1.0f, 1.0f, 1.0f);
+            {
+                MUZZLE_FLASH_MODEL.renderToBuffer(poseStack2, multiBufferSource.getBuffer(renderTypeLight), light, overlay, 1.0f, 1.0f, 1.0f, 1.0f);
+            }
         }
         poseStack2.popPose();
     }

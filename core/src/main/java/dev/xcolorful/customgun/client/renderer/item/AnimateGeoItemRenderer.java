@@ -315,12 +315,13 @@ public abstract class AnimateGeoItemRenderer<M extends AnimatedModelObject, CTX 
             poseStack.translate(0.5, 1.5f, 0.5);
             // 基岩版模型是上下颠倒的，需要翻转过来。
             poseStack.mulPose(Axis.ZP.rotationDegrees(180f));
+            ClientRenderHelper.FirstPersonArmHelper.setFirstPersonArmCollector_(bufferSource);
             try {
                 modelObject.render(poseStack, ctx, ClientRenderUtils.RenderType_.entityCutout(
                         getTextureLocation(pojoItem)
                 ), light, overlay);
             } finally {
-                ClientRenderHelper.FirstPersonArmHelper.setFirstPersonArmCollector(null);
+                ClientRenderHelper.FirstPersonArmHelper.setFirstPersonArmCollector_(null);
             }
         }
         poseStack.popPose();

@@ -16,7 +16,7 @@ import dev.xcolorful.customgun.client.renderer.model.TextRender;
 import dev.xcolorful.customgun.client.resource.assets.display._ModelNodeTextDisplay;
 import dev.xcolorful.customgun.client.resource.assets.model.BedrockModel;
 import dev.xcolorful.customgun.core.api.resource.assets.model.bedrock.geometry.NodeName;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;

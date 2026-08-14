@@ -18,6 +18,7 @@ import dev.xcolorful.customgun.client.api.renderer.item.IAnimateGeoItemRenderer;
 import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
 import dev.xcolorful.customgun.client.compat.shouldersurfing.ShoulderSurfingCompat;
 import dev.xcolorful.customgun.client.config.RenderConfig;
+import dev.xcolorful.customgun.client.mixin.renderer.GameRendererMixin;
 import dev.xcolorful.customgun.client.resource.assets.display.AttachmentDisplay;
 import dev.xcolorful.customgun.client.resource.assets.display.GunDisplay;
 import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
@@ -53,6 +54,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.math3.analysis.polynomials.PolynomialSplineFunction;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -94,6 +96,11 @@ public class GunCameraHelper implements IEventHandler {
     public static class State {
         public static final MathUtil.SecondOrderDynamics WORLD_FOV_DYNAMICS = new MathUtil.SecondOrderDynamics(0.5f, 1.2f, 0.5f, 0);
         public static final MathUtil.SecondOrderDynamics ITEM_MODEL_FOV_DYNAMICS = new MathUtil.SecondOrderDynamics(0.5f, 1.2f, 0.5f, 0);
+        /**
+         * 由{@link GameRendererMixin}设置
+         */
+        @ApiStatus.Internal
+        public static boolean renderItemInHand = false;
     }
     private static PolynomialSplineFunction pitchSplineFunction;
     private static PolynomialSplineFunction yawSplineFunction;
@@ -153,22 +160,21 @@ public class GunCameraHelper implements IEventHandler {
     }
 
     private void onComputeFovEvent(IComputeFovEvent event) {
-        if (isLevelRenderFov(event)) {
-            // 改世界渲染FOV
-            this._applyScopeMagnification(event);
-        } else {
+        if (State.renderItemInHand) {
             // 改手部渲染FOV
             this._applyGunModelFovModifying(event);
+        } else {
+            // 改世界渲染FOV
+            this._applyScopeMagnification(event);
         }
     }
     /**
      * 判断是否是世界渲染的 FOV，反之则是手部渲染 FOV 事件
      * <br>
-     * TODO 需要更改判定方式
+     * @deprecated {@link IComputeFovEvent#useConfiguredFov()}在26.2被移除
      */
     private boolean isLevelRenderFov(IComputeFovEvent event) {
-        @Nullable Boolean bool = event.useConfiguredFov();
-        return bool != null && bool;
+        return !State.renderItemInHand;
     }
     private void _applyScopeMagnification(IComputeFovEvent event) {
         Entity entity = ClientRenderUtils.getEntity(event.getCamera());

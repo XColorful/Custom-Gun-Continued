@@ -24,6 +24,7 @@ import dev.xcolorful.customgun.client.model.AnimatedModelObject;
 import dev.xcolorful.customgun.client.model.bedrock.BedrockPart;
 import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
 import dev.xcolorful.customgun.client.sound.SoundPlayManager;
+import dev.xcolorful.customgun.client.util.ClientRenderHelper;
 import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import dev.xcolorful.customgun.core.api.item.IAnimationItem;
 import dev.xcolorful.customgun.core.config.GunConfig;
@@ -283,7 +284,12 @@ public abstract class AnimateGeoItemRenderer<M extends AnimatedModelObject, CTX 
                 stateMachine.update();
             }
 
-            modelObject.render(poseStack, ctx, getRenderType(pojoItem), light, OverlayTexture.NO_OVERLAY);
+            ClientRenderHelper.FirstPersonArmHelper.setFirstPersonArmCollector(event.getMultiBufferSource_SubmitNodeCollector());
+            try {
+                modelObject.render(poseStack, ctx, getRenderType(pojoItem), light, OverlayTexture.NO_OVERLAY);
+            } finally {
+                ClientRenderHelper.FirstPersonArmHelper.setFirstPersonArmCollector(null);
+            }
 
             // 渲染结束后清除动画变换
             modelObject.cleanAnimationTransform();
@@ -309,9 +315,13 @@ public abstract class AnimateGeoItemRenderer<M extends AnimatedModelObject, CTX 
             poseStack.translate(0.5, 1.5f, 0.5);
             // 基岩版模型是上下颠倒的，需要翻转过来。
             poseStack.mulPose(Axis.ZP.rotationDegrees(180f));
-            modelObject.render(poseStack, ctx, ClientRenderUtils.RenderType_.entityCutout(
-                    getTextureLocation(pojoItem)
-            ), light, overlay);
+            try {
+                modelObject.render(poseStack, ctx, ClientRenderUtils.RenderType_.entityCutout(
+                        getTextureLocation(pojoItem)
+                ), light, overlay);
+            } finally {
+                ClientRenderHelper.FirstPersonArmHelper.setFirstPersonArmCollector(null);
+            }
         }
         poseStack.popPose();
     }

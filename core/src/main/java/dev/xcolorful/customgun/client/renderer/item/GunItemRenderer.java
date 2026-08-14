@@ -388,7 +388,12 @@ public class GunItemRenderer extends AnimateGeoItemRenderer<GunModelObject, GunA
 
                     // 渲染枪械模型
                     RenderType renderType = ClientRenderUtils.RenderType_.entityCutout(modelTextureLocation);
-                    gunModelObject.render(poseStack, transformType, renderType, light, overlay, gunItem);
+                    ClientRenderHelper.FirstPersonArmHelper.setFirstPersonArmCollector(bufferSource);
+                    try {
+                        gunModelObject.render(poseStack, transformType, renderType, light, overlay, gunItem);
+                    } finally {
+                        ClientRenderHelper.FirstPersonArmHelper.setFirstPersonArmCollector(null);
+                    }
                 }
             }
             poseStack.popPose();
@@ -460,7 +465,10 @@ public class GunItemRenderer extends AnimateGeoItemRenderer<GunModelObject, GunA
                                            Identifier texture) {
         poseStack.translate(0.5, 1.5, 0.5);
         poseStack.mulPose(Axis.ZN.rotationDegrees(180));
-        VertexConsumer buffer = bufferSource.getBuffer(ClientRenderUtils.RenderType_.entityTranslucent(texture));
-        SLOT_GUN_MODEL.renderToBuffer(poseStack, buffer, packedLight, packedOverlay, 1.0f, 1.0f, 1.0f, 1.0f);
+
+        {
+            VertexConsumer buffer = bufferSource.getBuffer(ClientRenderUtils.RenderType_.entityTranslucent(texture));
+            SLOT_GUN_MODEL.renderToBuffer(poseStack, buffer, packedLight, packedOverlay, 1.0f, 1.0f, 1.0f, 1.0f);
+        }
     }
 }

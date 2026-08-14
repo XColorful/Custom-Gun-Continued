@@ -24,6 +24,7 @@ import dev.xcolorful.customgun.client.model.AnimatedModelObject;
 import dev.xcolorful.customgun.client.model.bedrock.BedrockPart;
 import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
 import dev.xcolorful.customgun.client.sound.SoundPlayManager;
+import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import dev.xcolorful.customgun.core.api.item.IAnimationItem;
 import dev.xcolorful.customgun.core.config.GunConfig;
 import dev.xcolorful.customgun.core.util.MathUtil;
@@ -65,7 +66,7 @@ public abstract class AnimateGeoItemRenderer<M extends AnimatedModelObject, CTX 
     }
 
     public RenderType getRenderType(ItemStack itemStack) {
-        return RenderType.entityCutout(this.getTextureLocation(itemStack));
+        return ClientRenderUtils.RenderType_.entityCutout(this.getTextureLocation(itemStack));
     }
 
     /**
@@ -309,7 +310,7 @@ public abstract class AnimateGeoItemRenderer<M extends AnimatedModelObject, CTX 
             poseStack.translate(0.5, 1.5f, 0.5);
             // 基岩版模型是上下颠倒的，需要翻转过来。
             poseStack.mulPose(Axis.ZP.rotationDegrees(180f));
-            modelObject.render(poseStack, ctx, RenderType.entityCutout(
+            modelObject.render(poseStack, ctx, ClientRenderUtils.RenderType_.entityCutout(
                     getTextureLocation(pojoItem)
             ), light, overlay);
         }

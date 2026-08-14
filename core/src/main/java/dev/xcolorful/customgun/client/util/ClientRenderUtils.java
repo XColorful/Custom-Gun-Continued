@@ -11,6 +11,7 @@ import dev.xcolorful.customgun.client.api.event.IRenderLevelStageEvent;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
@@ -87,6 +88,13 @@ public class ClientRenderUtils {
     }
     public static Matrix4f createCenterOffsetMatrix(IRenderLevelStageEvent event, double centerX, double centerY, double centerZ, Vec3 cameraPos) {
         return createCenterOffsetMatrix(event.getModelViewMatrix(), centerX, centerY, centerZ, cameraPos);
+    }
+
+    public static class LightTexture_ {
+
+        public static int pack(int blockLight, int skyLight) {
+            return LightTexture.pack(blockLight, skyLight); // blockLight << 4 | skyLight << 20;
+        }
     }
 
     public static class RenderType_ {

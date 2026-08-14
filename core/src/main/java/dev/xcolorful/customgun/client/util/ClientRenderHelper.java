@@ -21,6 +21,7 @@ import net.minecraft.client.renderer.entity.player.AvatarRenderer;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.PlayerModelPart;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
@@ -68,7 +69,7 @@ public class ClientRenderHelper {
     }
 
     public static void renderFirstPersonArm(LocalPlayer player, HumanoidArm hand, PoseStack matrixStack, int combinedLight) {
-        SubmitNodeCollector collector = FirstPersonArmHelper.FIRST_PERSON_ARM_COLLECTOR.get();
+        @Nullable SubmitNodeCollector collector = FirstPersonArmHelper.FIRST_PERSON_ARM_COLLECTOR.get();
         if (collector == null) return;
 
         if (player == null) return;
@@ -169,11 +170,27 @@ public class ClientRenderHelper {
          * <br>
          * {@code MultiBufferSource}在26.2被移除，模型渲染统一经由该收集器提交
          * <br>
-         * 如果低版本出现异常问题，可以返回默认值来禁用该检查
+         * 在26.2以前的版本用于占位，如果低版本渲染异常可使其始终返回非null来规避
          */
+        @ApiStatus.AvailableSince("26.2")
         public static @Nullable Object getFirstPersonArmCollector() {
-            return FIRST_PERSON_ARM_COLLECTOR.get();
+            if (disableCollectorCheck) return _dummy;
+            var collector = FIRST_PERSON_ARM_COLLECTOR.get();
+            return collector != null ? collector : dummyCollector.get();
         }
-        private static final Object dummyCollector = new Object(); // 仅供低版本临时禁用"collector == null"
+
+        public static boolean disableCollectorCheck = true; // 26.2起不再使用
+        private static final @NotNull Object _dummy = new Object();
+        private static final ThreadLocal<Object> dummyCollector = new ThreadLocal<>();
+        /**
+         * 该重载用于[1.21.10, 26.2)占位用
+         */
+        public static void setFirstPersonArmCollector_(Object collector) {
+            if (collector == null) {
+                dummyCollector.remove();
+            } else {
+                dummyCollector.set(collector);
+            }
+        }
     }
 }

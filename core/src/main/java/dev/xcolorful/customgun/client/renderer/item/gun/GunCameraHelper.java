@@ -22,6 +22,7 @@ import dev.xcolorful.customgun.client.resource.assets.display.AttachmentDisplay;
 import dev.xcolorful.customgun.client.resource.assets.display.GunDisplay;
 import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
 import dev.xcolorful.customgun.client.resource.instance.data.ClientAttachmentIndexInstance;
+import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import dev.xcolorful.customgun.core.api.entity.ILivingShooter;
 import dev.xcolorful.customgun.core.api.entity.ShootState;
 import dev.xcolorful.customgun.core.api.entity.shooter.ILivingShooterGetter;
@@ -170,7 +171,7 @@ public class GunCameraHelper implements IEventHandler {
         return bool != null && bool;
     }
     private void _applyScopeMagnification(IComputeFovEvent event) {
-        Entity entity = event.getCamera().getEntity();
+        Entity entity = ClientRenderUtils.getEntity(event.getCamera());
         if (!(entity instanceof LivingEntity livingEntity)) return;
 
         ItemStack gunItem = KeepingItemRenderer.cgc$getRenderer().cgc$getCurrentItem();
@@ -190,7 +191,7 @@ public class GunCameraHelper implements IEventHandler {
         event.setFOV(fov);
     }
     private void _applyGunModelFovModifying(IComputeFovEvent event) {
-        Entity entity = event.getCamera().getEntity();
+        Entity entity = ClientRenderUtils.getEntity(event.getCamera());
         if (!(entity instanceof LivingEntity livingEntity)) return;
 
         ItemStack gunItem = KeepingItemRenderer.cgc$getRenderer().cgc$getCurrentItem();

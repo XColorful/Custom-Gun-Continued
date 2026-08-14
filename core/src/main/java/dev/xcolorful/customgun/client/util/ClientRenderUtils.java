@@ -8,9 +8,11 @@
 package dev.xcolorful.customgun.client.util;
 
 import dev.xcolorful.customgun.client.api.event.IRenderLevelStageEvent;
+import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
@@ -51,6 +53,16 @@ public class ClientRenderUtils {
                 .getGameTimeDeltaPartialTick(false);
     }
 
+    public static float getCameraXRot(Camera camera) {
+        return camera.getXRot(); // camera.xRot();
+    }
+    public static float getCameraYRot(Camera camera) {
+        return camera.getYRot(); // camera.yRot();
+    }
+    public static Entity getEntity(Camera camera) {
+        return camera.getEntity();
+    }
+
     /**
      * 创建一个新的模型视图矩阵
      * 该矩阵基于 baseModelView, 并应用了平移到指定世界中心点的变换 (同时抵消了相机偏移)
@@ -78,6 +90,25 @@ public class ClientRenderUtils {
     }
     public static Matrix4f createCenterOffsetMatrix(IRenderLevelStageEvent event, double centerX, double centerY, double centerZ, Vec3 cameraPos) {
         return createCenterOffsetMatrix(new Matrix4f(), centerX, centerY, centerZ, cameraPos);
+    }
+
+    public static class RenderType_ {
+
+        public static RenderType energySwirl(ResourceLocation textureLocation, float offsetX, float offsetY) {
+            return RenderType.energySwirl(textureLocation, offsetX, offsetY);
+        }
+        public static RenderType entityCutout(ResourceLocation textureLocation) {
+            return RenderType.entityCutout(textureLocation);
+        }
+        public static RenderType entityTranslucent(ResourceLocation textureLocation) {
+            return RenderType.entityTranslucent(textureLocation);
+        }
+        public static RenderType entityTranslucentCull(ResourceLocation textureLocation) {
+            return RenderType.entityTranslucentCull(textureLocation);
+        }
+        public static RenderType itemEntityTranslucentCull(ResourceLocation textureLocation) {
+            return RenderType.itemEntityTranslucentCull(textureLocation);
+        }
     }
 
     @ApiStatus.AvailableSince("1.21.4")

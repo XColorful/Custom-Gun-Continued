@@ -11,6 +11,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.api.event.render.ItemInHandBobEvent;
 import dev.xcolorful.customgun.client.api.event.render.LevelBobEvent;
+import dev.xcolorful.customgun.client.renderer.item.gun.GunCameraHelper;
 import dev.xcolorful.customgun.client.renderer.victim.GunHurtBobTweak;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
@@ -27,8 +28,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(GameRenderer.class)
 public abstract class GameRendererMixin {
 
-    private boolean cgc$useFovSetting;
-
     @Shadow
     public abstract Minecraft getMinecraft();
 
@@ -38,8 +37,8 @@ public abstract class GameRendererMixin {
 
     @Inject(method = "bobHurt", at = @At("HEAD"), cancellable = true)
     public void cgc$onBobHurt( // CameraRenderState cameraState
-                          PoseStack poseStack,
-                          float pPartialTicks, CallbackInfo ci) {
+                              PoseStack poseStack,
+                              float pPartialTicks, CallbackInfo ci) {
         // 取消受伤导致的视角摇晃
         if (this.getMinecraft().getCameraEntity() instanceof LocalPlayer player && !player.isDeadOrDying()) {
             if (GunHurtBobTweak.onHurtBobTweak(player, poseStack, pPartialTicks)) {
@@ -50,7 +49,7 @@ public abstract class GameRendererMixin {
 
         // 触发其他事件
         boolean cancel; {
-            if (!cgc$useFovSetting) {
+            if (GunCameraHelper.State.renderItemInHand) {
                 cancel = CustomGun.getEventPoster().postCustomEvent(new ItemInHandBobEvent.Hurt());
             } else {
                 cancel = CustomGun.getEventPoster().postCustomEvent(new LevelBobEvent.Hurt());
@@ -64,10 +63,10 @@ public abstract class GameRendererMixin {
 
     @Inject(method = "bobView", at = @At("HEAD"), cancellable = true)
     public void cgc$onBobView( // CameraRenderState cameraState
-                          PoseStack poseStack,
-                          float pPartialTicks, CallbackInfo ci) {
+                              PoseStack poseStack,
+                              float pPartialTicks, CallbackInfo ci) {
         boolean cancel; {
-            if (!cgc$useFovSetting) {
+            if (GunCameraHelper.State.renderItemInHand) {
                 cancel = CustomGun.getEventPoster().postCustomEvent(new ItemInHandBobEvent.View());
             } else {
                 cancel = CustomGun.getEventPoster().postCustomEvent(new LevelBobEvent.View());
@@ -87,11 +86,29 @@ public abstract class GameRendererMixin {
      *     <li>至于为什么不直接对 renderItemInHand 这个方法 mixin ，是因为安装了 Optifine 之后，这个方法的内容被大幅度修改了</li>
      * </ul>
      */
+    @Deprecated(since = "26.1.x")
     @Inject(method = "getFov", at = @At("HEAD"))
-    public void switchRenderType(Camera pActiveRenderInfo,
-                                 float pPartialTicks,
-                                 boolean pUseFOVSetting,
-                                 CallbackInfoReturnable<Double> cir) {
-        this.cgc$useFovSetting = pUseFOVSetting;
+    public void cgc$switchRenderType(Camera pActiveRenderInfo,
+                                     float pPartialTicks,
+                                     boolean pUseFOVSetting,
+                                     CallbackInfoReturnable<Double> cir) {
+//        GunCameraHelper.State.renderItemInHand = !pUseFOVSetting;
+    }
+    /**
+     * 楼上说得对，但是时代是会变的，咱别管optifine了
+     */
+    @Inject(method = "renderItemInHand", at = @At("HEAD"))
+    private void cgc$beforeRenderItemInHand(PoseStack poseStack,
+                                            Camera camera,
+                                            float partialTick,
+                                            CallbackInfo ci) {
+        GunCameraHelper.State.renderItemInHand = true;
+    }
+    @Inject(method = "renderItemInHand", at = @At("RETURN"))
+    private void cgc$afterRenderItemInHand(PoseStack poseStack,
+                                           Camera camera,
+                                           float partialTick,
+                                           CallbackInfo ci) {
+        GunCameraHelper.State.renderItemInHand = false;
     }
 }

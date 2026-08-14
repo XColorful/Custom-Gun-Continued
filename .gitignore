@@ -30,3 +30,6 @@ forge*changelog.txt
 
 # Obsidian
 .obsidian
+
+# Python
+__pycache__

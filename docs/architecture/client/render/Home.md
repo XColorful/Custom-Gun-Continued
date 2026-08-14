@@ -144,3 +144,5 @@ graph TB
 |[动画系统](./animation-system.md)|ObjectAnimation 动画实例、BedrockAnimation POJO 结构、GunAnimationState 枚举|
 |[渲染管线](./render-pipeline.md)|AnimateGeoItemRenderer 枪械渲染、渲染器分类、事件钩子|
 |[客户端资源 POJO](./client-resource-pojos.md)|Display POJO（GunDisplay / AttachmentDisplay / AmmoDisplay）、动画 POJO、GunDisplayInstance 缓存|
+|[26.1.x → 26.2 渲染系统差异](./26.2-rendering-differences.md)|26.2 渲染 API 变更对照（即时模式 → 延迟提交）、去哪找源码、迁移坑|
+|[26.2 MultiBufferSource 移除移植报告](./26.2-multibuffersource-migration-report.md)|MultiBufferSource 移除的迁移记录与运行时风险|

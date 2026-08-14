@@ -309,6 +309,7 @@ public class _AttachmentModelRender {
             Vector3f ocularCenter = getBedrockPartCenter(matrixStack, ocularNodePath);
             float centerX = ocularCenter.x() * 16 * 90;
             float centerY = ocularCenter.y() * 16 * 90;
+            
             {
                 builder = tesselator.begin(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR);
                 builder.addVertex(matrixStack.last(), centerX, centerY, -90.0f)

@@ -9,7 +9,7 @@ package dev.xcolorful.customgun.client.api.model;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.xcolorful.customgun.client.model.GunModelObject;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 

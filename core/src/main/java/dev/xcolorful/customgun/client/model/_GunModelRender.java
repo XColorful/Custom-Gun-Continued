@@ -24,7 +24,7 @@ import dev.xcolorful.customgun.core.api.item.attachment.MagazineCategory;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
 import dev.xcolorful.customgun.core.developer.PlannedRefactor;
 import dev.xcolorful.customgun.core.resource.data.data.AttachmentData;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;

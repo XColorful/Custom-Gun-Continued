@@ -125,7 +125,7 @@ public class AmmoItemRenderer extends BlockEntityWithoutLevelRenderer {
                     @Nullable var slotTextureLocation = ammoDisplay.getSlotTextureLocation();
                     if (slotTextureLocation == null) slotTextureLocation = ClientRenderUtils.getMissingTextureLocation();
 
-                    VertexConsumer buffer = pBuffer.getBuffer(RenderType.entityTranslucent(slotTextureLocation));
+                    VertexConsumer buffer = pBuffer.getBuffer(ClientRenderUtils.RenderType_.entityTranslucent(slotTextureLocation));
                     SLOT_AMMO_MODEL.renderToBuffer(poseStack, buffer, pPackedLight, pPackedOverlay, 1.0f, 1.0f, 1.0f, 1.0f);
                 } else {
                     @Nullable _ModelTransform modelTransform = ammoDisplay.getModelTransform();
@@ -140,7 +140,7 @@ public class AmmoItemRenderer extends BlockEntityWithoutLevelRenderer {
                     _applyScaleTransform(poseStack, transformType, modelTransform != null ? modelTransform.getScale() : null);
 
                     // 渲染子弹盒模型
-                    RenderType renderType = RenderType.entityCutout(modelTextureLocation);
+                    RenderType renderType = ClientRenderUtils.RenderType_.entityCutout(modelTextureLocation);
                     ammoModel.render(poseStack, transformType, renderType, pPackedLight, pPackedOverlay);
                 }
             }
@@ -150,7 +150,7 @@ public class AmmoItemRenderer extends BlockEntityWithoutLevelRenderer {
                 // 没有这个 ammoID，渲染个错误材质提醒别人
                 poseStack.translate(0.5, 1.5, 0.5);
                 poseStack.mulPose(Axis.ZN.rotationDegrees(180));
-                VertexConsumer buffer = pBuffer.getBuffer(RenderType.entityTranslucent(ClientRenderUtils.getMissingTextureLocation()));
+                VertexConsumer buffer = pBuffer.getBuffer(ClientRenderUtils.RenderType_.entityTranslucent(ClientRenderUtils.getMissingTextureLocation()));
                 SLOT_AMMO_MODEL.renderToBuffer(poseStack, buffer, pPackedLight, pPackedOverlay, 1.0f, 1.0f, 1.0f, 1.0f);
             }
             poseStack.popPose();

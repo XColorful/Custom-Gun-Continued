@@ -14,6 +14,7 @@ import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.api.renderer.model.IModelComponentRenderer;
 import dev.xcolorful.customgun.client.model.ModelObject;
 import dev.xcolorful.customgun.client.resource.assets.display._ModelNodeTextDisplay;
+import dev.xcolorful.customgun.client.util.ClientRenderHelper;
 import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import dev.xcolorful.customgun.core.api.text.placeholder.IPlaceholderManager;
 import net.minecraft.client.Minecraft;
@@ -22,6 +23,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 
@@ -57,6 +59,9 @@ public class TextRender implements IModelComponentRenderer {
 
         // 和枪械模型共用顶点缓冲的都需要代理到渲染结束后渲染
         this.modelObject.delegateRender((_poseStack, _vertexBuffer, _transformType, _light, _overlay) -> {
+            @Nullable Object collector = ClientRenderHelper.FirstPersonArmHelper.getFirstPersonArmCollector();
+            if (collector == null) return;
+
             Font font = Minecraft.getInstance().font;
             boolean shadow = this.modelNodeTextDisplay.getEnableTextShadow();
             int color = this.modelNodeTextDisplay.getTextColor();
@@ -72,7 +77,16 @@ public class TextRender implements IModelComponentRenderer {
 
             Minecraft mc = Minecraft.getInstance();
             MultiBufferSource.BufferSource bufferSource = mc.renderBuffers().bufferSource();
-            font.drawInBatch(text, -xOffset, -font.lineHeight / 2f, color, shadow, poseStack2.last().pose(), bufferSource, Font.DisplayMode.NORMAL, 0, packLight);
+            font.drawInBatch(text,
+                    -xOffset,
+                    -font.lineHeight / 2f,
+                    color,
+                    shadow,
+                    poseStack2.last().pose(),
+                    bufferSource,
+                    Font.DisplayMode.NORMAL,
+                    0,
+                    packLight);
             bufferSource.endBatch();
         });
     }

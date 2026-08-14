@@ -118,7 +118,8 @@ public class ClientRenderHelper {
         }
 
         public static void _colorMask(boolean red, boolean green, boolean blue, boolean alpha) {
-            GlStateManager._colorMask(red, green, blue, alpha);
+            int writeMask = (alpha ? 1 << 3 : 0) | (blue ? 1 << 2 : 0) | (green ? 1 << 1 : 0) | (red ? 1 : 0);
+            GlStateManager._colorMask(writeMask);
         }
         public static void _depthMask(boolean flag) {
             GlStateManager._depthMask(flag);

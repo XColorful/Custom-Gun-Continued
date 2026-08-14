@@ -13,7 +13,6 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.rendertype.RenderType;
@@ -104,7 +103,7 @@ public class ClientRenderUtils {
     public static class LightTexture_ {
 
         public static int pack(int blockLight, int skyLight) {
-            return LightTexture.pack(blockLight, skyLight); // blockLight << 4 | skyLight << 20;
+            return blockLight << 4 | skyLight << 20;
         }
     }
 
@@ -120,10 +119,10 @@ public class ClientRenderUtils {
             return RenderTypes.entityTranslucent(textureLocation);
         }
         public static RenderType entityTranslucentCull(Identifier textureLocation) {
-            return RenderTypes.itemEntityTranslucentCull(textureLocation);
+            return RenderTypes.entityTranslucentCullItemTarget(textureLocation);
         }
         public static RenderType itemEntityTranslucentCull(Identifier textureLocation) {
-            return RenderTypes.itemEntityTranslucentCull(textureLocation);
+            return RenderTypes.entityTranslucentCullItemTarget(textureLocation);
         }
     }
 

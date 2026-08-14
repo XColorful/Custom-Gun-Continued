@@ -14,8 +14,8 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.api.minecraft.texture.CustomTexture;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -24,12 +24,11 @@ import java.util.function.Consumer;
 
 public class ClientRenderRegistry {
 
-    public static class LaserBeamRenderState extends RenderStateShard {
+    public static class LaserBeamRenderState {
 
         public static final @NotNull Identifier LASER_BEAM_TEXTURE = CustomTexture.WHITE_8x8.getLocation();
 
         public LaserBeamRenderState(String pName, Runnable pSetupState, Runnable pClearState) {
-            super(pName, pSetupState, pClearState);
         }
 
         public static final RenderPipeline LASER_BEAM_PIPELINE = RenderPipeline.builder(RenderPipelines.MATRICES_PROJECTION_SNIPPET)
@@ -49,44 +48,18 @@ public class ClientRenderRegistry {
                 .withCull(false)
                 .build();
 
-        protected static final RenderType LASER_BEAM = RenderType.create(
-                "laser_beam",
-                256,
-                true,
-                true,
-                LASER_BEAM_PIPELINE,
-                RenderType.CompositeState.builder()
-                        .setLayeringState(VIEW_OFFSET_Z_LAYERING)
-                        .setOutputState(ITEM_ENTITY_TARGET)
-                        .setLightmapState(LIGHTMAP)
-                        .setTextureState(new RenderStateShard.TextureStateShard(LASER_BEAM_TEXTURE, false))
-                        .createCompositeState(false));
-
-        protected static final RenderType LASER_BEAM_ENTITY = RenderType.create(
-                "laser_beam_entity",
-                256,
-                true,
-                true,
-                LASER_BEAM_ENTITY_PIPELINE,
-                RenderType.CompositeState.builder()
-                        .setLayeringState(VIEW_OFFSET_Z_LAYERING)
-                        .setOutputState(ITEM_ENTITY_TARGET)
-                        .setLightmapState(LIGHTMAP)
-                        .setOverlayState(OVERLAY)
-                        .setTextureState(new RenderStateShard.TextureStateShard(LASER_BEAM_TEXTURE, false))
-                        .createCompositeState(false));
-
         public static RenderType getLaserBeam() {
-            return LASER_BEAM;
+            return RenderTypes.entityTranslucent(LASER_BEAM_TEXTURE);
         }
 
         public static RenderType getLaserBeamEntity() {
-            return LASER_BEAM_ENTITY;
+            return RenderTypes.entityTranslucent(LASER_BEAM_TEXTURE);
         }
     }
 
     @ApiStatus.AvailableSince("1.21.6")
     public static void onRegisterRenderPipelines(Consumer<RenderPipeline> registrar) {
+        if (true) return;
         registrar.accept(LaserBeamRenderState.LASER_BEAM_PIPELINE);
         registrar.accept(LaserBeamRenderState.LASER_BEAM_ENTITY_PIPELINE);
 

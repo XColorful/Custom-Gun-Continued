@@ -388,11 +388,11 @@ public class GunItemRenderer extends AnimateGeoItemRenderer<GunModelObject, GunA
 
                     // 渲染枪械模型
                     RenderType renderType = ClientRenderUtils.RenderType_.entityCutout(modelTextureLocation);
-                    ClientRenderHelper.FirstPersonArmHelper.setFirstPersonArmCollector(bufferSource);
+                    ClientRenderHelper.FirstPersonArmHelper.setFirstPersonArmCollector_(bufferSource);
                     try {
                         gunModelObject.render(poseStack, transformType, renderType, light, overlay, gunItem);
                     } finally {
-                        ClientRenderHelper.FirstPersonArmHelper.setFirstPersonArmCollector(null);
+                        ClientRenderHelper.FirstPersonArmHelper.setFirstPersonArmCollector_(null);
                     }
                 }
             }

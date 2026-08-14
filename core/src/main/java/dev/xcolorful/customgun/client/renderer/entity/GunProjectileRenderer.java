@@ -158,7 +158,7 @@ public class GunProjectileRenderer extends EntityRenderer<GunProjectile, GunProj
             poseStack.scale(-1, -1, 1);
             ammoEntityModelObject.render(poseStack,
                     ItemDisplayContext.GROUND,
-                    RenderType.itemEntityTranslucentCull(textureLocation),
+                    ClientRenderUtils.RenderType_.entityTranslucentCull(textureLocation),
                     packedLight,
                     OverlayTexture.NO_OVERLAY);
         }
@@ -194,8 +194,8 @@ public class GunProjectileRenderer extends EntityRenderer<GunProjectile, GunProj
                 if (offset == null) {
                     Vector3f _offset = GunItemRenderer.State.muzzleRenderOffset;
                     offset = new float[]{_offset.x, _offset.y, _offset.z};
-                    iClientGunProjectile.cgc$setCameraXRot(camera.getXRot());
-                    iClientGunProjectile.cgc$setCameraYRot(camera.getYRot());
+                    iClientGunProjectile.cgc$setCameraXRot(ClientRenderUtils.getCameraXRot(camera));
+                    iClientGunProjectile.cgc$setCameraYRot(ClientRenderUtils.getCameraYRot(camera));
                     iClientGunProjectile.cgc$setFirstPersonRenderOffset(offset);
                 }
 
@@ -223,7 +223,7 @@ public class GunProjectileRenderer extends EntityRenderer<GunProjectile, GunProj
             poseStack.translate(0, isFirstPerson ? 0 : -0.2, trailLength / 2.0);
             poseStack.scale(scale, scale, (float) trailLength);
 
-            RenderType type = RenderType.energySwirl(CustomTexture.GUN_PROJECTILE.getLocation(), 15, 15);
+            RenderType type = ClientRenderUtils.RenderType_.energySwirl(CustomTexture.GUN_PROJECTILE.getLocation(), 15, 15);
             modelObject.render(poseStack, ItemDisplayContext.NONE, type, packedLight, OverlayTexture.NO_OVERLAY,
                     tracerColor[0], tracerColor[1], tracerColor[2], tracerColor[3]);
         }

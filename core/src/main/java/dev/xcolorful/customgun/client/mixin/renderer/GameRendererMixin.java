@@ -18,7 +18,7 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
-import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -88,7 +88,7 @@ public abstract class GameRendererMixin {
      * </ul>
      */
     @Deprecated(since = "26.1.x")
-    @Inject(method = "getFov", at = @At("HEAD"))
+//    @Inject(method = "getFov", at = @At("HEAD"))
     public void cgc$switchRenderType(Camera pActiveRenderInfo,
                                      float pPartialTicks,
                                      boolean pUseFOVSetting,
@@ -99,17 +99,16 @@ public abstract class GameRendererMixin {
      * 楼上说得对，但是时代是会变的，咱别管optifine了
      */
     @Inject(method = "renderItemInHand", at = @At("HEAD"))
-    private void cgc$beforeRenderItemInHand(Camera camera,
-                                            float partialTick,
-                                            Matrix4f projectionMatrix,
+    private void cgc$beforeRenderItemInHand(CameraRenderState cameraState,
+                                            float deltaPartialTick,
+                                            Matrix4fc modelViewMatrix,
                                             CallbackInfo ci) {
         GunCameraHelper.State.renderItemInHand = true;
     }
     @Inject(method = "renderItemInHand", at = @At("RETURN"))
-    private void cgc$afterRenderItemInHand(Camera camera,
-                                           float partialTick,
-                                           Matrix4f projectionMatrix,
-                                           CallbackInfo ci) {
+    private void cgc$afterRenderItemInHand(CameraRenderState cameraState,
+                                           float deltaPartialTick,
+                                           Matrix4fc modelViewMatrix, CallbackInfo ci) {
         GunCameraHelper.State.renderItemInHand = false;
     }
 }

@@ -37,14 +37,14 @@ public class ClientRenderRegistry {
                 .withFragmentShader("core/position_color_tex_lightmap")
                 .withSampler("Sampler0")
                 .withSampler("Sampler2")
-                .withBlend(BlendFunction.LIGHTNING)
+//                .withBlend(BlendFunction.LIGHTNING)
                 .withCull(false)
                 .withVertexFormat(DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS)
                 .build();
 
         public static final RenderPipeline LASER_BEAM_ENTITY_PIPELINE = RenderPipeline.builder(RenderPipelines.ENTITY_EMISSIVE_SNIPPET)
                 .withLocation(CustomGun.getMcRegistry().createResourceLocation(String.format("%s:laser_beam_entity", CustomGun.MOD_ID)))
-                .withBlend(BlendFunction.LIGHTNING)
+//                .withBlend(BlendFunction.LIGHTNING)
                 .withCull(false)
                 .build();
 

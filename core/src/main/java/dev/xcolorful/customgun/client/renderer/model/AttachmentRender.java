@@ -82,7 +82,7 @@ public class AttachmentRender implements IModelComponentRenderer {
         }
         if (attachmentTextureLocation == null) attachmentTextureLocation = ClientRenderUtils.getMissingTextureLocation();
 
-        RenderType renderType = RenderType.entityCutout(attachmentTextureLocation);
+        RenderType renderType = ClientRenderUtils.RenderType_.entityCutout(attachmentTextureLocation);
         attachmentModelObject.render(poseStack, transformType, renderType, light, overlay, gunItem, attachmentItem);
     }
 

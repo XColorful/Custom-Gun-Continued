@@ -12,6 +12,7 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.entity.state.PlayerRenderState;
@@ -90,6 +91,13 @@ public class ClientRenderUtils {
     }
     public static Matrix4f createCenterOffsetMatrix(IRenderLevelStageEvent event, double centerX, double centerY, double centerZ, Vec3 cameraPos) {
         return createCenterOffsetMatrix(new Matrix4f(), centerX, centerY, centerZ, cameraPos);
+    }
+
+    public static class LightTexture_ {
+
+        public static int pack(int blockLight, int skyLight) {
+            return LightTexture.pack(blockLight, skyLight); // blockLight << 4 | skyLight << 20;
+        }
     }
 
     public static class RenderType_ {

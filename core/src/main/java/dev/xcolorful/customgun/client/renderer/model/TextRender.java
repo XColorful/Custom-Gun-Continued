@@ -14,10 +14,10 @@ import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.api.renderer.model.IModelComponentRenderer;
 import dev.xcolorful.customgun.client.model.ModelObject;
 import dev.xcolorful.customgun.client.resource.assets.display._ModelNodeTextDisplay;
+import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import dev.xcolorful.customgun.core.api.text.placeholder.IPlaceholderManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -61,7 +61,7 @@ public class TextRender implements IModelComponentRenderer {
             boolean shadow = this.modelNodeTextDisplay.getEnableTextShadow();
             int color = this.modelNodeTextDisplay.getTextColor();
             float scale = this.modelNodeTextDisplay.getTextScale();
-            int packLight = LightTexture.pack(this.modelNodeTextDisplay.getTextLight(), this.modelNodeTextDisplay.getTextLight());
+            int packLight = ClientRenderUtils.LightTexture_.pack(this.modelNodeTextDisplay.getTextLight(), this.modelNodeTextDisplay.getTextLight());
             int width = font.width(text);
             int xOffset = (int) (width * this.modelNodeTextDisplay.getXOffsetScale());
 

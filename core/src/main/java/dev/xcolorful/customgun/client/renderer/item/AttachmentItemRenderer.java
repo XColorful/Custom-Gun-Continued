@@ -70,11 +70,11 @@ public class AttachmentItemRenderer extends BlockEntityWithoutLevelRenderer {
             if (attachmentTextureLocation == null) attachmentTextureLocation = ClientRenderUtils.getMissingTextureLocation();
 
             RenderType renderType = ClientRenderUtils.RenderType_.entityCutout(attachmentTextureLocation);
-            ClientRenderHelper.FirstPersonArmHelper.setFirstPersonArmCollector(pBuffer);
+            ClientRenderHelper.FirstPersonArmHelper.setFirstPersonArmCollector_(pBuffer);
             try {
                 attachmentModelObject.render(poseStack, transformType, renderType, pPackedLight, pPackedOverlay, null, null);
             } finally {
-                ClientRenderHelper.FirstPersonArmHelper.setFirstPersonArmCollector(null);
+                ClientRenderHelper.FirstPersonArmHelper.setFirstPersonArmCollector_(null);
             }
         } else {
             // 渲染 GUI

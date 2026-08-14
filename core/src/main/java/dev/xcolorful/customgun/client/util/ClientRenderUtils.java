@@ -12,9 +12,10 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
@@ -54,13 +55,13 @@ public class ClientRenderUtils {
     }
 
     public static float getCameraXRot(Camera camera) {
-        return camera.getXRot(); // camera.xRot();
+        return camera.xRot();
     }
     public static float getCameraYRot(Camera camera) {
-        return camera.getYRot(); // camera.yRot();
+        return camera.yRot();
     }
     public static Entity getEntity(Camera camera) {
-        return camera.getEntity();
+        return camera.entity();
     }
 
     /**
@@ -94,20 +95,20 @@ public class ClientRenderUtils {
 
     public static class RenderType_ {
 
-        public static RenderType energySwirl(ResourceLocation textureLocation, float offsetX, float offsetY) {
-            return RenderType.energySwirl(textureLocation, offsetX, offsetY);
+        public static RenderType energySwirl(Identifier textureLocation, float offsetX, float offsetY) {
+            return RenderTypes.energySwirl(textureLocation, offsetX, offsetY);
         }
-        public static RenderType entityCutout(ResourceLocation textureLocation) {
-            return RenderType.entityCutout(textureLocation);
+        public static RenderType entityCutout(Identifier textureLocation) {
+            return RenderTypes.entityCutout(textureLocation);
         }
-        public static RenderType entityTranslucent(ResourceLocation textureLocation) {
-            return RenderType.entityTranslucent(textureLocation);
+        public static RenderType entityTranslucent(Identifier textureLocation) {
+            return RenderTypes.entityTranslucent(textureLocation);
         }
-        public static RenderType entityTranslucentCull(ResourceLocation textureLocation) {
-            return RenderType.itemEntityTranslucentCull(textureLocation);
+        public static RenderType entityTranslucentCull(Identifier textureLocation) {
+            return RenderTypes.itemEntityTranslucentCull(textureLocation);
         }
-        public static RenderType itemEntityTranslucentCull(ResourceLocation textureLocation) {
-            return RenderType.itemEntityTranslucentCull(textureLocation);
+        public static RenderType itemEntityTranslucentCull(Identifier textureLocation) {
+            return RenderTypes.itemEntityTranslucentCull(textureLocation);
         }
     }
 

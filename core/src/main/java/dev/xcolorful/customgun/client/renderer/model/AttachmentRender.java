@@ -18,6 +18,7 @@ import dev.xcolorful.customgun.client.resource.assets.display.AttachmentDisplay;
 import dev.xcolorful.customgun.client.resource.assets.display._LodDisplay;
 import dev.xcolorful.customgun.client.resource.instance.data.ClientAttachmentIndexInstance;
 import dev.xcolorful.customgun.client.util.ClientRenderDistance;
+import dev.xcolorful.customgun.client.util.ClientRenderHelper;
 import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import dev.xcolorful.customgun.core.api.item.IAttachment;
 import dev.xcolorful.customgun.core.api.item.attachment.AttachmentCategory;
@@ -53,10 +54,15 @@ public class AttachmentRender implements IModelComponentRenderer {
         @Nullable ClientAttachmentIndexInstance clientAttachmentIndexInstance = ClientResourceApi.getClientAttachmentIndexInstance(attachmentLocation);
         if (clientAttachmentIndexInstance == null) {
             // 没有对应的 attachmentIndex，渲染黑紫材质以提醒
+            @Nullable Object collector = ClientRenderHelper.FirstPersonArmHelper.getFirstPersonArmCollector();
+            if (collector == null) return;
+
             Minecraft mc = Minecraft.getInstance();
             MultiBufferSource bufferSource = mc.renderBuffers().bufferSource();
-            VertexConsumer buffer = bufferSource.getBuffer(ClientRenderUtils.RenderType_.entityTranslucent(ClientRenderUtils.getMissingTextureLocation()));
-            AttachmentItemRenderer.SLOT_ATTACHMENT_MODEL.renderToBuffer(poseStack, buffer, light, overlay, 1.0f, 1.0f, 1.0f, 1.0f);
+            {
+                VertexConsumer buffer = bufferSource.getBuffer(ClientRenderUtils.RenderType_.entityTranslucent(ClientRenderUtils.getMissingTextureLocation()));
+                AttachmentItemRenderer.SLOT_ATTACHMENT_MODEL.renderToBuffer(poseStack, buffer, light, overlay, 1.0f, 1.0f, 1.0f, 1.0f);
+            }
             return;
         }
 

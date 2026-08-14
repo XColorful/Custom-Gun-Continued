@@ -7,6 +7,7 @@
 
 package dev.xcolorful.customgun.client.util;
 
+import com.mojang.blaze3d.pipeline.RenderTarget;
 import dev.xcolorful.customgun.client.api.event.IRenderLevelStageEvent;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
@@ -62,6 +63,13 @@ public class ClientRenderUtils {
     }
     public static Entity getEntity(Camera camera) {
         return camera.getEntity();
+    }
+
+    public static Camera getMainCamera(Minecraft minecraft) {
+        return minecraft.gameRenderer.getMainCamera();
+    }
+    public static RenderTarget getMainRenderTarget(Minecraft minecraft) {
+        return minecraft.getMainRenderTarget();
     }
 
     /**

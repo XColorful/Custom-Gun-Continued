@@ -18,6 +18,7 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
+import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -98,16 +99,16 @@ public abstract class GameRendererMixin {
      * 楼上说得对，但是时代是会变的，咱别管optifine了
      */
     @Inject(method = "renderItemInHand", at = @At("HEAD"))
-    private void cgc$beforeRenderItemInHand(PoseStack poseStack,
-                                            Camera camera,
+    private void cgc$beforeRenderItemInHand(Camera camera,
                                             float partialTick,
+                                            Matrix4f projectionMatrix,
                                             CallbackInfo ci) {
         GunCameraHelper.State.renderItemInHand = true;
     }
     @Inject(method = "renderItemInHand", at = @At("RETURN"))
-    private void cgc$afterRenderItemInHand(PoseStack poseStack,
-                                           Camera camera,
+    private void cgc$afterRenderItemInHand(Camera camera,
                                            float partialTick,
+                                           Matrix4f projectionMatrix,
                                            CallbackInfo ci) {
         GunCameraHelper.State.renderItemInHand = false;
     }

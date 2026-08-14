@@ -101,7 +101,7 @@ public class BulletHoleParticle extends SingleQuadParticle {
 
         // 0 - 30 tick 内，从 15 亮度到 0 亮度
         int light = Math.max(15 - this.age / 2, 0);
-        int lightColor = light << 4 | light << 20; // LightTexture.pack(int blockLight, int skyLight) { return blockLight << 4 | skyLight << 20; }
+        int lightColor = ClientRenderUtils.LightTexture_.pack(light, light);
 
         // 颜色，逐渐渐变到 0 0 0，也就是黑色
         float colorPercent = light / 15.0f;

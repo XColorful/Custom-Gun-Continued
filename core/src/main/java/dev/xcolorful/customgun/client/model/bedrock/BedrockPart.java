@@ -13,9 +13,9 @@ import com.mojang.math.Axis;
 import dev.xcolorful.customgun.client.api.model.bedrock.IBedrockCube;
 import dev.xcolorful.customgun.client.api.model.bedrock.IBedrockCubeCompile;
 import dev.xcolorful.customgun.client.api.model.bedrock.IBedrockRenderer;
+import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
-import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.world.item.ItemDisplayContext;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
@@ -226,7 +226,7 @@ public class BedrockPart implements IBedrockCubeCompile, IBedrockRenderer {
                        VertexConsumer consumer,
                        int light, int overlay,
                        float red, float green, float blue, float alpha) {
-        int cubePackedLight = this.illuminated ? LightTexture.pack(15, 15) // 最大亮度
+        int cubePackedLight = this.illuminated ? ClientRenderUtils.LightTexture_.pack(15, 15) // 最大亮度
                 : light;
 
         if (this.visible) {

@@ -4,7 +4,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import dev.xcolorful.customgun.client.api.event.IRenderHandEvent;
 import dev.xcolorful.customgun.core.api.event.EventType;
 import dev.xcolorful.customgun.neoforge.event.NeoEvent;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
@@ -36,7 +35,7 @@ public class NeoRenderHandEvent extends NeoEvent implements IRenderHandEvent {
         return renderHandEvent.getPoseStack();
     }
 
-    @Override public @Nullable MultiBufferSource getMultiBufferSource() {
+    @Override public @Nullable Object getMultiBufferSource() {
         return null;
     }
     @Override public @Nullable SubmitNodeCollector getSubmitNodeCollector() {

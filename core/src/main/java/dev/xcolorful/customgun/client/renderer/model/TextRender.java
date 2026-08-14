@@ -19,7 +19,8 @@ import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import dev.xcolorful.customgun.core.api.text.placeholder.IPlaceholderManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -59,7 +60,7 @@ public class TextRender implements IModelComponentRenderer {
 
         // 和枪械模型共用顶点缓冲的都需要代理到渲染结束后渲染
         this.modelObject.delegateRender((_poseStack, _vertexBuffer, _transformType, _light, _overlay) -> {
-            @Nullable Object collector = ClientRenderHelper.FirstPersonArmHelper.getFirstPersonArmCollector();
+            @Nullable SubmitNodeCollector collector = ClientRenderHelper.FirstPersonArmHelper.getFirstPersonArmCollector();
             if (collector == null) return;
 
             Font font = Minecraft.getInstance().font;
@@ -75,19 +76,16 @@ public class TextRender implements IModelComponentRenderer {
             poseStack2.last().pose().mul(pose);
             poseStack2.scale(2 / 300f * scale, -2 / 300f * scale, -2 / 300f);
 
-            Minecraft mc = Minecraft.getInstance();
-            MultiBufferSource.BufferSource bufferSource = mc.renderBuffers().bufferSource();
-            font.drawInBatch(text,
+            collector.submitText(poseStack2,
                     -xOffset,
                     -font.lineHeight / 2f,
-                    color,
+                    Component.literal(text).getVisualOrderText(),
                     shadow,
-                    poseStack2.last().pose(),
-                    bufferSource,
                     Font.DisplayMode.NORMAL,
+                    packLight,
+                    color,
                     0,
-                    packLight);
-            bufferSource.endBatch();
+                    0);
         });
     }
 }

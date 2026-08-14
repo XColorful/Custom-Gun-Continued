@@ -67,3 +67,40 @@
 ```
 移植顺序移到开头，添加勾选框，添加到二级标题的跳转，以及回到开头的跳转
 ```
+
+# 
+
+```
+我现在需要完成Custom Gun Continued分支26.2neoforge(PR #32)针对Minecraft 26.2移除了MultiBufferSource而需要的移植。
+
+上下文快速交代：
+- CGC是跨版本开发的架构，1.20.1完成代码后，多版本同步更新，该手法基于作者开发Custom BattleRoyale的经验
+- CGC目前已经完成 #32 1.20.1-26.1.2的移植，现在需要完成26.2的部分
+- 你可以通过IDEA提供的MCP来浏览Custom BattleRoyale的文档，位于BattleRoyale仓库根目录./docs/下
+- Custom BattleRoyale针对26.2的移植有留下文档，在./docs/architecture/client/26.2-rendering-system-investigation-report.md
+
+以下人工信息辅助你完成任务:
+- 目前在CGC一共搜索到17个文件包含MultiBufferSource的import，由于26.2已经没有了MultiBufferSource，这些文件是一定需要修改的
+- Custom BattleRoyale的渲染仅限于方块渲染和单面绘制，与CGC里自定义基岩版模型渲染不同，但对于原版API调用方式仍有一定参考价值
+- 对于IRenderHandEvent的使用场景，如果原本使用MultiBufferSource而修改后改用SubmitNodeCollector，那么应使用IRenderHandEvent#getMultiBufferSource_SubmitNodeCollector这个接口
+- 默认Custom BattleRoyale的代码都是通过编译且正常运行的
+- CBR针对26.2的移植，可以通过调取创建"26.2-rendering-system-investigation-report.md"的git commit之后的几次commit来浏览，commit名为"Port level renderer to 26.2 render system"和Port block renderer to 26.2 render system"
+- 调用IDEA提供的MCP时注意区分CGC和CBR的文档、代码
+
+修改限制说明：
+- 你可以自由浏览Custom Gun Continued和Custom BattleRoyale项目的源码、文档、git历史信息
+- CGC的dev.xcolorful.customgun.client.compat.minecraft.BlockEntityWithoutLevelRenderer是一个占位用的，对子类renderByItem的修改应同步应用于父类
+- 只针对原本使用MultiBufferSource的场景进行修改，一定会涉及与已有代码的冲突；尽可能不新增辅助函数，直接在已有的使用处进行修改
+- 由于已经完成了1.20.1-26.1.2的差异，且26.1.2与26.2的变动不大，目前默认只需要处理MultiBufferSource的移植
+- 如果处理完MultiBufferSource而还有编译不通过的，可以自行研究如何移植
+- 你不得切换git worktree，当前待修改的内容已经是从26.1.2合并到26.2的
+- 你不得修改git仓库信息，完成任务后先通知我检查
+
+任务具体说明：
+- 借助Custom BattleRoyale之前移植留下的文档和git变动历史来研究原版渲染变更
+- 在Custom Gun Continued根目录./docs/architecture/client/render/下新增一个报告文档，描述CGC对MultiBufferSource的使用以及原版的变更的调查报告
+- 完成对MultiBufferSource的移植，需要通过编译
+- 注意上下文长度限制，你可以自行决定是否安排多Agent来完成该任务
+
+现在开始执行任务
+```

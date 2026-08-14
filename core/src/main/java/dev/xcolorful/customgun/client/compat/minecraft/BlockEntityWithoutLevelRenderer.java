@@ -3,7 +3,7 @@ package dev.xcolorful.customgun.client.compat.minecraft;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.xcolorful.customgun.client.api.renderer.item.IBlockEntityWithoutLevelRenderer;
 import net.minecraft.client.model.geom.EntityModelSet;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -23,7 +23,7 @@ public class BlockEntityWithoutLevelRenderer implements IBlockEntityWithoutLevel
     public void renderByItem(ItemStack stack,
                              ItemDisplayContext transformType,
                              PoseStack poseStack,
-                             MultiBufferSource buffer,
+                             SubmitNodeCollector buffer,
                              int packedLight, int packedOverlay) {
     }
 }

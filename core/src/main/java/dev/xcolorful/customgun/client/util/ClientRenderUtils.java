@@ -67,10 +67,10 @@ public class ClientRenderUtils {
     }
 
     public static Camera getMainCamera(Minecraft minecraft) {
-        return minecraft.gameRenderer.getMainCamera();
+        return minecraft.gameRenderer.mainCamera();
     }
     public static RenderTarget getMainRenderTarget(Minecraft minecraft) {
-        return minecraft.getMainRenderTarget();
+        return minecraft.gameRenderer.mainRenderTarget();
     }
 
     /**

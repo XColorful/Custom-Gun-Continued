@@ -28,7 +28,6 @@ import dev.xcolorful.customgun.core.entity.projectile.GunProjectile;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRenderer;
@@ -91,7 +90,7 @@ public class GunProjectileRenderer extends EntityRenderer<GunProjectile, GunProj
         try {
             this.render(state,
                     poseStack,
-                    Minecraft.getInstance().renderBuffers().bufferSource(),
+                    submitNodeCollector,
                     state.lightCoords);
         } finally {
             ClientRenderHelper.FirstPersonArmHelper.setFirstPersonArmCollector(null);
@@ -103,7 +102,7 @@ public class GunProjectileRenderer extends EntityRenderer<GunProjectile, GunProj
 //                       @NotNull GunProjectile gunProjectile,
 //                       float entityYaw, float partialTicks,
                        @NotNull PoseStack poseStack,
-                       @NotNull MultiBufferSource buffer,
+                       @NotNull SubmitNodeCollector buffer,
                        int packedLight) {
         GunProjectile gunProjectile = renderState.gunProjectile;
         float partialTicks = renderState.partialTick;
@@ -140,7 +139,7 @@ public class GunProjectileRenderer extends EntityRenderer<GunProjectile, GunProj
         }
     }
     private void _renderAmmoObject(@NotNull PoseStack poseStack,
-                                   @NotNull MultiBufferSource buffer,
+                                   @NotNull SubmitNodeCollector buffer,
                                    float entityYaw, float entityPitch, float partialTicks,
                                    int packedLight,
                                    @NotNull GunProjectile gunProjectile) {
@@ -173,7 +172,7 @@ public class GunProjectileRenderer extends EntityRenderer<GunProjectile, GunProj
         poseStack.popPose();
     }
     private void _renderTracer(@NotNull PoseStack poseStack,
-                               @NotNull MultiBufferSource buffer,
+                               @NotNull SubmitNodeCollector buffer,
                                float entityYaw, float entityPitch, float partialTicks,
                                int packedLight,
                                IClientGunProjectile iClientGunProjectile, @NotNull GunProjectile gunProjectile,

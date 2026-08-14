@@ -2,7 +2,6 @@ package dev.xcolorful.customgun.client.api.event;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.xcolorful.customgun.core.api.event.IEvent;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
@@ -15,7 +14,7 @@ public interface IRenderHandEvent extends IEvent {
     PoseStack getPoseStack();
 
     @Deprecated(since = "1.21.10")
-    @Nullable MultiBufferSource getMultiBufferSource();
+    @Nullable Object getMultiBufferSource();
     @ApiStatus.AvailableSince("1.21.10")
     @Nullable SubmitNodeCollector getSubmitNodeCollector();
 

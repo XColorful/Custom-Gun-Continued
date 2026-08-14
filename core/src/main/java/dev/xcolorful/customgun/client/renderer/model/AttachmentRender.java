@@ -23,8 +23,7 @@ import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import dev.xcolorful.customgun.core.api.item.IAttachment;
 import dev.xcolorful.customgun.core.api.item.attachment.AttachmentCategory;
 import dev.xcolorful.customgun.core.api.item.attachment.IAttachmentGetter;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -54,15 +53,15 @@ public class AttachmentRender implements IModelComponentRenderer {
         @Nullable ClientAttachmentIndexInstance clientAttachmentIndexInstance = ClientResourceApi.getClientAttachmentIndexInstance(attachmentLocation);
         if (clientAttachmentIndexInstance == null) {
             // 没有对应的 attachmentIndex，渲染黑紫材质以提醒
-            @Nullable Object collector = ClientRenderHelper.FirstPersonArmHelper.getFirstPersonArmCollector();
+            @Nullable SubmitNodeCollector collector = ClientRenderHelper.FirstPersonArmHelper.getFirstPersonArmCollector();
             if (collector == null) return;
 
-            Minecraft mc = Minecraft.getInstance();
-            MultiBufferSource bufferSource = mc.renderBuffers().bufferSource();
-            {
-                VertexConsumer buffer = bufferSource.getBuffer(ClientRenderUtils.RenderType_.entityTranslucent(ClientRenderUtils.getMissingTextureLocation()));
-                AttachmentItemRenderer.SLOT_ATTACHMENT_MODEL.renderToBuffer(poseStack, buffer, light, overlay, 1.0f, 1.0f, 1.0f, 1.0f);
-            }
+            RenderType missingRenderType = ClientRenderUtils.RenderType_.entityTranslucent(ClientRenderUtils.getMissingTextureLocation());
+            collector.submitCustomGeometry(poseStack, missingRenderType, (pose, buffer) -> {
+                PoseStack _poseStack = new PoseStack();
+                _poseStack.last().set(pose);
+                AttachmentItemRenderer.SLOT_ATTACHMENT_MODEL.renderToBuffer(_poseStack, buffer, light, overlay, 1.0f, 1.0f, 1.0f, 1.0f);
+            });
             return;
         }
 

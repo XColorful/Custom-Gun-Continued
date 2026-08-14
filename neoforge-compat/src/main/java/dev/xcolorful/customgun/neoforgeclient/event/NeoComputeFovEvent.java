@@ -48,7 +48,7 @@ public class NeoComputeFovEvent extends NeoEvent implements IComputeFovEvent {
         computeFov.setFOV(fov);
     }
     @Override public Boolean useConfiguredFov() {
-        return computeFov.usedConfiguredFov();
+        return null;
     }
 
 

@@ -7,6 +7,7 @@
 
 package dev.xcolorful.customgun.client.util;
 
+import com.mojang.blaze3d.PrimitiveTopology;
 import com.mojang.blaze3d.opengl.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
@@ -14,7 +15,6 @@ import dev.xcolorful.customgun.client.compat.ar.ARCompat;
 import dev.xcolorful.customgun.client.compat.optifine.OptifineCompat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.player.AvatarRenderer;
@@ -42,7 +42,7 @@ public class ClientRenderHelper {
 
     private static void innerBlit(Matrix4f matrix, float x1, float x2, float y1, float y2, float blitOffset, float minU, float maxU, float minV, float maxV) {
 //        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        BufferBuilder bufferbuilder = new BufferBuilder(new ByteBufferBuilder(1536), PrimitiveTopology.QUADS, DefaultVertexFormat.POSITION_TEX);
         bufferbuilder.addVertex(matrix, x1, y2, blitOffset).setUv(minU, maxV);
         bufferbuilder.addVertex(matrix, x2, y2, blitOffset).setUv(maxU, maxV);
         bufferbuilder.addVertex(matrix, x2, y1, blitOffset).setUv(maxU, minV);
@@ -77,7 +77,6 @@ public class ClientRenderHelper {
         Minecraft mc = Minecraft.getInstance();
         EntityRenderDispatcher renderManager = mc.getEntityRenderDispatcher();
         AvatarRenderer<?> renderer = renderManager.getPlayerRenderer(player);
-        MultiBufferSource buffer = Minecraft.getInstance().renderBuffers().bufferSource();
         // int oldId = RenderSystem.getShaderTexture(0);
         // RenderSystem.setShaderTexture(0, ClientRenderUtils.getSkinTextureLocation(player));
 
@@ -173,18 +172,20 @@ public class ClientRenderHelper {
          * 在26.2以前的版本用于占位，如果低版本渲染异常可使其始终返回非null来规避
          */
         @ApiStatus.AvailableSince("26.2")
-        public static @Nullable Object getFirstPersonArmCollector() {
-            if (disableCollectorCheck) return _dummy;
-            var collector = FIRST_PERSON_ARM_COLLECTOR.get();
-            return collector != null ? collector : dummyCollector.get();
+        public static @Nullable SubmitNodeCollector getFirstPersonArmCollector() {
+            return FIRST_PERSON_ARM_COLLECTOR.get();
         }
 
+        @Deprecated(since = "26.2")
         public static boolean disableCollectorCheck = true; // 26.2起不再使用
+        @Deprecated(since = "26.2")
         private static final @NotNull Object _dummy = new Object();
+        @Deprecated(since = "26.2")
         private static final ThreadLocal<Object> dummyCollector = new ThreadLocal<>();
         /**
          * 该重载用于[1.21.10, 26.2)占位用
          */
+        @Deprecated(since = "26.2")
         public static void setFirstPersonArmCollector_(Object collector) {
             if (collector == null) {
                 dummyCollector.remove();

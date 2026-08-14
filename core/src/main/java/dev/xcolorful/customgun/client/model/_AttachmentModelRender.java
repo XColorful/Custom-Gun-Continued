@@ -12,14 +12,13 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import dev.xcolorful.customgun.client.api.entity.shooter.ILocalShooterGetter;
 import dev.xcolorful.customgun.client.compat.ar.AttachmentModelAR;
-import dev.xcolorful.customgun.client.compat.oculus.OculusCompat;
 import dev.xcolorful.customgun.client.model.bedrock.BedrockPart;
 import dev.xcolorful.customgun.client.renderer.model.BeamRender;
 import dev.xcolorful.customgun.client.util.ClientRenderHelper;
 import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -211,7 +210,7 @@ public class _AttachmentModelRender {
                                         @Nullable List<BedrockPart> path) {
         if (path == null) return;
 
-        @Nullable Object collector = ClientRenderHelper.FirstPersonArmHelper.getFirstPersonArmCollector();
+        @Nullable SubmitNodeCollector collector = ClientRenderHelper.FirstPersonArmHelper.getFirstPersonArmCollector();
         if (collector == null) return;
 
         poseStack.pushPose(); {
@@ -219,23 +218,18 @@ public class _AttachmentModelRender {
                 path.get(i).translate_rotate_scale(poseStack);
             }
             BedrockPart part = path.get(path.size() - 1);
-            {
+            collector.submitCustomGeometry(poseStack, renderType, (pose, vertexConsumer) -> {
+                PoseStack _poseStack = new PoseStack();
+                _poseStack.last().set(pose);
                 part.visible = true; {
-                    Minecraft mc = Minecraft.getInstance();
-
-                    MultiBufferSource.BufferSource bufferSource = mc.renderBuffers().bufferSource();
-                    VertexConsumer vertexConsumer = bufferSource.getBuffer(renderType);
-                    part.render(poseStack,
+                    part.render(_poseStack,
                             transformType,
                             vertexConsumer,
                             light, overlay);
-
-                    if (!OculusCompat.endBatch(bufferSource)) {
-                        bufferSource.endBatch();
-                    }
                 }
                 part.visible = false;
-            }
+                }
+            );
         }
         poseStack.popPose();
     }
@@ -279,11 +273,8 @@ public class _AttachmentModelRender {
                                                 boolean selective) {
         if (_this.divisionOcularEntries.isEmpty() || _this.divisionOcularEntries.get(0).getOcularNodePath() == null) return;
 
-        @Nullable Object collector = ClientRenderHelper.FirstPersonArmHelper.getFirstPersonArmCollector();
+        @Nullable SubmitNodeCollector collector = ClientRenderHelper.FirstPersonArmHelper.getFirstPersonArmCollector();
         if (collector == null) return;
-
-        Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder builder;
 
         // 准备渲染圆形模板层
         ClientRenderHelper.GL._stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_INVERT);
@@ -312,19 +303,18 @@ public class _AttachmentModelRender {
             float centerX = ocularCenter.x() * 16 * 90;
             float centerY = ocularCenter.y() * 16 * 90;
 
-            {
-                builder = tesselator.begin(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR);
-                builder.addVertex(matrixStack.last(), centerX, centerY, -90.0f)
+            collector.submitCustomGeometry(matrixStack, renderType, (pose, builder) -> {
+                builder.addVertex(pose, centerX, centerY, -90.0f)
                         .setColor(255, 255, 255, 255);
                 for (int j = 0; j <= 90; j++) {
                     float angle = (float) j * ((float) Math.PI * 2F) / 90.0F;
                     float sin = Mth.sin(angle);
                     float cos = Mth.cos(angle);
-                    builder.addVertex(centerX + cos * rad, centerY + sin * rad, -90.0f)
+                    builder.addVertex(pose, centerX + cos * finalRad, centerY + sin * finalRad, -90.0f)
                             .setColor(255, 255, 255, 255);
                 }
-                renderType.draw(builder.buildOrThrow());
             }
+            );
         }
 
         ClientRenderHelper.GL._depthMask(true);
@@ -389,7 +379,7 @@ public class _AttachmentModelRender {
     }
     
     private static void _clearStencilBuffer() {
-        RenderTarget target = Minecraft.getInstance().getMainRenderTarget();
+        RenderTarget target = ClientRenderUtils.getMainRenderTarget(Minecraft.getInstance());
         if (target.useStencil && target.getDepthTexture() != null) {
             RenderSystem.getDevice().createCommandEncoder().clearStencilTexture(target.getDepthTexture(), 0);
         }

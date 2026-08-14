@@ -43,7 +43,7 @@ import dev.xcolorful.customgun.core.resource.data.data.GunData;
 import dev.xcolorful.customgun.core.resource.instance.data.GunIndexInstance;
 import dev.xcolorful.customgun.core.util.MathUtil;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
@@ -332,7 +332,7 @@ public class GunItemRenderer extends AnimateGeoItemRenderer<GunModelObject, GunA
     public void renderByItem(@NotNull ItemStack gunItem,
                              ItemDisplayContext transformType,
                              @NotNull PoseStack poseStack,
-                             @NotNull MultiBufferSource bufferSource,
+                             @NotNull SubmitNodeCollector bufferSource,
                              int light, int overlay) {
         @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return;
@@ -388,11 +388,11 @@ public class GunItemRenderer extends AnimateGeoItemRenderer<GunModelObject, GunA
 
                     // 渲染枪械模型
                     RenderType renderType = ClientRenderUtils.RenderType_.entityCutout(modelTextureLocation);
-                    ClientRenderHelper.FirstPersonArmHelper.setFirstPersonArmCollector_(bufferSource);
+                    ClientRenderHelper.FirstPersonArmHelper.setFirstPersonArmCollector(bufferSource);
                     try {
                         gunModelObject.render(poseStack, transformType, renderType, light, overlay, gunItem);
                     } finally {
-                        ClientRenderHelper.FirstPersonArmHelper.setFirstPersonArmCollector_(null);
+                        ClientRenderHelper.FirstPersonArmHelper.setFirstPersonArmCollector(null);
                     }
                 }
             }
@@ -460,15 +460,17 @@ public class GunItemRenderer extends AnimateGeoItemRenderer<GunModelObject, GunA
     }
 
     private static void _renderSlotTexture(PoseStack poseStack,
-                                           MultiBufferSource bufferSource,
+                                           SubmitNodeCollector collector,
                                            int packedLight, int packedOverlay,
                                            Identifier texture) {
         poseStack.translate(0.5, 1.5, 0.5);
         poseStack.mulPose(Axis.ZN.rotationDegrees(180));
 
-        {
-            VertexConsumer buffer = bufferSource.getBuffer(ClientRenderUtils.RenderType_.entityTranslucent(texture));
-            SLOT_GUN_MODEL.renderToBuffer(poseStack, buffer, packedLight, packedOverlay, 1.0f, 1.0f, 1.0f, 1.0f);
-        }
+
+        collector.submitCustomGeometry(poseStack, ClientRenderUtils.RenderType_.entityTranslucent(texture), (pose, buffer) -> {
+            PoseStack _poseStack = new PoseStack();
+            _poseStack.last().set(pose);
+            SLOT_GUN_MODEL.renderToBuffer(_poseStack, buffer, packedLight, packedOverlay, 1.0f, 1.0f, 1.0f, 1.0f);
+        });
     }
 }

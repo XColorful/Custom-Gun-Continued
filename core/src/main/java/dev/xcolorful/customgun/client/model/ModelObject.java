@@ -20,8 +20,7 @@ import dev.xcolorful.customgun.client.resource.assets.model.BedrockModel;
 import dev.xcolorful.customgun.client.resource.assets.model.bedrock.geometry._Bone;
 import dev.xcolorful.customgun.client.util.ClientModelUtils;
 import dev.xcolorful.customgun.core.resource.instance.PojoInstance;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.phys.Vec2;
@@ -194,39 +193,34 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
                        RenderType renderType,
                        int light, int overlay,
                        float red, float green, float blue, float alpha) {
-        @Nullable Object collector = ClientRenderHelper.FirstPersonArmHelper.getFirstPersonArmCollector();
+        @Nullable SubmitNodeCollector collector = ClientRenderHelper.FirstPersonArmHelper.getFirstPersonArmCollector();
         if (collector == null) return;
 
-        Minecraft mc = Minecraft.getInstance();
-        MultiBufferSource.BufferSource bufferSource = mc.renderBuffers().bufferSource();
-        VertexConsumer builder = bufferSource.getBuffer(renderType);
+        collector.submitCustomGeometry(matrixStack, renderType, (pose, builder) -> {
+            PoseStack _matrixStack = new PoseStack();
+            _matrixStack.last().set(pose);
 
-        {
-            matrixStack.pushPose(); {
+            {
                 for (int i = 0; i < this.shouldRender.size(); i++) {
                     this.shouldRender.get(i)
-                            .render(matrixStack,
+                            .render(_matrixStack,
                                     transformType,
                                     builder,
                                     light, overlay,
                                     red, green, blue, alpha);
                 }
             }
-            matrixStack.popPose();
-
-            if (!OculusCompat.endBatch(bufferSource)) {
-                bufferSource.endBatch();
-            }
 
             for (int i = 0; i < this.delegateRenderers.size(); i++) {
                 IModelComponentRenderer renderer = delegateRenderers.get(i);
-                renderer.render(matrixStack,
+                renderer.render(_matrixStack,
                         builder,
                         transformType,
                         light, overlay);
             }
             this.delegateRenderers = new ArrayList<>();
         }
+        );
     }
 
     // --------Deprecated--------

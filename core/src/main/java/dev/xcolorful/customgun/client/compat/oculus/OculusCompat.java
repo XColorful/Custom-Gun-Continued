@@ -7,8 +7,6 @@
 
 package dev.xcolorful.customgun.client.compat.oculus;
 
-import net.minecraft.client.renderer.MultiBufferSource;
-
 public class OculusCompat {
 
     public static boolean isRenderShadow() {
@@ -24,7 +22,7 @@ public class OculusCompat {
     /**
      * @return 是否接管渲染
      */
-    public static boolean endBatch(MultiBufferSource.BufferSource bufferSource) {
+    public static boolean endBatch(Object bufferSource) {
         // mixin注入点
         return false;
     }

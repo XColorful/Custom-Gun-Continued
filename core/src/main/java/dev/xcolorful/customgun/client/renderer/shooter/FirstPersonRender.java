@@ -12,7 +12,6 @@ import dev.xcolorful.customgun.client.api.event.IRenderHandEvent;
 import dev.xcolorful.customgun.client.api.item.IAnimateGeoItem;
 import dev.xcolorful.customgun.client.api.renderer.KeepingItemRenderer;
 import dev.xcolorful.customgun.client.api.renderer.item.IAnimateGeoItemRenderer;
-import dev.xcolorful.customgun.client.compat.oculus.OculusCompat;
 import dev.xcolorful.customgun.client.renderer.item.AnimateGeoItemRenderer;
 import dev.xcolorful.customgun.core.api.event.EventType;
 import dev.xcolorful.customgun.core.api.event.IEvent;
@@ -100,7 +99,7 @@ public class FirstPersonRender implements IEventHandler {
         }
 
         // 防止内存泄漏
-        OculusCompat.endBatch(mc.renderBuffers().bufferSource());
+        // 26.2 MultiBufferSource 已移除，endBatch 机制不复存在，由 SubmitNodeCollector 统一提交
 
         renderer.renderFirstPerson(event.getPoseStack(),
                 event,

@@ -25,8 +25,7 @@ import dev.xcolorful.customgun.core.api.item.IAttachment;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.attachment.IAttachmentGetter;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -55,11 +54,9 @@ public class BeamRender {
 
         if (BeamRenderAR.render(poseStack, transformType, path, pojoItem)) return;
 
-        @Nullable Object collector = ClientRenderHelper.FirstPersonArmHelper.getFirstPersonArmCollector();
+        @Nullable SubmitNodeCollector collector = ClientRenderHelper.FirstPersonArmHelper.getFirstPersonArmCollector();
         if (collector == null) return;
 
-        MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
-        VertexConsumer builder = bufferSource.getBuffer(ClientRenderRegistry.LaserBeamRenderState.getLaserBeam());
         poseStack.pushPose(); {
             for (int i = 0; i < path.size(); ++i) {
                 path.get(i).translate_rotate_scale(poseStack);
@@ -81,9 +78,8 @@ public class BeamRender {
             float z = transformType.firstPerson() ? -finalLaserDisplay.getLaserLength() : -finalLaserDisplay.getThirdPersonLaserLength();
             float width = transformType.firstPerson() ? finalLaserDisplay.getLaserWidth() : finalLaserDisplay.getThirdPersonLaserWidth();
 
-            {
-                _stringVertex(builder, poseStack.last(), z, width, r, g, b, RenderConfig.ENABLE_LASER_FADE_OUT.get());
-            }
+            collector.submitCustomGeometry(poseStack, ClientRenderRegistry.LaserBeamRenderState.getLaserBeam(), (pose, builder) ->
+                    _stringVertex(builder, pose, z, width, r, g, b, RenderConfig.ENABLE_LASER_FADE_OUT.get()));
         }
         poseStack.popPose();
     }

@@ -24,7 +24,7 @@ import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import dev.xcolorful.customgun.core.api.item.IAttachment;
 import dev.xcolorful.customgun.core.api.item.attachment.IAttachmentGetter;
 import net.minecraft.client.model.geom.EntityModelSet;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -43,7 +43,7 @@ public class AttachmentItemRenderer extends BlockEntityWithoutLevelRenderer {
      * 低模替换逻辑同 {@link AttachmentRender#renderAttachment}
      */
     private void _renderDefaultAttachment(@NotNull PoseStack poseStack,
-                                          @NotNull MultiBufferSource pBuffer,
+                                          @NotNull SubmitNodeCollector pBuffer,
                                           @NotNull ItemDisplayContext transformType,
                                           int pPackedLight, int pPackedOverlay,
                                           ClientAttachmentIndexInstance clientAttachmentIndexInstance) {
@@ -70,11 +70,11 @@ public class AttachmentItemRenderer extends BlockEntityWithoutLevelRenderer {
             if (attachmentTextureLocation == null) attachmentTextureLocation = ClientRenderUtils.getMissingTextureLocation();
 
             RenderType renderType = ClientRenderUtils.RenderType_.entityCutout(attachmentTextureLocation);
-            ClientRenderHelper.FirstPersonArmHelper.setFirstPersonArmCollector_(pBuffer);
+            ClientRenderHelper.FirstPersonArmHelper.setFirstPersonArmCollector(pBuffer);
             try {
                 attachmentModelObject.render(poseStack, transformType, renderType, pPackedLight, pPackedOverlay, null, null);
             } finally {
-                ClientRenderHelper.FirstPersonArmHelper.setFirstPersonArmCollector_(null);
+                ClientRenderHelper.FirstPersonArmHelper.setFirstPersonArmCollector(null);
             }
         } else {
             // 渲染 GUI
@@ -88,10 +88,11 @@ public class AttachmentItemRenderer extends BlockEntityWithoutLevelRenderer {
             @Nullable var slotTexture = attachmentDisplay.getSlotTextureLocation();
             if (slotTexture == null) slotTexture = ClientRenderUtils.getMissingTextureLocation();
 
-            {
-                VertexConsumer buffer = pBuffer.getBuffer(ClientRenderUtils.RenderType_.entityTranslucent(slotTexture));
-                SLOT_ATTACHMENT_MODEL.renderToBuffer(poseStack, buffer, pPackedLight, pPackedOverlay, 1.0f, 1.0f, 1.0f, 1.0f);
-            }
+            pBuffer.submitCustomGeometry(poseStack, ClientRenderUtils.RenderType_.entityTranslucent(slotTexture), (pose, buffer) -> {
+                PoseStack _poseStack = new PoseStack();
+                _poseStack.last().set(pose);
+                SLOT_ATTACHMENT_MODEL.renderToBuffer(_poseStack, buffer, pPackedLight, pPackedOverlay, 1.0f, 1.0f, 1.0f, 1.0f);
+            });
         }
     }
 
@@ -101,7 +102,7 @@ public class AttachmentItemRenderer extends BlockEntityWithoutLevelRenderer {
     public void renderByItem(@NotNull ItemStack attachmentItem,
                              @NotNull ItemDisplayContext transformType,
                              @NotNull PoseStack poseStack,
-                             @NotNull MultiBufferSource pBuffer,
+                             @NotNull SubmitNodeCollector pBuffer,
                              int pPackedLight, int pPackedOverlay) {
         @Nullable IAttachment iAttachment = IAttachmentGetter.fromItemStack(attachmentItem);
         if (iAttachment == null) return;
@@ -119,10 +120,11 @@ public class AttachmentItemRenderer extends BlockEntityWithoutLevelRenderer {
                     @Nullable var slotTexture = attachmentDisplay.getSlotTextureLocation();
                     if (slotTexture == null) slotTexture = ClientRenderUtils.getMissingTextureLocation();
 
-                    {
-                        VertexConsumer buffer = pBuffer.getBuffer(ClientRenderUtils.RenderType_.entityTranslucent(slotTexture));
-                        SLOT_ATTACHMENT_MODEL.renderToBuffer(poseStack, buffer, pPackedLight, pPackedOverlay, 1.0f, 1.0f, 1.0f, 1.0f);
-                    }
+                    pBuffer.submitCustomGeometry(poseStack, ClientRenderUtils.RenderType_.entityTranslucent(slotTexture), (pose, buffer) -> {
+                        PoseStack _poseStack = new PoseStack();
+                        _poseStack.last().set(pose);
+                        SLOT_ATTACHMENT_MODEL.renderToBuffer(_poseStack, buffer, pPackedLight, pPackedOverlay, 1.0f, 1.0f, 1.0f, 1.0f);
+                    });
                 } else {
                     poseStack.translate(0.5, 2, 0.5);
 
@@ -142,10 +144,11 @@ public class AttachmentItemRenderer extends BlockEntityWithoutLevelRenderer {
                 poseStack.translate(0.5, 1.5, 0.5);
                 poseStack.mulPose(Axis.ZN.rotationDegrees(180));
 
-                {
-                    VertexConsumer buffer = pBuffer.getBuffer(ClientRenderUtils.RenderType_.entityTranslucent(ClientRenderUtils.getMissingTextureLocation()));
-                    SLOT_ATTACHMENT_MODEL.renderToBuffer(poseStack, buffer, pPackedLight, pPackedOverlay, 1.0f, 1.0f, 1.0f, 1.0f);
-                }
+                pBuffer.submitCustomGeometry(poseStack, ClientRenderUtils.RenderType_.entityTranslucent(ClientRenderUtils.getMissingTextureLocation()), (pose, buffer) -> {
+                    PoseStack _poseStack = new PoseStack();
+                    _poseStack.last().set(pose);
+                    SLOT_ATTACHMENT_MODEL.renderToBuffer(_poseStack, buffer, pPackedLight, pPackedOverlay, 1.0f, 1.0f, 1.0f, 1.0f);
+                });
             }
             poseStack.popPose();
         }

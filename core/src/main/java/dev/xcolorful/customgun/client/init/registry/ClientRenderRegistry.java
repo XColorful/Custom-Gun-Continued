@@ -7,12 +7,12 @@
 
 package dev.xcolorful.customgun.client.init.registry;
 
+import com.mojang.blaze3d.PrimitiveTopology;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.mojang.blaze3d.pipeline.BlendFunction;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.api.minecraft.texture.CustomTexture;
+import net.minecraft.client.renderer.BindGroupLayouts;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
@@ -31,15 +31,15 @@ public class ClientRenderRegistry {
         public LaserBeamRenderState(String pName, Runnable pSetupState, Runnable pClearState) {
         }
 
-        public static final RenderPipeline LASER_BEAM_PIPELINE = RenderPipeline.builder(RenderPipelines.MATRICES_PROJECTION_SNIPPET)
+        public static final RenderPipeline LASER_BEAM_PIPELINE = RenderPipeline.builder(RenderPipelines.MATRICES_FOG_SNIPPET)
                 .withLocation(CustomGun.getMcRegistry().createResourceLocation(String.format("%s:laser_beam", CustomGun.MOD_ID)))
                 .withVertexShader("core/position_color_tex_lightmap")
                 .withFragmentShader("core/position_color_tex_lightmap")
-                .withSampler("Sampler0")
-                .withSampler("Sampler2")
+                .withBindGroupLayout(BindGroupLayouts.SAMPLER0_SAMPLER2)
 //                .withBlend(BlendFunction.LIGHTNING)
                 .withCull(false)
-                .withVertexFormat(DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS)
+                .withVertexBinding(0, DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP)
+                .withPrimitiveTopology(PrimitiveTopology.QUADS)
                 .build();
 
         public static final RenderPipeline LASER_BEAM_ENTITY_PIPELINE = RenderPipeline.builder(RenderPipelines.ENTITY_EMISSIVE_SNIPPET)

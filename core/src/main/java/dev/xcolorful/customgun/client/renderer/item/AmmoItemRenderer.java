@@ -24,7 +24,7 @@ import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import dev.xcolorful.customgun.core.api.item.IAmmo;
 import dev.xcolorful.customgun.core.api.item.ammo.IAmmoGetter;
 import net.minecraft.client.model.geom.EntityModelSet;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -104,7 +104,7 @@ public class AmmoItemRenderer extends BlockEntityWithoutLevelRenderer {
     public void renderByItem(@NotNull ItemStack ammoItem,
                              @NotNull ItemDisplayContext transformType,
                              @NotNull PoseStack poseStack,
-                             @NotNull MultiBufferSource pBuffer,
+                             @NotNull SubmitNodeCollector pBuffer,
                              int pPackedLight, int pPackedOverlay) {
         @Nullable IAmmo iAmmo = IAmmoGetter.fromItemStack(ammoItem);
         if (iAmmo == null) return;
@@ -126,8 +126,11 @@ public class AmmoItemRenderer extends BlockEntityWithoutLevelRenderer {
                     @Nullable var slotTextureLocation = ammoDisplay.getSlotTextureLocation();
                     if (slotTextureLocation == null) slotTextureLocation = ClientRenderUtils.getMissingTextureLocation();
 
-                    VertexConsumer buffer = pBuffer.getBuffer(ClientRenderUtils.RenderType_.entityTranslucent(slotTextureLocation));
-                    SLOT_AMMO_MODEL.renderToBuffer(poseStack, buffer, pPackedLight, pPackedOverlay, 1.0f, 1.0f, 1.0f, 1.0f);
+                    pBuffer.submitCustomGeometry(poseStack, ClientRenderUtils.RenderType_.entityTranslucent(slotTextureLocation), (pose, buffer) -> {
+                        PoseStack _poseStack = new PoseStack();
+                        _poseStack.last().set(pose);
+                        SLOT_AMMO_MODEL.renderToBuffer(_poseStack, buffer, pPackedLight, pPackedOverlay, 1.0f, 1.0f, 1.0f, 1.0f);
+                    });
                 } else {
                     @Nullable _ModelTransform modelTransform = ammoDisplay.getModelTransform();
 
@@ -142,11 +145,11 @@ public class AmmoItemRenderer extends BlockEntityWithoutLevelRenderer {
 
                     // 渲染子弹盒模型
                     RenderType renderType = ClientRenderUtils.RenderType_.entityCutout(modelTextureLocation);
-                    ClientRenderHelper.FirstPersonArmHelper.setFirstPersonArmCollector_(pBuffer);
+                    ClientRenderHelper.FirstPersonArmHelper.setFirstPersonArmCollector(pBuffer);
                     try {
                         ammoModel.render(poseStack, transformType, renderType, pPackedLight, pPackedOverlay);
                     } finally {
-                        ClientRenderHelper.FirstPersonArmHelper.setFirstPersonArmCollector_(null);
+                        ClientRenderHelper.FirstPersonArmHelper.setFirstPersonArmCollector(null);
                     }
                 }
             }
@@ -157,10 +160,11 @@ public class AmmoItemRenderer extends BlockEntityWithoutLevelRenderer {
                 poseStack.translate(0.5, 1.5, 0.5);
                 poseStack.mulPose(Axis.ZN.rotationDegrees(180));
 
-                {
-                    VertexConsumer buffer = pBuffer.getBuffer(ClientRenderUtils.RenderType_.entityTranslucent(ClientRenderUtils.getMissingTextureLocation()));
-                    SLOT_AMMO_MODEL.renderToBuffer(poseStack, buffer, pPackedLight, pPackedOverlay, 1.0f, 1.0f, 1.0f, 1.0f);
-                }
+                pBuffer.submitCustomGeometry(poseStack, ClientRenderUtils.RenderType_.entityTranslucent(ClientRenderUtils.getMissingTextureLocation()), (pose, buffer) -> {
+                    PoseStack _poseStack = new PoseStack();
+                    _poseStack.last().set(pose);
+                    SLOT_AMMO_MODEL.renderToBuffer(_poseStack, buffer, pPackedLight, pPackedOverlay, 1.0f, 1.0f, 1.0f, 1.0f);
+                });
             }
             poseStack.popPose();
         }

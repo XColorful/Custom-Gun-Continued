@@ -31,7 +31,6 @@ import dev.xcolorful.customgun.core.config.GunConfig;
 import dev.xcolorful.customgun.core.util.MathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -304,7 +303,7 @@ public abstract class AnimateGeoItemRenderer<M extends AnimatedModelObject, CTX 
     public void renderByItem(@NotNull ItemStack pojoItem,
                              ItemDisplayContext ctx,
                              @NotNull PoseStack poseStack,
-                             @NotNull MultiBufferSource bufferSource,
+                             @NotNull SubmitNodeCollector bufferSource,
                              int light, int overlay) {
         if (ctx.firstPerson()) return;
 
@@ -316,13 +315,13 @@ public abstract class AnimateGeoItemRenderer<M extends AnimatedModelObject, CTX 
             poseStack.translate(0.5, 1.5f, 0.5);
             // 基岩版模型是上下颠倒的，需要翻转过来。
             poseStack.mulPose(Axis.ZP.rotationDegrees(180f));
-            ClientRenderHelper.FirstPersonArmHelper.setFirstPersonArmCollector_(bufferSource);
+            ClientRenderHelper.FirstPersonArmHelper.setFirstPersonArmCollector(bufferSource);
             try {
                 modelObject.render(poseStack, ctx, ClientRenderUtils.RenderType_.entityCutout(
                         getTextureLocation(pojoItem)
                 ), light, overlay);
             } finally {
-                ClientRenderHelper.FirstPersonArmHelper.setFirstPersonArmCollector_(null);
+                ClientRenderHelper.FirstPersonArmHelper.setFirstPersonArmCollector(null);
             }
         }
         poseStack.popPose();

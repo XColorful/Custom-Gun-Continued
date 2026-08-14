@@ -28,8 +28,7 @@ import dev.xcolorful.customgun.core.api.resource.ResourceApi;
 import dev.xcolorful.customgun.core.resource.data.data.AttachmentData;
 import dev.xcolorful.customgun.core.resource.data.data.attachment._MuzzleModifierData;
 import dev.xcolorful.customgun.core.resource.instance.data.AttachmentIndexInstance;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -133,14 +132,13 @@ public class MuzzleFlashRender implements IModelComponentRenderer {
     private void doRender(int light, int overlay, long currentTimeMillis, _MuzzleFlashDisplay muzzleFlashDisplay) {
         if (State.muzzleFlashNormal == null || State.muzzleFlashPose == null) return;
 
-        @Nullable Object collector = ClientRenderHelper.FirstPersonArmHelper.getFirstPersonArmCollector();
+        @Nullable SubmitNodeCollector collector = ClientRenderHelper.FirstPersonArmHelper.getFirstPersonArmCollector();
         if (collector == null) return;
 
         float scale = 0.5f * muzzleFlashDisplay.getTextureScale();
         float scaleTime = TIME_RANGE / 2.0f;
         scale = currentTimeMillis < scaleTime ? (scale * (currentTimeMillis / scaleTime)) : scale;
         State.muzzleFlashStartMark = false;
-        MultiBufferSource multiBufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
 
         // 推送到指定位置
         PoseStack poseStack2 = new PoseStack();
@@ -153,9 +151,11 @@ public class MuzzleFlashRender implements IModelComponentRenderer {
             poseStack2.mulPose(Axis.ZP.rotationDegrees(State.muzzleFlashRandomRotate));
             poseStack2.translate(0, -1, 0);
             RenderType renderTypeBg = ClientRenderUtils.RenderType_.entityTranslucent(muzzleFlashDisplay.getTextureLocation());
-            {
-                MUZZLE_FLASH_MODEL.renderToBuffer(poseStack2, multiBufferSource.getBuffer(renderTypeBg), light, overlay, 1.0f, 1.0f, 1.0f, 1.0f);
-            }
+            collector.submitCustomGeometry(poseStack2, renderTypeBg, (pose, vertexConsumer) -> {
+                PoseStack _poseStack = new PoseStack();
+                _poseStack.last().set(pose);
+                MUZZLE_FLASH_MODEL.renderToBuffer(_poseStack, vertexConsumer, light, overlay, 1.0f, 1.0f, 1.0f, 1.0f);
+            });
         }
         poseStack2.popPose();
 
@@ -165,9 +165,11 @@ public class MuzzleFlashRender implements IModelComponentRenderer {
             poseStack2.mulPose(Axis.ZP.rotationDegrees(State.muzzleFlashRandomRotate));
             poseStack2.translate(0, -0.9, 0);
             RenderType renderTypeLight = ClientRenderUtils.RenderType_.energySwirl(muzzleFlashDisplay.getTextureLocation(), 1, 1);
-            {
-                MUZZLE_FLASH_MODEL.renderToBuffer(poseStack2, multiBufferSource.getBuffer(renderTypeLight), light, overlay, 1.0f, 1.0f, 1.0f, 1.0f);
-            }
+            collector.submitCustomGeometry(poseStack2, renderTypeLight, (pose, vertexConsumer) -> {
+                PoseStack _poseStack = new PoseStack();
+                _poseStack.last().set(pose);
+                MUZZLE_FLASH_MODEL.renderToBuffer(_poseStack, vertexConsumer, light, overlay, 1.0f, 1.0f, 1.0f, 1.0f);
+            });
         }
         poseStack2.popPose();
     }

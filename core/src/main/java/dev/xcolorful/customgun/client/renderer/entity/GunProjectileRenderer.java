@@ -22,6 +22,7 @@ import dev.xcolorful.customgun.client.resource.assets.display.AmmoDisplay;
 import dev.xcolorful.customgun.client.resource.assets.display.ammo._AmmoEntityDisplay;
 import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
 import dev.xcolorful.customgun.client.resource.instance.data.ClientAmmoIndexInstance;
+import dev.xcolorful.customgun.client.util.ClientRenderHelper;
 import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import dev.xcolorful.customgun.core.entity.projectile.GunProjectile;
 import net.minecraft.client.Camera;
@@ -84,10 +85,15 @@ public class GunProjectileRenderer extends EntityRenderer<GunProjectile, GunProj
 //        super.submit(state, poseStack, submitNodeCollector, cameraRenderState);
         if (state.gunProjectile == null) return;
 
-//        this.render(state,
-//                poseStack,
-//                Minecraft.getInstance().renderBuffers().bufferSource(),
-//                state.lightCoords);
+        ClientRenderHelper.FirstPersonArmHelper.setFirstPersonArmCollector(submitNodeCollector);
+        try {
+//            this.render(state,
+//                    poseStack,
+//                    Minecraft.getInstance().renderBuffers().bufferSource(),
+//                    state.lightCoords);
+        } finally {
+            ClientRenderHelper.FirstPersonArmHelper.setFirstPersonArmCollector(null);
+        }
     }
 
     @Override
@@ -189,7 +195,7 @@ public class GunProjectileRenderer extends EntityRenderer<GunProjectile, GunProj
 
             if (isFirstPerson) {
                 // 第一人称渲染自己的曳光弹的时候需要应用偏移
-                Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
+                Camera camera = ClientRenderUtils.getMainCamera(Minecraft.getInstance());
                 float @Nullable [] offset = iClientGunProjectile.cgc$getFirstPersonRenderOffset();
                 if (offset == null) {
                     Vector3f _offset = GunItemRenderer.State.muzzleRenderOffset;

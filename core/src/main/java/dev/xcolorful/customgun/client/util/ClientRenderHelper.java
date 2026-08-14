@@ -19,6 +19,7 @@ import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.PlayerModelPart;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 
@@ -52,7 +53,7 @@ public class ClientRenderHelper {
         boolean handled = OptifineCompat.onEnableItemEntityStencilTest();
         if (!handled) {
             Minecraft mc = Minecraft.getInstance();
-//            mc.getMainRenderTarget().enableStencil();
+//            ClientRenderUtils.getMainRenderTarget(mc).enableStencil();
         }
 
         GL11.glEnable(GL11.GL_STENCIL_TEST);
@@ -153,5 +154,17 @@ public class ClientRenderHelper {
                 FIRST_PERSON_ARM_COLLECTOR.set(collector);
             }
         }
+
+        /**
+         * 获取当前渲染使用的{@code SubmitNodeCollector}，未设置时返回{@code null}
+         * <br>
+         * {@code MultiBufferSource}在26.2被移除，模型渲染统一经由该收集器提交
+         * <br>
+         * 如果低版本出现异常问题，可以返回默认值来禁用该检查
+         */
+        public static @Nullable Object getFirstPersonArmCollector() {
+            return FIRST_PERSON_ARM_COLLECTOR.get();
+        }
+        private static final Object dummyCollector = new Object(); // 仅供低版本临时禁用"collector == null"
     }
 }

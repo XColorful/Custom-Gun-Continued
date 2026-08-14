@@ -1,4 +1,7 @@
 # 自定义枪械永续 | Custom Gun Continued
+<p align="center">
+  <img src="./logo/title.png">
+</p>
 
 [中文](#自定义枪械永续) | [English](#custom-gun-continued)
 

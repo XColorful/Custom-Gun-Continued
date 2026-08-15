@@ -1,5 +1,14 @@
 ### 0.0.x
 
+#### 0.0.5
+- Add mod logo
+- High zoom scope no longer reduce recoil
+- Rename render config `FirstPersonBulletTracerEnable` to `EnableFirstPersonBulletTracer`
+- Fix crosshair type resource location
+
+1.20.x:
+- Fix client not receiving item's full NBT
+
 #### 0.0.4
 - Rename package xiao.customgun to dev.xcolorful.customgun
 

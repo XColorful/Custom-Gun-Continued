@@ -11,7 +11,7 @@
 
 `本模组目前处于开发阶段，功能尚不完整，暂无法正常投入使用`
 
-本模组是基于[TaCZ](https://github.com/MCModderAnchor/TACZ) 1.1.8 [GPLv3](https://www.gnu.org/licenses/gpl-3.0.txt) 授权的衍生作品；由于 [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/)，本模组**不包含原美术资产**。
+本模组是基于采用 [GPL-3.0-only](https://www.gnu.org/licenses/gpl-3.0.txt) 许可证的 [TaCZ](https://github.com/MCModderAnchor/TACZ) 1.1.8 的衍生作品；由于 [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/)，本模组**不包含原美术资产**。
 
 ---
 
@@ -40,13 +40,21 @@
 - 对枪包进行了几乎全字段重命名，使其名称更对应实际用途
 - 兼容旧字段名称读取
 
+## 内容披露
+
+衍生内容：
+- [TaCZ](https://github.com/MCModderAnchor/TACZ)：本模组是基于采用 [GPL-3.0-only](https://www.gnu.org/licenses/gpl-3.0.txt) 许可证的 [TaCZ](https://github.com/MCModderAnchor/TACZ) 1.1.8 的衍生作品；由于 [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/)，本模组不包含原美术资产
+- [自定义大逃杀](https://github.com/XColorful/BattleRoyale)：本模组大量复用了采用 [GPL-3.0-or-later](https://www.gnu.org/licenses/gpl-3.0.txt) 许可证的[自定义大逃杀](https://github.com/XColorful/BattleRoyale)代码
+- [LuaJ](https://github.com/luaj/luaj)：本模组包含采用 [MIT](https://opensource.org/license/mit) 许可证的 [LuaJ](https://github.com/luaj/luaj)
+- [Apache Commons Math 3.6.1](https://commons.apache.org/proper/commons-math/javadocs/api-3.6.1/)：本模组包含采用 [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0) 许可证的 [Apache Commons Math 3.6.1](https://commons.apache.org/proper/commons-math/javadocs/api-3.6.1/)
+
 # Custom Gun Continued
 
 😎[wiki](https://github.com/XColorful/Custom-Gun-Continued/wiki) | 📄[docs](https://github.com/XColorful/Custom-Gun-Continued/tree/HEAD/docs)
 
 `This mod is currently under development with incomplete features, and is not ready for normal use`
 
-This mod is a derivative work of [TaCZ](https://github.com/MCModderAnchor/TACZ) 1.1.8 licensed under [GPLv3](https://www.gnu.org/licenses/gpl-3.0.txt). Due to the original art assets being licensed under [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/), this mod **does not include any original art assets**.
+This mod is a derivative work based on [TaCZ](https://github.com/MCModderAnchor/TACZ) 1.1.8, licensed under [GPL-3.0-only](https://www.gnu.org/licenses/gpl-3.0.txt). Due to the original art assets being licensed under [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/), this mod **does not include any original art assets**.
 
 ---
 
@@ -74,3 +82,11 @@ This mod features targeted optimizations for gunpacks:
 - Consistently using streaming parsing instead of tree-based deserialization, **significantly improving parsing performance**
 - Renaming almost all fields in gunpacks to better reflect their actual purposes
 - Maintaining compatibility with legacy field names when reading
+
+## Content disclosures
+
+Derivative content:
+- [TaCZ](https://github.com/MCModderAnchor/TACZ): This mod is a derivative work based on [TaCZ](https://github.com/MCModderAnchor/TACZ) 1.1.8, licensed under [GPL-3.0-only](https://www.gnu.org/licenses/gpl-3.0.txt). Due to the original art assets being licensed under [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/), this mod does not include any original art assets
+- [Custom BattleRoyale](https://github.com/XColorful/BattleRoyale): This mod reuses substantial amounts of code from [Custom BattleRoyale](https://github.com/XColorful/BattleRoyale), licensed under [GPL-3.0-or-later](https://www.gnu.org/licenses/gpl-3.0.txt)
+- [LuaJ](https://github.com/luaj/luaj): This mod includes [LuaJ](https://github.com/luaj/luaj), licensed under [MIT](https://opensource.org/license/mit)
+- [Apache Commons Math 3.6.1](https://commons.apache.org/proper/commons-math/javadocs/api-3.6.1/): This mod includes [Apache Commons Math 3.6.1](https://commons.apache.org/proper/commons-math/javadocs/api-3.6.1/), licensed under [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0)

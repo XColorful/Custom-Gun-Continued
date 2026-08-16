@@ -25,6 +25,6 @@ public class _AttachmentItem {
         if (attachmentIndexInstance == null) return null;
 
         AttachmentIndex attachmentIndex = attachmentIndexInstance.getPojo();
-        return attachmentIndex.getNameLang();
+        return Component.translatable(attachmentIndex.getNameLang());
     }
 }

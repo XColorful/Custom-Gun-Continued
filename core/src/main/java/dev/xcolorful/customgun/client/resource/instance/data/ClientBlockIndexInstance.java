@@ -77,10 +77,10 @@ public final class ClientBlockIndexInstance extends PojoInstance<BlockIndex> {
         return getBlockModelInstance();
     }
     @Deprecated public String getName() {
-        return ComponentUtils.toTranslatableKey(this.getPojo().getNameLang());
+        return this.getPojo().getNameLang();
     }
     @Deprecated public String getTooltipKey() {
-        return ComponentUtils.toTranslatableKey(this.getPojo().getTooltipLang());
+        return this.getPojo().getTooltipLang();
     }
     @Deprecated public @Nullable ResourceLocation getTexture() {
         return this.blockDisplayCache.getTextureLocation();

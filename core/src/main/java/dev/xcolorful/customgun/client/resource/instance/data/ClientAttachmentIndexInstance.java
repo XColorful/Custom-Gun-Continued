@@ -164,10 +164,10 @@ public final class ClientAttachmentIndexInstance extends PojoInstance<Attachment
     // --------Deprecated--------
 
     @Deprecated public String getName() {
-        return ComponentUtils.toTranslatableKey(this.getPojo().getNameLang());
+        return this.getPojo().getNameLang();
     }
     @Deprecated public String getTooltipKey() {
-        return ComponentUtils.toTranslatableKey(this.getPojo().getTooltipLang());
+        return this.getPojo().getTooltipLang();
     }
     @Deprecated public boolean isSight() {
         return this.attachmentDisplayCache.getEnableSight();

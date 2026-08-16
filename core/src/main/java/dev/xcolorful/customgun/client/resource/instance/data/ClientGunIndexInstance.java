@@ -64,7 +64,7 @@ public final class ClientGunIndexInstance extends PojoInstance<GunIndex> {
     // --------Deprecated--------
 
     @Deprecated public String getName() {
-        return ComponentUtils.toTranslatableKey(this.getPojo().getNameLang());
+        return this.getPojo().getNameLang();
     }
     @Deprecated public String getType() {
         return this.getPojo().getGunCategory().toString();

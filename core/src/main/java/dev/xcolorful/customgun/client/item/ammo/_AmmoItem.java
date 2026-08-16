@@ -33,7 +33,7 @@ public class _AmmoItem {
         if (ammoIndexInstance == null) return null;
 
         AmmoIndex ammoIndex = ammoIndexInstance.getPojo();
-        return ammoIndex.getNameLang();
+        return Component.translatable(ammoIndex.getNameLang());
     }
 
     public static void appendHoverText(IAmmo _this,
@@ -42,15 +42,15 @@ public class _AmmoItem {
         @Nullable AmmoIndexInstance ammoIndexInstance = ResourceApi.getAmmoIndexInstance(ammoLocation);
         if (ammoIndexInstance != null) {
             AmmoIndex ammoIndex = ammoIndexInstance.getPojo();
-            @NotNull MutableComponent tooltipLang = ammoIndex.getTooltipLang()
-                    .copy().withStyle(ChatFormatting.GRAY);
+            @NotNull MutableComponent tooltipLang = Component.translatable(ammoIndex.getTooltipLang())
+                    .withStyle(ChatFormatting.GRAY);
             components.add(tooltipLang);
         }
 
         GunpackInfo gunpackInfo = ClientResourceApi.getGunpackInfo(ammoLocation);
         if (gunpackInfo != null) {
-            @NotNull MutableComponent nameLang = gunpackInfo.getNameLang()
-                    .copy().withStyle(ChatFormatting.BLUE).withStyle(ChatFormatting.ITALIC);
+            @NotNull MutableComponent nameLang = Component.translatable(gunpackInfo.getNameLang())
+                    .withStyle(ChatFormatting.BLUE).withStyle(ChatFormatting.ITALIC);
             components.add(nameLang);
         }
     }

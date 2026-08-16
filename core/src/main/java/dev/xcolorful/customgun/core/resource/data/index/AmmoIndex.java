@@ -32,8 +32,8 @@ public final class AmmoIndex extends _DataIndex<AmmoIndex> {
             while (reader.hasNext()) {
                 String key = reader.nextName();
                 switch (key) {
-                    case AmmoIndexTag.NAME_LANG, AmmoIndexTag.NAME_LANG_OLD1 -> pojo.setNameLang(JsonUtils.readTranslatable(reader));
-                    case AmmoIndexTag.TOOLTIP_LANG, AmmoIndexTag.TOOLTIP_LANG_OLD1 -> pojo.setTooltipLang(JsonUtils.readTranslatable(reader));
+                    case AmmoIndexTag.NAME_LANG, AmmoIndexTag.NAME_LANG_OLD1 -> pojo.setNameLang(JsonUtils.readString(reader));
+                    case AmmoIndexTag.TOOLTIP_LANG, AmmoIndexTag.TOOLTIP_LANG_OLD1 -> pojo.setTooltipLang(JsonUtils.readString(reader));
                     case AmmoIndexTag.DISPLAY_INDEX_LOCATION, AmmoIndexTag.DISPLAY_INDEX_LOCATION_OLD1 -> pojo.setDisplayIndexLocation(JsonUtils.readResourceLocation(reader));
                     case AmmoIndexTag.SLOT_SORT, AmmoIndexTag.SLOT_SORT_OLD1 -> pojo.setSlotSort(JsonUtils.readInt(reader));
 
@@ -53,8 +53,8 @@ public final class AmmoIndex extends _DataIndex<AmmoIndex> {
     @Override
     public void toJson(JsonWriter writer) throws IOException {
         writer.beginObject(); {
-            JsonUtils.writeTranslatable(writer, AmmoIndexTag.NAME_LANG, this.getNameLang());
-            JsonUtils.writeTranslatable(writer, AmmoIndexTag.TOOLTIP_LANG, this.getTooltipLang());
+            JsonUtils.writeString(writer, AmmoIndexTag.NAME_LANG, this.getNameLang());
+            JsonUtils.writeString(writer, AmmoIndexTag.TOOLTIP_LANG, this.getTooltipLang());
             JsonUtils.writeResourceLocation(writer, AmmoIndexTag.DISPLAY_INDEX_LOCATION, this.getDisplayIndexLocation());
             JsonUtils.writeInt(writer, AmmoIndexTag.SLOT_SORT, this.getSlotSort());
 

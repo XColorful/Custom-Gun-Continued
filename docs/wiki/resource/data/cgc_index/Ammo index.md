@@ -1,10 +1,10 @@
 [English](#English)
 
 # 子弹索引
-> wiki 版本：`0.0.0`.0
+> wiki 版本：`0.0.5`.1
 
-- `name_lang`/`name`（MutableComponent）：
-- `tooltip_lang`/`tooltip`（MutableComponent）：
+- `name_lang`/`name`（String）：
+- `tooltip_lang`/`tooltip`（String）：
 - `display_index_location`/`display`（ResourceLocation）：
 - `slot_sort`/`sort`（int）：
 ---
@@ -22,10 +22,10 @@
 ```
 
 # English
-> wiki verison: `0.0.0`.0
+> wiki verison: `0.0.5`.1
 
-- `name_lang`/`name`(MutableComponent):
-- `tooltip_lang`/`tooltip`(MutableComponent):
+- `name_lang`/`name`(String):
+- `tooltip_lang`/`tooltip`(String):
 - `display_index_location`/`display`(ResourceLocation):
 - `slot_sort`/`sort`(int):
 ---

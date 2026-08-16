@@ -128,10 +128,10 @@ public final class ClientAmmoIndexInstance extends PojoInstance<AmmoIndex> {
     // --------Deprecated--------
 
     @Deprecated public String getName() {
-        return ComponentUtils.toTranslatableKey(this.getPojo().getNameLang());
+        return this.getPojo().getNameLang();
     }
     @Deprecated public String getTooltipKey() {
-        return ComponentUtils.toTranslatableKey(this.getPojo().getTooltipLang());
+        return this.getPojo().getTooltipLang();
     }
     @Deprecated public int getStackSize() {
         return this.getPojo().getMaxStackSize();

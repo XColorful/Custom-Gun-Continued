@@ -1129,3 +1129,15 @@ Notation:
 |com.tacz.guns.client.tooltip|dev.xcolorful.customgun.client.gui|
 |---|---|
 |`Client*Tooltip`|tooltip.\*.`Client*Tooltip`|
+
+|com.tacz.guns.client.tooltip|dev.xcolorful.customgun.client.api.gui|
+|---|---|
+|`Client*Tooltip`.getHeight|tooltip.`BaseTooltipContext`.calculateHeight|
+|`Client*Tooltip`.getWidth|tooltip.`BaseTooltipContext`.getMaxWidth|
+|`Client*Tooltip`.getText|tooltip.`BaseTooltipContext`.buildView|
+|`Client*Tooltip`.renderText|tooltip.`TooltipPart`.renderText|
+|`Client*Tooltip`.renderImage|tooltip.`TooltipPart`.renderImage|
+
+|com.tacz.guns.client.tooltip|dev.xcolorful.customgun.client.api.item|
+|---|---|
+|`Client*Tooltip`.shouldShow|gun.`GunTooltipMask`.fromBitmap|

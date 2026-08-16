@@ -47,6 +47,9 @@ public class GunTab {
                         // 开火模式
                         .setProperty(GunProperty.FIRE_MODE_TYPE,
                                 FireModeType.class,
+                                /**
+                                 * {@link GunIndexInstance#isPojoValid}保证列表不为空
+                                 */
                                 gunData.getFireModeTypes().get(0))
                         // 装满弹匣
                         .setProperty(GunProperty.MAG_AMMO,

@@ -52,10 +52,6 @@ public class GunTab {
                         .setProperty(GunProperty.MAG_AMMO,
                                 Integer.class,
                                 gunData.getDefaultMagSize())
-                        // 枪管子弹
-                        .setProperty(GunProperty.BARREL_AMMO,
-                                Integer.class,
-                                1)
                         .build();
                 gunItems.add(gunItem);
             }

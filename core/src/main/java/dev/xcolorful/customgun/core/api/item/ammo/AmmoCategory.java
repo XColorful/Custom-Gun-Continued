@@ -1,6 +1,7 @@
 package dev.xcolorful.customgun.core.api.item.ammo;
 
 import dev.xcolorful.customgun.core.api.resource.ResourceTag;
+import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import org.jetbrains.annotations.Nullable;
@@ -26,6 +27,9 @@ public enum AmmoCategory implements ResourceTag.CategoryTag {
         return this.categoryName;
     }
 
+    /**
+     * 调用方手动copy，不然会缓存旧{@link Language}
+     */
     public final MutableComponent getCategoryLang() {
         return this.categoryLang;
     }

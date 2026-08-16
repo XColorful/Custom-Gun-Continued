@@ -16,9 +16,10 @@ public enum GunTooltipMask implements ResourceTag.MaskTag {
     DESCRIPTION(GunDescriptionPart.INSTANCE),
     AMMO_INFO(GunAmmoInfoPart.INSTANCE),
     BASE_INFO(GunBaseInfoPart.INSTANCE),
-    EXTRA_DAMAGE_INFO(GunExtraDamageInfoPart.INSTANCE),
-    UPGRADES_TIP(GunUpgradesTipPart.INSTANCE),
-    PACK_INFO(GunPackInfoPart.INSTANCE);
+    ENCHANTMENT_INFO(GunEnchantmentInfoPart.INSTANCE),
+    GUIDE_TIP(GunGuideTipPart.INSTANCE),
+    PACK_INFO(GunPackInfoPart.INSTANCE),
+    CATEGORY_INFO(GunCategoryInfoPart.INSTANCE);
 
     public final String maskName;
     private final int mask;

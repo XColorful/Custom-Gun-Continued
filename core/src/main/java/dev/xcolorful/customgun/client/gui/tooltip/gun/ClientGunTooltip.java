@@ -21,7 +21,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
@@ -47,25 +46,39 @@ public class ClientGunTooltip implements ClientTooltipComponent {
     @Override public int getHeight() {
         return this.context.getHeight();
     }
-    @Override public int getWidth(Font font) {
+    @Override public int getWidth(@NotNull Font font) {
         return this.context.getMaxWidth();
     }
     @Override
-    public void renderText(Font font, int pX, int pY,
-                           Matrix4f matrix4f, MultiBufferSource.BufferSource bufferSource) {
+    public void renderText(@NotNull Font font,
+                           int pX, int pY,
+                           @NotNull Matrix4f matrix4f,
+                           @NotNull MultiBufferSource.BufferSource bufferSource) {
+        int currentY = pY;
+
         for (GunTooltipMask mask : this.context.visibleParts) {
             mask.getTooltipPart().renderText(this.context,
-                    font, pX, pY,
-                    matrix4f, bufferSource);
+                    font,
+                    pX, currentY,
+                    matrix4f,
+                    bufferSource);
+
+            currentY += mask.getTooltipPart().measureHeight(this.context);
         }
     }
     @Override
-    public void renderImage(Font font, int pX, int pY,
-                            GuiGraphics guiGraphics) {
+    public void renderImage(@NotNull Font font,
+                            int pX, int pY,
+                            @NotNull GuiGraphics guiGraphics) {
+        int currentY = pY;
+
         for (GunTooltipMask mask : this.context.visibleParts) {
             mask.getTooltipPart().renderImage(this.context,
-                    font, pX, pY,
+                    font,
+                    pX, currentY,
                     guiGraphics);
+
+            currentY += mask.getTooltipPart().measureHeight(this.context);
         }
     }
 
@@ -75,14 +88,8 @@ public class ClientGunTooltip implements ClientTooltipComponent {
     public static final class View extends BaseTooltipView {
         public @Nullable List<FormattedCharSequence> desc;
         public @Nullable Component ammoName;
-        public @Nullable MutableComponent ammoCount;
-        public @Nullable MutableComponent gunCategory;
-        public @Nullable MutableComponent damage;
-        public @Nullable MutableComponent armorIgnore;
-        public @Nullable MutableComponent headshotMultiplier;
-        public @Nullable MutableComponent weight;
-        public @Nullable MutableComponent tips;
-        public @Nullable MutableComponent gunLevel;
+        public @Nullable Component ammoCount;
+        public @Nullable Component gunCategory;
         public View() {
         }
     }

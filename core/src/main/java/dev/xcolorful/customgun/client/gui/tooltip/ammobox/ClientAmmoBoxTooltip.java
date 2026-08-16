@@ -39,12 +39,19 @@ public class ClientAmmoBoxTooltip implements ClientTooltipComponent {
         return this.context.getMaxWidth();
     }
     @Override
-    public void renderText(Font font, int pX, int pY,
-                           Matrix4f matrix4f, MultiBufferSource.BufferSource bufferSource) {
+    public void renderText(@NotNull Font font,
+                           int pX, int pY,
+                           @NotNull Matrix4f matrix4f,
+                           @NotNull MultiBufferSource.BufferSource bufferSource) {
+        int currentY = pY;
+
     }
     @Override
-    public void renderImage(Font font, int pX, int pY,
-                            GuiGraphics guiGraphics) {
+    public void renderImage(@NotNull Font font,
+                            int pX, int pY,
+                            @NotNull GuiGraphics guiGraphics) {
+        int currentY = pY;
+
     }
 
     // --------record--------

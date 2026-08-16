@@ -1,11 +1,11 @@
 package dev.xcolorful.customgun.client.api.gui.tooltip;
 
-import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class BaseTooltipView {
 
-    public @Nullable MutableComponent packInfo;
+    public @Nullable Component packInfo;
     public BaseTooltipView() {
     }
 }

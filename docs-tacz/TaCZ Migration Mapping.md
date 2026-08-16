@@ -394,7 +394,7 @@ Notation:
 |`CommonRegistry`|`CommonSetup`|
 |`CommonRegistry`.registerAttributes|_Deprecated_|
 |`CommonRegistry`.onAddPackFinders|_Deprecated_|
-|`CompatRegistry`||
+|`CompatRegistry`|_Deprecated_|
 |`ModAttributes`|_Deprecated_|
 |`ModBlocks`|_Deprecated_|
 |`ModBlocks`.BULLET_IGNORE_BLOCKS|registry.`ModBlocks`.BULLET_IGNORE_BLOCKS|
@@ -1005,7 +1005,7 @@ Notation:
 |functional.`LeftHandRender`|model.`HandRender`.`Left`|
 |functional.`MuzzleFlashRender`|model.`MuzzleFlashRender`|
 |functional.`RightHandRender`|model.`HandRender`.`Right`|
-|functional.`ShellRender`||
+|functional.`ShellRender`|model.`ShellRender`|
 |functional.`TextShowRender`|model.`TextRender`|
 |`IFunctionalRenderer`|model.`IModelComponentRenderer`|
 

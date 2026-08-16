@@ -45,20 +45,39 @@ public enum GunTooltipMask implements ResourceTag.MaskTag {
 
     private static final GunTooltipMask[] VALUES = values();
 
+    /**
+     * Tooltip 显示掩码
+     * <ul>
+     *     <li>二进制位为{@code 1}：禁用对应的 Tooltip 部分</li>
+     *     <li>二进制位为{@code 0}：启用对应的 Tooltip 部分</li>
+     * </ul>
+     * 传入{@code 0}表示全部启用
+     */
     public static EnumSet<GunTooltipMask> fromBitmap(int bitmap) {
         EnumSet<GunTooltipMask> set = EnumSet.noneOf(GunTooltipMask.class);
         for (GunTooltipMask value : VALUES) {
-            if ((bitmap & value.mask) != 0) {
+            if ((bitmap & value.mask) == 0) {
                 set.add(value);
             }
         }
         return set;
     }
 
+    /**
+     * 根据启用的 Tooltip 部分生成显示掩码
+     * <ul>
+     *     <li>集合中包含：对应二进制位为{@code 0}</li>
+     *     <li>集合中不包含：对应二进制位为{@code 1}</li>
+     * </ul>
+     * @param set 启用的 Tooltip 部分
+     * @return Tooltip 显示掩码
+     */
     public static int toBitmap(EnumSet<GunTooltipMask> set) {
         int bitmap = 0;
-        for (GunTooltipMask value : set) {
-            bitmap |= value.mask;
+        for (GunTooltipMask value : VALUES) {
+            if (!set.contains(value)) {
+                bitmap |= value.mask;
+            }
         }
         return bitmap;
     }

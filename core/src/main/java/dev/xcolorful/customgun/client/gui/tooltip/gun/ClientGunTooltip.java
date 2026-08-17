@@ -89,7 +89,6 @@ public class ClientGunTooltip implements ClientTooltipComponent {
         public @Nullable List<FormattedCharSequence> desc;
         public @Nullable Component ammoName;
         public @Nullable Component ammoCount;
-        public @Nullable Component gunCategory;
         public View() {
         }
     }
@@ -99,6 +98,9 @@ public class ClientGunTooltip implements ClientTooltipComponent {
         public final @NotNull EnumSet<GunTooltipMask> visibleParts;
         public @Nullable GunIndexInstance gunIndexInstance;
         public @Nullable GunDisplayInstance gunDisplayInstance;
+        public boolean showCategory = false;
+        public boolean showPackInfo = false;
+        public boolean showPojoLocation = false;
         public Context(@NotNull View view, @NotNull GunTooltip gunTooltip) {
             super(view);
             this.gunTooltip = gunTooltip;

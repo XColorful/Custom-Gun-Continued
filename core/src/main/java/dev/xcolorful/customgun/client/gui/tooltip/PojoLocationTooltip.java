@@ -39,7 +39,7 @@ public class PojoLocationTooltip implements IEventHandler {
         @Nullable IPojoItem iPojoItem = IPojoItemGetter.fromItemStack(pojoItem);
         if (iPojoItem == null) return;
 
-        if (!RenderConfig.ENABLE_RESOURCE_LOCATION_IN_TOOLTIP.get()) return;
+        if (!RenderConfig.APPEND_RESOURCE_LOCATION_IN_TOOLTIP.get()) return;
 
         var pojoLocation = iPojoItem.getPojoLocation(pojoItem);
         Component pojoLocationTooltip = Component.literal(pojoLocation.toString())

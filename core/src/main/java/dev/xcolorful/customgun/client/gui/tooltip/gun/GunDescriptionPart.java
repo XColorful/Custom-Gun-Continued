@@ -51,12 +51,11 @@ public final class GunDescriptionPart extends AbstractTooltipPart implements Gun
             String tooltipLang = gunIndex.getTooltipLang();
 
             desc = font.split(Component.translatable(tooltipLang), _textLineWidth);
-            context.view.desc = desc;
-
-            for (int i = 0; i < desc.size(); i++) {
-                FormattedCharSequence sequence = desc.get(i);
-                context.widenMaxWidth(font.width(sequence));
-            }
+        }
+        context.view.desc = desc;
+        for (int i = 0; i < desc.size(); i++) {
+            FormattedCharSequence sequence = desc.get(i);
+            context.widenMaxWidth(font.width(sequence));
         }
     }
 

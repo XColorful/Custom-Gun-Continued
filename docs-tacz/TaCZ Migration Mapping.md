@@ -855,7 +855,11 @@ Notation:
 |com.tacz.guns.client.event|dev.xcolorful.customgun.client.gui|
 |---|---|
 |`RenderCrosshairEvent`|crosshair.`CrosshairRender`|
-|`TooltipEvent`.onTooltip|tooltip.`PojoLocationTooltip`.addPojoLocationTooltip|
+
+|com.tacz.guns.client.event|dev.xcolorful.customgun.client.api.gui|
+|---|---|
+|`TooltipEvent`.onTooltip|tooltip.`BaseTooltipView`.pojoLocation|
+|`TooltipEvent`.formatTooltip|_Deprecated_|
 
 | |dev.xcolorful.customgun.client.event|
 |---|---|

@@ -47,7 +47,7 @@ public class _AmmoItem {
             components.add(tooltipLang);
         }
 
-        GunpackInfo gunpackInfo = ClientResourceApi.getGunpackInfo(ammoLocation);
+        GunpackInfo gunpackInfo = ClientResourceApi.getGunpackInfo(ammoLocation.getNamespace());
         if (gunpackInfo != null) {
             @NotNull MutableComponent nameLang = Component.translatable(gunpackInfo.getNameLang())
                     .withStyle(ChatFormatting.BLUE).withStyle(ChatFormatting.ITALIC);

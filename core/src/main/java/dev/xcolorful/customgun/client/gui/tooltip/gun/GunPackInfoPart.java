@@ -40,8 +40,7 @@ public final class GunPackInfoPart extends AbstractTooltipPart implements GunToo
         Font font = Minecraft.getInstance().font;
 
         var gunLocation = context.gunTooltip.gunLocation();
-        @Nullable var gunpackInfoLocation = CustomGun.getMcRegistry().createResourceLocation(gunLocation.getNamespace() + ":" + GunpackInfoManager.POJO_LOCATION_NAME);
-        @Nullable GunpackInfo gunpackInfo = ClientResourceApi.getGunpackInfo(gunpackInfoLocation);
+        @Nullable GunpackInfo gunpackInfo = ClientResourceApi.getGunpackInfo(gunLocation.getNamespace());
 
         Component packInfo; {
             if (gunpackInfo != null) {

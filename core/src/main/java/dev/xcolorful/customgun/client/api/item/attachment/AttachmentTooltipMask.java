@@ -14,7 +14,7 @@ import java.util.EnumSet;
 
 public enum AttachmentTooltipMask implements ResourceTag.MaskTag {
     DESCRIPTION(0, AttachmentDescriptionPart.INSTANCE),
-
+    STATE_INFO(1, AttachmentStateInfoPart.INSTANCE),
     BASE_INFO(2, AttachmentBaseInfoPart.INSTANCE),
     ENCHANTMENT_INFO(3, AttachmentEnchantmentInfoPart.INSTANCE),
     GUIDE_TIP(4, AttachmentGuideTipPart.INSTANCE),

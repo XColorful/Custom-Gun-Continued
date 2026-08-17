@@ -14,7 +14,7 @@ import java.util.EnumSet;
 
 public enum GunTooltipMask implements ResourceTag.MaskTag {
     DESCRIPTION(0, GunDescriptionPart.INSTANCE),
-    AMMO_INFO(1, GunAmmoInfoPart.INSTANCE),
+    STATE_INFO(1, GunStateInfoPart.INSTANCE),
     BASE_INFO(2, GunBaseInfoPart.INSTANCE),
     ENCHANTMENT_INFO(3, GunEnchantmentInfoPart.INSTANCE),
     GUIDE_TIP(4, GunGuideTipPart.INSTANCE),

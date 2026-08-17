@@ -18,8 +18,6 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
@@ -86,9 +84,6 @@ public class ClientAttachmentTooltip implements ClientTooltipComponent {
     @ApiStatus.Internal
     public static final class View extends BaseTooltipView {
         public @Nullable List<FormattedCharSequence> desc;
-        public @Nullable List<Component> attachmentProperties;
-        public @Nullable MutableComponent tips;
-        public @Nullable MutableComponent gunInstallability;
         public @Nullable List<ItemStack> installableGunItems;
         public View() {
         }
@@ -98,6 +93,7 @@ public class ClientAttachmentTooltip implements ClientTooltipComponent {
         public final @NotNull AttachmentTooltip attachmentTooltip;
         public final @NotNull EnumSet<AttachmentTooltipMask> visibleParts;
         public @Nullable AttachmentIndexInstance attachmentIndexInstance;
+        public boolean showGunInstallability = false;
         public boolean showCategory = false;
         public boolean showPackInfo = false;
         public boolean showPojoLocation = false;

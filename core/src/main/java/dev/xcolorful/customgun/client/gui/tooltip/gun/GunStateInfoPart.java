@@ -33,9 +33,9 @@ import org.joml.Matrix4f;
 |物  | 子弹名称
 |  品| 弹药/总数
  */
-public final class GunAmmoInfoPart extends AbstractTooltipPart implements GunTooltipPart {
-    public static final GunAmmoInfoPart INSTANCE = new GunAmmoInfoPart();
-    private GunAmmoInfoPart() {}
+public final class GunStateInfoPart extends AbstractTooltipPart implements GunTooltipPart {
+    public static final GunStateInfoPart INSTANCE = new GunStateInfoPart();
+    private GunStateInfoPart() {}
 
     /**
      * 文字需要往右 1个物品 + 行距离
@@ -117,7 +117,7 @@ public final class GunAmmoInfoPart extends AbstractTooltipPart implements GunToo
 
     @Override
     public int measureHeight(ClientGunTooltip.Context context) {
-        if (!context.visibleParts.contains(GunTooltipMask.AMMO_INFO)) return 0;
+        if (!context.visibleParts.contains(GunTooltipMask.STATE_INFO)) return 0;
 
         return _height;
     }

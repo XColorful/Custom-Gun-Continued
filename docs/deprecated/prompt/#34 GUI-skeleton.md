@@ -31,3 +31,16 @@
 
 现在开始执行，完成后叫我检查
 ```
+
+## 
+
+```
+/fork 现在效仿我修改后的GunTooltipMask和几个INSTANCE的模式，完成AttachmentTooltipMask及对应的INSTANCE
+- description方式相同
+- baseInfo、enchantmentInfo、guide_tip暂时留空
+- detailInfo方式相同
+
+注意这是模板复制，不要过度思考。
+
+现在开始执行，完成后叫我检查
+```

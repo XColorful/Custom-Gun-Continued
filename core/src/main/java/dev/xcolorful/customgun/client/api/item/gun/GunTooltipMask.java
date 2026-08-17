@@ -13,12 +13,12 @@ import dev.xcolorful.customgun.core.api.resource.ResourceTag;
 import java.util.EnumSet;
 
 public enum GunTooltipMask implements ResourceTag.MaskTag {
-    DESCRIPTION(GunDescriptionPart.INSTANCE),
-    AMMO_INFO(GunAmmoInfoPart.INSTANCE),
-    BASE_INFO(GunBaseInfoPart.INSTANCE),
-    ENCHANTMENT_INFO(GunEnchantmentInfoPart.INSTANCE),
-    GUIDE_TIP(GunGuideTipPart.INSTANCE),
-    DETAIL_INFO(GunDetailInfoPart.INSTANCE);
+    DESCRIPTION(0, GunDescriptionPart.INSTANCE),
+    AMMO_INFO(1, GunAmmoInfoPart.INSTANCE),
+    BASE_INFO(2, GunBaseInfoPart.INSTANCE),
+    ENCHANTMENT_INFO(3, GunEnchantmentInfoPart.INSTANCE),
+    GUIDE_TIP(4, GunGuideTipPart.INSTANCE),
+    DETAIL_INFO(5, GunDetailInfoPart.INSTANCE);
 
     public final String maskName;
     private final int mask;
@@ -26,9 +26,9 @@ public enum GunTooltipMask implements ResourceTag.MaskTag {
      * 从 {@link ClientGunTooltip} 提取而来
      */
     private final GunTooltipPart tooltipPart;
-    GunTooltipMask(GunTooltipPart tooltipPart) {
+    GunTooltipMask(int ordinal, GunTooltipPart tooltipPart) {
         this.maskName = this.name().toLowerCase();
-        this.mask = 1 << this.ordinal();
+        this.mask = 1 << ordinal;
         this.tooltipPart = tooltipPart;
     }
     @Override

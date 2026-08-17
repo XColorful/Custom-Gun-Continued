@@ -71,7 +71,7 @@ public class ClientModConfigTag {
     public static final String damageCounterResetTime_comment = "Max time the damage counter will reset";
 
     public static final String disableMovementAttributeFov_path = "DisableMovementAttributeFov";
-    public static final String disableMovementAttributeFov_comment = "Disable the fov effect from the movement speed attribute while holding a gun";
+    public static final String disableMovementAttributeFov_comment = "Disable the FOV effect from the movement speed attribute while holding a gun";
 
     public static final String enableResourceLocationInTooltip_path = "EnableResourceLocationInTooltip";
     public static final String enableResourceLocationInTooltip_comment = "Enable the display of the ResourceLocation in the tooltip when Advanced Tooltip is enabled";

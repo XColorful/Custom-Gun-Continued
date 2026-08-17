@@ -11,7 +11,9 @@ import java.util.Map;
 
 public enum AmmoCategory implements ResourceTag.CategoryTag {
     AMMO(AmmoCategoryTag.AMMO,
-            Component.translatable("customgun.ammocategory.ammo"));
+            Component.translatable("customgun.ammocategory.ammo")),
+    EXPLOSIVE(AmmoCategoryTag.EXPLOSIVE,
+            Component.translatable("customgun.ammocategory.explosive"));
 
     public final String categoryName;
     public final MutableComponent categoryLang;
@@ -19,7 +21,6 @@ public enum AmmoCategory implements ResourceTag.CategoryTag {
         this.categoryName = name;
         this.categoryLang = lang;
     }
-
     @Override public String getTagName() {
         return this.categoryName;
     }

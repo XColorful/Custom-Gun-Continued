@@ -11,6 +11,7 @@ import dev.xcolorful.customgun.client.api.gui.tooltip.BaseTooltipContext;
 import dev.xcolorful.customgun.client.api.gui.tooltip.BaseTooltipView;
 import dev.xcolorful.customgun.client.api.item.gun.GunTooltipMask;
 import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
+import dev.xcolorful.customgun.client.resource.assets.info.GunpackInfo;
 import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.resource.ResourceApi;
@@ -98,6 +99,7 @@ public class ClientGunTooltip implements ClientTooltipComponent {
         public final @NotNull EnumSet<GunTooltipMask> visibleParts;
         public @Nullable GunIndexInstance gunIndexInstance;
         public @Nullable GunDisplayInstance gunDisplayInstance;
+        public @Nullable GunpackInfo gunpackInfo;
         public boolean showCategory = false;
         public boolean showPackInfo = false;
         public boolean showPojoLocation = false;
@@ -109,6 +111,7 @@ public class ClientGunTooltip implements ClientTooltipComponent {
             this.visibleParts = GunTooltipMask.fromBitmap(iGun.getTooltipMask(gunItem));
             this.gunIndexInstance = ResourceApi.getGunIndexInstance(gunTooltip.gunLocation());
             this.gunDisplayInstance = ClientResourceApi.getGunDisplayInstance(iGun.getGunDisplayLocation(gunItem));
+            this.gunpackInfo = ClientResourceApi.getGunpackInfo(gunTooltip.gunLocation().getNamespace());
             this.buildView();
         }
         @Override

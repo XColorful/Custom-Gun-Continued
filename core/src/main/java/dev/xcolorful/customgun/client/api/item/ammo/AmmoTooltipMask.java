@@ -1,32 +1,25 @@
-/*
- * Copyright (c) 2024-2026 MCModderAnchor (https://github.com/MCModderAnchor)
- * SPDX-License-Identifier: GPL-3.0-only
- *
- * Source: https://github.com/MCModderAnchor/TACZ
- */
+package dev.xcolorful.customgun.client.api.item.ammo;
 
-package dev.xcolorful.customgun.client.api.item.gun;
-
-import dev.xcolorful.customgun.client.gui.tooltip.gun.*;
+import dev.xcolorful.customgun.client.gui.tooltip.ammo.AmmoDescriptionPart;
+import dev.xcolorful.customgun.client.gui.tooltip.ammo.AmmoDetailInfoPart;
+import dev.xcolorful.customgun.client.gui.tooltip.ammo.AmmoEnchantmentInfoPart;
+import dev.xcolorful.customgun.client.gui.tooltip.ammo.AmmoTooltipPart;
 import dev.xcolorful.customgun.core.api.resource.ResourceTag;
 
 import java.util.EnumSet;
 
-public enum GunTooltipMask implements ResourceTag.MaskTag {
-    DESCRIPTION(0, GunDescriptionPart.INSTANCE),
-    STATE_INFO(1, GunStateInfoPart.INSTANCE),
-    BASE_INFO(2, GunBaseInfoPart.INSTANCE),
-    ENCHANTMENT_INFO(3, GunEnchantmentInfoPart.INSTANCE),
-    GUIDE_TIP(4, GunGuideTipPart.INSTANCE),
-    DETAIL_INFO(5, GunDetailInfoPart.INSTANCE);
+public enum AmmoTooltipMask implements ResourceTag.MaskTag {
+    DESCRIPTION(0, AmmoDescriptionPart.INSTANCE),
+
+
+
+    ENCHANTMENT_INFO(4, AmmoEnchantmentInfoPart.INSTANCE),
+    DETAIL_INFO(5, AmmoDetailInfoPart.INSTANCE);
 
     public final String maskName;
     private final int mask;
-    /**
-     * 从 {@link ClientGunTooltip} 提取而来
-     */
-    private final GunTooltipPart tooltipPart;
-    GunTooltipMask(int ordinal, GunTooltipPart tooltipPart) {
+    private final AmmoTooltipPart tooltipPart;
+    AmmoTooltipMask(int ordinal, AmmoTooltipPart tooltipPart) {
         this.maskName = this.name().toLowerCase();
         this.mask = 1 << ordinal;
         this.tooltipPart = tooltipPart;
@@ -39,12 +32,12 @@ public enum GunTooltipMask implements ResourceTag.MaskTag {
     public int getMask() {
         return this.mask;
     }
-
-    public GunTooltipPart getTooltipPart() {
+    
+    public AmmoTooltipPart getTooltipPart() {
         return this.tooltipPart;
     }
-
-    private static final GunTooltipMask[] VALUES = values();
+    
+    private static final AmmoTooltipMask[] VALUES = values();
 
     /**
      * Tooltip 显示掩码
@@ -54,9 +47,9 @@ public enum GunTooltipMask implements ResourceTag.MaskTag {
      * </ul>
      * 传入{@code 0}表示全部启用
      */
-    public static EnumSet<GunTooltipMask> fromBitmap(int bitmap) {
-        EnumSet<GunTooltipMask> set = EnumSet.noneOf(GunTooltipMask.class);
-        for (GunTooltipMask value : VALUES) {
+    public static EnumSet<AmmoTooltipMask> fromBitmap(int bitmap) {
+        EnumSet<AmmoTooltipMask> set = EnumSet.noneOf(AmmoTooltipMask.class);
+        for (AmmoTooltipMask value : VALUES) {
             if ((bitmap & value.mask) == 0) {
                 set.add(value);
             }
@@ -73,9 +66,9 @@ public enum GunTooltipMask implements ResourceTag.MaskTag {
      * @param set 启用的 Tooltip 部分
      * @return Tooltip 显示掩码
      */
-    public static int toBitmap(EnumSet<GunTooltipMask> set) {
+    public static int toBitmap(EnumSet<AmmoTooltipMask> set) {
         int bitmap = 0;
-        for (GunTooltipMask value : VALUES) {
+        for (AmmoTooltipMask value : VALUES) {
             if (!set.contains(value)) {
                 bitmap |= value.mask;
             }

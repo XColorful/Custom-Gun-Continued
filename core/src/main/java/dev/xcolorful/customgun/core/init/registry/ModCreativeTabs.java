@@ -20,6 +20,7 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 
 import static dev.xcolorful.customgun.core.api.item.ammo.AmmoCategory.AMMO;
+import static dev.xcolorful.customgun.core.api.item.ammo.AmmoCategory.EXPLOSIVE;
 import static dev.xcolorful.customgun.core.api.item.attachment.AttachmentCategory.*;
 import static dev.xcolorful.customgun.core.api.item.gun.GunCategory.*;
 
@@ -38,11 +39,17 @@ public class ModCreativeTabs {
             .displayItems((parameters, output) -> output.acceptAll(AmmoTab.buildAmmoItems(AMMO)))
             .build()
     );
+    public static IRegistryObject<CreativeModeTab> EXPLOSIVE_TAB = TABS.register(EXPLOSIVE.getCategoryName(), () -> CreativeModeTab.builder()
+            .title(EXPLOSIVE.getCategoryLang()).withTabsBefore(AMMO_TAB.getRegistryName())
+            .icon(() -> ItemStack.EMPTY)
+            .displayItems((parameters, output) -> output.acceptAll(AmmoTab.buildAmmoItems(EXPLOSIVE)))
+            .build()
+    );
 
     // --------AttachmentCategory--------
 
     public static IRegistryObject<CreativeModeTab> ATTACHMENT_MUZZLE_TAB = TABS.register(MUZZLE.getCategoryName(), () -> CreativeModeTab.builder()
-            .title(MUZZLE.getCategoryLang()).withTabsBefore(AMMO_TAB.getRegistryName())
+            .title(MUZZLE.getCategoryLang()).withTabsBefore(EXPLOSIVE_TAB.getRegistryName())
             .icon(() -> ItemStack.EMPTY)
             .displayItems((parameters, output) -> output.acceptAll(AttachmentTab.buildAttachmentItems(MUZZLE)))
             .build()

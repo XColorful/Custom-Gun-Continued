@@ -49,7 +49,7 @@ public final class AttachmentDetailInfoPart extends AbstractTooltipPart implemen
 
         Component category; {
             AttachmentCategory attachmentCategory; {
-                @Nullable AttachmentIndexInstance attachmentIndexInstance = ResourceApi.getAttachmentIndexInstance(attachmentLocation);
+                @Nullable AttachmentIndexInstance attachmentIndexInstance = context.attachmentIndexInstance;
                 if (attachmentIndexInstance != null) {
                     AttachmentIndex attachmentIndex = attachmentIndexInstance.getPojo();
                     attachmentCategory = attachmentIndex.getAttachmentCategory();
@@ -65,7 +65,7 @@ public final class AttachmentDetailInfoPart extends AbstractTooltipPart implemen
         context.showCategory = context.isCreative;
 
         Component packInfo; {
-            @Nullable GunpackInfo gunpackInfo = ClientResourceApi.getGunpackInfo(attachmentLocation.getNamespace());
+            @Nullable GunpackInfo gunpackInfo = context.gunpackInfo;
             if (gunpackInfo != null) {
                 packInfo = Component.translatable(gunpackInfo.getNameLang())
                         .withStyle(ChatFormatting.ITALIC);

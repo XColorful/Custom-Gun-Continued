@@ -5,18 +5,16 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package dev.xcolorful.customgun.client.gui.tooltip.gun;
+package dev.xcolorful.customgun.client.gui.tooltip.ammo;
 
-import dev.xcolorful.customgun.client.api.item.gun.GunTooltipMask;
-import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
+import dev.xcolorful.customgun.client.api.item.ammo.AmmoTooltipMask;
 import dev.xcolorful.customgun.client.config.RenderConfig;
 import dev.xcolorful.customgun.client.gui.tooltip.AbstractTooltipPart;
 import dev.xcolorful.customgun.client.resource.assets.info.GunpackInfo;
-import dev.xcolorful.customgun.core.api.item.gun.GunCategory;
+import dev.xcolorful.customgun.core.api.item.ammo.AmmoCategory;
 import dev.xcolorful.customgun.core.api.minecraft.Color64;
-import dev.xcolorful.customgun.core.api.resource.ResourceApi;
-import dev.xcolorful.customgun.core.resource.data.index.GunIndex;
-import dev.xcolorful.customgun.core.resource.instance.data.GunIndexInstance;
+import dev.xcolorful.customgun.core.resource.data.index.AmmoIndex;
+import dev.xcolorful.customgun.core.resource.instance.data.AmmoIndexInstance;
 import dev.xcolorful.customgun.core.util.ComponentUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -27,41 +25,37 @@ import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 
-/**
- * 扩展模组可以考虑改成左边渲染一个枪包logo/物品，然后再渲染文本的方式
- */
 /*
 原版tab分类
 枪包名
 资源位置
  */
-public final class GunDetailInfoPart extends AbstractTooltipPart implements GunTooltipPart {
-    public static final GunDetailInfoPart INSTANCE = new GunDetailInfoPart();
-    private GunDetailInfoPart() {}
+public final class AmmoDetailInfoPart extends AbstractTooltipPart implements AmmoTooltipPart {
+    public static final AmmoDetailInfoPart INSTANCE = new AmmoDetailInfoPart();
+    private AmmoDetailInfoPart() {}
 
     private static final Color64 _defaultCategoryColor = Color64.fromChatFormatting(ChatFormatting.BLUE);
     private static final Color64 _defaultPackColor = Color64.fromChatFormatting(ChatFormatting.BLUE);
-    private static final Color64 _defaultLocationColor = _defaultCategoryColor; // MC用的DARK_GRAY，改成跟category一样
+    private static final Color64 _defaultLocationColor = _defaultCategoryColor;
     private static final boolean hasTextShadow = true;
 
     @Override
-    public void build(ClientGunTooltip.Context context) {
+    public void build(ClientAmmoTooltip.Context context) {
         Font font = Minecraft.getInstance().font;
 
-        var gunLocation = context.gunTooltip.gunLocation();
+        var ammoLocation = context.ammoTooltip.ammoLocation();
 
         Component category; {
-            GunCategory gunCategory; {
-                @Nullable GunIndexInstance gunIndexInstance = context.gunIndexInstance;
-                if (gunIndexInstance != null) {
-                    GunIndex gunIndex = gunIndexInstance.getPojo();
-                    gunCategory = gunIndex.getGunCategory();
+            AmmoCategory ammoCategory; {
+                @Nullable AmmoIndexInstance ammoIndexInstance = context.ammoIndexInstance;
+                if (ammoIndexInstance != null) {
+                    AmmoIndex ammoIndex = ammoIndexInstance.getPojo();
+                    ammoCategory = ammoIndex.getAmmoCategory();
                 } else {
-                    gunCategory = GunCategory.CUSTOM;
+                    ammoCategory = AmmoCategory.AMMO;
                 }
             }
-
-            category = gunCategory.getCategoryLang().copy();
+            category = ammoCategory.getCategoryLang().copy();
         }
         context.view.category = category;
         context.widenMaxWidth(font.width(category));
@@ -80,13 +74,13 @@ public final class GunDetailInfoPart extends AbstractTooltipPart implements GunT
         context.widenMaxWidth(font.width(context.view.packInfo));
         context.showPackInfo = context.isCreative && context.isAdvanced;
 
-        context.view.pojoLocation = Component.literal(gunLocation.toString());
+        context.view.pojoLocation = Component.literal(ammoLocation.toString());
         context.showPojoLocation = context.showPackInfo && RenderConfig.APPEND_RESOURCE_LOCATION_IN_TOOLTIP.get();
     }
 
     @Override
-    public int measureHeight(ClientGunTooltip.Context context) {
-        if (!context.visibleParts.contains(GunTooltipMask.DETAIL_INFO)) return 0;
+    public int measureHeight(ClientAmmoTooltip.Context context) {
+        if (!context.visibleParts.contains(AmmoTooltipMask.DETAIL_INFO)) return 0;
 
         int height = 0;
 
@@ -98,7 +92,7 @@ public final class GunDetailInfoPart extends AbstractTooltipPart implements GunT
     }
 
     @Override
-    public void renderText(ClientGunTooltip.Context context,
+    public void renderText(ClientAmmoTooltip.Context context,
                            Font font, int pX, int pY,
                            Matrix4f matrix4f,
                            MultiBufferSource.BufferSource bufferSource) {
@@ -108,7 +102,7 @@ public final class GunDetailInfoPart extends AbstractTooltipPart implements GunT
         if (context.showCategory && context.view.category != null) {
             yOffset += textLineSpacing;
 
-            // 枪械类型
+            // 子弹类型
             font.drawInBatch(context.view.category,
                     xOffset, yOffset,
                     _defaultCategoryColor.getRGB(),
@@ -153,7 +147,7 @@ public final class GunDetailInfoPart extends AbstractTooltipPart implements GunT
     }
 
     @Override
-    public void renderImage(ClientGunTooltip.Context context,
+    public void renderImage(ClientAmmoTooltip.Context context,
                             Font font, int pX, int pY,
                             GuiGraphics guiGraphics) {
         // mixin注入点

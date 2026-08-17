@@ -39,6 +39,7 @@ public enum AttachmentTooltipMask implements ResourceTag.MaskTag {
     public int getMask() {
         return this.mask;
     }
+
     public AttachmentTooltipPart getTooltipPart() {
         return this.tooltipPart;
     }

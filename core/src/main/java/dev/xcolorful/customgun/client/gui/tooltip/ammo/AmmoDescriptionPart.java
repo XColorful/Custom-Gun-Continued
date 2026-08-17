@@ -5,13 +5,13 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package dev.xcolorful.customgun.client.gui.tooltip.attachment;
+package dev.xcolorful.customgun.client.gui.tooltip.ammo;
 
-import dev.xcolorful.customgun.client.api.item.attachment.AttachmentTooltipMask;
+import dev.xcolorful.customgun.client.api.item.ammo.AmmoTooltipMask;
 import dev.xcolorful.customgun.client.gui.tooltip.AbstractTooltipPart;
 import dev.xcolorful.customgun.core.api.minecraft.Color64;
-import dev.xcolorful.customgun.core.resource.data.index.AttachmentIndex;
-import dev.xcolorful.customgun.core.resource.instance.data.AttachmentIndexInstance;
+import dev.xcolorful.customgun.core.resource.data.index.AmmoIndex;
+import dev.xcolorful.customgun.core.resource.instance.data.AmmoIndexInstance;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -28,9 +28,9 @@ import java.util.List;
 描述内容，描述内容
 ，描述内容。
  */
-public final class AttachmentDescriptionPart extends AbstractTooltipPart implements AttachmentTooltipPart {
-    public static final AttachmentDescriptionPart INSTANCE = new AttachmentDescriptionPart();
-    private AttachmentDescriptionPart() {}
+public final class AmmoDescriptionPart extends AbstractTooltipPart implements AmmoTooltipPart {
+    public static final AmmoDescriptionPart INSTANCE = new AmmoDescriptionPart();
+    private AmmoDescriptionPart() {}
 
     /**
      * 扩展模组可以动态识别当前鼠标到边界的距离来调整
@@ -40,15 +40,15 @@ public final class AttachmentDescriptionPart extends AbstractTooltipPart impleme
     private static final boolean hasTextShadow = true;
 
     @Override
-    public void build(ClientAttachmentTooltip.Context context) {
+    public void build(ClientAmmoTooltip.Context context) {
         Font font = Minecraft.getInstance().font;
 
-        @Nullable AttachmentIndexInstance attachmentIndexInstance = context.attachmentIndexInstance;
-        if (attachmentIndexInstance == null) return;
+        @Nullable AmmoIndexInstance ammoIndexInstance = context.ammoIndexInstance;
+        if (ammoIndexInstance == null) return;
 
         List<FormattedCharSequence> desc; {
-            AttachmentIndex attachmentIndex = attachmentIndexInstance.getPojo();
-            String tooltipLang = attachmentIndex.getTooltipLang();
+            AmmoIndex ammoIndex = ammoIndexInstance.getPojo();
+            String tooltipLang = ammoIndex.getTooltipLang();
 
             desc = font.split(Component.translatable(tooltipLang), _textLineWidth);
         }
@@ -60,8 +60,8 @@ public final class AttachmentDescriptionPart extends AbstractTooltipPart impleme
     }
 
     @Override
-    public int measureHeight(ClientAttachmentTooltip.Context context) {
-        if (!context.visibleParts.contains(AttachmentTooltipMask.DESCRIPTION)) return 0;
+    public int measureHeight(ClientAmmoTooltip.Context context) {
+        if (!context.visibleParts.contains(AmmoTooltipMask.DESCRIPTION)) return 0;
 
         @Nullable List<FormattedCharSequence> desc = context.view.desc;
         if (desc == null || desc.isEmpty()) return 0;
@@ -70,7 +70,7 @@ public final class AttachmentDescriptionPart extends AbstractTooltipPart impleme
     }
 
     @Override
-    public void renderText(ClientAttachmentTooltip.Context context,
+    public void renderText(ClientAmmoTooltip.Context context,
                            Font font, int pX, int pY,
                            Matrix4f matrix4f,
                            MultiBufferSource.BufferSource bufferSource) {
@@ -81,9 +81,9 @@ public final class AttachmentDescriptionPart extends AbstractTooltipPart impleme
         if (desc != null) {
             yOffset += textLineSpacing;
 
-            // 配件描述
+            // 子弹描述
             for (int i = 0; i < desc.size(); i++) {
-                // 单行配件描述
+                // 单行子弹描述
                 FormattedCharSequence sequence = desc.get(i);
                 font.drawInBatch(sequence,
                         xOffset, yOffset,

@@ -36,7 +36,7 @@ public final class GunDescriptionPart extends AbstractTooltipPart implements Gun
      * 扩展模组可以动态识别当前鼠标到边界的距离来调整
      */
     @ApiStatus.Internal public static volatile int _textLineWidth = 300;
-    private static final Color64 _defaultCategoryColor = Color64.fromChatFormatting(ChatFormatting.GRAY);
+    private static final Color64 _defaultDescriptionColor = Color64.fromChatFormatting(ChatFormatting.GRAY);
     private static final boolean hasTextShadow = true;
 
     @Override
@@ -87,7 +87,7 @@ public final class GunDescriptionPart extends AbstractTooltipPart implements Gun
                 FormattedCharSequence sequence = desc.get(i);
                 font.drawInBatch(sequence,
                         xOffset, yOffset,
-                        _defaultCategoryColor.getRGB(),
+                        _defaultDescriptionColor.getRGB(),
                         hasTextShadow,
                         matrix4f,
                         bufferSource,

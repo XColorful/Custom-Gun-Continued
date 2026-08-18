@@ -1,13 +1,6 @@
-/*
- * Copyright (c) 2025-2026 XiaoColorful (https://github.com/XColorful)
- * SPDX-License-Identifier: GPL-3.0-or-later
- *
- * Source: https://github.com/XColorful/BattleRoyale
- */
-
 package dev.xcolorful.customgun.forgeclient.event;
 
-import dev.xcolorful.customgun.client.api.event.IRenderGuiEvent;
+import dev.xcolorful.customgun.client.api.event.IPrepareRenderGuiEvent;
 import dev.xcolorful.customgun.core.api.event.EventType;
 import dev.xcolorful.customgun.forge.event.ForgeEvent;
 import net.minecraft.client.gui.GuiGraphics;
@@ -18,16 +11,16 @@ import net.minecraftforge.client.event.RenderGuiEvent;
 import net.minecraftforge.eventbus.api.Event;
 import org.jetbrains.annotations.Nullable;
 
-public class ForgeRenderGuiEvent extends ForgeEvent implements IRenderGuiEvent {
+public class ForgePrepareRenderGuiEvent extends ForgeEvent implements IPrepareRenderGuiEvent {
 
-    private final RenderGuiEvent.Post renderGuiEvent;
+    private final RenderGuiEvent.Pre renderGuiEvent;
 
-    public ForgeRenderGuiEvent(Event event) {
+    public ForgePrepareRenderGuiEvent(Event event) {
         super(event);
-        if (event instanceof RenderGuiEvent.Post eventIn) {
+        if (event instanceof RenderGuiEvent.Pre eventIn) {
             this.renderGuiEvent = eventIn;
         } else {
-            throw new RuntimeException("Expected RenderGuiEvent.Post but received: " + event.getClass().getName());
+            throw new RuntimeException("Expected RenderGuiEvent.Pre but received: " + event.getClass().getName());
         }
     }
     @Override public EventType getType() {
@@ -50,7 +43,7 @@ public class ForgeRenderGuiEvent extends ForgeEvent implements IRenderGuiEvent {
     }
 
     @Override public String getTextName() {
-        return "ForgeRenderGuiEvent";
+        return "ForgePrepareRenderGuiEvent";
     }
     @Override public Component getDisplayName() {
         return Component.literal(getTextName());

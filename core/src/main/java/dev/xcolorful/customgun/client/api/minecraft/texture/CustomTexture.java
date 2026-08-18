@@ -5,10 +5,13 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
 public enum CustomTexture {
-    WHITE(String.format("%s:%s", CustomGun.MOD_ID, "textures/white.png")),
+    WHITE_256x256(String.format("%s:%s", CustomGun.MOD_ID, "textures/white_256x256.png")),
+    WHITE_32x32(String.format("%s:%s", CustomGun.MOD_ID, "textures/white_32x32.png")),
+    WHITE_18x18(String.format("%s:%s", CustomGun.MOD_ID, "textures/white_18x18.png")),
     WHITE_8x8(String.format("%s:%s", CustomGun.MOD_ID, "textures/white_8x8.png")),
     // entity
-    GUN_PROJECTILE(String.format("%s:%s", CustomGun.MOD_ID, "textures/entity/gun_projectile.png"));
+    GUN_PROJECTILE(String.format("%s:%s", CustomGun.MOD_ID, "textures/entity/gun_projectile.png"))
+    ;
 
     public final ResourceLocation location;
     CustomTexture(String location) {

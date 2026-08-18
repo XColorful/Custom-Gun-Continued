@@ -893,8 +893,9 @@ Notation:
 |com.tacz.guns.client.gui|dev.xcolorful.customgun.client.gui|
 |---|---|
 |components.refit||
-|components.smith||
-|components.`*`||
+|components.smith|_Deprecated_|
+|components.`FlatColorButton`||
+|components.`GunPackList`|_Deprecated_|
 |overlay.`*Overlay`|_Deprecated_|
 |toast.`GunLevelUpToast`|_Deprecated_|
 |`GunPackProgressScreen`|_Deprecated_|

@@ -66,7 +66,9 @@ public final class GunDescriptionPart extends AbstractTooltipPart implements Gun
         @Nullable List<FormattedCharSequence> desc = context.view.desc;
         if (desc == null || desc.isEmpty()) return 0;
 
-        return textLineSpacing + desc.size() * textLineHeight;
+        return
+//                textLineSpacing +
+                        desc.size() * textLineHeight;
     }
 
     @Override
@@ -79,7 +81,10 @@ public final class GunDescriptionPart extends AbstractTooltipPart implements Gun
 
         @Nullable List<FormattedCharSequence> desc = context.view.desc;
         if (desc != null) {
-            yOffset += textLineSpacing;
+            /**
+             * {@link GunTooltipMask}第一项前不加行间距，后面的不管
+             */
+//            yOffset += textLineSpacing;
 
             // 枪械描述
             for (int i = 0; i < desc.size(); i++) {

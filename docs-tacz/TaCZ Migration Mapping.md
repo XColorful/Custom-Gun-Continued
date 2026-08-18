@@ -830,7 +830,7 @@ Notation:
 
 |com.tacz.guns.client.event|dev.xcolorful.customgun.client.entity|
 |---|---|
-|`ClientHitMark`|`ClientHitMarkHandler`|
+|`ClientHitMark`|shooter.player.`_LocalHitHandler`|
 |`InventoryEvent`.onPlayerSwapMainHand|shooter.player.`_LocalMessageHandler`.onSwapItemWithOffhand|
 |`RefreshClonePlayerDataEvent`|shooter.player.`_LocalPlayerHandler`.onClientPlayerClone|
 |`RefreshClonePlayerDataEvent`.onClientTick|_Deprecated_|
@@ -859,7 +859,7 @@ Notation:
 
 |com.tacz.guns.client.event|dev.xcolorful.customgun.client.gui|
 |---|---|
-|`RenderCrosshairEvent`|crosshair.`CrosshairRender`|
+|`RenderCrosshairEvent`|_Deprecated_|
 
 |com.tacz.guns.client.event|dev.xcolorful.customgun.client.api.gui|
 |---|---|
@@ -895,7 +895,7 @@ Notation:
 |components.refit||
 |components.smith||
 |components.`*`||
-|overlay.`*Overlay`||
+|overlay.`*Overlay`|_Deprecated_|
 |toast.`GunLevelUpToast`|_Deprecated_|
 |`GunPackProgressScreen`|_Deprecated_|
 |`GunRefitScreen`|screen.`GunRefitScreen`|
@@ -903,7 +903,11 @@ Notation:
 
 |com.tacz.guns.client.gui|dev.xcolorful.customgun.client.compat|
 |---|---|
-|compat.`ClothConfigScreen`|_Deprecated_|
+|compat.`ClothConfigScreen`|_Deprecated_
+
+|com.tacz.guns.client.gui|dev.xcolorful.customgun.client.api.gui|
+|---|---|
+|overlay.`KillAmountOverlay`.markTimestamp|overlay.`OverlayStateAccessor`.setKillTimestamp|
 
 ### Initialize (Client)
 > ```java
@@ -912,10 +916,10 @@ Notation:
 
 |com.tacz.guns.client.init|dev.xcolorful.customgun.client.init|
 |---|---|
-|`ClientSetupEvent`.onClientSetup(FMLClientSetupEvent)||
+|`ClientSetupEvent`.onClientSetup(FMLClientSetupEvent)|_Deprecated_|
 |`ClientSetupEvent`.onClientSetup(RegisterClientTooltipComponentFactoriesEvent)|`ClientTooltipRegistry`.registerTooltips|
 |`ClientSetupEvent`.onClientSetup(RegisterKeyMappingsEvent)|`ClientKeyMappingRegistry`.registerKeyMappings|
-|`ClientSetupEvent`.onRegisterGuiOverlays||
+|`ClientSetupEvent`.onRegisterGuiOverlays|_Deprecated_|
 |`ModContainerScreen`|_Deprecated_|
 |`ModEntitiesRender`|`ClientEntityRendererRegistry`|
 |`ParticleFactoryRegistry`|`ClientModParticles`|

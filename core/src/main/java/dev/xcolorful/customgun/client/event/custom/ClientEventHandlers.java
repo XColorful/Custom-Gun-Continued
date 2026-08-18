@@ -2,6 +2,7 @@ package dev.xcolorful.customgun.client.event.custom;
 
 import dev.xcolorful.customgun.client.api.event._CustomEventType;
 import dev.xcolorful.customgun.client.entity.shooter.player._LocalAnimHandler;
+import dev.xcolorful.customgun.client.entity.shooter.player._LocalHitHandler;
 import dev.xcolorful.customgun.client.entity.shooter.player._LocalMessageHandler;
 import dev.xcolorful.customgun.client.renderer.item.gun.GunCameraHelper;
 import dev.xcolorful.customgun.client.renderer.item.gun.GunRendererAddon;
@@ -35,5 +36,7 @@ public class ClientEventHandlers {
         CoreEventHandlers.register(customEventRegister, GunRendererAddon.get(), CustomEventType.ITEM_IN_HAND_BOB_VIEW_EVENT, EventPriority.NORMAL, false);
         CoreEventHandlers.register(customEventRegister, GunCameraHelper.Addon.get(), CustomEventType.GUN_FIRE_EVENT, EventPriority.NORMAL, false);
         CoreEventHandlers.register(customEventRegister, GunCameraHelper.Addon.get(), CustomEventType.BEFORE_RENDER_HAND_EVENT, EventPriority.NORMAL, false);
+        CoreEventHandlers.register(customEventRegister, _LocalHitHandler.get(), CustomEventType.PROJECTILE_HIT_ENTITY_FINISH_EVENT, EventPriority.NORMAL, false);
+        CoreEventHandlers.register(customEventRegister, _LocalHitHandler.get(), CustomEventType.PROJECTILE_KILL_ENTITY_EVENT, EventPriority.NORMAL, false);
     }
 }

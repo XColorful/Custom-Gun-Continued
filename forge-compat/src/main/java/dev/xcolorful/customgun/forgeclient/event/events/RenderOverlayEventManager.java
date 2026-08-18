@@ -5,13 +5,13 @@ import dev.xcolorful.customgun.core.api.event.EventType;
 import dev.xcolorful.customgun.core.api.event.IEventHandler;
 import dev.xcolorful.customgun.forge.event.ForgeEvent;
 import dev.xcolorful.customgun.forge.event.events.AbstractEventCommon;
-import dev.xcolorful.customgun.forgeclient.event.ForgePrepareRenderGuiEvent;
+import dev.xcolorful.customgun.forgeclient.event.ForgeRenderOverlayEvent;
 import net.minecraftforge.client.event.RenderGuiEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
-public class PrepareRenderGuiEventManager {
+public class RenderOverlayEventManager {
 
     public static boolean register(IEventHandler eventHandler, EventPriority priority, boolean receiveCanceled) {
         return getProxy(priority).addEventHandler(eventHandler, receiveCanceled);
@@ -23,17 +23,17 @@ public class PrepareRenderGuiEventManager {
 
     private static AbstractEventCommon getProxy(EventPriority priority) {
         return switch (priority) {
-            case HIGHEST -> PrepareRenderGuiProxyHighest.INSTANCE;
-            case HIGH -> PrepareRenderGuiProxyHigh.INSTANCE;
-            case NORMAL -> PrepareRenderGuiProxyNormal.INSTANCE;
-            case LOW -> PrepareRenderGuiProxyLow.INSTANCE;
-            case LOWEST -> PrepareRenderGuiProxyLowest.INSTANCE;
+            case HIGHEST -> RenderOverlayProxyHighest.INSTANCE;
+            case HIGH -> RenderOverlayProxyHigh.INSTANCE;
+            case NORMAL -> RenderOverlayProxyNormal.INSTANCE;
+            case LOW -> RenderOverlayProxyLow.INSTANCE;
+            case LOWEST -> RenderOverlayProxyLowest.INSTANCE;
         };
     }
 
-    private static abstract class PrepareRenderGuiProxy extends AbstractEventCommon {
-        public PrepareRenderGuiProxy() {
-            super(EventType.PREPARE_RENDER_GUI_EVENT);
+    private static abstract class RenderOverlayProxy extends AbstractEventCommon {
+        public RenderOverlayProxy() {
+            super(EventType.RENDER_OVERLAY_EVENT);
         }
 
         @Override
@@ -48,41 +48,41 @@ public class PrepareRenderGuiEventManager {
 
         @Override
         protected ForgeEvent getForgeEventType(Event event) {
-            return new ForgePrepareRenderGuiEvent(event);
+            return new ForgeRenderOverlayEvent(event);
         }
 
-        protected void handle(RenderGuiEvent.Pre event) {
+        protected void handle(RenderGuiEvent.Post event) {
             super.onEvent(event);
         }
     }
 
-    public static class PrepareRenderGuiProxyHighest extends PrepareRenderGuiProxy {
-        static final PrepareRenderGuiProxyHighest INSTANCE = new PrepareRenderGuiProxyHighest();
+    public static class RenderOverlayProxyHighest extends RenderOverlayProxy {
+        static final RenderOverlayProxyHighest INSTANCE = new RenderOverlayProxyHighest();
         @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.HIGHEST, receiveCanceled = true)
-        public void onEvent(RenderGuiEvent.Pre e) { handle(e); }
+        public void onEvent(RenderGuiEvent.Post e) { handle(e); }
     }
 
-    public static class PrepareRenderGuiProxyHigh extends PrepareRenderGuiProxy {
-        static final PrepareRenderGuiProxyHigh INSTANCE = new PrepareRenderGuiProxyHigh();
+    public static class RenderOverlayProxyHigh extends RenderOverlayProxy {
+        static final RenderOverlayProxyHigh INSTANCE = new RenderOverlayProxyHigh();
         @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.HIGH, receiveCanceled = true)
-        public void onEvent(RenderGuiEvent.Pre e) { handle(e); }
+        public void onEvent(RenderGuiEvent.Post e) { handle(e); }
     }
 
-    public static class PrepareRenderGuiProxyNormal extends PrepareRenderGuiProxy {
-        static final PrepareRenderGuiProxyNormal INSTANCE = new PrepareRenderGuiProxyNormal();
+    public static class RenderOverlayProxyNormal extends RenderOverlayProxy {
+        static final RenderOverlayProxyNormal INSTANCE = new RenderOverlayProxyNormal();
         @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.NORMAL, receiveCanceled = true)
-        public void onEvent(RenderGuiEvent.Pre e) { handle(e); }
+        public void onEvent(RenderGuiEvent.Post e) { handle(e); }
     }
 
-    public static class PrepareRenderGuiProxyLow extends PrepareRenderGuiProxy {
-        static final PrepareRenderGuiProxyLow INSTANCE = new PrepareRenderGuiProxyLow();
+    public static class RenderOverlayProxyLow extends RenderOverlayProxy {
+        static final RenderOverlayProxyLow INSTANCE = new RenderOverlayProxyLow();
         @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.LOW, receiveCanceled = true)
-        public void onEvent(RenderGuiEvent.Pre e) { handle(e); }
+        public void onEvent(RenderGuiEvent.Post e) { handle(e); }
     }
 
-    public static class PrepareRenderGuiProxyLowest extends PrepareRenderGuiProxy {
-        static final PrepareRenderGuiProxyLowest INSTANCE = new PrepareRenderGuiProxyLowest();
+    public static class RenderOverlayProxyLowest extends RenderOverlayProxy {
+        static final RenderOverlayProxyLowest INSTANCE = new RenderOverlayProxyLowest();
         @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.LOWEST, receiveCanceled = true)
-        public void onEvent(RenderGuiEvent.Pre e) { handle(e); }
+        public void onEvent(RenderGuiEvent.Post e) { handle(e); }
     }
 }

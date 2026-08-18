@@ -440,6 +440,11 @@ Notation:
 |`ModernKineticGunItem`.`DefaultPropertyModification`|_Deprecated_|
 |`TargetMinecartItem`|_Deprecated_|
 
+|com.tacz.guns.item|dev.xcolorful.customgun.client.gui|
+|---|---|
+|`AmmoItem`.appendHoverText|tooltip.ammo.`AmmoDescriptionPart`|
+|`AmmoItem`.appendHoverText|tooltip.ammo.`AmmoDetailInfoPart`|
+
 |com.tacz.guns.item|dev.xcolorful.customgun.client.api.item|
 |---|---|
 |`GunTooltipPart`|gun.`GunTooltipMask`|

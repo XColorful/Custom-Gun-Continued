@@ -39,7 +39,7 @@ public class ClientAmmoTooltip implements ClientTooltipComponent {
     @Override public int getHeight() {
         return this.context.getHeight();
     }
-    @Override public int getWidth(Font font) {
+    @Override public int getWidth(@NotNull Font font) {
         return this.context.getMaxWidth();
     }
     @Override

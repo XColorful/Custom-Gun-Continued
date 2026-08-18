@@ -18,8 +18,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class _AmmoItem {
 
-    public static @Nullable Component getName(IAmmo _this,
-                                    @NotNull ItemStack ammoItem) {
+    public static @Nullable Component getName(IAmmo _this, @NotNull ItemStack ammoItem) {
         var ammoLocation = _this.getAmmoLocation(ammoItem);
         @Nullable AmmoIndexInstance ammoIndexInstance = ResourceApi.getAmmoIndexInstance(ammoLocation);
         if (ammoIndexInstance == null) return null;

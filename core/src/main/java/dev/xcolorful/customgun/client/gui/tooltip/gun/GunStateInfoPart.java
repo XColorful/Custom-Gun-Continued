@@ -42,7 +42,7 @@ public final class GunStateInfoPart extends AbstractTooltipPart implements GunTo
      */
     private static final int _textXOffset = itemWidth + textLineSpacing;
     private static final int _height = textLineSpacing + Math.max(itemHeight, textLineHeight + textLineSpacing + textLineHeight);
-    private static final Color64 _defaultAmmoNameColor = Color64.fromChatFormatting(ChatFormatting.GOLD);
+    private static final Color64 _defaultAmmoNameColor = Color64.fromChatFormatting(ChatFormatting.WHITE);
     private static final Color64 _defaultAmmoCountColor = Color64.fromChatFormatting(ChatFormatting.DARK_GRAY);
     private static final boolean hasTextShadow = true;
 
@@ -50,11 +50,11 @@ public final class GunStateInfoPart extends AbstractTooltipPart implements GunTo
     public void build(ClientGunTooltip.Context context) {
         Font font = Minecraft.getInstance().font;
 
-        Component hoverName; {
-            hoverName = context.gunTooltip.ammoItem().getHoverName();
-            context.view.ammoName = hoverName;
-            context.widenMaxWidth(_textXOffset + font.width(hoverName));
+        Component ammoName; {
+            ammoName = context.gunTooltip.ammoItem().getHoverName();
         }
+        context.view.ammoName = ammoName;
+        context.widenMaxWidth(_textXOffset + font.width(ammoName));
 
         /**
          * TaCZ到处都在重新拉一大坨枪的逻辑，是其根深蒂固的问题

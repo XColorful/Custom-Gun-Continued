@@ -26,6 +26,9 @@ import static dev.xcolorful.customgun.core.api.item.gun.GunCategory.*;
 
 /**
  * 使用 {@link AmmoCategory}, {@link AttachmentCategory}, {@link GunCategory}
+ * <ul>
+ *     <li>加{@link CreativeModeTab.Builder#withSearchBar()}是为了从tab拿的物品不重复显示类别，尤其是子弹</li>
+ * </ul>
  */
 public class ModCreativeTabs {
     public static final IRegistrar<CreativeModeTab> TABS = CustomGun.getRegistrarFactory().createCreativeTabs(CustomGun.MOD_ID);
@@ -37,12 +40,14 @@ public class ModCreativeTabs {
             .title(AMMO.getCategoryLang())
             .icon(() -> ItemStack.EMPTY)
             .displayItems((parameters, output) -> output.acceptAll(AmmoTab.buildAmmoItems(AMMO)))
+            .withSearchBar()
             .build()
     );
     public static IRegistryObject<CreativeModeTab> EXPLOSIVE_TAB = TABS.register(EXPLOSIVE.getCategoryName(), () -> CreativeModeTab.builder()
             .title(EXPLOSIVE.getCategoryLang()).withTabsBefore(AMMO_TAB.getRegistryName())
             .icon(() -> ItemStack.EMPTY)
             .displayItems((parameters, output) -> output.acceptAll(AmmoTab.buildAmmoItems(EXPLOSIVE)))
+            .withSearchBar()
             .build()
     );
 
@@ -52,36 +57,42 @@ public class ModCreativeTabs {
             .title(MUZZLE.getCategoryLang()).withTabsBefore(EXPLOSIVE_TAB.getRegistryName())
             .icon(() -> ItemStack.EMPTY)
             .displayItems((parameters, output) -> output.acceptAll(AttachmentTab.buildAttachmentItems(MUZZLE)))
+            .withSearchBar()
             .build()
     );
     public static IRegistryObject<CreativeModeTab> ATTACHMENT_LASER_TAB = TABS.register(LASER.getCategoryName(), () -> CreativeModeTab.builder()
             .title(LASER.getCategoryLang()).withTabsBefore(ATTACHMENT_MUZZLE_TAB.getRegistryName())
             .icon(() -> ItemStack.EMPTY)
             .displayItems((parameters, output) -> output.acceptAll(AttachmentTab.buildAttachmentItems(LASER)))
+            .withSearchBar()
             .build()
     );
     public static IRegistryObject<CreativeModeTab> ATTACHMENT_GRIP_TAB = TABS.register(GRIP.getCategoryName(), () -> CreativeModeTab.builder()
             .title(GRIP.getCategoryLang()).withTabsBefore(ATTACHMENT_LASER_TAB.getRegistryName())
             .icon(() -> ItemStack.EMPTY)
             .displayItems((parameters, output) -> output.acceptAll(AttachmentTab.buildAttachmentItems(GRIP)))
+            .withSearchBar()
             .build()
     );
     public static IRegistryObject<CreativeModeTab> ATTACHMENT_MAGAZINE_TAB = TABS.register(MAGAZINE.getCategoryName(), () -> CreativeModeTab.builder()
             .title(MAGAZINE.getCategoryLang()).withTabsBefore(ATTACHMENT_GRIP_TAB.getRegistryName())
             .icon(() -> ItemStack.EMPTY)
             .displayItems((parameters, output) -> output.acceptAll(AttachmentTab.buildAttachmentItems(MAGAZINE)))
+            .withSearchBar()
             .build()
     );
     public static IRegistryObject<CreativeModeTab> ATTACHMENT_SCOPE_TAB = TABS.register(SCOPE.getCategoryName(), () -> CreativeModeTab.builder()
             .title(SCOPE.getCategoryLang()).withTabsBefore(ATTACHMENT_MAGAZINE_TAB.getRegistryName())
             .icon(() -> ItemStack.EMPTY)
             .displayItems((parameters, output) -> output.acceptAll(AttachmentTab.buildAttachmentItems(SCOPE)))
+            .withSearchBar()
             .build()
     );
     public static IRegistryObject<CreativeModeTab> ATTACHMENT_STOCK_TAB = TABS.register(STOCK.getCategoryName(), () -> CreativeModeTab.builder()
             .title(STOCK.getCategoryLang()).withTabsBefore(ATTACHMENT_SCOPE_TAB.getRegistryName())
             .icon(() -> ItemStack.EMPTY)
             .displayItems((parameters, output) -> output.acceptAll(AttachmentTab.buildAttachmentItems(STOCK)))
+            .withSearchBar()
             .build()
     );
 
@@ -91,48 +102,56 @@ public class ModCreativeTabs {
             .title(SHOTGUN.getCategoryLang()).withTabsBefore(ATTACHMENT_STOCK_TAB.getRegistryName())
             .icon(() -> ItemStack.EMPTY)
             .displayItems((parameters, output) -> output.acceptAll(GunTab.buildGunItems(SHOTGUN)))
+            .withSearchBar()
             .build()
     );
     public static IRegistryObject<CreativeModeTab> GUN_PISTOL_TAB = TABS.register(PISTOL.getCategoryName(), () -> CreativeModeTab.builder()
             .title(PISTOL.getCategoryLang()).withTabsBefore(GUN_SHOTGUN_TAB.getRegistryName())
             .icon(() -> ItemStack.EMPTY)
             .displayItems((parameters, output) -> output.acceptAll(GunTab.buildGunItems(PISTOL)))
+            .withSearchBar()
             .build()
     );
     public static IRegistryObject<CreativeModeTab> GUN_RIFLE_TAB = TABS.register(RIFLE.getCategoryName(), () -> CreativeModeTab.builder()
             .title(RIFLE.getCategoryLang()).withTabsBefore(GUN_PISTOL_TAB.getRegistryName())
             .icon(() -> ItemStack.EMPTY)
             .displayItems((parameters, output) -> output.acceptAll(GunTab.buildGunItems(RIFLE)))
+            .withSearchBar()
             .build()
     );
     public static IRegistryObject<CreativeModeTab> GUN_SNIPER_TAB = TABS.register(SNIPER.getCategoryName(), () -> CreativeModeTab.builder()
             .title(SNIPER.getCategoryLang()).withTabsBefore(GUN_RIFLE_TAB.getRegistryName())
             .icon(() -> ItemStack.EMPTY)
             .displayItems((parameters, output) -> output.acceptAll(GunTab.buildGunItems(SNIPER)))
+            .withSearchBar()
             .build()
     );
     public static IRegistryObject<CreativeModeTab> GUN_MG_TAB = TABS.register(MG.getCategoryName(), () -> CreativeModeTab.builder()
             .title(MG.getCategoryLang()).withTabsBefore(GUN_SNIPER_TAB.getRegistryName())
             .icon(() -> ItemStack.EMPTY)
             .displayItems((parameters, output) -> output.acceptAll(GunTab.buildGunItems(MG)))
+            .withSearchBar()
             .build()
     );
     public static IRegistryObject<CreativeModeTab> GUN_SMG_TAB = TABS.register(SMG.getCategoryName(), () -> CreativeModeTab.builder()
             .title(SMG.getCategoryLang()).withTabsBefore(GUN_MG_TAB.getRegistryName())
             .icon(() -> ItemStack.EMPTY)
             .displayItems((parameters, output) -> output.acceptAll(GunTab.buildGunItems(SMG)))
+            .withSearchBar()
             .build()
     );
     public static IRegistryObject<CreativeModeTab> GUN_RPG_TAB = TABS.register(RPG.getCategoryName(), () -> CreativeModeTab.builder()
             .title(RPG.getCategoryLang()).withTabsBefore(GUN_SMG_TAB.getRegistryName())
             .icon(() -> ItemStack.EMPTY)
             .displayItems((parameters, output) -> output.acceptAll(GunTab.buildGunItems(RPG)))
+            .withSearchBar()
             .build()
     );
     public static IRegistryObject<CreativeModeTab> GUN_CUSTOM_TAB = TABS.register(CUSTOM.getCategoryName(), () -> CreativeModeTab.builder()
             .title(CUSTOM.getCategoryLang()).withTabsBefore(GUN_RPG_TAB.getRegistryName())
             .icon(() -> ItemStack.EMPTY)
             .displayItems((parameters, output) -> output.acceptAll(GunTab.buildGunItems(CUSTOM)))
+            .withSearchBar()
             .build()
     );
 }

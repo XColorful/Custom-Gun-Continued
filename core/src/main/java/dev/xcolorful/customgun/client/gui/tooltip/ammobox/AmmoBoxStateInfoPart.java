@@ -75,15 +75,15 @@ public final class AmmoBoxStateInfoPart extends AbstractTooltipPart implements A
                            int pX, int pY,
                            Matrix4f matrix4f,
                            MultiBufferSource.BufferSource bufferSource) {
-        int xOffset = pX + _textXOffset;
-        int yOffset = pY;
+        int currentX = pX + _textXOffset;
+        int currentY = pY;
 
         if (context.showAmmo && context.view.ammoName != null) {
-            yOffset += textLineSpacing;
+            currentY += textLineSpacing;
 
             // 弹药名
             font.drawInBatch(context.view.ammoName,
-                    xOffset, yOffset,
+                    currentX, currentY,
                     _defaultAmmoNameColor.getRGB(),
                     hasTextShadow,
                     matrix4f,
@@ -91,15 +91,15 @@ public final class AmmoBoxStateInfoPart extends AbstractTooltipPart implements A
                     Font.DisplayMode.NORMAL,
                     0,
                     packedLightCoords);
-            yOffset += textLineHeight;
+            currentY += textLineHeight;
         }
 
         if (context.showAmmo && context.view.ammoCount != null) {
-            yOffset += textLineSpacing;
+            currentY += textLineSpacing;
 
             // 弹药数
             font.drawInBatch(context.view.ammoCount,
-                    xOffset, yOffset,
+                    currentX, currentY,
                     _defaultAmmoCountColor.getRGB(),
                     hasTextShadow,
                     matrix4f,
@@ -107,7 +107,7 @@ public final class AmmoBoxStateInfoPart extends AbstractTooltipPart implements A
                     Font.DisplayMode.NORMAL,
                     0,
                     packedLightCoords);
-            yOffset += textLineHeight;
+            currentY += textLineHeight;
         }
     }
 
@@ -116,12 +116,12 @@ public final class AmmoBoxStateInfoPart extends AbstractTooltipPart implements A
                             Font font,
                             int pX, int pY,
                             GuiGraphics guiGraphics) {
-        int yOffset = pY + textLineSpacing;
+        int currentX = pX;
+        int currentY = pY + textLineSpacing;
 
         if (context.showAmmo) { // 子弹物品
             guiGraphics.renderItem(context.ammoBoxTooltip.ammoItem(),
-                    pX,
-                    yOffset);
+                    currentX, currentY);
         }
     }
 }

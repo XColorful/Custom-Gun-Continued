@@ -76,8 +76,8 @@ public final class AmmoDescriptionPart extends AbstractTooltipPart implements Am
                            Font font, int pX, int pY,
                            Matrix4f matrix4f,
                            MultiBufferSource.BufferSource bufferSource) {
-        int xOffset = pX;
-        int yOffset = pY;
+        int currentX = pX;
+        int currentY = pY;
 
         @Nullable List<FormattedCharSequence> desc = context.view.desc;
         if (desc != null) {
@@ -91,7 +91,7 @@ public final class AmmoDescriptionPart extends AbstractTooltipPart implements Am
                 // 单行子弹描述
                 FormattedCharSequence sequence = desc.get(i);
                 font.drawInBatch(sequence,
-                        xOffset, yOffset,
+                        currentX, currentY,
                         _defaultDescriptionColor.getRGB(),
                         hasTextShadow,
                         matrix4f,
@@ -99,7 +99,7 @@ public final class AmmoDescriptionPart extends AbstractTooltipPart implements Am
                         Font.DisplayMode.NORMAL,
                         0,
                         packedLightCoords);
-                yOffset += textLineHeight;
+                currentY += textLineHeight;
             }
         }
     }

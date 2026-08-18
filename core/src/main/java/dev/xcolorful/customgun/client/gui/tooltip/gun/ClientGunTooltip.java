@@ -55,12 +55,13 @@ public class ClientGunTooltip implements ClientTooltipComponent {
                            int pX, int pY,
                            @NotNull Matrix4f matrix4f,
                            @NotNull MultiBufferSource.BufferSource bufferSource) {
+        int currentX = pX;
         int currentY = pY;
 
         for (GunTooltipMask mask : this.context.visibleParts) {
             mask.getTooltipPart().renderText(this.context,
                     font,
-                    pX, currentY,
+                    currentX, currentY,
                     matrix4f,
                     bufferSource);
 
@@ -71,12 +72,13 @@ public class ClientGunTooltip implements ClientTooltipComponent {
     public void renderImage(@NotNull Font font,
                             int pX, int pY,
                             @NotNull GuiGraphics guiGraphics) {
+        int currentX = pX;
         int currentY = pY;
 
         for (GunTooltipMask mask : this.context.visibleParts) {
             mask.getTooltipPart().renderImage(this.context,
                     font,
-                    pX, currentY,
+                    currentX, currentY,
                     guiGraphics);
 
             currentY += mask.getTooltipPart().measureHeight(this.context);

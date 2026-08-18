@@ -93,15 +93,15 @@ public final class AmmoBoxDetailInfoPart extends AbstractTooltipPart implements 
                            Font font, int pX, int pY,
                            Matrix4f matrix4f,
                            MultiBufferSource.BufferSource bufferSource) {
-        int xOffset = pX;
-        int yOffset = pY;
+        int currentX = pX;
+        int currentY = pY;
 
         if (context.showAmmo && context.showCategory && context.view.category != null) {
-            yOffset += textLineSpacing;
+            currentY += textLineSpacing;
 
             // 子弹类型
             font.drawInBatch(context.view.category,
-                    xOffset, yOffset,
+                    currentX, currentY,
                     _defaultCategoryColor.getRGB(),
                     hasTextShadow,
                     matrix4f,
@@ -109,37 +109,37 @@ public final class AmmoBoxDetailInfoPart extends AbstractTooltipPart implements 
                     Font.DisplayMode.NORMAL,
                     0,
                     packedLightCoords);
-            yOffset += textLineHeight;
+            currentY += textLineHeight;
         }
 
         if (context.showAmmo && context.showPackInfo && context.view.packInfo != null) {
-            yOffset += textLineSpacing;
+            currentY += textLineSpacing;
 
             // 枪包信息
             font.drawInBatch(context.view.packInfo,
-                    xOffset, yOffset,
+                    currentX, currentY,
                     _defaultPackColor.getRGB(),
                     hasTextShadow,
                     matrix4f,
                     bufferSource,
                     Font.DisplayMode.NORMAL,
                     0, packedLightCoords);
-            yOffset += textLineHeight;
+            currentY += textLineHeight;
         }
 
         if (context.showAmmo && context.showPojoLocation && context.view.pojoLocation != null) {
-            yOffset += textLineSpacing;
+            currentY += textLineSpacing;
 
             // 资源位置
             font.drawInBatch(context.view.pojoLocation,
-                    xOffset, yOffset,
+                    currentX, currentY,
                     _defaultLocationColor.getRGB(),
                     hasTextShadow,
                     matrix4f,
                     bufferSource,
                     Font.DisplayMode.NORMAL,
                     0, packedLightCoords);
-            yOffset += textLineHeight;
+            currentY += textLineHeight;
         }
     }
 

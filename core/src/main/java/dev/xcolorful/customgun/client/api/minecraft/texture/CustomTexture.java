@@ -5,20 +5,35 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
 public enum CustomTexture {
-    WHITE_256x256(String.format("%s:%s", CustomGun.MOD_ID, "textures/white_256x256.png")),
-    WHITE_32x32(String.format("%s:%s", CustomGun.MOD_ID, "textures/white_32x32.png")),
-    WHITE_18x18(String.format("%s:%s", CustomGun.MOD_ID, "textures/white_18x18.png")),
-    WHITE_8x8(String.format("%s:%s", CustomGun.MOD_ID, "textures/white_8x8.png")),
+    WHITE_256x256(String.format("%s:%s", CustomGun.MOD_ID, "textures/white_256x256.png"),
+            256, 256),
+    WHITE_32x32(String.format("%s:%s", CustomGun.MOD_ID, "textures/white_32x32.png"),
+            32, 32),
+    WHITE_18x18(String.format("%s:%s", CustomGun.MOD_ID, "textures/white_18x18.png"),
+            18, 18),
+    WHITE_8x8(String.format("%s:%s", CustomGun.MOD_ID, "textures/white_8x8.png"),
+            8, 8),
     // entity
-    GUN_PROJECTILE(String.format("%s:%s", CustomGun.MOD_ID, "textures/entity/gun_projectile.png"))
+    GUN_PROJECTILE(String.format("%s:%s", CustomGun.MOD_ID, "textures/entity/gun_projectile.png"),
+            16, 16),
     ;
 
     public final ResourceLocation location;
-    CustomTexture(String location) {
+    public final int width;
+    public final int height;
+    CustomTexture(String location, int width, int height) {
         this.location = CustomGun.getMcRegistry().createResourceLocation(location);
+        this.width = width;
+        this.height = height;
     }
 
     public @NotNull ResourceLocation getLocation() {
         return this.location;
+    }
+    public int getWidth() {
+        return this.width;
+    }
+    public int getHeight() {
+        return this.height;
     }
 }

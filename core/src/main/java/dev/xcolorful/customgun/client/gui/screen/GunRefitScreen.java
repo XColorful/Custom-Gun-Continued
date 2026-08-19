@@ -113,7 +113,9 @@ public class GunRefitScreen extends Screen implements IGunRefitScreen<GunRefitSc
     private static final AttachmentCategory[] ATTACHMENT_CATEGORIES = AttachmentCategory.values();
     private void _addAttachmentCategoryButtons(LocalPlayer localPlayer,
                                                IGun iGun, ItemStack gunItem) {
-        int currentX = this.width - screenXMargin;
+        int currentX = this.width - screenXMargin
+                // 从屏幕左边开始绘制往右绘制，使currentX数值正增
+                - CustomTexture.SLOT.getWidth() * (ATTACHMENT_CATEGORIES.length - 2);
         int currentY = screenYMargin;
         Inventory inventory = localPlayer.getInventory();
         int selectedSlot = InventoryUtils.getSelectedSlot(inventory);
@@ -152,7 +154,7 @@ public class GunRefitScreen extends Screen implements IGunRefitScreen<GunRefitSc
             }
 
             this.addRenderableWidget(button);
-            currentX -= CustomTexture.SLOT.getWidth();
+            currentX += CustomTexture.SLOT.getWidth();
         }
     }
     private void _onAttachmentCategoryButtonPress(Button _button) {

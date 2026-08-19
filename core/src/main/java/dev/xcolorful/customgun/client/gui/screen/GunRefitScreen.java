@@ -227,8 +227,13 @@ public class GunRefitScreen extends Screen implements IGunRefitScreen<GunRefitSc
         // 枪械没启用该配件类型
         if (!iGun.isAttachmentEnabled(gunItem, currentCategory)) return;
 
+        int startX = this.width - screenXMargin
+                // 从屏幕左边开始绘制往右绘制，使currentX数值正增
+                - CustomTexture.SLOT.getWidth() * (ATTACHMENT_CATEGORIES.length - 2);
         int startY = screenYMargin + 40;
-        int currentX = this.width - screenXMargin;
+        int currentX = startX
+                // 使列表跟类别对齐
+                + CustomTexture.SLOT.getWidth() * currentCategory.ordinal();
         int currentY = startY;
 
         int count = 0;

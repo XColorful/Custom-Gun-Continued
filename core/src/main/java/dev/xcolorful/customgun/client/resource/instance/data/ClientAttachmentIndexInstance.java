@@ -46,12 +46,14 @@ public final class ClientAttachmentIndexInstance extends PojoInstance<Attachment
     }
 
     @Override public boolean resetCache() {
-        this.attachmentDisplayCache = ClientResourceApi.getAttachmentDisplay(this.getPojo().getDisplayIndexLocation());
+        var pojo = this.getPojo();
+
+        this.attachmentDisplayCache = ClientResourceApi.getAttachmentDisplay(pojo.getDisplayIndexLocation());
         if (this.attachmentDisplayCache == null) {
-            CustomGun.LOGGER.debug("ClientAttachmentIndexInstance: AttachmentDisplay {} not found", this.getPojo().getDisplayIndexLocation());
+            CustomGun.LOGGER.debug("ClientAttachmentIndexInstance: AttachmentDisplay {} not found", pojo.getDisplayIndexLocation());
             return false;
         } else if (!this.attachmentDisplayCache.isValid()) {
-            CustomGun.LOGGER.debug("ClientAttachmentIndexInstance: AttachmentDisplay {} not valid", this.getPojo().getDisplayIndexLocation());
+            CustomGun.LOGGER.debug("ClientAttachmentIndexInstance: AttachmentDisplay {} not valid", pojo.getDisplayIndexLocation());
             return false;
         }
 

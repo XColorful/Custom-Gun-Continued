@@ -44,12 +44,14 @@ public class GunIndexInstance extends PojoInstance<GunIndex> {
     }
 
     @Override public boolean resetCache() {
-        this.gunDataCache = ResourceApi.getGunData(this.getPojo().getDataLocation());
+        var pojo = this.getPojo();
+
+        this.gunDataCache = ResourceApi.getGunData(pojo.getDataLocation());
         if (this.gunDataCache == null) {
-            CustomGun.LOGGER.debug("GunIndexInstance: GunData {} not found", this.getPojo().getDataLocation());
+            CustomGun.LOGGER.debug("GunIndexInstance: GunData {} not found", pojo.getDataLocation());
             return false;
         } else if (!this.gunDataCache.isValid()) {
-            CustomGun.LOGGER.debug("GunIndexInstance: GunData {} not valid", this.getPojo().getDataLocation());
+            CustomGun.LOGGER.debug("GunIndexInstance: GunData {} not valid", pojo.getDataLocation());
             return false;
         }
 

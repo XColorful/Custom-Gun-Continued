@@ -38,9 +38,11 @@ public final class ClientBlockIndexInstance extends PojoInstance<BlockIndex> {
     }
 
     @Override public boolean resetCache() {
-        this.blockDisplayCache = ClientResourceApi.getBlockDisplay(this.getPojo().getDisplayIndexLocation());
+        var pojo = this.getPojo();
+
+        this.blockDisplayCache = ClientResourceApi.getBlockDisplay(pojo.getDisplayIndexLocation());
         if (this.blockDisplayCache == null) {
-            CustomGun.LOGGER.debug("ClientBlockIndexInstance: BlockDisplay {} not found", this.getPojo().getDisplayIndexLocation());
+            CustomGun.LOGGER.debug("ClientBlockIndexInstance: BlockDisplay {} not found", pojo.getDisplayIndexLocation());
             return false;
         }
 

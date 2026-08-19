@@ -50,12 +50,14 @@ public final class ClientAmmoIndexInstance extends PojoInstance<AmmoIndex> {
     }
 
     @Override public boolean resetCache() {
-        this.ammoDisplayCache = ClientResourceApi.getAmmoDisplay(this.getPojo().getDisplayIndexLocation());
+        var pojo = this.getPojo();
+
+        this.ammoDisplayCache = ClientResourceApi.getAmmoDisplay(pojo.getDisplayIndexLocation());
         if (this.ammoDisplayCache == null) {
-            CustomGun.LOGGER.debug("ClientAmmoIndexInstance: AmmoDisplay {} not found", this.getPojo().getDisplayIndexLocation());
+            CustomGun.LOGGER.debug("ClientAmmoIndexInstance: AmmoDisplay {} not found", pojo.getDisplayIndexLocation());
             return false;
         } else if (!this.ammoDisplayCache.isValid()) {
-            CustomGun.LOGGER.debug("ClientAmmoIndexInstance: AmmoDisplay {} not valid", this.getPojo().getDisplayIndexLocation());
+            CustomGun.LOGGER.debug("ClientAmmoIndexInstance: AmmoDisplay {} not valid", pojo.getDisplayIndexLocation());
             return false;
         }
         {

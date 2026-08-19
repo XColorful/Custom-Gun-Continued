@@ -35,18 +35,20 @@ public class BlockIndexInstance extends PojoInstance<BlockIndex> {
     }
 
     @Override public boolean resetCache() {
-        this.blockItemCache = CustomGun.getMcRegistry().getItem(this.getPojo().getBlockLocation()) instanceof BlockItem blockItem ? blockItem : null;
+        var pojo = this.getPojo();
+
+        this.blockItemCache = CustomGun.getMcRegistry().getItem(pojo.getBlockLocation()) instanceof BlockItem blockItem ? blockItem : null;
         if (this.blockItemCache == null) {
-            CustomGun.LOGGER.debug("BlockIndexInstance: BlockItem {} not found", this.getPojo().getBlockLocation());
+            CustomGun.LOGGER.debug("BlockIndexInstance: BlockItem {} not found", pojo.getBlockLocation());
             return false;
         }
 
-        this.blockDataCache = ResourceApi.getBlockData(this.getPojo().getDataLocation());
+        this.blockDataCache = ResourceApi.getBlockData(pojo.getDataLocation());
         if (this.blockDataCache == null) {
-            CustomGun.LOGGER.debug("BlockIndexInstance: BlockData {} not found", this.getPojo().getDataLocation());
+            CustomGun.LOGGER.debug("BlockIndexInstance: BlockData {} not found", pojo.getDataLocation());
             return false;
         } else if (!this.blockDataCache.isValid()) {
-            CustomGun.LOGGER.debug("BlockIndexInstance: BlockData {} not valid", this.getPojo().getDataLocation());
+            CustomGun.LOGGER.debug("BlockIndexInstance: BlockData {} not valid", pojo.getDataLocation());
             return false;
         }
 

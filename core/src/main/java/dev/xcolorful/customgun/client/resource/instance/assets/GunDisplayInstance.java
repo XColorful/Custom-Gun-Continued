@@ -81,18 +81,20 @@ public final class GunDisplayInstance extends PojoInstance<GunDisplay> {
     }
 
     @Override public boolean resetCache() {
-        @Nullable IGunModelType gunModelType = this.getPojo().getGunModelType();
+        var pojo = this.getPojo();
+
+        @Nullable IGunModelType gunModelType = pojo.getGunModelType();
         if (gunModelType == null) gunModelType = GunModelType.DEFAULT;
         {
-            BedrockModel bedrockModel = ClientResourceApi.getBedrockModel(this.getPojo().getModelLocation());
+            BedrockModel bedrockModel = ClientResourceApi.getBedrockModel(pojo.getModelLocation());
             if (bedrockModel != null) {
                 this.gunModel = gunModelType.create(bedrockModel);
-                if (this.gunModel == null) CustomGun.LOGGER.debug("GunDisplayInstance: Failed to create GunModelObject {}", this.getPojo().getModelLocation());
+                if (this.gunModel == null) CustomGun.LOGGER.debug("GunDisplayInstance: Failed to create GunModelObject {}", pojo.getModelLocation());
             } else {
-                CustomGun.LOGGER.debug("GunDisplayInstance: BedrockModel {} not found", this.getPojo().getModelLocation());
+                CustomGun.LOGGER.debug("GunDisplayInstance: BedrockModel {} not found", pojo.getModelLocation());
             }
         }
-        _LodDisplay lodDisplay = this.getPojo().getLodDisplay();
+        _LodDisplay lodDisplay = pojo.getLodDisplay();
         if (lodDisplay != null) {
             BedrockModel bedrockModel = ClientResourceApi.getBedrockModel(lodDisplay.getModelLocation());
             if (bedrockModel != null) {
@@ -103,7 +105,7 @@ public final class GunDisplayInstance extends PojoInstance<GunDisplay> {
             }
         }
 
-        Map<String, _SurroundDisplay> surroundDisplayByHotbar = this.getPojo().getSurroundDisplayByHotbar();
+        Map<String, _SurroundDisplay> surroundDisplayByHotbar = pojo.getSurroundDisplayByHotbar();
         if (surroundDisplayByHotbar != null) {
             this.surroundDisplayByHotbarCache = new Int2ObjectArrayMap<>();
             for (Map.Entry<String, _SurroundDisplay> entry : surroundDisplayByHotbar.entrySet()) {
@@ -113,7 +115,7 @@ public final class GunDisplayInstance extends PojoInstance<GunDisplay> {
             }
         }
 
-        _AmmoDisplayOverride ammoDisplayOverride = this.getPojo().getAmmoDisplayOverride();
+        _AmmoDisplayOverride ammoDisplayOverride = pojo.getAmmoDisplayOverride();
         if (ammoDisplayOverride != null) {
             this.tracerColorCache = ammoDisplayOverride.getTracerColor();
             this.ammoParticleCache = ammoDisplayOverride.getAmmoParticle();
@@ -129,7 +131,7 @@ public final class GunDisplayInstance extends PojoInstance<GunDisplay> {
                 }
             }
         }
-        this.gunSoundsCache = this.getPojo().getGunSounds();
+        this.gunSoundsCache = pojo.getGunSounds();
 
         AnimController animController;
         { // 动画控制器
@@ -138,7 +140,7 @@ public final class GunDisplayInstance extends PojoInstance<GunDisplay> {
         }
 
         { // 状态机脚本
-            var scriptLocation = this.getPojo().getScriptLocation();
+            var scriptLocation = pojo.getScriptLocation();
             if (scriptLocation == null) {
                 CustomGun.LOGGER.debug("GunDisplayInstance: GunDisplay missing scriptLocation");
                 return false;

@@ -11,6 +11,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.api.event.IInputKeyEvent;
 import dev.xcolorful.customgun.client.api.event.IMouseButtonEvent;
+import dev.xcolorful.customgun.client.api.gui.screen.refit.IGunRefitScreen;
 import dev.xcolorful.customgun.client.api.input.IInputKeyManager;
 import dev.xcolorful.customgun.client.api.input.IKeyConflictContext;
 import dev.xcolorful.customgun.client.api.input.IKeyMapping;
@@ -86,12 +87,14 @@ public final class RefitKey extends InputKey {
         if (ClientInputUtils.isGameplayFocused()) {
             ItemStack gunItem = player.getMainHandItem();
             @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
-            if (iGun == null || ClientGuiUtils.getCurrentScreen(mc) == null) return;
-            if (iGun.hasAttachmentLock(gunItem)) return;
+            if (iGun == null || iGun.hasAttachmentLock(gunItem)) return;
 
-            ClientGuiUtils.setCurrentScreen(mc, new GunRefitScreen());
-        } else if (ClientGuiUtils.getCurrentScreen(mc) instanceof GunRefitScreen screen) {
-            screen.onClose();
+            // 有其他界面，不强制覆盖
+            if (ClientGuiUtils.getCurrentScreen(mc) != null) return;
+
+            ClientGuiUtils.setCurrentScreen(mc, GunRefitScreen.create().asScreen());
+        } else if (ClientGuiUtils.getCurrentScreen(mc) instanceof IGunRefitScreen<?> screen) {
+            screen.closeScreen();
         }
     }
 }

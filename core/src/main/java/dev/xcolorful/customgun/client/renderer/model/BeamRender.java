@@ -29,6 +29,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -117,7 +118,9 @@ public class BeamRender {
         pConsumer.vertex(pPose.pose(), halfWidth, -halfWidth, z).color(r, g, b, endAlpha).uv(1, 0).uv2(light).endVertex();
     }
 
-    private static void _getLaser(ItemStack pojoItem, Consumer<_LaserDisplay> setLaserDisplay, Consumer<Integer> setLaserColor) {
+    // public仅用于文档链接
+    @ApiStatus.Internal
+    public static void _getLaser(ItemStack pojoItem, Consumer<_LaserDisplay> setLaserDisplay, Consumer<Integer> setLaserColor) {
         if (pojoItem == null) return;
 
         { // 配件激光

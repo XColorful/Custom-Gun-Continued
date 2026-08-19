@@ -16,6 +16,15 @@ public enum CustomTexture {
     // entity
     GUN_PROJECTILE(String.format("%s:%s", CustomGun.MOD_ID, "textures/entity/gun_projectile.png"),
             16, 16),
+    // gui
+    SLOT(String.format("%s:%s", CustomGun.MOD_ID, "textures/white_18x18.png"), // 占位贴图
+            18, 18),
+    UNLOAD(String.format("%s:%s", CustomGun.MOD_ID, "textures/white_32x32.png"), // 占位贴图
+            32, 18),
+    ATTACHMENT_CATEGORIES(String.format("%s:%s", CustomGun.MOD_ID, "textures/white_256x256.png"), // 占位贴图
+            32 * 7, 32),
+    TURN_PAGE(String.format("%s:%s", CustomGun.MOD_ID, "textures/white_256x256.png"), // 占位贴图
+            180, 160),
     ;
 
     public final ResourceLocation location;

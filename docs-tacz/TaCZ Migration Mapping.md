@@ -892,7 +892,10 @@ Notation:
 
 |com.tacz.guns.client.gui|dev.xcolorful.customgun.client.gui|
 |---|---|
-|components.refit||
+|components.refit|screen.refit|
+|components.refit.`GunAttachmentSlot`|screen.refit.`AttachmentCategorySlot`|
+|components.refit.`GunPropertyDiagrams`||
+|components.refit.`IComponentTooltip`|_Deprecated_|
 |components.smith|_Deprecated_|
 |components.`FlatColorButton`||
 |components.`GunPackList`|_Deprecated_|

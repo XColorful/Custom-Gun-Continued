@@ -37,7 +37,13 @@ public abstract class PojoInstance<T extends ResourcePojo<T>> {
     protected boolean resetCache() {
         return true;
     }
-    abstract protected boolean isPojoValid();
+    protected boolean isPojoValid() {
+        var pojo = this.pojo;
+        if (!pojo.isValid()) return false;
+        if (!resetCache()) return false;
+
+        return true;
+    }
     /**
      * log数据中所有不合法的内容
      * @param errorMask 位运算掩码

@@ -44,11 +44,12 @@ public class AttachmentIndexInstance extends PojoInstance<AttachmentIndex> {
         return true;
     }
     @Override protected boolean isPojoValid() {
+        if (!super.isPojoValid()) return false;
+
         var pojo = this.getPojo();
-        if (!pojo.isValid()) return false;
 
         // AttachmentIndex
-        if (this.getPojo().getSlotSort() > 65536) CustomGun.LOGGER.warn("AttachmentIndexInstance: AttachmentIndex slotSort {} > 65536", this.getPojo().getSlotSort());
+        if (pojo.getSlotSort() > 65536) CustomGun.LOGGER.warn("AttachmentIndexInstance: AttachmentIndex slotSort {} > 65536", pojo.getSlotSort());
 
         return true;
     }

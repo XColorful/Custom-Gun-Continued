@@ -168,17 +168,17 @@ public final class GunDisplayInstance extends PojoInstance<GunDisplay> {
     private static final int ERR_IRON_ZOOM_SCALE = 1 << 3;
     private static final int ERR_IRON_VIEW_FOV = 1 << 4;
     @Override protected boolean isPojoValid() {
+        if (!super.isPojoValid()) return false;
+
         var pojo = this.getPojo();
-        if (!pojo.isValid()) return false;
-        if (!resetCache()) return false;
 
         int errorMask = 0;
         // GunDisplay
-        errorMask |= this.getPojo().getModelTransform().getScale() == null ? ERR_TRANSFORM_SCALE : 0;
+        errorMask |= pojo.getModelTransform() == null || pojo.getModelTransform().getScale() == null ? ERR_TRANSFORM_SCALE : 0;
         errorMask |= (this.ammoParticleCache != null && this.ammoParticleCache.getCount() < 1) ? ERR_AMMO_PARTICLE_COUNT : 0;
         errorMask |= (this.ammoParticleCache != null && this.ammoParticleCache.getLifetimeTicks() < 1) ? ERR_AMMO_PARTICLE_LIFETIME : 0;
-        errorMask |= this.getPojo().getIronZoomScale() < 1 ? ERR_IRON_ZOOM_SCALE : 0;
-        errorMask |= this.getPojo().getIronViewFov() > 70 ? ERR_IRON_VIEW_FOV : 0;
+        errorMask |= pojo.getIronZoomScale() < 1 ? ERR_IRON_ZOOM_SCALE : 0;
+        errorMask |= pojo.getIronViewFov() > 70 ? ERR_IRON_VIEW_FOV : 0;
         if (errorMask != 0) {
             this.logAllErrors(errorMask);
             return false;

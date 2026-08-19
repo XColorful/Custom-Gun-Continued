@@ -39,9 +39,7 @@ public final class ClientGunIndexInstance extends PojoInstance<GunIndex> {
         return true;
     }
     @Override protected boolean isPojoValid() {
-        var pojo = this.getPojo();
-        if (!pojo.isValid()) return false;
-        if (!resetCache()) return false;
+        if (!super.isPojoValid()) return false;
 
         return true;
     }

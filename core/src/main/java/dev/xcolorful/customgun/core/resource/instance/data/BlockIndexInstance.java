@@ -62,12 +62,12 @@ public class BlockIndexInstance extends PojoInstance<BlockIndex> {
         return true;
     }
     @Override protected boolean isPojoValid() {
+        if (!super.isPojoValid()) return false;
+
         var pojo = this.getPojo();
-        if (!pojo.isValid()) return false;
-        if (!resetCache()) return false;
 
         // BlockIndex
-        if (this.getPojo().getSlotSort() > 65536) CustomGun.LOGGER.warn("BlockIndexInstance: BlockIndex slotSort {} > 65536", this.getPojo().getSlotSort());
+        if (pojo.getSlotSort() > 65536) CustomGun.LOGGER.warn("BlockIndexInstance: BlockIndex slotSort {} > 65536", pojo.getSlotSort());
 
         return true;
     }

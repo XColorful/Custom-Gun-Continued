@@ -82,9 +82,7 @@ public final class ClientAttachmentIndexInstance extends PojoInstance<Attachment
     private static final int ERR_SCOPE_VIEW_INDEX = 1 << 2;
     private static final int ERR_SCOPE_LENGTH_MATCH = 1 << 3;
     @Override protected boolean isPojoValid() {
-        var pojo = this.getPojo();
-        if (!pojo.isValid()) return false;
-        if (!resetCache()) return false;
+        if (!super.isPojoValid()) return false;
 
         int errorMask = 0;
         // AttachmentDisplay

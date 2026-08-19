@@ -49,7 +49,7 @@ public record ClientMessageRefitGun(int attachmentSlotIndex,
                     return;
                 }
                 Inventory inventory = player.getInventory();
-                ItemStack attachmentItem = inventory.getItem(message.attachmentSlotIndex);
+
                 ItemStack gunItem = inventory.getItem(message.gunSlotIndex);
                 @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
                 if (iGun == null) return;
@@ -59,29 +59,41 @@ public record ClientMessageRefitGun(int attachmentSlotIndex,
                     return;
                 }
 
+                // 从背包取出配件物品
+                ItemStack attachmentItem = inventory.getItem(message.attachmentSlotIndex);
+
                 // 检查是否是配件
                 @Nullable IAttachment iAttachment = IAttachmentGetter.fromItemStack(attachmentItem);
-                if (iAttachment == null) {
+                if (iAttachment == null) return;
+
+                // 客户端预期的类型是否与真实的一致
+                AttachmentCategory attachmentCategory = iAttachment.getAttachmentCategory(attachmentItem);
+                if (attachmentCategory != message.attachmentCategory) {
+                    // 不一致就不操作
+                    CustomGun.LOGGER.debug("ClientMessageRefitGun: {} (UUID: {}) send invalid attachmentCategory: {} (actual: {})", player.getName(), player.getUUID(), message.attachmentCategory, attachmentCategory);
                     return;
                 }
 
-                // 吐出配件物品 (进背包或世界)
-                AttachmentCategory attachmentCategory = iAttachment.getAttachmentCategory(attachmentItem);
-                {
-                    // 先创建旧配件物品
-                    ItemStack oldAttachmentItem = iGun.getAttachment(gunItem, attachmentCategory);
-
+                // 先创建旧配件物品
+                ItemStack oldAttachmentItem = iGun.getAttachment(gunItem, attachmentCategory);
+                { // 安装配件
                     // 尝试安装 (含校验)
                     if (!iGun.installAttachment(gunItem, attachmentItem)) {
                         return;
                     }
+                    // 安装完后立即把原背包物品位置清空
+                    inventory.setItem(message.attachmentSlotIndex, ItemStack.EMPTY);
+                }
 
-                    // 先尝试将配件添加到背包
-                    if (!inventory.add(attachmentItem)) {
+                // 吐出配件物品 (进背包或世界)
+                if (!oldAttachmentItem.isEmpty()) {
+                    // 尝试将卸下的配件返还到背包
+                    if (!inventory.add(oldAttachmentItem)) {
                         // 添加不了就尝试吐出物品实体
                         if (PlannedRefactor.ON_DROP_ITEM_ENTITY_INSTEAD) return;
                         // 尝试吐出物品实体
                         boolean success = true;
+
                         // 还是失败就覆盖原位置
                         if (!success) {
                             inventory.setItem(message.attachmentSlotIndex, oldAttachmentItem);
@@ -90,7 +102,7 @@ public record ClientMessageRefitGun(int attachmentSlotIndex,
                 }
 
                 // 如果配件是弹匣，吐出所有子弹
-                if (message.attachmentCategory == AttachmentCategory.MAGAZINE) {
+                if (attachmentCategory == AttachmentCategory.MAGAZINE) {
                     iGun.unloadAmmo(player, gunItem);
                 }
 

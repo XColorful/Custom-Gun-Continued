@@ -17,14 +17,16 @@ public enum CustomTexture {
     GUN_PROJECTILE(String.format("%s:%s", CustomGun.MOD_ID, "textures/entity/gun_projectile.png"),
             16, 16),
     // gui
-    SLOT(String.format("%s:%s", CustomGun.MOD_ID, "textures/white_18x18.png"), // 占位贴图
+    SLOT(String.format("%s:%s", CustomGun.MOD_ID, "textures/gui/slot.png"),
             18, 18),
-    UNLOAD(String.format("%s:%s", CustomGun.MOD_ID, "textures/white_32x32.png"), // 占位贴图
-            32, 18),
-    ATTACHMENT_CATEGORIES(String.format("%s:%s", CustomGun.MOD_ID, "textures/white_256x256.png"), // 占位贴图
+    SLOT_SELECTED(String.format("%s:%s", CustomGun.MOD_ID, "textures/gui/slot_selected.png"),
+            18, 18),
+    UNLOAD(String.format("%s:%s", CustomGun.MOD_ID, "textures/gui/unload.png"),
+            32, 16),
+    ATTACHMENT_CATEGORIES(String.format("%s:%s", CustomGun.MOD_ID, "textures/gui/attachment_categories.png"),
             32 * 7, 32),
-    TURN_PAGE(String.format("%s:%s", CustomGun.MOD_ID, "textures/white_256x256.png"), // 占位贴图
-            180, 160),
+    TURN_PAGE(String.format("%s:%s", CustomGun.MOD_ID, "textures/gui/turn_page.png"),
+            32, 32),
     ;
 
     public final ResourceLocation location;

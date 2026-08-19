@@ -24,7 +24,7 @@ public class InventoryAttachmentSlot extends Button implements IStackTooltip {
     private final Inventory inventory;
 
     public InventoryAttachmentSlot(int pX, int pY, int slotIndex, Inventory inventory, OnPress onPress) {
-        super(pX, pY, 18, 18, Component.empty(), onPress, DEFAULT_NARRATION);
+        super(pX, pY, CustomTexture.SLOT.getWidth(), CustomTexture.SLOT.getHeight(), Component.empty(), onPress, DEFAULT_NARRATION);
         this.slotIndex = slotIndex;
         this.inventory = inventory;
     }
@@ -39,38 +39,34 @@ public class InventoryAttachmentSlot extends Button implements IStackTooltip {
     public void renderWidget(@Nonnull GuiGraphics graphics, int pMouseX, int pMouseY, float pPartialTick) {
         RenderSystem.disableDepthTest();
         RenderSystem.enableBlend(); {
-            CustomTexture texture = CustomTexture.SLOT;
+            { // 渲染外框
+                CustomTexture texture = this.isHoveredOrFocused() ? CustomTexture.SLOT_SELECTED : CustomTexture.SLOT;
 
-            int startX = getX();
-            int startY = getY();
-            int endX = this.width;
-            int endY = this.height;
+                int startX = this.getX();
+                int startY = this.getY();
+                int endX = this.width;
+                int endY = this.height;
 
-            int uOffset = 0;
-            int vOffset = 0;
-            int uWidth = texture.getWidth();
-            int vHeight = texture.getHeight();
+                int uOffset = 0;
+                int vOffset = 0;
+                int uWidth = texture.getWidth();
+                int vHeight = texture.getHeight();
 
-            if (!this.isHoveredOrFocused()) {
-                startX += 1;
-                startY += 1;
-                endX -= 2;
-                endY -= 2;
-
-                uOffset += 1;
-                vOffset += 1;
-                uWidth -= 2;
-                vHeight -= 2;
+                graphics.blit(texture.getLocation(),
+                        startX, startY,
+                        endX, endY,
+                        uOffset, vOffset,
+                        uWidth, vHeight,
+                        texture.getWidth(), texture.getHeight());
             }
 
-            graphics.blit(texture.getLocation(),
-                    startX, startY,
-                    endX, endY,
-                    uOffset, vOffset,
-                    uWidth, vHeight,
-                    texture.getWidth(), texture.getHeight());
+            { // 渲染物品
+                int startX = this.getX() + 1;
+                int startY = this.getY() + 1;
 
-            graphics.renderItem(inventory.getItem(slotIndex), getX() + 1, getY() + 1);
+                graphics.renderItem(inventory.getItem(slotIndex),
+                        startX, startY);
+            }
         }
 
         RenderSystem.enableDepthTest();

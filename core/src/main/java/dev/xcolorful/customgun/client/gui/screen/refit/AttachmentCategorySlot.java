@@ -30,26 +30,27 @@ public class AttachmentCategorySlot extends Button implements IStackTooltip {
     private final AttachmentCategory category;
     private final Inventory inventory;
     private final int gunItemIndex;
-    private boolean selected = false;
+    private final boolean isSelected;
+    private final boolean hasAttachmentLock;
+    private final boolean isCategoryEnabled;
+
+    // --------Cache--------
     private ItemStack attachmentItem = ItemStack.EMPTY;
 
-    public AttachmentCategorySlot(int pX, int pY, AttachmentCategory category, int gunItemIndex, Inventory inventory, Button.OnPress onPress) {
+    public AttachmentCategorySlot(int pX, int pY, AttachmentCategory category, int gunItemIndex, Inventory inventory,
+                                  boolean isSelected, boolean hasAttachmentLock, boolean isCategoryEnabled, Button.OnPress onPress) {
         super(pX, pY, CustomTexture.SLOT.getWidth(), CustomTexture.SLOT.getHeight(), Component.empty(), onPress, Button.DEFAULT_NARRATION);
         this.category = category;
         this.inventory = inventory;
         this.gunItemIndex = gunItemIndex;
+        this.isSelected = isSelected;
+        this.hasAttachmentLock = hasAttachmentLock;
+        this.isCategoryEnabled = isCategoryEnabled;
+        this.attachmentItem = this.getAttachmentItem();
     }
 
-    public static int getSlotTextureXOffset(IGun iGun, ItemStack gunItem, AttachmentCategory attachmentCategory) {
-        if (!iGun.isAttachmentEnabled(gunItem, attachmentCategory)) {
-            attachmentCategory = AttachmentCategory.NONE;
-        }
-
+    public static int getSlotTextureXOffset(AttachmentCategory attachmentCategory) {
         return CustomTexture.ATTACHMENT_CATEGORIES.getHeight() * attachmentCategory.ordinal();
-    }
-
-    public void setSelected(boolean selected) {
-        this.selected = selected;
     }
 
     public AttachmentCategory getCategory() {
@@ -64,35 +65,42 @@ public class AttachmentCategorySlot extends Button implements IStackTooltip {
         return iGun.getAttachment(gunItem, this.category);
     }
 
-    public boolean isAttachmentEnabled() {
-        ItemStack gunItem = this.inventory.getItem(this.gunItemIndex);
-        @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
-        if (iGun == null) return false;
-
-        return iGun.isAttachmentEnabled(gunItem, this.category);
+    public boolean hasAttachmentLock() {
+        return this.hasAttachmentLock;
+    }
+    public boolean isCategoryEnabled() {
+        return this.isCategoryEnabled;
     }
 
     // --------AbstractButton--------
 
     @Override
     public void renderWidget(@NotNull GuiGraphics graphics, int pMouseX, int pMouseY, float pPartialTick) {
+        // 悬浮显示文本
         if (this.isHoveredOrFocused()) {
             Font font = Minecraft.getInstance().font;
+            int xOffset = this.getX() + this.getWidth() / 2;
             int yOffset = this.getY() + 20;
-            if (this.selected && !this.attachmentItem.isEmpty()) {
+            if (this.isSelected && !this.attachmentItem.isEmpty()) {
                 yOffset = this.getY() + 30;
             }
-            graphics.drawCenteredString(font, category.getCategoryLang().copy(), this.getX() + this.getWidth() / 2, yOffset, Color64._FFFFFF.getRGB());
+            graphics.drawCenteredString(font,
+                    category.getCategoryLang().copy(),
+                    xOffset, yOffset,
+                    Color64._FFFFFF.getRGB()
+            );
         }
 
-        ItemStack gunItem = this.inventory.getItem(this.gunItemIndex);
-        @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
-        if (iGun == null) return;
+        {
+            ItemStack gunItem = this.inventory.getItem(this.gunItemIndex);
+            @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
+            if (iGun == null) return;
+        }
 
         RenderSystem.disableDepthTest();
         RenderSystem.enableBlend(); {
             { // 渲染外框
-                CustomTexture texture = CustomTexture.SLOT;
+                CustomTexture texture = this.isSelected || this.isHoveredOrFocused() ? CustomTexture.SLOT_SELECTED : CustomTexture.SLOT;
 
                 int startX = this.getX();
                 int startY = this.getY();
@@ -103,18 +111,6 @@ public class AttachmentCategorySlot extends Button implements IStackTooltip {
                 int vOffset = 0;
                 int uWidth = texture.getWidth();
                 int vHeight = texture.getHeight();
-
-                if (!this.isHoveredOrFocused() && !this.selected) {
-                    startX += 1;
-                    startY += 1;
-                    endX -= 2;
-                    endY -= 2;
-
-                    uOffset += 1;
-                    vOffset += 1;
-                    uWidth -= 2;
-                    vHeight -= 2;
-                }
 
                 graphics.blit(texture.getLocation(),
                         startX, startY,
@@ -128,20 +124,21 @@ public class AttachmentCategorySlot extends Button implements IStackTooltip {
                 int startX = this.getX();
                 int startY = this.getY();
 
-                this.attachmentItem = iGun.getAttachment(gunItem, category);
-                if (!attachmentItem.isEmpty()) {
+                if (!this.attachmentItem.isEmpty()) {
                     // 配件物品
-                    graphics.renderItem(attachmentItem, startX + 1, startY + 1);
-                } else {
+                    startX += 1;
+                    startY += 1;
+
+                    graphics.renderItem(this.attachmentItem,
+                            startX, startY);
+                } else if (this.isCategoryEnabled) {
                     // 配件类型
                     CustomTexture texture = CustomTexture.ATTACHMENT_CATEGORIES;
 
-                    startX += 2;
-                    startY += 2;
-                    int endX = this.width - 4;
-                    int endY = this.height - 4;
+                    int endX = this.width;
+                    int endY = this.height;
 
-                    int uOffset = getSlotTextureXOffset(iGun, gunItem, category);
+                    int uOffset = getSlotTextureXOffset(category);
                     int vOffset = 0;
                     int uWidth = texture.getHeight(); // 在横向长方形里取正方形
                     int vHeight = texture.getHeight();
@@ -153,6 +150,28 @@ public class AttachmentCategorySlot extends Button implements IStackTooltip {
                             uWidth, vHeight,
                             texture.getWidth(), texture.getHeight());
                 }
+            }
+
+            if (this.isCategoryEnabled && this.hasAttachmentLock) {
+                // 配件锁
+                CustomTexture texture = CustomTexture.ATTACHMENT_CATEGORIES;
+
+                int startX = this.getX();
+                int startY = this.getY();
+                int endX = this.width;
+                int endY = this.height;
+
+                int uOffset = getSlotTextureXOffset(AttachmentCategory.NONE);
+                int vOffset = 0;
+                int uWidth = texture.getHeight(); // 在横向长方形里取正方形
+                int vHeight = texture.getHeight();
+
+                graphics.blit(texture.location,
+                        startX, startY,
+                        endX, endY,
+                        uOffset, vOffset,
+                        uWidth, vHeight,
+                        texture.getWidth(), texture.getHeight());
             }
         }
         RenderSystem.enableDepthTest();

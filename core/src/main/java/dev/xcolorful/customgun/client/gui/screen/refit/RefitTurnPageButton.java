@@ -16,10 +16,13 @@ import org.jetbrains.annotations.NotNull;
 
 public class RefitTurnPageButton extends Button {
 
+    public static final int xMargin = (CustomTexture.SLOT.getWidth() - CustomTexture.TURN_PAGE.getWidth() / 2) / 2;
+    public static final int yMargin = (CustomTexture.SLOT.getHeight() - CustomTexture.TURN_PAGE.getHeight() / 2) / 2;
+
     private final boolean isPreviousPage;
 
     public RefitTurnPageButton(int pX, int pY, boolean isPreviousPage, OnPress pOnPress) {
-        super(pX, pY, CustomTexture.SLOT.getWidth(), 8, Component.empty(), pOnPress, DEFAULT_NARRATION);
+        super(pX + xMargin, pY + yMargin, CustomTexture.TURN_PAGE.getWidth() / 2, CustomTexture.TURN_PAGE.getHeight() / 2, Component.empty(), pOnPress, DEFAULT_NARRATION);
         this.isPreviousPage = isPreviousPage;
     }
 
@@ -36,23 +39,10 @@ public class RefitTurnPageButton extends Button {
             int endX = this.width;
             int endY = this.height;
 
-            int uOffset = 0;
+            int uOffset = this.isHoveredOrFocused() ? texture.getWidth() / 2 : 0;
             int vOffset = this.isPreviousPage ? 0 : texture.getHeight() / 2;
-            int uWidth = texture.getWidth();
+            int uWidth = texture.getWidth() / 2;
             int vHeight = texture.getHeight() / 2;
-
-            if (!this.isHoveredOrFocused()) {
-                // 没聚焦就缩小一圈
-                startX += 1;
-                startY += 1;
-                endX -= 2;
-                endY -= 2;
-
-                uOffset += 10;
-                vOffset += 10;
-                uWidth -= 20;
-                vHeight -= 20;
-            }
 
             graphics.blit(texture.getLocation(),
                     startX, startY,

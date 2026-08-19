@@ -14,9 +14,16 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * 图标长宽各为0.5倍
+ */
 public class RefitUnloadButton extends Button {
+
+    public static final int unloadButtonXMargin = (CustomTexture.SLOT.getWidth() - CustomTexture.UNLOAD.getWidth() / 2 / 2) / 2;
+    public static final int unloadButtonYMargin = 2;
+
     public RefitUnloadButton(int pX, int pY, Button.OnPress pOnPress) {
-        super(pX + 5, pY + CustomTexture.SLOT.getHeight() + 2, 8, 8, Component.empty(), pOnPress, DEFAULT_NARRATION);
+        super(pX + unloadButtonXMargin, pY + unloadButtonYMargin, CustomTexture.UNLOAD.getHeight() / 2, CustomTexture.UNLOAD.getHeight() / 2, Component.empty(), pOnPress, DEFAULT_NARRATION);
     }
 
     @Override
@@ -30,9 +37,9 @@ public class RefitUnloadButton extends Button {
             int endX = this.width;
             int endY = this.height;
 
-            int uOffset = this.isHoveredOrFocused() ? 0 : texture.getWidth() / 2;
+            int uOffset = this.isHoveredOrFocused() ? texture.getWidth() / 2 : 0;
             int vOffset = 0;
-            int uWidth = texture.getHeight(); // 在横向长方形里取正方形
+            int uWidth = texture.getWidth() / 2;
             int vHeight = texture.getHeight();
 
             graphics.blit(texture.getLocation(),

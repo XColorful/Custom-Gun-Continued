@@ -48,7 +48,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 目前是直接照搬原模组，扩展性设计仅一个mixin注入点
+ * 目前扩展性设计仅一个mixin注入点
  */
 public class GunRefitScreen extends Screen implements IGunRefitScreen<GunRefitScreen> {
 
@@ -137,16 +137,20 @@ public class GunRefitScreen extends Screen implements IGunRefitScreen<GunRefitSc
                 }
             }
 
-            AttachmentCategorySlot button = new AttachmentCategorySlot(currentX, currentY, attachmentCategory, selectedSlot, inventory, this::_onAttachmentCategoryButtonPress);
+            boolean hasAttachmentLock = iGun.hasAttachmentLock(gunItem);
+            boolean isCategoryEnabled = iGun.isAttachmentEnabled(gunItem, attachmentCategory);
+            boolean isSelected = !hasAttachmentLock && isCategoryEnabled && currentCategory == attachmentCategory;
+            AttachmentCategorySlot button = new AttachmentCategorySlot(currentX, currentY, attachmentCategory, selectedSlot, inventory,
+                    isSelected, hasAttachmentLock, isCategoryEnabled,
+                    this::_onAttachmentCategoryButtonPress);
 
             // 选中的attachment button
-            if (currentCategory == attachmentCategory) {
-                button.setSelected(true);
-
+            if (isSelected) {
                 ItemStack attachmentItem = button.getAttachmentItem();
                 if (!attachmentItem.isEmpty()) {
                     // 添加拆卸配件按钮
-                    this.addRenderableWidget(new RefitUnloadButton(currentX, currentY, (_button) -> this._onUnloadButtonPress(localPlayer, inventory, button)));
+                    this.addRenderableWidget(new RefitUnloadButton(currentX, currentY + CustomTexture.SLOT.getHeight(),
+                            (_button) -> this._onUnloadButtonPress(localPlayer, inventory, button)));
 
                     // 添加配件镭射
                     this._addAttachmentLaser(attachmentItem);
@@ -162,8 +166,10 @@ public class GunRefitScreen extends Screen implements IGunRefitScreen<GunRefitSc
         AttachmentCategory buttonType = button.getCategory();
 
         if (
+                // 有配件锁
+                button.hasAttachmentLock()
                 // 这个槽位不允许安装配件
-                !button.isAttachmentEnabled()
+                || !button.isCategoryEnabled()
                 // 点击的是当前选中的槽位
                 || buttonType != AttachmentCategory.NONE && RefitScreenTransformState.get().getCurrentTransformType() == buttonType
         ) {
@@ -230,7 +236,10 @@ public class GunRefitScreen extends Screen implements IGunRefitScreen<GunRefitSc
         int startX = this.width - screenXMargin
                 // 从屏幕左边开始绘制往右绘制，使currentX数值正增
                 - CustomTexture.SLOT.getWidth() * (ATTACHMENT_CATEGORIES.length - 2);
-        int startY = screenYMargin + 40;
+        int startY = screenYMargin
+                + CustomTexture.SLOT.getHeight()
+                + (RefitUnloadButton.unloadButtonYMargin + CustomTexture.UNLOAD.getHeight() / 2 + RefitUnloadButton.unloadButtonYMargin)
+                + CustomTexture.TURN_PAGE.getHeight() / 2;
         int currentX = startX
                 // 使列表跟类别对齐
                 + CustomTexture.SLOT.getWidth() * currentCategory.ordinal();
@@ -284,7 +293,7 @@ public class GunRefitScreen extends Screen implements IGunRefitScreen<GunRefitSc
             // 上一页
             if (this.currentPageIndex > 0) {
                 boolean isPreviousPage = true;
-                this.addRenderableWidget(new RefitTurnPageButton(currentX, startY - 10, isPreviousPage, b -> {
+                this.addRenderableWidget(new RefitTurnPageButton(currentX, startY - CustomTexture.TURN_PAGE.getHeight() / 2, isPreviousPage, b -> {
                     this.currentPageIndex--;
                     this.resetScreen();
                 }));
@@ -293,7 +302,7 @@ public class GunRefitScreen extends Screen implements IGunRefitScreen<GunRefitSc
             // 下一页
             if (hasNextPage) {
                 boolean isPreviousPage = false;
-                this.addRenderableWidget(new RefitTurnPageButton(currentX, currentY + 2, isPreviousPage, b -> {
+                this.addRenderableWidget(new RefitTurnPageButton(currentX, currentY, isPreviousPage, b -> {
                     this.currentPageIndex++;
                     this.resetScreen();
                 }));

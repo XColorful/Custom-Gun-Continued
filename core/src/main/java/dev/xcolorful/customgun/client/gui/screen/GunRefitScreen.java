@@ -222,6 +222,7 @@ public class GunRefitScreen extends Screen implements IGunRefitScreen<GunRefitSc
         AttachmentCategory currentCategory = RefitScreenTransformState.get().getCurrentTransformType();
         if (currentCategory == AttachmentCategory.NONE) return;
 
+        // 枪械没启用该配件类型
         if (!iGun.isAttachmentEnabled(gunItem, currentCategory)) return;
 
         int startY = screenYMargin + 40;
@@ -241,6 +242,10 @@ public class GunRefitScreen extends Screen implements IGunRefitScreen<GunRefitSc
             @Nullable IAttachment iAttachment = IAttachmentGetter.fromItemStack(attachmentItem);
             if (iAttachment == null) continue;
 
+            // 不为当前选中的配件类型
+            if (iAttachment.getAttachmentCategory(attachmentItem) != currentCategory) continue;
+
+            // 枪械不能安装该配件
             if (!iGun.canInstallAttachment(gunItem, attachmentItem)) continue;
 
             count++;

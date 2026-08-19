@@ -87,7 +87,7 @@ public final class RefitKey extends InputKey {
         if (ClientInputUtils.isGameplayFocused()) {
             ItemStack gunItem = player.getMainHandItem();
             @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
-            if (iGun == null || iGun.hasAttachmentLock(gunItem)) return;
+            if (iGun == null) return;
 
             // 有其他界面，不强制覆盖
             if (ClientGuiUtils.getCurrentScreen(mc) != null) return;

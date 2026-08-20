@@ -87,10 +87,6 @@ public class GunRefitScreen extends Screen implements IGunRefitScreen<GunRefitSc
         }
     }
 
-    // 移除虚化背景
-    public void renderTransparentBackground(@NotNull GuiGraphics graphics) {
-    }
-
     @Override
     public void init() {
         this.clearWidgets();

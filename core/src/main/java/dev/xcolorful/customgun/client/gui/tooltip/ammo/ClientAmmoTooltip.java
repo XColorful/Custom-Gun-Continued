@@ -13,14 +13,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Matrix4f;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -125,14 +123,14 @@ public class ClientAmmoTooltip implements ClientTooltipComponent {
     }
 
     @Override
-    public void renderText(@NotNull Font font,
-                           int startX, int startY,
-                           @NotNull Matrix4f matrix4f,
-                           @NotNull MultiBufferSource.BufferSource bufferSource) {
+    public void renderText(@NotNull GuiGraphics guiGraphics,
+                           @NotNull Font font,
+                           int startX, int startY) {
         { // 设置缓存
             this.context.textFont = font;
-            this.context.textMatrix4f = matrix4f;
-            this.context.textBufferSource = bufferSource;
+            this.context.textGraphic = guiGraphics;
+//            this.context.textMatrix4f = matrix4f;
+//            this.context.textBufferSource = bufferSource;
 
             this.renderText(startX, startY);
         }

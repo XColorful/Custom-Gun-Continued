@@ -39,9 +39,7 @@ public final class ClientGunIndexInstance extends PojoInstance<GunIndex> {
         return true;
     }
     @Override protected boolean isPojoValid() {
-        var pojo = this.getPojo();
-        if (!pojo.isValid()) return false;
-        if (!resetCache()) return false;
+        if (!super.isPojoValid()) return false;
 
         return true;
     }
@@ -64,7 +62,7 @@ public final class ClientGunIndexInstance extends PojoInstance<GunIndex> {
     // --------Deprecated--------
 
     @Deprecated public String getName() {
-        return ComponentUtils.toTranslatableKey(this.getPojo().getNameLang());
+        return this.getPojo().getNameLang();
     }
     @Deprecated public String getType() {
         return this.getPojo().getGunCategory().toString();

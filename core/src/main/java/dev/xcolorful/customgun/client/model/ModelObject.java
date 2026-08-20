@@ -99,9 +99,7 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
     }
 
     @Override protected boolean isPojoValid() {
-        var pojo = this.getPojo();
-        if (!pojo.isValid()) return false;
-        if (!resetCache()) return false;
+        if (!super.isPojoValid()) return false;
 
         return true;
     }

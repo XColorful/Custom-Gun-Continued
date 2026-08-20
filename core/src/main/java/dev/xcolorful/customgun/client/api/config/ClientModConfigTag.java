@@ -71,10 +71,10 @@ public class ClientModConfigTag {
     public static final String damageCounterResetTime_comment = "Max time the damage counter will reset";
 
     public static final String disableMovementAttributeFov_path = "DisableMovementAttributeFov";
-    public static final String disableMovementAttributeFov_comment = "Disable the fov effect from the movement speed attribute while holding a gun";
+    public static final String disableMovementAttributeFov_comment = "Disable the FOV effect from the movement speed attribute while holding a gun";
 
-    public static final String enableResourceLocationInTooltip_path = "EnableResourceLocationInTooltip";
-    public static final String enableResourceLocationInTooltip_comment = "Enable the display of the ResourceLocation in the tooltip when Advanced Tooltip is enabled";
+    public static final String appendResourceLocationInTooltip_path = "AppendResourceLocationInTooltip";
+    public static final String appendResourceLocationInTooltip_comment = "Whether to append resource location after gunpack information in tooltips";
 
     public static final String blockEntityTranslucent_path = "EnableBlockEntityTranslucent";
     public static final String blockEntityTranslucent_comment = "Enable translucent while render block entity or not. Enable this option will result in ADDITIONAL PERFORMANCE OVERHEAD.";

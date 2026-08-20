@@ -9,12 +9,16 @@ public interface TooltipPart<T extends BaseTooltipContext<?>> {
 
     int measureHeight(T context);
 
-    void renderText(T context,
-                    GuiGraphicsExtractor guiGraphics,
-                    Font font, int pX, int pY);
+    default void renderText(T context,
+                            GuiGraphicsExtractor guiGraphics,
+                            Font font,
+                            int pX, int pY) {
+    }
 
-    void renderImage(T context,
-                     Font font, int pX, int pY,
-                     int width, int height,
-                     GuiGraphicsExtractor guiGraphics);
+    default void renderImage(T context,
+                             Font font,
+                             int pX, int pY,
+                             int width, int height,
+                             GuiGraphicsExtractor guiGraphics) {
+    }
 }

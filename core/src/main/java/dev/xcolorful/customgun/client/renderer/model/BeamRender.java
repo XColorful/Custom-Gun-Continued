@@ -28,6 +28,7 @@ import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -113,7 +114,9 @@ public class BeamRender {
         pConsumer.addVertex(pPose.pose(), halfWidth, -halfWidth, z).setColor(r, g, b, endAlpha).setUv(1, 0).setLight(light);
     }
 
-    private static void _getLaser(ItemStack pojoItem, Consumer<_LaserDisplay> setLaserDisplay, Consumer<Integer> setLaserColor) {
+    // public仅用于文档链接
+    @ApiStatus.Internal
+    public static void _getLaser(ItemStack pojoItem, Consumer<_LaserDisplay> setLaserDisplay, Consumer<Integer> setLaserColor) {
         if (pojoItem == null) return;
 
         { // 配件激光

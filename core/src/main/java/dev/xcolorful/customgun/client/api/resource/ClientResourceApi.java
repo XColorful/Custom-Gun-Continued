@@ -7,8 +7,10 @@
 
 package dev.xcolorful.customgun.client.api.resource;
 
+import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.resource._AllAssetsManager;
 import dev.xcolorful.customgun.client.resource._AssetsInstanceManager;
+import dev.xcolorful.customgun.client.resource.assets.GunpackInfoManager;
 import dev.xcolorful.customgun.client.resource.assets.animation.BedrockAnimation;
 import dev.xcolorful.customgun.client.resource.assets.animation.GltfAnimation;
 import dev.xcolorful.customgun.client.resource.assets.display.AmmoDisplay;
@@ -40,6 +42,10 @@ import java.util.Set;
 public class ClientResourceApi {
 
     // --------gunpack info--------
+
+    public static @Nullable GunpackInfo getGunpackInfo(String namespace) {
+        return getGunpackInfo(CustomGun.getMcRegistry().createResourceLocation(namespace + ":" + GunpackInfoManager.POJO_LOCATION_NAME));
+    }
 
     public static @Nullable GunpackInfo getGunpackInfo(Identifier gunpackInfoLocation) {
         var assetsManager = _AllAssetsManager.INSTANCE.gunpackInfoManager;

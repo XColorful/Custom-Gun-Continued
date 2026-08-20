@@ -6,8 +6,10 @@ import net.minecraft.network.chat.contents.TranslatableContents;
 
 public class ComponentUtils {
 
+    public static final String UNKNOWN_TRANSLATABLE_KEY = "customgun.unknown";
+
     public static MutableComponent unknownTranslatableKey() {
-        return Component.translatable("customgun.unknown");
+        return Component.translatable(UNKNOWN_TRANSLATABLE_KEY);
     }
     public static MutableComponent fromTranslatableKey(String lang) {
         if (lang == null) return unknownTranslatableKey();

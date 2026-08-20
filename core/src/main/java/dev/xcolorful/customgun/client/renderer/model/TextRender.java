@@ -21,7 +21,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.locale.Language;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -47,10 +47,10 @@ public class TextRender implements IModelComponentRenderer {
                        int light, int overlay) {
         if (!transformType.firstPerson()) return;
 
-        MutableComponent textLang = this.modelNodeTextDisplay.getTextLang();
+        String textLang = this.modelNodeTextDisplay.getTextLang();
         IPlaceholderManager placeholderManager = CustomGun.getPlaceholderManager();
 
-        String text = textLang.getString();
+        String text = Language.getInstance().getOrDefault(textLang);
         String parsed = placeholderManager.parse(text, this.gunItem);
         if (parsed.isEmpty()) return;
 

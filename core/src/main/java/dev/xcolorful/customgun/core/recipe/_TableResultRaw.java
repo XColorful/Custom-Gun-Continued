@@ -21,6 +21,7 @@ import dev.xcolorful.customgun.core.api.recipe.RecipeResultType;
 import dev.xcolorful.customgun.core.api.resource.ResourceApi;
 import dev.xcolorful.customgun.core.init.registry.ModItems;
 import dev.xcolorful.customgun.core.resource.data.data.GunData;
+import dev.xcolorful.customgun.core.resource.data.index.AmmoIndex;
 import dev.xcolorful.customgun.core.resource.data.index.AttachmentIndex;
 import dev.xcolorful.customgun.core.resource.data.index.GunIndex;
 import dev.xcolorful.customgun.core.resource.instance.data.AmmoIndexInstance;
@@ -130,11 +131,19 @@ public class _TableResultRaw {
                 .build();
 
         // tab group
-        TabGroup tabGroup = switch (AmmoCategory.AMMO) {
-            case AMMO -> TabGroup.AMMO;
-            // 若增加AmmoCategory则使此处强制编译不同过，改用TabGroup.fromString
-        };
+        AmmoCategory ammoCategory; {
+            AmmoIndex ammoIndex = ammoIndexInstance.getPojo();
+            ammoCategory = ammoIndex.getAmmoCategory();
+        }
+        TabGroup tabGroup = _getAmmoTabGroup(ammoCategory);
 
         return new TableResult(ammoItem, tabGroup.registryLocation);
+    }
+    private TabGroup _getAmmoTabGroup(AmmoCategory ammoCategory) {
+        return switch (ammoCategory) {
+            case AMMO -> TabGroup.AMMO;
+            case EXPLOSIVE -> TabGroup.EXPLOSIVE;
+            // 增加类型使此处强制编译不通过
+        };
     }
 }

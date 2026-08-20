@@ -1,6 +1,6 @@
 package dev.xcolorful.customgun.forgeclient.event;
 
-import dev.xcolorful.customgun.client.api.event.IRenderFrameEvent;
+import dev.xcolorful.customgun.client.api.event.IPrepareRenderFrameEvent;
 import dev.xcolorful.customgun.core.api.event.EventType;
 import dev.xcolorful.customgun.forge.event.ForgeEvent;
 import net.minecraft.commands.CommandSource;
@@ -10,7 +10,7 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.Event;
 import org.jetbrains.annotations.Nullable;
 
-public class ForgePrepareRenderFrameEvent extends ForgeEvent implements IRenderFrameEvent {
+public class ForgePrepareRenderFrameEvent extends ForgeEvent implements IPrepareRenderFrameEvent {
 
     protected TickEvent.RenderTickEvent renderTickEvent;
 

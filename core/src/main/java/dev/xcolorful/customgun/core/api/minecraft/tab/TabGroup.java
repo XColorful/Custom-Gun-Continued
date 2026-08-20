@@ -25,6 +25,7 @@ import static dev.xcolorful.customgun.core.init.registry.ModCreativeTabs.*;
  */
 public enum TabGroup implements ResourceTag.RegistryTag {
     AMMO(AMMO_TAB),
+    EXPLOSIVE(EXPLOSIVE_TAB),
     ATTACHMENT_MUZZLE(ATTACHMENT_MUZZLE_TAB),
     ATTACHMENT_LASER(ATTACHMENT_LASER_TAB),
     ATTACHMENT_GRIP(ATTACHMENT_GRIP_TAB),

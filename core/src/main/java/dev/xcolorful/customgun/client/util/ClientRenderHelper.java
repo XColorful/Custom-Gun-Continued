@@ -151,10 +151,10 @@ public class ClientRenderHelper {
         }
 
         public static void _enableBlend() {
-            RenderSystem.enableBlend();
+            GlStateManager._enableBlend();
         }
         public static void _disableBlend() {
-            RenderSystem.disableBlend();
+            GlStateManager._disableBlend();
         }
     }
 

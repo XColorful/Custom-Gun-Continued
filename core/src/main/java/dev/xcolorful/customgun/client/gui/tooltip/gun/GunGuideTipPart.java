@@ -10,9 +10,6 @@ package dev.xcolorful.customgun.client.gui.tooltip.gun;
 import dev.xcolorful.customgun.client.api.item.gun.GunTooltipMask;
 import dev.xcolorful.customgun.client.gui.tooltip.AbstractTooltipPart;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.MultiBufferSource;
-import org.joml.Matrix4f;
 
 /**
  * 这个按键提示没太大必要，留给扩展模组mixin，动态切换提示文本喵~
@@ -26,7 +23,7 @@ public final class GunGuideTipPart extends AbstractTooltipPart implements GunToo
     private GunGuideTipPart() {}
 
     @Override
-    public void build(ClientGunTooltip.Context context) {
+    public void build(ClientGunTooltip.Context context, Font font) {
     }
 
     @Override
@@ -38,18 +35,13 @@ public final class GunGuideTipPart extends AbstractTooltipPart implements GunToo
 
     @Override
     public void renderText(ClientGunTooltip.Context context,
-                           Font font,
-                           int pX, int pY,
-                           Matrix4f matrix4f,
-                           MultiBufferSource.BufferSource bufferSource) {
+                           int startX, int startY) {
         // mixin注入点
     }
 
     @Override
     public void renderImage(ClientGunTooltip.Context context,
-                            Font font,
-                            int pX, int pY,
-                            GuiGraphics guiGraphics) {
+                            int startX, int startY) {
         // mixin注入点
     }
 }

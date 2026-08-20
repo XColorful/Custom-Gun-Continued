@@ -11,12 +11,17 @@ public interface TooltipPart<T extends BaseTooltipContext<?>> {
 
     int measureHeight(T context);
 
-    void renderText(T context,
-                    Font font, int pX, int pY,
-                    Matrix4f matrix4f, MultiBufferSource.BufferSource bufferSource);
+    default void renderText(T context,
+                            Font font,
+                            int pX, int pY,
+                            Matrix4f matrix4f,
+                            MultiBufferSource.BufferSource bufferSource) {
+    }
 
-    void renderImage(T context,
-                     Font font, int pX, int pY,
-                     int width, int height,
-                     GuiGraphics guiGraphics);
+    default void renderImage(T context,
+                             Font font,
+                             int pX, int pY,
+                             int width, int height,
+                             GuiGraphics guiGraphics) {
+    }
 }

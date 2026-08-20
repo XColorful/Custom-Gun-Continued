@@ -29,9 +29,7 @@ public class AmmoIndexInstance extends PojoInstance<AmmoIndex> {
         return true;
     }
     @Override protected boolean isPojoValid() {
-        var pojo = this.getPojo();
-        if (!pojo.isValid()) return false;
-        if (!resetCache()) return false;
+        if (!super.isPojoValid()) return false;
 
         return true;
     }

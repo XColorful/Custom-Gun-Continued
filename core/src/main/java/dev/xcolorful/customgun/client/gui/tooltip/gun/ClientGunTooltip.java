@@ -11,6 +11,7 @@ import dev.xcolorful.customgun.client.api.gui.tooltip.BaseTooltipContext;
 import dev.xcolorful.customgun.client.api.gui.tooltip.BaseTooltipView;
 import dev.xcolorful.customgun.client.api.item.gun.GunTooltipMask;
 import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
+import dev.xcolorful.customgun.client.resource.assets.info.GunpackInfo;
 import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.resource.ResourceApi;
@@ -21,7 +22,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
@@ -47,27 +47,42 @@ public class ClientGunTooltip implements ClientTooltipComponent {
     @Override public int getHeight(Font font) {
         return this.context.getHeight();
     }
-    @Override public int getWidth(Font font) {
+    @Override public int getWidth(@NotNull Font font) {
         return this.context.getMaxWidth();
     }
     @Override
-    public void renderText(Font font, int pX, int pY,
-                           Matrix4f matrix4f, MultiBufferSource.BufferSource bufferSource) {
+    public void renderText(@NotNull Font font,
+                           int pX, int pY,
+                           @NotNull Matrix4f matrix4f,
+                           @NotNull MultiBufferSource.BufferSource bufferSource) {
+        int currentX = pX;
+        int currentY = pY;
+
         for (GunTooltipMask mask : this.context.visibleParts) {
             mask.getTooltipPart().renderText(this.context,
-                    font, pX, pY,
-                    matrix4f, bufferSource);
+                    font,
+                    currentX, currentY,
+                    matrix4f,
+                    bufferSource);
+
+            currentY += mask.getTooltipPart().measureHeight(this.context);
         }
     }
     @Override
-    public void renderImage(Font font, int pX, int pY,
+    public void renderImage(@NotNull Font font,
+                            int pX, int pY,
                             int width, int height,
-                            GuiGraphics guiGraphics) {
+                            @NotNull GuiGraphics guiGraphics) {
+        int currentX = pX;
+        int currentY = pY;
+
         for (GunTooltipMask mask : this.context.visibleParts) {
             mask.getTooltipPart().renderImage(this.context,
-                    font, pX, pY,
-                    width, height,
+                    font,
+                    currentX, currentY,
                     guiGraphics);
+
+            currentY += mask.getTooltipPart().measureHeight(this.context);
         }
     }
 
@@ -77,14 +92,7 @@ public class ClientGunTooltip implements ClientTooltipComponent {
     public static final class View extends BaseTooltipView {
         public @Nullable List<FormattedCharSequence> desc;
         public @Nullable Component ammoName;
-        public @Nullable MutableComponent ammoCount;
-        public @Nullable MutableComponent gunCategory;
-        public @Nullable MutableComponent damage;
-        public @Nullable MutableComponent armorIgnore;
-        public @Nullable MutableComponent headshotMultiplier;
-        public @Nullable MutableComponent weight;
-        public @Nullable MutableComponent tips;
-        public @Nullable MutableComponent gunLevel;
+        public @Nullable Component ammoCount;
         public View() {
         }
     }
@@ -94,6 +102,10 @@ public class ClientGunTooltip implements ClientTooltipComponent {
         public final @NotNull EnumSet<GunTooltipMask> visibleParts;
         public @Nullable GunIndexInstance gunIndexInstance;
         public @Nullable GunDisplayInstance gunDisplayInstance;
+        public @Nullable GunpackInfo gunpackInfo;
+        public boolean showCategory = false;
+        public boolean showPackInfo = false;
+        public boolean showPojoLocation = false;
         public Context(@NotNull View view, @NotNull GunTooltip gunTooltip) {
             super(view);
             this.gunTooltip = gunTooltip;
@@ -102,6 +114,7 @@ public class ClientGunTooltip implements ClientTooltipComponent {
             this.visibleParts = GunTooltipMask.fromBitmap(iGun.getTooltipMask(gunItem));
             this.gunIndexInstance = ResourceApi.getGunIndexInstance(gunTooltip.gunLocation());
             this.gunDisplayInstance = ClientResourceApi.getGunDisplayInstance(iGun.getGunDisplayLocation(gunItem));
+            this.gunpackInfo = ClientResourceApi.getGunpackInfo(gunTooltip.gunLocation().getNamespace());
             this.buildView();
         }
         @Override

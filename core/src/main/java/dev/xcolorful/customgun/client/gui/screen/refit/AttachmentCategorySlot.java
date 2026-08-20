@@ -75,10 +75,9 @@ public class AttachmentCategorySlot extends Button implements IStackTooltip {
 
     // --------AbstractButton--------
 
-    @Override
-    public void renderWidget(@NotNull GuiGraphics graphics,
-                             int pMouseX, int pMouseY,
-                             float pPartialTick) {
+    public void _renderContent(@NotNull GuiGraphics graphics,
+                               int pMouseX, int pMouseY,
+                               float pPartialTick) {
         // 悬浮显示文本
         if (this.isHoveredOrFocused()) {
             Font font = Minecraft.getInstance().font;
@@ -190,5 +189,16 @@ public class AttachmentCategorySlot extends Button implements IStackTooltip {
         if (this.attachmentItem.isEmpty()) return;
 
         consumer.accept(this.attachmentItem);
+    }
+
+    // --------Compat--------
+    // 跨版本适配层
+    // 其他类可直接Ctrl CV
+
+    @Override
+    public void renderWidget(@NotNull GuiGraphics graphics,
+                             int pMouseX, int pMouseY,
+                             float pPartialTick) {
+        this._renderContent(graphics, pMouseX, pMouseY, pPartialTick);
     }
 }

@@ -3,6 +3,7 @@ package dev.xcolorful.customgun.client.gui.tooltip.ammobox;
 import dev.xcolorful.customgun.client.api.item.ammobox.AmmoBoxTooltipMask;
 import dev.xcolorful.customgun.client.gui.tooltip.AbstractTooltipPart;
 import dev.xcolorful.customgun.core.api.item.IAmmo;
+import net.minecraft.client.gui.Font;
 
 /**
  * 放扩展模组，可以显示{@link IAmmo#hasInfiniteFeed}、{@link IAmmo#isAlmightyAmmo}
@@ -12,7 +13,7 @@ public final class AmmoBoxEnchantmentInfoPart extends AbstractTooltipPart implem
     private AmmoBoxEnchantmentInfoPart() {}
 
     @Override
-    public void build(ClientAmmoBoxTooltip.Context context) {
+    public void build(ClientAmmoBoxTooltip.Context context, Font font) {
     }
 
     @Override

@@ -13,14 +13,11 @@ import dev.xcolorful.customgun.core.api.minecraft.Color64;
 import dev.xcolorful.customgun.core.resource.data.index.AmmoIndex;
 import dev.xcolorful.customgun.core.resource.instance.data.AmmoIndexInstance;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Matrix4f;
 
 import java.util.List;
 
@@ -40,9 +37,7 @@ public final class AmmoDescriptionPart extends AbstractTooltipPart implements Am
     private static final boolean hasTextShadow = true;
 
     @Override
-    public void build(ClientAmmoTooltip.Context context) {
-        Font font = Minecraft.getInstance().font;
-
+    public void build(ClientAmmoTooltip.Context context, Font font) {
         @Nullable AmmoIndexInstance ammoIndexInstance = context.ammoIndexInstance;
         if (ammoIndexInstance == null) return;
 
@@ -73,12 +68,9 @@ public final class AmmoDescriptionPart extends AbstractTooltipPart implements Am
 
     @Override
     public void renderText(ClientAmmoTooltip.Context context,
-                           Font font,
-                           int pX, int pY,
-                           Matrix4f matrix4f,
-                           MultiBufferSource.BufferSource bufferSource) {
-        int currentX = pX;
-        int currentY = pY;
+                           int startX, int startY) {
+        int currentX = startX;
+        int currentY = startY;
 
         @Nullable List<FormattedCharSequence> desc = context.view.desc;
         if (desc != null) {
@@ -91,13 +83,10 @@ public final class AmmoDescriptionPart extends AbstractTooltipPart implements Am
             for (int i = 0; i < desc.size(); i++) {
                 // 单行子弹描述
                 FormattedCharSequence sequence = desc.get(i);
-                font.drawInBatch(sequence,
+                context.drawText(sequence,
                         currentX, currentY,
                         _defaultDescriptionColor.getRGB(),
                         hasTextShadow,
-                        matrix4f,
-                        bufferSource,
-                        Font.DisplayMode.NORMAL,
                         0,
                         packedLightCoords);
                 currentY += textLineHeight;

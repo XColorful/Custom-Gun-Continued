@@ -4,9 +4,6 @@ import dev.xcolorful.customgun.client.api.item.ammobox.AmmoBoxTooltipMask;
 import dev.xcolorful.customgun.client.gui.tooltip.AbstractTooltipPart;
 import dev.xcolorful.customgun.core.api.item.IAmmoBox;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.MultiBufferSource;
-import org.joml.Matrix4f;
 
 /**
  * 扩展模组可以显示{@link IAmmoBox#getBoxLevel}
@@ -16,7 +13,7 @@ public final class AmmoBoxBaseInfoPart extends AbstractTooltipPart implements Am
     private AmmoBoxBaseInfoPart() {}
 
     @Override
-    public void build(ClientAmmoBoxTooltip.Context context) {
+    public void build(ClientAmmoBoxTooltip.Context context, Font font) {
     }
 
     @Override
@@ -28,19 +25,13 @@ public final class AmmoBoxBaseInfoPart extends AbstractTooltipPart implements Am
 
     @Override
     public void renderText(ClientAmmoBoxTooltip.Context context,
-                           Font font,
-                           int pX, int pY,
-                           Matrix4f matrix4f,
-                           MultiBufferSource.BufferSource bufferSource) {
+                           int startX, int startY) {
         // mixin注入点
     }
 
     @Override
     public void renderImage(ClientAmmoBoxTooltip.Context context,
-                            Font font,
-                            int pX,
-                            int pY,
-                            GuiGraphics guiGraphics) {
+                            int startX, int startY) {
         // mixin注入点
     }
 }

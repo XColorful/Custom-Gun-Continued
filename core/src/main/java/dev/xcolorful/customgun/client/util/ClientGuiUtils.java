@@ -3,7 +3,7 @@ package dev.xcolorful.customgun.client.util;
 import dev.xcolorful.customgun.client.api.minecraft.texture.CustomTexture;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Overlay;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -27,7 +27,7 @@ public class ClientGuiUtils {
         minecraft.gui.setOverlay(overlay);
     }
 
-    public static void blitGuiTexture(GuiGraphics guiGraphics,
+    public static void blitGuiTexture(GuiGraphicsExtractor guiGraphics,
                                       CustomTexture customTexture,
                                       int startX, int startY,
                                       int endX, int endY,
@@ -42,7 +42,7 @@ public class ClientGuiUtils {
                 customTexture.getWidth(), customTexture.getHeight());
 
     }
-    public static void blitGuiTexture(GuiGraphics guiGraphics,
+    public static void blitGuiTexture(GuiGraphicsExtractor guiGraphics,
                                       Identifier textureLocation,
                                       int startX, int startY,
                                       int endX, int endY,
@@ -62,7 +62,7 @@ public class ClientGuiUtils {
                 textureWidth, textureHeight);
     }
 
-    public static void renderTooltip(GuiGraphics guiGraphics,
+    public static void renderTooltip(GuiGraphicsExtractor guiGraphics,
                                      Font font,
                                      int startX, int startY,
                                      ItemStack itemStack) {

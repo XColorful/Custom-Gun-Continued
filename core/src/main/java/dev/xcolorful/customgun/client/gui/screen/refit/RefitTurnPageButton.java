@@ -10,7 +10,7 @@ package dev.xcolorful.customgun.client.gui.screen.refit;
 import dev.xcolorful.customgun.client.api.minecraft.texture.CustomTexture;
 import dev.xcolorful.customgun.client.util.ClientGuiUtils;
 import dev.xcolorful.customgun.client.util.ClientRenderHelper;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
@@ -29,7 +29,7 @@ public class RefitTurnPageButton extends Button {
 
     // --------AbstractButton--------
 
-    public void _renderContent(@NotNull GuiGraphics graphics,
+    public void _renderContent(@NotNull GuiGraphicsExtractor graphics,
                                int pMouseX, int pMouseY,
                                float pPartialTick) {
         ClientRenderHelper.GL._disableDepthTest();
@@ -62,7 +62,7 @@ public class RefitTurnPageButton extends Button {
     // 其他类可直接Ctrl CV
 
     @Override
-    public void renderContents(@NotNull GuiGraphics graphics,
+    public void extractContents(@NotNull GuiGraphicsExtractor graphics,
                              int pMouseX, int pMouseY,
                              float pPartialTick) {
         this._renderContent(graphics, pMouseX, pMouseY, pPartialTick);

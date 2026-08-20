@@ -132,7 +132,7 @@ public class ClientGunTooltip implements ClientTooltipComponent {
     }
 
     @Override
-    public void renderText(@NotNull GuiGraphics guiGraphics,
+    public void extractText(@NotNull GuiGraphicsExtractor guiGraphics,
                            @NotNull Font font,
                            int startX, int startY) {
         { // 设置缓存
@@ -147,10 +147,10 @@ public class ClientGunTooltip implements ClientTooltipComponent {
     }
 
     @Override
-    public void renderImage(@NotNull Font font,
+    public void extractImage(@NotNull Font font,
                             int startX, int startY,
                             int width, int height,
-                            @NotNull GuiGraphics guiGraphics) {
+                            @NotNull GuiGraphicsExtractor guiGraphics) {
         { // 设置缓存
             this.context.imageFont = font;
             this.context.imageGraphic = guiGraphics;

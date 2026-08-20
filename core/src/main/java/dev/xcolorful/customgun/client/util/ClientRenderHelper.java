@@ -10,11 +10,9 @@ package dev.xcolorful.customgun.client.util;
 import com.mojang.blaze3d.opengl.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import dev.xcolorful.customgun.client.api.minecraft.texture.CustomTexture;
 import dev.xcolorful.customgun.client.compat.ar.ARCompat;
 import dev.xcolorful.customgun.client.compat.optifine.OptifineCompat;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -30,37 +28,6 @@ import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 
 public class ClientRenderHelper {
-
-    public static void blitGuiTexture(GuiGraphics guiGraphics,
-                                      CustomTexture customTexture,
-                                      int startX, int startY,
-                                      int endX, int endY,
-                                      int uOffset, int vOffset,
-                                      int uWidth, int vHeight) {
-        blitGuiTexture(guiGraphics,
-                customTexture.getLocation(),
-                startX, startY,
-                endX, endY,
-                uOffset, vOffset,
-                uWidth, vHeight,
-                customTexture.getWidth(), customTexture.getHeight());
-
-    }
-    public static void blitGuiTexture(GuiGraphics guiGraphics,
-                                      ResourceLocation textureLocation,
-                                      int startX, int startY,
-                                      int endX, int endY,
-                                      int uOffset, int vOffset,
-                                      int uWidth, int vHeight,
-                                      int textureWidth, int textureHeight) {
-        guiGraphics.blit(RenderType::guiTextured,
-                textureLocation,
-                startX, startY,
-                endX, endY,
-                uOffset, vOffset,
-                uWidth, vHeight,
-                textureWidth, textureHeight);
-    }
 
     public static void blit(PoseStack poseStack, float x, float y, float uOffset, float vOffset, float pWidth, float height, float textureWidth, float textureHeight) {
         blit(poseStack, x, y, pWidth, height, uOffset, vOffset, pWidth, height, textureWidth, textureHeight);
@@ -182,6 +149,13 @@ public class ClientRenderHelper {
         }
         public static void _enableDepthTest() {
             GlStateManager._enableDepthTest();
+        }
+
+        public static void _enableBlend() {
+            RenderSystem.enableBlend();
+        }
+        public static void _disableBlend() {
+            RenderSystem.disableBlend();
         }
     }
 

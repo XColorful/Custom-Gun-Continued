@@ -11,6 +11,9 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 public interface IRenderGuiEvent {
 
+    /**
+     * @since 26.1 {@code GuiGraphicsExtractor}
+     */
     GuiGraphicsExtractor getGuiGraphics();
 
     /**

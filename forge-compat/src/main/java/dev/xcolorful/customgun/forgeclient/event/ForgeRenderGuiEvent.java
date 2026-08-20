@@ -10,24 +10,24 @@ package dev.xcolorful.customgun.forgeclient.event;
 import dev.xcolorful.customgun.client.api.event.IRenderGuiEvent;
 import dev.xcolorful.customgun.core.api.event.EventType;
 import dev.xcolorful.customgun.forge.event.ForgeEvent;
+import dev.xcolorful.customgun.forgeclient.compat.forge.event.RenderGuiEvent;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
-import net.minecraftforge.client.event.CustomizeGuiOverlayEvent;
 import net.minecraftforge.eventbus.api.Event;
 import org.jetbrains.annotations.Nullable;
 
 public class ForgeRenderGuiEvent extends ForgeEvent implements IRenderGuiEvent {
 
-    private final CustomizeGuiOverlayEvent renderGuiEvent;
+    private final RenderGuiEvent renderGuiEvent;
 
     public ForgeRenderGuiEvent(Event event) {
         super(event);
-        if (event instanceof CustomizeGuiOverlayEvent eventIn) {
+        if (event instanceof RenderGuiEvent eventIn) {
             this.renderGuiEvent = eventIn;
         } else {
-            throw new RuntimeException("Expected CustomizeGuiOverlayEvent but received: " + event.getClass().getName());
+            throw new RuntimeException("Expected RenderGuiEvent but received: " + event.getClass().getName());
         }
     }
     @Override public EventType getType() {
@@ -41,7 +41,7 @@ public class ForgeRenderGuiEvent extends ForgeEvent implements IRenderGuiEvent {
 
     @Override
     public float getPartialTick() {
-        return renderGuiEvent.getPartialTick();
+        return renderGuiEvent.getPartialTick().getGameTimeDeltaPartialTick(true);
     }
 
     @Override

@@ -46,12 +46,14 @@ public final class ClientAttachmentIndexInstance extends PojoInstance<Attachment
     }
 
     @Override public boolean resetCache() {
-        this.attachmentDisplayCache = ClientResourceApi.getAttachmentDisplay(this.getPojo().getDisplayIndexLocation());
+        var pojo = this.getPojo();
+
+        this.attachmentDisplayCache = ClientResourceApi.getAttachmentDisplay(pojo.getDisplayIndexLocation());
         if (this.attachmentDisplayCache == null) {
-            CustomGun.LOGGER.debug("ClientAttachmentIndexInstance: AttachmentDisplay {} not found", this.getPojo().getDisplayIndexLocation());
+            CustomGun.LOGGER.debug("ClientAttachmentIndexInstance: AttachmentDisplay {} not found", pojo.getDisplayIndexLocation());
             return false;
         } else if (!this.attachmentDisplayCache.isValid()) {
-            CustomGun.LOGGER.debug("ClientAttachmentIndexInstance: AttachmentDisplay {} not valid", this.getPojo().getDisplayIndexLocation());
+            CustomGun.LOGGER.debug("ClientAttachmentIndexInstance: AttachmentDisplay {} not valid", pojo.getDisplayIndexLocation());
             return false;
         }
 
@@ -82,9 +84,7 @@ public final class ClientAttachmentIndexInstance extends PojoInstance<Attachment
     private static final int ERR_SCOPE_VIEW_INDEX = 1 << 2;
     private static final int ERR_SCOPE_LENGTH_MATCH = 1 << 3;
     @Override protected boolean isPojoValid() {
-        var pojo = this.getPojo();
-        if (!pojo.isValid()) return false;
-        if (!resetCache()) return false;
+        if (!super.isPojoValid()) return false;
 
         int errorMask = 0;
         // AttachmentDisplay
@@ -164,10 +164,10 @@ public final class ClientAttachmentIndexInstance extends PojoInstance<Attachment
     // --------Deprecated--------
 
     @Deprecated public String getName() {
-        return ComponentUtils.toTranslatableKey(this.getPojo().getNameLang());
+        return this.getPojo().getNameLang();
     }
     @Deprecated public String getTooltipKey() {
-        return ComponentUtils.toTranslatableKey(this.getPojo().getTooltipLang());
+        return this.getPojo().getTooltipLang();
     }
     @Deprecated public boolean isSight() {
         return this.attachmentDisplayCache.getEnableSight();

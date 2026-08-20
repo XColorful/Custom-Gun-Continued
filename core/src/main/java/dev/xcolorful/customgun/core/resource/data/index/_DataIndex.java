@@ -10,13 +10,12 @@ package dev.xcolorful.customgun.core.resource.data.index;
 import dev.xcolorful.customgun.core.api.resource.ResourceTag;
 import dev.xcolorful.customgun.core.resource.ResourcePojo;
 import dev.xcolorful.customgun.core.util.ComponentUtils;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 
 public abstract class _DataIndex<T extends _DataIndex<T>> extends ResourcePojo<T> {
 
-    private MutableComponent nameLang;
-    private MutableComponent tooltipLang;
+    private String nameLang;
+    private String tooltipLang;
 
     private ResourceLocation dataLocation;
     private ResourceLocation displayIndexLocation;
@@ -33,18 +32,18 @@ public abstract class _DataIndex<T extends _DataIndex<T>> extends ResourcePojo<T
             return;
         }
 
-        if (this.nameLang == null) this.nameLang = ComponentUtils.unknownTranslatableKey();
-        if (this.tooltipLang == null) this.tooltipLang = ComponentUtils.unknownTranslatableKey();
+        if (this.nameLang == null) this.nameLang = ComponentUtils.UNKNOWN_TRANSLATABLE_KEY;
+        if (this.tooltipLang == null) this.tooltipLang = ComponentUtils.UNKNOWN_TRANSLATABLE_KEY;
         if (this.slotSort < 0) this.slotSort = 0;
         this.setValid(true);
     }
 
     // --------Getter & Setter--------
 
-    public final MutableComponent getNameLang() {
+    public final String getNameLang() {
         return nameLang;
     }
-    public final MutableComponent getTooltipLang() {
+    public final String getTooltipLang() {
         return tooltipLang;
     }
     public final ResourceLocation getDataLocation() {
@@ -57,10 +56,10 @@ public abstract class _DataIndex<T extends _DataIndex<T>> extends ResourcePojo<T
         return slotSort;
     }
 
-    public final void setNameLang(MutableComponent nameLang) {
+    public final void setNameLang(String nameLang) {
         this.nameLang = nameLang;
     }
-    public final void setTooltipLang(MutableComponent tooltipLang) {
+    public final void setTooltipLang(String tooltipLang) {
         this.tooltipLang = tooltipLang;
     }
     public final void setDataLocation(ResourceLocation dataLocation) {

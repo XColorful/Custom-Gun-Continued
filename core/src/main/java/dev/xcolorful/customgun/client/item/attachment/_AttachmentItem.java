@@ -18,13 +18,12 @@ import org.jetbrains.annotations.Nullable;
 
 public class _AttachmentItem {
 
-    public static @Nullable Component getName(IAttachment _this,
-                                              @NotNull ItemStack attachmentItem) {
+    public static @Nullable Component getName(IAttachment _this, @NotNull ItemStack attachmentItem) {
         var attachmentLocation = _this.getAttachmentLocation(attachmentItem);
         @Nullable AttachmentIndexInstance attachmentIndexInstance = ResourceApi.getAttachmentIndexInstance(attachmentLocation);
         if (attachmentIndexInstance == null) return null;
 
         AttachmentIndex attachmentIndex = attachmentIndexInstance.getPojo();
-        return attachmentIndex.getNameLang();
+        return Component.translatable(attachmentIndex.getNameLang());
     }
 }

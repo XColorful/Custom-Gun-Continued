@@ -20,6 +20,7 @@ import dev.xcolorful.customgun.core.api.entity.shooter.ILivingShooterGetter;
 import dev.xcolorful.customgun.core.api.gun.attack.IGunAttackRuntime;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
+import dev.xcolorful.customgun.core.api.item.gun.MeleeType;
 import dev.xcolorful.customgun.core.network.message.ClientMessagePlayerMelee;
 import dev.xcolorful.customgun.core.util.SendUtils;
 import net.minecraft.client.player.LocalPlayer;
@@ -53,17 +54,21 @@ public final class LocalShooterMelee extends LocalShooterAspect {
             this.localShooterProperty.lockState(_iLivingShooter -> _iLivingShooter.cgc$getSynMeleeCooldown() > 0);
         }
 
-        switch (meleePreparation.meleeType()) {
+        _doMelee(iGun, gunItem, meleePreparation.meleeType());
+    }
+    private int _doMelee(IGun iGun, ItemStack gunItem,
+                         MeleeType meleeType) {
+        return switch (meleeType) {
             case BAYONET -> _doMelee(iGun, gunItem, GunSoundType.MELEE_BAYONET, GunAnimationState.INPUT_BAYONET_MUZZLE);
             case STOCK -> _doMelee(iGun, gunItem, GunSoundType.MELEE_STOCK, GunAnimationState.INPUT_BAYONET_STOCK);
             case PUSH -> _doMelee(iGun, gunItem, GunSoundType.MELEE_PUSH, GunAnimationState.INPUT_BAYONET_PUSH);
             // 增加类型使此处强制编译不通过
-        }
+        };
     }
-    private void _doMelee(IGun iGun, ItemStack gunItem,
+    private int _doMelee(IGun iGun, ItemStack gunItem,
                           GunSoundType gunSoundType, GunAnimationState gunAnimationState) {
         @Nullable GunDisplayInstance gunDisplayInstance = ClientResourceApi.getGunDisplayInstance(gunItem);
-        if (gunDisplayInstance == null) return;
+        if (gunDisplayInstance == null) return 0;
 
         SoundPlayManager.get().playGunSound(gunDisplayInstance.getGunSound(gunSoundType),
                 this.localShooter);
@@ -73,5 +78,7 @@ public final class LocalShooterMelee extends LocalShooterAspect {
         // 动画状态机转移状态
         LuaAnimStateMachine<GunAnimStateContext> animStateMachine = gunDisplayInstance.getAnimStateMachine();
         animStateMachine.trigger(gunAnimationState.getConstantName());
+
+        return 1;
     }
 }

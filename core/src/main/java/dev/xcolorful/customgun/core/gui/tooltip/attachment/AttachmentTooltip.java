@@ -28,6 +28,7 @@ public record AttachmentTooltip(ItemStack attachmentItem, IAttachment iAttachmen
         var attachmentLocation = iAttachment.getAttachmentLocation(attachmentItem);
         AttachmentCategory attachmentCategory = iAttachment.getAttachmentCategory(attachmentItem);
         return new AttachmentTooltip(attachmentItem, iAttachment,
-                attachmentLocation, attachmentCategory);
+                attachmentLocation,
+                attachmentCategory);
     }
 }

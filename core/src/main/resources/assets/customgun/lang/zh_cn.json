@@ -31,5 +31,6 @@
   "customgun.attachmentcategory.stock": "枪托",
   "customgun.attachmentcategory.none": "未知配件",
 
-  "customgun.ammocategory.ammo": "子弹"
+  "customgun.ammocategory.ammo": "子弹",
+  "customgun.ammocategory.explosive": "爆弹"
 }

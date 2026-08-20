@@ -130,14 +130,14 @@ public class ClientAmmoBoxTooltip implements ClientTooltipComponent {
     }
 
     @Override
-    public void renderText(@NotNull Font font,
-                           int startX, int startY,
-                           @NotNull Matrix4f matrix4f,
-                           @NotNull MultiBufferSource.BufferSource bufferSource) {
+    public void renderText(@NotNull GuiGraphics guiGraphics,
+                           @NotNull Font font,
+                           int startX, int startY) {
         { // 设置缓存
             this.context.textFont = font;
-            this.context.textMatrix4f = matrix4f;
-            this.context.textBufferSource = bufferSource;
+            this.context.textGraphic = guiGraphics;
+//            this.context.textMatrix4f = matrix4f;
+//            this.context.textBufferSource = bufferSource;
 
             this.renderText(startX, startY);
         }

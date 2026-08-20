@@ -88,7 +88,7 @@ public class GunRefitScreen extends Screen implements IGunRefitScreen<GunRefitSc
     }
 
     // 移除虚化背景
-//    @Override
+    @Override
     public void renderTransparentBackground(@NotNull GuiGraphics graphics) {
     }
 

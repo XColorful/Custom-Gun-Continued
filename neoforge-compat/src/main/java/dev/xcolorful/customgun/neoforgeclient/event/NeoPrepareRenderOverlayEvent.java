@@ -9,19 +9,19 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.Event;
-import net.neoforged.neoforge.client.event.RenderGuiOverlayEvent;
+import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
 import org.jetbrains.annotations.Nullable;
 
 public class NeoPrepareRenderOverlayEvent extends NeoEvent implements IPrepareRenderOverlayEvent {
 
-    private final RenderGuiOverlayEvent.Pre renderGuiEvent;
+    private final RenderGuiLayerEvent.Pre renderGuiEvent;
 
     public NeoPrepareRenderOverlayEvent(Event event) {
         super(event);
-        if (event instanceof RenderGuiOverlayEvent.Pre eventIn) {
+        if (event instanceof RenderGuiLayerEvent.Pre eventIn) {
             this.renderGuiEvent = eventIn;
         } else {
-            throw new RuntimeException("Expected RenderGuiOverlayEvent.Pre but received: " + event.getClass().getName());
+            throw new RuntimeException("Expected RenderGuiLayerEvent.Pre but received: " + event.getClass().getName());
         }
     }
     @Override public EventType getType() {
@@ -35,12 +35,12 @@ public class NeoPrepareRenderOverlayEvent extends NeoEvent implements IPrepareRe
 
     @Override
     public float getPartialTick() {
-        return renderGuiEvent.getPartialTick();
+        return renderGuiEvent.getPartialTick().getGameTimeDeltaPartialTick(true);
     }
 
     @Override
     public ResourceLocation getRegistryLocation() {
-        return renderGuiEvent.getOverlay().id();
+        return renderGuiEvent.getName();
     }
 
     @Override

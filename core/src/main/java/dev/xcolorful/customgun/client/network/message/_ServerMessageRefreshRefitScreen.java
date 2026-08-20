@@ -7,7 +7,7 @@
 
 package dev.xcolorful.customgun.client.network.message;
 
-import dev.xcolorful.customgun.client.gui.screen.GunRefitScreen;
+import dev.xcolorful.customgun.client.api.gui.screen.refit.IGunRefitScreen;
 import dev.xcolorful.customgun.client.util.ClientGuiUtils;
 import dev.xcolorful.customgun.core.entity.shooter.modifier.ShooterGunModifierManager;
 import net.minecraft.client.Minecraft;
@@ -20,9 +20,9 @@ public class _ServerMessageRefreshRefitScreen {
     public static void updateScreen() {
         Minecraft mc = Minecraft.getInstance();
         LocalPlayer player = mc.player;
-        if (player != null && ClientGuiUtils.getCurrentScreen(mc) instanceof GunRefitScreen screen) {
+        if (player != null && ClientGuiUtils.getCurrentScreen(mc) instanceof IGunRefitScreen<?> screen) {
             // 刷新Screen
-            screen.init();
+            screen.resetScreen();
 
             // 刷新客户端配件数据
             ShooterGunModifierManager.postChangeEvent(player);

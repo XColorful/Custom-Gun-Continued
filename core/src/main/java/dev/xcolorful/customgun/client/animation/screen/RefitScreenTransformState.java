@@ -9,7 +9,7 @@ package dev.xcolorful.customgun.client.animation.screen;
 
 import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.api.event.IPrepareRenderFrameEvent;
-import dev.xcolorful.customgun.client.gui.screen.GunRefitScreen;
+import dev.xcolorful.customgun.client.api.gui.screen.refit.IGunRefitScreen;
 import dev.xcolorful.customgun.client.util.ClientGuiUtils;
 import dev.xcolorful.customgun.core.api.event.EventPriority;
 import dev.xcolorful.customgun.core.api.event.EventType;
@@ -21,7 +21,10 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * 装配界面{@link GunRefitScreen}的动画插值
+ * 装配界面{@link IGunRefitScreen}的动画插值
+ * <ul>
+ *     <li>这个类维护的{@link #getCurrentTransformType}已经作为单例状态给{@link IGunRefitScreen}用了</li>
+ * </ul>
  */
 public class RefitScreenTransformState implements IEventHandler {
     private static class RenderTransformHolder {
@@ -75,7 +78,7 @@ public class RefitScreenTransformState implements IEventHandler {
             // 初始化
             if (this.screenOpeningTimestamp == -1) this.screenOpeningTimestamp = currentTimeMillis;
 
-            if (ClientGuiUtils.getCurrentScreen(mc) instanceof GunRefitScreen) {
+            if (ClientGuiUtils.getCurrentScreen(mc) instanceof IGunRefitScreen) {
                 // 当前是装配screen
                 this.screenOpeningProgress += (float) (currentTimeMillis - this.screenOpeningTimestamp) / REFIT_SCREEN_TRANSFORM_TIME_MS;
                 if (this.screenOpeningProgress > 1) {

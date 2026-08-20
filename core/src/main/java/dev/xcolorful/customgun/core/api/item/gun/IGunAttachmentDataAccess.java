@@ -53,7 +53,7 @@ public interface IGunAttachmentDataAccess {
     @NotNull Identifier getBuiltinAttachmentLocation(ItemStack gunItem, AttachmentCategory attachmentCategory);
 
     /**
-     * 覆盖安装配件
+     * 覆盖安装配件，含{@link #canInstallAttachment}校验
      * @return 是否安装成功
      */
     boolean installAttachment(ItemStack gunItem, ItemStack attachmentItem);

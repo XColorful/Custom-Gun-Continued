@@ -42,4 +42,6 @@ public class PlannedRefactor {
     public static final int GET_MAX_BARREL_AMMO = 1;
     // 缓存100个ItemStack，渲染的时候直接hash get (equal改成引用) 来查找，物品状态更新和过期清理都挂在client tick，如有必要可以上并发
     public static final boolean CACHE_ITEM_STACK_FOR_RENDER = false;
+    // 统一枪械api，避免到处拉屎
+    public static final boolean UNIFY_GUN_API = false;
 }

@@ -31,5 +31,6 @@
   "customgun.attachmentcategory.stock": "Stock",
   "customgun.attachmentcategory.none": "Unknown Attachments",
 
-  "customgun.ammocategory.ammo": "Ammo"
+  "customgun.ammocategory.ammo": "Ammo",
+  "customgun.ammocategory.explosive": "Explosive"
 }

@@ -65,6 +65,9 @@ public enum EventType {
     @ApiStatus.AvailableSince("neoforge26.2")
     SUBMIT_CUSTOM_GEOMETRY_EVENT(true),
     RENDER_HAND_EVENT(true),
+    PREPARE_RENDER_OVERLAY_EVENT(true),
+    RENDER_OVERLAY_EVENT(true),
+    PREPARE_RENDER_GUI_EVENT(true),
     RENDER_GUI_EVENT(true),
     // display
     ITEM_TOOLTIP_EVENT(true);

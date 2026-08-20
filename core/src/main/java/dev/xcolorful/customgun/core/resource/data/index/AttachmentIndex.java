@@ -35,8 +35,8 @@ public final class AttachmentIndex extends _DataIndex<AttachmentIndex> {
             while (reader.hasNext()) {
                 String key = reader.nextName();
                 switch (key) {
-                    case AttachmentIndexTag.NAME_LANG, AttachmentIndexTag.NAME_LANG_OLD1 -> pojo.setNameLang(JsonUtils.readTranslatable(reader));
-                    case AttachmentIndexTag.TOOLTIP_LANG, AttachmentIndexTag.TOOLTIP_LANG_OLD1 -> pojo.setTooltipLang(JsonUtils.readTranslatable(reader));
+                    case AttachmentIndexTag.NAME_LANG, AttachmentIndexTag.NAME_LANG_OLD1 -> pojo.setNameLang(JsonUtils.readString(reader));
+                    case AttachmentIndexTag.TOOLTIP_LANG, AttachmentIndexTag.TOOLTIP_LANG_OLD1 -> pojo.setTooltipLang(JsonUtils.readString(reader));
                     case AttachmentIndexTag.DATA_LOCATION, AttachmentIndexTag.DATA_LOCATION_OLD1 -> pojo.setDataLocation(JsonUtils.readResourceLocation(reader));
                     case AttachmentIndexTag.DISPLAY_INDEX_LOCATION, AttachmentIndexTag.DISPLAY_INDEX_LOCATION_OLD1 -> pojo.setDisplayIndexLocation(JsonUtils.readResourceLocation(reader));
                     case AttachmentIndexTag.SLOT_SORT, AttachmentIndexTag.SLOT_SORT_OLD1 -> pojo.setSlotSort(JsonUtils.readInt(reader));
@@ -58,8 +58,8 @@ public final class AttachmentIndex extends _DataIndex<AttachmentIndex> {
     @Override
     public void toJson(JsonWriter writer) throws IOException {
         writer.beginObject(); {
-            JsonUtils.writeTranslatable(writer, AttachmentIndexTag.NAME_LANG, this.getNameLang());
-            JsonUtils.writeTranslatable(writer, AttachmentIndexTag.TOOLTIP_LANG, this.getTooltipLang());
+            JsonUtils.writeString(writer, AttachmentIndexTag.NAME_LANG, this.getNameLang());
+            JsonUtils.writeString(writer, AttachmentIndexTag.TOOLTIP_LANG, this.getTooltipLang());
             JsonUtils.writeResourceLocation(writer, AttachmentIndexTag.DATA_LOCATION, this.getDataLocation());
             JsonUtils.writeResourceLocation(writer, AttachmentIndexTag.DISPLAY_INDEX_LOCATION, this.getDisplayIndexLocation());
             JsonUtils.writeInt(writer, AttachmentIndexTag.SLOT_SORT, this.getSlotSort());

@@ -22,7 +22,7 @@ import java.io.IOException;
 public final class _RecipeGroupData extends ResourcePojo<_RecipeGroupData> {
 
     private Identifier groupCategory;
-    private MutableComponent nameLang;
+    private String nameLang;
 
     private static final _RecipeGroupData PARSER = new _RecipeGroupData();
     public static _RecipeGroupData fromJson(JsonReader reader) throws IOException {
@@ -37,7 +37,7 @@ public final class _RecipeGroupData extends ResourcePojo<_RecipeGroupData> {
             String key = reader.nextName();
             switch (key) {
                 case _RecipeGroupDataTag.GROUP_CATEGORY -> pojo.groupCategory = JsonUtils.readResourceLocation(reader);
-                case _RecipeGroupDataTag.NAME_LANG -> pojo.nameLang = JsonUtils.readTranslatable(reader);
+                case _RecipeGroupDataTag.NAME_LANG -> pojo.nameLang = JsonUtils.readString(reader);
                 default -> reader.skipValue();
             }
         }
@@ -53,7 +53,7 @@ public final class _RecipeGroupData extends ResourcePojo<_RecipeGroupData> {
     public void toJson(JsonWriter writer) throws IOException {
         writer.beginObject(); {
             JsonUtils.writeResourceLocation(writer, _RecipeGroupDataTag.GROUP_CATEGORY, this.groupCategory);
-            JsonUtils.writeTranslatable(writer, _RecipeGroupDataTag.NAME_LANG, this.nameLang);
+            JsonUtils.writeString(writer, _RecipeGroupDataTag.NAME_LANG, this.nameLang);
         }
         writer.endObject();
     }
@@ -76,14 +76,14 @@ public final class _RecipeGroupData extends ResourcePojo<_RecipeGroupData> {
     public Identifier getGroupCategory() {
         return groupCategory;
     }
-    public MutableComponent getNameLang() {
+    public String getNameLang() {
         return nameLang;
     }
 
     public void setGroupCategory(Identifier groupCategory) {
         this.groupCategory = groupCategory;
     }
-    public void setNameLang(MutableComponent nameLang) {
+    public void setNameLang(String nameLang) {
         this.nameLang = nameLang;
     }
 
@@ -92,7 +92,7 @@ public final class _RecipeGroupData extends ResourcePojo<_RecipeGroupData> {
     @Override
     public _RecipeGroupData applyBackCompatibility() {
         this.groupCategory = this.groupCategory == null ? ResourceTag.NULL_LOCATION : this.groupCategory;
-        this.nameLang = this.nameLang == null ? ComponentUtils.unknownTranslatableKey() : this.nameLang;
+        this.nameLang = this.nameLang == null ? ComponentUtils.UNKNOWN_TRANSLATABLE_KEY : this.nameLang;
         return this;
     }
 }

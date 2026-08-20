@@ -32,23 +32,26 @@ public class AttachmentIndexInstance extends PojoInstance<AttachmentIndex> {
     }
 
     @Override public boolean resetCache() {
-        this.attachmentDataCache = ResourceApi.getAttachmentData(this.getPojo().getDataLocation());
+        var pojo = this.getPojo();
+
+        this.attachmentDataCache = ResourceApi.getAttachmentData(pojo.getDataLocation());
         if (this.attachmentDataCache == null) {
-            CustomGun.LOGGER.debug("AttachmentIndexInstance: AttachmentData {} not found", this.getPojo().getDataLocation());
+            CustomGun.LOGGER.debug("AttachmentIndexInstance: AttachmentData {} not found", pojo.getDataLocation());
             return false;
         } else if (!this.attachmentDataCache.isValid()) {
-            CustomGun.LOGGER.debug("AttachmentIndexInstance: AttachmentData {} not valid", this.getPojo().getDataLocation());
+            CustomGun.LOGGER.debug("AttachmentIndexInstance: AttachmentData {} not valid", pojo.getDataLocation());
             return false;
         }
 
         return true;
     }
     @Override protected boolean isPojoValid() {
+        if (!super.isPojoValid()) return false;
+
         var pojo = this.getPojo();
-        if (!pojo.isValid()) return false;
 
         // AttachmentIndex
-        if (this.getPojo().getSlotSort() > 65536) CustomGun.LOGGER.warn("AttachmentIndexInstance: AttachmentIndex slotSort {} > 65536", this.getPojo().getSlotSort());
+        if (pojo.getSlotSort() > 65536) CustomGun.LOGGER.warn("AttachmentIndexInstance: AttachmentIndex slotSort {} > 65536", pojo.getSlotSort());
 
         return true;
     }

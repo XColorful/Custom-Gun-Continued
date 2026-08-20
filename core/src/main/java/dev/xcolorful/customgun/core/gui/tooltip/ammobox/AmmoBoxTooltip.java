@@ -36,6 +36,8 @@ public record AmmoBoxTooltip(ItemStack ammoBoxItem, IAmmoBox iAmmoBox,
                         ammoLocation)
                 .build();
         return new AmmoBoxTooltip(ammoBoxItem, iAmmoBox,
-                ammoItem, ammoLocation, ammoCount);
+                ammoItem,
+                ammoLocation,
+                ammoCount);
     }
 }

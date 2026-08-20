@@ -82,7 +82,7 @@ public class GunRefitScreen extends Screen implements IGunRefitScreen<GunRefitSc
 
         for (GuiEventListener child : this.children()) {
             if (child instanceof IStackTooltip guiComponent) {
-                guiComponent.renderTooltip(stack -> graphics.renderTooltip(font, stack, mouseX, mouseY));
+                guiComponent.renderTooltip(stack -> ClientGuiUtils.renderTooltip(graphics, font, mouseX, mouseY, stack));
             }
         }
     }

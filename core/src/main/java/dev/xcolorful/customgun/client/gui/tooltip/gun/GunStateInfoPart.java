@@ -129,9 +129,7 @@ public final class GunStateInfoPart extends AbstractTooltipPart implements GunTo
             context.drawText(context.view.ammoName,
                     currentX, currentY,
                     _defaultAmmoNameColor.getRGB(),
-                    hasTextShadow,
-                    0,
-                    packedLightCoords);
+                    hasTextShadow);
             currentY += textLineHeight;
         }
 
@@ -142,9 +140,7 @@ public final class GunStateInfoPart extends AbstractTooltipPart implements GunTo
             context.drawText(context.view.ammoCount,
                     currentX, currentY,
                     _defaultAmmoCountColor.getRGB(),
-                    hasTextShadow,
-                    0,
-                    packedLightCoords);
+                    hasTextShadow);
             currentY += textLineHeight;
         }
     }

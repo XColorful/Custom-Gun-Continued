@@ -7,8 +7,8 @@
 
 package dev.xcolorful.customgun.client.gui.screen.refit;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import dev.xcolorful.customgun.client.api.minecraft.texture.CustomTexture;
+import dev.xcolorful.customgun.client.util.ClientGuiUtils;
 import dev.xcolorful.customgun.client.util.ClientRenderHelper;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -31,8 +31,8 @@ public class RefitUnloadButton extends Button {
     public void renderWidget(@NotNull GuiGraphics graphics,
                              int pMouseX, int pMouseY,
                              float pPartialTick) {
-        RenderSystem.disableDepthTest();
-        RenderSystem.enableBlend(); {
+        ClientRenderHelper.GL._disableDepthTest();
+        ClientRenderHelper.GL._enableBlend(); {
             CustomTexture texture = CustomTexture.UNLOAD;
 
             int startX = getX();
@@ -45,14 +45,14 @@ public class RefitUnloadButton extends Button {
             int uWidth = texture.getWidth() / 2;
             int vHeight = texture.getHeight();
 
-            ClientRenderHelper.blitGuiTexture(graphics,
+            ClientGuiUtils.blitGuiTexture(graphics,
                     texture,
                     startX, startY,
                     endX, endY,
                     uOffset, vOffset,
                     uWidth, vHeight);
         }
-        RenderSystem.enableDepthTest();
-        RenderSystem.disableBlend();
+        ClientRenderHelper.GL._enableDepthTest();
+        ClientRenderHelper.GL._disableBlend();
     }
 }

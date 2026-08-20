@@ -12,4 +12,9 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 public interface IRenderGuiEvent {
 
     GuiGraphicsExtractor getGuiGraphics();
+
+    /**
+     * @return {@code RenderGuiEvent.getPartialTick().getGameTimeDeltaPartialTick(true)}
+     */
+    float getPartialTick();
 }

@@ -24,6 +24,6 @@ public class _GunItem {
         if (gunIndexInstance == null) return null;
 
         GunIndex gunIndex = gunIndexInstance.getPojo();
-        return gunIndex.getNameLang();
+        return Component.translatable(gunIndex.getNameLang());
     }
 }

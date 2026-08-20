@@ -90,7 +90,8 @@ public final class AmmoBoxDetailInfoPart extends AbstractTooltipPart implements 
 
     @Override
     public void renderText(ClientAmmoBoxTooltip.Context context,
-                           Font font, int pX, int pY,
+                           Font font,
+                           int pX, int pY,
                            Matrix4f matrix4f,
                            MultiBufferSource.BufferSource bufferSource) {
         int currentX = pX;
@@ -145,7 +146,8 @@ public final class AmmoBoxDetailInfoPart extends AbstractTooltipPart implements 
 
     @Override
     public void renderImage(ClientAmmoBoxTooltip.Context context,
-                            Font font, int pX, int pY,
+                            Font font,
+                            int pX, int pY,
                             GuiGraphics guiGraphics) {
         // mixin注入点
     }

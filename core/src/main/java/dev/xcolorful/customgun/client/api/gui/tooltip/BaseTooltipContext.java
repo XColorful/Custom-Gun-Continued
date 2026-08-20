@@ -1,5 +1,6 @@
 package dev.xcolorful.customgun.client.api.gui.tooltip;
 
+import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -80,12 +81,12 @@ public abstract class BaseTooltipContext<T extends BaseTooltipView> {
     // --------Compat--------
     // 跨版本适配层
 
+    private static final int _backgroundRGB = 0;
+    private static final int _packedLightCoords = ClientRenderUtils.LightTexture_.pack(15, 15);
     public void drawText(@NotNull Component component,
                          int currentX, int currentY,
                          int textRGB,
-                         boolean hasTextShadow,
-                         int backgroundRGB,
-                         int packedLightCoords) {
+                         boolean hasTextShadow) {
         this.textFont.drawInBatch(component,
                 currentX, currentY,
                 textRGB,
@@ -93,16 +94,14 @@ public abstract class BaseTooltipContext<T extends BaseTooltipView> {
                 this.textMatrix4f,
                 this.textBufferSource,
                 Font.DisplayMode.NORMAL,
-                backgroundRGB,
-                packedLightCoords
+                _backgroundRGB,
+                _packedLightCoords
         );
     }
     public void drawText(@NotNull FormattedCharSequence sequence,
                          int currentX, int currentY,
                          int textRGB,
-                         boolean hasTextShadow,
-                         int backgroundRGB,
-                         int packedLightCoords) {
+                         boolean hasTextShadow) {
         this.textFont.drawInBatch(sequence,
                 currentX, currentY,
                 textRGB,
@@ -110,8 +109,8 @@ public abstract class BaseTooltipContext<T extends BaseTooltipView> {
                 this.textMatrix4f,
                 this.textBufferSource,
                 Font.DisplayMode.NORMAL,
-                backgroundRGB,
-                packedLightCoords
+                _backgroundRGB,
+                _packedLightCoords
         );
     }
 

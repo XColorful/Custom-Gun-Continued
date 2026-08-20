@@ -171,8 +171,9 @@ public final class GunDisplay extends _AssetsDisplay<GunDisplay> {
         super.validatePojo();
         if (!this.isValid()) return;
 
-        boolean n1 = (this.getModelTransform() == null | this.getSlotTextureLocation() == null | this.modelNodeTextDisplay == null | this.surroundDisplayByOffhand == null | this.gunSounds == null);
-        if (n1) {
+        boolean n1 = (this.getModelTransform() == null | this.getSlotTextureLocation() == null | this.modelNodeTextDisplay == null | this.surroundDisplayByOffhand == null);
+        boolean n2 = (this.damageDisplayType == null | this.ammoCountType == null | this.gunAnimationLocation == null | this.shooterAnimationCategory == null | this.gunSounds == null);
+        if (n1 | n2) {
             this.setValid(false);
             return;
         }
@@ -391,6 +392,10 @@ public final class GunDisplay extends _AssetsDisplay<GunDisplay> {
         if (this.modelNodeTextDisplay == null) this.modelNodeTextDisplay = new HashMap<>();
         else this.modelNodeTextDisplay.values().forEach(_ModelNodeTextDisplay::applyBackCompatibility);
 
+        this.damageDisplayType = this.damageDisplayType == null ? DamageDisplayType.TOTAL : this.damageDisplayType;
+        this.ammoCountType = this.ammoCountType == null ? AmmoCountType.NORMAL : this.ammoCountType;
+        this.gunAnimationLocation = this.gunAnimationLocation == null ? ResourceTag.NULL_LOCATION : this.gunAnimationLocation;
+        this.shooterAnimationCategory = this.shooterAnimationCategory == null ? ShooterAnimationCategory.DEFAULT : this.shooterAnimationCategory;
         this.gunSounds = this.gunSounds == null ? new HashMap<>() : this.gunSounds;
         return this;
     }

@@ -198,7 +198,7 @@ public class _DefaultGunAction {
                 stateType = ReloadState.StateType.NOT_RELOADING;
                 countDown = ReloadState.NOT_RELOADING_COUNTDOWN;
             }
-            // 增加类型使此处强制编译不通过
+            // 增加类型需检查
         }
 
         // (之前没装弹/在feeding) & (现在切换到finishing/已经finish)
@@ -237,7 +237,7 @@ public class _DefaultGunAction {
             }
             case INVENTORY -> {
             }
-            // 增加类型使此处强制编译不通过
+            // 增加类型需检查
         }
         // 如果不是战术换弹，需要执行上膛
         if (!isTactical) {

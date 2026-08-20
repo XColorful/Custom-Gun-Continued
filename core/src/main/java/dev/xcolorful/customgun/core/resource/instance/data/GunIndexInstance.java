@@ -44,12 +44,14 @@ public class GunIndexInstance extends PojoInstance<GunIndex> {
     }
 
     @Override public boolean resetCache() {
-        this.gunDataCache = ResourceApi.getGunData(this.getPojo().getDataLocation());
+        var pojo = this.getPojo();
+
+        this.gunDataCache = ResourceApi.getGunData(pojo.getDataLocation());
         if (this.gunDataCache == null) {
-            CustomGun.LOGGER.debug("GunIndexInstance: GunData {} not found", this.getPojo().getDataLocation());
+            CustomGun.LOGGER.debug("GunIndexInstance: GunData {} not found", pojo.getDataLocation());
             return false;
         } else if (!this.gunDataCache.isValid()) {
-            CustomGun.LOGGER.debug("GunIndexInstance: GunData {} not valid", this.getPojo().getDataLocation());
+            CustomGun.LOGGER.debug("GunIndexInstance: GunData {} not valid", pojo.getDataLocation());
             return false;
         }
 
@@ -75,13 +77,13 @@ public class GunIndexInstance extends PojoInstance<GunIndex> {
     private static final int ERR_FIRE_MODE_TYPES = 1 << 2;
     private static final int ERR_RECOIL_DATA = 1 << 3;
     @Override protected boolean isPojoValid() {
+        if (!super.isPojoValid()) return false;
+
         var pojo = this.getPojo();
-        if (!pojo.isValid()) return false;
-        if (!resetCache()) return false;
 
         int errorMask = 0;
         // GunIndex
-        if (this.getPojo().getSlotSort() > 65536) CustomGun.LOGGER.warn("GunIndexInstance: GunIndex slotSort {} > 65536", this.getPojo().getSlotSort());
+        if (pojo.getSlotSort() > 65536) CustomGun.LOGGER.warn("GunIndexInstance: GunIndex slotSort {} > 65536", pojo.getSlotSort());
         // GunData
         errorMask |= this.gunDataCache.getDefaultMagSize() < 1 ? ERR_MAG_SIZE : 0;
         errorMask |= this.gunDataCache.getRpm() < 1 ? ERR_RPM : 0;

@@ -36,8 +36,8 @@ public final class GunIndex extends _DataIndex<GunIndex> {
             while (reader.hasNext()) {
                 String key = reader.nextName();
                 switch (key) {
-                    case GunIndexTag.NAME_LANG, GunIndexTag.NAME_LANG_OLD1 -> pojo.setNameLang(JsonUtils.readTranslatable(reader));
-                    case GunIndexTag.TOOLTIP_LANG, GunIndexTag.TOOLTIP_LANG_OLD1 -> pojo.setTooltipLang(JsonUtils.readTranslatable(reader));
+                    case GunIndexTag.NAME_LANG, GunIndexTag.NAME_LANG_OLD1 -> pojo.setNameLang(JsonUtils.readString(reader));
+                    case GunIndexTag.TOOLTIP_LANG, GunIndexTag.TOOLTIP_LANG_OLD1 -> pojo.setTooltipLang(JsonUtils.readString(reader));
                     case GunIndexTag.DATA_LOCATION, GunIndexTag.DATA_LOCATION_OLD1 -> pojo.setDataLocation(JsonUtils.readResourceLocation(reader));
                     case GunIndexTag.DISPLAY_INDEX_LOCATION, GunIndexTag.DISPLAY_INDEX_LOCATION_OLD1 -> pojo.setDisplayIndexLocation(JsonUtils.readResourceLocation(reader));
                     case GunIndexTag.SLOT_SORT, GunIndexTag.SLOT_SORT_OLD1 -> pojo.setSlotSort(JsonUtils.readInt(reader));
@@ -58,8 +58,8 @@ public final class GunIndex extends _DataIndex<GunIndex> {
     @Override
     public void toJson(JsonWriter writer) throws IOException {
         writer.beginObject(); {
-            JsonUtils.writeTranslatable(writer, GunIndexTag.NAME_LANG, this.getNameLang());
-            JsonUtils.writeTranslatable(writer, GunIndexTag.TOOLTIP_LANG, this.getTooltipLang());
+            JsonUtils.writeString(writer, GunIndexTag.NAME_LANG, this.getNameLang());
+            JsonUtils.writeString(writer, GunIndexTag.TOOLTIP_LANG, this.getTooltipLang());
             JsonUtils.writeResourceLocation(writer, GunIndexTag.DATA_LOCATION, this.getDataLocation());
             JsonUtils.writeResourceLocation(writer, GunIndexTag.DISPLAY_INDEX_LOCATION, this.getDisplayIndexLocation());
             JsonUtils.writeInt(writer, GunIndexTag.SLOT_SORT, this.getSlotSort());

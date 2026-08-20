@@ -1,7 +1,7 @@
 [English](#English)
 
 # 枪械显示
-> wiki 版本：`0.0.4`.2
+> wiki 版本：`0.0.5`.3
 
 - `model_location`/`model`（ResourceLocation）：
 - `model_transform`/`transform`（\_ModelTransform）：
@@ -28,7 +28,7 @@
 	- `texture_location`/`texture`（ResourceLocation）：
 	- `texture_scale`/`scale`（float）：
 - `model_node_text_display`/`text_show`（Map\<String, \_ModelNodeTextDisplay>）：
-	- `text_lang`/`text`（MutableComponent）：
+	- `text_lang`/`text`（String）：
 	- `text_scale`/`scale`（float）：
 	- `text_color`/`color`（Color）：
 	- `text_light`/`light`（int）：
@@ -180,7 +180,7 @@
 ```
 
 # English
-> wiki verison: `0.0.4`.2
+> wiki verison: `0.0.5`.3
 
 - `model_location`/`model`(ResourceLocation):
 - `model_transform`/`transform`(\_ModelTransform):
@@ -207,7 +207,7 @@
 	- `texture_location`/`texture`(ResourceLocation):
 	- `texture_scale`/`scale`(float):
 - `model_node_text_display`/`text_show`(Map\<String, \_ModelNodeTextDisplay>):
-	- `text_lang`/`text`(MutableComponent):
+	- `text_lang`/`text`(String):
 	- `text_scale`/`scale`(float):
 	- `text_color`/`color`(Color):
 	- `text_light`/`light`(int):

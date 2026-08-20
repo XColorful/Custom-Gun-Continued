@@ -123,7 +123,7 @@ public class ClientAttachmentTooltip implements ClientTooltipComponent {
     // 跨版本适配层
     // 其他类可直接Ctrl CV
 
-    @Override
+//    @Override
     public int getHeight() {
         return this.getHeight(Minecraft.getInstance().font);
     }
@@ -146,6 +146,7 @@ public class ClientAttachmentTooltip implements ClientTooltipComponent {
     @Override
     public void renderImage(@NotNull Font font,
                             int startX, int startY,
+                            int width, int height,
                             @NotNull GuiGraphics guiGraphics) {
         { // 设置缓存
             this.context.imageFont = font;

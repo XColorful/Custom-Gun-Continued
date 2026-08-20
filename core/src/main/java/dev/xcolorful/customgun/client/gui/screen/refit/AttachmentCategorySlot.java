@@ -7,8 +7,8 @@
 
 package dev.xcolorful.customgun.client.gui.screen.refit;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import dev.xcolorful.customgun.client.api.minecraft.texture.CustomTexture;
+import dev.xcolorful.customgun.client.util.ClientGuiUtils;
 import dev.xcolorful.customgun.client.util.ClientRenderHelper;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.attachment.AttachmentCategory;
@@ -100,8 +100,8 @@ public class AttachmentCategorySlot extends Button implements IStackTooltip {
             if (iGun == null) return;
         }
 
-        RenderSystem.disableDepthTest();
-        RenderSystem.enableBlend(); {
+        ClientRenderHelper.GL._disableDepthTest();
+        ClientRenderHelper.GL._enableBlend(); {
             { // 渲染外框
                 CustomTexture texture = this.isSelected || this.isHoveredOrFocused() ? CustomTexture.SLOT_SELECTED : CustomTexture.SLOT;
 
@@ -115,7 +115,7 @@ public class AttachmentCategorySlot extends Button implements IStackTooltip {
                 int uWidth = texture.getWidth();
                 int vHeight = texture.getHeight();
 
-                ClientRenderHelper.blitGuiTexture(graphics,
+                ClientGuiUtils.blitGuiTexture(graphics,
                         texture,
                         startX, startY,
                         endX, endY,
@@ -146,7 +146,7 @@ public class AttachmentCategorySlot extends Button implements IStackTooltip {
                     int uWidth = texture.getHeight(); // 在横向长方形里取正方形
                     int vHeight = texture.getHeight();
 
-                    ClientRenderHelper.blitGuiTexture(graphics,
+                    ClientGuiUtils.blitGuiTexture(graphics,
                             texture,
                             startX, startY,
                             endX, endY,
@@ -169,7 +169,7 @@ public class AttachmentCategorySlot extends Button implements IStackTooltip {
                 int uWidth = texture.getHeight(); // 在横向长方形里取正方形
                 int vHeight = texture.getHeight();
 
-                ClientRenderHelper.blitGuiTexture(graphics,
+                ClientGuiUtils.blitGuiTexture(graphics,
                         texture,
                         startX, startY,
                         endX, endY,
@@ -177,8 +177,8 @@ public class AttachmentCategorySlot extends Button implements IStackTooltip {
                         uWidth, vHeight);
             }
         }
-        RenderSystem.enableDepthTest();
-        RenderSystem.disableBlend();
+        ClientRenderHelper.GL._enableDepthTest();
+        ClientRenderHelper.GL._disableBlend();
     }
 
     // --------IStackTooltip--------

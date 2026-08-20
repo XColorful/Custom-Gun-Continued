@@ -99,9 +99,7 @@ public final class AttachmentDetailInfoPart extends AbstractTooltipPart implemen
             context.drawText(context.view.category,
                     currentX, currentY,
                     _defaultCategoryColor.getRGB(),
-                    hasTextShadow,
-                    0,
-                    packedLightCoords);
+                    hasTextShadow);
             currentY += textLineHeight;
         }
 
@@ -112,8 +110,7 @@ public final class AttachmentDetailInfoPart extends AbstractTooltipPart implemen
             context.drawText(context.view.packInfo,
                     currentX, currentY,
                     _defaultPackColor.getRGB(),
-                    hasTextShadow,
-                    0, packedLightCoords);
+                    hasTextShadow);
             currentY += textLineHeight;
         }
 
@@ -124,8 +121,7 @@ public final class AttachmentDetailInfoPart extends AbstractTooltipPart implemen
             context.drawText(context.view.pojoLocation,
                     currentX, currentY,
                     _defaultLocationColor.getRGB(),
-                    hasTextShadow,
-                    0, packedLightCoords);
+                    hasTextShadow);
             currentY += textLineHeight;
         }
     }

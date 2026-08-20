@@ -1,8 +1,13 @@
 package dev.xcolorful.customgun.client.util;
 
+import dev.xcolorful.customgun.client.api.minecraft.texture.CustomTexture;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Overlay;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 public class ClientGuiUtils {
@@ -19,5 +24,50 @@ public class ClientGuiUtils {
     }
     public static void setOverlay(Minecraft minecraft, Overlay overlay) {
         minecraft.setOverlay(overlay); // minecraft.gui.setOverlay(overlay)
+    }
+
+    public static void blitGuiTexture(GuiGraphics guiGraphics,
+                                      CustomTexture customTexture,
+                                      int startX, int startY,
+                                      int endX, int endY,
+                                      int uOffset, int vOffset,
+                                      int uWidth, int vHeight) {
+        blitGuiTexture(guiGraphics,
+                customTexture.getLocation(),
+                startX, startY,
+                endX, endY,
+                uOffset, vOffset,
+                uWidth, vHeight,
+                customTexture.getWidth(), customTexture.getHeight());
+
+    }
+    public static void blitGuiTexture(GuiGraphics guiGraphics,
+                                      ResourceLocation textureLocation,
+                                      int startX, int startY,
+                                      int endX, int endY,
+                                      int uOffset, int vOffset,
+                                      int uWidth, int vHeight,
+                                      int textureWidth, int textureHeight) {
+        guiGraphics.blit(
+                // 1.21.4
+//              RenderType::guiTextured
+                // 1.21.6
+//              RenderPipelines.GUI_TEXTURED
+                textureLocation,
+                startX, startY,
+                endX, endY,
+                uOffset, vOffset,
+                uWidth, vHeight,
+                textureWidth, textureHeight);
+    }
+
+    public static void renderTooltip(GuiGraphics guiGraphics,
+                                     Font font,
+                                     int startX, int startY,
+                                     ItemStack itemStack) {
+        guiGraphics.renderTooltip(
+                font,
+                itemStack,
+                startX, startY);
     }
 }

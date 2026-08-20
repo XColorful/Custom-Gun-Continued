@@ -41,7 +41,7 @@ public class NeoRenderGuiEvent extends NeoEvent implements IRenderGuiEvent {
 
     @Override
     public float getPartialTick() {
-        return renderGuiEvent.getPartialTick();
+        return renderGuiEvent.getPartialTick().getGameTimeDeltaPartialTick(true);
     }
 
     @Override

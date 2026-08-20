@@ -73,7 +73,8 @@ public final class GunDescriptionPart extends AbstractTooltipPart implements Gun
 
     @Override
     public void renderText(ClientGunTooltip.Context context,
-                           Font font, int pX, int pY,
+                           Font font,
+                           int pX, int pY,
                            Matrix4f matrix4f,
                            MultiBufferSource.BufferSource bufferSource) {
         int currentX = pX;

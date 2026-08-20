@@ -8,24 +8,18 @@
 package dev.xcolorful.customgun.client.gui.tooltip.gun;
 
 import dev.xcolorful.customgun.client.api.item.gun.GunTooltipMask;
-import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
 import dev.xcolorful.customgun.client.config.RenderConfig;
 import dev.xcolorful.customgun.client.gui.tooltip.AbstractTooltipPart;
 import dev.xcolorful.customgun.client.resource.assets.info.GunpackInfo;
 import dev.xcolorful.customgun.core.api.item.gun.GunCategory;
 import dev.xcolorful.customgun.core.api.minecraft.Color64;
-import dev.xcolorful.customgun.core.api.resource.ResourceApi;
 import dev.xcolorful.customgun.core.resource.data.index.GunIndex;
 import dev.xcolorful.customgun.core.resource.instance.data.GunIndexInstance;
 import dev.xcolorful.customgun.core.util.ComponentUtils;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Matrix4f;
 
 /**
  * 扩展模组可以考虑改成左边渲染一个枪包logo/物品，然后再渲染文本的方式
@@ -45,9 +39,7 @@ public final class GunDetailInfoPart extends AbstractTooltipPart implements GunT
     private static final boolean hasTextShadow = true;
 
     @Override
-    public void build(ClientGunTooltip.Context context) {
-        Font font = Minecraft.getInstance().font;
-
+    public void build(ClientGunTooltip.Context context, Font font) {
         var gunLocation = context.gunTooltip.gunLocation();
 
         Component category; {
@@ -99,24 +91,18 @@ public final class GunDetailInfoPart extends AbstractTooltipPart implements GunT
 
     @Override
     public void renderText(ClientGunTooltip.Context context,
-                           Font font,
-                           int pX, int pY,
-                           Matrix4f matrix4f,
-                           MultiBufferSource.BufferSource bufferSource) {
-        int currentX = pX;
-        int currentY = pY;
+                           int startX, int startY) {
+        int currentX = startX;
+        int currentY = startY;
 
         if (context.showCategory && context.view.category != null) {
             currentY += textLineSpacing;
 
             // 枪械类型
-            font.drawInBatch(context.view.category,
+            context.drawText(context.view.category,
                     currentX, currentY,
                     _defaultCategoryColor.getRGB(),
                     hasTextShadow,
-                    matrix4f,
-                    bufferSource,
-                    Font.DisplayMode.NORMAL,
                     0,
                     packedLightCoords);
             currentY += textLineHeight;
@@ -126,13 +112,10 @@ public final class GunDetailInfoPart extends AbstractTooltipPart implements GunT
             currentY += textLineSpacing;
 
             // 枪包信息
-            font.drawInBatch(context.view.packInfo,
+            context.drawText(context.view.packInfo,
                     currentX, currentY,
                     _defaultPackColor.getRGB(),
                     hasTextShadow,
-                    matrix4f,
-                    bufferSource,
-                    Font.DisplayMode.NORMAL,
                     0, packedLightCoords);
             currentY += textLineHeight;
         }
@@ -141,13 +124,10 @@ public final class GunDetailInfoPart extends AbstractTooltipPart implements GunT
             currentY += textLineSpacing;
 
             // 资源位置
-            font.drawInBatch(context.view.pojoLocation,
+            context.drawText(context.view.pojoLocation,
                     currentX, currentY,
                     _defaultLocationColor.getRGB(),
                     hasTextShadow,
-                    matrix4f,
-                    bufferSource,
-                    Font.DisplayMode.NORMAL,
                     0, packedLightCoords);
             currentY += textLineHeight;
         }
@@ -155,9 +135,7 @@ public final class GunDetailInfoPart extends AbstractTooltipPart implements GunT
 
     @Override
     public void renderImage(ClientGunTooltip.Context context,
-                            Font font,
-                            int pX, int pY,
-                            GuiGraphics guiGraphics) {
+                            int startX, int startY) {
         // mixin注入点
     }
 }

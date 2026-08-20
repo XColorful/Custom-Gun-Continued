@@ -9,13 +9,14 @@ package dev.xcolorful.customgun.client.gui.screen.refit;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.xcolorful.customgun.client.api.minecraft.texture.CustomTexture;
+import dev.xcolorful.customgun.client.util.ClientRenderHelper;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 public class InventoryAttachmentSlot extends Button implements IStackTooltip {
@@ -36,7 +37,9 @@ public class InventoryAttachmentSlot extends Button implements IStackTooltip {
     // --------AbstractButton--------
 
     @Override
-    public void renderWidget(@Nonnull GuiGraphics graphics, int pMouseX, int pMouseY, float pPartialTick) {
+    public void renderWidget(@NotNull GuiGraphics graphics,
+                             int pMouseX, int pMouseY,
+                             float pPartialTick) {
         RenderSystem.disableDepthTest();
         RenderSystem.enableBlend(); {
             { // 渲染外框
@@ -52,12 +55,12 @@ public class InventoryAttachmentSlot extends Button implements IStackTooltip {
                 int uWidth = texture.getWidth();
                 int vHeight = texture.getHeight();
 
-                graphics.blit(texture.getLocation(),
+                ClientRenderHelper.blitGuiTexture(graphics,
+                        texture,
                         startX, startY,
                         endX, endY,
                         uOffset, vOffset,
-                        uWidth, vHeight,
-                        texture.getWidth(), texture.getHeight());
+                        uWidth, vHeight);
             }
 
             { // 渲染物品

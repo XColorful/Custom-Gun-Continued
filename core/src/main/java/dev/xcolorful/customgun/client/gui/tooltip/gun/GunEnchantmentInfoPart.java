@@ -10,9 +10,6 @@ package dev.xcolorful.customgun.client.gui.tooltip.gun;
 import dev.xcolorful.customgun.client.api.item.gun.GunTooltipMask;
 import dev.xcolorful.customgun.client.gui.tooltip.AbstractTooltipPart;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.MultiBufferSource;
-import org.joml.Matrix4f;
 
 /**
  * 这个类是默认弃用的，留给扩展模组mixin，理由如下：
@@ -28,7 +25,7 @@ public final class GunEnchantmentInfoPart extends AbstractTooltipPart implements
     private GunEnchantmentInfoPart() {}
 
     @Override
-    public void build(ClientGunTooltip.Context context) {
+    public void build(ClientGunTooltip.Context context, Font font) {
     }
 
     @Override
@@ -40,19 +37,13 @@ public final class GunEnchantmentInfoPart extends AbstractTooltipPart implements
 
     @Override
     public void renderText(ClientGunTooltip.Context context,
-                           Font font,
-                           int pX, int pY,
-                           Matrix4f matrix4f,
-                           MultiBufferSource.BufferSource bufferSource) {
+                           int startX, int startY) {
         // mixin注入点
     }
 
     @Override
     public void renderImage(ClientGunTooltip.Context context,
-                            Font font,
-                            int pX,
-                            int pY,
-                            GuiGraphics guiGraphics) {
+                            int startX, int startY) {
         // mixin注入点
     }
 }

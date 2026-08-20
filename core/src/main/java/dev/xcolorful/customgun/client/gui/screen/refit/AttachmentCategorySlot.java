@@ -9,6 +9,7 @@ package dev.xcolorful.customgun.client.gui.screen.refit;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.xcolorful.customgun.client.api.minecraft.texture.CustomTexture;
+import dev.xcolorful.customgun.client.util.ClientRenderHelper;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.attachment.AttachmentCategory;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
@@ -75,7 +76,9 @@ public class AttachmentCategorySlot extends Button implements IStackTooltip {
     // --------AbstractButton--------
 
     @Override
-    public void renderWidget(@NotNull GuiGraphics graphics, int pMouseX, int pMouseY, float pPartialTick) {
+    public void renderWidget(@NotNull GuiGraphics graphics,
+                             int pMouseX, int pMouseY,
+                             float pPartialTick) {
         // 悬浮显示文本
         if (this.isHoveredOrFocused()) {
             Font font = Minecraft.getInstance().font;
@@ -112,12 +115,12 @@ public class AttachmentCategorySlot extends Button implements IStackTooltip {
                 int uWidth = texture.getWidth();
                 int vHeight = texture.getHeight();
 
-                graphics.blit(texture.getLocation(),
+                ClientRenderHelper.blitGuiTexture(graphics,
+                        texture,
                         startX, startY,
                         endX, endY,
                         uOffset, vOffset,
-                        uWidth, vHeight,
-                        texture.getWidth(), texture.getHeight());
+                        uWidth, vHeight);
             }
 
             { // 渲染内部物品，或者空置时的icon
@@ -143,12 +146,12 @@ public class AttachmentCategorySlot extends Button implements IStackTooltip {
                     int uWidth = texture.getHeight(); // 在横向长方形里取正方形
                     int vHeight = texture.getHeight();
 
-                    graphics.blit(texture.location,
+                    ClientRenderHelper.blitGuiTexture(graphics,
+                            texture,
                             startX, startY,
                             endX, endY,
                             uOffset, vOffset,
-                            uWidth, vHeight,
-                            texture.getWidth(), texture.getHeight());
+                            uWidth, vHeight);
                 }
             }
 
@@ -166,12 +169,12 @@ public class AttachmentCategorySlot extends Button implements IStackTooltip {
                 int uWidth = texture.getHeight(); // 在横向长方形里取正方形
                 int vHeight = texture.getHeight();
 
-                graphics.blit(texture.location,
+                ClientRenderHelper.blitGuiTexture(graphics,
+                        texture,
                         startX, startY,
                         endX, endY,
                         uOffset, vOffset,
-                        uWidth, vHeight,
-                        texture.getWidth(), texture.getHeight());
+                        uWidth, vHeight);
             }
         }
         RenderSystem.enableDepthTest();

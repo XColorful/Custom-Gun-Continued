@@ -5,13 +5,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix4f;
 
 public abstract class BaseTooltipContext<T extends BaseTooltipView> {
 
@@ -60,14 +58,16 @@ public abstract class BaseTooltipContext<T extends BaseTooltipView> {
 
     public Font textFont = null;
     public GuiGraphics textGraphic = null;
-    public Matrix4f textMatrix4f = null;
-    public MultiBufferSource.BufferSource textBufferSource = null;
+    @Deprecated(since = "1.21.6")
+    public Object textMatrix4f = null;
+    @Deprecated(since = "1.21.6")
+    public Object textBufferSource = null;
     @ApiStatus.Internal
     public void _clearTextCache() {
         this.textFont = null;
         this.textGraphic = null;
-        this.textMatrix4f = null;
-        this.textBufferSource = null;
+//        this.textMatrix4f = null;
+//        this.textBufferSource = null;
     }
 
     public Font imageFont = null;
@@ -87,30 +87,22 @@ public abstract class BaseTooltipContext<T extends BaseTooltipView> {
                          int currentX, int currentY,
                          int textRGB,
                          boolean hasTextShadow) {
-        this.textFont.drawInBatch(component,
+        this.textGraphic.drawString(this.textFont,
+                component,
                 currentX, currentY,
                 textRGB,
-                hasTextShadow,
-                this.textMatrix4f,
-                this.textBufferSource,
-                Font.DisplayMode.NORMAL,
-                _backgroundRGB,
-                _packedLightCoords
+                hasTextShadow
         );
     }
     public void drawText(@NotNull FormattedCharSequence sequence,
                          int currentX, int currentY,
                          int textRGB,
                          boolean hasTextShadow) {
-        this.textFont.drawInBatch(sequence,
+        this.textGraphic.drawString(this.textFont,
+                sequence,
                 currentX, currentY,
                 textRGB,
-                hasTextShadow,
-                this.textMatrix4f,
-                this.textBufferSource,
-                Font.DisplayMode.NORMAL,
-                _backgroundRGB,
-                _packedLightCoords
+                hasTextShadow
         );
     }
 

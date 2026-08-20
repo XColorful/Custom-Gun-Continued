@@ -96,7 +96,8 @@ public final class AttachmentDetailInfoPart extends AbstractTooltipPart implemen
 
     @Override
     public void renderText(ClientAttachmentTooltip.Context context,
-                           Font font, int pX, int pY,
+                           Font font,
+                           int pX, int pY,
                            Matrix4f matrix4f,
                            MultiBufferSource.BufferSource bufferSource) {
         int currentX = pX;
@@ -151,7 +152,8 @@ public final class AttachmentDetailInfoPart extends AbstractTooltipPart implemen
 
     @Override
     public void renderImage(ClientAttachmentTooltip.Context context,
-                            Font font, int pX, int pY,
+                            Font font,
+                            int pX, int pY,
                             GuiGraphics guiGraphics) {
         // mixin注入点
     }

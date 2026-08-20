@@ -36,10 +36,9 @@ public class InventoryAttachmentSlot extends Button implements IStackTooltip {
 
     // --------AbstractButton--------
 
-    @Override
-    public void renderWidget(@NotNull GuiGraphics graphics,
-                             int pMouseX, int pMouseY,
-                             float pPartialTick) {
+    public void _renderContent(@NotNull GuiGraphics graphics,
+                               int pMouseX, int pMouseY,
+                               float pPartialTick) {
         ClientRenderHelper.GL._disableDepthTest();
         ClientRenderHelper.GL._enableBlend(); {
             { // 渲染外框
@@ -88,5 +87,16 @@ public class InventoryAttachmentSlot extends Button implements IStackTooltip {
         ItemStack item = this.inventory.getItem(slotIndex);
 
         consumer.accept(item);
+    }
+
+    // --------Compat--------
+    // 跨版本适配层
+    // 其他类可直接Ctrl CV
+
+    @Override
+    public void renderWidget(@NotNull GuiGraphics graphics,
+                             int pMouseX, int pMouseY,
+                             float pPartialTick) {
+        this._renderContent(graphics, pMouseX, pMouseY, pPartialTick);
     }
 }

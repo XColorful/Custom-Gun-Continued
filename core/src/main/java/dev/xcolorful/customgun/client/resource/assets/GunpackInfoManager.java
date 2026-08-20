@@ -20,6 +20,12 @@ import org.jetbrains.annotations.ApiStatus;
  * 但保留了相应的 {@link AssetsFolderType} 以便以后修改标准
  */
 public final class GunpackInfoManager extends ResourcePojoManager<GunpackInfo> {
+
+    /**
+     * 单个namespace下唯一
+     */
+    public static final String POJO_LOCATION_NAME = "gunpack_info";
+
     @ApiStatus.Internal
     public GunpackInfoManager() {
         super(PackType.CLIENT_RESOURCES, AssetsFolderType.GUNPACK_INFO.getFolderName(),
@@ -29,6 +35,6 @@ public final class GunpackInfoManager extends ResourcePojoManager<GunpackInfo> {
 
     @Override
     protected boolean isPojoLocationValid(ResourceLocation pojoLocation) {
-        return pojoLocation.getPath().equals("gunpack_info"); // 单个namespace下唯一
+        return pojoLocation.getPath().equals(POJO_LOCATION_NAME);
     }
 }

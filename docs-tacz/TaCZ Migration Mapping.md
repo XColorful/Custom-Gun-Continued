@@ -440,6 +440,11 @@ Notation:
 |`ModernKineticGunItem`.`DefaultPropertyModification`|_Deprecated_|
 |`TargetMinecartItem`|_Deprecated_|
 
+|com.tacz.guns.item|dev.xcolorful.customgun.client.gui|
+|---|---|
+|`AmmoItem`.appendHoverText|tooltip.ammo.`AmmoDescriptionPart`|
+|`AmmoItem`.appendHoverText|tooltip.ammo.`AmmoDetailInfoPart`|
+
 |com.tacz.guns.item|dev.xcolorful.customgun.client.api.item|
 |---|---|
 |`GunTooltipPart`|gun.`GunTooltipMask`|
@@ -825,7 +830,7 @@ Notation:
 
 |com.tacz.guns.client.event|dev.xcolorful.customgun.client.entity|
 |---|---|
-|`ClientHitMark`|`ClientHitMarkHandler`|
+|`ClientHitMark`|shooter.player.`_LocalHitHandler`|
 |`InventoryEvent`.onPlayerSwapMainHand|shooter.player.`_LocalMessageHandler`.onSwapItemWithOffhand|
 |`RefreshClonePlayerDataEvent`|shooter.player.`_LocalPlayerHandler`.onClientPlayerClone|
 |`RefreshClonePlayerDataEvent`.onClientTick|_Deprecated_|
@@ -854,8 +859,12 @@ Notation:
 
 |com.tacz.guns.client.event|dev.xcolorful.customgun.client.gui|
 |---|---|
-|`RenderCrosshairEvent`|crosshair.`CrosshairRender`|
-|`TooltipEvent`.onTooltip|tooltip.`PojoLocationTooltip`.addPojoLocationTooltip|
+|`RenderCrosshairEvent`|_Deprecated_|
+
+|com.tacz.guns.client.event|dev.xcolorful.customgun.client.api.gui|
+|---|---|
+|`TooltipEvent`.onTooltip|tooltip.`BaseTooltipView`.pojoLocation|
+|`TooltipEvent`.formatTooltip|_Deprecated_|
 
 | |dev.xcolorful.customgun.client.event|
 |---|---|
@@ -883,10 +892,14 @@ Notation:
 
 |com.tacz.guns.client.gui|dev.xcolorful.customgun.client.gui|
 |---|---|
-|components.refit||
-|components.smith||
-|components.`*`||
-|overlay.`*Overlay`||
+|components.refit|screen.refit|
+|components.refit.`GunAttachmentSlot`|screen.refit.`AttachmentCategorySlot`|
+|components.refit.`GunPropertyDiagrams`||
+|components.refit.`IComponentTooltip`|_Deprecated_|
+|components.smith|_Deprecated_|
+|components.`FlatColorButton`||
+|components.`GunPackList`|_Deprecated_|
+|overlay.`*Overlay`|_Deprecated_|
 |toast.`GunLevelUpToast`|_Deprecated_|
 |`GunPackProgressScreen`|_Deprecated_|
 |`GunRefitScreen`|screen.`GunRefitScreen`|
@@ -894,7 +907,11 @@ Notation:
 
 |com.tacz.guns.client.gui|dev.xcolorful.customgun.client.compat|
 |---|---|
-|compat.`ClothConfigScreen`|_Deprecated_|
+|compat.`ClothConfigScreen`|_Deprecated_
+
+|com.tacz.guns.client.gui|dev.xcolorful.customgun.client.api.gui|
+|---|---|
+|overlay.`KillAmountOverlay`.markTimestamp|overlay.`OverlayStateAccessor`.setKillTimestamp|
 
 ### Initialize (Client)
 > ```java
@@ -903,10 +920,10 @@ Notation:
 
 |com.tacz.guns.client.init|dev.xcolorful.customgun.client.init|
 |---|---|
-|`ClientSetupEvent`.onClientSetup(FMLClientSetupEvent)||
+|`ClientSetupEvent`.onClientSetup(FMLClientSetupEvent)|_Deprecated_|
 |`ClientSetupEvent`.onClientSetup(RegisterClientTooltipComponentFactoriesEvent)|`ClientTooltipRegistry`.registerTooltips|
 |`ClientSetupEvent`.onClientSetup(RegisterKeyMappingsEvent)|`ClientKeyMappingRegistry`.registerKeyMappings|
-|`ClientSetupEvent`.onRegisterGuiOverlays||
+|`ClientSetupEvent`.onRegisterGuiOverlays|_Deprecated_|
 |`ModContainerScreen`|_Deprecated_|
 |`ModEntitiesRender`|`ClientEntityRendererRegistry`|
 |`ParticleFactoryRegistry`|`ClientModParticles`|
@@ -1129,3 +1146,15 @@ Notation:
 |com.tacz.guns.client.tooltip|dev.xcolorful.customgun.client.gui|
 |---|---|
 |`Client*Tooltip`|tooltip.\*.`Client*Tooltip`|
+
+|com.tacz.guns.client.tooltip|dev.xcolorful.customgun.client.api.gui|
+|---|---|
+|`Client*Tooltip`.getHeight|tooltip.`BaseTooltipContext`.calculateHeight|
+|`Client*Tooltip`.getWidth|tooltip.`BaseTooltipContext`.getMaxWidth|
+|`Client*Tooltip`.getText|tooltip.`BaseTooltipContext`.buildView|
+|`Client*Tooltip`.renderText|tooltip.`TooltipPart`.renderText|
+|`Client*Tooltip`.renderImage|tooltip.`TooltipPart`.renderImage|
+
+|com.tacz.guns.client.tooltip|dev.xcolorful.customgun.client.api.item|
+|---|---|
+|`Client*Tooltip`.shouldShow|gun.`GunTooltipMask`.fromBitmap|

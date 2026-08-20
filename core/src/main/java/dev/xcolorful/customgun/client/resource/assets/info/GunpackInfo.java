@@ -22,8 +22,8 @@ import java.util.List;
 public final class GunpackInfo extends ResourcePojo<GunpackInfo> {
 
     private String gunpackVersion;
-    private MutableComponent nameLang;
-    private MutableComponent tooltipLang;
+    private String nameLang;
+    private String tooltipLang;
     private String license;
     private List<String> authors;
     private String date;
@@ -41,8 +41,8 @@ public final class GunpackInfo extends ResourcePojo<GunpackInfo> {
                 String key = reader.nextName();
                 switch (key) {
                     case GunpackInfoTag.GUNPACK_VERSION, GunpackInfoTag.GUNPACK_VERSION_OLD1 -> pojo.gunpackVersion = JsonUtils.readString(reader);
-                    case GunpackInfoTag.NAME_LANG, GunpackInfoTag.NAME_LANG_OLD1 -> pojo.nameLang = JsonUtils.readTranslatable(reader);
-                    case GunpackInfoTag.TOOLTIP_LANG, GunpackInfoTag.TOOLTIP_LANG_OLD1 -> pojo.tooltipLang = JsonUtils.readTranslatable(reader);
+                    case GunpackInfoTag.NAME_LANG, GunpackInfoTag.NAME_LANG_OLD1 -> pojo.nameLang = JsonUtils.readString(reader);
+                    case GunpackInfoTag.TOOLTIP_LANG, GunpackInfoTag.TOOLTIP_LANG_OLD1 -> pojo.tooltipLang = JsonUtils.readString(reader);
                     case GunpackInfoTag.LICENSE -> pojo.license = JsonUtils.readString(reader);
                     case GunpackInfoTag.AUTHORS -> pojo.authors = JsonUtils.readStringList(reader);
                     case GunpackInfoTag.DATE -> pojo.date = JsonUtils.readString(reader);
@@ -62,8 +62,8 @@ public final class GunpackInfo extends ResourcePojo<GunpackInfo> {
     public void toJson(JsonWriter writer) throws IOException {
         writer.beginObject(); {
             JsonUtils.writeString(writer, GunpackInfoTag.GUNPACK_VERSION, this.gunpackVersion);
-            JsonUtils.writeTranslatable(writer, GunpackInfoTag.NAME_LANG, this.nameLang);
-            JsonUtils.writeTranslatable(writer, GunpackInfoTag.TOOLTIP_LANG, this.tooltipLang);
+            JsonUtils.writeString(writer, GunpackInfoTag.NAME_LANG, this.nameLang);
+            JsonUtils.writeString(writer, GunpackInfoTag.TOOLTIP_LANG, this.tooltipLang);
             JsonUtils.writeString(writer, GunpackInfoTag.LICENSE, this.license);
             JsonUtils.writeStringList(writer, GunpackInfoTag.AUTHORS, this.authors);
             JsonUtils.writeString(writer, GunpackInfoTag.DATE, this.date);
@@ -82,8 +82,8 @@ public final class GunpackInfo extends ResourcePojo<GunpackInfo> {
             return;
         }
 
-        if (this.nameLang == null) this.nameLang = ComponentUtils.unknownTranslatableKey();
-        if (this.tooltipLang == null) this.tooltipLang = ComponentUtils.unknownTranslatableKey();
+        if (this.nameLang == null) this.nameLang = ComponentUtils.UNKNOWN_TRANSLATABLE_KEY;
+        if (this.tooltipLang == null) this.tooltipLang = ComponentUtils.UNKNOWN_TRANSLATABLE_KEY;
         this.setValid(true);
     }
 
@@ -92,10 +92,10 @@ public final class GunpackInfo extends ResourcePojo<GunpackInfo> {
     public String getGunpackVersion() {
         return gunpackVersion;
     }
-    public MutableComponent getNameLang() {
+    public String getNameLang() {
         return nameLang;
     }
-    public MutableComponent getTooltipLang() {
+    public String getTooltipLang() {
         return tooltipLang;
     }
     public String getLicense() {
@@ -114,10 +114,10 @@ public final class GunpackInfo extends ResourcePojo<GunpackInfo> {
     public void setGunpackVersion(String gunpackVersion) {
         this.gunpackVersion = gunpackVersion;
     }
-    public void setNameLang(MutableComponent nameLang) {
+    public void setNameLang(String nameLang) {
         this.nameLang = nameLang;
     }
-    public void setTooltipLang(MutableComponent tooltipLang) {
+    public void setTooltipLang(String tooltipLang) {
         this.tooltipLang = tooltipLang;
     }
     public void setLicense(String license) {

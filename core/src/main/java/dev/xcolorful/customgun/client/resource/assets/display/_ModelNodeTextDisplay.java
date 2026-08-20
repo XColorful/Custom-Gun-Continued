@@ -13,13 +13,12 @@ import dev.xcolorful.customgun.core.api.resource.assets.display._ModelNodeTextDi
 import dev.xcolorful.customgun.core.resource.ResourcePojo;
 import dev.xcolorful.customgun.core.util.ComponentUtils;
 import dev.xcolorful.customgun.core.util.JsonUtils;
-import net.minecraft.network.chat.MutableComponent;
 
 import java.io.IOException;
 
 public final class _ModelNodeTextDisplay extends ResourcePojo<_ModelNodeTextDisplay> {
 
-    private MutableComponent textLang;
+    private String textLang;
     private float textScale;
     private int textColor = 0xFFFFFF;
     private int textLight = 15;
@@ -37,7 +36,7 @@ public final class _ModelNodeTextDisplay extends ResourcePojo<_ModelNodeTextDisp
             while (reader.hasNext()) {
                 String key = reader.nextName();
                 switch (key) {
-                    case _ModelNodeTextDisplayTag.TEXT_LANG, _ModelNodeTextDisplayTag.TEXT_LANG_OLD1 -> pojo.textLang = JsonUtils.readTranslatable(reader);
+                    case _ModelNodeTextDisplayTag.TEXT_LANG, _ModelNodeTextDisplayTag.TEXT_LANG_OLD1 -> pojo.textLang = JsonUtils.readString(reader);
                     case _ModelNodeTextDisplayTag.TEXT_SCALE, _ModelNodeTextDisplayTag.TEXT_SCALE_OLD1 -> pojo.textScale = JsonUtils.readFloat(reader);
                     case _ModelNodeTextDisplayTag.TEXT_COLOR, _ModelNodeTextDisplayTag.TEXT_COLOR_OLD1 -> pojo.textColor = JsonUtils.readColorInt(reader);
                     case _ModelNodeTextDisplayTag.TEXT_LIGHT, _ModelNodeTextDisplayTag.TEXT_LIGHT_OLD1 -> pojo.textLight = JsonUtils.readInt(reader);
@@ -57,7 +56,7 @@ public final class _ModelNodeTextDisplay extends ResourcePojo<_ModelNodeTextDisp
     @Override
     public void toJson(JsonWriter writer) throws IOException {
         writer.beginObject(); {
-            JsonUtils.writeTranslatable(writer, _ModelNodeTextDisplayTag.TEXT_LANG, this.textLang);
+            JsonUtils.writeString(writer, _ModelNodeTextDisplayTag.TEXT_LANG, this.textLang);
             JsonUtils.writeFloat(writer, _ModelNodeTextDisplayTag.TEXT_SCALE, this.textScale);
             JsonUtils.writeColorInt(writer, _ModelNodeTextDisplayTag.TEXT_COLOR, this.textColor);
             JsonUtils.writeInt(writer, _ModelNodeTextDisplayTag.TEXT_LIGHT, this.textLight);
@@ -82,7 +81,7 @@ public final class _ModelNodeTextDisplay extends ResourcePojo<_ModelNodeTextDisp
 
     // --------Getter & Setter--------
 
-    public MutableComponent getTextLang() {
+    public String getTextLang() {
         return textLang;
     }
     public float getTextScale() {
@@ -101,7 +100,7 @@ public final class _ModelNodeTextDisplay extends ResourcePojo<_ModelNodeTextDisp
         return xOffsetScale;
     }
 
-    public void setTextLang(MutableComponent textLang) {
+    public void setTextLang(String textLang) {
         this.textLang = textLang;
     }
     public void setTextScale(float textScale) {
@@ -124,7 +123,7 @@ public final class _ModelNodeTextDisplay extends ResourcePojo<_ModelNodeTextDisp
 
     @Override
     public _ModelNodeTextDisplay applyBackCompatibility() {
-        this.textLang = this.textLang == null ? ComponentUtils.unknownTranslatableKey() : this.textLang;
+        this.textLang = this.textLang == null ? ComponentUtils.UNKNOWN_TRANSLATABLE_KEY : this.textLang;
         return this;
     }
 }

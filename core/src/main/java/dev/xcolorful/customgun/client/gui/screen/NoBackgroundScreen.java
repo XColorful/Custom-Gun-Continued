@@ -22,7 +22,7 @@ public abstract class NoBackgroundScreen extends Screen {
     }
     @ApiStatus.AvailableSince("1.21.1")
     @Override
-    protected void renderBlurredBackground(float partickTick) {
+    protected void renderBlurredBackground() {
     }
     @ApiStatus.AvailableSince("1.21.1")
     @Override

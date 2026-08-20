@@ -9,7 +9,8 @@ package dev.xcolorful.customgun.client.gui.tooltip.gun;
 
 import dev.xcolorful.customgun.client.api.item.gun.GunTooltipMask;
 import dev.xcolorful.customgun.client.gui.tooltip.AbstractTooltipPart;
-import dev.xcolorful.customgun.core.resource.data.data.gun.bullet.damage._DistanceDamageData;import net.minecraft.client.gui.Font;
+import dev.xcolorful.customgun.core.resource.data.data.gun.bullet.damage._DistanceDamageData;
+import net.minecraft.client.gui.Font;
 
 /**
  * 这个类有用但不多，display的damage只是摆设，没法表示{@link _DistanceDamageData}距离衰减

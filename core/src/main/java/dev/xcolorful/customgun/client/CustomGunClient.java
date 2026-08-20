@@ -17,11 +17,13 @@ package dev.xcolorful.customgun.client;
 import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.animation.shooter.ShooterAnimationManager;
 import dev.xcolorful.customgun.client.api.animation.shooter.IShooterAnimationManager;
+import dev.xcolorful.customgun.client.api.gui.overlay.IOverlayManager;
 import dev.xcolorful.customgun.client.api.input.IInputKeyManager;
 import dev.xcolorful.customgun.client.api.input.IKeyMapping;
 import dev.xcolorful.customgun.client.api.minecraft.access.IClientAccessTransformer;
 import dev.xcolorful.customgun.client.api.minecraft.item.IClientItemExtensionProvider;
 import dev.xcolorful.customgun.client.event.custom.ClientEventHandlers;
+import dev.xcolorful.customgun.client.gui.overlay.OverlayManager;
 import dev.xcolorful.customgun.client.init.ClientModConfig;
 import dev.xcolorful.customgun.client.input.InputKeyManager;
 import org.jetbrains.annotations.NotNull;
@@ -47,6 +49,8 @@ public class CustomGunClient {
         InputKeyManager.init(CustomGun.getMcSide());
         shooterAnimationManager = ShooterAnimationManager.INSTANCE;
         ShooterAnimationManager.init(CustomGun.getMcSide());
+        setOverlayManagerInternal(OverlayManager.INSTANCE);
+        OverlayManager.init(CustomGun.getMcSide());
 
         ClientEventHandlers.registerAll(CustomGun.getEventRegister());
         initialized = true;
@@ -70,6 +74,10 @@ public class CustomGunClient {
     public static IShooterAnimationManager getShooterAnimationManager() {
         return CustomGunClient.shooterAnimationManager;
     }
+    private static IOverlayManager overlayManager;
+    public static IOverlayManager getOverlayManager() {
+        return CustomGunClient.overlayManager;
+    }
     /**
      * @deprecated 除非需要深度定制, 否则不应该调用
      */
@@ -81,11 +89,20 @@ public class CustomGunClient {
     public static void setShooterAnimationManager(IShooterAnimationManager shooterAnimationManager) {
         CustomGunClient.shooterAnimationManager = shooterAnimationManager;
     }
+    @Deprecated(forRemoval = false)
+    public static void setOverlayManager(IOverlayManager overlayManager) {
+        setOverlayManagerInternal(overlayManager);
+    }
 
     // 跟IInpuKeySubManager同样的机制
     private static void setInputKeyManagerInternal(@NotNull IInputKeyManager inputKeyManager) {
         if (CustomGunClient.inputKeyManager != null) CustomGunClient.inputKeyManager.unregisterEventHandler();
         CustomGunClient.inputKeyManager = inputKeyManager;
         CustomGunClient.inputKeyManager.registerEventHandler();
+    }
+    private static void setOverlayManagerInternal(@NotNull IOverlayManager overlayManager) {
+        if (CustomGunClient.overlayManager != null) CustomGunClient.overlayManager.unregisterOverlayEvent();
+        CustomGunClient.overlayManager = overlayManager;
+        CustomGunClient.overlayManager.registerOverlayEvent();
     }
 }

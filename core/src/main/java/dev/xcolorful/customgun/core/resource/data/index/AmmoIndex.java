@@ -9,12 +9,15 @@ package dev.xcolorful.customgun.core.resource.data.index;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import dev.xcolorful.customgun.core.api.item.ammo.AmmoCategory;
 import dev.xcolorful.customgun.core.api.resource.data.index.AmmoIndexTag;
 import dev.xcolorful.customgun.core.util.JsonUtils;
 
 import java.io.IOException;
 
 public final class AmmoIndex extends _DataIndex<AmmoIndex> {
+
+    private AmmoCategory ammoCategory;
 
     /**
      * 物品堆叠数量
@@ -32,11 +35,12 @@ public final class AmmoIndex extends _DataIndex<AmmoIndex> {
             while (reader.hasNext()) {
                 String key = reader.nextName();
                 switch (key) {
-                    case AmmoIndexTag.NAME_LANG, AmmoIndexTag.NAME_LANG_OLD1 -> pojo.setNameLang(JsonUtils.readTranslatable(reader));
-                    case AmmoIndexTag.TOOLTIP_LANG, AmmoIndexTag.TOOLTIP_LANG_OLD1 -> pojo.setTooltipLang(JsonUtils.readTranslatable(reader));
+                    case AmmoIndexTag.NAME_LANG, AmmoIndexTag.NAME_LANG_OLD1 -> pojo.setNameLang(JsonUtils.readString(reader));
+                    case AmmoIndexTag.TOOLTIP_LANG, AmmoIndexTag.TOOLTIP_LANG_OLD1 -> pojo.setTooltipLang(JsonUtils.readString(reader));
                     case AmmoIndexTag.DISPLAY_INDEX_LOCATION, AmmoIndexTag.DISPLAY_INDEX_LOCATION_OLD1 -> pojo.setDisplayIndexLocation(JsonUtils.readResourceLocation(reader));
                     case AmmoIndexTag.SLOT_SORT, AmmoIndexTag.SLOT_SORT_OLD1 -> pojo.setSlotSort(JsonUtils.readInt(reader));
 
+                    case AmmoIndexTag.AMMO_CATEGORY -> pojo.ammoCategory = JsonUtils.readFromString(reader, AmmoCategory::fromString);
                     case AmmoIndexTag.MAX_STACK_SIZE, AmmoIndexTag.MAX_STACK_SIZE_OLD1 -> pojo.maxStackSize = JsonUtils.readInt(reader);
                     default -> reader.skipValue();
                 }
@@ -53,11 +57,12 @@ public final class AmmoIndex extends _DataIndex<AmmoIndex> {
     @Override
     public void toJson(JsonWriter writer) throws IOException {
         writer.beginObject(); {
-            JsonUtils.writeTranslatable(writer, AmmoIndexTag.NAME_LANG, this.getNameLang());
-            JsonUtils.writeTranslatable(writer, AmmoIndexTag.TOOLTIP_LANG, this.getTooltipLang());
+            JsonUtils.writeString(writer, AmmoIndexTag.NAME_LANG, this.getNameLang());
+            JsonUtils.writeString(writer, AmmoIndexTag.TOOLTIP_LANG, this.getTooltipLang());
             JsonUtils.writeResourceLocation(writer, AmmoIndexTag.DISPLAY_INDEX_LOCATION, this.getDisplayIndexLocation());
             JsonUtils.writeInt(writer, AmmoIndexTag.SLOT_SORT, this.getSlotSort());
 
+            JsonUtils.writeToString(writer, AmmoIndexTag.AMMO_CATEGORY, this.ammoCategory);
             JsonUtils.writeInt(writer, AmmoIndexTag.MAX_STACK_SIZE, this.maxStackSize);
         }
         writer.endObject();
@@ -68,16 +73,23 @@ public final class AmmoIndex extends _DataIndex<AmmoIndex> {
         super.validatePojo();
         if (!this.isValid()) return;
 
+        if (this.ammoCategory == null) this.ammoCategory = AmmoCategory.AMMO;
         if (this.maxStackSize < 1) this.maxStackSize = 1;
         this.setValid(true);
     }
 
     // --------Getter & Setter--------
 
+    public AmmoCategory getAmmoCategory() {
+        return ammoCategory;
+    }
     public int getMaxStackSize() {
         return maxStackSize;
     }
 
+    public void setAmmoCategory(AmmoCategory ammoCategory) {
+        this.ammoCategory = ammoCategory;
+    }
     public void setMaxStackSize(int maxStackSize) {
         this.maxStackSize = maxStackSize;
     }

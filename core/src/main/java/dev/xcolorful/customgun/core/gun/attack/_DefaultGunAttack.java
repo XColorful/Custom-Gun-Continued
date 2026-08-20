@@ -192,49 +192,51 @@ public class _DefaultGunAttack {
         return new IGunAttackRuntime.MeleePreparation(prepareTick, meleeType);
     }
 
-    protected static void melee(ShooterProperty shooterProperty,
+    protected static int melee(ShooterProperty shooterProperty,
                                 @NotNull IGun iGun, @NotNull ItemStack gunItem,
                                 ILivingShooter iLivingShooter, LivingEntity livingShooter,
                                 MeleeType meleeType) {
         var gunLocation = iGun.getGunLocation(gunItem);
         @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(gunLocation);
-        if (gunIndexInstance == null) return;
+        if (gunIndexInstance == null) return 0;
 
         GunData gunData = gunIndexInstance.getGunData();
         _MeleeData meleeData = gunData.getMeleeData();
         float gunBaseLength = meleeData.getGunBaseLength();
 
-        switch (meleeType) {
+        return switch (meleeType) {
             case BAYONET -> _doAttachmentMelee(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter,
                     gunBaseLength, AttachmentCategory.MUZZLE);
             case STOCK -> _doAttachmentMelee(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter,
                     gunBaseLength, AttachmentCategory.STOCK);
             case PUSH -> {
                 _DefaultMeleeData defaultMeleeData = meleeData.getDefaultMeleeData();
-                _doGunMelee(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter,
+                yield _doGunMelee(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter,
                     gunBaseLength, defaultMeleeData);
             }
             // 增加类型使此处强制编译不通过
-        }
+        };
     }
-    private static void _doAttachmentMelee(ShooterProperty shooterProperty,
+    private static int _doAttachmentMelee(ShooterProperty shooterProperty,
                                               @NotNull IGun iGun, @NotNull ItemStack gunItem,
                                               ILivingShooter iLivingShooter, LivingEntity livingShooter,
                                               float gunBaseLength, AttachmentCategory attachmentCategory) {
         @Nullable _MeleeModifierData meleeModifierData = GunDataAccessor._getAttachmentMeleeModifierData(iGun, gunItem, attachmentCategory);
-        if (meleeModifierData == null) return;
+        if (meleeModifierData == null) return 0;
 
         _doMelee(iLivingShooter, livingShooter,
                 gunBaseLength,
                 meleeModifierData.getMeleeDistance(), meleeModifierData.getRangeAngle(), meleeModifierData.getKnockbackStrength(), meleeModifierData.getMeleeDamage(), meleeModifierData.getTargetEffect());
+        return 1;
     }
-    private static void _doGunMelee(ShooterProperty shooterProperty,
+    private static int _doGunMelee(ShooterProperty shooterProperty,
                                        @NotNull IGun iGun, @NotNull ItemStack gunItem,
                                        ILivingShooter iLivingShooter, LivingEntity livingShooter,
                                        float gunBaseLength, _DefaultMeleeData defaultMeleeData) {
         _doMelee(iLivingShooter, livingShooter,
                 gunBaseLength,
                 defaultMeleeData.getMeleeDistance(), defaultMeleeData.getRangeAngle(), defaultMeleeData.getKnockbackStrength(), defaultMeleeData.getMeleeDamage(), null);
+        return 1;
     }
     private static void _doMelee(ILivingShooter iLivingShooter, LivingEntity livingShooter,
                                  float gunBaseLength,

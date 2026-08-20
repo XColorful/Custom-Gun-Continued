@@ -9,14 +9,14 @@ package dev.xcolorful.customgun.core.gui.tooltip.ammo;
 
 import dev.xcolorful.customgun.core.api.item.IAmmo;
 import dev.xcolorful.customgun.core.api.item.ammo.IAmmoGetter;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 public record AmmoTooltip(ItemStack ammoItem, IAmmo iAmmo,
                           // --------Cache--------
-                          ResourceLocation ammoLocation,
+                          Identifier ammoLocation,
                           int ammoCount,
                           int ammoLevel)
         implements TooltipComponent {

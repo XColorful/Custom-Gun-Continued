@@ -7,7 +7,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Overlay;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,7 +43,7 @@ public class ClientGuiUtils {
 
     }
     public static void blitGuiTexture(GuiGraphics guiGraphics,
-                                      ResourceLocation textureLocation,
+                                      Identifier textureLocation,
                                       int startX, int startY,
                                       int endX, int endY,
                                       int uOffset, int vOffset,

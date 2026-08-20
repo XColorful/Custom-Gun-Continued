@@ -34,7 +34,7 @@ public class NeoPrepareRenderGuiEvent extends NeoEvent implements IPrepareRender
 
     @Override
     public float getPartialTick() {
-        return renderGuiEvent.getPartialTick();
+        return renderGuiEvent.getPartialTick().getGameTimeDeltaPartialTick(true);
     }
 
     @Override

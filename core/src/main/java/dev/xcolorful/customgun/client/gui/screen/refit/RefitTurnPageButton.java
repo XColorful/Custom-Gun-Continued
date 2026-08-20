@@ -9,6 +9,7 @@ package dev.xcolorful.customgun.client.gui.screen.refit;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.xcolorful.customgun.client.api.minecraft.texture.CustomTexture;
+import dev.xcolorful.customgun.client.util.ClientRenderHelper;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
@@ -29,7 +30,8 @@ public class RefitTurnPageButton extends Button {
     // --------AbstractButton--------
 
     @Override
-    public void renderWidget(@NotNull GuiGraphics graphics, int pMouseX, int pMouseY, float pPartialTick) {
+    public void renderWidget(@NotNull GuiGraphics graphics,
+                             int pMouseX, int pMouseY, float pPartialTick) {
         RenderSystem.disableDepthTest();
         RenderSystem.enableBlend(); {
             CustomTexture texture = CustomTexture.TURN_PAGE;
@@ -44,12 +46,12 @@ public class RefitTurnPageButton extends Button {
             int uWidth = texture.getWidth() / 2;
             int vHeight = texture.getHeight() / 2;
 
-            graphics.blit(texture.getLocation(),
+            ClientRenderHelper.blitGuiTexture(graphics,
+                    texture,
                     startX, startY,
                     endX, endY,
                     uOffset, vOffset,
-                    uWidth, vHeight,
-                    texture.getWidth(), texture.getHeight());
+                    uWidth, vHeight);
         }
         RenderSystem.enableDepthTest();
         RenderSystem.disableBlend();

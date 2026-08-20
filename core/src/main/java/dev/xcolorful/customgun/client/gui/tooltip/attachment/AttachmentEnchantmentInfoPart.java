@@ -10,6 +10,7 @@ package dev.xcolorful.customgun.client.gui.tooltip.attachment;
 import dev.xcolorful.customgun.client.api.item.attachment.AttachmentTooltipMask;
 import dev.xcolorful.customgun.client.gui.tooltip.AbstractTooltipPart;
 import dev.xcolorful.customgun.core.resource.network._AttachmentModifierCache;
+import net.minecraft.client.gui.Font;
 
 /**
  * 配件数值加成信息，等{@link _AttachmentModifierCache}完成后才方便读取，并且需要有序
@@ -20,7 +21,7 @@ public final class AttachmentEnchantmentInfoPart extends AbstractTooltipPart imp
     private AttachmentEnchantmentInfoPart() {}
 
     @Override
-    public void build(ClientAttachmentTooltip.Context context) {
+    public void build(ClientAttachmentTooltip.Context context, Font font) {
     }
 
     @Override

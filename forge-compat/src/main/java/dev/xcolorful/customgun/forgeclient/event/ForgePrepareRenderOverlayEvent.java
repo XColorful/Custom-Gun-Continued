@@ -3,25 +3,25 @@ package dev.xcolorful.customgun.forgeclient.event;
 import dev.xcolorful.customgun.client.api.event.IPrepareRenderOverlayEvent;
 import dev.xcolorful.customgun.core.api.event.EventType;
 import dev.xcolorful.customgun.forge.event.ForgeEvent;
+import dev.xcolorful.customgun.forgeclient.compat.forge.event.PrepareRenderOverlayEvent;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.client.event.RenderGuiOverlayEvent;
 import net.minecraftforge.eventbus.api.Event;
 import org.jetbrains.annotations.Nullable;
 
 public class ForgePrepareRenderOverlayEvent extends ForgeEvent implements IPrepareRenderOverlayEvent {
 
-    private final RenderGuiOverlayEvent.Pre renderGuiEvent;
+    private final PrepareRenderOverlayEvent renderGuiEvent;
 
     public ForgePrepareRenderOverlayEvent(Event event) {
         super(event);
-        if (event instanceof RenderGuiOverlayEvent.Pre eventIn) {
+        if (event instanceof PrepareRenderOverlayEvent eventIn) {
             this.renderGuiEvent = eventIn;
         } else {
-            throw new RuntimeException("Expected RenderGuiOverlayEvent.Pre but received: " + event.getClass().getName());
+            throw new RuntimeException("Expected PrepareRenderOverlayEvent but received: " + event.getClass().getName());
         }
     }
     @Override public EventType getType() {
@@ -35,12 +35,12 @@ public class ForgePrepareRenderOverlayEvent extends ForgeEvent implements IPrepa
 
     @Override
     public float getPartialTick() {
-        return renderGuiEvent.getPartialTick();
+        return renderGuiEvent.getPartialTick().getGameTimeDeltaPartialTick(true);
     }
 
     @Override
     public ResourceLocation getRegistryLocation() {
-        return renderGuiEvent.getOverlay().id();
+        return renderGuiEvent.getRegistryLocation();
     }
 
     @Override

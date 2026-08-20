@@ -57,7 +57,7 @@ public class GunItem extends Item implements IGun, GunDataAccessor {
     }
 
     /**
-     * 获取在 Tooltip 中渲染的图片
+     * 获取供客户端使用的 Tooltip 信息
      */
     @Override
     public @NotNull Optional<TooltipComponent> getTooltipImage(@NotNull ItemStack gunItem) {

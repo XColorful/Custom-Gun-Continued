@@ -39,8 +39,8 @@ public final class BlockIndex extends _DataIndex<BlockIndex> {
             while (reader.hasNext()) {
                 String key = reader.nextName();
                 switch (key) {
-                    case BlockIndexTag.NAME_LANG, BlockIndexTag.NAME_LANG_OLD1 -> pojo.setNameLang(JsonUtils.readTranslatable(reader));
-                    case BlockIndexTag.TOOLTIP_LANG, BlockIndexTag.TOOLTIP_LANG_OLD1 -> pojo.setTooltipLang(JsonUtils.readTranslatable(reader));
+                    case BlockIndexTag.NAME_LANG, BlockIndexTag.NAME_LANG_OLD1 -> pojo.setNameLang(JsonUtils.readString(reader));
+                    case BlockIndexTag.TOOLTIP_LANG, BlockIndexTag.TOOLTIP_LANG_OLD1 -> pojo.setTooltipLang(JsonUtils.readString(reader));
                     case BlockIndexTag.DATA_LOCATION, BlockIndexTag.DATA_LOCATION_OLD1 -> pojo.setDataLocation(JsonUtils.readResourceLocation(reader));
                     case BlockIndexTag.DISPLAY_INDEX_LOCATION, BlockIndexTag.DISPLAY_INDEX_LOCATION_OLD1 -> pojo.setDisplayIndexLocation(JsonUtils.readResourceLocation(reader));
                     case BlockIndexTag.SLOT_SORT, BlockIndexTag.SLOT_SORT_OLD1 -> pojo.setSlotSort(JsonUtils.readInt(reader));
@@ -62,8 +62,8 @@ public final class BlockIndex extends _DataIndex<BlockIndex> {
     @Override
     public void toJson(JsonWriter writer) throws IOException {
         writer.beginObject(); {
-            JsonUtils.writeTranslatable(writer, BlockIndexTag.NAME_LANG, this.getNameLang());
-            JsonUtils.writeTranslatable(writer, BlockIndexTag.TOOLTIP_LANG, this.getTooltipLang());
+            JsonUtils.writeString(writer, BlockIndexTag.NAME_LANG, this.getNameLang());
+            JsonUtils.writeString(writer, BlockIndexTag.TOOLTIP_LANG, this.getTooltipLang());
             JsonUtils.writeResourceLocation(writer, BlockIndexTag.DATA_LOCATION, this.getDataLocation());
             JsonUtils.writeResourceLocation(writer, BlockIndexTag.DISPLAY_INDEX_LOCATION, this.getDisplayIndexLocation());
             JsonUtils.writeInt(writer, BlockIndexTag.SLOT_SORT, this.getSlotSort());

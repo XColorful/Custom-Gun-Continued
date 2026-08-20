@@ -9,6 +9,7 @@ package dev.xcolorful.customgun.core.api.item.attachment;
 
 import dev.xcolorful.customgun.core.api.item.GunProperty;
 import dev.xcolorful.customgun.core.api.resource.ResourceTag;
+import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import org.jetbrains.annotations.Nullable;
@@ -78,6 +79,9 @@ public enum AttachmentCategory implements ResourceTag.CategoryTag, ResourceTag.C
         return this.constantName;
     }
 
+    /**
+     * 调用方手动copy，不然会缓存旧{@link Language}
+     */
     public final MutableComponent getCategoryLang() {
         return this.categoryLang;
     }

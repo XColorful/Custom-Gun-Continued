@@ -38,9 +38,11 @@ public final class ClientBlockIndexInstance extends PojoInstance<BlockIndex> {
     }
 
     @Override public boolean resetCache() {
-        this.blockDisplayCache = ClientResourceApi.getBlockDisplay(this.getPojo().getDisplayIndexLocation());
+        var pojo = this.getPojo();
+
+        this.blockDisplayCache = ClientResourceApi.getBlockDisplay(pojo.getDisplayIndexLocation());
         if (this.blockDisplayCache == null) {
-            CustomGun.LOGGER.debug("ClientBlockIndexInstance: BlockDisplay {} not found", this.getPojo().getDisplayIndexLocation());
+            CustomGun.LOGGER.debug("ClientBlockIndexInstance: BlockDisplay {} not found", pojo.getDisplayIndexLocation());
             return false;
         }
 
@@ -58,9 +60,7 @@ public final class ClientBlockIndexInstance extends PojoInstance<BlockIndex> {
         return true;
     }
     @Override protected boolean isPojoValid() {
-        var pojo = this.getPojo();
-        if (!pojo.isValid()) return false;
-        if (!resetCache()) return false;
+        if (!super.isPojoValid()) return false;
 
         return true;
     }
@@ -77,10 +77,10 @@ public final class ClientBlockIndexInstance extends PojoInstance<BlockIndex> {
         return getBlockModelInstance();
     }
     @Deprecated public String getName() {
-        return ComponentUtils.toTranslatableKey(this.getPojo().getNameLang());
+        return this.getPojo().getNameLang();
     }
     @Deprecated public String getTooltipKey() {
-        return ComponentUtils.toTranslatableKey(this.getPojo().getTooltipLang());
+        return this.getPojo().getTooltipLang();
     }
     @Deprecated public @Nullable Identifier getTexture() {
         return this.blockDisplayCache.getTextureLocation();

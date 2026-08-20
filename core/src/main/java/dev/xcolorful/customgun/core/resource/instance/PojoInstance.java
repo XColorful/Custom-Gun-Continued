@@ -31,13 +31,18 @@ public abstract class PojoInstance<T extends ResourcePojo<T>> {
 
     /**
      * 重置缓存
-     * @return 是否成功拿到全部缓存
+     * <br>
      * 客户端侧PojoInstance不使用这个方法作为{@link #isPojoValid}的检测 (assets会先加载的读取顺序问题)
+     * @return 是否成功拿到全部缓存，如不使用缓存应返回{@code true}
      */
-    protected boolean resetCache() {
+    abstract protected boolean resetCache();
+    protected boolean isPojoValid() {
+        var pojo = this.pojo;
+        if (!pojo.isValid()) return false;
+        if (!resetCache()) return false;
+
         return true;
     }
-    abstract protected boolean isPojoValid();
     /**
      * log数据中所有不合法的内容
      * @param errorMask 位运算掩码

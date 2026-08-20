@@ -12,6 +12,7 @@ import dev.xcolorful.customgun.core.api.item.ammo.AmmoCategory;
 import dev.xcolorful.customgun.core.api.item.builder.AmmoBuilder;
 import dev.xcolorful.customgun.core.api.resource.ResourceApi;
 import dev.xcolorful.customgun.core.init.registry.ModItems;
+import dev.xcolorful.customgun.core.resource.data.index.AmmoIndex;
 import dev.xcolorful.customgun.core.resource.instance.data.AmmoIndexInstance;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
@@ -32,7 +33,10 @@ public class AmmoTab {
         List<ItemStack> ammoItems = new ArrayList<>();
         ResourceApi.getAllAmmoIndexInstance().stream().sorted(indexSort()).forEach(entry -> {
             @NotNull AmmoIndexInstance ammoIndexInstance = entry.getValue();
-            {
+
+            AmmoIndex ammoIndex = ammoIndexInstance.getPojo();
+
+            if (ammoIndex.getAmmoCategory() == ammoCategory) {
                 ItemStack ammoItem = AmmoBuilder.create(ModItems.AMMO.get())
                         // 子弹ResourceLocation
                         .setProperty(AmmoProperty.AMMO_LOCATION,

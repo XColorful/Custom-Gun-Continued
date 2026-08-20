@@ -1,6 +1,6 @@
 # 自定义枪械永续 | Custom Gun Continued
 <p align="center">
-  <img src="./logo/title.png">
+  <img src="./logo/title.png" alt="Custom Gun Continued title">
 </p>
 
 [中文](#自定义枪械永续) | [English](#custom-gun-continued)
@@ -19,7 +19,7 @@
 
 ## 主要特色
 <p align="left">
- <img src="./pic/attachment_gun.png">
+ <img src="./pic/attachment_gun.png" alt="配件枪">
 </p>
 
 本模组在 TaCZ 的基础上进行了深度的重构：
@@ -70,7 +70,7 @@ This mod is a derivative work based on [TaCZ](https://github.com/MCModderAnchor/
 
 ## Main Features
 <p align="left">
- <img src="./pic/attachment_gun.png">
+ <img src="./pic/attachment_gun.png" alt="Attachment gun">
 </p>
 
 This mod performs a deep refactor on top of TaCZ:

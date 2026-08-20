@@ -86,9 +86,7 @@ public final class GunDescriptionPart extends AbstractTooltipPart implements Gun
                 context.drawText(sequence,
                         currentX, currentY,
                         _defaultDescriptionColor.getRGB(),
-                        hasTextShadow,
-                        0,
-                        packedLightCoords);
+                        hasTextShadow);
                 currentY += textLineHeight;
             }
         }

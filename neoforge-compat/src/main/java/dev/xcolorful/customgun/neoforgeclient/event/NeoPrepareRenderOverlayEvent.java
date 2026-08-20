@@ -7,7 +7,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
 import org.jetbrains.annotations.Nullable;
@@ -39,7 +39,7 @@ public class NeoPrepareRenderOverlayEvent extends NeoEvent implements IPrepareRe
     }
 
     @Override
-    public ResourceLocation getRegistryLocation() {
+    public Identifier getRegistryLocation() {
         return renderGuiEvent.getName();
     }
 

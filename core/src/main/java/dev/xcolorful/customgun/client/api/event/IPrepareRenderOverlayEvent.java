@@ -1,7 +1,7 @@
 package dev.xcolorful.customgun.client.api.event;
 
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public interface IPrepareRenderOverlayEvent {
 
@@ -12,5 +12,5 @@ public interface IPrepareRenderOverlayEvent {
      */
     float getPartialTick();
 
-    ResourceLocation getRegistryLocation();
+    Identifier getRegistryLocation();
 }

@@ -9,6 +9,7 @@ package dev.xcolorful.customgun.client.gui.tooltip.attachment;
 
 import dev.xcolorful.customgun.client.api.item.attachment.AttachmentTooltipMask;
 import dev.xcolorful.customgun.client.gui.tooltip.AbstractTooltipPart;
+import net.minecraft.client.gui.Font;
 
 /**
  * 什么是配件的基础信息？除了加成信息以外还有什么？这个类预计的实现还是模糊的
@@ -20,7 +21,7 @@ public final class AttachmentBaseInfoPart extends AbstractTooltipPart implements
     private AttachmentBaseInfoPart() {}
 
     @Override
-    public void build(ClientAttachmentTooltip.Context context) {
+    public void build(ClientAttachmentTooltip.Context context, Font font) {
     }
 
     @Override

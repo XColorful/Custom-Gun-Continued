@@ -44,7 +44,7 @@ public class ClientAttachmentTooltip implements ClientTooltipComponent {
     // --------ClientTooltipComponent--------
 
 //    @Override
-    public int getHeight(Font font) {
+    public int getHeight(@NotNull Font font) {
         return this.context.getHeight(font);
     }
     @Override

@@ -5,6 +5,8 @@
   "refmap": "customgun.refmap.json",
   "client": [
     "entity.GunProjectileMixin",
+    "gui.GuiMixin",
+    "gui.LayeredDrawMixin",
     "item.GunItemMixin"
   ],
   "injectors": {

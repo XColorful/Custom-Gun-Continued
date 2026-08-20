@@ -99,7 +99,8 @@ public final class GunDetailInfoPart extends AbstractTooltipPart implements GunT
 
     @Override
     public void renderText(ClientGunTooltip.Context context,
-                           Font font, int pX, int pY,
+                           Font font,
+                           int pX, int pY,
                            Matrix4f matrix4f,
                            MultiBufferSource.BufferSource bufferSource) {
         int currentX = pX;
@@ -154,7 +155,8 @@ public final class GunDetailInfoPart extends AbstractTooltipPart implements GunT
 
     @Override
     public void renderImage(ClientGunTooltip.Context context,
-                            Font font, int pX, int pY,
+                            Font font,
+                            int pX, int pY,
                             GuiGraphics guiGraphics) {
         // mixin注入点
     }

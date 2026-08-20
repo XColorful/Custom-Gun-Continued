@@ -3,7 +3,7 @@ package dev.xcolorful.customgun.client.api.gui.tooltip;
 import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
@@ -57,7 +57,7 @@ public abstract class BaseTooltipContext<T extends BaseTooltipView> {
     // --------Cache--------
 
     public Font textFont = null;
-    public GuiGraphics textGraphic = null;
+    public GuiGraphicsExtractor textGraphic = null;
     @Deprecated(since = "1.21.6")
     public Object textMatrix4f = null;
     @Deprecated(since = "1.21.6")
@@ -71,7 +71,7 @@ public abstract class BaseTooltipContext<T extends BaseTooltipView> {
     }
 
     public Font imageFont = null;
-    public GuiGraphics imageGraphic = null;
+    public GuiGraphicsExtractor imageGraphic = null;
     @ApiStatus.Internal
     public void _clearImageCache() {
         this.imageFont = null;
@@ -87,28 +87,26 @@ public abstract class BaseTooltipContext<T extends BaseTooltipView> {
                          int currentX, int currentY,
                          int textRGB,
                          boolean hasTextShadow) {
-        this.textGraphic.drawString(this.textFont,
+        this.textGraphic.text(this.textFont,
                 component,
                 currentX, currentY,
-                textRGB,
-                hasTextShadow
+                textRGB
         );
     }
     public void drawText(@NotNull FormattedCharSequence sequence,
                          int currentX, int currentY,
                          int textRGB,
                          boolean hasTextShadow) {
-        this.textGraphic.drawString(this.textFont,
+        this.textGraphic.text(this.textFont,
                 sequence,
                 currentX, currentY,
-                textRGB,
-                hasTextShadow
+                textRGB
         );
     }
 
     public void drawItem(ItemStack itemStack,
                          int currentX, int currentY) {
-        this.imageGraphic.renderItem(itemStack,
+        this.imageGraphic.item(itemStack,
                 currentX, currentY);
     }
 }

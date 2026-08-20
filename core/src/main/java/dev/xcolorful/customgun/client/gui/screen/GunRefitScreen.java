@@ -34,7 +34,7 @@ import dev.xcolorful.customgun.core.network.message.ClientMessageUnloadAttachmen
 import dev.xcolorful.customgun.core.util.InventoryUtils;
 import dev.xcolorful.customgun.core.util.SendUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.player.LocalPlayer;
@@ -76,8 +76,8 @@ public class GunRefitScreen extends NoBackgroundScreen implements IGunRefitScree
     // --------Screen--------
 
     @Override
-    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float pPartialTick) {
-        super.render(graphics, mouseX, mouseY, pPartialTick);
+    public void extractRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float pPartialTick) {
+        super.extractRenderState(graphics, mouseX, mouseY, pPartialTick);
 
         for (GuiEventListener child : this.children()) {
             if (child instanceof IStackTooltip guiComponent) {

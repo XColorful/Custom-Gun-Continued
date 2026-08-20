@@ -16,7 +16,7 @@ import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
 import dev.xcolorful.customgun.core.api.minecraft.Color64;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
@@ -75,7 +75,7 @@ public class AttachmentCategorySlot extends Button implements IStackTooltip {
 
     // --------AbstractButton--------
 
-    public void _renderContent(@NotNull GuiGraphics graphics,
+    public void _renderContent(@NotNull GuiGraphicsExtractor graphics,
                                int pMouseX, int pMouseY,
                                float pPartialTick) {
         // 悬浮显示文本
@@ -86,7 +86,7 @@ public class AttachmentCategorySlot extends Button implements IStackTooltip {
             if (this.isSelected && !this.attachmentItem.isEmpty()) {
                 yOffset = this.getY() + 30;
             }
-            graphics.drawCenteredString(font,
+            graphics.centeredText(font,
                     category.getCategoryLang().copy(),
                     xOffset, yOffset,
                     Color64._FFFFFF.getRGB()
@@ -131,7 +131,7 @@ public class AttachmentCategorySlot extends Button implements IStackTooltip {
                     startX += 1;
                     startY += 1;
 
-                    graphics.renderItem(this.attachmentItem,
+                    graphics.item(this.attachmentItem,
                             startX, startY);
                 } else if (this.isCategoryEnabled) {
                     // 配件类型
@@ -196,7 +196,7 @@ public class AttachmentCategorySlot extends Button implements IStackTooltip {
     // 其他类可直接Ctrl CV
 
     @Override
-    public void renderContents(@NotNull GuiGraphics graphics,
+    public void extractContents(@NotNull GuiGraphicsExtractor graphics,
                              int pMouseX, int pMouseY,
                              float pPartialTick) {
         this._renderContent(graphics, pMouseX, pMouseY, pPartialTick);

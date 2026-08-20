@@ -73,7 +73,8 @@ public final class AmmoDescriptionPart extends AbstractTooltipPart implements Am
 
     @Override
     public void renderText(ClientAmmoTooltip.Context context,
-                           Font font, int pX, int pY,
+                           Font font,
+                           int pX, int pY,
                            Matrix4f matrix4f,
                            MultiBufferSource.BufferSource bufferSource) {
         int currentX = pX;

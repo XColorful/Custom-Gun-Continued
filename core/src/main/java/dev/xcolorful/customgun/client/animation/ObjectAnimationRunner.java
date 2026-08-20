@@ -180,7 +180,7 @@ public class ObjectAnimationRunner {
                         }
                         slerp(from, to, progress, result);
                     }
-                    // 增加类型使此处强制编译不通过，影响result初始化
+                    // 增加类型影响result初始化
                 }
 
                 List<ObjectAnimationChannel> newToChannels = transitionTo.animation.getChannels().get(fromChannel.node);
@@ -344,7 +344,7 @@ public class ObjectAnimationRunner {
                     }
                     slerp(from, to, progress, result);
                 }
-                // 增加类型使此处强制编译不通过，影响result初始化
+                // 增加类型影响result初始化
             }
 
             for (IAnimationListener listener : fromChannel.getListeners()) {

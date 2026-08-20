@@ -49,12 +49,14 @@ public final class ClientAmmoIndexInstance extends PojoInstance<AmmoIndex> {
     }
 
     @Override public boolean resetCache() {
-        this.ammoDisplayCache = ClientResourceApi.getAmmoDisplay(this.getPojo().getDisplayIndexLocation());
+        var pojo = this.getPojo();
+
+        this.ammoDisplayCache = ClientResourceApi.getAmmoDisplay(pojo.getDisplayIndexLocation());
         if (this.ammoDisplayCache == null) {
-            CustomGun.LOGGER.debug("ClientAmmoIndexInstance: AmmoDisplay {} not found", this.getPojo().getDisplayIndexLocation());
+            CustomGun.LOGGER.debug("ClientAmmoIndexInstance: AmmoDisplay {} not found", pojo.getDisplayIndexLocation());
             return false;
         } else if (!this.ammoDisplayCache.isValid()) {
-            CustomGun.LOGGER.debug("ClientAmmoIndexInstance: AmmoDisplay {} not valid", this.getPojo().getDisplayIndexLocation());
+            CustomGun.LOGGER.debug("ClientAmmoIndexInstance: AmmoDisplay {} not valid", pojo.getDisplayIndexLocation());
             return false;
         }
         {
@@ -99,9 +101,7 @@ public final class ClientAmmoIndexInstance extends PojoInstance<AmmoIndex> {
         return true;
     }
     @Override protected boolean isPojoValid() {
-        var pojo = this.getPojo();
-        if (!pojo.isValid()) return false;
-        if (!resetCache()) return false;
+        if (!super.isPojoValid()) return false;
 
         return true;
     }
@@ -127,10 +127,10 @@ public final class ClientAmmoIndexInstance extends PojoInstance<AmmoIndex> {
     // --------Deprecated--------
 
     @Deprecated public String getName() {
-        return ComponentUtils.toTranslatableKey(this.getPojo().getNameLang());
+        return this.getPojo().getNameLang();
     }
     @Deprecated public String getTooltipKey() {
-        return ComponentUtils.toTranslatableKey(this.getPojo().getTooltipLang());
+        return this.getPojo().getTooltipLang();
     }
     @Deprecated public int getStackSize() {
         return this.getPojo().getMaxStackSize();

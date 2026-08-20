@@ -95,7 +95,7 @@ public enum ShootState implements ResourceTag.CategoryTag {
             case PRONE -> pojo.getProne();
             case AIM -> pojo.getAim();
             case LEVITATE -> pojo.getLevitate();
-            // 如后续添加则强制编译不通过
+            // 增加类型使此处强制编译不通过
         };
     }
 

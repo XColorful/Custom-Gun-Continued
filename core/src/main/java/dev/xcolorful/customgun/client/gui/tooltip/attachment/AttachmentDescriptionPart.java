@@ -73,7 +73,8 @@ public final class AttachmentDescriptionPart extends AbstractTooltipPart impleme
 
     @Override
     public void renderText(ClientAttachmentTooltip.Context context,
-                           Font font, int pX, int pY,
+                           Font font,
+                           int pX, int pY,
                            Matrix4f matrix4f,
                            MultiBufferSource.BufferSource bufferSource) {
         int currentX = pX;

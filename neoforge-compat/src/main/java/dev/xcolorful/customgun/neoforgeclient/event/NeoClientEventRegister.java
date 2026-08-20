@@ -42,6 +42,9 @@ public final class NeoClientEventRegister implements IEventRegister {
             case RENDER_TRANSLUCENT_EVENT -> NeoRenderTranslucentEventManager.register(eventHandler, priority, receiveCanceled);
             case SUBMIT_CUSTOM_GEOMETRY_EVENT -> NeoSubmitCustomGeometryEventManager.register(eventHandler, priority, receiveCanceled);
             case RENDER_HAND_EVENT -> NeoRenderHandEventManager.register(eventHandler, priority, receiveCanceled);
+            case PREPARE_RENDER_OVERLAY_EVENT -> NeoPrepareRenderOverlayEventManager.register(eventHandler, priority, receiveCanceled);
+            case RENDER_OVERLAY_EVENT -> NeoRenderOverlayEventManager.register(eventHandler, priority, receiveCanceled);
+            case PREPARE_RENDER_GUI_EVENT -> NeoPrepareRenderGuiEventManager.register(eventHandler, priority, receiveCanceled);
             case RENDER_GUI_EVENT -> NeoRenderGuiEventManager.register(eventHandler, priority, receiveCanceled);
             // display
             case ITEM_TOOLTIP_EVENT -> NeoItemTooltipEventManager.register(eventHandler, priority, receiveCanceled);
@@ -77,6 +80,9 @@ public final class NeoClientEventRegister implements IEventRegister {
             case RENDER_TRANSLUCENT_EVENT -> NeoRenderTranslucentEventManager.unregister(eventHandler, priority, receiveCanceled);
             case SUBMIT_CUSTOM_GEOMETRY_EVENT -> NeoSubmitCustomGeometryEventManager.unregister(eventHandler, priority, receiveCanceled);
             case RENDER_HAND_EVENT -> NeoRenderHandEventManager.unregister(eventHandler, priority, receiveCanceled);
+            case PREPARE_RENDER_OVERLAY_EVENT -> NeoPrepareRenderOverlayEventManager.unregister(eventHandler, priority, receiveCanceled);
+            case RENDER_OVERLAY_EVENT -> NeoRenderOverlayEventManager.unregister(eventHandler, priority, receiveCanceled);
+            case PREPARE_RENDER_GUI_EVENT -> NeoPrepareRenderGuiEventManager.unregister(eventHandler, priority, receiveCanceled);
             case RENDER_GUI_EVENT -> NeoRenderGuiEventManager.unregister(eventHandler, priority, receiveCanceled);
             // display
             case ITEM_TOOLTIP_EVENT -> NeoItemTooltipEventManager.unregister(eventHandler, priority, receiveCanceled);

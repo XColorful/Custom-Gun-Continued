@@ -1,7 +1,7 @@
 [English](#English)
 
 # 渲染配置
-> wiki 版本：`0.0.4`.2
+> wiki 版本：`0.0.5`.3
 
 路径：`render`
 - `EnableLaserFadeOut`（bool）：是否对激光应用淡出效果
@@ -27,7 +27,7 @@
 - `AutoSelectGunSmithTableFilter`（bool）：手持枪械/配件/子弹打开改装台时是否自动选择过滤
 - `DamageCounterResetTime`（整数，≥10）：伤害计数器重置时间（毫秒）
 - `DisableMovementAttributeFov`（bool）：持枪时禁用移动速度属性对FOV的影响
-- `EnableResourceLocationInTooltip`（bool）：启用高级提示框时在提示框中显示资源位置
+- `AppendResourceLocationInTooltip`（bool）：是否在提示框枪包信息后附加显示资源位置
 - `EnableBlockEntityTranslucent`（bool）：渲染方块实体时启用半透明
 ```toml
 [render]
@@ -47,12 +47,12 @@
 	AutoSelectGunSmithTableFilter = true
 	DamageCounterResetTime = 2000
 	DisableMovementAttributeFov = true
-	EnableResourceLocationInTooltip = true
+	AppendResourceLocationInTooltip = true
 	EnableBlockEntityTranslucent = false
 ```
 
 # English
-> wiki verison: `0.0.4`.2
+> wiki verison: `0.0.5`.3
 
 ## Render Config
 
@@ -80,7 +80,7 @@ Path: `render`
 - `AutoSelectGunSmithTableFilter` (bool): Whether to automatically select the gun smith table's held item filter
 - `DamageCounterResetTime` (integer, ≥10): Max time the damage counter will reset
 - `DisableMovementAttributeFov` (bool): Disable the FOV effect from the movement speed attribute while holding a gun
-- `EnableResourceLocationInTooltip` (bool): Enable the display of the resource location in the tooltip when Advanced Tooltip is enabled
+- `AppendResourceLocationInTooltip` (bool): Whether to append resource location after gunpack information in tooltips
 - `EnableBlockEntityTranslucent` (bool): Enable translucent while rendering block entities
 ```toml
 [render]
@@ -100,6 +100,6 @@ Path: `render`
 	AutoSelectGunSmithTableFilter = true
 	DamageCounterResetTime = 2000
 	DisableMovementAttributeFov = true
-	EnableResourceLocationInTooltip = true
+	AppendResourceLocationInTooltip = true
 	EnableBlockEntityTranslucent = false
 ```

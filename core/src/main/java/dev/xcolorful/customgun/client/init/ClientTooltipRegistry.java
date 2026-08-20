@@ -4,9 +4,11 @@
 
 package dev.xcolorful.customgun.client.init;
 
+import dev.xcolorful.customgun.client.gui.tooltip.ammo.ClientAmmoTooltip;
 import dev.xcolorful.customgun.client.gui.tooltip.ammobox.ClientAmmoBoxTooltip;
 import dev.xcolorful.customgun.client.gui.tooltip.attachment.ClientAttachmentTooltip;
 import dev.xcolorful.customgun.client.gui.tooltip.gun.ClientGunTooltip;
+import dev.xcolorful.customgun.core.gui.tooltip.ammo.AmmoTooltip;
 import dev.xcolorful.customgun.core.gui.tooltip.ammobox.AmmoBoxTooltip;
 import dev.xcolorful.customgun.core.gui.tooltip.attachment.AttachmentTooltip;
 import dev.xcolorful.customgun.core.gui.tooltip.gun.GunTooltip;
@@ -33,6 +35,7 @@ public class ClientTooltipRegistry {
     public void registerTooltips(TooltipRegistrar registrar) {
         registrar.register(GunTooltip.class, ClientGunTooltip::new);
         registrar.register(AttachmentTooltip.class, ClientAttachmentTooltip::new);
+        registrar.register(AmmoTooltip.class, ClientAmmoTooltip::new);
         registrar.register(AmmoBoxTooltip.class, ClientAmmoBoxTooltip::new);
     }
 }

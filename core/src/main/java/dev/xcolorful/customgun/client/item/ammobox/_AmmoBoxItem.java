@@ -13,11 +13,19 @@ import dev.xcolorful.customgun.core.developer.PlannedRefactor;
 import dev.xcolorful.customgun.core.util.NBTUtils;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class _AmmoBoxItem {
+
+    public static @Nullable Component getName(IAmmoBox _this, @NotNull ItemStack ammoBoxItem) {
+        // TODO 是否将子弹名称写在物品名上？
+        // 显示在tooltip也行
+        return null;
+    }
 
     public static int getColor(ItemStack ammoItem, int tintIndex) {
         // 只有基础类型染色

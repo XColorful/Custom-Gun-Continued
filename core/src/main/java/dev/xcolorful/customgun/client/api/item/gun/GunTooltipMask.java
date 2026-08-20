@@ -13,12 +13,12 @@ import dev.xcolorful.customgun.core.api.resource.ResourceTag;
 import java.util.EnumSet;
 
 public enum GunTooltipMask implements ResourceTag.MaskTag {
-    DESCRIPTION(GunDescriptionPart.INSTANCE),
-    AMMO_INFO(GunAmmoInfoPart.INSTANCE),
-    BASE_INFO(GunBaseInfoPart.INSTANCE),
-    EXTRA_DAMAGE_INFO(GunExtraDamageInfoPart.INSTANCE),
-    UPGRADES_TIP(GunUpgradesTipPart.INSTANCE),
-    PACK_INFO(GunPackInfoPart.INSTANCE);
+    DESCRIPTION(0, GunDescriptionPart.INSTANCE),
+    STATE_INFO(1, GunStateInfoPart.INSTANCE),
+    BASE_INFO(2, GunBaseInfoPart.INSTANCE),
+    ENCHANTMENT_INFO(3, GunEnchantmentInfoPart.INSTANCE),
+    GUIDE_TIP(4, GunGuideTipPart.INSTANCE),
+    DETAIL_INFO(5, GunDetailInfoPart.INSTANCE);
 
     public final String maskName;
     private final int mask;
@@ -26,9 +26,9 @@ public enum GunTooltipMask implements ResourceTag.MaskTag {
      * 从 {@link ClientGunTooltip} 提取而来
      */
     private final GunTooltipPart tooltipPart;
-    GunTooltipMask(GunTooltipPart tooltipPart) {
+    GunTooltipMask(int ordinal, GunTooltipPart tooltipPart) {
         this.maskName = this.name().toLowerCase();
-        this.mask = 1 << this.ordinal();
+        this.mask = 1 << ordinal;
         this.tooltipPart = tooltipPart;
     }
     @Override
@@ -39,26 +39,46 @@ public enum GunTooltipMask implements ResourceTag.MaskTag {
     public int getMask() {
         return this.mask;
     }
+
     public GunTooltipPart getTooltipPart() {
         return this.tooltipPart;
     }
 
     private static final GunTooltipMask[] VALUES = values();
 
+    /**
+     * Tooltip 显示掩码
+     * <ul>
+     *     <li>二进制位为{@code 1}：禁用对应的 Tooltip 部分</li>
+     *     <li>二进制位为{@code 0}：启用对应的 Tooltip 部分</li>
+     * </ul>
+     * 传入{@code 0}表示全部启用
+     */
     public static EnumSet<GunTooltipMask> fromBitmap(int bitmap) {
         EnumSet<GunTooltipMask> set = EnumSet.noneOf(GunTooltipMask.class);
         for (GunTooltipMask value : VALUES) {
-            if ((bitmap & value.mask) != 0) {
+            if ((bitmap & value.mask) == 0) {
                 set.add(value);
             }
         }
         return set;
     }
 
+    /**
+     * 根据启用的 Tooltip 部分生成显示掩码
+     * <ul>
+     *     <li>集合中包含：对应二进制位为{@code 0}</li>
+     *     <li>集合中不包含：对应二进制位为{@code 1}</li>
+     * </ul>
+     * @param set 启用的 Tooltip 部分
+     * @return Tooltip 显示掩码
+     */
     public static int toBitmap(EnumSet<GunTooltipMask> set) {
         int bitmap = 0;
-        for (GunTooltipMask value : set) {
-            bitmap |= value.mask;
+        for (GunTooltipMask value : VALUES) {
+            if (!set.contains(value)) {
+                bitmap |= value.mask;
+            }
         }
         return bitmap;
     }

@@ -40,12 +40,12 @@ public class ClientMessageLaserColor implements IMessage<ClientMessageLaserColor
         if (iGun == null) return;
 
         for (AttachmentCategory category : AttachmentCategory.values()) {
-            ItemStack attachment = iGun.getAttachment(gunItem, category);
-            @Nullable IAttachment iAttachment = IAttachmentGetter.fromItemStack(attachment);
+            ItemStack attachmentItem = iGun.getAttachment(gunItem, category);
+            @Nullable IAttachment iAttachment = IAttachmentGetter.fromItemStack(attachmentItem);
             if (iAttachment == null) continue;
 
-            if (iAttachment.hasLaserColor(attachment)) {
-                this.colorMap.put(category, iAttachment.getLaserColorInt(attachment));
+            if (iAttachment.hasLaserColor(attachmentItem)) {
+                this.colorMap.put(category, iAttachment.getLaserColorInt(attachmentItem));
             }
         }
 

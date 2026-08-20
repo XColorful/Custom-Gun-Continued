@@ -356,7 +356,7 @@ public interface GunDataAccessor extends IGunDataAccess {
     }
     @Override
     default int getMagAmmoCountWithBarrel(ItemStack gunItem, BoltType boltType) {
-        if (boltType == BoltType.OPEN_BOLT) {
+        if (!boltType.useBarrelAmmo()) {
             return this.getMagAmmoCount(gunItem);
         } else {
             return this.getMagAmmoCount(gunItem) + this.getBarrelAmmoCount(gunItem);

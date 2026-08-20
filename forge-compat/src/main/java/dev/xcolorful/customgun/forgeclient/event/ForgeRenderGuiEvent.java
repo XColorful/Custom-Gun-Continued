@@ -20,14 +20,14 @@ import org.jetbrains.annotations.Nullable;
 
 public class ForgeRenderGuiEvent extends ForgeEvent implements IRenderGuiEvent {
 
-    private final RenderGuiEvent.Post event;
+    private final RenderGuiEvent.Post renderGuiEvent;
 
     public ForgeRenderGuiEvent(Event event) {
         super(event);
         if (event instanceof RenderGuiEvent.Post eventIn) {
-            this.event = eventIn;
+            this.renderGuiEvent = eventIn;
         } else {
-            throw new RuntimeException("Expected RenderGuiEvent but received: " + event.getClass().getName());
+            throw new RuntimeException("Expected RenderGuiEvent.Post but received: " + event.getClass().getName());
         }
     }
     @Override public EventType getType() {
@@ -36,7 +36,12 @@ public class ForgeRenderGuiEvent extends ForgeEvent implements IRenderGuiEvent {
 
     @Override
     public GuiGraphics getGuiGraphics() {
-        return this.event.getGuiGraphics();
+        return renderGuiEvent.getGuiGraphics();
+    }
+
+    @Override
+    public float getPartialTick() {
+        return renderGuiEvent.getPartialTick();
     }
 
     @Override

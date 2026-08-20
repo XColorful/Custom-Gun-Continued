@@ -9,6 +9,7 @@ package dev.xcolorful.customgun.client.gui.tooltip.attachment;
 
 import dev.xcolorful.customgun.client.api.item.attachment.AttachmentTooltipMask;
 import dev.xcolorful.customgun.client.gui.tooltip.AbstractTooltipPart;
+import net.minecraft.client.gui.Font;
 
 /**
  * 配件状态
@@ -20,7 +21,7 @@ public final class AttachmentStateInfoPart extends AbstractTooltipPart implement
     private AttachmentStateInfoPart() {}
 
     @Override
-    public void build(ClientAttachmentTooltip.Context context) {
+    public void build(ClientAttachmentTooltip.Context context, Font font) {
     }
 
     @Override

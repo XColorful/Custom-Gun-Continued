@@ -1,22 +1,19 @@
 package dev.xcolorful.customgun.client.api.gui.tooltip;
 
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
 
 public interface TooltipPart<T extends BaseTooltipContext<?>> {
 
-    void build(T context);
+    void build(T context,
+               Font font);
 
     int measureHeight(T context);
 
     default void renderText(T context,
-                            GuiGraphics guiGraphics,
-                            Font font, int pX, int pY) {
+                            int startX, int startY) {
     }
 
     default void renderImage(T context,
-                             Font font, int pX, int pY,
-                             int width, int height,
-                             GuiGraphics guiGraphics) {
+                             int startX, int startY) {
     }
 }

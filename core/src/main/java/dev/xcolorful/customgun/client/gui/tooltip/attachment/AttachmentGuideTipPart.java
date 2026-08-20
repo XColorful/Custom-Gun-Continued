@@ -10,9 +10,6 @@ package dev.xcolorful.customgun.client.gui.tooltip.attachment;
 import dev.xcolorful.customgun.client.api.item.attachment.AttachmentTooltipMask;
 import dev.xcolorful.customgun.client.gui.tooltip.AbstractTooltipPart;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.MultiBufferSource;
-import org.joml.Matrix4f;
 
 /**
  * "[Shift] 展开枪械安装性"预计放在这里，用于提示
@@ -24,7 +21,7 @@ public final class AttachmentGuideTipPart extends AbstractTooltipPart implements
     private AttachmentGuideTipPart() {}
 
     @Override
-    public void build(ClientAttachmentTooltip.Context context) {
+    public void build(ClientAttachmentTooltip.Context context, Font font) {
         // mixin注入点
 
         context.showGunInstallability = context.isCreative && context.isAdvanced;
@@ -42,19 +39,13 @@ public final class AttachmentGuideTipPart extends AbstractTooltipPart implements
 
     @Override
     public void renderText(ClientAttachmentTooltip.Context context,
-                           Font font,
-                           int pX, int pY,
-                           Matrix4f matrix4f,
-                           MultiBufferSource.BufferSource bufferSource) {
+                           int startX, int startY) {
         // mixin注入点
     }
 
     @Override
     public void renderImage(ClientAttachmentTooltip.Context context,
-                            Font font,
-                            int pX,
-                            int pY,
-                            GuiGraphics guiGraphics) {
+                            int startX, int startY) {
         // mixin注入点
     }
 }

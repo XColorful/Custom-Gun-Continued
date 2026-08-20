@@ -20,6 +20,7 @@ import dev.xcolorful.customgun.client.resource.assets.display._LaserDisplay;
 import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
 import dev.xcolorful.customgun.client.resource.instance.data.ClientAttachmentIndexInstance;
 import dev.xcolorful.customgun.client.sound.SoundPlayManager;
+import dev.xcolorful.customgun.client.util.ClientMcUtils;
 import dev.xcolorful.customgun.client.util.ClientGuiUtils;
 import dev.xcolorful.customgun.core.api.item.IAttachment;
 import dev.xcolorful.customgun.core.api.item.IGun;
@@ -90,14 +91,17 @@ public class GunRefitScreen extends Screen implements IGunRefitScreen<GunRefitSc
     public void init() {
         this.clearWidgets();
 
-        LocalPlayer player = getMinecraft().player;
+        Minecraft mc = getMinecraft();
+        LocalPlayer player = mc.player;
         if (player == null) return;
 
         ItemStack gunItem = player.getMainHandItem();
         @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) {
-            // 没枪就直接退出界面，延迟到下一帧处理以避免在 init 生命周期中重入切换 Screen
-            Minecraft.getInstance().tell(() -> ClientGuiUtils.setCurrentScreen(Minecraft.getInstance(), null));
+            // 没枪就直接退出界面，延迟到下一tick处理以避免在 init 生命周期中重入切换 Screen
+            ClientMcUtils.schedule(mc, () -> {
+                if (ClientGuiUtils.getCurrentScreen(mc) instanceof IGunRefitScreen<?>) ClientGuiUtils.setCurrentScreen(mc, null);
+            });
             return;
         }
 

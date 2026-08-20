@@ -16,6 +16,7 @@ import dev.xcolorful.customgun.core.api.item.IAttachment;
 import dev.xcolorful.customgun.core.api.resource.ResourceApi;
 import dev.xcolorful.customgun.core.gui.tooltip.attachment.AttachmentTooltip;
 import dev.xcolorful.customgun.core.resource.instance.data.AttachmentIndexInstance;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
@@ -40,42 +41,33 @@ public class ClientAttachmentTooltip implements ClientTooltipComponent {
 
     // --------ClientTooltipComponent--------
 
-    @Override public int getHeight(Font font) {
-        return this.context.getHeight();
-    }
-    @Override public int getWidth(@NotNull Font font) {
-        return this.context.getMaxWidth();
+    @Override
+    public int getHeight(@NotNull Font font) {
+        return this.context.getHeight(font);
     }
     @Override
-    public void renderText(@NotNull GuiGraphics guiGraphics,
-                           @NotNull Font font,
-                           int pX, int pY) {
-        int currentX = pX;
-        int currentY = pY;
+    public int getWidth(@NotNull Font font) {
+        return this.context.getMaxWidth();
+    }
+
+    public void renderText(int startX, int startY) {
+        int currentX = startX;
+        int currentY = startY;
 
         for (AttachmentTooltipMask mask : this.context.visibleParts) {
             mask.getTooltipPart().renderText(this.context,
-                    font,
-                    currentX, currentY,
-                    matrix4f,
-                    bufferSource);
+                    currentX, currentY);
 
             currentY += mask.getTooltipPart().measureHeight(this.context);
         }
     }
-    @Override
-    public void renderImage(@NotNull Font font,
-                            int pX, int pY,
-                            int width, int height,
-                            @NotNull GuiGraphics guiGraphics) {
-        int currentX = pX;
-        int currentY = pY;
+    public void renderImage(int startX, int startY) {
+        int currentX = startX;
+        int currentY = startY;
 
         for (AttachmentTooltipMask mask : this.context.visibleParts) {
             mask.getTooltipPart().renderImage(this.context,
-                    font,
-                    currentX, currentY,
-                    guiGraphics);
+                    currentX, currentY);
 
             currentY += mask.getTooltipPart().measureHeight(this.context);
         }
@@ -112,17 +104,55 @@ public class ClientAttachmentTooltip implements ClientTooltipComponent {
         }
         @Override
         protected void buildView() {
+            Font font = Minecraft.getInstance().font;
             for (AttachmentTooltipMask mask : this.visibleParts) {
-                mask.getTooltipPart().build(this);
+                mask.getTooltipPart().build(this, font);
             }
         }
         @Override
-        protected int calculateHeight() {
+        protected int calculateHeight(Font font) {
             int height = 0;
             for (AttachmentTooltipMask mask : this.visibleParts) {
                 height += mask.getTooltipPart().measureHeight(this);
             }
             return height;
         }
+    }
+
+    // --------Compat--------
+    // 跨版本适配层
+    // 其他类可直接Ctrl CV
+
+    @Override
+    public int getHeight() {
+        return this.getHeight(Minecraft.getInstance().font);
+    }
+
+    @Override
+    public void renderText(@NotNull Font font,
+                           int startX, int startY,
+                           @NotNull Matrix4f matrix4f,
+                           @NotNull MultiBufferSource.BufferSource bufferSource) {
+        { // 设置缓存
+            this.context.textFont = font;
+            this.context.textMatrix4f = matrix4f;
+            this.context.textBufferSource = bufferSource;
+
+            this.renderText(startX, startY);
+        }
+        this.context._clearTextCache();
+    }
+
+    @Override
+    public void renderImage(@NotNull Font font,
+                            int startX, int startY,
+                            @NotNull GuiGraphics guiGraphics) {
+        { // 设置缓存
+            this.context.imageFont = font;
+            this.context.imageGraphic = guiGraphics;
+
+            this.renderImage(startX, startY);
+        }
+        this.context._clearImageCache();
     }
 }

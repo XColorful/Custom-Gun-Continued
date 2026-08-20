@@ -13,13 +13,9 @@ import dev.xcolorful.customgun.core.api.minecraft.Color64;
 import dev.xcolorful.customgun.core.resource.data.index.AmmoIndex;
 import dev.xcolorful.customgun.core.resource.instance.data.AmmoIndexInstance;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Matrix4f;
 
 /*
 |物  | 子弹名称
@@ -39,9 +35,7 @@ public final class AmmoBoxStateInfoPart extends AbstractTooltipPart implements A
     private static final boolean hasTextShadow = true;
 
     @Override
-    public void build(ClientAmmoBoxTooltip.Context context) {
-        Font font = Minecraft.getInstance().font;
-
+    public void build(ClientAmmoBoxTooltip.Context context, Font font) {
         @Nullable AmmoIndexInstance ammoIndexInstance = context.ammoIndexInstance;
         if (ammoIndexInstance == null) return;
 
@@ -71,24 +65,18 @@ public final class AmmoBoxStateInfoPart extends AbstractTooltipPart implements A
 
     @Override
     public void renderText(ClientAmmoBoxTooltip.Context context,
-                           Font font,
-                           int pX, int pY,
-                           Matrix4f matrix4f,
-                           MultiBufferSource.BufferSource bufferSource) {
-        int currentX = pX + _textXOffset;
-        int currentY = pY;
+                           int startX, int startY) {
+        int currentX = startX + _textXOffset;
+        int currentY = startY;
 
         if (context.showAmmo && context.view.ammoName != null) {
             currentY += textLineSpacing;
 
             // 弹药名
-            font.drawInBatch(context.view.ammoName,
+            context.drawText(context.view.ammoName,
                     currentX, currentY,
                     _defaultAmmoNameColor.getRGB(),
                     hasTextShadow,
-                    matrix4f,
-                    bufferSource,
-                    Font.DisplayMode.NORMAL,
                     0,
                     packedLightCoords);
             currentY += textLineHeight;
@@ -98,13 +86,10 @@ public final class AmmoBoxStateInfoPart extends AbstractTooltipPart implements A
             currentY += textLineSpacing;
 
             // 弹药数
-            font.drawInBatch(context.view.ammoCount,
+            context.drawText(context.view.ammoCount,
                     currentX, currentY,
                     _defaultAmmoCountColor.getRGB(),
                     hasTextShadow,
-                    matrix4f,
-                    bufferSource,
-                    Font.DisplayMode.NORMAL,
                     0,
                     packedLightCoords);
             currentY += textLineHeight;
@@ -113,14 +98,12 @@ public final class AmmoBoxStateInfoPart extends AbstractTooltipPart implements A
 
     @Override
     public void renderImage(ClientAmmoBoxTooltip.Context context,
-                            Font font,
-                            int pX, int pY,
-                            GuiGraphics guiGraphics) {
-        int currentX = pX;
-        int currentY = pY + textLineSpacing;
+                            int startX, int startY) {
+        int currentX = startX;
+        int currentY = startY + textLineSpacing;
 
         if (context.showAmmo) { // 子弹物品
-            guiGraphics.renderItem(context.ammoBoxTooltip.ammoItem(),
+            context.drawItem(context.ammoBoxTooltip.ammoItem(),
                     currentX, currentY);
         }
     }

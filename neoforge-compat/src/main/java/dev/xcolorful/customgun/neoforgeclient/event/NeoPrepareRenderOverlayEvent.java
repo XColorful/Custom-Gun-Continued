@@ -3,7 +3,7 @@ package dev.xcolorful.customgun.neoforgeclient.event;
 import dev.xcolorful.customgun.client.api.event.IPrepareRenderOverlayEvent;
 import dev.xcolorful.customgun.core.api.event.EventType;
 import dev.xcolorful.customgun.neoforge.event.NeoEvent;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
@@ -29,7 +29,7 @@ public class NeoPrepareRenderOverlayEvent extends NeoEvent implements IPrepareRe
     }
 
     @Override
-    public GuiGraphics getGuiGraphics() {
+    public GuiGraphicsExtractor getGuiGraphics() {
         return renderGuiEvent.getGuiGraphics();
     }
 

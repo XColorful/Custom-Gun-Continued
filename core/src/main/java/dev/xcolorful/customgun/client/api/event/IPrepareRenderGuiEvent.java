@@ -1,10 +1,10 @@
 package dev.xcolorful.customgun.client.api.event;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 public interface IPrepareRenderGuiEvent {
 
-    GuiGraphics getGuiGraphics();
+    GuiGraphicsExtractor getGuiGraphics();
 
     /**
      * @return {@code RenderGuiEvent.getPartialTick().getGameTimeDeltaPartialTick(true)}

@@ -51,7 +51,7 @@ import java.util.List;
 /**
  * 目前扩展性设计仅一个mixin注入点
  */
-public class GunRefitScreen extends Screen implements IGunRefitScreen<GunRefitScreen> {
+public class GunRefitScreen extends NoBackgroundScreen implements IGunRefitScreen<GunRefitScreen> {
 
     /**
      * 屏幕右侧留出的距离 (1920x1080p下120像素)
@@ -85,11 +85,6 @@ public class GunRefitScreen extends Screen implements IGunRefitScreen<GunRefitSc
                 guiComponent.renderTooltip(stack -> ClientGuiUtils.renderTooltip(graphics, font, mouseX, mouseY, stack));
             }
         }
-    }
-
-    // 移除虚化背景
-    @Override
-    public void renderTransparentBackground(@NotNull GuiGraphics graphics) {
     }
 
     @Override

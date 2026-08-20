@@ -7,8 +7,8 @@
 
 package dev.xcolorful.customgun.client.gui.screen.refit;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import dev.xcolorful.customgun.client.api.minecraft.texture.CustomTexture;
+import dev.xcolorful.customgun.client.util.ClientGuiUtils;
 import dev.xcolorful.customgun.client.util.ClientRenderHelper;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -40,8 +40,8 @@ public class InventoryAttachmentSlot extends Button implements IStackTooltip {
     public void renderWidget(@NotNull GuiGraphics graphics,
                              int pMouseX, int pMouseY,
                              float pPartialTick) {
-        RenderSystem.disableDepthTest();
-        RenderSystem.enableBlend(); {
+        ClientRenderHelper.GL._disableDepthTest();
+        ClientRenderHelper.GL._enableBlend(); {
             { // 渲染外框
                 CustomTexture texture = this.isHoveredOrFocused() ? CustomTexture.SLOT_SELECTED : CustomTexture.SLOT;
 
@@ -55,7 +55,7 @@ public class InventoryAttachmentSlot extends Button implements IStackTooltip {
                 int uWidth = texture.getWidth();
                 int vHeight = texture.getHeight();
 
-                ClientRenderHelper.blitGuiTexture(graphics,
+                ClientGuiUtils.blitGuiTexture(graphics,
                         texture,
                         startX, startY,
                         endX, endY,
@@ -71,9 +71,8 @@ public class InventoryAttachmentSlot extends Button implements IStackTooltip {
                         startX, startY);
             }
         }
-
-        RenderSystem.enableDepthTest();
-        RenderSystem.disableBlend();
+        ClientRenderHelper.GL._enableDepthTest();
+        ClientRenderHelper.GL._disableBlend();
     }
 
     // --------IStackTooltip--------

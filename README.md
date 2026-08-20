@@ -64,6 +64,9 @@ This mod is a derivative work based on [TaCZ](https://github.com/MCModderAnchor/
 `This mod needs to be installed on both the server and the client.`
 
 ## Main Features
+<p align="left">
+ <img src="./pic/attachment_gun.png">
+</p>
 
 This mod performs a deep refactor on top of TaCZ:
 

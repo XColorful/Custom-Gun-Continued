@@ -62,7 +62,7 @@ public class RefitTurnPageButton extends Button {
     // 其他类可直接Ctrl CV
 
     @Override
-    public void renderWidget(@NotNull GuiGraphics graphics,
+    public void renderContents(@NotNull GuiGraphics graphics,
                              int pMouseX, int pMouseY,
                              float pPartialTick) {
         this._renderContent(graphics, pMouseX, pMouseY, pPartialTick);

@@ -27,10 +27,9 @@ public class RefitUnloadButton extends Button {
         super(pX + unloadButtonXMargin, pY + unloadButtonYMargin, CustomTexture.UNLOAD.getHeight() / 2, CustomTexture.UNLOAD.getHeight() / 2, Component.empty(), pOnPress, DEFAULT_NARRATION);
     }
 
-    @Override
-    public void renderWidget(@NotNull GuiGraphics graphics,
-                             int pMouseX, int pMouseY,
-                             float pPartialTick) {
+    public void _renderContent(@NotNull GuiGraphics graphics,
+                               int pMouseX, int pMouseY,
+                               float pPartialTick) {
         ClientRenderHelper.GL._disableDepthTest();
         ClientRenderHelper.GL._enableBlend(); {
             CustomTexture texture = CustomTexture.UNLOAD;
@@ -54,5 +53,16 @@ public class RefitUnloadButton extends Button {
         }
         ClientRenderHelper.GL._enableDepthTest();
         ClientRenderHelper.GL._disableBlend();
+    }
+
+    // --------Compat--------
+    // 跨版本适配层
+    // 其他类可直接Ctrl CV
+
+    @Override
+    public void renderWidget(@NotNull GuiGraphics graphics,
+                             int pMouseX, int pMouseY,
+                             float pPartialTick) {
+        this._renderContent(graphics, pMouseX, pMouseY, pPartialTick);
     }
 }

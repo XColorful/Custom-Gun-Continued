@@ -6,6 +6,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Overlay;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -50,7 +51,7 @@ public class ClientGuiUtils {
                                       int textureWidth, int textureHeight) {
         guiGraphics.blit(
                 // 1.21.4
-//              RenderType::guiTextured
+                RenderType::guiTextured,
                 // 1.21.6
 //              RenderPipelines.GUI_TEXTURED
                 textureLocation,

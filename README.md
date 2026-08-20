@@ -18,6 +18,9 @@
 `该模组需要安装在服务端和客户端`
 
 ## 主要特色
+<p align="left">
+ <img src="./pic/attachment_gun.png">
+</p>
 
 本模组在 TaCZ 的基础上进行了深度的重构：
 

@@ -8,6 +8,7 @@ import net.minecraft.client.gui.screens.Overlay;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
@@ -75,6 +76,16 @@ public class ClientGuiUtils {
                     startX, startY,
                     rgb);
         }
+        public static void drawText(GuiGraphics guiGraphics,
+                                    Font font,
+                                    FormattedCharSequence sequence,
+                                    int startX, int startY,
+                                    int rgb) {
+            guiGraphics.drawString(font, // text
+                    sequence,
+                    startX, startY,
+                    rgb);
+        }
 
         public static void drawCenteredText(GuiGraphics guiGraphics,
                                             Font font,
@@ -84,6 +95,17 @@ public class ClientGuiUtils {
             guiGraphics.drawCenteredString( // centeredText
                     font,
                     component,
+                    startX, startY,
+                    rgb);
+        }
+        public static void drawCenteredText(GuiGraphics guiGraphics,
+                                            Font font,
+                                            FormattedCharSequence sequence,
+                                            int startX, int startY,
+                                            int rgb) {
+            guiGraphics.drawCenteredString( // centeredText
+                    font,
+                    sequence,
                     startX, startY,
                     rgb);
         }

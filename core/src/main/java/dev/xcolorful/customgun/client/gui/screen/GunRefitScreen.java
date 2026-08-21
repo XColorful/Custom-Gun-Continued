@@ -76,12 +76,14 @@ public class GunRefitScreen extends NoBackgroundScreen implements IGunRefitScree
     // --------Screen--------
 
     @Override
-    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float pPartialTick) {
+    public void render(@NotNull GuiGraphics graphics,
+                       int mouseX, int mouseY,
+                       float pPartialTick) {
         super.render(graphics, mouseX, mouseY, pPartialTick);
 
         for (GuiEventListener child : this.children()) {
             if (child instanceof IStackTooltip guiComponent) {
-                guiComponent.renderTooltip(stack -> ClientGuiUtils.renderTooltip(graphics, font, mouseX, mouseY, stack));
+                guiComponent.renderTooltip(stack -> ClientGuiUtils.Graphics.drawTooltip(graphics, font, mouseX, mouseY, stack));
             }
         }
     }

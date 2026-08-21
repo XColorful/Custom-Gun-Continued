@@ -36,7 +36,6 @@ public final class GunDetailInfoPart extends AbstractTooltipPart implements GunT
     private static final Color64 _defaultCategoryColor = Color64.fromChatFormatting(ChatFormatting.BLUE);
     private static final Color64 _defaultPackColor = Color64.fromChatFormatting(ChatFormatting.BLUE);
     private static final Color64 _defaultLocationColor = _defaultCategoryColor; // MC用的DARK_GRAY，改成跟category一样
-    private static final boolean hasTextShadow = true;
 
     @Override
     public void build(ClientGunTooltip.Context context, Font font) {
@@ -101,8 +100,8 @@ public final class GunDetailInfoPart extends AbstractTooltipPart implements GunT
             // 枪械类型
             context.drawText(context.view.category,
                     currentX, currentY,
-                    _defaultCategoryColor.getRGB(),
-                    hasTextShadow);
+                    _defaultCategoryColor.getRGB()
+            );
             currentY += textLineHeight;
         }
 
@@ -112,8 +111,8 @@ public final class GunDetailInfoPart extends AbstractTooltipPart implements GunT
             // 枪包信息
             context.drawText(context.view.packInfo,
                     currentX, currentY,
-                    _defaultPackColor.getRGB(),
-                    hasTextShadow);
+                    _defaultPackColor.getRGB()
+            );
             currentY += textLineHeight;
         }
 
@@ -123,8 +122,8 @@ public final class GunDetailInfoPart extends AbstractTooltipPart implements GunT
             // 资源位置
             context.drawText(context.view.pojoLocation,
                     currentX, currentY,
-                    _defaultLocationColor.getRGB(),
-                    hasTextShadow);
+                    _defaultLocationColor.getRGB()
+            );
             currentY += textLineHeight;
         }
     }

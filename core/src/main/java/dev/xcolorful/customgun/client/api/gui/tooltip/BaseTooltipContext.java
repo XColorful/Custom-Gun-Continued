@@ -1,5 +1,6 @@
 package dev.xcolorful.customgun.client.api.gui.tooltip;
 
+import dev.xcolorful.customgun.client.util.ClientGuiUtils;
 import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -81,12 +82,12 @@ public abstract class BaseTooltipContext<T extends BaseTooltipView> {
     // --------Compat--------
     // 跨版本适配层
 
+    private static final boolean hasTextShadow = true;
     private static final int _backgroundRGB = 0;
     private static final int _packedLightCoords = ClientRenderUtils.LightTexture_.pack(15, 15);
     public void drawText(@NotNull Component component,
                          int currentX, int currentY,
-                         int textRGB,
-                         boolean hasTextShadow) {
+                         int textRGB) {
         this.textFont.drawInBatch(component,
                 currentX, currentY,
                 textRGB,
@@ -100,8 +101,7 @@ public abstract class BaseTooltipContext<T extends BaseTooltipView> {
     }
     public void drawText(@NotNull FormattedCharSequence sequence,
                          int currentX, int currentY,
-                         int textRGB,
-                         boolean hasTextShadow) {
+                         int textRGB) {
         this.textFont.drawInBatch(sequence,
                 currentX, currentY,
                 textRGB,
@@ -116,7 +116,6 @@ public abstract class BaseTooltipContext<T extends BaseTooltipView> {
 
     public void drawItem(ItemStack itemStack,
                          int currentX, int currentY) {
-        this.imageGraphic.renderItem(itemStack,
-                currentX, currentY);
+        ClientGuiUtils.Graphics.drawItem(this.imageGraphic, itemStack, currentX, currentY);
     }
 }

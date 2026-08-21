@@ -65,6 +65,17 @@ public class ClientGuiUtils {
                     textureWidth, textureHeight);
         }
 
+        public static void drawText(GuiGraphics guiGraphics,
+                                    Font font,
+                                    Component component,
+                                    int startX, int startY,
+                                    int rgb) {
+            guiGraphics.drawString(font, // text
+                    component,
+                    startX, startY,
+                    rgb);
+        }
+
         public static void drawCenteredText(GuiGraphics guiGraphics,
                                             Font font,
                                             Component component,

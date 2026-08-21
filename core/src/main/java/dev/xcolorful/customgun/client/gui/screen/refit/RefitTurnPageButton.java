@@ -38,8 +38,8 @@ public class RefitTurnPageButton extends Button {
 
             int startX = getX();
             int startY = getY();
-            int endX = this.width;
-            int endY = this.height;
+            int width = this.width;
+            int height = this.height;
 
             int uOffset = this.isHoveredOrFocused() ? texture.getWidth() / 2 : 0;
             int vOffset = this.isPreviousPage ? 0 : texture.getHeight() / 2;
@@ -49,7 +49,7 @@ public class RefitTurnPageButton extends Button {
             ClientGuiUtils.blitGuiTexture(graphics,
                     texture,
                     startX, startY,
-                    endX, endY,
+                    width, height,
                     uOffset, vOffset,
                     uWidth, vHeight);
         }

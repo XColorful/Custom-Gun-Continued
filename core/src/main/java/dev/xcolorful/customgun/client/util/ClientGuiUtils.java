@@ -61,9 +61,9 @@ public class ClientGuiUtils {
                     RenderPipelines.GUI_TEXTURED,
                     textureLocation,
                     startX, startY,
-                    width, height, // [1.20.1, 1.21.4)
+//                  width, height, // [1.20.1, 1.21.4)
                     uOffset, vOffset,
-//                  width, height, // [1.21.4, )
+                    width, height, // [1.21.4, )
                     uWidth, vHeight,
                     textureWidth, textureHeight);
         }

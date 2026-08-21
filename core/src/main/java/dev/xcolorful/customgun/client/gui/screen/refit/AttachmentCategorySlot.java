@@ -106,8 +106,8 @@ public class AttachmentCategorySlot extends Button implements IStackTooltip {
 
                 int startX = this.getX();
                 int startY = this.getY();
-                int endX = this.width;
-                int endY = this.height;
+                int width = this.width;
+                int height = this.height;
 
                 int uOffset = 0;
                 int vOffset = 0;
@@ -117,7 +117,7 @@ public class AttachmentCategorySlot extends Button implements IStackTooltip {
                 ClientGuiUtils.blitGuiTexture(graphics,
                         texture,
                         startX, startY,
-                        endX, endY,
+                        width, height,
                         uOffset, vOffset,
                         uWidth, vHeight);
             }
@@ -138,8 +138,8 @@ public class AttachmentCategorySlot extends Button implements IStackTooltip {
                     // 配件类型
                     CustomTexture texture = CustomTexture.ATTACHMENT_CATEGORIES;
 
-                    int endX = this.width;
-                    int endY = this.height;
+                    int width = this.width;
+                    int height = this.height;
 
                     int uOffset = getSlotTextureXOffset(category);
                     int vOffset = 0;
@@ -149,7 +149,7 @@ public class AttachmentCategorySlot extends Button implements IStackTooltip {
                     ClientGuiUtils.blitGuiTexture(graphics,
                             texture,
                             startX, startY,
-                            endX, endY,
+                            width, height,
                             uOffset, vOffset,
                             uWidth, vHeight);
                 }
@@ -161,8 +161,8 @@ public class AttachmentCategorySlot extends Button implements IStackTooltip {
 
                 int startX = this.getX();
                 int startY = this.getY();
-                int endX = this.width;
-                int endY = this.height;
+                int width = this.width;
+                int height = this.height;
 
                 int uOffset = getSlotTextureXOffset(AttachmentCategory.NONE);
                 int vOffset = 0;
@@ -172,7 +172,7 @@ public class AttachmentCategorySlot extends Button implements IStackTooltip {
                 ClientGuiUtils.blitGuiTexture(graphics,
                         texture,
                         startX, startY,
-                        endX, endY,
+                        width, height,
                         uOffset, vOffset,
                         uWidth, vHeight);
             }

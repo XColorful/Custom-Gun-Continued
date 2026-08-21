@@ -46,8 +46,8 @@ public class InventoryAttachmentSlot extends Button implements IStackTooltip {
 
                 int startX = this.getX();
                 int startY = this.getY();
-                int endX = this.width;
-                int endY = this.height;
+                int width = this.width;
+                int height = this.height;
 
                 int uOffset = 0;
                 int vOffset = 0;
@@ -57,7 +57,7 @@ public class InventoryAttachmentSlot extends Button implements IStackTooltip {
                 ClientGuiUtils.blitGuiTexture(graphics,
                         texture,
                         startX, startY,
-                        endX, endY,
+                        width, height,
                         uOffset, vOffset,
                         uWidth, vHeight);
             }

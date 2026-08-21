@@ -28,7 +28,6 @@ public final class AmmoBoxDetailInfoPart extends AbstractTooltipPart implements 
     private static final Color64 _defaultCategoryColor = Color64.fromChatFormatting(ChatFormatting.BLUE);
     private static final Color64 _defaultPackColor = Color64.fromChatFormatting(ChatFormatting.BLUE);
     private static final Color64 _defaultLocationColor = _defaultCategoryColor;
-    private static final boolean hasTextShadow = true;
 
     @Override
     public void build(ClientAmmoBoxTooltip.Context context, Font font) {
@@ -94,8 +93,8 @@ public final class AmmoBoxDetailInfoPart extends AbstractTooltipPart implements 
             // 子弹类型
             context.drawText(context.view.category,
                     currentX, currentY,
-                    _defaultCategoryColor.getRGB(),
-                    hasTextShadow);
+                    _defaultCategoryColor.getRGB()
+            );
             currentY += textLineHeight;
         }
 
@@ -105,8 +104,8 @@ public final class AmmoBoxDetailInfoPart extends AbstractTooltipPart implements 
             // 枪包信息
             context.drawText(context.view.packInfo,
                     currentX, currentY,
-                    _defaultPackColor.getRGB(),
-                    hasTextShadow);
+                    _defaultPackColor.getRGB()
+            );
             currentY += textLineHeight;
         }
 
@@ -116,8 +115,8 @@ public final class AmmoBoxDetailInfoPart extends AbstractTooltipPart implements 
             // 资源位置
             context.drawText(context.view.pojoLocation,
                     currentX, currentY,
-                    _defaultLocationColor.getRGB(),
-                    hasTextShadow);
+                    _defaultLocationColor.getRGB()
+            );
             currentY += textLineHeight;
         }
     }

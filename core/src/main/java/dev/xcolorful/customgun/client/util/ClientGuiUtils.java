@@ -7,6 +7,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Overlay;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -33,7 +34,7 @@ public class ClientGuiUtils {
                                       int endX, int endY,
                                       int uOffset, int vOffset,
                                       int uWidth, int vHeight) {
-        blitGuiTexture(guiGraphics,
+        Graphics.blitGuiTexture(guiGraphics,
                 customTexture.getLocation(),
                 startX, startY,
                 endX, endY,
@@ -42,33 +43,68 @@ public class ClientGuiUtils {
                 customTexture.getWidth(), customTexture.getHeight());
 
     }
-    public static void blitGuiTexture(GuiGraphics guiGraphics,
-                                      ResourceLocation textureLocation,
-                                      int startX, int startY,
-                                      int endX, int endY,
-                                      int uOffset, int vOffset,
-                                      int uWidth, int vHeight,
-                                      int textureWidth, int textureHeight) {
-        guiGraphics.blit(
-                // 1.21.4
-//               RenderType::guiTextured,
-                // 1.21.6
-                RenderPipelines.GUI_TEXTURED,
-                textureLocation,
-                startX, startY,
-                endX, endY,
-                uOffset, vOffset,
-                uWidth, vHeight,
-                textureWidth, textureHeight);
-    }
 
-    public static void renderTooltip(GuiGraphics guiGraphics,
-                                     Font font,
-                                     int startX, int startY,
-                                     ItemStack itemStack) {
-        guiGraphics.setTooltipForNextFrame(
-                font,
-                itemStack,
-                startX, startY);
+    public static class Graphics {
+
+        public static void blitGuiTexture(GuiGraphics guiGraphics,
+                                          ResourceLocation textureLocation,
+                                          int startX, int startY,
+                                          int endX, int endY,
+                                          int uOffset, int vOffset,
+                                          int uWidth, int vHeight,
+                                          int textureWidth, int textureHeight) {
+            guiGraphics.blit(
+                    // 1.21.4
+//                  RenderType::guiTextured,
+                    // 1.21.6
+                    RenderPipelines.GUI_TEXTURED,
+                    textureLocation,
+                    startX, startY,
+                    endX, endY,
+                    uOffset, vOffset,
+                    uWidth, vHeight,
+                    textureWidth, textureHeight);
+        }
+
+        public static void drawText(GuiGraphics guiGraphics,
+                                    Font font,
+                                    Component component,
+                                    int startX, int startY,
+                                    int rgb) {
+            guiGraphics.drawString(font, // text
+                    component,
+                    startX, startY,
+                    rgb);
+        }
+
+        public static void drawCenteredText(GuiGraphics guiGraphics,
+                                            Font font,
+                                            Component component,
+                                            int startX, int startY,
+                                            int rgb) {
+            guiGraphics.drawCenteredString( // centeredText
+                    font,
+                    component,
+                    startX, startY,
+                    rgb);
+        }
+
+        public static void drawTooltip(GuiGraphics guiGraphics,
+                                       Font font,
+                                       int startX, int startY,
+                                       ItemStack itemStack) {
+            guiGraphics.setTooltipForNextFrame(
+                    font,
+                    itemStack,
+                    startX, startY);
+        }
+
+        public static void drawItem(GuiGraphics guiGraphics,
+                                    ItemStack itemStack,
+                                    int startX, int startY) {
+            guiGraphics.renderItem( // item
+                    itemStack,
+                    startX, startY);
+        }
     }
 }

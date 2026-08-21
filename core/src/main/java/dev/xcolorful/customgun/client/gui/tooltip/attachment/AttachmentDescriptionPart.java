@@ -34,7 +34,6 @@ public final class AttachmentDescriptionPart extends AbstractTooltipPart impleme
      */
     @ApiStatus.Internal public static volatile int _textLineWidth = 300;
     private static final Color64 _defaultDescriptionColor = Color64.fromChatFormatting(ChatFormatting.GRAY);
-    private static final boolean hasTextShadow = true;
 
     @Override
     public void build(ClientAttachmentTooltip.Context context, Font font) {
@@ -85,8 +84,8 @@ public final class AttachmentDescriptionPart extends AbstractTooltipPart impleme
                 FormattedCharSequence sequence = desc.get(i);
                 context.drawText(sequence,
                         currentX, currentY,
-                        _defaultDescriptionColor.getRGB(),
-                        hasTextShadow);
+                        _defaultDescriptionColor.getRGB()
+                );
                 currentY += textLineHeight;
             }
         }

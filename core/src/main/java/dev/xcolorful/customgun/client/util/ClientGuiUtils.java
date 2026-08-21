@@ -75,7 +75,7 @@ public class ClientGuiUtils {
             guiGraphics.drawString(font, // text
                     component,
                     startX, startY,
-                    rgb);
+                    rgb | 0xFF000000);
         }
         public static void drawText(GuiGraphics guiGraphics,
                                     Font font,
@@ -85,7 +85,7 @@ public class ClientGuiUtils {
             guiGraphics.drawString(font, // text
                     sequence,
                     startX, startY,
-                    rgb);
+                    rgb | 0xFF000000);
         }
 
         public static void drawCenteredText(GuiGraphics guiGraphics,
@@ -97,7 +97,7 @@ public class ClientGuiUtils {
                     font,
                     component,
                     startX, startY,
-                    rgb);
+                    rgb | 0xFF000000);
         }
         public static void drawCenteredText(GuiGraphics guiGraphics,
                                             Font font,
@@ -108,7 +108,7 @@ public class ClientGuiUtils {
                     font,
                     sequence,
                     startX, startY,
-                    rgb);
+                    rgb | 0xFF000000);
         }
 
         public static void drawTooltip(GuiGraphics guiGraphics,

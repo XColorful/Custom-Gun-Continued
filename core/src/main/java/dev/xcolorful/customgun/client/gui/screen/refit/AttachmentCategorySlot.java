@@ -86,11 +86,11 @@ public class AttachmentCategorySlot extends Button implements IStackTooltip {
             if (this.isSelected && !this.attachmentItem.isEmpty()) {
                 yOffset = this.getY() + 30;
             }
-            graphics.centeredText(font,
+            ClientGuiUtils.Graphics.drawCenteredText(graphics,
+                    font,
                     category.getCategoryLang().copy(),
                     xOffset, yOffset,
-                    Color64._FFFFFF.getRGB()
-            );
+                    Color64._FFFFFF.getRGB());
         }
 
         {
@@ -131,7 +131,8 @@ public class AttachmentCategorySlot extends Button implements IStackTooltip {
                     startX += 1;
                     startY += 1;
 
-                    graphics.item(this.attachmentItem,
+                    ClientGuiUtils.Graphics.drawItem(graphics,
+                            this.attachmentItem,
                             startX, startY);
                 } else if (this.isCategoryEnabled) {
                     // 配件类型

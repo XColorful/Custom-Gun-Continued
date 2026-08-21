@@ -40,7 +40,6 @@ public final class GunStateInfoPart extends AbstractTooltipPart implements GunTo
     private static final int _height = textLineSpacing + Math.max(itemHeight, textLineHeight + textLineSpacing + textLineHeight);
     private static final Color64 _defaultAmmoNameColor = Color64.fromChatFormatting(ChatFormatting.WHITE);
     private static final Color64 _defaultAmmoCountColor = Color64.fromChatFormatting(ChatFormatting.DARK_GRAY);
-    private static final boolean hasTextShadow = true;
 
     @Override
     public void build(ClientGunTooltip.Context context, Font font) {
@@ -128,8 +127,8 @@ public final class GunStateInfoPart extends AbstractTooltipPart implements GunTo
             // 弹药名
             context.drawText(context.view.ammoName,
                     currentX, currentY,
-                    _defaultAmmoNameColor.getRGB(),
-                    hasTextShadow);
+                    _defaultAmmoNameColor.getRGB()
+            );
             currentY += textLineHeight;
         }
 
@@ -139,8 +138,8 @@ public final class GunStateInfoPart extends AbstractTooltipPart implements GunTo
             // 弹药数
             context.drawText(context.view.ammoCount,
                     currentX, currentY,
-                    _defaultAmmoCountColor.getRGB(),
-                    hasTextShadow);
+                    _defaultAmmoCountColor.getRGB()
+            );
             currentY += textLineHeight;
         }
     }

@@ -66,7 +66,8 @@ public class InventoryAttachmentSlot extends Button implements IStackTooltip {
                 int startX = this.getX() + 1;
                 int startY = this.getY() + 1;
 
-                graphics.item(inventory.getItem(slotIndex),
+                ClientGuiUtils.Graphics.drawItem(graphics,
+                        this.inventory.getItem(this.slotIndex),
                         startX, startY);
             }
         }

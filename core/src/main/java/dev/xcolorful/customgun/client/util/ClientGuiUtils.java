@@ -32,13 +32,13 @@ public class ClientGuiUtils {
     public static void blitGuiTexture(GuiGraphics guiGraphics,
                                       CustomTexture customTexture,
                                       int startX, int startY,
-                                      int endX, int endY,
+                                      int width, int height,
                                       int uOffset, int vOffset,
                                       int uWidth, int vHeight) {
         Graphics.blitGuiTexture(guiGraphics,
                 customTexture.getLocation(),
                 startX, startY,
-                endX, endY,
+                width, height,
                 uOffset, vOffset,
                 uWidth, vHeight,
                 customTexture.getWidth(), customTexture.getHeight());
@@ -50,7 +50,7 @@ public class ClientGuiUtils {
         public static void blitGuiTexture(GuiGraphics guiGraphics,
                                           ResourceLocation textureLocation,
                                           int startX, int startY,
-                                          int endX, int endY,
+                                          int width, int height,
                                           int uOffset, int vOffset,
                                           int uWidth, int vHeight,
                                           int textureWidth, int textureHeight) {
@@ -61,8 +61,9 @@ public class ClientGuiUtils {
                     RenderPipelines.GUI_TEXTURED,
                     textureLocation,
                     startX, startY,
-                    endX, endY,
+                    width, height, // [1.20.1, 1.21.4)
                     uOffset, vOffset,
+//                  width, height, // [1.21.4, )
                     uWidth, vHeight,
                     textureWidth, textureHeight);
         }

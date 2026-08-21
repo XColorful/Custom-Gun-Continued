@@ -18,6 +18,7 @@ import dev.xcolorful.customgun.core.gui.tooltip.ammobox.AmmoBoxTooltip;
 import dev.xcolorful.customgun.core.resource.instance.data.AmmoIndexInstance;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;

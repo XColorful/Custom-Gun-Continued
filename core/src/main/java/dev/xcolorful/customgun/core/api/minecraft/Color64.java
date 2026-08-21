@@ -1,6 +1,7 @@
 package dev.xcolorful.customgun.core.api.minecraft;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.TextColor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -168,7 +169,8 @@ public enum Color64 {
     public static @NotNull Color64 fromChatFormatting(ChatFormatting chatFormatting) {
         if (chatFormatting == null) return _000000;
 
-        @Nullable Integer rgb = chatFormatting.getColor();
+        @Nullable TextColor color = TextColor.fromLegacyFormat(chatFormatting);
+        @Nullable Integer rgb = color != null ? color.getValue() : null;
         if (rgb != null) {
             Color64 color64 = rgbToColor64.get(rgb & 0xFFFFFF);
             if (color64 != null) {

@@ -15,7 +15,6 @@ import dev.xcolorful.customgun.client.compat.ar.ARCompat;
 import dev.xcolorful.customgun.client.compat.optifine.OptifineCompat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.player.AvatarRenderer;
@@ -152,10 +151,10 @@ public class ClientRenderHelper {
         }
 
         public static void _enableBlend() {
-            GlStateManager._enableBlend();
+            GlStateManager._enableBlend(0);
         }
         public static void _disableBlend() {
-            GlStateManager._disableBlend();
+            GlStateManager._disableBlend(0);
         }
     }
 

@@ -1,5 +1,24 @@
 ### 0.0.x
 
+#### 0.0.6
+- Add tooltips for gun, attachment, ammo, ammo box item
+- Add search bar to creative tab, thereby hiding vanilla tab category in tooltips
+- Add `GunDisplay` backward compatibility check
+- Fix `AttachmentIndex` cache validation
+
+Add gun refit screen:
+- Add bigger turn-page button
+- Expand inventory attachment slots to 9
+- Align inventory attachment slots with attachment category slot
+- Attachment lock no longer prevent opening the gun refit screen
+- Add attachment lock texture
+
+Adjust:
+- Invert gun tooltip mask
+- Remove default barrel ammo from gun items in creative tab
+- Move item resource location to tooltip detail info part
+- Asset license updated to `CC-BY-SA-4.0`
+
 #### 0.0.5
 - Add mod logo
 - High zoom scope no longer reduce recoil

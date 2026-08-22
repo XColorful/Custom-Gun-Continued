@@ -1,11 +1,12 @@
 [English](#English)
 
 # 渲染配置
-> wiki 版本：`0.0.5`.3
+> wiki 版本：`0.0.6`.4
 
 路径：`render`
 - `EnableLaserFadeOut`（bool）：是否对激光应用淡出效果
 - `GunLodRenderDistance`（整数）：远距离模型显示距离，设为0则始终显示
+- `DisableGunTilting`（bool）：是否禁止蹲下时倾斜枪械
 - `BulletHoleParticleLife`（整数）：弹孔粒子存在时间（tick）
 - `BulletHoleParticleFadeThreshold`（浮点，0.0~1.0）：弹孔粒子渲染淡出阈值
 - `CrosshairType`（枚举）：持枪时的准星样式
@@ -33,6 +34,7 @@
 [render]
 	EnableLaserFadeOut = true
 	GunLodRenderDistance = 0
+	DisableGunTilting = false
 	BulletHoleParticleLife = 400
 	BulletHoleParticleFadeThreshold = 0.98
 	CrosshairType = "DOT_1"
@@ -52,13 +54,14 @@
 ```
 
 # English
-> wiki verison: `0.0.5`.3
+> wiki verison: `0.0.6`.4
 
 ## Render Config
 
 Path: `render`
 - `EnableLaserFadeOut` (bool): Whether to apply fadeout effect on the laser beam
 - `GunLodRenderDistance` (integer): How far to display the LOD model, 0 means always display
+- `DisableGunTilting` (bool): Whether to disable gun tilting while crouching
 - `BulletHoleParticleLife` (integer): The existence time of bullet hole particles, in ticks
 - `BulletHoleParticleFadeThreshold` (float, 0.0~1.0): The threshold for fading out when rendering bullet hole particles
 - `CrosshairType` (enum): The crosshair when holding a gun
@@ -86,6 +89,7 @@ Path: `render`
 [render]
 	EnableLaserFadeOut = true
 	GunLodRenderDistance = 0
+	DisableGunTilting = false
 	BulletHoleParticleLife = 400
 	BulletHoleParticleFadeThreshold = 0.98
 	CrosshairType = "DOT_1"

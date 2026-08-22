@@ -35,7 +35,7 @@ import org.jetbrains.annotations.Nullable;
 public class _DefaultGunInventory {
 
     protected static void retrieveAmmoFromGun(@NotNull IGun iGun, @NotNull ItemStack gunItem,
-                                              ILivingShooter iLivingShooter, LivingEntity livingShooter) {
+                                              @Nullable ILivingShooter iLivingShooter, @Nullable LivingEntity livingShooter) {
         var gunLocation = iGun.getGunLocation(gunItem);
         @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(gunLocation);
         if (gunIndexInstance == null) return;
@@ -67,6 +67,7 @@ public class _DefaultGunInventory {
         if (ammoIndexInstance == null) return;
 
         // --------退弹--------
+        if (livingShooter == null) return;
 
         // 优先退到背包 (物品)
         int dropAmmoRemain = retrieveAmmoToInventory(iGun, gunItem, livingShooter, gunData, magAmmoCount);
@@ -79,7 +80,7 @@ public class _DefaultGunInventory {
      */
     @ApiStatus.Internal
     public static int retrieveAmmoToInventory(@NotNull IGun iGun, @NotNull ItemStack gunItem,
-                                              LivingEntity livingShooter,
+                                              @NotNull LivingEntity livingShooter,
                                               GunData gunData,
                                               int dropAmmoRemain) {
         var ammoLocation = gunData.getAmmoLocation();
@@ -146,7 +147,7 @@ public class _DefaultGunInventory {
      */
     @ApiStatus.Internal
     public static int dropAmmoToWorld(@NotNull IGun iGun, @NotNull ItemStack gunItem,
-                                      LivingEntity livingShooter,
+                                      @NotNull LivingEntity livingShooter,
                                       GunData gunData,
                                       int dropAmmoRemain) {
         if (!(livingShooter.level() instanceof ServerLevel serverLevel)) return dropAmmoRemain;

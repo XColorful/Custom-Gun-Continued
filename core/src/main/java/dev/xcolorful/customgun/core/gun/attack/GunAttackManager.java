@@ -16,7 +16,7 @@ import dev.xcolorful.customgun.core.api.event.shooter.ShooterFireEvent;
 import dev.xcolorful.customgun.core.api.event.shooter.ShooterPrepareMeleeEvent;
 import dev.xcolorful.customgun.core.api.gun.attack.IGunAttackManager;
 import dev.xcolorful.customgun.core.api.gun.attack.IGunAttackRuntime;
-import dev.xcolorful.customgun.core.api.gun.script.GunScriptApi;
+import dev.xcolorful.customgun.core.api.script.context.GunScriptApi;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.gun.MeleeType;
 import dev.xcolorful.customgun.core.api.script.ScriptMethodType;

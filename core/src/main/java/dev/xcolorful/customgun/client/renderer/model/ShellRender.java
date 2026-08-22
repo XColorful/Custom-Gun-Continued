@@ -53,13 +53,13 @@ public class ShellRender implements IModelComponentRenderer {
         this.gunModelObject = gunModelObject;
     }
 
-    public void addShell(Vector3f randomVelocity) {
+    public void addShell(float[] randomVelocity) {
         if (this.shellQueue.size() > 128) {
             this.shellQueue.pollFirst();
         }
-        double xRandom = Math.random() * randomVelocity.x();
-        double yRandom = Math.random() * randomVelocity.y();
-        double zRandom = Math.random() * randomVelocity.z();
+        double xRandom = Math.random() * randomVelocity[0];
+        double yRandom = Math.random() * randomVelocity[1];
+        double zRandom = Math.random() * randomVelocity[2];
         Vector3f vector3f = new Vector3f((float) xRandom, (float) yRandom, (float) zRandom);
         this.shellQueue.offerLast(new _Data(System.currentTimeMillis(), vector3f));
     }

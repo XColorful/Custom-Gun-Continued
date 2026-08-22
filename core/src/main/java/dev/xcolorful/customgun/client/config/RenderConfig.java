@@ -15,6 +15,7 @@ import dev.xcolorful.customgun.core.api.config.IModConfigSpecBuilder;
 public class RenderConfig {
     public static IModConfigSpec<Boolean> ENABLE_LASER_FADE_OUT;
     public static IModConfigSpec<Integer> GUN_LOD_RENDER_DISTANCE;
+    public static IModConfigSpec<Boolean> DISABLE_GUN_TILTING;
     public static IModConfigSpec<Integer> BULLET_HOLE_PARTICLE_LIFE;
     public static IModConfigSpec<Double> BULLET_HOLE_PARTICLE_FADE_THRESHOLD;
     public static IModConfigSpec<CrosshairType> CROSSHAIR_TYPE;
@@ -40,6 +41,9 @@ public class RenderConfig {
 
         builder.addComment(ClientModConfigTag.gunLodRenderDistance_comment);
         GUN_LOD_RENDER_DISTANCE = builder.addConfig(ClientModConfigTag.gunLodRenderDistance_path, 0, 0, Integer.MAX_VALUE);
+
+        builder.addComment(ClientModConfigTag.disableGunTilting_comment);
+        DISABLE_GUN_TILTING = builder.addConfig(ClientModConfigTag.disableGunTilting_path, false);
 
         builder.addComment(ClientModConfigTag.bulletHoleParticleLife_comment);
         BULLET_HOLE_PARTICLE_LIFE = builder.addConfig(ClientModConfigTag.bulletHoleParticleLife_path, 400, 0, Integer.MAX_VALUE);

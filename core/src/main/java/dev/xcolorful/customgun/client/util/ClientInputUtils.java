@@ -8,6 +8,9 @@
 package dev.xcolorful.customgun.client.util;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.Input;
+import net.minecraft.client.player.LocalPlayer;
+import org.jetbrains.annotations.Nullable;
 
 public class ClientInputUtils {
 
@@ -46,6 +49,54 @@ public class ClientInputUtils {
             return false;
         }
         return true;
+    }
+
+    public static class Key {
+
+        public static @Nullable Input getInput(@Nullable LocalPlayer localPlayer) {
+            if (localPlayer == null) return null;
+            // [1.20.1, 1.21.4)
+            return localPlayer.input;
+            // [1.21.4, )
+//          return localPlayer.input.keyPresses;
+        }
+
+        public static boolean forward(@Nullable LocalPlayer localPlayer) {
+            if (localPlayer == null) return false;
+            return localPlayer.input.up; // localPlayer.input.keyPresses.forward();
+        }
+        public static boolean backward(@Nullable LocalPlayer localPlayer) {
+            if (localPlayer == null) return false;
+            return localPlayer.input.down; // localPlayer.input.keyPresses.backward();
+        }
+        public static boolean left(@Nullable LocalPlayer localPlayer) {
+            if (localPlayer == null) return false;
+            return localPlayer.input.left; // localPlayer.input.keyPresses.left();
+        }
+        public static boolean right(@Nullable LocalPlayer localPlayer) {
+            if (localPlayer == null) return false;
+            return localPlayer.input.right; // localPlayer.input.keyPresses.right();
+        }
+        public static boolean jump(@Nullable LocalPlayer localPlayer) {
+            if (localPlayer == null) return false;
+            return localPlayer.input.jumping; // localPlayer.input.keyPresses.jump();
+        }
+        public static boolean shift(@Nullable LocalPlayer localPlayer) {
+            if (localPlayer == null) return false;
+            return localPlayer.input.shiftKeyDown; // localPlayer.input.keyPresses.shift();
+        }
+        public static boolean sprint(@Nullable LocalPlayer localPlayer) {
+            if (localPlayer == null) return false;
+            return localPlayer.input.hasForwardImpulse(); // localPlayer.input.keyPresses.sprint();
+        }
+        public static boolean moving(@Nullable LocalPlayer localPlayer) {
+            if (localPlayer == null) return false;
+            return localPlayer.input.getMoveVector().length() > 0.01f;
+        }
+        public static boolean movingForward(@Nullable LocalPlayer localPlayer) {
+            if (localPlayer == null) return false;
+            return localPlayer.input.hasForwardImpulse();
+        }
     }
 
     // --------Deprecated--------

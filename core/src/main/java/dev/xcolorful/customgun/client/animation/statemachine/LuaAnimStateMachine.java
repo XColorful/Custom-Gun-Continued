@@ -11,11 +11,14 @@ import dev.xcolorful.customgun.client.animation.controller.AnimController;
 import dev.xcolorful.customgun.client.api.animation.statemachine.AnimStateContext;
 import dev.xcolorful.customgun.client.api.animation.statemachine.AnimStateMachine;
 import dev.xcolorful.customgun.client.api.animation.statemachine.IAnimationStateContext;
+import dev.xcolorful.customgun.core.api.script.ScriptMethodType;
+import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 
+import javax.annotation.Nullable;
 import java.util.LinkedList;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -59,7 +62,10 @@ public class LuaAnimStateMachine<T extends AnimStateContext> extends AnimStateMa
         }
 
         public LuaAnimStateMachine<T> build() {
-            checkNullPointer();
+            if (controller == null) {
+                throw new IllegalStateException("controller must not be null before build");
+            }
+
             var stateMachine = new LuaAnimStateMachine<T>(controller);
             stateMachine.initializeFunc = (context) -> {
                 if (initializeFunc != null) {
@@ -85,20 +91,24 @@ public class LuaAnimStateMachine<T extends AnimStateContext> extends AnimStateMa
                 return this;
             }
             this.table = table;
-            this.initializeFunc = checkFunction("initialize", table);
-            this.exitFunc = checkFunction("exit", table);
-            this.statesFunc = checkFunction("states", table);
+            this.initializeFunc = checkFunction(table, ScriptMethodType.ANIM_INIT);
+            this.exitFunc = checkFunction(table, ScriptMethodType.ANIM_EXIT);
+            this.statesFunc = checkFunction(table, ScriptMethodType.ANIM_STATES);
             return this;
         }
 
-        private LuaFunction checkFunction(String funcName, LuaTable table) {
-            LuaValue value = table.get(funcName);
-            if (value.isnil()) {
-                return null;
+        private @Nullable LuaFunction checkFunction(LuaTable table, ScriptMethodType scriptMethodType) {
+            @Nullable LuaValue function = scriptMethodType.getFunctionOrNil(table);
+            if (function == null) {
+                throw new LuaError("LuaAnimStateMachine.Builder: Either the type of field '" + scriptMethodType.getConstantName() + "' or '" + scriptMethodType.typeNameOld + "' must be function or nil");
             }
-            return value.checkfunction();
+
+            if (function.isnil()) return null;
+
+            return function.checkfunction();
         }
 
+        @Deprecated(forRemoval = true)
         private void checkNullPointer() {
             if (controller == null) {
                 throw new IllegalStateException("controller must not be null before build");

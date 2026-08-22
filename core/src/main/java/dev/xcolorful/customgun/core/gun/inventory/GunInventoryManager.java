@@ -15,6 +15,7 @@ import dev.xcolorful.customgun.core.api.minecraft.capability.IInventoryCapabilit
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class GunInventoryManager implements IGunInventoryManager {
     public static final GunInventoryManager INSTANCE = new GunInventoryManager();
@@ -30,7 +31,7 @@ public class GunInventoryManager implements IGunInventoryManager {
 
     @Override
     public void retrieveAmmoFromGun(@NotNull IGun iGun, @NotNull ItemStack gunItem,
-                                    ILivingShooter iLivingShooter, LivingEntity livingShooter) {
+                                    @Nullable ILivingShooter iLivingShooter, @Nullable LivingEntity livingShooter) {
         _DefaultGunInventory.retrieveAmmoFromGun(iGun, gunItem, iLivingShooter, livingShooter);
     }
 

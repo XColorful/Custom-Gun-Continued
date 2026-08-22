@@ -5,7 +5,7 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package dev.xcolorful.customgun.core.api.gun.script;
+package dev.xcolorful.customgun.core.api.script.context;
 
 import dev.xcolorful.customgun.core.util.NBTUtils;
 import net.minecraft.nbt.CompoundTag;

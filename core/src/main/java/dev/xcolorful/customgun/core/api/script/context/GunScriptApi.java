@@ -74,14 +74,7 @@ public class GunScriptApi implements IGunScriptApi {
     }
 
     public @Nullable LuaFunction getFunction(ScriptMethodType scriptMethodType) {
-        if (this.scriptCache == null) return null;
-        LuaValue function = this.scriptCache.get(scriptMethodType.getConstantName());
-        if (function.isfunction()) return function.checkfunction();
-        else if (scriptMethodType.typeNameOld != null) {
-            function = this.scriptCache.get(scriptMethodType.typeNameOld);
-            if (function.isfunction()) return function.checkfunction();
-            else return null;
-        } else return null;
+        return scriptMethodType.getFunction(this.scriptCache);
     }
 
     /**

@@ -214,6 +214,7 @@
 	- 已封装组合数据结构：`ArraySet`、`QueueSet`、`ArrayMap`
 - ColorUtils：处理颜色字符串、游戏内颜色等
 - ComponentUtils：文本组件工具
+- EntityUtils：实体工具及相关兼容封装
 - FileUtils：文件工具
 - IngredientUtils：`Ingredient.of()` 重载工具
 - InventoryUtils：`Inventory`相关兼容封装
@@ -443,6 +444,7 @@ Module division based on the `dev.xcolorful.customgun.core` top-level package
 - ColorUtils: Utilities for color strings and in-game colors
 - ComponentUtils: Text component utilities
 - FileUtils: File utilities
+- EntityUtils: Entity utilities and compatibility wrappers
 - IngredientUtils: Utilities for `Ingredient.of()` overloads
 - InventoryUtils: Compatibility wrappers for `Inventory`
 - JsonUtils: JSON serialization wrapper

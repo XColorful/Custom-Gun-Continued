@@ -648,7 +648,7 @@ Notation:
 |`ExplodeUtil`||
 |`GetJarResources`|_Deprecated_|
 |`HitboxHelper`.onPlayerLoggedOut|_Deprecated_|
-|`HitboxHelper`.getFixedBoundingBox|`EntityHitboxUtils`.getTracedHitbox|
+|`HitboxHelper`.getFixedBoundingBox|`EntityUtils`.`Hitbox`.getTracedHitbox|
 |`Md5Utils`|_Deprecated_|
 |`PathHandler`|_Deprecated_|
 |`ResourceScanner`|_Deprecated_|

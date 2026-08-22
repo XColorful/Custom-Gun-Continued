@@ -9,6 +9,7 @@ package dev.xcolorful.customgun.client.animation.statemachine;
 
 import dev.xcolorful.customgun.client.api.animation.statemachine.AnimStateContext;
 import dev.xcolorful.customgun.client.api.animation.statemachine.IAnimationStateContext;
+import dev.xcolorful.customgun.core.api.script.ScriptMethodType;
 import org.jetbrains.annotations.NotNull;
 import org.luaj.vm2.*;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
@@ -17,7 +18,6 @@ import javax.annotation.Nullable;
 
 public class LuaAnimStateContext<T extends AnimStateContext> implements IAnimationStateContext<T> {
 
-    private final @NotNull LuaTable stateTable;
     private final @NotNull LuaTable scriptTable;
     private final @Nullable LuaFunction updateFunction;
     private final @Nullable LuaFunction enterFunction;
@@ -32,12 +32,11 @@ public class LuaAnimStateContext<T extends AnimStateContext> implements IAnimati
      * @see LuaAnimStateMachine.Builder
      */
     LuaAnimStateContext(@NotNull LuaTable stateTable, @NotNull LuaTable scriptTable) {
-        this.stateTable = stateTable;
         this.scriptTable = scriptTable;
-        this.updateFunction = checkLuaFunction("update");
-        this.enterFunction = checkLuaFunction("entry");
-        this.exitFunction = checkLuaFunction("exit");
-        this.transitionFunction = checkLuaFunction("transition");
+        this.updateFunction = checkLuaFunction(stateTable, ScriptMethodType.ANIM_CONTEXT_UPDATE);
+        this.enterFunction = checkLuaFunction(stateTable, ScriptMethodType.ANIM_CONTEXT_ENTRY_ACTION);
+        this.exitFunction = checkLuaFunction(stateTable, ScriptMethodType.ANIM_CONTEXT_EXIT);
+        this.transitionFunction = checkLuaFunction(stateTable, ScriptMethodType.ANIM_CONTEXT_TRANSITION);
     }
 
     @Override
@@ -76,13 +75,14 @@ public class LuaAnimStateContext<T extends AnimStateContext> implements IAnimati
         return null;
     }
 
-    private LuaFunction checkLuaFunction(String funcName) {
-        LuaValue value = stateTable.get(funcName);
-        if (value.isfunction()) {
-            return (LuaFunction) value;
-        } else if (value.isnil()) {
-            return null;
+    private @Nullable LuaFunction checkLuaFunction(@NotNull LuaTable stateTable, ScriptMethodType scriptMethodType) {
+        @Nullable LuaValue function = scriptMethodType.getFunctionOrNil(stateTable);
+        if (function == null) {
+            throw new LuaError("LuaAnimStateContext: Either the type of field '" + scriptMethodType.getConstantName() + "' or '" + scriptMethodType.typeNameOld + "' must be function or nil");
         }
-        throw new LuaError("the type of field '" + funcName + "' must be function or nil");
+
+        if (function.isnil()) return null;
+
+        return function.checkfunction();
     }
 }

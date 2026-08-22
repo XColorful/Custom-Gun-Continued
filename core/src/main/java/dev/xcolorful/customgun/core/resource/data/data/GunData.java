@@ -70,7 +70,7 @@ public final class GunData extends ResourcePojo<GunData> {
 
     // 举枪动作
     private boolean enableProne = true;
-    private boolean enableSlide = true; // 枪挡在视野中间
+    private boolean enableTilting = true; // 枪倾斜挡在视野中间
 
     // 操作枪械的时长
     private float drawTime = 0.4f;
@@ -124,7 +124,7 @@ public final class GunData extends ResourcePojo<GunData> {
                     case GunDataTag.BUILTIN_ATTACHMENTS -> pojo.builtinAttachments = JsonUtils.readObject2ObjectMap(reader, AttachmentCategory::fromString, JsonUtils::readResourceLocation);
 
                     case GunDataTag.ENABLE_PRONE, GunDataTag.ENABLE_PRONE_OLD1 -> pojo.enableProne = JsonUtils.readBoolean(reader);
-                    case GunDataTag.ENABLE_SLIDE, GunDataTag.ENABLE_SLIDE_OLD1 -> pojo.enableSlide = JsonUtils.readBoolean(reader);
+                    case GunDataTag.ENABLE_TILTING, GunDataTag.ENABLE_TILTING_OLD1 -> pojo.enableTilting = JsonUtils.readBoolean(reader);
 
                     case GunDataTag.DRAW_TIME -> pojo.drawTime = JsonUtils.readFloat(reader);
                     case GunDataTag.PUT_AWAY_TIME -> pojo.putAwayTime = JsonUtils.readFloat(reader);
@@ -179,7 +179,7 @@ public final class GunData extends ResourcePojo<GunData> {
             JsonUtils.writeObject2ObjectMap(writer, GunDataTag.BUILTIN_ATTACHMENTS, builtinAttachments, AttachmentCategory::toString, JsonUtils::writeResourceLocationValue);
 
             JsonUtils.writeBoolean(writer, GunDataTag.ENABLE_PRONE, enableProne);
-            JsonUtils.writeBoolean(writer, GunDataTag.ENABLE_SLIDE, enableSlide);
+            JsonUtils.writeBoolean(writer, GunDataTag.ENABLE_TILTING, enableTilting);
 
             JsonUtils.writeFloat(writer, GunDataTag.DRAW_TIME, drawTime);
             JsonUtils.writeFloat(writer, GunDataTag.PUT_AWAY_TIME, putAwayTime);
@@ -327,8 +327,8 @@ public final class GunData extends ResourcePojo<GunData> {
     public boolean getEnableProne() {
         return enableProne;
     }
-    public boolean getEnableSlide() {
-        return enableSlide;
+    public boolean getEnableTilting() {
+        return enableTilting;
     }
     public float getDrawTime() {
         return drawTime;
@@ -430,8 +430,8 @@ public final class GunData extends ResourcePojo<GunData> {
     public void setEnableProne(boolean enableProne) {
         this.enableProne = enableProne;
     }
-    public void setEnableSlide(boolean enableSlide) {
-        this.enableSlide = enableSlide;
+    public void setEnableTilting(boolean enableTilting) {
+        this.enableTilting = enableTilting;
     }
     public void setDrawTime(float drawTime) {
         this.drawTime = drawTime;

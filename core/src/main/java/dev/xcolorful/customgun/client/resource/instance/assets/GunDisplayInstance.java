@@ -66,7 +66,7 @@ public final class GunDisplayInstance extends PojoInstance<GunDisplay> {
     /**
      * 状态机脚本参数
      */
-    private @Nullable LuaTable animStateMachineParams = null;
+    private LuaTable animStateMachineParams = null;
 
     private GunDisplayInstance(@NotNull GunDisplay pojo) {
         super(pojo);
@@ -214,9 +214,10 @@ public final class GunDisplayInstance extends PojoInstance<GunDisplay> {
         }
     }
     private void reloadScriptParams() {
+        this.animStateMachineParams = new LuaTable();
+
         Map<String, Object> params = this.getPojo().getScriptParam();
         if (params != null) {
-            this.animStateMachineParams = new LuaTable();
             for (Map.Entry<String, Object> entry : params.entrySet()) {
                 this.animStateMachineParams.set(entry.getKey(), CoerceJavaToLua.coerce(entry.getValue()));
             }
@@ -250,7 +251,7 @@ public final class GunDisplayInstance extends PojoInstance<GunDisplay> {
     public LuaAnimStateMachine<GunAnimStateContext> getAnimStateMachine() {
         return this.animStateMachine;
     }
-    public @Nullable LuaTable getAnimStateMachineParams() {
+    public LuaTable getAnimStateMachineParams() {
         return this.animStateMachineParams;
     }
 

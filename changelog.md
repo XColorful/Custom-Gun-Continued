@@ -1,5 +1,11 @@
 ### 0.0.x
 
+#### 0.0.7
+- Add render config `DisableGunTilting`
+
+Resource pack:
+- Add animation state machine script backwork compatibility
+
 #### 0.0.6
 - Add tooltips for gun, attachment, ammo, ammo box item
 - Add search bar to creative tab, thereby hiding vanilla tab category in tooltips

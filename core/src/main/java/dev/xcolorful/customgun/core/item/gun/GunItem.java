@@ -14,7 +14,7 @@ import dev.xcolorful.customgun.core.api.entity.ILivingShooter;
 import dev.xcolorful.customgun.core.api.entity.ReloadState;
 import dev.xcolorful.customgun.core.api.entity.ShooterProperty;
 import dev.xcolorful.customgun.core.api.gun.attack.IGunAttackRuntime;
-import dev.xcolorful.customgun.core.api.gun.script.GunScriptApi;
+import dev.xcolorful.customgun.core.api.script.context.GunScriptApi;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.gun.GunDataAccessor;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
@@ -137,7 +137,7 @@ public class GunItem extends Item implements IGun, GunDataAccessor {
                 .melee(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter, meleeType);
     }
     // ----IGunInventoryRuntime----
-    @Override public void retrieveAmmoFromGun(@NotNull IGun iGun, @NotNull ItemStack gunItem, ILivingShooter iLivingShooter, LivingEntity livingShooter) {
+    @Override public void retrieveAmmoFromGun(@NotNull IGun iGun, @NotNull ItemStack gunItem, @Nullable ILivingShooter iLivingShooter, @Nullable LivingEntity livingShooter) {
         CustomGun.getGunManager().getManagerGroup(this.getManagerGroupTag(gunItem))
                 .gunInventoryManager()
                 .retrieveAmmoFromGun(iGun, gunItem, iLivingShooter, livingShooter);

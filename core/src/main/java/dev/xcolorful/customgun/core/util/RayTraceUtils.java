@@ -184,7 +184,7 @@ public class RayTraceUtils {
 
             for (Entity entity : entities) {
                 // 计算射线与当前实体包围盒的精确交点
-                Optional<Vec3> clipResult = EntityHitboxUtils.getTracedHitbox(entity, owner).clip(startPos, endPos);
+                Optional<Vec3> clipResult = EntityUtils.Hitbox.getTracedHitbox(entity, owner).clip(startPos, endPos);
                 if (clipResult.isPresent()) {
                     // 将命中结果包装为调用方指定类型
                     T result = hitFactory.apply(entity, clipResult.get());

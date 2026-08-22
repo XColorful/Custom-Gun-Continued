@@ -15,7 +15,7 @@ import dev.xcolorful.customgun.core.api.entity.ShooterProperty;
 import dev.xcolorful.customgun.core.api.event.shooter.ShooterReloadEvent;
 import dev.xcolorful.customgun.core.api.event.shooter.ShooterSwitchFireModeEvent;
 import dev.xcolorful.customgun.core.api.gun.action.IGunActionManager;
-import dev.xcolorful.customgun.core.api.gun.script.GunScriptApi;
+import dev.xcolorful.customgun.core.api.script.context.GunScriptApi;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.script.ScriptMethodType;
 import net.minecraft.world.entity.LivingEntity;

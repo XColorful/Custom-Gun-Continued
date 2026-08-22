@@ -14,6 +14,7 @@ import dev.xcolorful.customgun.core.gun.inventory.GunInventoryManager;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public interface IGunInventoryRuntime {
 
@@ -37,7 +38,7 @@ public interface IGunInventoryRuntime {
      * @param livingShooter 准备退弹的实体
      */
     void retrieveAmmoFromGun(@NotNull IGun iGun, @NotNull ItemStack gunItem,
-                             ILivingShooter iLivingShooter, LivingEntity livingShooter);
+                             @Nullable ILivingShooter iLivingShooter, @Nullable LivingEntity livingShooter);
 
     /**
      * 枪械寻弹和扣除背包弹药逻辑

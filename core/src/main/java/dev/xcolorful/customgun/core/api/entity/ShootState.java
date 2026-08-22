@@ -17,6 +17,8 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -137,6 +139,52 @@ public enum ShootState implements ResourceTag.CategoryTag {
 
         // 7. 站姿
         return ShootState.STAND;
+    }
+
+    public static EnumSet<ShootState> of(@Nullable LivingEntity livingShooter) {
+        if (livingShooter == null) return EnumSet.noneOf(ShootState.class);
+        return of(ILivingShooterGetter.cgc$fromLivingEntity(livingShooter), livingShooter);
+    }
+    public static EnumSet<ShootState> of(@NotNull ILivingShooter iLivingShooter, @NotNull LivingEntity livingShooter) {
+        EnumSet<ShootState> set = EnumSet.noneOf(ShootState.class);
+
+        boolean isStanding = true;
+        // 1. 骑乘 (优先于悬空)
+        if (livingShooter.isPassenger() || livingShooter.isVehicle()) {
+            set.add(ShootState.RIDE);
+            isStanding = false;
+        }
+        // 2. 悬空
+        if (!livingShooter.onGround() || livingShooter.isSwimming()) {
+            set.add(ShootState.LEVITATE);
+            isStanding = false;
+        }
+        // 3. 瞄准
+        if (iLivingShooter.cgc$getSynAimingProgress() >= 1.0f) {
+            set.add(ShootState.AIM);
+        }
+        // 4. 移动
+        @Nullable IEntityHitboxHistory entityHitboxHistory = IEntityHitboxHistoryGetter.cgc$fromEntity(livingShooter);
+        @Nullable Vec3 velocity = entityHitboxHistory != null ? entityHitboxHistory.cgc$getHistoryVelocity(0) : null;
+        if (velocity != null && velocity.length() > 0.05f) {
+            set.add(ShootState.MOVE);
+            isStanding = false;
+        }
+        // 5. 潜行
+        if (livingShooter.isCrouching()) {
+            set.add(ShootState.SNEAK);
+            isStanding = false;
+        }
+        // 6. 趴姿
+        if (livingShooter.isVisuallySwimming()) {
+            set.add(ShootState.PRONE);
+            isStanding = false;
+        }
+        // 7. 站姿
+        if (isStanding) {
+            set.add(ShootState.STAND);
+        }
+        return set;
     }
 
     // --------Deprecated--------

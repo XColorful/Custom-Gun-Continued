@@ -18,6 +18,7 @@ import dev.xcolorful.customgun.client.api.renderer.item.IAnimateGeoItemRenderer;
 import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
 import dev.xcolorful.customgun.client.renderer.item.AnimateGeoItemRenderer;
 import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
+import dev.xcolorful.customgun.client.util.ClientInputUtils;
 import dev.xcolorful.customgun.core.api.event.EventType;
 import dev.xcolorful.customgun.core.api.event.IEvent;
 import dev.xcolorful.customgun.core.api.event.IEventHandler;
@@ -75,7 +76,7 @@ public class _LocalAnimHandler implements IEventHandler {
     private void _tickAnimState(LocalPlayer player,
                                 LuaAnimStateMachine<GunAnimStateContext> animStateMachine) {
         // 群组服切世界导致的特殊 BUG 处理，正常情况不会遇到此问题
-        if (player.input == null) {
+        if (ClientInputUtils.Key.getInput(player) == null) {
             animStateMachine.trigger(GunAnimationState.INPUT_IDLE.getConstantName());
             return;
         }
@@ -84,7 +85,10 @@ public class _LocalAnimHandler implements IEventHandler {
         if (isSneaking) {
             // 压脚步
             animStateMachine.trigger(GunAnimationState.INPUT_IDLE.getConstantName()); // 可以增加类型
-        } else if (player.input.getMoveVector().length() > 0.01) {
+        } else if (
+                ClientInputUtils.Key.moving(player) // 任意方向移动
+//                || ClientInputUtils.Key.movingForward(player) // 仅判断是否有向前，会漏掉向后移动（如鬼跳）
+        ) {
             // 移动
             animStateMachine.trigger(player.isSprinting()
                     ? GunAnimationState.INPUT_RUN.getConstantName() // 冲刺

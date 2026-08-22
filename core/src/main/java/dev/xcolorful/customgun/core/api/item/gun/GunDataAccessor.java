@@ -263,7 +263,7 @@ public interface GunDataAccessor extends IGunDataAccess {
     }
 
     @Override
-    default int consumeAmmoOnce(LivingEntity livingEntity, ItemStack gunItem) {
+    default int consumeAmmoOnce(@Nullable LivingEntity livingEntity, ItemStack gunItem) {
         @Nullable BoltType boltType = _getBoltType(this, gunItem);
         if (boltType == null) return 0;
         return this.consumeAmmoOnce(livingEntity, gunItem, boltType);
@@ -405,7 +405,7 @@ public interface GunDataAccessor extends IGunDataAccess {
     }
 
     @Override
-    default int boltBarrelAmmo(LivingEntity livingEntity, ItemStack gunItem) {
+    default int boltBarrelAmmo(@Nullable LivingEntity livingEntity, ItemStack gunItem) {
         @Nullable BoltType boltType = _getBoltType(this, gunItem);
         if (boltType == null) return 0;
         return boltBarrelAmmo(livingEntity, gunItem, boltType);

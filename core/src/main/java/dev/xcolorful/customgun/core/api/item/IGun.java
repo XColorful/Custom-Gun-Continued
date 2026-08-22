@@ -29,7 +29,7 @@ public interface IGun extends IGunRuntime, IAnimationItem,
     // --------IGunAmmoDataAccess--------
 
     @Override
-    default int consumeAmmoOnce(LivingEntity livingEntity, ItemStack gunItem, BoltType boltType) {
+    default int consumeAmmoOnce(@Nullable LivingEntity livingEntity, ItemStack gunItem, BoltType boltType) {
         if (PlannedRefactor.ON_CONSUME_AMMO) return 0;
 
         // 消耗子弹
@@ -37,6 +37,7 @@ public interface IGun extends IGunRuntime, IAnimationItem,
         final int DEFAULT_CONSUME_AMMO = 1; // 连续消耗子弹应改用burst模式
         if (this.useInventoryAmmo(gunItem)) {
             // 背包直读
+            if (livingEntity == null) return 0;
             ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(livingEntity);
             if (!iLivingShooter.cgc$needCheckAmmo()) {
                 // 不需要检查子弹
@@ -79,7 +80,7 @@ public interface IGun extends IGunRuntime, IAnimationItem,
     }
 
     @Override
-    default int boltBarrelAmmo(LivingEntity livingEntity, ItemStack gunItem, BoltType boltType) {
+    default int boltBarrelAmmo(@Nullable LivingEntity livingEntity, ItemStack gunItem, BoltType boltType) {
         if (!boltType.useBarrelAmmo()) return 0; // open bolt 不需要上膛
 
         if (this.hasBarrelAmmo(gunItem)) return 0; // 枪管已经有子弹
@@ -90,6 +91,7 @@ public interface IGun extends IGunRuntime, IAnimationItem,
         int consumedAmmo;
         if (this.useInventoryAmmo(gunItem)) {
             // 背包直读
+            if (livingEntity == null) return 0;
             ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(livingEntity);
             if (!iLivingShooter.cgc$needCheckAmmo()) {
                 // 不需要检查子弹

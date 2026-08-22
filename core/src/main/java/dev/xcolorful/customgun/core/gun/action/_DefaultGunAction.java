@@ -245,7 +245,7 @@ public class _DefaultGunAction {
         }
     }
     /**
-     * 获取不到玩家 则 默认消耗成功
+     * 获取不到玩家 则 只能消耗枪械上的子弹
      */
     @ApiStatus.Internal
     public static int consumeAmmoFromPlayer(IGun iGun, ItemStack gunItem,
@@ -256,9 +256,9 @@ public class _DefaultGunAction {
 
         if (iGun.useDummyAmmo(gunItem)) return iGun.findAndExtractDummyAmmo(iGun, gunItem, neededAmount);
         else {
-            if (livingShooter == null) return neededAmount;
+            if (livingShooter == null) return 0;
             @Nullable IInventoryCapability inventoryCapability = CustomGun.getCapabilityProvider().getItemHandler(livingShooter, null);
-            if (inventoryCapability == null) return neededAmount;
+            if (inventoryCapability == null) return 0;
             return iGun.findAndExtractInventoryAmmo(inventoryCapability, iGun, gunItem, neededAmount);
         }
     }

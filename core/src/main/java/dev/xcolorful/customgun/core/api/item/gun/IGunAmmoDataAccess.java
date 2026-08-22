@@ -11,6 +11,7 @@ import dev.xcolorful.customgun.core.api.gun.inventory.IGunInventoryRuntime;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 public interface IGunAmmoDataAccess {
 
@@ -36,11 +37,11 @@ public interface IGunAmmoDataAccess {
      * </ul>
      * @return 消耗的子弹数，返回{@code 0}则无法消耗子弹
      */
-    int consumeAmmoOnce(LivingEntity livingEntity, ItemStack gunItem, BoltType boltType);
+    int consumeAmmoOnce(@Nullable LivingEntity livingEntity, ItemStack gunItem, BoltType boltType);
     /**
      * {@link IGunAmmoDataAccess#consumeAmmoOnce(LivingEntity, ItemStack, BoltType)}的便利方法
      */
-    int consumeAmmoOnce(LivingEntity livingEntity, ItemStack gunItem);
+    int consumeAmmoOnce(@Nullable LivingEntity livingEntity, ItemStack gunItem);
 
     /**
      * 尝试卸载供弹(如弹匣)，其中:
@@ -111,11 +112,11 @@ public interface IGunAmmoDataAccess {
      * 执行一次拉栓的子弹上膛
      * @return 消耗的子弹数
      */
-    int boltBarrelAmmo(LivingEntity livingEntity, ItemStack gunItem, BoltType boltType);
+    int boltBarrelAmmo(@Nullable LivingEntity livingEntity, ItemStack gunItem, BoltType boltType);
     /**
      * {@link IGunAmmoDataAccess#boltBarrelAmmo(LivingEntity, ItemStack, BoltType)}的便利方法
      */
-    int boltBarrelAmmo(LivingEntity livingEntity, ItemStack gunItem);
+    int boltBarrelAmmo(@Nullable LivingEntity livingEntity, ItemStack gunItem);
 
     // --------Deprecated--------
 

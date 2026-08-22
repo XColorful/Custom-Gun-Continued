@@ -136,7 +136,7 @@ public class GunItem extends Item implements IGun, GunDataAccessor {
                 .melee(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter, meleeType);
     }
     // ----IGunInventoryRuntime----
-    @Override public void retrieveAmmoFromGun(@NotNull IGun iGun, @NotNull ItemStack gunItem, ILivingShooter iLivingShooter, LivingEntity livingShooter) {
+    @Override public void retrieveAmmoFromGun(@NotNull IGun iGun, @NotNull ItemStack gunItem, @Nullable ILivingShooter iLivingShooter, @Nullable LivingEntity livingShooter) {
         CustomGun.getGunManager().getManagerGroup(this.getManagerGroupTag(gunItem))
                 .gunInventoryManager()
                 .retrieveAmmoFromGun(iGun, gunItem, iLivingShooter, livingShooter);

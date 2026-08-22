@@ -21,7 +21,7 @@ import java.util.List;
  * Go to {@link RayTraceUtils}
  */
 @Deprecated(forRemoval = true)
-public class EntityUtils {
+public class _EntityUtils {
 
     @Deprecated
     public static @Nullable IProjectilePhysicsRuntime.EntityHitResult findEntityOnPath(Projectile bulletEntity, Vec3 startVec, Vec3 endVec) {

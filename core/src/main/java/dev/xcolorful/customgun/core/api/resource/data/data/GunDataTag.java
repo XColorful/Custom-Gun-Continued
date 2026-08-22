@@ -51,7 +51,7 @@ public class GunDataTag {
 
     // 举枪动作
     public static final String ENABLE_PRONE = "enable_prone"; public static final String ENABLE_PRONE_OLD1 = "can_crawl";
-    public static final String ENABLE_SLIDE = "enable_slide"; public static final String ENABLE_SLIDE_OLD1 = "can_slide";
+    public static final String ENABLE_TILTING = "enable_tilting"; public static final String ENABLE_TILTING_OLD1 = "can_slide";
 
     // 操作枪械的时长
     public static final String DRAW_TIME = "draw_time";

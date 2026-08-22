@@ -7,31 +7,30 @@
 
 package dev.xcolorful.customgun.client.animation.statemachine;
 
+import dev.xcolorful.customgun.client.api.entity.ILocalShooter;
+import dev.xcolorful.customgun.client.api.entity.shooter.ILocalShooterGetter;
 import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
+import dev.xcolorful.customgun.client.api.script.context.IClientGunScriptApi;
 import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
-import dev.xcolorful.customgun.core.api.gun.script.context.GunScriptApi;
-import dev.xcolorful.customgun.core.api.gun.script.context._LuaNbtAccessor;
 import dev.xcolorful.customgun.core.api.item.IGun;
-import dev.xcolorful.customgun.core.api.item.gun.BoltType;
-import dev.xcolorful.customgun.core.api.item.gun.FireModeType;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
 import dev.xcolorful.customgun.core.api.resource.ResourceApi;
-import dev.xcolorful.customgun.core.entity.shooter.LivingShooterShoot;
+import dev.xcolorful.customgun.core.api.script.context._LuaNbtAccessor;
 import dev.xcolorful.customgun.core.resource.data.data.GunData;
-import dev.xcolorful.customgun.core.resource.data.data.gun._HeatData;
 import dev.xcolorful.customgun.core.resource.instance.data.GunIndexInstance;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
-public class GunAnimStateContext extends ItemAnimStateContext {
+public class GunAnimStateContext extends ItemAnimStateContext implements IClientGunScriptApi {
 
     private ItemStack currentGunItem;
     private @Nullable IGun iGun;
-    private GunDisplayInstance gunDisplayInstance;
+    private @Nullable GunDisplayInstance gunDisplayInstance;
+    private @Nullable GunIndexInstance gunIndexInstance;
     private GunData gunData;
     private float walkDistAnchor = 0f;
     private _LuaNbtAccessor nbtUtil;
@@ -55,43 +54,54 @@ public class GunAnimStateContext extends ItemAnimStateContext {
 
             var gunLocation = this.iGun.getGunLocation(gunItem);
             @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(gunLocation);
+            this.gunIndexInstance = gunIndexInstance;
             this.gunData = gunIndexInstance != null ? gunIndexInstance.getGunData() : null;
         }
 
         this.nbtUtil = _LuaNbtAccessor.of(this.currentGunItem);
     }
 
-    // --------Deprecated--------
-    // TODO 又一个"_GunScriptBackCompat"待移植
-    // 做成单独的模组mixin？
+    // --------IGunScriptContextAccess--------
 
-    /**
-     * @return {@link GunScriptApi#hasAmmoInBarrel()}
-     */
-    @Deprecated public boolean hasBulletInBarrel() {
-        BoltType boltType = this.gunData.getBoltType();
-        return boltType.useBarrelAmmo() && iGun.hasBarrelAmmo(this.currentGunItem);
+    @Override public @Nullable IGun getIGun() {
+        return this.iGun;
     }
-    /**
-     * @return {@link GunScriptApi#isOverheatLocked()}
-     */
-    @Deprecated public boolean isOverHeat() {
-        return iGun.hasOverheatLock(this.currentGunItem);
+    @Override public ItemStack getGunItem() {
+        return this.currentGunItem;
     }
-    @Deprecated public float getHeatProgress() {
-        _HeatData heatData = this.gunData.getHeatData();
-        return heatData != null &&iGun.hasHeat(this.currentGunItem) ? iGun.getHeatCount(this.currentGunItem) / heatData.getMaxHeat() : 0;
+    @Override public @Nullable GunIndexInstance getGunIndexInstance() {
+        return this.gunIndexInstance;
+    }
+    @Override public @Nullable GunDisplayInstance getGunDisplayInstance() {
+        return this.gunDisplayInstance;
     }
 
-    /**
-     * 获取枪械的射击间隔，单位毫秒
-     * @return 射击间隔
-     */
-    @Deprecated public long getShootInterval() {
-        Entity entity = Minecraft.getInstance().getCameraEntity();
-        if (!(entity instanceof LivingEntity livingEntity)) return 0;
+    @Deprecated(forRemoval = false)
+    @Override public float getWalkDistAnchor() {
+        return this.walkDistAnchor;
+    }
 
-        FireModeType fireModeType = iGun.getFireModeType(this.currentGunItem);
-        return LivingShooterShoot._getShootInterval(livingEntity, this.gunData, fireModeType, iGun, this.currentGunItem);
+    @Deprecated(forRemoval = false)
+    @Override public @Nullable _LuaNbtAccessor getNbt() {
+        return this.nbtUtil;
+    }
+
+    @Deprecated(forRemoval = false)
+    @Override public void setWalkDistAnchor(float value) {
+        this.walkDistAnchor = value;
+    }
+
+    // --------IClientGunScriptContextAccess--------
+
+    @Override public @Nullable ILocalShooter getILocalShooter() {
+        @Nullable LocalPlayer localShooter = this.getLocalShooter();
+        return localShooter != null ? ILocalShooterGetter.fromLocalPlayer(localShooter) : null;
+    }
+    @Override public @Nullable LocalPlayer getLocalShooter() {
+        return Minecraft.getInstance().player;
+    }
+
+    @Override public @Nullable Entity getCameraShooter() {
+        return Minecraft.getInstance().getCameraEntity();
     }
 }

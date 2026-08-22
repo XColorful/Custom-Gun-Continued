@@ -31,6 +31,7 @@ import dev.xcolorful.customgun.core.resource.data.data.gun._BurstData;
 import dev.xcolorful.customgun.core.resource.data.data.gun._ChargingData;
 import dev.xcolorful.customgun.core.resource.data.data.gun._HeatData;
 import dev.xcolorful.customgun.core.resource.instance.data.GunIndexInstance;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -505,66 +506,53 @@ public interface IGunScriptBackCompat extends IGunScriptContextAccess {
         ItemStack gunItem = this.getGunItem();
         return iGun.getHeatCount(gunItem);
     }
+    default float getHeatProgress() {
+        @Nullable _HeatData heatData = this.getHeatData();
+        IGun iGun = this.getIGun();
+        ItemStack gunItem = this.getGunItem();
+        if (heatData == null || iGun == null || gunItem == null) return 0;
+
+        return Mth.clamp(iGun.getHeatCount(gunItem) / heatData.getMaxHeat(), 0, 1);
+    }
 
     default boolean hasHeatData() {
+        return this.getHeatData() != null;
+    }
+    default @Nullable _HeatData getHeatData() {
         @Nullable GunIndexInstance gunIndexInstance = this.getGunIndexInstance();
-        if (gunIndexInstance == null) return false;
+        if (gunIndexInstance == null) return null;
 
         GunData gunData = gunIndexInstance.getGunData();
-        return gunData.getHeatData() != null;
+        return gunData.getHeatData();
     }
 
     default float getHeatMinRpm() {
-        @Nullable GunIndexInstance gunIndexInstance = this.getGunIndexInstance();
-        if (gunIndexInstance == null) return 0;
-
-        GunData gunData = gunIndexInstance.getGunData();
-        @Nullable _HeatData heatData = gunData.getHeatData();
+        @Nullable _HeatData heatData = this.getHeatData();
         return heatData != null ? heatData.getMinRpmByHeat() : 0;
     }
 
     default float getHeatMaxRpm() {
-        @Nullable GunIndexInstance gunIndexInstance = this.getGunIndexInstance();
-        if (gunIndexInstance == null) return 0;
-
-        GunData gunData = gunIndexInstance.getGunData();
-        @Nullable _HeatData heatData = gunData.getHeatData();
+        @Nullable _HeatData heatData = this.getHeatData();
         return heatData != null ? heatData.getMaxRpmByHeat() : 0;
     }
 
     default float getHeatMinInaccuracy() {
-        @Nullable GunIndexInstance gunIndexInstance = this.getGunIndexInstance();
-        if (gunIndexInstance == null) return 0;
-
-        GunData gunData = gunIndexInstance.getGunData();
-        @Nullable _HeatData heatData = gunData.getHeatData();
+        @Nullable _HeatData heatData = this.getHeatData();
         return heatData != null ? heatData.getMinInaccuracyByHeat() : 0;
     }
 
     default float getHeatMaxInaccuracy() {
-        @Nullable GunIndexInstance gunIndexInstance = this.getGunIndexInstance();
-        if (gunIndexInstance == null) return 0;
-
-        GunData gunData = gunIndexInstance.getGunData();
-        @Nullable _HeatData heatData = gunData.getHeatData();
+        @Nullable _HeatData heatData = this.getHeatData();
         return heatData != null ? heatData.getMaxInaccuracyByHeat() : 0;
     }
 
     default float getHeatMax() {
-        @Nullable GunIndexInstance gunIndexInstance = this.getGunIndexInstance();
-        if (gunIndexInstance == null) return 0;
-
-        GunData gunData = gunIndexInstance.getGunData();
-        @Nullable _HeatData heatData = gunData.getHeatData();
+        @Nullable _HeatData heatData = this.getHeatData();
         return heatData != null ? heatData.getMaxHeat() : 0;
     }
 
     default float getHeatPerShot() {
-        @Nullable GunIndexInstance gunIndexInstance = this.getGunIndexInstance();
-        if (gunIndexInstance == null) return 0;
-
-        GunData gunData = gunIndexInstance.getGunData();
-        @Nullable _HeatData heatData = gunData.getHeatData();
+        @Nullable _HeatData heatData = this.getHeatData();
         return heatData != null ? heatData.getHeatPerShot() : 0;
     }
 
@@ -581,29 +569,17 @@ public interface IGunScriptBackCompat extends IGunScriptContextAccess {
     }
 
     default long getOverheatTime() {
-        @Nullable GunIndexInstance gunIndexInstance = this.getGunIndexInstance();
-        if (gunIndexInstance == null) return 0;
-
-        GunData gunData = gunIndexInstance.getGunData();
-        @Nullable _HeatData heatData = gunData.getHeatData();
+        @Nullable _HeatData heatData = this.getHeatData();
         return heatData != null ? heatData.getOverheatLocktimeMs() : 0;
     }
 
     default long getCoolingDelay() {
-        @Nullable GunIndexInstance gunIndexInstance = this.getGunIndexInstance();
-        if (gunIndexInstance == null) return 0;
-
-        GunData gunData = gunIndexInstance.getGunData();
-        @Nullable _HeatData heatData = gunData.getHeatData();
+        @Nullable _HeatData heatData = this.getHeatData();
         return heatData != null ? heatData.getCoolingDelayMs() : 0;
     }
 
     default float calcHeatReduction(long heatTimestamp) {
-        @Nullable GunIndexInstance gunIndexInstance = this.getGunIndexInstance();
-        if (gunIndexInstance == null) return 0;
-
-        GunData gunData = gunIndexInstance.getGunData();
-        @Nullable _HeatData heatData = gunData.getHeatData();
+        @Nullable _HeatData heatData = this.getHeatData();
         if (heatData == null) return 0;
         else return ((float) (System.currentTimeMillis() - heatTimestamp) / 10_000f) * heatData.getCoolingSpeedMultiplier();
     }

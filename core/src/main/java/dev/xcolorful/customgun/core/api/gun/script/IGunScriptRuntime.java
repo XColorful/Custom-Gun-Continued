@@ -1,5 +1,6 @@
 package dev.xcolorful.customgun.core.api.gun.script;
 
+import dev.xcolorful.customgun.core.api.gun.script.context.GunScriptApi;
 import dev.xcolorful.customgun.core.api.item.gun.modifier.GunModifierType;
 import dev.xcolorful.customgun.core.api.item.gun.modifier.IGunModifier;
 import net.minecraft.world.item.ItemStack;

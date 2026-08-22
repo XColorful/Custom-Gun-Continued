@@ -8,7 +8,7 @@
 package dev.xcolorful.customgun.core.api.item.gun.modifier;
 
 import dev.xcolorful.customgun.core.api.entity.shooter.modifier.ShooterGunModifierCache;
-import dev.xcolorful.customgun.core.api.gun.script.GunScriptApi;
+import dev.xcolorful.customgun.core.api.gun.script.context.GunScriptApi;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.gun.FireSoundType;
 import dev.xcolorful.customgun.core.resource.ResourcePojo;

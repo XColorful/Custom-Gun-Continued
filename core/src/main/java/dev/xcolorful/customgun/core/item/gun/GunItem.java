@@ -14,7 +14,7 @@ import dev.xcolorful.customgun.core.api.entity.ILivingShooter;
 import dev.xcolorful.customgun.core.api.entity.ReloadState;
 import dev.xcolorful.customgun.core.api.entity.ShooterProperty;
 import dev.xcolorful.customgun.core.api.gun.attack.IGunAttackRuntime;
-import dev.xcolorful.customgun.core.api.gun.script.GunScriptApi;
+import dev.xcolorful.customgun.core.api.gun.script.context.GunScriptApi;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.gun.GunDataAccessor;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;

@@ -9,8 +9,8 @@ package dev.xcolorful.customgun.client.animation.statemachine;
 
 import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
 import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
-import dev.xcolorful.customgun.core.api.gun.script.GunScriptApi;
-import dev.xcolorful.customgun.core.api.gun.script._LuaNbtAccessor;
+import dev.xcolorful.customgun.core.api.gun.script.context.GunScriptApi;
+import dev.xcolorful.customgun.core.api.gun.script.context._LuaNbtAccessor;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.gun.BoltType;
 import dev.xcolorful.customgun.core.api.item.gun.FireModeType;

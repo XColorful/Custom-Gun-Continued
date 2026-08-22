@@ -5,7 +5,7 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package dev.xcolorful.customgun.core.api.gun.script.context;
+package dev.xcolorful.customgun.core.api.script.context;
 
 import dev.xcolorful.customgun.core.util.ChatUtils;
 import net.minecraft.network.chat.Component;

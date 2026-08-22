@@ -10,7 +10,7 @@ package dev.xcolorful.customgun.core.entity.shooter.player;
 import dev.xcolorful.customgun.core.api.entity.ILivingShooter;
 import dev.xcolorful.customgun.core.api.entity.shooter.ILivingShooterGetter;
 import dev.xcolorful.customgun.core.api.event.*;
-import dev.xcolorful.customgun.core.api.gun.script.context.GunScriptApi;
+import dev.xcolorful.customgun.core.api.script.context.GunScriptApi;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
 import dev.xcolorful.customgun.core.config.GunConfig;

@@ -5,7 +5,7 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package dev.xcolorful.customgun.core.api.gun.script.context;
+package dev.xcolorful.customgun.core.api.script.context;
 
 public interface IGunScriptApi extends IGunScriptBackCompat {
 }

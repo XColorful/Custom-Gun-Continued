@@ -5,7 +5,7 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package dev.xcolorful.customgun.core.api.gun.script.context;
+package dev.xcolorful.customgun.core.api.script.context;
 
 import dev.xcolorful.customgun.core.api.entity.ILivingShooter;
 import dev.xcolorful.customgun.core.api.item.IGun;
@@ -25,6 +25,4 @@ public interface IGunScriptContextAccess {
 
     @Deprecated
     @Nullable _LuaNbtAccessor getNbt();
-
-    // --------_GunScriptBackCompat--------
 }

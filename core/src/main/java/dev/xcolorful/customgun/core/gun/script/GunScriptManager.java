@@ -8,7 +8,7 @@
 package dev.xcolorful.customgun.core.gun.script;
 
 import dev.xcolorful.customgun.CustomGun;
-import dev.xcolorful.customgun.core.api.gun.script.context.GunScriptApi;
+import dev.xcolorful.customgun.core.api.script.context.GunScriptApi;
 import dev.xcolorful.customgun.core.api.gun.script.IGunScriptManager;
 import dev.xcolorful.customgun.core.api.item.gun.modifier.GunModifierType;
 import dev.xcolorful.customgun.core.api.script.ScriptMethodType;

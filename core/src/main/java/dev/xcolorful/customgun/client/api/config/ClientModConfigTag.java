@@ -31,8 +31,8 @@ public class ClientModConfigTag {
     public static final String gunLodRenderDistance_path = "GunLodRenderDistance";
     public static final String gunLodRenderDistance_comment = "How far to display the lod model, 0 means always display";
 
-    public static final String disableGunTilting_comment = "DisableGunTilting";
-    public static final String disableGunTilting_path = "Whether to disable gun tilting while crouching";
+    public static final String disableGunTilting_path = "DisableGunTilting";
+    public static final String disableGunTilting_comment = "Whether to disable gun tilting while crouching";
 
     public static final String bulletHoleParticleLife_path = "BulletHoleParticleLife";
     public static final String bulletHoleParticleLife_comment = "The existence time of bullet hole particles, in tick";

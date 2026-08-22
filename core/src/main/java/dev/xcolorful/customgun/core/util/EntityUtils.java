@@ -20,11 +20,11 @@ public class EntityUtils {
     }
     @Deprecated(forRemoval = true, since = "1.21.4")
     public static float getWalkDist(@NotNull Entity entity) {
-        return entity.walkDist;
+        return getMoveDist(entity);
     }
     @Deprecated(forRemoval = true, since = "1.21.4")
     public static float getOldWalkDist(@NotNull Entity entity) {
-        return entity.walkDistO;
+        return getMoveDist(entity);
     }
 
     public static class Hitbox {

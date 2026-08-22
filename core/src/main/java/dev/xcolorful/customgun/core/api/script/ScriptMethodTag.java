@@ -25,5 +25,16 @@ public class ScriptMethodTag {
     public static final String CALCULATE_SPREAD = "calculate_spread"; public static final String CALCULATE_SPREAD_OLD1 = "calcSpread";
     public static final String HANDLE_SHOOT_HEAT = "handle_shoot_heat";
 
+    // AnimStateMachine
+    public static final String ANIM_INIT = "anim_init"; public static final String ANIM_INIT_OLD1 = "initialize";
+    public static final String ANIM_EXIT = "anim_exit"; public static final String ANIM_EXIT_OLD1 = "exit";
+    public static final String ANIM_STATES = "anim_states"; public static final String ANIM_STATES_OLD1 = "states";
+
+    // IAnimationStateContext
+    public static final String ANIM_CONTEXT_UPDATE = "anim_context_update"; public static final String ANIM_CONTEXT_UPDATE_OLD1 = "update";
+    public static final String ANIM_CONTEXT_ENTRY_ACTION = "anim_context_entry_action"; public static final String ANIM_CONTEXT_ENTRY_ACTION_OLD1 = "entry";
+    public static final String ANIM_CONTEXT_EXIT = "anim_context_exit"; public static final String ANIM_CONTEXT_EXIT_OLD1 = "exit";
+    public static final String ANIM_CONTEXT_TRANSITION = "anim_context_transition"; public static final String ANIM_CONTEXT_TRANSITION_OLD1 = "transition";
+
     private ScriptMethodTag() {}
 }

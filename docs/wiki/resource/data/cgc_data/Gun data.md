@@ -1,7 +1,7 @@
 [English](#English)
 
 # 枪械数据
-> wiki 版本：`0.0.4`.8
+> wiki 版本：`0.0.6`.9
 
 - `bullet_data`/`bullet`（\_BulletData）：
 	- `display_damage`/`damage`（float）：
@@ -136,7 +136,7 @@
 - `builtin_attachments`（Map\<AttachmentCategory, ResourceLocation>）：
 ---
 - `enable_prone`/`can_crawl`（boolean）：
-- `enable_slide`/`can_slide`（boolean）：
+- `enable_tilting`/`can_slide`（boolean）：
 ---
 - `draw_time`（float）：
 - `put_away_time`（float）：
@@ -313,7 +313,7 @@
 	},
 	
 	"enable_prone": false,
-	"enable_slide": false,
+	"enable_tilting": false,
 	
 	"draw_time": 0.0,
 	"put_away_time": 0.0,
@@ -325,7 +325,7 @@
 ```
 
 # English
-> wiki verison: `0.0.4`.8
+> wiki verison: `0.0.6`.9
 
 - `bullet_data`/`bullet`( \_BulletData):
 	- `display_damage`/`damage`(float):
@@ -460,7 +460,7 @@
 - `builtin_attachments`(Map\<AttachmentCategory, ResourceLocation>):
 ---
 - `enable_prone`/`can_crawl`(boolean):
-- `enable_slide`/`can_slide`(boolean):
+- `enable_tilting`/`can_slide`(boolean):
 ---
 - `draw_time`(float):
 - `put_away_time`(float):
@@ -637,7 +637,7 @@
 	},
 	
 	"enable_prone": false,
-	"enable_slide": false,
+	"enable_tilting": false,
 	
 	"draw_time": 0.0,
 	"put_away_time": 0.0,

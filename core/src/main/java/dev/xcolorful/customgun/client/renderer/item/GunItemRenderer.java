@@ -234,6 +234,9 @@ public class GunItemRenderer extends AnimateGeoItemRenderer<GunModelObject, GunA
             animationStateMachine.update();
         }
 
+        // 开启第一人称弹壳和火焰渲染
+        MuzzleFlashRender.State.isSelf = true;
+        ShellRender.State.isSelf = true;
         poseStack.pushPose(); {
             // 逆转原版施加在手上的延滞效果，改为写入模型动画数据中
             float xRotOffset = Mth.lerp(partialTick, player.xBobO, player.xBob);
@@ -261,10 +264,6 @@ public class GunItemRenderer extends AnimateGeoItemRenderer<GunModelObject, GunA
 
             // 应用持枪姿态变换，如第一人称摄像机定位
             GunRendererAddon.get().applyFirstPersonGunTransform(poseStack, partialTick, gunModelObject, player, gunItem);
-
-            // 开启第一人称弹壳和火焰渲染
-            MuzzleFlashRender.State.isSelf = true;
-            ShellRender.State.isSelf = true;
 
             // 如果正在打开改装界面，则取消手臂渲染
             boolean renderHand = gunModelObject.getRenderHand();
@@ -295,13 +294,12 @@ public class GunItemRenderer extends AnimateGeoItemRenderer<GunModelObject, GunA
             gunModelObject.setRenderHand(renderHand);
         }
         poseStack.popPose();
-
-        // 渲染完成后，将动画数据从模型中清除，不对其他视角下的模型渲染产生影响
-        gunModelObject.cleanAnimationTransform();
-
         // 关闭第一人称弹壳和火焰渲染
         MuzzleFlashRender.State.isSelf = false;
         ShellRender.State.isSelf = false;
+
+        // 渲染完成后，将动画数据从模型中清除，不对其他视角下的模型渲染产生影响
+        gunModelObject.cleanAnimationTransform();
     }
     private static void cacheMuzzlePosition(PoseStack poseStack, GunModelObject gunModel) {
         @Nullable List<BedrockPart> muzzleFlashPosPath = gunModel.getMuzzleFlashPosPath();

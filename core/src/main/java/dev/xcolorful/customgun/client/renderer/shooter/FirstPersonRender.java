@@ -68,7 +68,7 @@ public class FirstPersonRender implements IEventHandler {
             return;
         }
 
-        // 事件事件给的是被延长渲染修改过后的物品，不是玩家实际手持的
+        // 事件给的是被延长渲染修改过后的物品，不是玩家实际手持的
         ItemStack gunItem = event.getItemStack();
 
         /**

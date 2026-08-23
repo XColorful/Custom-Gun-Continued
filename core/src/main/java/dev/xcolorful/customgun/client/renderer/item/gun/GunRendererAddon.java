@@ -249,8 +249,8 @@ public class GunRendererAddon implements ICustomEventHandler {
         transformMatrix.identity();
 
         // 应用瞄准定位
-        List<BedrockPart> idleNodePath = gunModelObject.getIdleSightPath();
-        List<BedrockPart> aimingNodePath = null;
+        @Nullable List<BedrockPart> idleNodePath = gunModelObject.getIdleSightPath();
+        @Nullable List<BedrockPart> aimingNodePath = null;
         var scopeLocation = iGun.getAttachmentLocation(gunItem, AttachmentCategory.SCOPE);
         if (ResourceTag.NULL_LOCATION.equals(scopeLocation)) {
             scopeLocation = iGun.getBuiltinAttachmentLocation(gunItem, AttachmentCategory.SCOPE);

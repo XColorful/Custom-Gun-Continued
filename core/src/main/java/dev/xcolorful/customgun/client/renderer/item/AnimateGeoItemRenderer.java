@@ -15,6 +15,7 @@ import dev.xcolorful.customgun.client.api.animation.statemachine.GunAnimationSta
 import dev.xcolorful.customgun.client.api.event.IComputeCameraAnglesEvent;
 import dev.xcolorful.customgun.client.api.event.IRenderHandEvent;
 import dev.xcolorful.customgun.client.api.event.render.BeforeRenderHandEvent;
+import dev.xcolorful.customgun.client.api.renderer.KeepingItemRenderer;
 import dev.xcolorful.customgun.client.api.renderer.item.IAnimateGeoItemRenderer;
 import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
 import dev.xcolorful.customgun.client.api.sound.gun.GunSoundType;
@@ -174,7 +175,7 @@ public abstract class AnimateGeoItemRenderer<M extends AnimatedModelObject, CTX 
 
         if (!stateMachine.isInitialized()) return;
 
-//        KeepingItemRenderer.cgc$getRenderer().cgc$keep(itemStack, putAwayTime);
+        KeepingItemRenderer.cgc$getRenderer().cgc$keep(itemStack, putAwayTime);
         stateMachine.exit();
         // 需要设置的比动画稍长些，避免意外的重初始化（可能是丢精度了）
         // 延后1tick应该基本没有感知

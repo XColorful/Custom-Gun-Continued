@@ -28,8 +28,10 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * 原模组把逻辑移到了前置模组，从而绑架了移植
+ * <ul>
+ *     <li>一个跨版本的模组不能引入跨版本能力更弱的模组作为依赖</li>
+ * </ul>
  */
-@Deprecated(forRemoval = true)
 public class FirstPersonRender implements IEventHandler {
     private static class FirstPersonRenderHolder {
         private static final FirstPersonRender INSTANCE = new FirstPersonRender();

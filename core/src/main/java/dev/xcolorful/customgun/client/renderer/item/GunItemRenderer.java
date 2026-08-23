@@ -20,6 +20,7 @@ import dev.xcolorful.customgun.client.api.entity.shooter.ILocalShooterGetter;
 import dev.xcolorful.customgun.client.api.event.IComputeCameraAnglesEvent;
 import dev.xcolorful.customgun.client.api.event.IRenderHandEvent;
 import dev.xcolorful.customgun.client.api.event.render.BeforeRenderHandEvent;
+import dev.xcolorful.customgun.client.api.renderer.KeepingItemRenderer;
 import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
 import dev.xcolorful.customgun.client.model.GunModelObject;
 import dev.xcolorful.customgun.client.model.bedrock.BedrockPart;
@@ -133,9 +134,9 @@ public class GunItemRenderer extends AnimateGeoItemRenderer<GunModelObject, GunA
             context.setCurrentGunItem(gunItem);
         });
 
-        if(stateMachine.isInitialized()) {
+        if (stateMachine.isInitialized()) {
             stateMachine.trigger(GunAnimationState.INPUT_PUT_AWAY.getConstantName());
-//            KeepingItemRenderer.cgc$getRenderer().cgc$keep(gunItem, putAwayTime);
+            KeepingItemRenderer.cgc$getRenderer().cgc$keep(gunItem, putAwayTime);
             stateMachine.exit();
             stateMachine.setExitingTime(putAwayTime + 50);
         }

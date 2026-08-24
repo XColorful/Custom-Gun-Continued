@@ -153,13 +153,15 @@ public class _Uv extends ResourcePojo<_Uv> {
             return getSimpleUv(this.uv);
         }
 
+        // 基岩版与 Java 版的坐标轴翻转（Y 上下颠倒、X 左右颠倒），
+        // 因此东/西、上/下这两对面要交叉取 UV。
         _FaceUv faceUv = switch (direction) {
             case NORTH -> this.north;
             case SOUTH -> this.south;
-            case EAST -> this.east;
-            case WEST -> this.west;
-            case UP -> this.up;
-            case DOWN -> this.down;
+            case EAST -> this.west;
+            case WEST -> this.east;
+            case UP -> this.down;
+            case DOWN -> this.up;
         };
         return faceUv != null ? faceUv : _FaceUv.EMPTY;
     }

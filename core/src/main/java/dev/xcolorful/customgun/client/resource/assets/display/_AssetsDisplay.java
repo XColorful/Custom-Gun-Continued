@@ -20,8 +20,6 @@ public abstract class _AssetsDisplay<T extends _AssetsDisplay<T>> extends Resour
 
     @Override
     protected void validatePojo() {
-        if (ENABLE_BACK_COMPATIBILITY) this.applyBackCompatibility();
-
         this.setValid(true);
     }
 

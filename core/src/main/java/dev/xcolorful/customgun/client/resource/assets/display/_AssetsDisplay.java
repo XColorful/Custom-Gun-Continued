@@ -22,12 +22,6 @@ public abstract class _AssetsDisplay<T extends _AssetsDisplay<T>> extends Resour
     protected void validatePojo() {
         if (ENABLE_BACK_COMPATIBILITY) this.applyBackCompatibility();
 
-        boolean n1 = (this.modelLocation == null);
-        if (n1) {
-            this.setValid(false);
-            return;
-        }
-
         this.setValid(true);
     }
 

@@ -381,6 +381,9 @@ public final class GunDisplay extends _AssetsDisplay<GunDisplay> {
         this.setModelTransform(this.getModelTransform() == null ? new _ModelTransform().applyBackCompatibility() : this.getModelTransform().applyBackCompatibility());
         this.setSlotTextureLocation(this.getSlotTextureLocation() == null ? ResourceTag.NULL_LOCATION : this.getSlotTextureLocation());
 
+        this.hudTextureLocation = applyTextureLocationBackCompatibility(this.hudTextureLocation);
+        this.hudEmptyTextureLocation = applyTextureLocationBackCompatibility(this.hudEmptyTextureLocation);
+
         if (this.lodDisplay != null) this.lodDisplay.applyBackCompatibility();
         if (this.muzzleFlashDisplay != null) this.muzzleFlashDisplay.applyBackCompatibility();
         if (this.laserDisplay != null) this.laserDisplay.applyBackCompatibility();

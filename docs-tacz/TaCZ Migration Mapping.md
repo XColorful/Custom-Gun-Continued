@@ -1091,7 +1091,7 @@ Notation:
 |pojo.display.gun.`Align`|assets.display.`_ModelNodeTextDisplay`.xOffsetScale|
 |pojo.display.gun.`DefaultAnimationType`|_Deprecated_|
 |pojo.display.gun.`*`|assets.display.gun|
-|pojo.display.`IDisplay`|_Deprecated_|
+|pojo.display.`IDisplay`|assets.display.`_AssetsDisplay`.applyTextureLocationBackCompatibility|
 |pojo.display.`LaserConfig`|assets.display.`_LaserDisplay`|
 |pojo.model.`BedrockModelPOJO`|assets.model.`BedrockModel`|
 |pojo.model.`BedrockVersion`|_Deprecated_|

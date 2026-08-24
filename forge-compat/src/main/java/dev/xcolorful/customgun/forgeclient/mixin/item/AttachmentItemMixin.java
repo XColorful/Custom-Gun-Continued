@@ -27,6 +27,7 @@ public abstract class AttachmentItemMixin extends Item implements IItemBEWLR {
     @Override
     public void initializeClient(Consumer<IClientItemExtensions> consumer) {
         consumer.accept(new IClientItemExtensions() {
+            @Deprecated(since = "1.21.4")
             @Override
             public BlockEntityWithoutLevelRenderer getCustomRenderer() {
                 return AttachmentItemMixin.this.cgc$getBEWLR();

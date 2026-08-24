@@ -27,6 +27,7 @@ public abstract class AmmoItemMixin extends Item implements IItemBEWLR {
     @Override
     public void initializeClient(Consumer<IClientItemExtensions> consumer) {
         consumer.accept(new IClientItemExtensions() {
+            @Deprecated(since = "1.21.4")
             @Override
             public BlockEntityWithoutLevelRenderer getCustomRenderer() {
                 return AmmoItemMixin.this.cgc$getBEWLR();

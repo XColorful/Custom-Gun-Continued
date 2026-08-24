@@ -28,6 +28,7 @@ public abstract class GunItemMixin extends Item implements IAnimateGeoItem, IIte
     @Override
     public void initializeClient(Consumer<IClientItemExtensions> consumer) {
         consumer.accept(new IClientItemExtensions() {
+            @Deprecated(since = "1.21.4")
             @Override
             public BlockEntityWithoutLevelRenderer getCustomRenderer() {
                 return GunItemMixin.this.cgc$getBEWLR();

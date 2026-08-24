@@ -143,7 +143,7 @@ public final class GunDisplayInstance extends PojoInstance<GunDisplay> {
             var scriptLocation = pojo.getScriptLocation();
             if (scriptLocation == null) {
                 CustomGun.LOGGER.debug("GunDisplayInstance: GunDisplay missing scriptLocation");
-                return false;
+                scriptLocation = GunDisplay.DEFAULT_SCRIPT_LOCATION;
             }
             AssetsScript assetsScript = ClientResourceApi.getAssetsScript(scriptLocation);
             if (assetsScript == null) {

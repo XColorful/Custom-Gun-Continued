@@ -9,6 +9,7 @@ package dev.xcolorful.customgun.client.resource.assets.display;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.api.item.gun.DamageDisplayType;
 import dev.xcolorful.customgun.client.api.item.gun.IShooterAnimationCategory;
 import dev.xcolorful.customgun.client.api.item.gun.ShooterAnimationCategory;
@@ -21,6 +22,7 @@ import dev.xcolorful.customgun.core.api.resource.ResourceTag;
 import dev.xcolorful.customgun.core.api.resource.assets.display.GunDisplayTag;
 import dev.xcolorful.customgun.core.util.JsonUtils;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -399,4 +401,8 @@ public final class GunDisplay extends _AssetsDisplay<GunDisplay> {
         this.gunSounds = this.gunSounds == null ? new HashMap<>() : this.gunSounds;
         return this;
     }
+
+    // --------Special--------
+
+    public static @NotNull ResourceLocation DEFAULT_SCRIPT_LOCATION = CustomGun.getMcRegistry().createResourceLocation(String.format("%s:%s", CustomGun.MOD_ID_OLD1, "default_state_machine"));
 }

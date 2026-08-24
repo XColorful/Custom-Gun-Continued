@@ -56,7 +56,6 @@ public final class GunDisplayInstance extends PojoInstance<GunDisplay> {
 
     private @Nullable Int2ObjectArrayMap<_SurroundDisplay> surroundDisplayByHotbarCache;
     private @Nullable Color tracerColorCache;
-    private @Nullable _AmmoParticle ammoParticleCache;
     private @Nullable ParticleOptions ammoParticleOptionsCache;
     private Map<GunSoundType, ResourceLocation> gunSoundsCache;
 
@@ -120,9 +119,9 @@ public final class GunDisplayInstance extends PojoInstance<GunDisplay> {
         _AmmoDisplayOverride ammoDisplayOverride = pojo.getAmmoDisplayOverride();
         if (ammoDisplayOverride != null) {
             this.tracerColorCache = ammoDisplayOverride.getTracerColor();
-            this.ammoParticleCache = ammoDisplayOverride.getAmmoParticle();
-            if (this.ammoParticleOptionsCache != null) {
-                var particleRl = this.ammoParticleCache.getParticleLocation();
+            @Nullable _AmmoParticle ammoParticle = ammoDisplayOverride.getAmmoParticle();
+            if (ammoParticle != null) {
+                var particleRl = ammoParticle.getParticleLocation();
                 try {
                     this.ammoParticleOptionsCache = ParticleArgument.readParticle(new StringReader(particleRl.toString()), BuiltInRegistries.PARTICLE_TYPE.asLookup());
                 } catch (CommandSyntaxException e) {
@@ -175,12 +174,13 @@ public final class GunDisplayInstance extends PojoInstance<GunDisplay> {
         if (!super.isPojoValid()) return false;
 
         var pojo = this.getPojo();
+        @Nullable _AmmoParticle ammoParticle = this.getAmmoParticle();
 
         int errorMask = 0;
         // GunDisplay
         errorMask |= pojo.getModelTransform() == null || pojo.getModelTransform().getScale() == null ? ERR_TRANSFORM_SCALE : 0;
-        errorMask |= (this.ammoParticleCache != null && this.ammoParticleCache.getCount() < 1) ? ERR_AMMO_PARTICLE_COUNT : 0;
-        errorMask |= (this.ammoParticleCache != null && this.ammoParticleCache.getLifetimeTicks() < 1) ? ERR_AMMO_PARTICLE_LIFETIME : 0;
+        errorMask |= (ammoParticle != null && ammoParticle.getCount() < 1) ? ERR_AMMO_PARTICLE_COUNT : 0;
+        errorMask |= (ammoParticle != null && ammoParticle.getLifetimeTicks() < 1) ? ERR_AMMO_PARTICLE_LIFETIME : 0;
         errorMask |= pojo.getIronZoomScale() < 1 ? ERR_IRON_ZOOM_SCALE : 0;
         errorMask |= pojo.getIronViewFov() > 70 ? ERR_IRON_VIEW_FOV : 0;
         if (errorMask != 0) {
@@ -243,7 +243,8 @@ public final class GunDisplayInstance extends PojoInstance<GunDisplay> {
         return this.tracerColorCache;
     }
     public @Nullable _AmmoParticle getAmmoParticle() {
-        return this.ammoParticleCache;
+        @Nullable _AmmoDisplayOverride ammoDisplayOverride = this.getPojo().getAmmoDisplayOverride();
+        return ammoDisplayOverride != null ? ammoDisplayOverride.getAmmoParticle() : null;
     }
     public @Nullable ParticleOptions getParticleOptions() {
         return this.ammoParticleOptionsCache;

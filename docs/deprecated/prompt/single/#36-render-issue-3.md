@@ -607,3 +607,83 @@ I've found and fixed two clear root causes this turn. Here's the summary.
 2. BerylM762 装备扩容弹夹后应切换到对应 `mag_extended_*` 模型。
 
 对于「透明/变黑」「子弹盒顶面」这两类，建议你提供**具体截图或指出是哪块面**，或我下一步继续深入逐面比对 `BedrockCubePerFace` 与 SimpleBedrockModel 原版的顶点绕序和 UV。你看是先按当前两处修复测试，还是让我继续排查模型面渲染问题？
+
+# 
+
+```
+经测试，已经正常切换扩容弹夹模型、以及持枪视角不再始终处于机瞄视野，这两个修改我已commit
+
+现在测试如下：
+- 开镜后的视角，看起来像是切换到了机瞄视角然后放大，而不是瞄准镜模型里根据scopeViewIndex指定的视角
+- 倍镜的ocular始终都是黑色的（跟模型一样，而不是ocular部分显示画面）
+- 在安装倍镜时，将背包的任意物品放到（创造模式背包右下角的）“摧毁物品”，此时背包里所有枪械安装的倍镜的模型部分都会只剩下ocular和ocular ring被渲染，其余部分变透明，退出存档重进后则恢复；经测试TaCZ在这个操作下不会触发该问题
+- BerylM762和SLR的模型，没发现整体形变，但是有些地方的材质变透明，装备的配件模型（握把）也是，有些地方的贴图颜色变黑
+- 7.62毫米子弹的模型顶面（盒子顶面）没有正确渲染，应该是有纹理，但似乎只有顶面底下的一个纯色面，上面的装饰缺失；范围为root/box/top下，除了一个位置-2.2813,1.75,-2.0313尺寸为6,0.0625,4.0625的cube（盒子顶面）以外的所有其他部分，且渲染的面的颜色也比这个面应该有的淡黄色要深得多
+
+以下问题依旧存在，如果渲染问题解决了可以考虑处理下面的问题：
+- ZoomKey异常，按下后没有切换倍率，读取物品NBT没发现配件有scope_view_index
+- 7.62毫米子弹不能堆叠（正常来说，根据AmmoIndex里的设置来修改堆叠）
+- 装弹结束后枪械物品NBT没有写入子弹
+
+以你你刚才提到TaCZ用的SBM的模型，但是POJO读取不应该是写在TaCZ里的类吗？BedrockCubePerFace是从TaCZ的类里移植的，TaCZ内部难道没使用吗？
+CGC测试用的跟用于TaCZ枪包目录下的模型文件、贴图等都是一样的（直接复制到不同位置+增加pack.mcmeta使作为材质包），BlockBench导出的模型格式本身应该都是相同的，是否是移植的时候处理问题？我觉得大概不是TaCZ用了SBM的格式，最多只能是SBM接管了渲染，并且更新修复了什么，而写在TaCZ里的过时了。
+
+注：SBM是LGPL3的，兼容GPL3，并且也能通过IDEA提供的MCP浏览源码和调用关系
+
+你继续完成修复。
+```
+
+# 
+
+You're right — I conflated SBM's model classes with TaCZ's own. The migration mapping shows TaCZ has its own `BedrockCubePerFace`/`BedrockPolygon`/`BedrockVertex` that CGC ported directly. Let me compare those properly.
+
+Found the key difference. TaCZ's `FaceUVsItem.getFace()` swaps East↔West and Up↔Down (Bedrock→Minecraft axis flip), but CGC's `_Uv.getFaceUv()` doesn't. Let me read the full CGC `_Uv` to apply the correct fix.
+
+This is the root cause of the model face rendering issues. TaCZ's `FaceUVsItem.getFace()` swaps East↔West and Up↔Down (to account for Bedrock's Y/X flip relative to Minecraft), but CGC's `_Uv.getFaceUv()` dropped that swap. Let me fix it:
+
+Found another key bug. TaCZ does `views[zoomNumber % views.length] - 1` (converting 1-based `views` to 0-based), but CGC dropped the `- 1`. The cbrg scopes use `"views": [1]` with a single `scope_view` locator, so CGC's `getScopeViewPath(1)` returns null, leaving the camera at `scope_pos` instead of looking through the scope. Let me fix it:
+
+I've found and fixed several more root causes. Here's the full summary of this round.
+
+## 已修复（4 处，均为移植时引入的明确 bug）
+
+### 1. 材质变透明 / 贴图变黑 / 7.62 子弹盒顶面缺失
+
+**根因**：[_Uv.java:151](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/client/resource/assets/model/bedrock/geometry/bone/cube/_Uv.java:151) 的 `getFaceUv()` 丢了 TaCZ `FaceUVsItem.getFace()` 里的「面交叉映射」。
+
+TaCZ 原版因为基岩版↔Java 版坐标轴翻转（Y 上下颠倒、X 左右颠倒），在按 `Direction` 取 UV 时做了 **东↔西、上↔下** 的交叉：
+
+```java
+case EAST -> west; case WEST -> east; case UP -> down; case DOWN -> up;
+```
+
+CGC 移植时写成了 `EAST -> east`、`WEST -> west`、`UP -> up`、`DOWN -> down`，导致东/西/上/下四个面的 UV 取错，出现透明、变黑、以及子弹盒顶面（up 面）纹理缺失。已按 TaCZ 原逻辑补回交叉映射。这与之前修的 `singleSouthFace()` 是同一条链路上的另一个 bug。
+
+### 2. 开镜后视角不是 scopeViewIndex 指定的位置
+
+**根因**：[GunRendererAddon.java:286](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/client/renderer/item/gun/GunRendererAddon.java:286) 少了 `-1`。
+
+TaCZ 原版：`viewIndex = views[zoomNumber % views.length] - 1`，把 display 里 `views`（1-based 的 scope_view 索引）转成模型里 `scopeViewPaths`（0-based）。CGC 漏了 `-1`。cbrg 所有倍镜的 `views` 都是 `[1]`，于是 `getScopeViewPath(1)` 对只有一个 `scope_view` 的模型返回 null，开镜后只定位到 `scope_pos`（镜座）而不是镜内视野。已补上 `-1`。
+
+### 3. 扩容弹夹不换模型
+
+**根因**：[ClientAttachmentIndexInstance.java:155](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/client/resource/instance/data/ClientAttachmentIndexInstance.java:155) 的 `getAttachmentData()` 判断错字段（`attachmentDisplayCache` 应为 `attachmentDataCache`），导致 `AttachmentData` 永远不加载、`currentMagazineCategory` 永远 `NONE`。已修。（上一轮已提交）
+
+### 4. 持枪视角始终机瞄
+
+**根因**：[GunModelObject.java:199](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/client/model/GunModelObject.java:199) 的 `getIdleSightPath()` 返回了 `ironSightPath` 而非 `idleSightPath`。已修。（上一轮已提交）
+
+以上 4 处均已通过 `:core:compileJava` 编译验证（exit 0，无错误）。
+
+## 仍未解决、需继续排查的两处（都是倍镜渲染，GL 状态相关）
+
+1. **倍镜 ocular 一直是黑色**：这是「镜内显示放大世界」的模板（stencil）二次渲染没生效。我已对比 `_AttachmentModelRender` / `_GunModelRender.renderScope` 与 TaCZ 的 `BedrockAttachmentModel` / `BedrockGunModel`，模板函数、镜身 `GL_EQUAL,0`、目镜遮罩逻辑基本一致，单靠静态对比没找到差异点。这属于运行时 GL 状态问题。
+2. **摧毁物品后倍镜模型只剩 ocular/ocular ring**：触发条件很具体（创造模式把物品拖进摧毁槽），且退出重进恢复，强烈指向某个渲染期共享状态没在异常路径下被重置（可能跟 stencil 缓冲/镜身 `GL_EQUAL,0` 测试相关，因为镜身正是靠这个测试才不被目镜遮掉）。
+
+## 关于你指出的「TaCZ 自己有 POJO 读取类」这点
+
+你是对的，我之前把 SimpleBedrockModel 的 `BedrockCubePerFace` 当成了 TaCZ 的实现。重新核对后确认：TaCZ 自己的 `com.tacz.guns.client.model.bedrock.{BedrockCubePerFace, BedrockPolygon, BedrockVertex, FaceUVsItem, FaceItem}` 才是 CGC 直接移植的来源，且 CGC 的 `BedrockCubePerFace`/`BedrockPolygon`/`BedrockVertex` 与 TaCZ 原版**逐行一致**——所以问题不在顶点绕序，而在 `FaceUVsItem.getFace()` → `_Uv.getFaceUv()` 的**面映射**这一层（即上面的修复 1）。SBM 只接管第一人称渲染，不负责几何读取，这个判断已纠正。
+
+## 下一步建议
+
+请先测试这 4 处修复（尤其「开镜视角」「材质透明/黑」「子弹盒顶面」）。若倍镜 ocular 黑、摧毁物品后镜身消失仍存在，我会继续深入 `_AttachmentModelRender` 的 stencil 渲染与 `GameRendererMixin` 的镜内世界渲染，必要时再加一次针对性的运行时日志来定位是「stencil 写入」「镜身 GL_EQUAL 测试」还是「镜内二次渲染 pass」哪一环失效。你看是先验证这 4 处，还是我直接继续查倍镜渲染？

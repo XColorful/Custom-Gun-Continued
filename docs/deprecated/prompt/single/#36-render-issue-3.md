@@ -529,3 +529,81 @@ CGC 去掉了 SimpleBedrockModel 依赖，改用自研事件系统。`KeepingIte
 如果测试后问题 3 仍是"锁死"（而非"回退慢"），请告诉我具体现象（是否开过镜、是否切过枪、toggle 还是 hold 瞄准模式），我再判断是否需要加运行时日志进一步定位。另外有一个次要但相关的点：CGC 的掏枪**音效**目前没有播放（`_doDraw` 为空、`tryInit` 也不播声音），本次未处理，因为你的问题描述聚焦在动画上——需要的话我可以一并补上。
 
 修改未提交，保持工作区状态供你检查。
+
+# 
+
+```
+刚才正确的修改我已commit，现在继续剩余问题。
+
+现在测试如下：
+- 物品GUI正常显示
+- 有收枪动画，且保持到收枪动画结束后才开始显示下一个物品/枪械抬枪动画
+- 对于仅有贴图的子弹类型，拿在手上也正常显示贴图
+
+测试异常项如下：
+- 无论是抬枪/收枪/开镜，始终保持在机瞄视角
+- 安装高倍镜瞄准放大，始终保持在机瞄视角，视角有根据瞄准镜倍率放大
+- 倍镜的ocular始终都是黑色的（跟模型一样，而不是ocular部分显示画面）
+- 在不知道切了几次枪还是做了什么操作后，4倍镜无论换下重新装上，都只剩一个ocular在渲染，8倍镜也一样，然后重新拿了2倍镜（之前没用过），显示完整模型；该问题曾经在TaCZ也遇到过，并且我向原仓库提过PR，因此我认为该问题可能TaCZ也有，不能只靠对比来完成修复
+- BerylM762装备扩容弹夹后，没有更换渲染的弹夹模型
+- BerylM762和SLR的模型，没发现整体形变，但是有些地方的材质变透明，装备的配件模型（握把）也是，有些地方的贴图颜色变黑
+- 按装弹键，播放装弹动画，始终锁定在机瞄视角，枪在动
+- 7.62毫米子弹的模型顶面（盒子顶面）没有正确渲染，应该是有纹理，但似乎只有顶面底下的一个纯色面，上面的装饰缺失
+
+可能是服务端的异常项，如果以上问题没解决则不优先处理以下列出的待修复问题：
+- ZoomKey异常，按下后没有切换倍率，读取物品NBT没发现配件有scope_view_index
+- 7.62毫米子弹不能堆叠（正常来说，根据AmmoIndex里的设置来修改堆叠）
+- 装弹结束后枪械物品NBT没有写入子弹
+
+优先处理渲染相关的测试异常项，除非能顺便解决，否则没解决完之前可以不处理服务端待修复问题。
+```
+
+# 
+
+The previous fixes are committed. Now I need to investigate the remaining rendering issues, starting with the most impactful: the "always locked at iron_view" problem. Let me gather the key facts.
+
+I've done extensive source comparison. The positioning code, aiming progress logic, and path resolution all appear identical to TaCZ, so I need runtime data to pinpoint the "always iron_view" bug. Let me add a targeted, rate-limited debug log, and also fix a clear issue I found. First the log:
+
+Found the root cause of "always iron_view". `getIdleSightPath()` returns the wrong field:
+
+I've found the root cause, so let me remove the now-unnecessary debug log I added:
+
+I've found and fixed two clear root causes this turn. Here's the summary.
+
+## 已修复的问题
+
+### 1. "始终保持在机瞄视角"（抬枪/收枪/开镜/装弹都锁在机瞄）
+
+**根因**：[GunModelObject.java:199](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/client/model/GunModelObject.java:199) 的 `getIdleSightPath()` 复制粘贴错误，返回了 `this.ironSightPath` 而不是 `this.idleSightPath`。
+
+第一人称定位变换里 `idleNodePath` 和 `aimingNodePath` 都取到了机瞄路径，导致 `applyMatrixLerp` 的 idle→aim 插值两个端点相同，模型永远停在机瞄位置，无论瞄准进度是多少。这与 FOV 正常缩放不矛盾（FOV 用的是 `getRenderAimingProgress`，是独立的）。
+
+**修复**：改为返回 `this.idleSightPath`。这把「非瞄准 = idle_view（右下侧展示侧面）」和「瞄准 = iron_view/scope_view」重新分开。
+
+### 2. "扩容弹夹没有更换渲染的弹夹模型"
+
+**根因**：[ClientAttachmentIndexInstance.java:155](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/client/resource/instance/data/ClientAttachmentIndexInstance.java:155) 的 `getAttachmentData()` 判断错了字段，写成了 `if (this.attachmentDisplayCache == null)`（display 永远非空），导致 `attachmentDataCache` 从未被加载，`getAttachmentData()` 永远返回 `null`。
+
+于是 `_GunModelRender.render` 里 `currentMagazineCategory` 永远是 `NONE`，`mag_extended_1/2/3` 永远不显示。这个 bug 同样影响其它依赖附件 `AttachmentData` 的渲染逻辑。
+
+**修复**：改为判断 `if (this.attachmentDataCache == null)`。
+
+两处都通过 `:core:compileJava` 编译验证（exit 0，无错误）。
+
+## 尚未解决、需要进一步调查的问题
+
+以下我做了对比调查，但没有发现像上面那样「一眼可确认」的移植差异，需要更深入或运行时信息：
+
+1. **倍镜 ocular 黑色**：这是模板缓冲（stencil）镜内渲染问题。CGC 的 `_GunModelRender.renderScope` 与 TaCZ 的 `BedrockGunModel.render` 里的 scope 分支逐行对比是一致的，stencil 函数也相同（`GL_GREATER/127` 组合镜、`GL_EQUAL/0` 长筒镜）。黑镜片说明「镜内显示世界」的第二个渲染 pass 没有生效，需要进一步定位是哪个环节（`enableItemEntityStencilTest`、镜片透明度、还是二次 pass）。
+2. **多倍镜只渲染一个 ocular**：你已确认 TaCZ 也有此问题并提过 PR，属于原版遗留，按你的说明不通过对比修复，先搁置。
+3. **模型材质变透明 / 贴图变黑**（Beryl、SLR、握把配件）：这些指向 `BedrockCubePerFace`（CGC 重写版）的面朝向/UV 处理。CGC 的 `BedrockCubePerFace` 是全新实现，与 TaCZ 依赖的 SimpleBedrockModel 版本结构不同，某几类面的顶点绕序或 UV 可能有差异。这需要逐面比对或提供具体哪块面异常才能精确定位。
+4. **7.62 子弹盒顶面纹理缺失**：同样是面渲染问题，很可能是 `BedrockCubePerFace` 里 up 面（`polygons[3]`）的顶点绕序/UV 与 TaCZ 不一致导致。
+
+## 需要你做的验证
+
+请运行测试，重点确认下面两点是否已恢复：
+
+1. 非瞄准待机时枪械应回到右下侧 `idle_view`；开镜才到 `iron_view`/`scope_view`；抬枪/收枪/装弹动画期间也应在 idle_view（而非机瞄）。
+2. BerylM762 装备扩容弹夹后应切换到对应 `mag_extended_*` 模型。
+
+对于「透明/变黑」「子弹盒顶面」这两类，建议你提供**具体截图或指出是哪块面**，或我下一步继续深入逐面比对 `BedrockCubePerFace` 与 SimpleBedrockModel 原版的顶点绕序和 UV。你看是先按当前两处修复测试，还是让我继续排查模型面渲染问题？

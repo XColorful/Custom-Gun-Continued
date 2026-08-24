@@ -153,7 +153,7 @@ public final class ClientAttachmentIndexInstance extends PojoInstance<Attachment
     }
 
     public @Nullable AttachmentData getAttachmentData() {
-        if (this.attachmentDisplayCache == null) {
+        if (this.attachmentDataCache == null) {
             AttachmentData attachmentData = ResourceApi.getAttachmentData(this.getPojo().getDataLocation());
             if (attachmentData != null && attachmentData.isValid()) this.attachmentDataCache = attachmentData;
         }

@@ -266,7 +266,7 @@ public interface IClientGunScriptBackCompat extends IClientGunScriptContextAcces
     @Deprecated(forRemoval = false) default long getShootCoolDown() {
         return this.getShootCooldown();
     }
-    @Deprecated(forRemoval = false) default boolean isInputCrawl() {
+    @Deprecated(forRemoval = false) default boolean isCrawl() {
         return this.isInputProne();
     }
     @Deprecated(forRemoval = false) default boolean shouldSlide() {

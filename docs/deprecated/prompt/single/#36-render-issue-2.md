@@ -417,3 +417,506 @@ Unable to load model: 'customgun:ammo_box#inventory' ... FileNotFoundException: 
 **关于问题 1 的建议**：手部渲染与动画链路已确认与 TaCZ 等价、`static_idle` 已加载，但实机仍停在 blockbench 默认位置。若需要我继续排查，最值得进一步用运行期手段确认的是：① 第一人称下 `base_track_state.entry` 的 `runAnimation("static_idle", ...)` 是否真的执行（可在 `AnimController.run` 里临时打日志确认 `static_idle` 是否命中 prototype）；② `lefthand`/`righthand` 骨骼的 `offsetX/Y/Z` 与 `additionalQuaternion` 在渲染时是否被写入非零值。这两点能区分「状态机未初始化」还是「监听器未生效」。
 
 未提交任何 commit，工作区保持现状待你检查。
+
+# 
+
+```
+现在测试如下：
+- 第一人称手臂还是在枪械中间朝上（默认位置），没有随动画移动
+- 第三人称能正常渲染枪械了
+- 对于背包内物品图标的GUI渲染，均渲染为“透明格子”，tooltip里子弹物品图标的部分也是透明
+- 我移除了ForgeGunItem的注册hack（已提交commit），测试结果相同
+- 能触发问题3的log，因此我已移除（已提交commit）
+- 问题2、3已完成
+
+现在继续处理问题1：
+- 如果以上新增测试信息对解决这个问题有帮助，则尝试解决
+- 允许添加log，并告诉我怎么测试，避免在不能测试的情况下浪费token
+```
+
+# 
+
+Let me investigate the most likely runtime failure point before adding logging. First, let me check the `GunAnimStateContext` (which the Lua script calls heavily) and re-check the debug log for any silent Lua errors.
+
+No Lua errors in the log, and the script API is intact. My static analysis has been unable to pinpoint the issue, so I'll add targeted diagnostics. Let me add logging at three strategic points to definitively localize where the hand animation is lost.
+
+我已为问题 1 添加了三处诊断日志，用 `[CGC-DBG]` 前缀，便于你在日志中 grep。改动均已通过 IDEA 检查（无编译错误），后台正在做一次 Gradle 编译确认。
+
+## 我加了什么日志
+
+**① `AnimController.run`**（每次调度动画时打印一次，频率低）：
+
+```
+[CGC-DBG] AnimController.run name={动画名} track={轨道} prototypeExists={原型是否存在}
+```
+
+**② `ObjectAnimationChannel.update`**（只打印 `lefthand`/`righthand` 两个节点，限前 10 次）：
+
+```
+[CGC-DBG] channel node={lefthand/righthand} result={写入骨骼的关键帧数值}
+```
+
+**③ `GunItemRenderer.renderFirstPerson`**（限前 5 帧）：
+
+```
+[CGC-DBG] renderFirstPerson stateMachine initialized={true/false}
+```
+
+## 怎么测试
+
+1. 重新构建并启动游戏，进世界，第一人称手持 `cbrg:slr`（无需开镜）。
+2. 打开游戏根目录的 `logs/latest.log`（或 `logs/debug.log`）。
+3. 搜索 `[CGC-DBG]`，把**全部**匹配行（尤其开头的一小段）贴给我。
+
+## 结果如何判读（我会据此定位）
+
+按优先级：
+
+|现象|结论|
+|---|---|
+|`renderFirstPerson stateMachine initialized=false`|状态机根本没初始化 → 查 `tryInit`/`needReInit` 链路|
+|`initialized=true` 但**没有** `AnimController.run name=static_idle`|`static_idle` 没被调度 → 查脚本 `base_track_state.entry` / `initialize`|
+|出现 `name=static_idle ... prototypeExists=false`|动画文件没加载进原型 → 查 `loadAnimController`|
+|出现 `name=static_idle ... prototypeExists=true` 但**没有** `channel node=lefthand/righthand`|监听器没绑定到骨骼 → 查 `applyAnimationListeners`|
+|出现 `channel node=lefthand result=[非零数值]` 但手还是默认位置|数值写进去了但渲染前被清掉/被覆盖 → 查 `cleanAnimationTransform` 或渲染矩阵|
+
+只要看到前 2~3 行 `[CGC-DBG]` 我基本就能确定断点在哪一环，比继续盲猜高效。
+
+## 另外两件需要你确认的事
+
+1. **关于“GUI 透明格子”**：你说问题 2、3 已完成，但“背包图标渲染为透明格子、tooltip 子弹图标透明”这条我有点在意——它可能意味着 `renderByItem(GUI)` 现在进去了，但**槽位贴图**（display 里的 `"slot": "cbrg:guns/slot/slr"`）没正确显示。这与问题 1 大概率是两码事（前者是槽位贴图，后者是手臂动画）。如果你希望我下一步查它，单独告诉我即可。
+    
+2. **关于已提交的 commit**：你提到“移除了 ForgeGunItem 的注册 hack”“移除了问题 3 的 log”已提交。我这次新增的日志是**未提交**的工作区改动，测完问题 1 后我会一起清理掉（或按你要求保留）。我这边**不会自行 commit**。
+    
+
+请先跑一遍，把 `[CGC-DBG]` 的日志贴回来。
+
+后台编译已完成（exit 0，无错误）。
+
+诊断日志已就绪，三处 `[CGC-DBG]` 日志点会覆盖「状态机是否初始化 → `static_idle` 是否被调度 → 手部骨骼是否被写入数值」这条链路。
+
+请按上一条消息的步骤测试：重建进游戏、第一人称持 `cbrg:slr`、在 `logs/latest.log` 里搜 `[CGC-DBG]` 并把结果贴回来。我会根据前几行日志定位断点在哪一环。
+
+# 
+
+```
+一共以下日志，视情况继续修复或添加日志测试
+[24Aug2026 17:37:21.488] [Render thread/DEBUG] [dev.xcolorful.customgun.CustomGun/]: ServerMessageSyncGunPack: reload AssetsInstanceManager: 157.962 ms
+[24Aug2026 17:37:21.525] [Render thread/DEBUG] [dev.xcolorful.customgun.CustomGun/SYNC_BASE_TIMESTAMP]: Update Client base timestamp: 1787564241148
+[24Aug2026 17:37:21.528] [Server thread/DEBUG] [dev.xcolorful.customgun.CustomGun/cgc_sync_base_timestamp]: Update server base timestamp: 1787564241526
+[24Aug2026 17:37:22.178] [Render thread/WARN] [dev.xcolorful.customgun.CustomGun/]: Failed to get soundPath from soundLocation null
+[24Aug2026 17:37:22.589] [Render thread/WARN] [dev.xcolorful.customgun.CustomGun/]: [CGC-DBG] renderFirstPerson stateMachine initialized=true
+[24Aug2026 17:37:22.702] [Render thread/INFO] [net.minecraft.advancements.AdvancementList/]: Loaded 30 advancements
+[24Aug2026 17:37:22.830] [Render thread/WARN] [dev.xcolorful.customgun.CustomGun/]: [CGC-DBG] renderFirstPerson stateMachine initialized=true
+[24Aug2026 17:37:22.888] [Render thread/WARN] [dev.xcolorful.customgun.CustomGun/]: [CGC-DBG] renderFirstPerson stateMachine initialized=true
+[24Aug2026 17:37:22.902] [Render thread/WARN] [dev.xcolorful.customgun.CustomGun/]: Failed to get soundPath from soundLocation null
+[24Aug2026 17:37:22.921] [Render thread/WARN] [dev.xcolorful.customgun.CustomGun/]: [CGC-DBG] renderFirstPerson stateMachine initialized=true
+[24Aug2026 17:37:22.944] [Render thread/WARN] [dev.xcolorful.customgun.CustomGun/]: [CGC-DBG] renderFirstPerson stateMachine initialized=true
+```
+
+# 
+
+This is a crucial result — `initialized=true` but **no `AnimController.run` log at all**, which means `static_idle` was never scheduled. Let me investigate the state machine's `states()` function resolution, which is where the initial states (and their `entry` actions) come from.
+
+The result is decisive: the state machine initializes (`initialized=true`) but **no animation is ever scheduled** (`AnimController.run` never logged). This means the initial states' `entry` actions never ran. Let me add logging inside `AnimStateMachine.initialize()` to pinpoint why.
+
+我已添加更深入的两处日志。这一轮会定位「状态机初始化了、但为什么没调度动画」的断点。
+
+## 新增日志（本轮）
+
+**④ `AnimStateMachine.initialize`**（状态机初始化时打印）：
+
+```
+[CGC-DBG] AnimStateMachine.initialize statesSupplierNull={true/false}
+[CGC-DBG] AnimStateMachine.initialize statesCount={N}
+[CGC-DBG] AnimStateMachine.initialize failed  （仅当 states/entry 抛异常时，带堆栈）
+```
+
+**⑤ `LuaAnimStateContext.entryAction`**（每个初始状态进入时打印）：
+
+```
+[CGC-DBG] LuaAnimStateContext.entryAction enterFunctionNull={true/false}
+```
+
+## 请再测一次
+
+同样的步骤：重建进游戏、第一人称持 `cbrg:slr`，然后把 `logs/latest.log` 里**全部 `[CGC-DBG]` 行**（从最早一条 `AnimStateMachine.initialize` 开始，到约 15 行）贴回来。
+
+## 重点看这几条
+
+- `statesSupplierNull=true` → Lua 脚本的 `states()` 函数没被找到（脚本加载/字段解析问题）。
+- `statesSupplierNull=false` 但 `statesCount=0` → `states()` 返回空 / 抛异常（看有没有 `failed` 堆栈）。
+- `statesCount=5` 但首个 `entryAction enterFunctionNull=true` → 状态表里的 `entry` 字段没被识别。
+- 出现 `failed` 堆栈 → 直接看堆栈定位到具体哪行 Lua/Java 调用挂了。
+
+把日志贴回来后，我基本就能确定根因并直接改代码。
+
+# 
+
+```
+一共以下日志，视情况继续修复或添加日志测试
+[24Aug2026 18:02:04.315] [Render thread/DEBUG] [dev.xcolorful.customgun.CustomGun/]: ServerMessageSyncGunPack: reload AssetsInstanceManager: 129.1412 ms
+[24Aug2026 18:02:04.655] [Render thread/WARN] [dev.xcolorful.customgun.CustomGun/]: Failed to get soundPath from soundLocation null
+[24Aug2026 18:02:04.774] [Render thread/WARN] [dev.xcolorful.customgun.CustomGun/]: [CGC-DBG] AnimStateMachine.initialize statesSupplierNull=true
+[24Aug2026 18:02:04.775] [Render thread/WARN] [dev.xcolorful.customgun.CustomGun/]: [CGC-DBG] AnimStateMachine.initialize statesCount=0
+[24Aug2026 18:02:04.775] [Render thread/WARN] [dev.xcolorful.customgun.CustomGun/]: [CGC-DBG] renderFirstPerson stateMachine initialized=true
+[24Aug2026 18:02:04.966] [Render thread/INFO] [net.minecraft.advancements.AdvancementList/]: Loaded 30 advancements
+[24Aug2026 18:02:05.019] [Render thread/WARN] [dev.xcolorful.customgun.CustomGun/]: [CGC-DBG] renderFirstPerson stateMachine initialized=true
+[24Aug2026 18:02:05.056] [Render thread/WARN] [dev.xcolorful.customgun.CustomGun/]: [CGC-DBG] renderFirstPerson stateMachine initialized=true
+[24Aug2026 18:02:05.074] [Render thread/WARN] [dev.xcolorful.customgun.CustomGun/]: [CGC-DBG] renderFirstPerson stateMachine initialized=true
+[24Aug2026 18:02:05.087] [Render thread/WARN] [dev.xcolorful.customgun.CustomGun/]: [CGC-DBG] renderFirstPerson stateMachine initialized=true
+[24Aug2026 18:02:05.292] [Render thread/WARN] [dev.xcolorful.customgun.CustomGun/]: Failed to get soundPath from soundLocation null
+[24Aug2026 18:02:22.480] [Server thread/INFO] [net.minecraft.client.server.IntegratedServer/]: Saving and pausing game...
+```
+
+# 
+
+Found it. The log shows `statesSupplierNull=true` and `statesCount=0` — the Lua script's `states()` function was never resolved. The bug is in `ScriptMethodType.getFunctionOrNil`: it returns `NIL` immediately when the **new** field name (`anim_states`, `anim_init`, etc.) is absent, before ever checking the **old** name (`states`, `initialize`, `entry`, ...) that the script actually uses. The sibling method `getFunction` correctly falls through, but `getFunctionOrNil` does not.
+
+The fix compiles. The bug was exactly as diagnosed: `getFunctionOrNil` returned `NIL` as soon as the new field name was absent, never reaching the old name (`states`/`initialize`/`entry`) that the script actually uses. This broke the entire animation state machine — which also explains why the gun "immediately showed" with no draw animation and hands stayed at the default pose.
+
+Let me kick off a compile to confirm, then give you the test instructions.
+
+## 根因找到了
+
+日志 `statesSupplierNull=true` / `statesCount=0` 直接指向问题：**Lua 脚本的状态机函数根本没被解析到**。
+
+根因在 `ScriptMethodType.getFunctionOrNil`：它先查新字段名（`anim_states`、`anim_init`、`anim_context_entry_action`…），一旦发现新名字为 `nil`，就**立刻返回 `NIL`，不再查旧字段名**（`states`、`initialize`、`entry`…）。而 CGC 的资源包脚本用的是旧名字，所以 `states`/`initialize`/`entry` 全都解析失败 → 状态机初始化时没有任何状态、不调度任何动画 → 手臂停在默认位置、切枪也没有掏枪动画。
+
+我旁边的 `getFunction`（枪械逻辑脚本用的方法）能正确回退到旧名，唯独 `getFunctionOrNil` 有这个早退 bug。已修复为「新名不是函数就继续查旧名」。
+
+## 修复内容
+
+`core/.../core/api/script/ScriptMethodType.java` 的 `getFunctionOrNil`：
+
+```java
+LuaValue function = luaTable.get(this.typeName);
+if (function.isfunction()) return function.checkfunction();
+if (!function.isnil()) return null;          // 新名是非法类型 → 报错
+
+if (this.typeNameOld != null) {
+    function = luaTable.get(this.typeNameOld);
+    if (function.isfunction()) return function.checkfunction();
+    if (!function.isnil()) return null;
+}
+
+return LuaValue.NIL;                          // 两个名字都没有 → 返回 nil
+```
+
+## 请再测一次
+
+重建进游戏、第一人称持 `cbrg:slr`，把 `logs/latest.log` 里 `[CGC-DBG]` 的行再贴一次。这次**预期应该看到**：
+
+- `AnimStateMachine.initialize statesSupplierNull=false`
+- `AnimStateMachine.initialize statesCount=5`
+- 5 条 `entryAction enterFunctionNull=false/true`（base 态应为 false）
+- `AnimController.run name=static_idle ... prototypeExists=true`
+- `AnimController.run name=draw ...`
+- `channel node=lefthand/righthand result=[非零值]`
+
+如果这些都出现了，第一人称手臂应该就会随动画移到握持位置，切枪也会有掏枪动画。确认无误后我再把这批 `[CGC-DBG]` 诊断日志清理掉。
+
+编译在后台跑着，结果出来后我会确认。
+
+编译通过（exit 0，无错误）。
+
+修复已就绪。请按上一条消息的步骤再测一次并贴回 `[CGC-DBG]` 日志——预期 `statesSupplierNull=false`、`statesCount=5`，并出现 `AnimController.run name=static_idle` 和 `channel node=lefthand/righthand result=[非零值]`。确认手臂随动画到位后，我再清理这批诊断日志。
+
+# 
+
+```
+日志如下，我觉得去读一下动画状态机的.lua文件（跟TaCZ用的是一样的），以及对比TaCZ往脚本里注入的常量的区别？是否是DisplayInstance里没填默认动画导致的？可以参考我的建议，继续修改或添加日志测试
+[24Aug2026 18:13:10.595] [Server thread/DEBUG] [dev.xcolorful.customgun.CustomGun/cgc_sync_base_timestamp]: Update server base timestamp: 1787566390593
+[24Aug2026 18:13:10.706] [Render thread/INFO] [net.minecraft.advancements.AdvancementList/]: Loaded 30 advancements
+[24Aug2026 18:13:11.024] [Render thread/WARN] [dev.xcolorful.customgun.CustomGun/]: Failed to get soundPath from soundLocation null
+[24Aug2026 18:13:11.142] [Render thread/WARN] [dev.xcolorful.customgun.CustomGun/]: [CGC-DBG] AnimStateMachine.initialize statesSupplierNull=false
+[24Aug2026 18:13:11.147] [Render thread/WARN] [dev.xcolorful.customgun.CustomGun/]: [CGC-DBG] LuaAnimStateContext.entryAction enterFunctionNull=false
+[24Aug2026 18:13:11.147] [Render thread/WARN] [dev.xcolorful.customgun.CustomGun/]: [CGC-DBG] AnimController.run name=static_idle track=0 prototypeExists=true
+[24Aug2026 18:13:11.152] [Render thread/WARN] [dev.xcolorful.customgun.CustomGun/]: [CGC-DBG] LuaAnimStateContext.entryAction enterFunctionNull=false
+[24Aug2026 18:13:11.153] [Render thread/ERROR] [dev.xcolorful.customgun.CustomGun/]: [CGC-DBG] AnimStateMachine.initialize failed
+org.luaj.vm2.LuaError: @cbrg/default_state_machine:46 attempt to call a nil value
+	at org.luaj.vm2.LuaValue.checkmetatag(LuaValue.java:3906) ~[luaj-core-3.0.8-figura.jar%23181!/:?]
+	at org.luaj.vm2.LuaValue.callmt(LuaValue.java:2356) ~[luaj-core-3.0.8-figura.jar%23181!/:?]
+	at org.luaj.vm2.LuaValue.call(LuaValue.java:1734) ~[luaj-core-3.0.8-figura.jar%23181!/:?]
+	at org.luaj.vm2.LuaClosure.execute(LuaClosure.java:445) ~[luaj-core-3.0.8-figura.jar%23181!/:?]
+	at org.luaj.vm2.LuaClosure.call(LuaClosure.java:171) ~[luaj-core-3.0.8-figura.jar%23181!/:?]
+	at org.luaj.vm2.LuaClosure.execute(LuaClosure.java:445) ~[luaj-core-3.0.8-figura.jar%23181!/:?]
+	at org.luaj.vm2.LuaClosure.call(LuaClosure.java:184) ~[luaj-core-3.0.8-figura.jar%23181!/:?]
+	at org.luaj.vm2.LuaClosure.execute(LuaClosure.java:436) ~[luaj-core-3.0.8-figura.jar%23181!/:?]
+	at org.luaj.vm2.LuaClosure.call(LuaClosure.java:184) ~[luaj-core-3.0.8-figura.jar%23181!/:?]
+	at dev.xcolorful.customgun.client.animation.statemachine.LuaAnimStateContext.entryAction(LuaAnimStateContext.java:54) ~[customgun-0.0.7-forge-1.20.1.jar%23163!/:0.0.7]
+	at dev.xcolorful.customgun.client.api.animation.statemachine.AnimStateMachine.lambda$initialize$2(AnimStateMachine.java:127) ~[customgun-0.0.7-forge-1.20.1.jar%23163!/:0.0.7]
+	at java.lang.Iterable.forEach(Iterable.java:75) ~[?:?]
+	at dev.xcolorful.customgun.client.api.animation.statemachine.AnimStateMachine.lambda$initialize$3(AnimStateMachine.java:125) ~[customgun-0.0.7-forge-1.20.1.jar%23163!/:0.0.7]
+	at java.util.Optional.ifPresent(Optional.java:178) ~[?:?]
+	at dev.xcolorful.customgun.client.api.animation.statemachine.AnimStateMachine.initialize(AnimStateMachine.java:125) ~[customgun-0.0.7-forge-1.20.1.jar%23163!/:0.0.7]
+	at dev.xcolorful.customgun.client.animation.statemachine.LuaAnimStateMachine.initialize(LuaAnimStateMachine.java:44) ~[customgun-0.0.7-forge-1.20.1.jar%23163!/:0.0.7]
+	at dev.xcolorful.customgun.client.renderer.item.AnimateGeoItemRenderer.tryInit(AnimateGeoItemRenderer.java:162) ~[customgun-0.0.7-forge-1.20.1.jar%23163!/:0.0.7]
+	at dev.xcolorful.customgun.client.renderer.item.GunItemRenderer.tryInit(GunItemRenderer.java:126) ~[customgun-0.0.7-forge-1.20.1.jar%23163!/:0.0.7]
+	at dev.xcolorful.customgun.client.renderer.shooter.FirstPersonRender.onRenderHand(FirstPersonRender.java:101) ~[customgun-0.0.7-forge-1.20.1.jar%23163!/:0.0.7]
+	at dev.xcolorful.customgun.client.renderer.shooter.FirstPersonRender.handleEvent(FirstPersonRender.java:50) ~[customgun-0.0.7-forge-1.20.1.jar%23163!/:0.0.7]
+	at dev.xcolorful.customgun.client.renderer.shooter.FirstPersonRender.handleEvent(FirstPersonRender.java:35) ~[customgun-0.0.7-forge-1.20.1.jar%23163!/:0.0.7]
+	at dev.xcolorful.customgun.forge.event.events.AbstractEventCommon.lambda$onEvent$0(AbstractEventCommon.java:69) ~[customgun-0.0.7-forge-1.20.1.jar%23163!/:0.0.7]
+	at dev.xcolorful.customgun.core.event.EventDispatcher.dispatch(EventDispatcher.java:96) ~[customgun-0.0.7-forge-1.20.1.jar%23163!/:0.0.7]
+	at dev.xcolorful.customgun.forge.event.events.AbstractEventCommon.onEvent(AbstractEventCommon.java:68) ~[customgun-0.0.7-forge-1.20.1.jar%23163!/:0.0.7]
+	at dev.xcolorful.customgun.forgeclient.event.events.RenderHandEventManager$RenderHandProxy.handle(RenderHandEventManager.java:55) ~[customgun-0.0.7-forge-1.20.1.jar%23163!/:0.0.7]
+	at dev.xcolorful.customgun.forgeclient.event.events.RenderHandEventManager$RenderHandProxyNormal.onEvent(RenderHandEventManager.java:74) ~[customgun-0.0.7-forge-1.20.1.jar%23163!/:0.0.7]
+	at dev.xcolorful.customgun.forgeclient.event.events.__RenderHandProxyNormal_onEvent_RenderHandEvent.invoke(.dynamic) ~[customgun-0.0.7-forge-1.20.1.jar%23163!/:0.0.7]
+	at net.minecraftforge.eventbus.ASMEventHandler.invoke(ASMEventHandler.java:55) ~[eventbus-6.2.33.jar%2387!/:?]
+	at net.minecraftforge.eventbus.EventBus.post(EventBus.java:312) ~[eventbus-6.2.33.jar%2387!/:?]
+	at net.minecraftforge.eventbus.EventBus.post(EventBus.java:298) ~[eventbus-6.2.33.jar%2387!/:?]
+	at net.minecraftforge.client.ForgeHooksClient.renderSpecificFirstPersonHand(ForgeHooksClient.java:302) ~[forge-1.20.1-47.4.16-universal.jar%23169!/:?]
+	at net.minecraft.client.renderer.ItemInHandRenderer.m_109314_(ItemInHandRenderer.java:316) ~[client-1.20.1-20230612.114412-srg.jar%23164!/:?]
+	at net.minecraft.client.renderer.GameRenderer.m_109120_(GameRenderer.java:852) ~[client-1.20.1-20230612.114412-srg.jar%23164!/:?]
+	at net.minecraft.client.renderer.GameRenderer.m_109089_(GameRenderer.java:1132) ~[client-1.20.1-20230612.114412-srg.jar%23164!/:?]
+	at net.minecraft.client.renderer.GameRenderer.m_109093_(GameRenderer.java:909) ~[client-1.20.1-20230612.114412-srg.jar%23164!/:?]
+	at net.minecraft.client.Minecraft.m_91383_(Minecraft.java:1146) ~[client-1.20.1-20230612.114412-srg.jar%23164!/:?]
+	at net.minecraft.client.Minecraft.m_91374_(Minecraft.java:718) ~[client-1.20.1-20230612.114412-srg.jar%23164!/:?]
+	at net.minecraft.client.main.Main.main(Main.java:218) ~[1.20.1-forge-47.4.16.jar:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[?:?]
+	at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?]
+	at java.lang.reflect.Method.invoke(Method.java:568) ~[?:?]
+	at net.minecraftforge.fml.loading.targets.CommonLaunchHandler.runTarget(CommonLaunchHandler.java:111) ~[fmlloader-1.20.1-47.4.16.jar:?]
+	at net.minecraftforge.fml.loading.targets.CommonLaunchHandler.clientService(CommonLaunchHandler.java:99) ~[fmlloader-1.20.1-47.4.16.jar:?]
+	at net.minecraftforge.fml.loading.targets.CommonClientLaunchHandler.lambda$makeService$0(CommonClientLaunchHandler.java:25) ~[fmlloader-1.20.1-47.4.16.jar:?]
+	at cpw.mods.modlauncher.LaunchServiceHandlerDecorator.launch(LaunchServiceHandlerDecorator.java:30) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:53) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:71) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.Launcher.run(Launcher.java:108) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.Launcher.main(Launcher.java:78) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:26) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:23) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.bootstraplauncher.BootstrapLauncher.main(BootstrapLauncher.java:141) ~[bootstraplauncher-1.1.2.jar:?]
+[24Aug2026 18:13:11.161] [Render thread/WARN] [dev.xcolorful.customgun.CustomGun/]: [CGC-DBG] AnimStateMachine.initialize statesCount=2
+[24Aug2026 18:13:11.162] [Render thread/WARN] [dev.xcolorful.customgun.CustomGun/]: [CGC-DBG] renderFirstPerson stateMachine initialized=true
+[24Aug2026 18:13:11.166] [Render thread/ERROR] [net.minecraftforge.eventbus.EventBus/EVENTBUS]: Exception caught during firing event: @cbrg/default_state_machine:46 attempt to call a nil value
+	Index: 1
+	Listeners:
+		0: NORMAL
+		1: ASM: dev.xcolorful.customgun.forgeclient.event.events.RenderHandEventManager$RenderHandProxyNormal@37bcfca3 onEvent(Lnet/minecraftforge/client/event/RenderHandEvent;)V
+org.luaj.vm2.LuaError: @cbrg/default_state_machine:46 attempt to call a nil value
+	at TRANSFORMER/luaj.core.figura@3.0.8-figura/org.luaj.vm2.LuaValue.checkmetatag(LuaValue.java:3906)
+	at TRANSFORMER/luaj.core.figura@3.0.8-figura/org.luaj.vm2.LuaValue.callmt(LuaValue.java:2356)
+	at TRANSFORMER/luaj.core.figura@3.0.8-figura/org.luaj.vm2.LuaValue.call(LuaValue.java:1734)
+	at TRANSFORMER/luaj.core.figura@3.0.8-figura/org.luaj.vm2.LuaClosure.execute(LuaClosure.java:445)
+	at TRANSFORMER/luaj.core.figura@3.0.8-figura/org.luaj.vm2.LuaClosure.call(LuaClosure.java:171)
+	at TRANSFORMER/luaj.core.figura@3.0.8-figura/org.luaj.vm2.LuaClosure.execute(LuaClosure.java:445)
+	at TRANSFORMER/luaj.core.figura@3.0.8-figura/org.luaj.vm2.LuaClosure.call(LuaClosure.java:184)
+	at TRANSFORMER/customgun@0.0.7/dev.xcolorful.customgun.client.animation.statemachine.LuaAnimStateContext.update(LuaAnimStateContext.java:46)
+	at TRANSFORMER/customgun@0.0.7/dev.xcolorful.customgun.client.api.animation.statemachine.AnimStateMachine.lambda$update$0(AnimStateMachine.java:62)
+	at java.base/java.lang.Iterable.forEach(Iterable.java:75)
+	at TRANSFORMER/customgun@0.0.7/dev.xcolorful.customgun.client.api.animation.statemachine.AnimStateMachine.update(AnimStateMachine.java:62)
+	at TRANSFORMER/customgun@0.0.7/dev.xcolorful.customgun.client.renderer.item.GunItemRenderer.renderFirstPerson(GunItemRenderer.java:240)
+	at TRANSFORMER/customgun@0.0.7/dev.xcolorful.customgun.client.renderer.shooter.FirstPersonRender.onRenderHand(FirstPersonRender.java:107)
+	at TRANSFORMER/customgun@0.0.7/dev.xcolorful.customgun.client.renderer.shooter.FirstPersonRender.handleEvent(FirstPersonRender.java:50)
+	at TRANSFORMER/customgun@0.0.7/dev.xcolorful.customgun.client.renderer.shooter.FirstPersonRender.handleEvent(FirstPersonRender.java:35)
+	at TRANSFORMER/customgun@0.0.7/dev.xcolorful.customgun.forge.event.events.AbstractEventCommon.lambda$onEvent$0(AbstractEventCommon.java:69)
+	at TRANSFORMER/customgun@0.0.7/dev.xcolorful.customgun.core.event.EventDispatcher.dispatch(EventDispatcher.java:96)
+	at TRANSFORMER/customgun@0.0.7/dev.xcolorful.customgun.forge.event.events.AbstractEventCommon.onEvent(AbstractEventCommon.java:68)
+	at TRANSFORMER/customgun@0.0.7/dev.xcolorful.customgun.forgeclient.event.events.RenderHandEventManager$RenderHandProxy.handle(RenderHandEventManager.java:55)
+	at TRANSFORMER/customgun@0.0.7/dev.xcolorful.customgun.forgeclient.event.events.RenderHandEventManager$RenderHandProxyNormal.onEvent(RenderHandEventManager.java:74)
+	at TRANSFORMER/customgun@0.0.7/dev.xcolorful.customgun.forgeclient.event.events.__RenderHandProxyNormal_onEvent_RenderHandEvent.invoke(.dynamic)
+	at MC-BOOTSTRAP/net.minecraftforge.eventbus/net.minecraftforge.eventbus.ASMEventHandler.invoke(ASMEventHandler.java:55)
+	at MC-BOOTSTRAP/net.minecraftforge.eventbus/net.minecraftforge.eventbus.EventBus.post(EventBus.java:312)
+	at MC-BOOTSTRAP/net.minecraftforge.eventbus/net.minecraftforge.eventbus.EventBus.post(EventBus.java:298)
+	at TRANSFORMER/forge@47.4.16/net.minecraftforge.client.ForgeHooksClient.renderSpecificFirstPersonHand(ForgeHooksClient.java:302)
+	at TRANSFORMER/minecraft@1.20.1/net.minecraft.client.renderer.ItemInHandRenderer.m_109314_(ItemInHandRenderer.java:316)
+	at TRANSFORMER/minecraft@1.20.1/net.minecraft.client.renderer.GameRenderer.m_109120_(GameRenderer.java:852)
+	at TRANSFORMER/minecraft@1.20.1/net.minecraft.client.renderer.GameRenderer.m_109089_(GameRenderer.java:1132)
+	at TRANSFORMER/minecraft@1.20.1/net.minecraft.client.renderer.GameRenderer.m_109093_(GameRenderer.java:909)
+	at TRANSFORMER/minecraft@1.20.1/net.minecraft.client.Minecraft.m_91383_(Minecraft.java:1146)
+	at TRANSFORMER/minecraft@1.20.1/net.minecraft.client.Minecraft.m_91374_(Minecraft.java:718)
+	at TRANSFORMER/minecraft@1.20.1/net.minecraft.client.main.Main.main(Main.java:218)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at MC-BOOTSTRAP/fmlloader@1.20.1-47.4.16/net.minecraftforge.fml.loading.targets.CommonLaunchHandler.runTarget(CommonLaunchHandler.java:111)
+	at MC-BOOTSTRAP/fmlloader@1.20.1-47.4.16/net.minecraftforge.fml.loading.targets.CommonLaunchHandler.clientService(CommonLaunchHandler.java:99)
+	at MC-BOOTSTRAP/fmlloader@1.20.1-47.4.16/net.minecraftforge.fml.loading.targets.CommonClientLaunchHandler.lambda$makeService$0(CommonClientLaunchHandler.java:25)
+	at MC-BOOTSTRAP/cpw.mods.modlauncher@10.0.9/cpw.mods.modlauncher.LaunchServiceHandlerDecorator.launch(LaunchServiceHandlerDecorator.java:30)
+	at MC-BOOTSTRAP/cpw.mods.modlauncher@10.0.9/cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:53)
+	at MC-BOOTSTRAP/cpw.mods.modlauncher@10.0.9/cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:71)
+	at MC-BOOTSTRAP/cpw.mods.modlauncher@10.0.9/cpw.mods.modlauncher.Launcher.run(Launcher.java:108)
+	at MC-BOOTSTRAP/cpw.mods.modlauncher@10.0.9/cpw.mods.modlauncher.Launcher.main(Launcher.java:78)
+	at MC-BOOTSTRAP/cpw.mods.modlauncher@10.0.9/cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:26)
+	at MC-BOOTSTRAP/cpw.mods.modlauncher@10.0.9/cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:23)
+	at cpw.mods.bootstraplauncher@1.1.2/cpw.mods.bootstraplauncher.BootstrapLauncher.main(BootstrapLauncher.java:141)
+
+[24Aug2026 18:13:11.338] [Render thread/DEBUG] [oshi.util.FileUtil/]: No oshi.architecture.properties file found from ClassLoader cpw.mods.modlauncher.TransformingClassLoader@43b5021c
+[24Aug2026 18:13:11.387] [Render thread/ERROR] [net.minecraft.client.Minecraft/FATAL]: Unreported exception thrown!
+org.luaj.vm2.LuaError: @cbrg/default_state_machine:46 attempt to call a nil value
+	at org.luaj.vm2.LuaValue.checkmetatag(LuaValue.java:3906) ~[luaj-core-3.0.8-figura.jar%23181!/:?]
+	at org.luaj.vm2.LuaValue.callmt(LuaValue.java:2356) ~[luaj-core-3.0.8-figura.jar%23181!/:?]
+	at org.luaj.vm2.LuaValue.call(LuaValue.java:1734) ~[luaj-core-3.0.8-figura.jar%23181!/:?]
+	at org.luaj.vm2.LuaClosure.execute(LuaClosure.java:445) ~[luaj-core-3.0.8-figura.jar%23181!/:?]
+	at org.luaj.vm2.LuaClosure.call(LuaClosure.java:171) ~[luaj-core-3.0.8-figura.jar%23181!/:?]
+	at org.luaj.vm2.LuaClosure.execute(LuaClosure.java:445) ~[luaj-core-3.0.8-figura.jar%23181!/:?]
+	at org.luaj.vm2.LuaClosure.call(LuaClosure.java:184) ~[luaj-core-3.0.8-figura.jar%23181!/:?]
+	at dev.xcolorful.customgun.client.animation.statemachine.LuaAnimStateContext.update(LuaAnimStateContext.java:46) ~[customgun-0.0.7-forge-1.20.1.jar%23163!/:0.0.7]
+	at dev.xcolorful.customgun.client.api.animation.statemachine.AnimStateMachine.lambda$update$0(AnimStateMachine.java:62) ~[customgun-0.0.7-forge-1.20.1.jar%23163!/:0.0.7]
+	at java.lang.Iterable.forEach(Iterable.java:75) ~[?:?]
+	at dev.xcolorful.customgun.client.api.animation.statemachine.AnimStateMachine.update(AnimStateMachine.java:62) ~[customgun-0.0.7-forge-1.20.1.jar%23163!/:0.0.7]
+	at dev.xcolorful.customgun.client.renderer.item.GunItemRenderer.renderFirstPerson(GunItemRenderer.java:240) ~[customgun-0.0.7-forge-1.20.1.jar%23163!/:0.0.7]
+	at dev.xcolorful.customgun.client.renderer.shooter.FirstPersonRender.onRenderHand(FirstPersonRender.java:107) ~[customgun-0.0.7-forge-1.20.1.jar%23163!/:0.0.7]
+	at dev.xcolorful.customgun.client.renderer.shooter.FirstPersonRender.handleEvent(FirstPersonRender.java:50) ~[customgun-0.0.7-forge-1.20.1.jar%23163!/:0.0.7]
+	at dev.xcolorful.customgun.client.renderer.shooter.FirstPersonRender.handleEvent(FirstPersonRender.java:35) ~[customgun-0.0.7-forge-1.20.1.jar%23163!/:0.0.7]
+	at dev.xcolorful.customgun.forge.event.events.AbstractEventCommon.lambda$onEvent$0(AbstractEventCommon.java:69) ~[customgun-0.0.7-forge-1.20.1.jar%23163!/:0.0.7]
+	at dev.xcolorful.customgun.core.event.EventDispatcher.dispatch(EventDispatcher.java:96) ~[customgun-0.0.7-forge-1.20.1.jar%23163!/:0.0.7]
+	at dev.xcolorful.customgun.forge.event.events.AbstractEventCommon.onEvent(AbstractEventCommon.java:68) ~[customgun-0.0.7-forge-1.20.1.jar%23163!/:0.0.7]
+	at dev.xcolorful.customgun.forgeclient.event.events.RenderHandEventManager$RenderHandProxy.handle(RenderHandEventManager.java:55) ~[customgun-0.0.7-forge-1.20.1.jar%23163!/:0.0.7]
+	at dev.xcolorful.customgun.forgeclient.event.events.RenderHandEventManager$RenderHandProxyNormal.onEvent(RenderHandEventManager.java:74) ~[customgun-0.0.7-forge-1.20.1.jar%23163!/:0.0.7]
+	at dev.xcolorful.customgun.forgeclient.event.events.__RenderHandProxyNormal_onEvent_RenderHandEvent.invoke(.dynamic) ~[customgun-0.0.7-forge-1.20.1.jar%23163!/:0.0.7]
+	at net.minecraftforge.eventbus.ASMEventHandler.invoke(ASMEventHandler.java:55) ~[eventbus-6.2.33.jar%2387!/:?]
+	at net.minecraftforge.eventbus.EventBus.post(EventBus.java:312) ~[eventbus-6.2.33.jar%2387!/:?]
+	at net.minecraftforge.eventbus.EventBus.post(EventBus.java:298) ~[eventbus-6.2.33.jar%2387!/:?]
+	at net.minecraftforge.client.ForgeHooksClient.renderSpecificFirstPersonHand(ForgeHooksClient.java:302) ~[forge-1.20.1-47.4.16-universal.jar%23169!/:?]
+	at net.minecraft.client.renderer.ItemInHandRenderer.m_109314_(ItemInHandRenderer.java:316) ~[client-1.20.1-20230612.114412-srg.jar%23164!/:?]
+	at net.minecraft.client.renderer.GameRenderer.m_109120_(GameRenderer.java:852) ~[client-1.20.1-20230612.114412-srg.jar%23164!/:?]
+	at net.minecraft.client.renderer.GameRenderer.m_109089_(GameRenderer.java:1132) ~[client-1.20.1-20230612.114412-srg.jar%23164!/:?]
+	at net.minecraft.client.renderer.GameRenderer.m_109093_(GameRenderer.java:909) ~[client-1.20.1-20230612.114412-srg.jar%23164!/:?]
+	at net.minecraft.client.Minecraft.m_91383_(Minecraft.java:1146) ~[client-1.20.1-20230612.114412-srg.jar%23164!/:?]
+	at net.minecraft.client.Minecraft.m_91374_(Minecraft.java:718) ~[client-1.20.1-20230612.114412-srg.jar%23164!/:?]
+	at net.minecraft.client.main.Main.main(Main.java:218) ~[1.20.1-forge-47.4.16.jar:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[?:?]
+	at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?]
+	at java.lang.reflect.Method.invoke(Method.java:568) ~[?:?]
+	at net.minecraftforge.fml.loading.targets.CommonLaunchHandler.runTarget(CommonLaunchHandler.java:111) ~[fmlloader-1.20.1-47.4.16.jar:?]
+	at net.minecraftforge.fml.loading.targets.CommonLaunchHandler.clientService(CommonLaunchHandler.java:99) ~[fmlloader-1.20.1-47.4.16.jar:?]
+	at net.minecraftforge.fml.loading.targets.CommonClientLaunchHandler.lambda$makeService$0(CommonClientLaunchHandler.java:25) ~[fmlloader-1.20.1-47.4.16.jar:?]
+	at cpw.mods.modlauncher.LaunchServiceHandlerDecorator.launch(LaunchServiceHandlerDecorator.java:30) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:53) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:71) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.Launcher.run(Launcher.java:108) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.Launcher.main(Launcher.java:78) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:26) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:23) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.bootstraplauncher.BootstrapLauncher.main(BootstrapLauncher.java:141) ~[bootstraplauncher-1.1.2.jar:?]
+```
+
+# 
+
+The error is now definitive: `@cbrg/default_state_machine:46 attempt to call a nil value`, thrown inside the second state's `entry` action. This is a **Lua `this`-binding difference**. Let me read the exact script line and compare how TaCZ vs CGC invoke the state functions.
+
+The error is at line 46: `return (not context:hasBulletInBarrel()) and (context:getAmmoCount() <= 0)`. So `context:hasBulletInBarrel()` (or `getAmmoCount()`) is `nil` — a context method not exposed to Lua. Let me trace how CGC's context exposes these methods vs TaCZ.
+
+The root cause is now clear. TaCZ's `GunAnimationStateContext` declares `hasBulletInBarrel()`, `getAmmoCount()`, etc. as **public methods directly on the class**, while CGC moved them to **`default` methods on interfaces** (`IClientGunScriptBackCompat` / `IGunScriptBackCompat`). LuaJ's reflection exposes class methods (which is why `getTrack`/`runAnimation` work) but not interface `default` methods (which is why `hasBulletInBarrel` is nil). Let me confirm how LuaJ resolves these.
+
+Found the missing method. The script calls `context:getAmmoCount()`, but CGC renamed it to `getAmmoCountInMagazine()` (TaCZ kept `getAmmoCount()`). Let me read the CGC equivalent to confirm semantics before adding the alias.
+
+Confirmed. TaCZ's `GunAnimationStateContext` exposes `getAmmoCount()`, but CGC renamed it to `getAmmoCountInMagazine()` and the animation script still calls the old `getAmmoCount()`. LuaJ exposes default interface methods (it uses `Class.getMethods()`), so `hasBulletInBarrel()` works but `getAmmoCount()` is simply absent. Let me add the alias.
+
+编译在后台跑。已定位并修复这轮的真实断点。
+
+## 这轮的根因
+
+脚本 `default_state_machine.lua` 第 46 行（`isNoAmmo` 函数）调用 `context:getAmmoCount()`。TaCZ 的 `GunAnimationStateContext` 有 `public int getAmmoCount()`，但 CGC 在重构时把它改名成了 `getAmmoCountInMagazine()`，导致脚本里 `getAmmoCount` 是 nil → `attempt to call a nil value` → 状态机初始化中断，只加了 2 个状态就失败，`static_idle` 之后的状态（包括移动/待机动画）都没建立。
+
+这解释了之前所有现象：`getFunctionOrNil` 修好后 `statesSupplierNull=false`、`static_idle` 也调度了，但紧接着 `bolt_caught_states.normal.entry → isNoAmmo → getAmmoCount` 直接抛错，状态机初始化只完成了一半。
+
+## 修复内容
+
+在 `IGunScriptBackCompat`（core）里补回 `getAmmoCount()` 别名，语义与 TaCZ 一致（弹匣备弹数）：
+
+```java
+default int getAmmoCount() {
+    return this.getAmmoCountInMagazine();
+}
+```
+
+我已把脚本里全部 `context:` 方法调用（25 个）逐一和 CGC 的暴露方法核对过，**只有 `getAmmoCount` 这一个缺失**，其余都已存在。
+
+## 请再测一次
+
+重建进游戏、第一人称持 `cbrg:slr`，贴回 `[CGC-DBG]` 日志。这次预期：
+
+- 不再有 `AnimStateMachine.initialize failed`（没有 LuaError）
+- `statesCount=5`
+- `AnimController.run name=static_idle`、`name=draw`
+- `channel node=lefthand/righthand result=[非零值]`
+- 第一人称手臂应随 `static_idle` 动画移到握持位置，切枪也有掏枪动画
+
+确认没问题后，我把这批 `[CGC-DBG]` 诊断日志清理掉。
+
+编译通过（exit 0，无错误）。
+
+修复已就绪，诊断日志仍在位。请再测一次并贴回 `[CGC-DBG]` 日志，预期不再有 `failed` 报错、`statesCount=5`、出现 `name=static_idle`/`name=draw`/`channel node=lefthand result=[非零值]`。确认手臂动画正常后，我清理掉全部 `[CGC-DBG]` 日志。
+
+# 
+
+```
+现在测试如下：
+- 手臂位置正确，不再是停在枪械中间朝上的位置
+- 刚进游戏（第一次碰枪）的时候会触发掏枪动画，但是切到空手在切回来的时候没有切枪动画
+- 枪切成别的物品/空手的时候是立即切出，没有收枪的动画
+- 从一把枪切到另一把枪的时候，没有收枪动画，但是目标枪械重新播放了掏枪动画
+- 枪械、配件、子弹物品的GUI渲染还是空白
+- 无论是播放切枪动画，还是播放完之后的待机，视角都是锁在机瞄视角的位置，枪械在动，正常来说非瞄准状态应该不是机瞄视角
+- 机瞄视角指的是不装倍镜的时候的开镜瞄准视角，枪械机瞄在屏幕中心，而不是“枪在屏幕右边展示侧面”的视角
+- 装配界面的枪械过渡动画明显比TaCZ慢很多，开镜状态的过渡也是慢很多
+
+由于上下文长度可能导致的幻觉问题，我需要重新开对话，请先做以下内容：
+- 移除本次的测试日志相关代码
+- 把以上待解决的问题简练列出，便于我新开对话继续完成，例如我会将其塞入提示词“## 四、本次需要解决的问题”的部分
+- 如果有必要，把当前调查的、已经测试过的、对解决以上问题有帮助或有助于排除测试目标的内容，一并补充
+```
+
+# 
+
+I'll remove all the diagnostic logging now. Let me revert the logging changes while keeping the actual fixes.
+
+诊断日志已全部清除（`grep` 确认无 `[CGC-DBG]` 残留），各文件无编译错误。工作区保留了本次的**真实修复**（见下）。
+
+下面是你新开对话要用的内容。
+
+---
+
+## 四、本次需要解决的问题
+
+### 待解决（按现象分组）
+
+1. **切枪/收枪动画不完整**
+    
+    - 第一次碰枪（刚进游戏）会播放掏枪（draw）动画；
+    - 切到空手/其它物品时是**立即切出，没有收枪（put_away）动画**；
+    - 切回枪时**没有掏枪动画**；
+    - 从一把枪切到另一把枪时：旧枪**没有收枪动画**，但新枪重新播放了掏枪动画。
+2. **GUI 物品图标空白**
+    
+    - 枪械、配件、子弹的物品 GUI 图标（背包槽、tooltip 里的 draw Item）渲染为**空白/透明**，没有显示 display 里 `"slot"` 字段的槽位贴图。
+3. **视角锁在机瞄视角**
+    
+    - 无论播放切枪动画还是切枪后的待机，第一人称视角都锁在机瞄居中位置（枪械模型在动，但没有正常非瞄准状态下「枪在屏幕右下侧展示侧面」的姿态）。
+    - 机瞄视角 = 未装倍镜时的开镜瞄准视角（枪械机瞄在屏幕中心）。
+4. **过渡动画过慢**
+    
+    - 改装（refit）界面的枪械过渡动画、开镜过渡都比 TaCZ 明显慢。
+
+### 已修复/已排除（不必重复调查）
+
+- **第三人称渲染、`renderByItem` 触发（原问题 2/3）已解决**：物品模型 JSON（`gun/attachment/ammo/ammo_box` → `parent: builtin/entity`）+ 把 `initializeClient` 从 `ForgeGunItem` 移到 forgeclient 的 `GunItemMixin`/`AttachmentItemMixin`/`AmmoItemMixin`（`getCustomRenderer()` 正确返回 BEWLR）。
+- **第一人称手臂位置（原问题 1 的手臂部分）已解决**：手臂现在能随 `static_idle` 动画到位，不再是「枪中间朝上」。
+    - 根因①：`ScriptMethodType.getFunctionOrNil` 有早退 bug——查到新字段名（如 `anim_states`）为 nil 就立即返回 NIL，不再查旧字段名（`states`），导致 Lua 状态机脚本的 `states`/`initialize`/`entry` 等函数全部解析不到。已修复为「新名不是函数就继续查旧名」。
+    - 根因②：脚本调用 `context:getAmmoCount()`，但 CGC 重构时把它改名成了 `getAmmoCountInMagazine()`，导致 `LuaError: attempt to call a nil value`，状态机初始化只完成一半。已在 `IGunScriptBackCompat` 补回 `getAmmoCount()` 别名。
+
+## 已调查的关键事实（有助于继续定位）
+
+- 状态机脚本是 `cbrg/default_state_machine.lua`（与 TaCZ 相同），display JSON 指向 `cbrg:slr` 动画 + `cbrg:default_state_machine` 状态机。
+- **CGC 重构时把脚本 API 的若干方法改了名**（`getAmmoCount`→`getAmmoCountInMagazine`、`isInputCrawl`→`isCrawl` 等），这会直接让 TaCZ 脚本调用不到。`getAmmoCount` 和 `isCrawl` 已补回，但**很可能还有其它脚本 API 方法名不匹配**——建议把 TaCZ `GunAnimationStateContext` 的全部 public 方法名，逐一与 CGC 的 `IClientGunScriptBackCompat` / `IGunScriptBackCompat`（及 `IGunScriptContextAccess`）核对。
+- LuaJ 通过 `Class.getMethods()` 暴露 public 方法（**含接口 default 方法**），所以接口 default 方法能被脚本调用；真正的问题是「方法名被改名/缺失」，不是「default 方法暴露不了」。
+- 第一人称渲染入口是 `FirstPersonRender.onRenderHand`（监听 `RENDER_HAND_EVENT`），收枪/掏枪由 `renderer.tryExit`/`tryInit` + `KeepingItemRenderer.cgc$keep` 驱动；状态机 `trigger`/`update` 生命周期在 `GunItemRenderer.renderFirstPerson` 里。
+- 视角定位（idle_view 与 iron_view 的混合）在 `GunRendererAddon.applyFirstPersonGunTransform`，受 `aimingProgress`（来自 `ILocalShooter.cgc$getRenderAimingProgress`）控制。
+- 改装界面过渡在 `RefitScreenTransformState`。
+- **CGC 的 `GunDisplayInstance.loadAnimController()` 里有个 TODO：没有加载 `use_default_animation: "rifle"` 对应的默认动画**（`idle`/`walk`/`run` 等只驱动 `root` 骨骼）。这可能与「视角锁机瞄」相关（非瞄准的 idle 待机动画缺失），值得重点核查。
+
+## 当前工作区（未提交，待你检查）
+
+以下文件是本次的真实修复，未提交：
+
+- `core/.../core/api/script/ScriptMethodType.java` —— `getFunctionOrNil` 早退修复。
+- `core/.../core/api/script/context/IGunScriptBackCompat.java` —— 补回 `getAmmoCount()`。
+- `core/.../client/api/script/context/IClientGunScriptBackCompat.java` —— `isInputCrawl` 改回 `isCrawl`（非本次产生，但属于同类脚本 API 命名修复）。
+
+测试日志代码已全部移除，工作区就剩上述真实改动。

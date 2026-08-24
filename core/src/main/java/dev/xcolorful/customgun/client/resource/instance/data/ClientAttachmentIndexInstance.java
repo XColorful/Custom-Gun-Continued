@@ -100,7 +100,7 @@ public final class ClientAttachmentIndexInstance extends PojoInstance<Attachment
         return true;
     }
     @Override protected void logAllErrors(int errorMask) {
-        StringBuilder sb = new StringBuilder("ClientAttachmentIndexInstance: AttachmentDisplay ").append(this.getPojo().getDataLocation()).append(" is invalid because:");
+        StringBuilder sb = new StringBuilder("ClientAttachmentIndexInstance: AttachmentDisplay ").append(this.getPojo().getDisplayIndexLocation()).append(" is invalid because:");
         if ((errorMask & ERR_SCOPE_VIEW_FOV) != 0) sb.append("\n\t- scopeViewFov <= 0");
         if ((errorMask & ERR_SCOPE_ZOOM_SCALE) != 0) sb.append("\n\t- scopeZoomScale < 1");
         if ((errorMask & ERR_SCOPE_VIEW_INDEX) != 0) sb.append("\n\t- scopeViewIndex < 1");

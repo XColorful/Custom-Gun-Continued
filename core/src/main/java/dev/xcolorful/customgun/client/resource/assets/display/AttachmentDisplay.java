@@ -10,6 +10,7 @@ package dev.xcolorful.customgun.client.resource.assets.display;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import dev.xcolorful.customgun.client.api.sound.attachment.AttachmentSoundType;
+import dev.xcolorful.customgun.client.resource.instance.data.ClientAttachmentIndexInstance;
 import dev.xcolorful.customgun.core.api.resource.ResourceTag;
 import dev.xcolorful.customgun.core.api.resource.assets.display.AttachmentDisplayTag;
 import dev.xcolorful.customgun.core.util.JsonUtils;
@@ -222,6 +223,23 @@ public final class AttachmentDisplay extends _AssetsDisplay<AttachmentDisplay> {
         else this.modelNodeTextDisplay.values().forEach(_ModelNodeTextDisplay::applyBackCompatibility);
 
         this.attachmentSounds = this.attachmentSounds == null ? new HashMap<>() : this.attachmentSounds;
+
+        this.applyScopeBackCompatibility();
         return this;
+    }
+    /**
+     * {@link ClientAttachmentIndexInstance#checkScopeLengthMatch}
+     */
+    public void applyScopeBackCompatibility() {
+        if (this.scopeZoomScale == null) return;
+
+        // 填补省略的view index (通常只有1个)
+        if (this.scopeViewIndex == null) {
+            int scopeViews = this.scopeZoomScale.length;
+            this.scopeViewIndex = new int[scopeViews];
+            for (int i = 0; i < scopeViews; i++) {
+                this.scopeViewIndex[i] = i + 1;
+            }
+        }
     }
 }

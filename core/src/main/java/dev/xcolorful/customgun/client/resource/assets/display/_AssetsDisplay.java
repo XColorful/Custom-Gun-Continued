@@ -7,14 +7,13 @@
 
 package dev.xcolorful.customgun.client.resource.assets.display;
 
-import dev.xcolorful.customgun.core.api.resource.ResourceTag;
 import dev.xcolorful.customgun.core.resource.ResourcePojo;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class _AssetsDisplay<T extends _AssetsDisplay<T>> extends ResourcePojo<T> {
 
-    private ResourceLocation modelLocation;
+    private @Nullable ResourceLocation modelLocation;
     private @Nullable _ModelTransform modelTransform;
     private @Nullable ResourceLocation textureLocation;
     private @Nullable ResourceLocation slotTextureLocation;
@@ -34,7 +33,7 @@ public abstract class _AssetsDisplay<T extends _AssetsDisplay<T>> extends Resour
 
     // --------Getter & Setter--------
 
-    public final ResourceLocation getModelLocation() {
+    public final @Nullable ResourceLocation getModelLocation() {
         return modelLocation;
     }
     public final @Nullable _ModelTransform getModelTransform() {
@@ -58,14 +57,5 @@ public abstract class _AssetsDisplay<T extends _AssetsDisplay<T>> extends Resour
     }
     public final void setSlotTextureLocation(ResourceLocation slotTextureLocation) {
         this.slotTextureLocation = slotTextureLocation;
-    }
-
-    // --------Back compatibility--------
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public T applyBackCompatibility() {
-        this.modelLocation = this.modelLocation == null ? ResourceTag.NULL_LOCATION : this.modelLocation;
-        return (T) this;
     }
 }

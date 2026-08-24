@@ -57,23 +57,25 @@ public final class ClientAttachmentIndexInstance extends PojoInstance<Attachment
             return false;
         }
 
-        {
-            BedrockModel bedrockModel = ClientResourceApi.getBedrockModel(this.attachmentDisplayCache.getModelLocation());
+        @Nullable var modelLocation = this.attachmentDisplayCache.getModelLocation();
+        if (modelLocation != null) {
+            @Nullable BedrockModel bedrockModel = ClientResourceApi.getBedrockModel(modelLocation);
             if (bedrockModel != null) {
                 this.attachmentModel = AttachmentModelObject.fromPojo(bedrockModel);
-                if (this.attachmentModel == null) CustomGun.LOGGER.debug("ClientAttachmentIndexInstance: Failed to create AttachmentModelObject {}", this.attachmentDisplayCache.getModelLocation());
+                if (this.attachmentModel == null) CustomGun.LOGGER.debug("ClientAttachmentIndexInstance: Failed to create AttachmentModelObject {}", modelLocation);
             } else {
-                CustomGun.LOGGER.debug("ClientAttachmentIndexInstance: BedrockModel {} not found", this.attachmentDisplayCache.getModelLocation());
+                CustomGun.LOGGER.debug("ClientAttachmentIndexInstance: BedrockModel {} not found", modelLocation);
             }
         }
-        _LodDisplay lodDisplay = this.attachmentDisplayCache.getLodDisplay();
+        @Nullable _LodDisplay lodDisplay = this.attachmentDisplayCache.getLodDisplay();
         if (lodDisplay != null) {
-            BedrockModel bedrockModel = ClientResourceApi.getBedrockModel(lodDisplay.getModelLocation());
+            @Nullable var lodModelLocation = lodDisplay.getModelLocation();
+            @Nullable BedrockModel bedrockModel = ClientResourceApi.getBedrockModel(lodModelLocation);
             if (bedrockModel != null) {
                 this.attachmentModelLod = AttachmentModelObject.fromPojo(bedrockModel);
-                if (this.attachmentModelLod == null) CustomGun.LOGGER.debug("ClientAttachmentIndexInstance: Failed to create AttachmentModelObject (for lod) {}", lodDisplay.getModelLocation());
+                if (this.attachmentModelLod == null) CustomGun.LOGGER.debug("ClientAttachmentIndexInstance: Failed to create AttachmentModelObject (for lod) {}", lodModelLocation);
             } else {
-                CustomGun.LOGGER.debug("ClientAttachmentIndexInstance: BedrockModel (for lod) {} not found", lodDisplay.getModelLocation());
+                CustomGun.LOGGER.debug("ClientAttachmentIndexInstance: BedrockModel (for lod) {} not found", lodModelLocation);
             }
         }
 

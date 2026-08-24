@@ -85,23 +85,25 @@ public final class GunDisplayInstance extends PojoInstance<GunDisplay> {
 
         @Nullable IGunModelType gunModelType = pojo.getGunModelType();
         if (gunModelType == null) gunModelType = GunModelType.DEFAULT;
-        {
-            BedrockModel bedrockModel = ClientResourceApi.getBedrockModel(pojo.getModelLocation());
+        @Nullable var modelLocation = pojo.getModelLocation();
+        if (modelLocation != null) {
+            @Nullable BedrockModel bedrockModel = ClientResourceApi.getBedrockModel(modelLocation);
             if (bedrockModel != null) {
                 this.gunModel = gunModelType.create(bedrockModel);
-                if (this.gunModel == null) CustomGun.LOGGER.debug("GunDisplayInstance: Failed to create GunModelObject {}", pojo.getModelLocation());
+                if (this.gunModel == null) CustomGun.LOGGER.debug("GunDisplayInstance: Failed to create GunModelObject {}", modelLocation);
             } else {
-                CustomGun.LOGGER.debug("GunDisplayInstance: BedrockModel {} not found", pojo.getModelLocation());
+                CustomGun.LOGGER.debug("GunDisplayInstance: BedrockModel {} not found", modelLocation);
             }
         }
-        _LodDisplay lodDisplay = pojo.getLodDisplay();
+        @Nullable _LodDisplay lodDisplay = pojo.getLodDisplay();
         if (lodDisplay != null) {
-            BedrockModel bedrockModel = ClientResourceApi.getBedrockModel(lodDisplay.getModelLocation());
+            @Nullable var lodModelLocation = lodDisplay.getModelLocation();
+            @Nullable BedrockModel bedrockModel = ClientResourceApi.getBedrockModel(lodModelLocation);
             if (bedrockModel != null) {
                 this.gunModelLod = gunModelType.create(bedrockModel);
-                if (this.gunModelLod == null) CustomGun.LOGGER.debug("GunDisplayInstance: Failed to create GunModelObject (for lod) {}", lodDisplay.getModelLocation());
+                if (this.gunModelLod == null) CustomGun.LOGGER.debug("GunDisplayInstance: Failed to create GunModelObject (for lod) {}", lodModelLocation);
             } else {
-                CustomGun.LOGGER.debug("GunDisplayInstance: BedrockModel (for lod) {} not found", lodDisplay.getModelLocation());
+                CustomGun.LOGGER.debug("GunDisplayInstance: BedrockModel (for lod) {} not found", lodModelLocation);
             }
         }
 

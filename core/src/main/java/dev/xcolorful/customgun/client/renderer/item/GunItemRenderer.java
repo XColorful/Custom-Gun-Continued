@@ -10,6 +10,7 @@ package dev.xcolorful.customgun.client.renderer.item;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
+import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.animation.listener.camera.CameraAnimationObject;
 import dev.xcolorful.customgun.client.animation.screen.RefitScreenTransformState;
 import dev.xcolorful.customgun.client.animation.statemachine.GunAnimStateContext;
@@ -333,6 +334,7 @@ public class GunItemRenderer extends AnimateGeoItemRenderer<GunModelObject, GunA
                              @NotNull PoseStack poseStack,
                              @NotNull MultiBufferSource bufferSource,
                              int light, int overlay) {
+        CustomGun.LOGGER.debug("cgc$renderByItem");
         @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return;
 

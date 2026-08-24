@@ -635,8 +635,6 @@ public class MathUtil {
 
         private float target;
 
-        private long lastTimeNs;
-
         /**
          * 创建一个二阶动态系统
          * @param f  自然频率，决定系统响应速度
@@ -653,8 +651,6 @@ public class MathUtil {
             pyd = 0;
 
             target = x0;
-
-            lastTimeNs = System.nanoTime();
         }
 
         /**
@@ -670,6 +666,9 @@ public class MathUtil {
 
         /**
          * 执行一次二阶动态计算
+         * <p>
+         * 使用固定时间步长 0.05s，与原版 {@code SecondOrderDynamics} 的积分步长一致，
+         * 保证过渡动画的速度与原版一致。
          */
         public void tick() {
             // 修正罕见的 NAN 错误
@@ -680,16 +679,7 @@ public class MathUtil {
                 pyd = 0;
             }
 
-            long currentTimeNs = System.nanoTime();
-            float t = (currentTimeNs - lastTimeNs) / 1_000_000_000.0f;
-            lastTimeNs = currentTimeNs;
-
-            // 防止首次调用或卡顿导致时间步过大
-            if (t <= 0) {
-                t = 0.001f;
-            } else if (t > 0.05f) {
-                t = 0.05f;
-            }
+            float t = 0.05f;
 
             float xd = (target - px) / t;
             float y = py + t * pyd;

@@ -10,6 +10,7 @@ package dev.xcolorful.customgun.client.api.textures.crosshair;
 import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.api.resource.assets.textures.CrosshairFolderType;
 import dev.xcolorful.customgun.client.api.resource.assets.textures.TextureSubFolderType;
+import dev.xcolorful.customgun.client.config.RenderConfig;
 import dev.xcolorful.customgun.core.api.resource.ResourceTag;
 import dev.xcolorful.customgun.core.api.resource.assets.textures.crosshair.CrosshairTag;
 import net.minecraft.resources.ResourceLocation;
@@ -18,34 +19,61 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * 保留枚举仅用于兼容旧的准心方式
+ * 使用{@link RenderConfig#REPLACE_VANILLA_CROSSHAIR}可一键隐藏
+ */
 public enum CrosshairType implements ResourceTag {
     EMPTY(CrosshairFolderType.NORMAL, CrosshairTag.EMPTY),
 
     DOT_1(CrosshairFolderType.NORMAL, CrosshairTag.DOT_1),
 
+    // --------Deprecated--------
+    // 一般用不着，或者直接用扩展模组自制的准心效果了
+    
+    @Deprecated(forRemoval = false)
     CIRCLE_1(CrosshairFolderType.NORMAL, CrosshairTag.CIRCLE_1),
+    @Deprecated(forRemoval = false)
     CIRCLE_2(CrosshairFolderType.NORMAL, CrosshairTag.CIRCLE_2),
+    @Deprecated(forRemoval = false)
     CIRCLE_3(CrosshairFolderType.NORMAL, CrosshairTag.CIRCLE_3),
 
+    @Deprecated(forRemoval = false)
     CROSS_1(CrosshairFolderType.NORMAL, CrosshairTag.CROSS_1),
+    @Deprecated(forRemoval = false)
     CROSS_2(CrosshairFolderType.NORMAL, CrosshairTag.CROSS_2),
+    @Deprecated(forRemoval = false)
     CROSS_3(CrosshairFolderType.NORMAL, CrosshairTag.CROSS_3),
+    @Deprecated(forRemoval = false)
     CROSS_4(CrosshairFolderType.NORMAL, CrosshairTag.CROSS_4),
+    @Deprecated(forRemoval = false)
     CROSS_5(CrosshairFolderType.NORMAL, CrosshairTag.CROSS_5),
+    @Deprecated(forRemoval = false)
     CROSS_6(CrosshairFolderType.NORMAL, CrosshairTag.CROSS_6),
 
+    @Deprecated(forRemoval = false)
     LINE_1(CrosshairFolderType.NORMAL, CrosshairTag.LINE_1),
+    @Deprecated(forRemoval = false)
     LINE_2(CrosshairFolderType.NORMAL, CrosshairTag.LINE_2),
+    @Deprecated(forRemoval = false)
     LINE_3(CrosshairFolderType.NORMAL, CrosshairTag.LINE_3),
 
+    @Deprecated(forRemoval = false)
     SQUARE_1(CrosshairFolderType.NORMAL, CrosshairTag.SQUARE_1),
+    @Deprecated(forRemoval = false)
     SQUARE_2(CrosshairFolderType.NORMAL, CrosshairTag.SQUARE_2),
+    @Deprecated(forRemoval = false)
     SQUARE_3(CrosshairFolderType.NORMAL, CrosshairTag.SQUARE_3),
+    @Deprecated(forRemoval = false)
     SQUARE_4(CrosshairFolderType.NORMAL, CrosshairTag.SQUARE_4),
+    @Deprecated(forRemoval = false)
     SQUARE_5(CrosshairFolderType.NORMAL, CrosshairTag.SQUARE_5),
+    @Deprecated(forRemoval = false)
     SQUARE_6(CrosshairFolderType.NORMAL, CrosshairTag.SQUARE_6),
 
+    @Deprecated(forRemoval = false)
     TRIDENT_1(CrosshairFolderType.NORMAL, CrosshairTag.TRIDENT_1),
+    @Deprecated(forRemoval = false)
     TRIDENT_2(CrosshairFolderType.NORMAL, CrosshairTag.TRIDENT_2);
 
     // {namespace}:textures/{crosshair}/{CrosshairType.folderType}/{filename}.png

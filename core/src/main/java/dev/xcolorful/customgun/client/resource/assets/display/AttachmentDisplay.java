@@ -57,8 +57,8 @@ public final class AttachmentDisplay extends _AssetsDisplay<AttachmentDisplay> {
                     case AttachmentDisplayTag.LOD_DISPLAY, AttachmentDisplayTag.LOD_DISPLAY_OLD1 -> pojo.lodDisplay = JsonUtils.read(reader, _LodDisplay::fromJson);
                     case AttachmentDisplayTag.ADAPTER_NODE_NAME, AttachmentDisplayTag.ADAPTER_NODE_NAME_OLD1 -> pojo.adapterNodeName = JsonUtils.readString(reader);
 
-                    case AttachmentDisplayTag.ENABLE_SIGHT -> pojo.enableSight = JsonUtils.readBoolean(reader);
-                    case AttachmentDisplayTag.ENABLE_SCOPE -> pojo.enableScope = JsonUtils.readBoolean(reader);
+                    case AttachmentDisplayTag.ENABLE_SIGHT, AttachmentDisplayTag.ENABLE_SIGHT_OLD1 -> pojo.enableSight = JsonUtils.readBoolean(reader);
+                    case AttachmentDisplayTag.ENABLE_SCOPE, AttachmentDisplayTag.ENABLE_SCOPE_OLD1 -> pojo.enableScope = JsonUtils.readBoolean(reader);
                     case AttachmentDisplayTag.SCOPE_ZOOM_SCALE, AttachmentDisplayTag.SCOPE_ZOOM_SCALE_OLD1 -> pojo.scopeZoomScale = JsonUtils.readFloatArray(reader);
                     case AttachmentDisplayTag.SCOPE_VIEW_INDEX, AttachmentDisplayTag.SCOPE_VIEW_INDEX_OLD1 -> pojo.scopeViewIndex = JsonUtils.readIntArray(reader);
                     case AttachmentDisplayTag.SCOPE_VIEW_FOV, AttachmentDisplayTag.SCOPE_VIEW_FOV_OLD2 -> pojo.scopeViewFov = JsonUtils.readFloatArray(reader); case AttachmentDisplayTag.SCOPE_VIEW_FOV_OLD1 -> pojo.scopeViewFov = new float[]{JsonUtils.readFloat(reader)};

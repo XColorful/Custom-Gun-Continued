@@ -687,3 +687,199 @@ TaCZ 原版：`viewIndex = views[zoomNumber % views.length] - 1`，把 display �
 ## 下一步建议
 
 请先测试这 4 处修复（尤其「开镜视角」「材质透明/黑」「子弹盒顶面」）。若倍镜 ocular 黑、摧毁物品后镜身消失仍存在，我会继续深入 `_AttachmentModelRender` 的 stencil 渲染与 `GameRendererMixin` 的镜内世界渲染，必要时再加一次针对性的运行时日志来定位是「stencil 写入」「镜身 GL_EQUAL 测试」还是「镜内二次渲染 pass」哪一环失效。你看是先验证这 4 处，还是我直接继续查倍镜渲染？
+
+# 
+
+```
+经测试，已经修复模型上部分面异常，以及子弹盒顶面没显示的问题，现在ZoomKey已生效，也正常切换到scope view，目前所有改动均已commit
+
+现在测试如下：
+- 筒镜和红点镜的ocular始终都是黑色的（跟模型一样，而不是ocular部分显示画面）
+- 在安装倍镜时，将背包的任意物品放到创造模式背包右下角“摧毁物品”，仍然会导致倍镜只剩一个ocular和ocular ring被渲染
+- 打开装配界面时，枪械会不定时的闪没一瞬间，或者像连续快门一样连续闪没，然后又正常渲染，这个在tacz也有这问题；我觉得是客户端收到物品更新/因为装配导致NBT不匹配，从而一瞬间导致物品没读上/tag被并发get导致异常，需要排查
+
+其他的服务端待修复的问题暂时不管，留到别的PR里修复。
+
+对前两个问题，找不到原因可以添加log然后让我拿到测试结果排查问题
+对第三个问题，应该能直接找到问题
+```
+
+# 
+
+Found the root cause of the ocular-black issue. CGC never sets `enableScope`/`enableSight` on the attachment model, unlike TaCZ's `setIsScope`/`setIsSight`. Let me fix it:
+
+我找到了 ocular 黑色的根因并修复，另外两个问题加了针对性日志。以下是本轮结果。
+
+## 已修复：筒镜/红点 ocular 黑色
+
+**根因**：[ClientAttachmentIndexInstance.java:62](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/client/resource/instance/data/ClientAttachmentIndexInstance.java:62) 创建附件模型后，**没有把 display 里的 `scope`/`sight` 标记同步到模型**。
+
+TaCZ 原版在 `ClientAttachmentIndex.checkTextureAndModel` 里做了：
+
+```java
+index.attachmentModel.setIsScope(display.isScope());
+index.attachmentModel.setIsSight(display.isSight());
+```
+
+CGC 移植时漏了这两行，导致 `AttachmentModelObject.enableScope` / `enableSight` 永远是 `false`。于是 `_AttachmentModelRender.render` 里的 `renderBoth`/`renderScope`/`renderSight` 三个分支全部不执行，倍镜被当作普通模型渲染，ocular 镜片作为不透明材质画出来（黑色），不会走模板测试显示画面。
+
+**修复**：在 `resetCache` 里给 `attachmentModel` 补上：
+
+```java
+this.attachmentModel.setEnableScope(this.attachmentDisplayCache.getEnableScope());
+this.attachmentModel.setEnableSight(this.attachmentDisplayCache.getEnableSight());
+```
+
+这样筒镜（`scope:true`）走 `renderScope`、红点（`sight:true`）走 `renderSight`、组合镜走 `renderBoth`，恢复镜内画面渲染。
+
+## 另外两个问题：加了针对性日志
+
+### 1. 摧毁物品后镜身只剩 ocular/ocular ring
+
+在 [_AttachmentModelRender.java:47](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/client/model/_AttachmentModelRender.java:47) 加了一条每 2 秒一次的日志，输出：
+
+```
+[CGC-debug] attachmentRender: enableScope=?, enableSight=?, scopeBodyPath=?, firstPerson=?
+```
+
+目的：确认「摧毁物品」触发时，`enableScope/enableSight` 是否被错误重置、`scopeBodyPath` 是否变 null、是否还在第一人称渲染。
+
+### 2. 打开装配界面枪械闪没
+
+我加了两条日志：
+
+- [FirstPersonRender.java:79](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/client/renderer/shooter/FirstPersonRender.java:79)：主手物品瞬时不是枪时输出 `onRenderHand: not a gun, item=?, empty=?`
+- [GunItemRenderer.java:221](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/client/renderer/item/GunItemRenderer.java:221)：`GunDisplayInstance` 取不到时输出 `renderFirstPerson: GunDisplayInstance null, gun=?, display=?, empty=?`
+
+这两条日志用来区分闪没的候选原因：
+
+- 若打印 `not a gun, empty=true` → 主手物品瞬时被清空（物品同步的瞬间）。
+- 若打印 `GunDisplayInstance null` 且 `empty=false, gun=null` → `GUN_LOCATION` NBT 瞬时读不到（`NULL_LOCATION`）。
+- 若打印 `GunDisplayInstance null` 但 `gun=<有效>`、`display=<有效>` → 显示实例缓存瞬时未命中。
+
+## 需要你做的测试
+
+1. 先验证 ocular 黑色已恢复（筒镜、红点、组合镜开镜应能看到镜内放大画面）。
+2. 复现「摧毁物品」→ 收集 `[CGC-debug] attachmentRender:` 日志（触发前后各截取几行即可）。
+3. 复现「打开装配界面闪没」→ 收集 `[CGC-debug] onRenderHand:` 和 `[CGC-debug] renderFirstPerson:` 日志。
+
+日志用 `LOGGER.info`/`warn` 输出，在游戏日志里 grep `CGC-debug` 即可。已限频，不会刷屏。
+
+拿到日志后我就能确定这两处的确切根因。注意：本轮改动中，`setEnableScope/setEnableSight` 是正式修复；三条 `CGC-debug` 日志是临时诊断用，定位到问题后我会移除。改动尚未提交，请你先测试。
+
+# 
+
+```
+经测试：
+- 红点和筒镜的ocular仍然是黑色
+- 似乎打开装配界面，枪械移到位置后会固定闪两次，即使进到装配界面后秒点一个配件的视角，仍然会闪
+
+日志如下，直到退出存档前都是这个log
+[25Aug2026 00:19:10.486] [Render thread/DEBUG] [dev.xcolorful.customgun.CustomGun/SYNC_BASE_TIMESTAMP]: Update Client base timestamp: 1787588350112
+[25Aug2026 00:19:10.487] [Server thread/DEBUG] [dev.xcolorful.customgun.CustomGun/cgc_sync_base_timestamp]: Update server base timestamp: 1787588350487
+[25Aug2026 00:19:10.519] [Render thread/INFO] [net.minecraft.advancements.AdvancementList/]: Loaded 50 advancements
+[25Aug2026 00:19:10.575] [Render thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [CGC-debug] attachmentRender: enableScope=false, enableSight=false, scopeBodyPath=true, firstPerson=true
+[25Aug2026 00:19:10.581] [Render thread/WARN] [dev.xcolorful.customgun.CustomGun/]: Failed to get soundPath from soundLocation null
+[25Aug2026 00:19:11.251] [Render thread/WARN] [dev.xcolorful.customgun.CustomGun/]: Failed to get soundPath from soundLocation null
+[25Aug2026 00:19:12.580] [Render thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [CGC-debug] attachmentRender: enableScope=false, enableSight=false, scopeBodyPath=true, firstPerson=true
+[25Aug2026 00:19:14.588] [Render thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [CGC-debug] attachmentRender: enableScope=false, enableSight=false, scopeBodyPath=true, firstPerson=true
+[25Aug2026 00:19:16.588] [Render thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [CGC-debug] attachmentRender: enableScope=false, enableSight=false, scopeBodyPath=true, firstPerson=true
+
+以下两次新的进入存档，第一次摧毁背包物品后退出后再进，倍镜仍然只剩ocular和ocular ring渲染，没有恢复：
+
+[25Aug2026 00:24:21.729] [Render thread/DEBUG] [dev.xcolorful.customgun.CustomGun/]: ServerMessageSyncGunPack: reload AssetsInstanceManager: 114.9081 ms
+[25Aug2026 00:24:21.745] [Render thread/DEBUG] [dev.xcolorful.customgun.CustomGun/SYNC_BASE_TIMESTAMP]: Update Client base timestamp: 1787588657778
+[25Aug2026 00:24:21.748] [Server thread/DEBUG] [dev.xcolorful.customgun.CustomGun/cgc_sync_base_timestamp]: Update server base timestamp: 1787588661747
+[25Aug2026 00:24:21.812] [Render thread/INFO] [net.minecraft.advancements.AdvancementList/]: Loaded 50 advancements
+[25Aug2026 00:24:22.104] [Render thread/WARN] [dev.xcolorful.customgun.CustomGun/]: [CGC-debug] onRenderHand: not a gun, item=block.minecraft.air, empty=true
+[25Aug2026 00:24:22.194] [Render thread/WARN] [dev.xcolorful.customgun.CustomGun/]: Failed to get soundPath from soundLocation null
+[25Aug2026 00:24:22.333] [Render thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [CGC-debug] attachmentRender: enableScope=false, enableSight=false, scopeBodyPath=true, firstPerson=true
+[25Aug2026 00:24:22.840] [Render thread/WARN] [dev.xcolorful.customgun.CustomGun/]: Failed to get soundPath from soundLocation null
+[25Aug2026 00:24:24.351] [Render thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [CGC-debug] attachmentRender: enableScope=false, enableSight=false, scopeBodyPath=true, firstPerson=true
+[25Aug2026 00:24:26.360] [Render thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [CGC-debug] attachmentRender: enableScope=false, enableSight=false, scopeBodyPath=true, firstPerson=true
+[25Aug2026 00:24:28.365] [Render thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [CGC-debug] attachmentRender: enableScope=false, enableSight=false, scopeBodyPath=true, firstPerson=true
+[25Aug2026 00:24:28.613] [Render thread/DEBUG] [io.netty.util.internal.ThreadLocalRandom/]: -Dio.netty.initialSeedUniquifier: 0xc65bd4373ce2157c
+[25Aug2026 00:24:30.371] [Render thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [CGC-debug] attachmentRender: enableScope=false, enableSight=false, scopeBodyPath=true, firstPerson=true
+[25Aug2026 00:24:32.371] [Render thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [CGC-debug] attachmentRender: enableScope=false, enableSight=false, scopeBodyPath=true, firstPerson=true
+[25Aug2026 00:24:32.789] [Server thread/INFO] [net.minecraft.client.server.IntegratedServer/]: Saving and pausing game...
+
+[25Aug2026 00:25:13.345] [Render thread/DEBUG] [dev.xcolorful.customgun.CustomGun/SYNC_BASE_TIMESTAMP]: Update Client base timestamp: 1787588713046
+[25Aug2026 00:25:13.347] [Server thread/DEBUG] [dev.xcolorful.customgun.CustomGun/cgc_sync_base_timestamp]: Update server base timestamp: 1787588713345
+[25Aug2026 00:25:13.379] [Render thread/INFO] [net.minecraft.advancements.AdvancementList/]: Loaded 50 advancements
+[25Aug2026 00:25:13.438] [Render thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [CGC-debug] attachmentRender: enableScope=false, enableSight=false, scopeBodyPath=true, firstPerson=true
+[25Aug2026 00:25:13.448] [Render thread/WARN] [dev.xcolorful.customgun.CustomGun/]: Failed to get soundPath from soundLocation null
+[25Aug2026 00:25:14.079] [Render thread/WARN] [dev.xcolorful.customgun.CustomGun/]: Failed to get soundPath from soundLocation null
+[25Aug2026 00:25:15.450] [Render thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [CGC-debug] attachmentRender: enableScope=false, enableSight=false, scopeBodyPath=true, firstPerson=true
+[25Aug2026 00:25:17.451] [Render thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [CGC-debug] attachmentRender: enableScope=false, enableSight=false, scopeBodyPath=true, firstPerson=true
+[25Aug2026 00:25:19.453] [Render thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [CGC-debug] attachmentRender: enableScope=false, enableSight=false, scopeBodyPath=true, firstPerson=true
+[25Aug2026 00:25:21.453] [Render thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [CGC-debug] attachmentRender: enableScope=false, enableSight=false, scopeBodyPath=true, firstPerson=true
+[25Aug2026 00:25:23.453] [Render thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [CGC-debug] attachmentRender: enableScope=false, enableSight=false, scopeBodyPath=true, firstPerson=true
+[25Aug2026 00:25:25.457] [Render thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [CGC-debug] attachmentRender: enableScope=false, enableSight=false, scopeBodyPath=true, firstPerson=true
+[25Aug2026 00:25:27.458] [Render thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [CGC-debug] attachmentRender: enableScope=false, enableSight=false, scopeBodyPath=true, firstPerson=true
+[25Aug2026 00:25:28.385] [Server thread/INFO] [net.minecraft.client.server.IntegratedServer/]: Saving and pausing game...
+
+由于上下文长度的限制，我需要新开对话，你根据以上新增内容，总结一下已经排除的内容，当前进度，和当前git暂存区里已经做的修改，使得我能将其塞进提示词模板里“## 四、本次需要解决的问题”部分
+```
+
+# 
+
+Found the real root cause. The display JSON uses `"scope"`/`"sight"` (TaCZ format), but CGC's `AttachmentDisplayTag` only defines `"enable_scope"`/`"enable_sight"` — so the `scope: true` field is never read. Let me verify and fix.
+
+## 总结：供新对话提示词使用
+
+### 一、已排除（已验证并 commit，无需再排查）
+
+1. **GUI 图标空白** — 已修复。
+2. **切枪不播收枪/掏枪动画** — 已修复。
+3. **过渡动画过慢** — 已修复（`SecondOrderDynamics` 改为固定步长）。
+4. **始终机瞄视角** — 已修复（`GunModelObject.getIdleSightPath()` 返回错字段）。
+5. **扩容弹夹不换模型** — 已修复（`ClientAttachmentIndexInstance.getAttachmentData()` 判断错字段）。
+6. **开镜视角不是 scope_view** — 已修复（`GunRendererAddon` 里 `scopeViewIndex` 少了 `-1`）。
+7. **模型部分面透明/贴图变黑/子弹盒顶面缺失** — 已修复（`_Uv.getFaceUv()` 丢了 East↔West、Up↔Down 的交叉映射，TaCZ 的 `FaceUVsItem.getFace()` 有此逻辑）。
+
+### 二、当前待解决问题（按优先级）
+
+**1. 筒镜/红点 ocular 黑色（本轮已定位根因并修复，待验证）**
+
+- 日志确认 `enableScope=false, enableSight=false`，说明 display 的 `scope`/`sight` 标记根本没读进来。
+- 根因：`AttachmentDisplayTag` 里 `ENABLE_SCOPE="enable_scope"`、`ENABLE_SIGHT="enable_sight"`，但枪包（TaCZ 格式）JSON 用的是 `"scope"` / `"sight"`。
+- 修复（本轮未 commit）：给 `AttachmentDisplayTag` 加 `ENABLE_SCOPE_OLD1="scope"`、`ENABLE_SIGHT_OLD1="sight"`，并在 `AttachmentDisplay.fromJsonReader` 的 case 里加 OLD 标签；配合上一轮已 commit 的 `ClientAttachmentIndexInstance` 里 `setEnableScope/setEnableSight`（把 display 标记同步到 model）。
+
+**2. 摧毁物品后倍镜只剩 ocular/ocular ring（持久状态，重进存档也不恢复）**
+
+- 日志显示 `enableScope=false` 持续存在 → 与问题 1 同根因（scope/sight 没读到），修完 tag 后大概率一起好。
+- 若修完 tag 后仍存在，需继续排查（可能涉及 scope body 的 visible 状态或 stencil 残留）。
+
+**3. 装配界面枪械闪没（已定位到直接现象，根因待确认）**
+
+- 日志确认 `onRenderHand: not a gun, item=block.minecraft.air, empty=true`，即主手物品瞬时变成 AIR 导致枪械闪没。
+- 待确认：为什么主手物品会瞬时变空（疑似 `ClientMessageRefitGun` → 服务端 `broadcastChanges` → 客户端同步的时序问题，或装配导致 NBT 瞬时读不到）。
+
+### 三、当前 git 暂存区修改（均未 commit）
+
+**正式修复：**
+
+- `core/.../api/resource/assets/display/AttachmentDisplayTag.java` — 加 `ENABLE_SCOPE_OLD1="scope"`、`ENABLE_SIGHT_OLD1="sight"`。
+- `core/.../resource/assets/display/AttachmentDisplay.java` — case 里加 OLD 标签。
+- `core/.../instance/data/ClientAttachmentIndexInstance.java` — `resetCache` 里给 `attachmentModel` 设置 `setEnableScope/setEnableSight`。
+
+**临时诊断日志（定位后应移除）：**
+
+- `core/.../model/_AttachmentModelRender.java` — 每 2 秒输出 `[CGC-debug] attachmentRender: enableScope/enableSight/scopeBodyPath/firstPerson`。
+- `core/.../renderer/item/GunItemRenderer.java` — `GunDisplayInstance` 为 null 时输出 `[CGC-debug] renderFirstPerson`。
+- `core/.../renderer/shooter/FirstPersonRender.java` — 主手非枪时输出 `[CGC-debug] onRenderHand: not a gun`。
+
+**用户自己的文件（非本次代码修改）：**
+
+- `docs/deprecated/prompt/single/#36-render-issue-3.md`（prompt 模板）。
+
+### 四、调查工具/环境备忘
+
+- TaCZ 源码：`D:/Github/TACZ`（有自己的 `BedrockCubePerFace`/`BedrockPolygon`/`BedrockVertex`/`FaceItem`/`FaceUVsItem`，CGC 直接移植自这些，**不是** SBM 的）。
+- SBM（SimpleBedrockModel）：`D:/Github/SimpleBedrockModel`，只接管第一人称渲染，不负责几何读取。
+- 测试枪包：`E:/Software/Minecraft/1.20.1test/...`（resourcepacks/classic_battleroyale_gun 与 datapacks）。
+- 关键差异点已多次踩坑：TaCZ 原版 `FaceUVsItem.getFace()` 有 East↔West、Up↔Down 交叉映射；`views` 是 1-based 需 `-1`；display JSON 用 `scope`/`sight` 而非 `enable_scope`/`enable_sight`。
+
+---
+
+以上可直接塞进提示词「## 四、本次需要解决的问题」部分。建议新对话从「验证 ocular 修复 → 确认摧毁物品是否随之解决 → 排查闪没的物品瞬时变空根因」这条线继续。

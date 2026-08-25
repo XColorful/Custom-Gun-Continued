@@ -213,6 +213,8 @@ public class _AttachmentModelRender {
         if (collector == null) return;
 
         poseStack.pushPose(); {
+            // 只对最后一个节点之前的节点施加变换；最后一个节点的变换由下面的 part.render() 内部施加，
+            // 否则末端节点（scope_body/ocular/ocular_ring 等）的平移旋转会被应用两次
             for (int i = 0; i < path.size() - 1; i++) {
                 path.get(i).translate_rotate_scale(poseStack);
             }

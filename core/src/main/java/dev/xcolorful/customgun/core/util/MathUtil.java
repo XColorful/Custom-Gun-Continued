@@ -81,7 +81,10 @@ public class MathUtil {
 
     public static Vector3f getEulerAngles(Matrix4f matrix) {
         Vector3f dest = new Vector3f();
-        matrix.getEulerAnglesZYX(dest);
+        dest.x = (float) Math.atan2(matrix.m12(), matrix.m22());
+        // 对 sqrt 的参数做 clamp：旋转到 ±90° 万向锁时浮点误差会让 m02² 略微超过 1，sqrt(负数) 产生 NaN
+        dest.y = (float) Math.atan2(-matrix.m02(), Math.sqrt(Math.max(0.0f, 1.0f - matrix.m02() * matrix.m02())));
+        dest.z = (float) Math.atan2(matrix.m01(), matrix.m00());
         return dest;
     }
 

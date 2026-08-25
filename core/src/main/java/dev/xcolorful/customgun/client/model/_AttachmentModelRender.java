@@ -58,7 +58,7 @@ public class _AttachmentModelRender {
                 // 渲染镜身
                 renderModelPart(_this, matrixStack, transformType, renderType, light, overlay, _this.scopeBodyPath);
                 // 渲染目镜上的环
-                renderModelPart(_this, matrixStack, transformType, renderType, light, overlay, _this.scopeBodyPath);
+                renderModelPart(_this, matrixStack, transformType, renderType, light, overlay, _this.ocularRingPath);
             }
         }
 
@@ -213,7 +213,7 @@ public class _AttachmentModelRender {
         if (collector == null) return;
 
         poseStack.pushPose(); {
-            for (int i = 0; i < path.size(); i++) {
+            for (int i = 0; i < path.size() - 1; i++) {
                 path.get(i).translate_rotate_scale(poseStack);
             }
             BedrockPart part = path.get(path.size() - 1);
@@ -244,7 +244,7 @@ public class _AttachmentModelRender {
                                             RenderType renderType,
                                             int light, int overlay,
                                             boolean enableScope) {
-        if (_this.ocularRingPath.isEmpty()) return;
+        if (_this.divisionOcularEntries.isEmpty()) return;
 
         ClientRenderHelper.GL._colorMask(false, false, false, false);
         ClientRenderHelper.GL._depthMask(false);

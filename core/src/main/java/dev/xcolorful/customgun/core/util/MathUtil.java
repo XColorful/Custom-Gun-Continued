@@ -121,13 +121,11 @@ public class MathUtil {
         // 计算位移的插值
         Vector3f translation = new Vector3f(toMatrix.m30() - fromMatrix.m30(), toMatrix.m31() - fromMatrix.m31(), toMatrix.m32() - fromMatrix.m32());
         translation.mul(alpha);
-        // 计算旋转的插值
-        Vector3f fromRotation = MathUtil.getEulerAngles(fromMatrix);
-        float[] qFrom = Quaternion.fromEulerAngles(fromRotation.x(), fromRotation.y(), fromRotation.z());
-        Vector3f toRotation = MathUtil.getEulerAngles(toMatrix);
-        float[] qTo = Quaternion.fromEulerAngles(toRotation.x(), toRotation.y(), toRotation.z());
-        float[] qRelative = Quaternion.getRelative(qFrom, qTo);
-        Quaternionf qLerped = Quaternion.of(Quaternion.slerp(Quaternion.QUATERNION_ONE, qRelative, alpha));
+        // 计算旋转的插值：直接从矩阵提取四元数，避免走欧拉角在 90° 万向锁处 sqrt(负数) 产生 NaN
+        Quaternionf qFrom = fromMatrix.getNormalizedRotation(new Quaternionf());
+        Quaternionf qTo = toMatrix.getNormalizedRotation(new Quaternionf());
+        Quaternionf qRelative = Quaternion.getRelative(qFrom, qTo);
+        Quaternionf qLerped = Quaternion.slerp(new Quaternionf(0, 0, 0, 1), qRelative, alpha);
         // 应用位移和旋转
         resultMatrix.m30(resultMatrix.m30() + translation.x);
         resultMatrix.m31(resultMatrix.m31() + translation.y);

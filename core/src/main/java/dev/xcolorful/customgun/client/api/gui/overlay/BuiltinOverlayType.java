@@ -1,5 +1,6 @@
 package dev.xcolorful.customgun.client.api.gui.overlay;
 
+import dev.xcolorful.customgun.client.api.event.IPrepareRenderOverlayEvent;
 import dev.xcolorful.customgun.core.api.gui.overlay.BuiltinOverlayTypeTag;
 import dev.xcolorful.customgun.core.api.resource.ResourceTag;
 import org.jetbrains.annotations.Nullable;
@@ -8,6 +9,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum BuiltinOverlayType implements ResourceTag.CategoryTag {
+    /**
+     * 跟Forge对原版起的注册名一致，通常都应该叫crosshair，可用于在{@link IPrepareRenderOverlayEvent}进行拦截
+     */
     CROSSHAIR(BuiltinOverlayTypeTag.CROSSHAIR)
     ;
 
@@ -26,7 +30,7 @@ public enum BuiltinOverlayType implements ResourceTag.CategoryTag {
 
     static {
         for (BuiltinOverlayType type : BuiltinOverlayType.values()) {
-            OVERLAY_TYPES.put(type.typeName, type);
+            OVERLAY_TYPES.put(type.getCategoryName(), type);
         }
     }
 

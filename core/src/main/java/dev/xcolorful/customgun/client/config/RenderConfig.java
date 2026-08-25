@@ -56,7 +56,7 @@ public class RenderConfig {
         REPLACE_VANILLA_CROSSHAIR = builder.addConfig(ClientModConfigTag.replaceVanillaCrosshair_path, true);
 
         builder.addComment(ClientModConfigTag.crosshairType_comment);
-        CROSSHAIR_TYPE = builder.addConfig(ClientModConfigTag.crosshairType_path, CrosshairType.DOT_1);
+        CROSSHAIR_TYPE = builder.addConfig(ClientModConfigTag.crosshairType_path, CrosshairType.DEFAULT);
 
         builder.addComment(ClientModConfigTag.hitMarkerStartPosition_comment);
         HIT_MARKET_START_POSITION = builder.addConfig(ClientModConfigTag.hitMarkerStartPosition_path, 4.0, -1024.0, 1024.0);

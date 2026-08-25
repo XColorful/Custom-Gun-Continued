@@ -8,6 +8,7 @@
 package dev.xcolorful.customgun.client.api.textures.crosshair;
 
 import dev.xcolorful.customgun.CustomGun;
+import dev.xcolorful.customgun.client.api.minecraft.texture.CustomTexture;
 import dev.xcolorful.customgun.client.api.resource.assets.textures.CrosshairFolderType;
 import dev.xcolorful.customgun.client.api.resource.assets.textures.TextureSubFolderType;
 import dev.xcolorful.customgun.client.config.RenderConfig;
@@ -24,13 +25,18 @@ import java.util.concurrent.ConcurrentHashMap;
  * 使用{@link RenderConfig#REPLACE_VANILLA_CROSSHAIR}可一键隐藏
  */
 public enum CrosshairType implements ResourceTag {
-    EMPTY(CrosshairFolderType.NORMAL, CrosshairTag.EMPTY),
-
-    DOT_1(CrosshairFolderType.NORMAL, CrosshairTag.DOT_1),
+    DEFAULT(CrosshairTag.DEFAULT, CustomTexture.CROSSHAIR.getLocation()),
+    BLANK(CrosshairTag.BLANK, CustomTexture.BLANK_128x128.getLocation()),
 
     // --------Deprecated--------
-    // 一般用不着，或者直接用扩展模组自制的准心效果了
-    
+    // 一般用不着，或者直接用扩展模组自制的准心绘制了
+
+    @Deprecated(forRemoval = false)
+    EMPTY(CrosshairFolderType.NORMAL, CrosshairTag.EMPTY),
+
+    @Deprecated(forRemoval = false)
+    DOT_1(CrosshairFolderType.NORMAL, CrosshairTag.DOT_1),
+
     @Deprecated(forRemoval = false)
     CIRCLE_1(CrosshairFolderType.NORMAL, CrosshairTag.CIRCLE_1),
     @Deprecated(forRemoval = false)
@@ -77,65 +83,50 @@ public enum CrosshairType implements ResourceTag {
     TRIDENT_2(CrosshairFolderType.NORMAL, CrosshairTag.TRIDENT_2);
 
     // {namespace}:textures/{crosshair}/{CrosshairType.folderType}/{filename}.png
+    @Deprecated
     public static final String LOCATION_FORMAT = "%s:textures/%s/%s/%s.png";
 
-    public final CrosshairFolderType folderType;
     public final String crosshairTag;
-    private final ResourceLocation fastDefaultRl;
-    CrosshairType(CrosshairFolderType folderType, String crosshairTag) {
-        this.folderType = folderType;
+    private final ResourceLocation textureLocation;
+    CrosshairType(String crosshairTag, ResourceLocation textureLocation) {
+        this.textureLocation = textureLocation;
         this.crosshairTag = crosshairTag;
-        this.fastDefaultRl = CustomGun.getMcRegistry().createResourceLocation(String.format(LOCATION_FORMAT,
+    }
+    @SuppressWarnings("all")
+    @Deprecated
+    CrosshairType(CrosshairFolderType folderType, String crosshairTag) {
+        this(crosshairTag, CustomGun.getMcRegistry().createResourceLocation(String.format(LOCATION_FORMAT,
                 CustomGun.MOD_ID,
                 TextureSubFolderType.CROSSHAIR.getFolderName(),
-                this.folderType.getFolderName(),
-                this.getTagName()));
+                folderType.getFolderName(),
+                crosshairTag)));
     }
     @Override public String getTagName() {
         return this.crosshairTag;
     }
 
-    /**
-     * 模组内置的事件监听器调用，无 Hash get 开销，线程安全
-     * 扩展模组直接走别的获取/注入方式
-     */
-    public ResourceLocation getLocationFast() {
-        return this.fastDefaultRl;
+    public ResourceLocation getTextureLocation() {
+        return this.textureLocation;
     }
 
     // {名称}.png -> textures/crosshair/{normal}/{名称}.png
-    private static final Map<String, ResourceLocation> CACHE = new ConcurrentHashMap<>(); // 防止扩展模组不在渲染线程处理
+    private static final Map<String, ResourceLocation> CROSSHAIR_TYPES = new ConcurrentHashMap<>(); // 防止扩展模组不在渲染线程处理
 
     static {
         for (CrosshairType type : CrosshairType.values()) {
-            CACHE.put(type.getTagName(),type.fastDefaultRl);
+            CROSSHAIR_TYPES.put(type.getTagName(),type.textureLocation);
+            CROSSHAIR_TYPES.put(type.getTextureLocation().toString(),type.textureLocation);
         }
     }
 
-    public static void addCrosshairType(CrosshairFolderType folderType, String crosshairTag) {
-        addCrosshairType(folderType.getFolderName(), crosshairTag);
-    }
-    public static ResourceLocation addCrosshairType(String folderType, String crosshair) {
-        var location = CustomGun.getMcRegistry().createResourceLocation(String.format(LOCATION_FORMAT,
-                CustomGun.MOD_ID,
-                TextureSubFolderType.CROSSHAIR.getFolderName(),
-                folderType,
-                crosshair));
-        CACHE.put(crosshair, location); // 返回的是旧值
-        return location;
+    public static void addCrosshairType(String crosshairTag, ResourceLocation textureLocation) {
+        CROSSHAIR_TYPES.put(crosshairTag, textureLocation);
     }
 
     public static @Nullable ResourceLocation getTextureLocation(CrosshairType crosshair) {
         return getTextureLocation(crosshair.getTagName());
     }
     public static @Nullable ResourceLocation getTextureLocation(String crosshair) {
-        return CACHE.get(crosshair);
-    }
-    public static ResourceLocation getOrAddTextureLocation(CrosshairType crosshair) {
-        return getOrAddTextureLocation(CrosshairFolderType.NORMAL.getFolderName(), crosshair.getTagName());
-    }
-    public static ResourceLocation getOrAddTextureLocation(String folderType, String crosshair) {
-        var location = CACHE.get(crosshair);
-        return location != null ? location : addCrosshairType(folderType, crosshair);
+        return CROSSHAIR_TYPES.get(crosshair);
     }
 }

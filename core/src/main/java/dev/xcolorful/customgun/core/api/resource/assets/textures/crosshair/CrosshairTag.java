@@ -9,6 +9,9 @@ package dev.xcolorful.customgun.core.api.resource.assets.textures.crosshair;
 
 public class CrosshairTag {
 
+    public static final String DEFAULT = "default";
+    public static final String BLANK = "blank";
+
     public static final String EMPTY = "empty";
 
     public static final String DOT_1 = "dot_1";

@@ -56,7 +56,6 @@ public final class GunDisplayInstance extends PojoInstance<GunDisplay> {
 
     private @Nullable Int2ObjectArrayMap<_SurroundDisplay> surroundDisplayByHotbarCache;
     private @Nullable Color tracerColorCache;
-    private @Nullable _AmmoParticle ammoParticleCache;
     private @Nullable ParticleOptions ammoParticleOptionsCache;
     private Map<GunSoundType, ResourceLocation> gunSoundsCache;
 
@@ -85,23 +84,25 @@ public final class GunDisplayInstance extends PojoInstance<GunDisplay> {
 
         @Nullable IGunModelType gunModelType = pojo.getGunModelType();
         if (gunModelType == null) gunModelType = GunModelType.DEFAULT;
-        {
-            BedrockModel bedrockModel = ClientResourceApi.getBedrockModel(pojo.getModelLocation());
+        @Nullable var modelLocation = pojo.getModelLocation();
+        if (modelLocation != null) {
+            @Nullable BedrockModel bedrockModel = ClientResourceApi.getBedrockModel(modelLocation);
             if (bedrockModel != null) {
                 this.gunModel = gunModelType.create(bedrockModel);
-                if (this.gunModel == null) CustomGun.LOGGER.debug("GunDisplayInstance: Failed to create GunModelObject {}", pojo.getModelLocation());
+                if (this.gunModel == null) CustomGun.LOGGER.debug("GunDisplayInstance: Failed to create GunModelObject {}", modelLocation);
             } else {
-                CustomGun.LOGGER.debug("GunDisplayInstance: BedrockModel {} not found", pojo.getModelLocation());
+                CustomGun.LOGGER.debug("GunDisplayInstance: BedrockModel {} not found", modelLocation);
             }
         }
-        _LodDisplay lodDisplay = pojo.getLodDisplay();
+        @Nullable _LodDisplay lodDisplay = pojo.getLodDisplay();
         if (lodDisplay != null) {
-            BedrockModel bedrockModel = ClientResourceApi.getBedrockModel(lodDisplay.getModelLocation());
+            @Nullable var lodModelLocation = lodDisplay.getModelLocation();
+            @Nullable BedrockModel bedrockModel = ClientResourceApi.getBedrockModel(lodModelLocation);
             if (bedrockModel != null) {
                 this.gunModelLod = gunModelType.create(bedrockModel);
-                if (this.gunModelLod == null) CustomGun.LOGGER.debug("GunDisplayInstance: Failed to create GunModelObject (for lod) {}", lodDisplay.getModelLocation());
+                if (this.gunModelLod == null) CustomGun.LOGGER.debug("GunDisplayInstance: Failed to create GunModelObject (for lod) {}", lodModelLocation);
             } else {
-                CustomGun.LOGGER.debug("GunDisplayInstance: BedrockModel (for lod) {} not found", lodDisplay.getModelLocation());
+                CustomGun.LOGGER.debug("GunDisplayInstance: BedrockModel (for lod) {} not found", lodModelLocation);
             }
         }
 
@@ -118,9 +119,9 @@ public final class GunDisplayInstance extends PojoInstance<GunDisplay> {
         _AmmoDisplayOverride ammoDisplayOverride = pojo.getAmmoDisplayOverride();
         if (ammoDisplayOverride != null) {
             this.tracerColorCache = ammoDisplayOverride.getTracerColor();
-            this.ammoParticleCache = ammoDisplayOverride.getAmmoParticle();
-            if (this.ammoParticleOptionsCache != null) {
-                var particleRl = this.ammoParticleCache.getParticleLocation();
+            @Nullable _AmmoParticle ammoParticle = ammoDisplayOverride.getAmmoParticle();
+            if (ammoParticle != null) {
+                var particleRl = ammoParticle.getParticleLocation();
                 try {
                     this.ammoParticleOptionsCache = ParticleArgument.readParticle(new StringReader(particleRl.toString()), BuiltInRegistries.PARTICLE_TYPE.asLookup());
                 } catch (CommandSyntaxException e) {
@@ -143,7 +144,7 @@ public final class GunDisplayInstance extends PojoInstance<GunDisplay> {
             var scriptLocation = pojo.getScriptLocation();
             if (scriptLocation == null) {
                 CustomGun.LOGGER.debug("GunDisplayInstance: GunDisplay missing scriptLocation");
-                return false;
+                scriptLocation = GunDisplay.DEFAULT_SCRIPT_LOCATION;
             }
             AssetsScript assetsScript = ClientResourceApi.getAssetsScript(scriptLocation);
             if (assetsScript == null) {
@@ -173,12 +174,13 @@ public final class GunDisplayInstance extends PojoInstance<GunDisplay> {
         if (!super.isPojoValid()) return false;
 
         var pojo = this.getPojo();
+        @Nullable _AmmoParticle ammoParticle = this.getAmmoParticle();
 
         int errorMask = 0;
         // GunDisplay
         errorMask |= pojo.getModelTransform() == null || pojo.getModelTransform().getScale() == null ? ERR_TRANSFORM_SCALE : 0;
-        errorMask |= (this.ammoParticleCache != null && this.ammoParticleCache.getCount() < 1) ? ERR_AMMO_PARTICLE_COUNT : 0;
-        errorMask |= (this.ammoParticleCache != null && this.ammoParticleCache.getLifetimeTicks() < 1) ? ERR_AMMO_PARTICLE_LIFETIME : 0;
+        errorMask |= (ammoParticle != null && ammoParticle.getCount() < 1) ? ERR_AMMO_PARTICLE_COUNT : 0;
+        errorMask |= (ammoParticle != null && ammoParticle.getLifetimeTicks() < 1) ? ERR_AMMO_PARTICLE_LIFETIME : 0;
         errorMask |= pojo.getIronZoomScale() < 1 ? ERR_IRON_ZOOM_SCALE : 0;
         errorMask |= pojo.getIronViewFov() > 70 ? ERR_IRON_VIEW_FOV : 0;
         if (errorMask != 0) {
@@ -241,7 +243,8 @@ public final class GunDisplayInstance extends PojoInstance<GunDisplay> {
         return this.tracerColorCache;
     }
     public @Nullable _AmmoParticle getAmmoParticle() {
-        return this.ammoParticleCache;
+        @Nullable _AmmoDisplayOverride ammoDisplayOverride = this.getPojo().getAmmoDisplayOverride();
+        return ammoDisplayOverride != null ? ammoDisplayOverride.getAmmoParticle() : null;
     }
     public @Nullable ParticleOptions getParticleOptions() {
         return this.ammoParticleOptionsCache;

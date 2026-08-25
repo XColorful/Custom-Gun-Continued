@@ -13,6 +13,8 @@ public enum CustomTexture {
             18, 18),
     WHITE_8x8(String.format("%s:%s", CustomGun.MOD_ID, "textures/white_8x8.png"),
             8, 8),
+    BLANK_128x128(String.format("%s:%s", CustomGun.MOD_ID, "textures/blank_128x128.png"),
+            128, 128),
     // entity
     GUN_PROJECTILE(String.format("%s:%s", CustomGun.MOD_ID, "textures/entity/gun_projectile.png"),
             16, 16),
@@ -27,6 +29,8 @@ public enum CustomTexture {
             32 * 7, 32),
     TURN_PAGE(String.format("%s:%s", CustomGun.MOD_ID, "textures/gui/turn_page.png"),
             32, 32),
+    CROSSHAIR(String.format("%s:%s", CustomGun.MOD_ID, "textures/gui/crosshair.png"),
+            128, 128),
     ;
 
     public final ResourceLocation location;

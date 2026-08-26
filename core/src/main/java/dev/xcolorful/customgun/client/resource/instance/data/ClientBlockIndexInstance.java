@@ -46,14 +46,15 @@ public final class ClientBlockIndexInstance extends PojoInstance<BlockIndex> {
             return false;
         }
 
-        BedrockModel bedrockModel = ClientResourceApi.getBedrockModel(this.blockDisplayCache.getModelLocation());
+        @Nullable var modelLocation = this.blockDisplayCache.getModelLocation();
+        @Nullable BedrockModel bedrockModel = ClientResourceApi.getBedrockModel(modelLocation);
         if (bedrockModel == null) {
-            CustomGun.LOGGER.debug("ClientBlockIndexInstance: BedrockModel {} not found", this.blockDisplayCache.getModelLocation());
+            CustomGun.LOGGER.debug("ClientBlockIndexInstance: BedrockModel {} not found", modelLocation);
             return false;
         }
         this.blockModelInstance = ModelObject.fromPojo(bedrockModel);
         if (this.blockModelInstance == null) {
-            CustomGun.LOGGER.debug("ClientBlockIndexInstance: Failed to create ModelObject {}", this.blockDisplayCache.getModelLocation());
+            CustomGun.LOGGER.debug("ClientBlockIndexInstance: Failed to create ModelObject {}", modelLocation);
             return false;
         }
 

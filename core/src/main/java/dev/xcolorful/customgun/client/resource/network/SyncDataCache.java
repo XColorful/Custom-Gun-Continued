@@ -97,6 +97,7 @@ public final class SyncDataCache {
         this.GUN_INDEX.clear();
         this.GUN_SORT.clear();
         this.ATTACHMENT_INDEX.clear();
+        this.ATTACHMENT_MODIFIER.clear();
         this.AMMO_INDEX.clear();
         this.BLOCK_INDEX.clear();
         this.ATTACHMENT_INSTALLABILITY.clear();
@@ -128,6 +129,7 @@ public final class SyncDataCache {
         buildPojoInstance(ResourceApi.getAllGunIndex(), this.GUN_INDEX, GunIndexInstance::fromPojo, GunIndexInstance.class);
         this.GUN_SORT.reload();
         buildPojoInstance(ResourceApi.getAllAttachmentIndex(), this.ATTACHMENT_INDEX, AttachmentIndexInstance::fromPojo, AttachmentIndexInstance.class);
+        this.ATTACHMENT_MODIFIER.reload();
         buildPojoInstance(ResourceApi.getAllAmmoIndex(), this.AMMO_INDEX, AmmoIndexInstance::fromPojo, AmmoIndexInstance.class);
         buildPojoInstance(ResourceApi.getAllBlockIndex(), this.BLOCK_INDEX, BlockIndexInstance::fromPojo, BlockIndexInstance.class);
         this.ATTACHMENT_INSTALLABILITY.reload();

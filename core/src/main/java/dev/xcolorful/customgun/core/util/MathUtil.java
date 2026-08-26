@@ -81,7 +81,10 @@ public class MathUtil {
 
     public static Vector3f getEulerAngles(Matrix4f matrix) {
         Vector3f dest = new Vector3f();
-        matrix.getEulerAnglesZYX(dest);
+        dest.x = (float) Math.atan2(matrix.m12(), matrix.m22());
+        // 对 sqrt 的参数做 clamp：旋转到 ±90° 万向锁时浮点误差会让 m02² 略微超过 1，sqrt(负数) 产生 NaN
+        dest.y = (float) Math.atan2(-matrix.m02(), Math.sqrt(Math.max(0.0f, 1.0f - matrix.m02() * matrix.m02())));
+        dest.z = (float) Math.atan2(matrix.m01(), matrix.m00());
         return dest;
     }
 
@@ -121,13 +124,11 @@ public class MathUtil {
         // 计算位移的插值
         Vector3f translation = new Vector3f(toMatrix.m30() - fromMatrix.m30(), toMatrix.m31() - fromMatrix.m31(), toMatrix.m32() - fromMatrix.m32());
         translation.mul(alpha);
-        // 计算旋转的插值
-        Vector3f fromRotation = MathUtil.getEulerAngles(fromMatrix);
-        float[] qFrom = Quaternion.fromEulerAngles(fromRotation.x(), fromRotation.y(), fromRotation.z());
-        Vector3f toRotation = MathUtil.getEulerAngles(toMatrix);
-        float[] qTo = Quaternion.fromEulerAngles(toRotation.x(), toRotation.y(), toRotation.z());
-        float[] qRelative = Quaternion.getRelative(qFrom, qTo);
-        Quaternionf qLerped = Quaternion.of(Quaternion.slerp(Quaternion.QUATERNION_ONE, qRelative, alpha));
+        // 计算旋转的插值：直接从矩阵提取四元数，避免走欧拉角在 90° 万向锁处 sqrt(负数) 产生 NaN
+        Quaternionf qFrom = fromMatrix.getNormalizedRotation(new Quaternionf());
+        Quaternionf qTo = toMatrix.getNormalizedRotation(new Quaternionf());
+        Quaternionf qRelative = Quaternion.getRelative(qFrom, qTo);
+        Quaternionf qLerped = Quaternion.slerp(new Quaternionf(0, 0, 0, 1), qRelative, alpha);
         // 应用位移和旋转
         resultMatrix.m30(resultMatrix.m30() + translation.x);
         resultMatrix.m31(resultMatrix.m31() + translation.y);
@@ -635,8 +636,6 @@ public class MathUtil {
 
         private float target;
 
-        private long lastTimeNs;
-
         /**
          * 创建一个二阶动态系统
          * @param f  自然频率，决定系统响应速度
@@ -653,8 +652,6 @@ public class MathUtil {
             pyd = 0;
 
             target = x0;
-
-            lastTimeNs = System.nanoTime();
         }
 
         /**
@@ -670,6 +667,9 @@ public class MathUtil {
 
         /**
          * 执行一次二阶动态计算
+         * <p>
+         * 使用固定时间步长 0.05s，与原版 {@code SecondOrderDynamics} 的积分步长一致，
+         * 保证过渡动画的速度与原版一致。
          */
         public void tick() {
             // 修正罕见的 NAN 错误
@@ -680,16 +680,7 @@ public class MathUtil {
                 pyd = 0;
             }
 
-            long currentTimeNs = System.nanoTime();
-            float t = (currentTimeNs - lastTimeNs) / 1_000_000_000.0f;
-            lastTimeNs = currentTimeNs;
-
-            // 防止首次调用或卡顿导致时间步过大
-            if (t <= 0) {
-                t = 0.001f;
-            } else if (t > 0.05f) {
-                t = 0.05f;
-            }
+            float t = 0.05f;
 
             float xd = (target - px) / t;
             float y = py + t * pyd;

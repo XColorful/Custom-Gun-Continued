@@ -1,146 +1,119 @@
 # 渲染体系总览
 
-> 本文档作为渲染架构的导航索引
+> 本文档是 CGC 客户端渲染架构的入口。它回答一个问题：一套从 BlockBench 导出的基岩版资源，如何变成游戏里可动的枪械。
 
 ## 体系总图
 
 ```mermaid
 graph TB
-    subgraph "资源加载层 — client.resource"
-        direction LR
-        RES_MGR["_AllAssetsManager<br/>资源包加载调度"]
-        DISPLAY_MGR["DisplayManager<br/>DisplayManager.Gun / Attachment / Ammo / Block"]
-        MODEL_MGR["ModelManager<br/>ModelManager.BedrockModelManager"]
-        ANIM_MGR["AnimationManager<br/>AnimationManager.BedrockAnimation / GltfAnimation"]
-        INSTANCE["_AssetsInstanceManager<br/>二次校验 → Instance Map"]
-
-        RES_MGR --> DISPLAY_MGR
-        RES_MGR --> MODEL_MGR
-        RES_MGR --> ANIM_MGR
-        DISPLAY_MGR --> INSTANCE
-        MODEL_MGR --> INSTANCE
-        ANIM_MGR --> INSTANCE
+    subgraph L1["渲染入口 — 事件与 Mixin"]
+        E_FP["ItemInHandRendererMixin<br/>第一人称"]
+        E_TP["ItemInHandLayerMixin<br/>第三人称"]
+        E_BEWLR["renderStatic → BEWLR<br/>GUI / 掉落物 / 展示框"]
+        E_TICK["_LocalAnimHandler<br/>逐 tick / 逐帧驱动"]
+        E_TRIG["LocalShooter*<br/>trigger 信号"]
     end
 
-    subgraph "数据索引层 — client.resource.instance"
-        GUN_IDX["ClientGunIndexInstance<br/>模型 + 纹理 + 数据"]
-        ATCH_IDX["ClientAttachmentIndexInstance<br/>模型 + 纹理 + LOD"]
-        AMMO_IDX["ClientAmmoIndexInstance<br/>弹药模型 + 弹壳模型"]
-        GUN_DISP["GunDisplayInstance<br/>二次校验 + 缓存构建"]
+    subgraph L2["物品渲染器 — renderer.item"]
+        R_BASE["AnimateGeoItemRenderer<br/>BEWLR 基类"]
+        R_GUN["GunItemRenderer"]
+        R_ATCH["AttachmentItemRenderer"]
+        R_AMMO["AmmoItemRenderer"]
+        R_ADDON["GunRendererAddon<br/>第一人称变换编排"]
+        R_CAM["GunCameraHelper<br/>摄像机 / FOV / 后坐力"]
     end
 
-    subgraph "模型层 — client.model"
-        MO["ModelObject<br/>基岩版几何模型"]
-        AMO["AnimatedModelObject<br/>动画模型 (AnimationListenerSupplier)"]
-        ATMO["AttachmentModelObject<br/>配件模型 + 模板缓冲瞄具"]
-        GMO["GunModelObject<br/>枪械模型 + 功能性渲染器"]
-        AMMO_MO["AmmoModelObject<br/>弹药模型 + 定位组"]
-
-        MO --> AMO
-        AMO --> ATMO
-        AMO --> GMO
-        MO --> AMMO_MO
+    subgraph L3["模型层 — model"]
+        M_BASE["ModelObject"]
+        M_ANIM["AnimatedModelObject"]
+        M_GUN["GunModelObject"]
+        M_ATCH["AttachmentModelObject"]
+        M_AMMO["AmmoModelObject"]
+        M_PART["BedrockPart 场景图"]
     end
 
-    subgraph "几何 POJO — client.resource.assets.model.bedrock"
-        GEOM["_GeometryModel<br/>模型几何体"]
-        BONE["_Bone<br/>骨骼定义"]
-        CUBE["_Cube<br/>立方体定义"]
-        DESC["_Description<br/>纹理尺寸 + 可见边界"]
+    subgraph L4["动画系统 — animation"]
+        A_SM["AnimStateMachine /<br/>LuaAnimStateMachine"]
+        A_CTX["AnimStateContext /<br/>GunAnimStateContext"]
+        A_CTRL["AnimController"]
+        A_OBJ["ObjectAnimation /<br/>Runner / Channel"]
     end
 
-    subgraph "功能性渲染器 — client.renderer.model"
-        MFR["MuzzleFlashRender<br/>枪口火焰"]
-        SR["ShellRender<br/>抛壳动画"]
+    subgraph L5["资源层 — resource"]
+        S_API["ClientResourceApi"]
+        S_POJO["POJO: display / model /<br/>animation / script"]
+        S_INST["Instance:<br/>GunDisplayInstance 等"]
     end
 
-    subgraph "动画 POJO — client.resource.assets.animation"
-        BA["BedrockAnimation<br/>基岩版动画数据"]
-        GA["GltfAnimation<br/>glTF 动画数据"]
-        AB["animation.bedrock._Animation<br/>单动画定义"]
-        AKB["animation.bedrock.animation._Bone<br/>动画骨骼关键帧"]
-    end
+    E_FP --> R_GUN
+    E_TP --> R_GUN
+    E_BEWLR --> R_GUN
+    E_BEWLR --> R_ATCH
+    E_BEWLR --> R_AMMO
+    E_TICK --> A_SM
+    E_TRIG --> A_SM
 
-    subgraph "动画系统 — client.api.animation"
-        OA["ObjectAnimation<br/>动画实例"]
-        OSC["ObjectAnimationSoundChannel<br/>声音轨道"]
-    end
+    R_GUN --> R_BASE
+    R_ATCH --> R_BASE
+    R_AMMO --> R_BASE
+    R_BASE --> A_SM
+    R_ADDON --> M_GUN
+    R_CAM --> R_GUN
 
-    subgraph "物品渲染器 — client.renderer.item"
-        GW["AnimateGeoItemRenderer<br/>枪械渲染 (BEWLR)"]
-    end
+    M_GUN --> M_ANIM
+    M_ATCH --> M_ANIM
+    M_ANIM --> M_BASE
+    M_AMMO --> M_BASE
+    M_BASE --> M_PART
 
-    subgraph "实体/方块渲染器 — client.renderer"
-        EBR["entity.HeadAABBRender<br/>爆头碰撞盒（已弃用）"]
-        HOR["shooter.HumanoidOffhandRender<br/>副手/热键栏枪械渲染"]
-        GHT["victim.GunHurtBobTweak<br/>枪击受伤晃动"]
-    end
+    A_SM --> A_CTX
+    A_SM --> A_CTRL
+    A_CTRL --> A_OBJ
+    A_OBJ --> M_ANIM
 
-    INSTANCE --> GUN_DISP
-    INSTANCE --> GUN_IDX
-    INSTANCE --> ATCH_IDX
-    INSTANCE --> AMMO_IDX
-
-    GUN_DISP --> GMO
-
-    GMO --> MFR
-    GMO --> SR
-
-    GW --> OA
-    OA -->|"驱动"| AMO
-
-    style RES_MGR fill:#e1f5fe
-    style DISPLAY_MGR fill:#e1f5fe
-    style MODEL_MGR fill:#e1f5fe
-    style ANIM_MGR fill:#e1f5fe
-    style INSTANCE fill:#e1f5fe
-    style GEOM fill:#e1f5fe
-    style BONE fill:#e1f5fe
-    style CUBE fill:#e1f5fe
-    style BA fill:#e1f5fe
-    style GA fill:#e1f5fe
-    style AB fill:#e1f5fe
-    style AKB fill:#e1f5fe
-    style MO fill:#fff3e0
-    style AMO fill:#fff3e0
-    style ATMO fill:#fff3e0
-    style GMO fill:#fff3e0
-    style AMMO_MO fill:#fff3e0
-    style MFR fill:#e8f5e9
-    style SR fill:#e8f5e9
-    style OA fill:#fce4ec
-    style GW fill:#fff9c4
-    style GHT fill:#ede7f6
+    S_API --> S_POJO
+    S_POJO --> S_INST
+    S_INST --> M_GUN
+    S_INST --> M_ATCH
+    S_INST --> M_AMMO
+    S_INST --> R_GUN
+    S_INST --> A_SM
 ```
 
-## 体系概要
+## 渲染主线
 
-渲染体系解决的核心问题：**如何将 BlockBench 导出的基岩版模型文件，结合基岩版动画和 Lua 状态机，渲染为游戏中的第一/第三人称枪械、配件、弹药和方块实体**。
+一杆枪从资源到画面的主线是固定的，所有渲染场景都在这条主线上插拔：
 
-整个体系分为六个层次：
+1. 资源加载阶段：`_AllAssetsManager` 把资源包里的 display、model、animation、script 文件读成 POJO，`_AssetsInstanceManager` 对 POJO 做二次校验并构建 Instance（模型对象、动画控制器、状态机脚本）。
+2. 渲染入口阶段：Minecraft 的渲染循环通过某个事件或 `renderStatic` 调起对应的 BEWLR 渲染器。
+3. 状态机更新阶段：渲染前由 `_LocalAnimHandler` 或渲染器自身调用状态机的 `update()`，把动画关键帧写入模型节点的位移 / 旋转 / 缩放。
+4. 变换编排阶段：第一人称下 `GunRendererAddon` 依次叠加瞄准、改装界面、后坐力、跳跃晃动等变换，并应用动画约束。
+5. 模型渲染阶段：`GunModelObject` 遍历场景图 `BedrockPart`，在主渲染中插入配件、瞄具模板测试、激光，并在结尾执行 delegate 渲染（枪口火焰、抛壳、手臂、文字）。
+
+这条主线各环节的细节分别记录在子文档中。
+
+## 各层职责
 
 |层|包路径|职责|
 |---|---|---|
-|资源加载层|`client.resource`|加载资源包中的 display、model、animation JSON 文件，构建 ResourcePojo → Instance 管道|
-|数据索引层|`client.resource.instance`|将二次校验后的 POJO 数据组织为可查询的索引|
-|模型层|`client.model`|构建基岩版几何模型的场景图，提供动画监听器接口和功能性渲染注册|
-|几何 POJO 层|`client.resource.assets.model.bedrock`|基岩版几何模型的 JSON 数据结构定义（骨骼、立方体、UV）|
-|动画 POJO 层|`client.resource.assets.animation`|基岩版动画和 glTF 动画的 JSON 数据结构定义|
-|渲染器层|`client.renderer`|对接 Minecraft BEWLR / EntityRenderer，执行实际渲染|
-
-## 关键设计特征
-
-- 统一 ResourcePojo 模型：所有资源 POJO 继承 `ResourcePojo<T>`，通过 `ResourcePojoManager<T>` 管理加载和索引
-- 基岩版坐标转换：模型加载时将 BlockBench 的 Y-up 度和绝对坐标转换为 Minecraft 的弧度相对坐标
-- 功能性渲染器模式：通过 `IModelComponentRenderer` 接口实现动态渲染逻辑替换
-- 两阶段 Instance 构建：POJO 校验（类型安全检查）+ Instance 校验（跨 POJO 索引检查）
-- 资源重载后自动刷新：重载后自动切枪触发状态机重新初始化
+|渲染入口|`client.mixin` / `client.renderer.shooter`|把 Minecraft 渲染循环的各个钩子转成 CGC 的渲染事件，分发给对应渲染器|
+|物品渲染器|`client.renderer.item`|承接第一 / 第三人称、GUI、掉落物、展示框等场景，执行实际的姿态与渲染调用|
+|模型层|`client.model`|把几何 POJO 转成场景图，缓存定位组路径，注册功能性渲染器|
+|动画系统|`client.animation`|解析动画 POJO，用状态机 + 控制器 + 轨道驱动模型节点变形|
+|附加模块|`client.renderer.item.gun` / `client.renderer.model`|后坐力、摄像机、枪口火焰、抛壳、激光、手臂、文字等独立渲染能力|
+|资源层|`client.resource`|资源包加载、POJO 校验、Instance 缓存，是渲染体系的数据来源|
+|装配界面|`client.gui`|枪械改装界面与物品提示框，复用模型渲染并叠加 GUI 变换|
 
 ## 文档导航
 
 |文档|内容|
 |---|---|
-|[基岩版模型与几何系统](./bedrock-model-geometry.md)|BedrockModel POJO → ModelObject 场景图、骨骼/立方体数据、坐标转换算法|
-|[动画系统](./animation-system.md)|ObjectAnimation 动画实例、BedrockAnimation POJO 结构、GunAnimationState 枚举|
-|[渲染管线](./render-pipeline.md)|AnimateGeoItemRenderer 枪械渲染、渲染器分类、事件钩子|
-|[客户端资源 POJO](./client-resource-pojos.md)|Display POJO（GunDisplay / AttachmentDisplay / AmmoDisplay）、动画 POJO、GunDisplayInstance 缓存|
+|[渲染入口与场景](./rendering-entry-points.md)|第一 / 第三人称、GUI、tooltip、掉落物、展示框分别从哪里进入渲染体系|
+|[主渲染链路](./render-pipeline.md)|从渲染事件到模型渲染的完整调用链，以及附加模块的插入点|
+|[模型与几何系统](./model-and-geometry.md)|几何 POJO 到场景图、坐标转换、模型对象层次与定位组|
+|[动画状态机与轨道](./animation-state-machine.md)|状态机、状态上下文、轨道、控制器、动画实例与 trigger 信号|
+|[动画状态机脚本 API](./animation-script-api.md)|状态机脚本通过哪些能力影响动画与渲染|
+|[枪械附加变换模块](./gun-render-addons.md)|后坐力、摄像机动画、FOV、跳跃晃动、改装界面、约束等变换|
+|[功能性渲染器](./functional-renderers.md)|枪口火焰、抛壳、激光、配件、手臂、文字、瞄具模板、LOD 等|
+|[GUI 装配界面与提示框](./gui-and-tooltip.md)|枪械改装界面、tooltip 的渲染与变换|
+|[资源读取](./resource-reading.md)|从 ClientResourceApi 获取的 POJO / Instance 与美术资源的对应关系|

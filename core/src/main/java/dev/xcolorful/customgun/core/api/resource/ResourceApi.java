@@ -10,6 +10,7 @@ package dev.xcolorful.customgun.core.api.resource;
 import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
 import dev.xcolorful.customgun.client.resource.network.SyncDataCache;
+import dev.xcolorful.customgun.core.api.item.attachment.modifier.AttachmentModifierType;
 import dev.xcolorful.customgun.core.init.registry.ModRecipe;
 import dev.xcolorful.customgun.core.recipe.TableRecipe;
 import dev.xcolorful.customgun.core.resource._AllDataManager;
@@ -264,5 +265,9 @@ public class ResourceApi {
     public static @Nullable ClassUtils.ArraySet<ResourceLocation> getAttachmentInstallability(ResourceLocation attachmentLocation) {
         if (CustomGun.getSideExecutor().getLogicalSide().isServer()) return _DataInstanceManager.ATTACHMENT_INSTALLABILITY.getAttachmentInstallability(attachmentLocation);
         else return SyncDataCache.INSTANCE.ATTACHMENT_INSTALLABILITY.getAttachmentInstallability(attachmentLocation);
+    }
+    public static @Nullable Map<AttachmentModifierType, Object> getAttachmentModifiers(ResourceLocation attachmentLocation) {
+        if (CustomGun.getSideExecutor().getLogicalSide().isServer()) return _DataInstanceManager.ATTACHMENT_MODIFIER.getModifiers(attachmentLocation);
+        else return SyncDataCache.INSTANCE.ATTACHMENT_MODIFIER.getModifiers(attachmentLocation);
     }
 }

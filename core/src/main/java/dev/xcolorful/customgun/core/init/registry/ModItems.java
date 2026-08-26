@@ -38,8 +38,9 @@ public class ModItems {
             .stacksTo(1); // 堆叠数会重载getter来修改
 
 
-    public static final IRegistryObject<GunItem> GUN = ITEMS.registerItem(ItemType.GUN.getTagName(), GunItem.class);
-    public static final IRegistryObject<AttachmentItem> ATTACHMENT = ITEMS.registerItem(ItemType.ATTACHMENT.getTagName(), AttachmentItem.class);
-    public static final IRegistryObject<AmmoItem> AMMO = ITEMS.registerItem(ItemType.AMMO.getTagName(), AmmoItem.class);
+    // 暂时不需要hack注册，因此还是用register而不是registerItem
+    public static final IRegistryObject<GunItem> GUN = ITEMS.register(ItemType.GUN.getTagName(), GunItem::new);
+    public static final IRegistryObject<AttachmentItem> ATTACHMENT = ITEMS.register(ItemType.ATTACHMENT.getTagName(), AttachmentItem::new);
+    public static final IRegistryObject<AmmoItem> AMMO = ITEMS.register(ItemType.AMMO.getTagName(), AmmoItem::new);
     public static final IRegistryObject<Item> AMMO_BOX = ITEMS.register(ItemType.AMMO_BOX.getTagName(), AmmoBoxItem::new);
 }

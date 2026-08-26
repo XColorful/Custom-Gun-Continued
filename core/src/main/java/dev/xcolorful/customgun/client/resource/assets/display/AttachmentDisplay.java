@@ -10,6 +10,7 @@ package dev.xcolorful.customgun.client.resource.assets.display;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import dev.xcolorful.customgun.client.api.sound.attachment.AttachmentSoundType;
+import dev.xcolorful.customgun.client.resource.instance.data.ClientAttachmentIndexInstance;
 import dev.xcolorful.customgun.core.api.resource.ResourceTag;
 import dev.xcolorful.customgun.core.api.resource.assets.display.AttachmentDisplayTag;
 import dev.xcolorful.customgun.core.util.JsonUtils;
@@ -56,8 +57,8 @@ public final class AttachmentDisplay extends _AssetsDisplay<AttachmentDisplay> {
                     case AttachmentDisplayTag.LOD_DISPLAY, AttachmentDisplayTag.LOD_DISPLAY_OLD1 -> pojo.lodDisplay = JsonUtils.read(reader, _LodDisplay::fromJson);
                     case AttachmentDisplayTag.ADAPTER_NODE_NAME, AttachmentDisplayTag.ADAPTER_NODE_NAME_OLD1 -> pojo.adapterNodeName = JsonUtils.readString(reader);
 
-                    case AttachmentDisplayTag.ENABLE_SIGHT -> pojo.enableSight = JsonUtils.readBoolean(reader);
-                    case AttachmentDisplayTag.ENABLE_SCOPE -> pojo.enableScope = JsonUtils.readBoolean(reader);
+                    case AttachmentDisplayTag.ENABLE_SIGHT, AttachmentDisplayTag.ENABLE_SIGHT_OLD1 -> pojo.enableSight = JsonUtils.readBoolean(reader);
+                    case AttachmentDisplayTag.ENABLE_SCOPE, AttachmentDisplayTag.ENABLE_SCOPE_OLD1 -> pojo.enableScope = JsonUtils.readBoolean(reader);
                     case AttachmentDisplayTag.SCOPE_ZOOM_SCALE, AttachmentDisplayTag.SCOPE_ZOOM_SCALE_OLD1 -> pojo.scopeZoomScale = JsonUtils.readFloatArray(reader);
                     case AttachmentDisplayTag.SCOPE_VIEW_INDEX, AttachmentDisplayTag.SCOPE_VIEW_INDEX_OLD1 -> pojo.scopeViewIndex = JsonUtils.readIntArray(reader);
                     case AttachmentDisplayTag.SCOPE_VIEW_FOV, AttachmentDisplayTag.SCOPE_VIEW_FOV_OLD2 -> pojo.scopeViewFov = JsonUtils.readFloatArray(reader); case AttachmentDisplayTag.SCOPE_VIEW_FOV_OLD1 -> pojo.scopeViewFov = new float[]{JsonUtils.readFloat(reader)};
@@ -222,6 +223,23 @@ public final class AttachmentDisplay extends _AssetsDisplay<AttachmentDisplay> {
         else this.modelNodeTextDisplay.values().forEach(_ModelNodeTextDisplay::applyBackCompatibility);
 
         this.attachmentSounds = this.attachmentSounds == null ? new HashMap<>() : this.attachmentSounds;
+
+        this.applyScopeBackCompatibility();
         return this;
+    }
+    /**
+     * {@link ClientAttachmentIndexInstance#checkScopeLengthMatch}
+     */
+    public void applyScopeBackCompatibility() {
+        if (this.scopeZoomScale == null) return;
+
+        // 填补省略的view index (通常只有1个)
+        if (this.scopeViewIndex == null) {
+            int scopeViews = this.scopeZoomScale.length;
+            this.scopeViewIndex = new int[scopeViews];
+            for (int i = 0; i < scopeViews; i++) {
+                this.scopeViewIndex[i] = i + 1;
+            }
+        }
     }
 }

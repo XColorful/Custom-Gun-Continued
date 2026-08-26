@@ -141,8 +141,8 @@ public class AnimStateMachine<T extends AnimStateContext> {
      * 设置状态机的建议退出时间，单位为毫秒<br/>
      * 用于在切换至同一个物品时，建议延迟重新初始化状态机，以便让动画播放完毕
      */
-    public void setExitingTime(long keepTime) {
-        this.exitingTime = System.currentTimeMillis() + keepTime;
+    public void setExitingTime(long keepTimeMs) {
+        this.exitingTime = System.currentTimeMillis() + keepTimeMs;
     }
 
     /**

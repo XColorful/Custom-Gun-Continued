@@ -15,10 +15,10 @@ import dev.xcolorful.customgun.client.api.animation.statemachine.GunAnimationSta
 import dev.xcolorful.customgun.client.api.event.IComputeCameraAnglesEvent;
 import dev.xcolorful.customgun.client.api.event.IRenderHandEvent;
 import dev.xcolorful.customgun.client.api.event.render.BeforeRenderHandEvent;
+import dev.xcolorful.customgun.client.api.renderer.KeepingItemRenderer;
 import dev.xcolorful.customgun.client.api.renderer.item.IAnimateGeoItemRenderer;
 import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
 import dev.xcolorful.customgun.client.api.sound.gun.GunSoundType;
-import dev.xcolorful.customgun.client.compat.minecraft.BlockEntityWithoutLevelRenderer;
 import dev.xcolorful.customgun.client.config.SoundConfig;
 import dev.xcolorful.customgun.client.model.AnimatedModelObject;
 import dev.xcolorful.customgun.client.model.bedrock.BedrockPart;
@@ -31,6 +31,7 @@ import dev.xcolorful.customgun.core.config.GunConfig;
 import dev.xcolorful.customgun.core.util.MathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -174,7 +175,7 @@ public abstract class AnimateGeoItemRenderer<M extends AnimatedModelObject, CTX 
 
         if (!stateMachine.isInitialized()) return;
 
-//        KeepingItemRenderer.cgc$getRenderer().cgc$keep(itemStack, putAwayTime);
+        KeepingItemRenderer.cgc$getRenderer().cgc$keep(itemStack, putAwayTime);
         stateMachine.exit();
         // 需要设置的比动画稍长些，避免意外的重初始化（可能是丢精度了）
         // 延后1tick应该基本没有感知

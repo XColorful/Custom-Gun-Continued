@@ -1,6 +1,7 @@
 package dev.xcolorful.customgun.client.api.item;
 
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
+
+import dev.xcolorful.customgun.client.compat.minecraft.BlockEntityWithoutLevelRenderer;
 
 public interface IItemBEWLR {
 

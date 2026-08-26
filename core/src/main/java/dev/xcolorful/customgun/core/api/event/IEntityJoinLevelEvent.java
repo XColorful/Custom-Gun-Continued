@@ -4,7 +4,7 @@ import dev.xcolorful.customgun.core.api.common.ILogicalSideOnly;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 
-public interface IEntityJoinLevelEvent extends ILogicalSideOnly {
+public interface IEntityJoinLevelEvent extends IEvent, ILogicalSideOnly {
 
     Entity getEntity();
 

@@ -7,9 +7,10 @@
 
 package dev.xcolorful.customgun.client.api.event;
 
+import dev.xcolorful.customgun.core.api.event.IEvent;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 
-public interface IRenderGuiEvent {
+public interface IRenderGuiEvent extends IEvent {
 
     /**
      * @since 26.1 {@code GuiGraphicsExtractor}

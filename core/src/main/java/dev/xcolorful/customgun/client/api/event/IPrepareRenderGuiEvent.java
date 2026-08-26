@@ -1,8 +1,9 @@
 package dev.xcolorful.customgun.client.api.event;
 
+import dev.xcolorful.customgun.core.api.event.IEvent;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 
-public interface IPrepareRenderGuiEvent {
+public interface IPrepareRenderGuiEvent extends IEvent {
 
     GuiGraphicsExtractor getGuiGraphics();
 

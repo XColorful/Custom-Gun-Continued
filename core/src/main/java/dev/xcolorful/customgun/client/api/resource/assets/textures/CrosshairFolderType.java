@@ -10,6 +10,7 @@ package dev.xcolorful.customgun.client.api.resource.assets.textures;
 import dev.xcolorful.customgun.core.api.resource.ResourceTag;
 import dev.xcolorful.customgun.core.api.resource.assets.textures.CrosshairFolderName;
 
+@Deprecated
 public enum CrosshairFolderType implements ResourceTag {
     HIT(CrosshairFolderName.HIT),
     NORMAL(CrosshairFolderName.NORMAL);

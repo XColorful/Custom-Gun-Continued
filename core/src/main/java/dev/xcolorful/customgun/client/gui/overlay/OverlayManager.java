@@ -27,10 +27,6 @@ public class OverlayManager implements IOverlayManager {
     public boolean register(IOverlaySubManager subManager) {
         String overlayName = subManager.getOverlayName();
         if (this.subManagers.containsKey(overlayName)) {
-            // 注册事件
-            if (!subManager.registerOverlayEvent()) {
-                CustomGun.LOGGER.warn("OverlayManager: Failed to register event of overlay sub manager {}", subManager.getManagerName());
-            }
 
             IOverlaySubManager previous = this.subManagers.put(overlayName, subManager);
             CustomGun.LOGGER.debug("OverlayManager: registered overlay sub manager {} for overlay {} (replaced {})", subManager.getManagerName(), overlayName, previous.getManagerName());
@@ -38,6 +34,12 @@ public class OverlayManager implements IOverlayManager {
             this.subManagers.put(overlayName, subManager);
             CustomGun.LOGGER.debug("OverlayManager: registered overlay sub manager {} for overlay {}", subManager.getManagerName(), overlayName);
         }
+
+        // 注册事件
+        if (!subManager.registerOverlayEvent()) {
+            CustomGun.LOGGER.warn("OverlayManager: Failed to register event of overlay sub manager {}", subManager.getManagerName());
+        }
+
         return true;
     }
     @Override

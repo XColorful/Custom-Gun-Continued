@@ -178,8 +178,8 @@ public class ClientRenderHelper {
         }
         public static void _disableCrosshair() {
             // [1.20.1, 1.21.4)
-            RenderSystem.defaultBlendFunc();
-            RenderSystem.disableBlend();
+//            RenderSystem.defaultBlendFunc();
+//            RenderSystem.disableBlend();
             // [1.21.4, 1.21.6)
             // 改成RenderType管理
             // [1.21.6, )

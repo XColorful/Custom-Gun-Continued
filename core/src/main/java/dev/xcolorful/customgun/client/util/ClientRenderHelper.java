@@ -198,7 +198,7 @@ public class ClientRenderHelper {
          */
         @ApiStatus.Internal
         public static Matrix4f _getModelViewMatrix() {
-            return RenderSystem.getModelViewMatrix();
+            return RenderSystem.getModelViewMatrixCopy();
         }
     }
 

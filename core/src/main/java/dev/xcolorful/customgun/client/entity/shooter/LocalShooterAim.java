@@ -56,7 +56,7 @@ public final class LocalShooterAim extends LocalShooterAspect {
     @ApiStatus.Internal private void _resetAiming() {
         this.localShooterProperty.clientIsAiming = false;
         this.localShooterProperty.clientAimingProgress = 0;
-        LocalShooterProperty.oldAimingProgress = System.currentTimeMillis();
+        LocalShooterProperty.oldAimingProgress = 0;
     }
     public void tickAimingProgress() {
         // 1. 手持枪械检查

@@ -11,7 +11,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
-import dev.xcolorful.customgun.client.compat.minecraft.BlockEntityWithoutLevelRenderer;
 import dev.xcolorful.customgun.client.model.AttachmentModelObject;
 import dev.xcolorful.customgun.client.model.bedrock.SlotModel;
 import dev.xcolorful.customgun.client.renderer.model.AttachmentRender;
@@ -23,7 +22,9 @@ import dev.xcolorful.customgun.client.util.ClientRenderHelper;
 import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import dev.xcolorful.customgun.core.api.item.IAttachment;
 import dev.xcolorful.customgun.core.api.item.attachment.IAttachmentGetter;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.EntityModelSet;
+import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
@@ -35,6 +36,9 @@ import org.jetbrains.annotations.Nullable;
 public class AttachmentItemRenderer extends BlockEntityWithoutLevelRenderer {
     public static final SlotModel SLOT_ATTACHMENT_MODEL = new SlotModel();
 
+    public AttachmentItemRenderer() {
+        this(Minecraft.getInstance().getBlockEntityRenderDispatcher(), Minecraft.getInstance().getEntityModels());
+    }
     public AttachmentItemRenderer(BlockEntityRenderDispatcher dispatcher, EntityModelSet modelSet) {
         super(dispatcher, modelSet);
     }

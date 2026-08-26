@@ -17,6 +17,11 @@
 官方 Wiki 介绍，面向玩家与服主等最终用户
 - 涵盖所有游戏功能介绍及详细配置示例
 
+## 提示词
+
+- 模组开发者使用的提示词模板位于 _./docs/prompt_
+- 历史使用的 Agent 提示词位于 _./docs/deprecated/prompt_
+
 # English
 
 ## API docs
@@ -35,3 +40,8 @@ A quick overview of the mod's architecture, for core developers and debugging pu
 
 Official Wiki guide, for end-users such as players and server owners.
 - Includes introductions to all game features and detailed configuration examples.
+
+## Prompts
+
+- Prompt templates for mod developers are located in _./docs/prompt_
+- Historical Agent prompts are located in _./docs/deprecated/prompt_

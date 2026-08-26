@@ -52,6 +52,7 @@ public class _DataInstanceManager {
         GUN_INDEX.clear();
         GUN_SORT.clear();
         ATTACHMENT_INDEX.clear();
+        ATTACHMENT_MODIFIER.clear();
         AMMO_INDEX.clear();
         BLOCK_INDEX.clear();
         ATTACHMENT_INSTALLABILITY.clear();
@@ -65,6 +66,7 @@ public class _DataInstanceManager {
         buildPojoInstance(ResourceApi.getAllGunIndex(), GUN_INDEX, GunIndexInstance::fromPojo, GunIndexInstance.class);
         GUN_SORT.reload();
         buildPojoInstance(ResourceApi.getAllAttachmentIndex(), ATTACHMENT_INDEX, AttachmentIndexInstance::fromPojo, AttachmentIndexInstance.class);
+        ATTACHMENT_MODIFIER.reload();
         buildPojoInstance(ResourceApi.getAllAmmoIndex(), AMMO_INDEX, AmmoIndexInstance::fromPojo, AmmoIndexInstance.class);
         buildPojoInstance(ResourceApi.getAllBlockIndex(), BLOCK_INDEX, BlockIndexInstance::fromPojo, BlockIndexInstance.class);
         ATTACHMENT_INSTALLABILITY.reload();

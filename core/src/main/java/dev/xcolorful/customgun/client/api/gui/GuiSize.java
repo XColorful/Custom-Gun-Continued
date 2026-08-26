@@ -63,5 +63,26 @@ public class GuiSize {
         private Item() {}
     }
 
+    /**
+     * 原版GUI尺寸
+     */
+    public static class Vanilla {
+        /**
+         * (原版渲染) 图像高60像素
+         */
+        @ApiStatus.Internal public static final int _crosshairHeightPixel = 60;
+        /**
+         * (原版渲染) 图像宽60像素
+         */
+        @ApiStatus.Internal public static final int _crosshairWidthPixel = 60;
+
+        /**
+         * 原版准心中心是离屏幕中心偏离0.5的
+         * @see net.minecraft.client.gui.Gui
+         */
+        public static final int CROSSHAIR_HEIGHT = _crosshairHeightPixel / _sizeToPixelRatio;
+        public static final int CROSSHAIR_WIDTH = _crosshairWidthPixel / _sizeToPixelRatio;
+    }
+
     private GuiSize() {}
 }

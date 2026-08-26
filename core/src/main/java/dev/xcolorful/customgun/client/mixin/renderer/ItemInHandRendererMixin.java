@@ -11,6 +11,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.api.event.render.BeforeRenderHandEvent;
 import dev.xcolorful.customgun.client.api.renderer.KeepingItemRenderer;
+import dev.xcolorful.customgun.core.api.item.IGun;
+import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.ItemInHandRenderer;
@@ -21,6 +23,8 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import javax.annotation.Nullable;
 
 @Mixin(ItemInHandRenderer.class)
 public class ItemInHandRendererMixin implements KeepingItemRenderer {
@@ -41,6 +45,32 @@ public class ItemInHandRendererMixin implements KeepingItemRenderer {
                                    LocalPlayer player, int lightCoords,
                                    CallbackInfo ci) {
         CustomGun.getEventPoster().postCustomEvent(new BeforeRenderHandEvent(poseStack));
+    }
+
+    @Inject(method = "tick", at = @At("HEAD"))
+    public void cgc$cancelEquippedProgress(CallbackInfo ci) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player == null) return;
+
+        if (cgc$keepItem != null) {
+            // 检查keep时长
+            long currentTimeMillis = System.currentTimeMillis();
+            if (currentTimeMillis - cgc$keepTimestamp < cgc$keepTimeMs) {
+                // 没超过需要keep的时长，保持keep
+                this.mainHandHeight = 1.0f;
+                this.oMainHandHeight = 1.0f;
+                this.mainHandItem = cgc$keepItem;
+                return;
+            }
+        }
+
+        ItemStack gunItem = mc.player.getMainHandItem();
+        @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
+        if (iGun != null) {
+            this.mainHandHeight = 1.0f;
+            this.oMainHandHeight = 1.0f;
+            this.mainHandItem = gunItem;
+        }
     }
 
     // --------KeepItemRenderer--------

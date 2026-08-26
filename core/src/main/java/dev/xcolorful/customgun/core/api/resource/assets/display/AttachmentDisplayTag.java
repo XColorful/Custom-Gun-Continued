@@ -17,8 +17,8 @@ public class AttachmentDisplayTag extends _AssetsDisplayTag {
     public static final String SCOPE_ZOOM_SCALE = "scope_zoom_scale"; public static final String SCOPE_ZOOM_SCALE_OLD1 = "zoom";
     public static final String SCOPE_VIEW_INDEX = "scope_view_index"; public static final String SCOPE_VIEW_INDEX_OLD1 = "views";
     public static final String SCOPE_VIEW_FOV = "scope_view_fov"; public static final String SCOPE_VIEW_FOV_OLD2 = "views_fov"; public static final String SCOPE_VIEW_FOV_OLD1 = "fov";
-    public static final String ENABLE_SCOPE = "enable_scope";
-    public static final String ENABLE_SIGHT = "enable_sight";
+    public static final String ENABLE_SCOPE = "enable_scope"; public static final String ENABLE_SCOPE_OLD1 = "scope";
+    public static final String ENABLE_SIGHT = "enable_sight"; public static final String ENABLE_SIGHT_OLD1 = "sight";
     public static final String SHOW_MUZZLE = "show_muzzle";
     public static final String SHOW_MOUNT = "show_mount";
     public static final String MODEL_NODE_TEXT_DISPLAY = GunDisplayTag.MODEL_NODE_TEXT_DISPLAY; public static final String MODEL_NODE_TEXT_DISPLAY_OLD1 = "text_show";

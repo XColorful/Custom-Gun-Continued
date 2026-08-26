@@ -75,19 +75,17 @@ public enum ScriptMethodType implements ResourceTag.ConstantTag, IScriptMethodTy
     public @Nullable LuaValue getFunctionOrNil(LuaTable luaTable) {
         if (luaTable == null) return null;
 
-        LuaValue function = luaTable.get(this.typeName); {
-            if (function.isfunction()) return function.checkfunction();
-            else if (function.isnil()) return LuaValue.NIL;
-        }
+        LuaValue function = luaTable.get(this.typeName);
+        if (function.isfunction()) return function.checkfunction();
+        if (!function.isnil()) return null;
 
         if (this.typeNameOld != null) {
-            function = luaTable.get(this.typeNameOld); {
-                if (function.isfunction()) return function.checkfunction();
-                else if (function.isnil()) return LuaValue.NIL;
-            }
+            function = luaTable.get(this.typeNameOld);
+            if (function.isfunction()) return function.checkfunction();
+            if (!function.isnil()) return null;
         }
 
-        return null;
+        return LuaValue.NIL;
     }
 
     private static final Map<String, ScriptMethodType> METHOD_TYPES = new HashMap<>();

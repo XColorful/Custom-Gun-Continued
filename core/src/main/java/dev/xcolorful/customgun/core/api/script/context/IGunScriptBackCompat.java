@@ -394,6 +394,14 @@ public interface IGunScriptBackCompat extends IGunScriptContextAccess {
     }
 
     /**
+     * 获取弹匣内的备弹数（兼容 TaCZ 状态机脚本的 {@code getAmmoCount} 命名）
+     * @return 弹匣内子弹数量
+     */
+    default int getAmmoCount() {
+        return this.getAmmoCountInMagazine();
+    }
+
+    /**
      * 获取枪膛内是否有子弹
      * @return 枪膛内是否有子弹.如果是开膛待击的枪械，则此方法返回 false
      */

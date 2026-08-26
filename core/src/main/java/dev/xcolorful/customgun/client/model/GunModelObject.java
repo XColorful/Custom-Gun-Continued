@@ -197,7 +197,7 @@ public class GunModelObject extends AnimatedModelObject implements IGunModelObje
         return this.ironSightPath;
     }
     @Override public @Nullable List<BedrockPart> getIdleSightPath() {
-        return this.ironSightPath;
+        return this.idleSightPath;
     }
     @Override public @Nullable List<BedrockPart> getThirdPersonHandOriginPath() {
         return this.thirdPersonHandOriginPath;

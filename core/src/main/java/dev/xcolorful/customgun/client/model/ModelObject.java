@@ -112,7 +112,7 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
         _ModelLoader.loadLegacyModel(this, pojo);
     }
 
-    protected List<BedrockPart> getPath(@Nullable IBedrockRenderer renderer) {
+    protected @Nullable List<BedrockPart> getPath(@Nullable IBedrockRenderer renderer) {
         if (renderer == null) return null;
 
         BedrockPart part = renderer.getModelRenderer();

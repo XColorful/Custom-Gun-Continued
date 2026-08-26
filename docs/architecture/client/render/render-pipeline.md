@@ -1,130 +1,73 @@
-# 渲染管线
+# 主渲染链路
 
-> 从物品渲染器（BEWLR）到 Minecraft 渲染管线的流程概览
+> 从第一人称渲染事件开始，到枪械模型真正被绘制，中间经过状态机、变换编排、配件渲染与 delegate 渲染。本文只描述主链路的模块间调用关系，不展开各模块的内部实现（后坐力、摄像机等见 [枪械附加变换模块](./gun-render-addons.md)，功能性渲染器见 [功能性渲染器](./functional-renderers.md)）。
 
-## 渲染上下文总览
-
-渲染覆盖了多种 Minecraft 渲染上下文：
+## 第一人称链路总图
 
 ```mermaid
 graph TB
-    subgraph "渲染上下文"
-        FP["第一人称持枪<br/>ItemInHandRenderer"]
-        TP["第三人称持枪<br/>ItemInHandLayer"]
-        GUI["GUI 物品槽<br/>BEWLR GUI"]
-        GROUND["掉落物<br/>BEWLR GROUND"]
-        FIXED["物品展示框<br/>BEWLR FIXED"]
-    end
-
-    subgraph "物品渲染器 — client.renderer.item"
-        GW["AnimateGeoItemRenderer<br/>枪械渲染 (BEWLR)"]
-    end
-
-    subgraph "其他渲染器 — client.renderer"
-        HOR["shooter.HumanoidOffhandRender<br/>副手/热键栏枪械"]
-        GHT["victim.GunHurtBobTweak<br/>枪击受伤晃动"]
-    end
-
-    subgraph "功能性渲染器 — client.renderer.model"
-        MFR["MuzzleFlashRender<br/>枪口火焰"]
-        SR["ShellRender<br/>抛壳"]
-    end
-
-    subgraph "API 接口 — client.api"
-        ICR["IModelComponentRenderer<br/>功能性渲染接口"]
-        KIR["KeepingItemRenderer<br/>物品保持渲染"]
-    end
-
-    FP --> GW
-    TP --> GW
-    GUI --> GW
-    GROUND --> GW
-    FIXED --> GW
-    GW --> MFR
-    GW --> SR
-
-    style FP fill:#e1f5fe
-    style TP fill:#e1f5fe
-    style GUI fill:#e1f5fe
-    style GW fill:#fff9c4
-    style MFR fill:#e8f5e9
-    style SR fill:#e8f5e9
-    style ICR fill:#fce4ec
-    style KIR fill:#fce4ec
+    A["RENDER_HAND_EVENT"] --> B["FirstPersonRender.onRenderHand"]
+    B --> C["GunItemRenderer.renderFirstPerson"]
+    C --> C1["状态机 update()<br/>把动画写入模型"]
+    C --> C2["GunRendererAddon.applyFirstPersonGunTransform"]
+    C2 --> C2a["后坐 / 跳跃晃动"]
+    C2 --> C2b["瞄准 / 改装界面定位"]
+    C2 --> C2c["动画约束变换"]
+    C --> C3["GunModelObject.render"]
+    C3 --> C3a["_GunModelRender.render"]
+    C3a --> C3b["renderScope 瞄具模板"]
+    C3a --> C3c["BeamRender 激光"]
+    C3a --> C3d["super_render 场景图"]
+    C3d --> C3e["delegate 渲染"]
+    C --> C4["cleanAnimationTransform"]
 ```
 
-物品渲染全部通过 `BlockEntityWithoutLevelRenderer`（BEWLR）体系实现，绕过 MC 原版的 JSON 模型系统，直接操作基岩版模型。
+## 第一人称渲染流程
 
-## AnimateGeoItemRenderer — 枪械渲染器
+`FirstPersonRender` 从事件拿到物品栈后，调用 `GunItemRenderer.renderFirstPerson()`，其内部按以下顺序执行：
 
-`client.renderer.item.AnimateGeoItemRenderer` 是枪械物品的完整渲染器。处理第一人称和第三人称枪械渲染，包括动画播放、音效触发。
+1. 解析物品：通过 `ClientResourceApi.getGunDisplayInstance()` 拿到 `GunDisplayInstance`，进而取得 `GunModelObject` 和 `LuaAnimStateMachine`。
+2. 更新状态机：先把 partialTicks 和当前枪械物品写入 `GunAnimStateContext`，再调用 `stateMachine.update()`，让当前状态计算出的关键帧通过动画监听器写入模型节点的 offset / 旋转 / 缩放。
+3. 抵消原版晃动：把原版施加在手上的视角晃动反向抵消，转而以 root 节点的 offset 与附加四元数写入模型，作为自定义的走路 / 跑步晃动来源。
+4. 移到模型原点并翻转：`translate(0, 1.5, 0)` 把渲染原点从 `(0, 24, 0)` 移到 `(0, 0, 0)`，再绕 Z 轴旋转 180° 摆正上下颠倒的基岩版模型。
+5. 应用第一人称变换：`GunRendererAddon.applyFirstPersonGunTransform()` 依次叠加后坐 / 跳跃晃动、瞄准 / 改装界面定位、动画约束变换。
+6. 渲染模型：调用 `GunModelObject.render()`，它委托给 `_GunModelRender.render()`。
+7. 缓存枪口位置：`cacheMuzzlePosition()` 计算枪口相对摄像机的坐标，供第一人称曳光弹使用。
+8. 清理动画变换：`cleanAnimationTransform()` 把写入模型的动画 offset / 旋转 / 缩放清零，避免污染其他视角。
 
-### 第一人称渲染流程
+## 模型渲染内部
 
-`renderFirstPerson()` 的执行顺序：
+`_GunModelRender.render()` 是枪械模型的渲染核心，它把多个独立模块串起来：
 
-1. 获取模型对象、纹理和 `GunDisplayInstance`
-2. 更新动画状态机，将动画数据写入模型
-3. 取消原版视角晃动，将其作为根节点偏移重新应用到基岩版模型
-4. 平移到模型原点并翻转
-5. 应用第一人称定位变换（瞄准、后坐力、改装界面等）
-6. 设置功能性渲染器标记（`MuzzleFlashRender.isSelf` 等）
-7. 渲染模型
-8. 清除动画变换残留
+1. 刷新状态：记录当前枪械物品、清空配件转接口集合、遍历所有配件槽位更新 `currentAttachmentItem` 缓存，并读取弹匣类别与瞄具导轨显示需求。
+2. 渲染激光：若有激光节点路径，先调 `BeamRender.render()`。
+3. 渲染瞄具：`renderScope()` 先渲染 scope 配件并开启模板测试（详见 [功能性渲染器](./functional-renderers.md)）。
+4. 渲染主体：`super_render()` 遍历场景图绘制枪身，随后执行 delegate 渲染器（枪口火焰、抛壳、手臂、文字、配件）。
 
-### 非第一人称渲染
+这个结构说明：配件、激光、瞄具、delegate 渲染器都挂在主模型渲染的固定阶段上，而不是各自独立调度。
 
-GUI 上下文中渲染平面槽位图标；其他上下文（第三人称、掉落物、展示框）应用定位变换和缩放变换后渲染模型。
+## 非第一人称链路
 
-### 动画生命周期
+第三人称主手、掉落物、展示框走 `GunItemRenderer.renderByItem()`：
 
-- `triggerDraw()`：初始化状态机、播放拔枪音效
-- `triggerPutAway()`：退出状态机、播放收枪音效
+- GUI 分支渲染槽位图标。
+- 其他分支先做 LOD 替换（`ClientRenderDistance.shouldRenderLod()`），再应用对应定位组的位移 / 旋转 / 缩放，最后调用 `GunModelObject.render()`。此路径同样会走 `_GunModelRender.render()` 的配件 / 激光 / delegate 逻辑。
 
-## 功能性渲染器
+## 摄像机与 FOV 链路
 
-### IModelComponentRenderer 接口
+第一人称的摄像机与 FOV 调整与模型渲染并行，由平台层投递的摄像机事件驱动 `GunCameraHelper`：
 
-```java
-void render(PoseStack poseStack, VertexConsumer vertexBuffer,
-            ItemDisplayContext transformType, int light, int overlay);
-```
+- `COMPUTE_CAMERA_ANGLES_EVENT`：应用摄像机动画（`applyLevelCameraAnimation`）与后坐力（`_applyCameraRecoil`）。
+- `COMPUTE_FOV_EVENT`：区分世界渲染与手部渲染两种 FOV，分别应用瞄具倍率（世界）与配件 / 机瞄 FOV（手部）。
 
-实现类通过模型对象注册到特定节点，渲染时由对应的模型部件调用。
+这些逻辑与 [枪械附加变换模块](./gun-render-addons.md) 里的后坐力、瞄准紧密相关。
 
-### MuzzleFlashRender
+## 主链路中的数据来源
 
-枪口火焰效果：射击时记录时间戳和随机旋转角度，在 50ms 时间窗口内通过两阶段渲染（半透明背景层 + 加性混合发光层）产生火焰视觉效果。
+链路里反复出现的几个数据入口都收敛到 `ClientResourceApi`：
 
-### ShellRender
+- 枪械模型、纹理、动画、状态机脚本：来自 `GunDisplayInstance`（由 `GunDisplay` POJO 二次校验构建）。
+- 配件模型、瞄具视野、激光：来自 `ClientAttachmentIndexInstance`。
+- 弹壳模型：来自 `ClientAmmoIndexInstance`（抛壳时用）。
 
-抛壳动画效果：维护弹壳队列（上限 128），每个弹壳按匀变速直线运动公式计算位移，按角速度计算旋转，使用弹壳模型渲染。
-
-## 其他渲染器
-
-### HumanoidOffhandRender
-
-第三人称枪械渲染：处理其他实体手持枪械时的可见性（副手和热键栏），确保枪械在非第一人称视角下正确显示。
-
-### GunHurtBobTweak
-
-枪击受伤镜头调整：当本地玩家被枪械击中时，替换原版受伤晃动逻辑，根据枪械数据中配置的晃动倍率调整受伤晃动的幅度。通过 `ProjectileHitEntityEvent` 触发，在渲染帧通过 `onHurtBobTweak()` 应用自定义晃动矩阵。
-
-## KeepingItemRenderer 接口
-
-`client.api.renderer.KeepingItemRenderer` 用于在物品切换动画后延长物品可见性。通过 Mixin 注入到 `ItemInHandRenderer`：
-
-- `cgc$keep(itemStack, timeMs)`：在指定时间内用保持的物品覆盖主手物品
-- `cgc$getCurrentItem()`：获取当前应渲染的物品（保持期内返回保持的物品，过期后返回实际主手物品）
-- `cgc$getRenderer()`：通过 `fromItemInHandRenderer()` 获取当前 `ItemInHandRenderer` 的 `KeepingItemRenderer` 接口实例
-
-## 渲染顺序
-
-第一人称枪械渲染的完整事件顺序：
-
-1. Mixin 层：`ItemInHandRendererMixin` 触发 `BeforeRenderHandEvent`
-2. 相机动画应用（通过事件处理）
-3. `AnimateGeoItemRenderer.renderFirstPerson()`：状态机更新 + 模型渲染
-4. 第一人称变换编排应用（瞄准、后坐力、改装界面等）
-5. 功能性渲染器（枪口火焰、抛壳等）
-6. `KeepingItemRenderer` 保持物品机制确保拔枪/收枪动画期间物品不消失
+这些 Instance 的构建与读取方式见 [资源读取](./resource-reading.md)。

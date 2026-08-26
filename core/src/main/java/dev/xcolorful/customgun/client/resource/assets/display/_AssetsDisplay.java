@@ -68,7 +68,7 @@ public abstract class _AssetsDisplay<T extends _AssetsDisplay<T>> extends Resour
     private static final IMcRegistry mcRegistry = CustomGun.getMcRegistry();
     private static final String textureLocationPrefix = AssetsFolderType.TEXTURES.getFolderPathPrefix();
     private static final String textureLocationSuffix = FileExtensionType.PNG.getExtensionNameWithDot();
-    public static @Nullable ResourceLocation applyTextureLocationBackCompatibility(@Nullable ResourceLocation textureLocation) {
+    public static @Nullable Identifier applyTextureLocationBackCompatibility(@Nullable Identifier textureLocation) {
         if (textureLocation == null) return null;
 
         String rlPath = textureLocation.getPath();

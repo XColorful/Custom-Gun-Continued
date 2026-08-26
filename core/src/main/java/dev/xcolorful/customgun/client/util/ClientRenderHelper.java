@@ -112,7 +112,8 @@ public class ClientRenderHelper {
 
     @ApiStatus.Internal
     public static void ensureMainRenderTargetStencil(Minecraft minecraft) {
-        RenderSystem.recordRenderCall(() -> ClientRenderUtils.getMainRenderTarget(minecraft).enableStencil());
+//        RenderSystem.recordRenderCall(() -> ClientRenderUtils.getMainRenderTarget(minecraft).enableStencil());
+        // 1.21.4起变成了构造函数时的参数
     }
 
     public static class GL {

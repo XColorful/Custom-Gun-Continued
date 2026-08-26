@@ -407,5 +407,5 @@ public final class GunDisplay extends _AssetsDisplay<GunDisplay> {
 
     // --------Special--------
 
-    public static @NotNull ResourceLocation DEFAULT_SCRIPT_LOCATION = CustomGun.getMcRegistry().createResourceLocation(String.format("%s:%s", CustomGun.MOD_ID_OLD1, "default_state_machine"));
+    public static @NotNull Identifier DEFAULT_SCRIPT_LOCATION = CustomGun.getMcRegistry().createResourceLocation(String.format("%s:%s", CustomGun.MOD_ID_OLD1, "default_state_machine"));
 }

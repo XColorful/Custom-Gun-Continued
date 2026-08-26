@@ -68,7 +68,7 @@ public class ClientGuiUtils {
                     textureWidth, textureHeight);
         }
         public static void blitCrosshairTexture(GuiGraphics guiGraphics,
-                                          ResourceLocation textureLocation,
+                                                Identifier textureLocation,
                                           int startX, int startY,
                                           int width, int height,
                                           int uOffset, int vOffset,

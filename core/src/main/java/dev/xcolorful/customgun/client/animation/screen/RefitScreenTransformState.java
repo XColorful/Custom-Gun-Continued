@@ -80,15 +80,15 @@ public class RefitScreenTransformState implements IEventHandler {
 
             if (ClientGuiUtils.getCurrentScreen(mc) instanceof IGunRefitScreen) {
                 // 当前是装配screen
-                this.screenOpeningProgress += (float) (currentTimeMillis - this.screenOpeningTimestamp) / REFIT_SCREEN_TRANSFORM_TIME_MS;
-                if (this.screenOpeningProgress > 1) {
-                    this.screenOpeningProgress = 1;
+                if (this.screenOpeningProgress < 1) {
+                    this.screenOpeningProgress += (float) (currentTimeMillis - this.screenOpeningTimestamp) / REFIT_SCREEN_TRANSFORM_TIME_MS;
                 }
+                if (this.screenOpeningProgress > 0.99) this.screenOpeningProgress = 1;
             } else {
-                this.screenOpeningProgress -= (float) (currentTimeMillis - this.screenOpeningTimestamp) / REFIT_SCREEN_TRANSFORM_TIME_MS;
-                if (this.screenOpeningProgress < 0) {
-                    this.screenOpeningProgress = 0;
+                if (this.screenOpeningProgress > 0) {
+                    this.screenOpeningProgress -= (float) (currentTimeMillis - this.screenOpeningTimestamp) / REFIT_SCREEN_TRANSFORM_TIME_MS;
                 }
+                if (this.screenOpeningProgress < 0.01) this.screenOpeningProgress = 0;
             }
         }
         this.screenOpeningTimestamp = currentTimeMillis;
@@ -97,10 +97,10 @@ public class RefitScreenTransformState implements IEventHandler {
             // 初始化
             if (this.screenTransformTimestamp == -1) this.screenTransformTimestamp = currentTimeMillis;
 
-            this.screenTransformProgress += (float) (currentTimeMillis - this.screenTransformTimestamp) / REFIT_SCREEN_TRANSFORM_TIME_MS;
-            if (this.screenTransformProgress > 1) {
-                this.screenTransformProgress = 1;
+            if (this.screenTransformProgress < 1) {
+                this.screenTransformProgress += (float) (currentTimeMillis - this.screenTransformTimestamp) / REFIT_SCREEN_TRANSFORM_TIME_MS;
             }
+            if (this.screenTransformProgress > 0.99) this.screenTransformProgress = 1;
         }
         this.screenTransformTimestamp = currentTimeMillis;
     }

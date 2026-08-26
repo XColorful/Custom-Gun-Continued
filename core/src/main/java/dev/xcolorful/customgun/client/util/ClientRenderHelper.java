@@ -156,6 +156,24 @@ public class ClientRenderHelper {
         public static void _disableBlend() {
             GlStateManager._disableBlend();
         }
+
+        /**
+         * 原版准心的反色效果，使在各种画面上都可见
+         * @see net.minecraft.client.gui.Gui#renderCrosshair
+         */
+        public static void _enableCrosshair() {
+            RenderSystem.enableBlend();
+            RenderSystem.blendFuncSeparate(
+                    GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR,
+                    GlStateManager.DestFactor.ONE_MINUS_DST_COLOR,
+                    GlStateManager.SourceFactor.ONE,
+                    GlStateManager.DestFactor.ZERO
+            );
+        }
+        public static void _disableCrosshair() {
+            RenderSystem.defaultBlendFunc();
+            RenderSystem.disableBlend();
+        }
     }
 
     @ApiStatus.AvailableSince("1.21.10")

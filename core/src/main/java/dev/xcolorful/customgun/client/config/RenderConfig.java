@@ -18,6 +18,7 @@ public class RenderConfig {
     public static IModConfigSpec<Boolean> DISABLE_GUN_TILTING;
     public static IModConfigSpec<Integer> BULLET_HOLE_PARTICLE_LIFE;
     public static IModConfigSpec<Double> BULLET_HOLE_PARTICLE_FADE_THRESHOLD;
+    public static IModConfigSpec<Boolean> REPLACE_VANILLA_CROSSHAIR;
     public static IModConfigSpec<CrosshairType> CROSSHAIR_TYPE;
     public static IModConfigSpec<Double> HIT_MARKET_START_POSITION;
     public static IModConfigSpec<Boolean> HEAD_SHOT_DEBUG_HITBOX;
@@ -51,8 +52,11 @@ public class RenderConfig {
         builder.addComment(ClientModConfigTag.bulletHoleParticleFadeThreshold_comment);
         BULLET_HOLE_PARTICLE_FADE_THRESHOLD = builder.addConfig(ClientModConfigTag.bulletHoleParticleFadeThreshold_path, 0.98, 0.0, 1.0);
 
+        builder.addComment(ClientModConfigTag.replaceVanillaCrosshair_comment);
+        REPLACE_VANILLA_CROSSHAIR = builder.addConfig(ClientModConfigTag.replaceVanillaCrosshair_path, true);
+
         builder.addComment(ClientModConfigTag.crosshairType_comment);
-        CROSSHAIR_TYPE = builder.addConfig(ClientModConfigTag.crosshairType_path, CrosshairType.DOT_1);
+        CROSSHAIR_TYPE = builder.addConfig(ClientModConfigTag.crosshairType_path, CrosshairType.DEFAULT);
 
         builder.addComment(ClientModConfigTag.hitMarkerStartPosition_comment);
         HIT_MARKET_START_POSITION = builder.addConfig(ClientModConfigTag.hitMarkerStartPosition_path, 4.0, -1024.0, 1024.0);

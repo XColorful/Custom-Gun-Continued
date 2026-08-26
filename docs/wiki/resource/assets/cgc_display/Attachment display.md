@@ -1,7 +1,7 @@
 [English](#English)
 
 # 配件显示
-> wiki 版本：`0.0.0`.0
+> wiki 版本：`0.0.7`.1
 
 - `model_location`/`model`（ResourceLocation）：
 - `texture_location`/`texture`（ResourceLocation）：
@@ -12,8 +12,8 @@
 	- `texture_location`/`texture`（ResourceLocation）：
 - `adapter_node_name`/`adapter`（String）：
 ---
-- `enable_sight`（boolean）：
-- `enable_scope`（boolean）：
+- `enable_sight`/`sight`（boolean）：
+- `enable_scope`/`scope`（boolean）：
 - `scope_zoom_scale`/`zoom`（float[]）：
 - `scope_view_index`/`views`（int[]）：
 - `scope_view_fov`/`views_fov`/`fov`（float[]）：
@@ -85,7 +85,7 @@
 ```
 
 # English
-> wiki verison: `0.0.0`.0
+> wiki verison: `0.0.7`.1
 
 - `model_location`/`model`(ResourceLocation):
 - `texture_location`/`texture`(ResourceLocation):
@@ -96,8 +96,8 @@
 	- `texture_location`/`texture`(ResourceLocation):
 - `adapter_node_name`/`adapter`(String):
 ---
-- `enable_sight`(boolean):
-- `enable_scope`(boolean):
+- `enable_sight`/`sight`(boolean):
+- `enable_scope`/`scope`(boolean):
 - `scope_zoom_scale`/`zoom`(float[]):
 - `scope_view_index`/`views`(int[]):
 - `scope_view_fov`/`views_fov`/`fov`(float[]):

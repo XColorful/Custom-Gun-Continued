@@ -130,19 +130,23 @@ public final class AttachmentModelObject extends AnimatedModelObject implements 
             stripped = null;
 
             // ocular 镜片
-            if (NodeName.OCULAR_SIGHT.matches(nodeName) // 先匹配长的
-                    || NodeName.Prefix.OCULAR_SIGHT.matches(nodeName)
-                    || (stripped = NodeName.OCULAR.getStrippedIfMatches(nodeName)) != null
-                    || (stripped = NodeName.Prefix.OCULAR.getStrippedIfMatches(nodeName)) != null
-            ) {
-                if (stripped == null) stripped = nodeName.substring(NodeName.OCULAR.getName().length()); // 只去掉"ocular"，保留"_sight"或"_sight_{}"
-                _ocularNodePaths.add(new _OcularNodeEntry(stripped, this.getPath(renderer), false));
-                continue;
-            } else if (NodeName.OCULAR_SCOPE.matches(nodeName)
+            if (NodeName.OCULAR_SCOPE.matches(nodeName)
                     || NodeName.Prefix.OCULAR_SCOPE.matches(nodeName)
             ) {
-                stripped = nodeName.substring(NodeName.OCULAR.getName().length()); // 只去掉"ocular"，保留"_scope"或"_scope_{}"
+                stripped = nodeName.substring(NodeName.OCULAR.getName().length()); // 只去掉"ocular"，保留"_scope"或"_scope_{n}"
                 _ocularNodePaths.add(new _OcularNodeEntry(stripped, this.getPath(renderer), true));
+                continue;
+            } else if (NodeName.OCULAR_SIGHT.matches(nodeName)
+                    || NodeName.Prefix.OCULAR_SIGHT.matches(nodeName)
+            ) {
+                stripped = nodeName.substring(NodeName.OCULAR.getName().length()); // 只去掉"ocular"，保留"_sight"或"_sight_{n}"
+                _ocularNodePaths.add(new _OcularNodeEntry(stripped, this.getPath(renderer), false));
+                continue;
+            } else if ((stripped = NodeName.OCULAR.getStrippedIfMatches(nodeName)) != null
+                    || (stripped = NodeName.Prefix.OCULAR.getStrippedIfMatches(nodeName)) != null
+            ) {
+                if (_AttachmentSort.isStrippedSuffixInvalid(stripped)) continue;
+                _ocularNodePaths.add(new _OcularNodeEntry(stripped, this.getPath(renderer), false));
                 continue;
             }
 

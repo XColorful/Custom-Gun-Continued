@@ -7,6 +7,7 @@
 
 package dev.xcolorful.customgun.client.api.renderer;
 
+import dev.xcolorful.customgun.client.mixin.renderer.ItemInHandRendererMixin;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.world.item.ItemStack;
@@ -30,13 +31,15 @@ public interface KeepingItemRenderer {
     ItemStack cgc$getCurrentItem();
 
     /**
-     * ItemInHandRenderer 通过 Mixin 的方式实现了此接口
+     * ItemInHandRenderer 通过 Mixin 的方式实现了此接口 {@link ItemInHandRendererMixin}
      * @return 返回 ItemInHandRenderer 实例
      */
     static KeepingItemRenderer cgc$fromItemInHandRenderer(ItemInHandRenderer itemInHandRenderer) {
         return (KeepingItemRenderer) itemInHandRenderer;
     }
     static KeepingItemRenderer cgc$getRenderer(){
-        return cgc$fromItemInHandRenderer(Minecraft.getInstance().getEntityRenderDispatcher().getItemInHandRenderer());
+        Minecraft mc = Minecraft.getInstance();
+        ItemInHandRenderer itemInHandRenderer = mc.getEntityRenderDispatcher().getItemInHandRenderer();
+        return cgc$fromItemInHandRenderer(itemInHandRenderer);
     }
 }

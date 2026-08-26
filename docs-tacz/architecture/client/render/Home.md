@@ -1,205 +1,121 @@
 # 渲染体系总览
 
-> 本文档作为 TaCZ 客户端渲染架构的导航索引
+> TaCZ 客户端渲染架构的导航入口
 
-## 体系总图
+TaCZ 的渲染体系解决一个核心问题：如何把 BlockBench 导出的基岩版几何模型，结合基岩版/glTF 动画与 Lua 状态机脚本，渲染成游戏中的第一/第三人称枪械、配件、弹药与方块实体。这套体系不依赖 Minecraft 原版 JSON 模型，而是构建自己的场景图与动画管线。
+
+## 全局概览
 
 ```mermaid
-graph TB
-    subgraph g1["资源加载层 — client.resource"]
-        direction LR
-        RES_MGR["ClientAssetsManager<br/>资源包加载调度"]
-        DISPLAY_MGR["DisplayManager<br/>AmmoDisplay / AttachmentDisplay<br/>GunDisplay / BlockDisplay"]
-        MODEL_MGR["ModelManager<br/>BedrockModelPOJO"]
-        ANIM_MGR["AnimationLoadManager<br/>BedrockAnimation / GltfAnimation"]
-        INSTANCE["GunDisplayInstance<br/>二次校验 + 缓存构建"]
-
-        RES_MGR --> DISPLAY_MGR
-        RES_MGR --> MODEL_MGR
-        RES_MGR --> ANIM_MGR
-        DISPLAY_MGR --> INSTANCE
-        MODEL_MGR --> INSTANCE
-        ANIM_MGR --> INSTANCE
+flowchart TB
+    subgraph RES["资源层"]
+        DISP["GunDisplayInstance<br/>每枪渲染缓存"] 
+        IDX["ClientGunIndex / Attachment / Ammo / Block Index"]
+        SCR["ScriptManager<br/>状态机脚本"]
     end
 
-    subgraph g2["数据索引层 — client.resource.index"]
-        GUN_IDX["ClientGunIndex<br/>模型 + 纹理 + 数据"]
-        ATCH_IDX["ClientAttachmentIndex<br/>模型 + 纹理 + LOD"]
-        AMMO_IDX["ClientAmmoIndex<br/>弹药模型 + 弹壳模型"]
+    subgraph MODEL["模型层"]
+        BM["BedrockModel<br/>场景图"]
+        BAM["BedrockAnimatedModel<br/>动画监听器桥"]
+        BGM["BedrockGunModel<br/>功能性渲染器 + 定位组"]
+        BAT["BedrockAttachmentModel"]
+        BAm["BedrockAmmoModel"]
+        BP["BedrockPart / FunctionalBedrockPart"]
     end
 
-    subgraph g3["模型层 — client.model"]
-        BM["BedrockModel<br/>基岩版几何模型"]
-        BAM["BedrockAnimatedModel<br/>动画模型 (AnimationListenerSupplier)"]
-        BAT["BedrockAttachmentModel<br/>配件模型 + 模板缓冲瞄具"]
-        BGM["BedrockGunModel<br/>枪械模型 + 功能性渲染器"]
-        AM["BedrockAmmoModel<br/>弹药模型 + 定位组"]
-        FP["FunctionalBedrockPart<br/>可替换渲染逻辑的模型部件"]
-
-        BM ---> BAM
-        BAM --> BAT
-        BAM --> BGM
-        BM --> AM
-        BM --> FP
+    subgraph ANIM["动画层"]
+        CTRL["AnimationController"]
+        OA["ObjectAnimation / Channel / Runner"]
+        LS["AnimationListener"]
     end
 
-    subgraph g4["几何层 — client.model.bedrock"]
-        BP["BedrockPart<br/>场景图节点"]
-        BC["BedrockCube Box/PerFace<br/>立方体面几何"]
-        MRW["ModelRendererWrapper<br/>动画属性包装"]
+    subgraph SM["状态机层"]
+        ASM["AnimationStateMachine"]
+        CTX["GunAnimationStateContext"]
+        LUA["Lua 脚本"]
     end
 
-    subgraph g5["功能性渲染器 — client.model.functional"]
-        MFR["MuzzleFlashRender<br/>枪口火焰"]
-        SR["ShellRender<br/>抛壳动画"]
-        BR["BeamRenderer<br/>激光束"]
-        AR["AttachmentRender<br/>配件渲染"]
-        LHR["LeftHandRender<br/>左手手臂"]
-        RHR["RightHandRender<br/>右手手臂"]
-        TSR["TextShowRender<br/>模型文字"]
+    subgraph RENDER["渲染层"]
+        AGR["AnimateGeoItemRenderer<br/>GunItemRendererWrapper"]
+        ITEM["Ammo / Attachment / Table ItemRenderer"]
+        ENT["EntityBulletRenderer"]
+        BLK["GunSmithTable / Statue / TargetRenderer"]
     end
 
-    subgraph g6["动画系统 — api.client.animation"]
-        direction LR
-        OA["ObjectAnimation<br/>动画实例"]
-        OAR["ObjectAnimationRunner<br/>动画运行器"]
-        AC["AnimationController<br/>轨道管理 + 过渡"]
-        ASM["AnimationStateMachine<br/>Lua 状态机"]
-        ALS["AnimationListenerSupplier<br/>模型 -> 动画监听器"]
+    subgraph HOOK["事件与 Mixin"]
+        FPRE["FirstPersonRenderGunEvent"]
+        CAM["CameraSetupEvent"]
+        TICK["TickAnimationEvent"]
+        MIX["GameRenderer / ItemInHand / Mouse Mixin"]
     end
 
-    subgraph g7["物品渲染器 — client.renderer.item"]
-        GW["GunItemRendererWrapper<br/>枪械渲染 (BEWLR)"]
-        AGR["AnimateGeoItemRenderer<br/>动画物品基类"]
-        ATTR["AttachmentItemRenderer<br/>配件物品渲染"]
-        AMMOR["AmmoItemRenderer<br/>弹药物品渲染"]
-        GSTR["GunSmithTableItemRenderer<br/>工作台物品渲染"]
-    end
+    DISP --> BGM
+    DISP --> ASM
+    IDX --> BAT
+    IDX --> BAm
+    SCR --> ASM
 
-    subgraph g8["实体/方块渲染器 — client.renderer"]
-        EBR["EntityBulletRenderer<br/>子弹 + 曳光弹"]
-        TR["TargetRenderer<br/>射击靶"]
-        SR2["StatueRenderer<br/>雕像方块"]
-        GSTR2["GunSmithTableRenderer<br/>工作台方块"]
-    end
+    BAM --> BM
+    BGM --> BAM
+    BAT --> BAM
+    BAm --> BM
 
-    subgraph g9["事件与 Mixin — client.event / client.mixin"]
-        FPRE["FirstPersonRenderGunEvent<br/>第一人称变换编排"]
-        CS["CameraSetupEvent<br/>FOV + 后坐力"]
-        TAE["TickAnimationEvent<br/>动画 Tick 驱动"]
-        GRM["GameRendererMixin<br/>晃动取消"]
-        IHRM["ItemInHandRendererMixin<br/>保持物品 + 渲染钩子"]
-        IHLM["ItemInHandLayerMixin<br/>第三人称枪械"]
-    end
+    ASM --> CTRL
+    CTRL --> OA
+    OA --> LS
+    LS --> BAM
 
-    INSTANCE --> GUN_IDX
-    INSTANCE --> ATCH_IDX
-    INSTANCE --> AMMO_IDX
-
-    GUN_IDX --> BGM
-    ATCH_IDX --> BAT
-    AMMO_IDX --> AM
-
-    BGM --> FP
-    BGM --> MFR
-    BGM --> SR
-    BGM --> BR
-    BGM --> AR
-    BGM --> LHR
-    BGM --> RHR
-    BGM ---> TSR
-
-    GUN_IDX --> GW
-    ATCH_IDX --> ATTR
-    AMMO_IDX --> AMMOR
-
-    GW --> AGR
+    AGR --> BGM
     AGR --> ASM
-    ASM --> AC
-    AC --> OA
-    AC --> OAR
+    ITEM --> BGM
+    ENT --> BAm
+    BLK --> BM
 
-    BAM --> ALS
-    OA --> ALS
-
-    GW --> FPRE
-    GW --> CS
-    TAE --> ASM
-    GRM --> GW
-    IHRM --> GW
-    IHLM --> GW
-
-    EBR --> AM
-    GSTR2 --> BM
-    TR --> BM
-    SR2 --> BM
-
-    style RES_MGR fill:#e1f5fe
-    style DISPLAY_MGR fill:#e1f5fe
-    style MODEL_MGR fill:#e1f5fe
-    style ANIM_MGR fill:#e1f5fe
-    style INSTANCE fill:#e1f5fe
-    style BM fill:#fff3e0
-    style BAM fill:#fff3e0
-    style BAT fill:#fff3e0
-    style BGM fill:#fff3e0
-    style AM fill:#fff3e0
-    style FP fill:#fff3e0
-    style BP fill:#f3e5f5
-    style BC fill:#f3e5f5
-    style MRW fill:#f3e5f5
-    style MFR fill:#e8f5e9
-    style SR fill:#e8f5e9
-    style BR fill:#e8f5e9
-    style AR fill:#e8f5e9
-    style OA fill:#fce4ec
-    style OAR fill:#fce4ec
-    style AC fill:#fce4ec
-    style ASM fill:#fce4ec
-    style GW fill:#fff9c4
-    style AGR fill:#fff9c4
-    style EBR fill:#fff9c4
-    style FPRE fill:#ede7f6
-    style CS fill:#ede7f6
-    
-    %% ----调整Mermaid外观（与体系无关）----
-    AMMO_IDX ~~~ ATCH_IDX
-    AMMO_IDX ~~~ GUN_IDX ~~~ ATCH_IDX
-    g1 ~~~ g4 ~~~ g8
-    g1 ~~~ g3 ~~~ g2 ~~~ g7
-    FPRE ~~~ CS
+    TICK --> ASM
+    FPRE --> AGR
+    CAM --> AGR
+    MIX --> AGR
 ```
 
-## 体系概要
+## 分层职责
 
-渲染体系解决的核心问题：**如何将 BlockBench 导出的基岩版模型文件，结合基岩版动画和 Lua 状态机，渲染为游戏中的第一/第三人称枪械、配件、弹药和方块实体**。
+渲染体系按「资源 → 模型 → 动画 → 状态机 → 渲染器」分层，外加一组事件与 Mixin 钩子把渲染接入 Minecraft：
 
-整个体系分为六个层次：
-
-|层|包路径|职责|
+|层|职责|入口文档|
 |---|---|---|
-|资源加载层|`client.resource`|加载资源包中的 display、model、animation JSON 文件，构建 POJO → Instance 管道|
-|数据索引层|`client.resource.index`|将二次校验后的 POJO 数据组织为可查询的索引（纹理、模型、变换等）|
-|模型层|`client.model`|构建基岩版几何模型的场景图，提供动画监听器接口和功能性渲染注册|
-|几何层|`client.model.bedrock`|场景图节点、立方体面的顶点数据、坐标转换|
-|动画系统|`api.client.animation`|解析基岩版/glTF 动画数据，通过动画控制器和 Lua 状态机驱动模型变形|
-|渲染器层|`client.renderer`|对接 Minecraft BEWLR / EntityRenderer / BlockEntityRenderer，执行实际渲染|
+|资源层|加载 JSON/贴图，组装成每枪、每配件的渲染缓存|[资源读取](./resource-loading.md)|
+|模型层|构建基岩版场景图，提供动画属性与功能性渲染接口|[模型与几何](./model-and-geometry.md)|
+|动画层|解析动画数据，逐帧插值关键帧并写入模型|[动画系统](./animation-system.md)|
+|状态机层|决定播什么动画、何时切换，可由 Lua 定义|[动画状态机](./animation-state-machine.md)|
+|渲染层|对接 Minecraft 各渲染上下文，执行实际绘制|[渲染入口与主调用链](./render-entry-and-pipeline.md)|
+|事件与 Mixin|第一人称变换、镜头、输入信号、晃动取消等钩子|[第一人称变换与镜头](./first-person-transforms.md)|
 
-## 关键设计特征
+## 一次枪械渲染的链路
 
-- 基岩版坐标转换：模型加载时将 BlockBench 的 Y-up 度和绝对坐标转换为 Minecraft 的弧度相对坐标
-- 功能性渲染器模式：通过 `Function<BedrockPart, IFunctionalRenderer>` 在渲染时动态决定部件的渲染行为，支持返回 null 回退至默认几何
-- 两阶段模型加载：第一趟插入空占位符，第二趟填充数据，保证父子骨骼交叉引用正确解析
-- 模板缓冲瞄具：使用 OpenGL stencil buffer 在瞄具镜片范围内遮盖枪身，实现透过瞄具看世界的效果
-- LOD 系统：枪支和配件模型在远距离自动切换低面数模型
-- Lua 动画状态机：通过 Lua 脚本定义动画状态转移，实现高度可自定义的枪械动画
+一把枪从渲染入口到最终绘制，大致经过：入口解析 `ItemStack` → 取 `GunDisplayInstance` → 更新状态机（写动画到模型）→ 施加姿态变换 → 模型渲染（功能性渲染器介入）→ 缓存枪口位置 → 清除动画残留。这条链路的模块级拆解见 [枪械渲染链路](./gun-render-pipeline.md)。
 
 ## 文档导航
 
 |文档|内容|
 |---|---|
-|[基岩版模型与几何系统](./bedrock-model-geometry.md)|BedrockModel 场景图构建、BedrockPart 节点树、立方体面几何、坐标转换算法|
-|[动画系统](./animation-system.md)|ObjectAnimation 动画实例、AnimationController 轨道管理、基岩版/glTF 动画解析、Lua 动画状态机|
-|[渲染管线](./render-pipeline.md)|物品渲染器（BEWLR）、第一/第三人称渲染流程、方块/实体渲染器、事件与 Mixin 钩子|
-|[功能性渲染器](./functional-renderers.md)|枪口火焰、抛壳、激光束、配件渲染、手臂渲染、模型文字|
-|[客户端资源 POJO](./client-resource-pojos.md)|Display 数据（GunDisplay / AttachmentDisplay / AmmoDisplay）、动画数据、模型数据、GunDisplayInstance 缓存|
+|[渲染入口与主调用链](./render-entry-and-pipeline.md)|各渲染上下文从哪里进入、BEWLR 注册、帧内事件与 Mixin、通用渲染阶段|
+|[枪械渲染链路](./gun-render-pipeline.md)|枪械渲染的模块级数据流与各模块的插入点|
+|[模型与几何](./model-and-geometry.md)|基岩版场景图、坐标转换、动画属性、功能性渲染部件、定位组|
+|[动画系统](./animation-system.md)|动画数据、轨道、插值器、控制器、运行器、监听器与模型写入|
+|[动画状态机](./animation-state-machine.md)|并发状态机、状态生命周期、输入信号、双更新路径、Lua 集成|
+|[动画状态机脚本 API](./state-machine-script-api.md)|资源包 Lua 脚本的能力、表结构、脚本如何驱动状态机与模型|
+|[枪械附加渲染模块](./functional-renderers.md)|枪口火焰、抛壳、激光、配件、手臂、文字、子弹与弹匣可见性|
+|[第一人称变换与镜头](./first-person-transforms.md)|后坐摇摆、跳跃摇摆、瞄准/改装定位、动画约束、FOV 与相机后坐力|
+|[渲染场景](./render-scenes.md)|第一/第三人称、手臂、GUI、改装界面、tooltip、实体与方块的差异|
+|[资源读取](./resource-loading.md)|资源如何加载为渲染对象、各 display POJO 对应什么美术资源、被谁消费|
+
+## 从哪开始
+
+- 想理解枪械「整体怎么画」：先读 [渲染入口与主调用链](./render-entry-and-pipeline.md)，再看 [枪械渲染链路](./gun-render-pipeline.md)。
+- 想改某个骨骼/几何的表现：看 [模型与几何](./model-and-geometry.md)。
+- 想改动画如何播放、何时切换：看 [动画状态机](./animation-state-machine.md) 与 [动画状态机脚本 API](./state-machine-script-api.md)。
+- 想改动画数值如何落到模型：看 [动画系统](./animation-system.md)。
+- 想改枪口火焰、抛壳、手臂、文字等附加表现：看 [枪械附加渲染模块](./functional-renderers.md)。
+- 想改瞄准、后坐力、镜头 FOV：看 [第一人称变换与镜头](./first-person-transforms.md)。
+- 想改第三人称、GUI、tooltip 等场景的表现：看 [渲染场景](./render-scenes.md)。
+- 想改资源如何被加载、某个 display 字段的作用：看 [资源读取](./resource-loading.md)。

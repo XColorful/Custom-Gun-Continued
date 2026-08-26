@@ -13,7 +13,7 @@ import dev.xcolorful.customgun.core.api.resource.ResourceApi;
 import dev.xcolorful.customgun.core.resource._DataInstanceManager;
 import dev.xcolorful.customgun.core.resource.data.data.AttachmentData;
 import dev.xcolorful.customgun.core.resource.instance.data.AttachmentIndexInstance;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -29,7 +29,7 @@ import java.util.Map;
  */
 public class _AttachmentModifierCache {
 
-    private final Map<ResourceLocation, Map<AttachmentModifierType, Object>> attachmentModifiers;
+    private final Map<Identifier, Map<AttachmentModifierType, Object>> attachmentModifiers;
 
     @ApiStatus.Internal
     public _AttachmentModifierCache() {
@@ -64,14 +64,14 @@ public class _AttachmentModifierCache {
     /**
      * @return 该配件对应的 modifier（{@link AttachmentModifierType} -> 原始 modifier 值），无则返回 null
      */
-    public @Nullable Map<AttachmentModifierType, Object> getModifiers(@NotNull ResourceLocation attachmentLocation) {
+    public @Nullable Map<AttachmentModifierType, Object> getModifiers(@NotNull Identifier attachmentLocation) {
         return this.attachmentModifiers.get(attachmentLocation);
     }
 
     // --------答辩区--------
 
     private void rebuildCache() {
-        for (Map.Entry<ResourceLocation, AttachmentIndexInstance> entry : ResourceApi.getAllAttachmentIndexInstance()) {
+        for (Map.Entry<Identifier, AttachmentIndexInstance> entry : ResourceApi.getAllAttachmentIndexInstance()) {
             this.recompute(entry.getKey());
         }
     }
@@ -80,7 +80,7 @@ public class _AttachmentModifierCache {
      * 计算配件对应的 modifier 缓存
      */
     @ApiStatus.Internal
-    public @Nullable Map<AttachmentModifierType, Object> recompute(@NotNull ResourceLocation attachmentLocation) {
+    public @Nullable Map<AttachmentModifierType, Object> recompute(@NotNull Identifier attachmentLocation) {
         @Nullable Map<AttachmentModifierType, Object> modifiers = null; {
             @Nullable AttachmentIndexInstance attachmentIndexInstance = ResourceApi.getAttachmentIndexInstance(attachmentLocation);
             if (attachmentIndexInstance != null) {

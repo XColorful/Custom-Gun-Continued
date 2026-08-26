@@ -130,7 +130,7 @@ public class DefaultCrosshair implements IOverlaySubManager, IEventHandler {
                 int vOffset = 0;
                 int uWidth = textureWidth;
                 int vHeight = textureHeight;
-                ClientGuiUtils.Graphics.blitGuiTexture(graphics,
+                ClientGuiUtils.Graphics.blitCrosshairTexture(graphics,
                         RenderConfig.CROSSHAIR_TYPE.get().getTextureLocation(),
                         startX, startY,
                         width, height,

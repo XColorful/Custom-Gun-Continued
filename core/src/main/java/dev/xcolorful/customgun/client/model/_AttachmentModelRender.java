@@ -318,7 +318,7 @@ public class _AttachmentModelRender {
             {
                 builder = tesselator.begin(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR);
                 builder.addVertex(matrixStack.last(),
-                                centerX, centerY, -90.0f)
+                        centerX, centerY, -90.0f)
                         .setColor(255, 255, 255, 255);
                 for (int j = 0; j <= 90; j++) {
                     float angle = (float) j * ((float) Math.PI * 2F) / 90.0F;

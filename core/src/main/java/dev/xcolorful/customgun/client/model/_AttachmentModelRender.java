@@ -24,6 +24,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
@@ -316,13 +317,15 @@ public class _AttachmentModelRender {
 
             {
                 builder = tesselator.begin(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR);
-                builder.addVertex(matrixStack.last(), centerX, centerY, -90.0f)
+                builder.addVertex(matrixStack.last(),
+                                centerX, centerY, -90.0f)
                         .setColor(255, 255, 255, 255);
                 for (int j = 0; j <= 90; j++) {
                     float angle = (float) j * ((float) Math.PI * 2F) / 90.0F;
                     float sin = Mth.sin(angle);
                     float cos = Mth.cos(angle);
-                    builder.addVertex(centerX + cos * rad, centerY + sin * rad, -90.0f)
+                    builder.addVertex(matrixStack.last(),
+                                    centerX + cos * finalRad, centerY + sin * finalRad, -90.0f)
                             .setColor(255, 255, 255, 255);
                 }
                 renderType.draw(builder.buildOrThrow());
@@ -376,9 +379,13 @@ public class _AttachmentModelRender {
         ClientRenderHelper.GL._enableDepthTest();
     }
 
-    private static Vector3f getBedrockPartCenter(PoseStack poseStack, @NotNull List<BedrockPart> path) {
+    // public仅用于链接
+    @ApiStatus.Internal
+    public static Vector3f getBedrockPartCenter(PoseStack poseStack, @NotNull List<BedrockPart> path) {
         Vector3f result;
         poseStack.pushPose(); {
+//            poseStack.last().pose().mulLocal(ClientRenderHelper.GL._getModelViewMatrix()); // 加速渲染的兼容，正常应该不需要
+
             for (int i = 0; i < path.size(); i++) {
                 BedrockPart part = path.get(i);
                 part.translate_rotate_scale(poseStack);

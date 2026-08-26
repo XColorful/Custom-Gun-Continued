@@ -161,13 +161,13 @@ public class ClientRenderHelper {
          */
         public static void _enableCrosshair() {
             // [1.20.1, 1.21.4)
-            RenderSystem.enableBlend();
-            RenderSystem.blendFuncSeparate(
-                    GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR,
-                    GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR,
-                    GlStateManager.SourceFactor.ONE,
-                    GlStateManager.DestFactor.ZERO
-            );
+//            RenderSystem.enableBlend();
+//            RenderSystem.blendFuncSeparate(
+//                    GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR,
+//                    GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR,
+//                    GlStateManager.SourceFactor.ONE,
+//                    GlStateManager.DestFactor.ZERO
+//            );
             // [1.21.4, 1.21.6)
             // 改成RenderType管理
             // [1.21.6, )

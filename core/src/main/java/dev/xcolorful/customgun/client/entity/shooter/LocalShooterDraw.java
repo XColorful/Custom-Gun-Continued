@@ -75,7 +75,12 @@ public final class LocalShooterDraw extends LocalShooterAspect {
 
         SendUtils.sendMessageToServer(new ClientMessagePlayerDrawGun());
 
-        // 异步放映抬枪动画
+        // 异步放映收枪动画（切出动画）
+        if (lastIGun != null) {
+            this._doPutAway(lastItem, putAwayTime);
+        }
+
+        // 异步放映抬枪动画（切入动画）
         if (currentIGun != null) {
             this._doDraw(currentItem, putAwayTime);
             // 刷新配件数据

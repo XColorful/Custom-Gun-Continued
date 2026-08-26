@@ -41,8 +41,10 @@ public enum AssetsFolderType implements ResourceTag {
     TEXTURES(AssetsFolderName.TEXTURES);
 
     public final String folderName;
+    public final String pathPrefix;
     AssetsFolderType(String folderName) {
         this.folderName = folderName;
+        this.pathPrefix = folderName + "/";
     }
 
     @Override public String getTagName() {
@@ -51,5 +53,17 @@ public enum AssetsFolderType implements ResourceTag {
 
     public String getFolderName() {
         return this.folderName;
+    }
+
+    /**
+     * 用于直接加在{@code ResourceLocation}path前
+     * <ul>
+     *     例如：
+     *     <li>"customgun:null"</li>
+     *     <li>"customgun:<font color="red">textures/</font>null"</li>
+     * </ul>
+     */
+    public String getFolderPathPrefix() {
+        return this.pathPrefix;
     }
 }

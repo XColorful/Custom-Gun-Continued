@@ -249,8 +249,8 @@ public class GunRendererAddon implements ICustomEventHandler {
         transformMatrix.identity();
 
         // 应用瞄准定位
-        List<BedrockPart> idleNodePath = gunModelObject.getIdleSightPath();
-        List<BedrockPart> aimingNodePath = null;
+        @Nullable List<BedrockPart> idleNodePath = gunModelObject.getIdleSightPath();
+        @Nullable List<BedrockPart> aimingNodePath = null;
         var scopeLocation = iGun.getAttachmentLocation(gunItem, AttachmentCategory.SCOPE);
         if (ResourceTag.NULL_LOCATION.equals(scopeLocation)) {
             scopeLocation = iGun.getBuiltinAttachmentLocation(gunItem, AttachmentCategory.SCOPE);
@@ -282,8 +282,9 @@ public class GunRendererAddon implements ICustomEventHandler {
                         if (scopeViewIndexList != null) {
                             /**
                              * {@link ClientAttachmentIndexInstance#checkScopeViewIndex}不保证列表长度不为0
+                             * display 里的 views 是 1-based 的 scope_view 索引，模型里 scopeViewPaths 是 0-based，因此要减 1
                              */
-                            scopeViewIndex = scopeViewIndexList.length != 0 ? scopeViewIndexList[scopeViewIndex % scopeViewIndexList.length] : 0;
+                            scopeViewIndex = scopeViewIndexList.length != 0 ? scopeViewIndexList[scopeViewIndex % scopeViewIndexList.length] - 1 : 0;
                         }
                     }
 

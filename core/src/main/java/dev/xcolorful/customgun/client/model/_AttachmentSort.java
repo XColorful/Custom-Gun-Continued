@@ -1,6 +1,7 @@
 package dev.xcolorful.customgun.client.model;
 
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -17,6 +18,29 @@ public class _AttachmentSort {
      */
     @ApiStatus.Internal
     public static boolean IGNORE_NAME_MISMATCH = true;
+
+    /**
+     * 是否允许ocular节点使用非数字后缀
+     * <ul>
+     *     <li>默认关闭，兼容原模组限制</li>
+     *     <li>开启后则允许旧资源包使用非数字后缀的 ocular 节点名</li>
+     * </ul>
+     */
+    @ApiStatus.Internal
+    public static boolean ALLOW_NON_NUMERIC_SUFFIX = false;
+
+    /**
+     * 判断去掉 "ocular_" 前缀后剩下的后缀是否是「非数字后缀」，结果受{@link #ALLOW_NON_NUMERIC_SUFFIX}影响
+     */
+    public static boolean isStrippedSuffixInvalid(@Nullable String stripped) {
+        if (ALLOW_NON_NUMERIC_SUFFIX) return false;
+        if (stripped == null || stripped.isEmpty()) return false;
+        for (int i = 0; i < stripped.length(); i++) {
+            char c = stripped.charAt(i);
+            if (c < '0' || c > '9') return true;
+        }
+        return false;
+    }
 
     /**
      * 根据ocular和division的name，合并成一个list

@@ -11,7 +11,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
-import dev.xcolorful.customgun.client.compat.minecraft.BlockEntityWithoutLevelRenderer;
 import dev.xcolorful.customgun.client.model.AmmoModelObject;
 import dev.xcolorful.customgun.client.model.bedrock.BedrockPart;
 import dev.xcolorful.customgun.client.model.bedrock.SlotModel;
@@ -23,7 +22,9 @@ import dev.xcolorful.customgun.client.util.ClientRenderHelper;
 import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import dev.xcolorful.customgun.core.api.item.IAmmo;
 import dev.xcolorful.customgun.core.api.item.ammo.IAmmoGetter;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.EntityModelSet;
+import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
@@ -37,6 +38,9 @@ import java.util.List;
 public class AmmoItemRenderer extends BlockEntityWithoutLevelRenderer {
     public static final SlotModel SLOT_AMMO_MODEL = new SlotModel();
 
+    public AmmoItemRenderer() {
+        this(Minecraft.getInstance().getBlockEntityRenderDispatcher(), Minecraft.getInstance().getEntityModels());
+    }
     public AmmoItemRenderer(BlockEntityRenderDispatcher dispatcher, EntityModelSet modelSet) {
         super(dispatcher, modelSet);
     }

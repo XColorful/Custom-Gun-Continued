@@ -1,7 +1,7 @@
 [English](#English)
 
 # 渲染配置
-> wiki 版本：`0.0.6`.4
+> wiki 版本：`0.0.7`.5
 
 路径：`render`
 - `EnableLaserFadeOut`（bool）：是否对激光应用淡出效果
@@ -9,6 +9,7 @@
 - `DisableGunTilting`（bool）：是否禁止蹲下时倾斜枪械
 - `BulletHoleParticleLife`（整数）：弹孔粒子存在时间（tick）
 - `BulletHoleParticleFadeThreshold`（浮点，0.0~1.0）：弹孔粒子渲染淡出阈值
+- `ReplaceVanillaCrosshair`（bool）：持枪时是否替换原版准心
 - `CrosshairType`（枚举）：持枪时的准星样式
 	- `EMPTY`
 	- `DOT_1`
@@ -37,6 +38,7 @@
 	DisableGunTilting = false
 	BulletHoleParticleLife = 400
 	BulletHoleParticleFadeThreshold = 0.98
+	ReplaceVanillaCrosshair = true
 	CrosshairType = "DOT_1"
 	HitMarketStartPosition = 4.0
 	HeadShotDebugHitbox = false
@@ -54,7 +56,7 @@
 ```
 
 # English
-> wiki verison: `0.0.6`.4
+> wiki verison: `0.0.7`.5
 
 ## Render Config
 
@@ -64,6 +66,7 @@ Path: `render`
 - `DisableGunTilting` (bool): Whether to disable gun tilting while crouching
 - `BulletHoleParticleLife` (integer): The existence time of bullet hole particles, in ticks
 - `BulletHoleParticleFadeThreshold` (float, 0.0~1.0): The threshold for fading out when rendering bullet hole particles
+- `ReplaceVanillaCrosshair`(bool): Whether to replace the vanilla crosshair when holding a gun
 - `CrosshairType` (enum): The crosshair when holding a gun
 	- `EMPTY`
 	- `DOT_1`
@@ -92,6 +95,7 @@ Path: `render`
 	DisableGunTilting = false
 	BulletHoleParticleLife = 400
 	BulletHoleParticleFadeThreshold = 0.98
+	ReplaceVanillaCrosshair = true
 	CrosshairType = "DOT_1"
 	HitMarketStartPosition = 4.0
 	HeadShotDebugHitbox = false

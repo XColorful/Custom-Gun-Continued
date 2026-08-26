@@ -160,7 +160,7 @@ public class ClientRenderHelper {
             RenderSystem.enableBlend();
             RenderSystem.blendFuncSeparate(
                     GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR,
-                    GlStateManager.DestFactor.ONE_MINUS_DST_COLOR,
+                    GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR,
                     GlStateManager.SourceFactor.ONE,
                     GlStateManager.DestFactor.ZERO
             );

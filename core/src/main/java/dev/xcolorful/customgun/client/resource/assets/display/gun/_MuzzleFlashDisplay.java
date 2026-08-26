@@ -9,6 +9,7 @@ package dev.xcolorful.customgun.client.resource.assets.display.gun;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import dev.xcolorful.customgun.client.resource.assets.display._AssetsDisplay;
 import dev.xcolorful.customgun.core.api.resource.ResourceTag;
 import dev.xcolorful.customgun.core.api.resource.assets.display.gun._MuzzleFlashDisplayTag;
 import dev.xcolorful.customgun.core.resource.ResourcePojo;
@@ -88,6 +89,7 @@ public final class _MuzzleFlashDisplay extends ResourcePojo<_MuzzleFlashDisplay>
 
     @Override
     public _MuzzleFlashDisplay applyBackCompatibility() {
+        this.textureLocation = _AssetsDisplay.applyTextureLocationBackCompatibility(this.textureLocation);
         this.textureLocation = this.textureLocation == null ? ResourceTag.NULL_LOCATION : this.textureLocation;
         return this;
     }

@@ -3,6 +3,7 @@ package dev.xcolorful.customgun.core.api.resource;
 public enum FileExtensionType {
     // 标准格式
     JSON(FileExtensionName.JSON),
+    PNG(FileExtensionName.PNG),
     OGG(FileExtensionName.SOUND_OGG),
     BEDROCK_ANIMATION(FileExtensionName.BEDROCK_ANIMATION),
     GLTF(FileExtensionName.GLTF),

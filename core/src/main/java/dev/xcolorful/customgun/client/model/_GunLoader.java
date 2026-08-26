@@ -25,6 +25,8 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+
 public class _GunLoader {
 
     protected static void constructMagazineNode(GunModelObject _this) {
@@ -168,21 +170,38 @@ public class _GunLoader {
 
     private static final AttachmentCategory[] ATTACHMENT_CATEGORIES = AttachmentCategory.values();
     private static final String[] ATTACHMENT_CATEGORY_NODE_NAMES;
+    private static final String[] ATTACHMENT_CATEGORY_NODE_NAMES_OLD;
     static {
         ATTACHMENT_CATEGORY_NODE_NAMES = new String[ATTACHMENT_CATEGORIES.length];
+        ATTACHMENT_CATEGORY_NODE_NAMES_OLD = new String[ATTACHMENT_CATEGORIES.length];
         for (int i = 0; i < ATTACHMENT_CATEGORIES.length; i++) {
             AttachmentCategory type = ATTACHMENT_CATEGORIES[i];
+
             if (type == AttachmentCategory.NONE) {
                 ATTACHMENT_CATEGORY_NODE_NAMES[i] = NodeName.REFIT_VIEW.getName();
-            } else {
-                ATTACHMENT_CATEGORY_NODE_NAMES[i] = NodeName.Prefix.REFIT_VIEW.getName() + type.getConstantName() + NodeName.Suffix.REFIT_VIEW.getName();
+                ATTACHMENT_CATEGORY_NODE_NAMES_OLD[i] = null;
+                continue;
+            }
+
+            ATTACHMENT_CATEGORY_NODE_NAMES[i] = NodeName.Prefix.REFIT_VIEW.getName() + type.getConstantName() + NodeName.Suffix.REFIT_VIEW.getName();
+            if (type.categoryNameOld != null) {
+                ATTACHMENT_CATEGORY_NODE_NAMES_OLD[i] = NodeName.Prefix.REFIT_VIEW.getName() + type.categoryNameOld + NodeName.Suffix.REFIT_VIEW.getName();
             }
         }
     }
     protected static void constructRefitAttachmentViewPath(GunModelObject _this) {
         for (int i = 0; i < ATTACHMENT_CATEGORIES.length; i++) {
+            // 优先取新字段
             String nodeName = ATTACHMENT_CATEGORY_NODE_NAMES[i];
-            _this.refitAttachmentViewPath.put(ATTACHMENT_CATEGORIES[i], _this.getPath(_this.modelMap_get(nodeName)));
+            @Nullable List<BedrockPart> refitViewPath = _this.getPath(_this.modelMap_get(nodeName));
+
+            if (refitViewPath == null && ATTACHMENT_CATEGORY_NODE_NAMES_OLD[i] != null) {
+                // 找不到则尝试用老字段
+                nodeName = ATTACHMENT_CATEGORY_NODE_NAMES_OLD[i];
+                refitViewPath = _this.getPath(_this.modelMap_get(nodeName));
+            }
+
+            _this.refitAttachmentViewPath.put(ATTACHMENT_CATEGORIES[i], refitViewPath);
         }
     }
 

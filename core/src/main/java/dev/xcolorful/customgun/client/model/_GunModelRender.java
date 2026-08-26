@@ -85,8 +85,9 @@ public class _GunModelRender {
             switch (category) {
                 case MAGAZINE -> {
                     // 读取弹匣类别，为弹匣渲染做准备
-                    AttachmentData attachmentData = clientAttachmentIndexInstance.getAttachmentData();
-                    _this.currentMagazineCategory = attachmentData != null ? attachmentData.getMagazineCategory() : MagazineCategory.NONE;
+                    @Nullable AttachmentData attachmentData = clientAttachmentIndexInstance.getAttachmentData();
+                    if (attachmentData != null) _this.currentMagazineCategory = attachmentData.getMagazineCategory();
+                    if (_this.currentMagazineCategory == null) _this.currentMagazineCategory = MagazineCategory.NONE;
                 }
                 case SCOPE -> {
                     // 读取瞄具 Mount 的渲染需求
@@ -123,7 +124,7 @@ public class _GunModelRender {
                                       ItemStack gunItem) {
         ItemStack attachmentItem = _this.currentAttachmentItem.get(AttachmentCategory.SCOPE);
         @Nullable IAttachment iAttachment = IAttachmentGetter.fromItemStack(attachmentItem);
-        if (_this.scopePosPath == null || attachmentItem == null || attachmentItem.isEmpty()) return;
+        if (_this.scopePosPath == null || iAttachment == null || attachmentItem.isEmpty()) return;
 
         matrixStack.pushPose(); {
             for (int i = 0; i < _this.scopePosPath.size(); i++) {
@@ -133,8 +134,6 @@ public class _GunModelRender {
             AttachmentRender.renderAttachment(matrixStack, transformType, light, overlay, gunItem, iAttachment, attachmentItem);
         }
         matrixStack.popPose();
-
-        if (iAttachment == null) return;
 
         var attachmentLocation = iAttachment.getAttachmentLocation(attachmentItem);
         @Nullable ClientAttachmentIndexInstance clientAttachmentIndexInstance = ClientResourceApi.getClientAttachmentIndexInstance(attachmentLocation);

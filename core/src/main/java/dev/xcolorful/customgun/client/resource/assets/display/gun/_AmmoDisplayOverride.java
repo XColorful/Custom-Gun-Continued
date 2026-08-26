@@ -13,6 +13,7 @@ import dev.xcolorful.customgun.client.resource.assets.display.ammo._AmmoParticle
 import dev.xcolorful.customgun.core.api.resource.assets.display.gun._AmmoDisplayOverrideTag;
 import dev.xcolorful.customgun.core.resource.ResourcePojo;
 import dev.xcolorful.customgun.core.util.JsonUtils;
+import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.io.IOException;
@@ -20,7 +21,7 @@ import java.io.IOException;
 public final class _AmmoDisplayOverride extends ResourcePojo<_AmmoDisplayOverride> {
 
     // 显示
-    private _AmmoParticle ammoParticle;
+    private @Nullable _AmmoParticle ammoParticle;
     private Color tracerColor;
 
     private static final _AmmoDisplayOverride PARSER = new _AmmoDisplayOverride();
@@ -60,13 +61,13 @@ public final class _AmmoDisplayOverride extends ResourcePojo<_AmmoDisplayOverrid
     protected void validatePojo() {
         if (ENABLE_BACK_COMPATIBILITY) this.applyBackCompatibility();
 
-        boolean n1 = (this.ammoParticle == null | this.tracerColor == null);
+        boolean n1 = (this.tracerColor == null);
         if (n1) {
             this.setValid(false);
             return;
         }
-        this.ammoParticle.validate();
-        boolean v1 = (this.ammoParticle.isValid());
+        if (this.ammoParticle != null) this.ammoParticle.validate();
+        boolean v1 = ((this.ammoParticle == null || this.ammoParticle.isValid()));
         if (!v1) {
             this.setValid(false);
             return;
@@ -77,7 +78,7 @@ public final class _AmmoDisplayOverride extends ResourcePojo<_AmmoDisplayOverrid
 
     // --------Getter & Setter--------
 
-    public _AmmoParticle getAmmoParticle() {
+    public @Nullable _AmmoParticle getAmmoParticle() {
         return ammoParticle;
     }
     public Color getTracerColor() {

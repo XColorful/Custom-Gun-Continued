@@ -175,8 +175,8 @@ public class ClientRenderHelper {
             // 改成RenderPipeline管理
         }
         public static void _disableCrosshair() {
-            RenderSystem.defaultBlendFunc();
-            RenderSystem.disableBlend();
+//            RenderSystem.defaultBlendFunc();
+//            RenderSystem.disableBlend();
         }
     }
 

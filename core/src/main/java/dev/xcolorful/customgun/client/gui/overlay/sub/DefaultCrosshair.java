@@ -54,7 +54,7 @@ public class DefaultCrosshair implements IOverlaySubManager, IEventHandler {
         Minecraft mc = Minecraft.getInstance();
         if ( // 状态检查
                 // 按F1 (不显示GUI)
-                mc.options.hideGui
+                ClientGuiUtils.isGuiHidden(mc)
                 // 当前不是第一人称
                 || !mc.options.getCameraType().isFirstPerson()
                 // 当前有打开任意screen

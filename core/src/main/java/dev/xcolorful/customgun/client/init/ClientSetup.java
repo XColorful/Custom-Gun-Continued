@@ -5,6 +5,8 @@
 package dev.xcolorful.customgun.client.init;
 
 import dev.xcolorful.customgun.client.gui.overlay.sub.DefaultCrosshair;
+import dev.xcolorful.customgun.client.util.ClientRenderHelper;
+import net.minecraft.client.Minecraft;
 
 public class ClientSetup {
 
@@ -15,6 +17,8 @@ public class ClientSetup {
     private ClientSetup() {}
 
     public void onClientSetup() {
+        ClientRenderHelper.ensureMainRenderTargetStencil(Minecraft.getInstance()); // 没什么用，但可能增加一些兼容性
+
         DefaultCrosshair.init();
     }
 }

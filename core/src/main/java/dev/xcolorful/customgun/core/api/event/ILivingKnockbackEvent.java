@@ -2,7 +2,7 @@ package dev.xcolorful.customgun.core.api.event;
 
 import net.minecraft.world.entity.LivingEntity;
 
-public interface ILivingKnockbackEvent {
+public interface ILivingKnockbackEvent extends IEvent {
 
     LivingEntity getEntity();
 

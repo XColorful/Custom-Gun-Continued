@@ -15,6 +15,8 @@ import dev.xcolorful.customgun.core.api.item.attachment.modifier.IAttachmentModi
 import dev.xcolorful.customgun.core.api.item.gun.modifier.GunModifierType;
 import dev.xcolorful.customgun.core.api.item.gun.modifier.IGunModifier;
 import dev.xcolorful.customgun.core.api.item.gun.modifier.IGunModifierHolder;
+import dev.xcolorful.customgun.core.api.resource.ResourceApi;
+import dev.xcolorful.customgun.core.api.resource.ResourceTag;
 import dev.xcolorful.customgun.core.resource.ResourcePojo;
 import dev.xcolorful.customgun.core.resource.data.data.GunData;
 import dev.xcolorful.customgun.core.resource.instance.data.GunIndexInstance;
@@ -23,7 +25,9 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /*
@@ -46,20 +50,53 @@ public final class ShooterGunModifierCache {
 
     private static final AttachmentModifierType[] ATTACHMENT_MODIFIER_TYPES = AttachmentModifierType.values();
     private static final AttachmentCategory[] ATTACHMENT_CATEGORIES = AttachmentCategory.values();
+    @SuppressWarnings({"rawtypes", "unchecked"})
     private void initAttachmentModifiers(@NotNull GunIndexInstance gunIndexInstance,
                                          @NotNull IGun iGun, @NotNull ItemStack gunItem) {
         GunData gunData = gunIndexInstance.getGunData();
 
         // base值设置
         for (AttachmentModifierType type : ATTACHMENT_MODIFIER_TYPES) {
-            IAttachmentModifier<?, ?> modifier = type.getModifier();
+            IAttachmentModifier modifier = type.getModifier();
             modifierType_values.put(type.getGunModifierType(), modifier.getBase(iGun, gunItem, gunData));
         }
 
-        // Attachment modifier
-        for (AttachmentCategory category : ATTACHMENT_CATEGORIES) {
-            var attachmentLocation = iGun.getAttachmentLocation(gunItem, category);
-            // TODO
+        // 配件modifier base值
+        Map<GunModifierType, List<Object>> attachmentModifiers = new HashMap<>(); {
+            for (AttachmentModifierType type : ATTACHMENT_MODIFIER_TYPES) {
+                attachmentModifiers.put(type.getGunModifierType(), new ArrayList<>());
+            }
+
+            for (AttachmentCategory category : ATTACHMENT_CATEGORIES) {
+                if (category == AttachmentCategory.NONE) continue;
+
+                var attachmentLocation = iGun.getAttachmentLocation(gunItem, category);
+                if (ResourceTag.NULL_LOCATION.equals(attachmentLocation)) attachmentLocation = iGun.getBuiltinAttachmentLocation(gunItem, category);
+                if (ResourceTag.NULL_LOCATION.equals(attachmentLocation)) continue;
+
+                @Nullable Map<AttachmentModifierType, Object> modifiers = ResourceApi.getAttachmentModifiers(attachmentLocation);
+                if (modifiers == null) continue;
+
+                for (Map.Entry<AttachmentModifierType, Object> entry : modifiers.entrySet()) {
+                    attachmentModifiers.get(entry.getKey().getGunModifierType())
+                            .add(entry.getValue());
+                }
+            }
+        }
+
+        // 一次性计算并覆盖 base 值
+        for (AttachmentModifierType type : ATTACHMENT_MODIFIER_TYPES) {
+            List<Object> rawModifiers = attachmentModifiers.get(type.getGunModifierType());
+            if (rawModifiers.isEmpty()) continue;
+
+            @Nullable Object base = modifierType_values.get(type.getGunModifierType());
+            if (base == null) continue;
+
+            IAttachmentModifier modifier = type.getModifier();
+            @Nullable Object evaluated = modifier.eval(rawModifiers, base);
+            if (evaluated != null) {
+                modifierType_values.put(type.getGunModifierType(), evaluated);
+            }
         }
     }
 

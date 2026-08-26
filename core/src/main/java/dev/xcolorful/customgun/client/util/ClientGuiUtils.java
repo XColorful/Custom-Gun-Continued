@@ -66,6 +66,26 @@ public class ClientGuiUtils {
                     uWidth, vHeight,
                     textureWidth, textureHeight);
         }
+        public static void blitCrosshairTexture(GuiGraphics guiGraphics,
+                                          ResourceLocation textureLocation,
+                                          int startX, int startY,
+                                          int width, int height,
+                                          int uOffset, int vOffset,
+                                          int uWidth, int vHeight,
+                                          int textureWidth, int textureHeight) {
+            guiGraphics.blit(
+                    // 1.21.4
+//                  RenderType::crosshair,
+                    // 1.21.6
+//                  RenderPipelines.CROSSHAIR,
+                    textureLocation,
+                    startX, startY,
+                    width, height, // [1.20.1, 1.21.4)
+                    uOffset, vOffset,
+//                  width, height, // [1.21.4, )
+                    uWidth, vHeight,
+                    textureWidth, textureHeight);
+        }
 
         public static void drawText(GuiGraphics guiGraphics,
                                     Font font,

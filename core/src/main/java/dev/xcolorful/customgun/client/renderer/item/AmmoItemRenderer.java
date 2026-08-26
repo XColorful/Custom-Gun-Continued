@@ -10,6 +10,7 @@ package dev.xcolorful.customgun.client.renderer.item;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
+import dev.xcolorful.customgun.client.compat.minecraft.BlockEntityWithoutLevelRenderer;
 import dev.xcolorful.customgun.client.model.AmmoModelObject;
 import dev.xcolorful.customgun.client.model.bedrock.BedrockPart;
 import dev.xcolorful.customgun.client.model.bedrock.SlotModel;

@@ -19,6 +19,7 @@ import dev.xcolorful.customgun.client.api.renderer.KeepingItemRenderer;
 import dev.xcolorful.customgun.client.api.renderer.item.IAnimateGeoItemRenderer;
 import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
 import dev.xcolorful.customgun.client.api.sound.gun.GunSoundType;
+import dev.xcolorful.customgun.client.compat.minecraft.BlockEntityWithoutLevelRenderer;
 import dev.xcolorful.customgun.client.config.SoundConfig;
 import dev.xcolorful.customgun.client.model.AnimatedModelObject;
 import dev.xcolorful.customgun.client.model.bedrock.BedrockPart;

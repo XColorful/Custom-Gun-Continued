@@ -8,7 +8,7 @@ import dev.xcolorful.customgun.neoforge.event.events.AbstractNeoEventCommon;
 import dev.xcolorful.customgun.neoforgeclient.event.NeoPrepareRenderOverlayEvent;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.client.event.RenderGuiOverlayEvent;
+import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
 import net.neoforged.neoforge.common.NeoForge;
 
 public class NeoPrepareRenderOverlayEventManager {
@@ -51,7 +51,7 @@ public class NeoPrepareRenderOverlayEventManager {
             return new NeoPrepareRenderOverlayEvent(event);
         }
 
-        protected void handle(RenderGuiOverlayEvent.Pre event) {
+        protected void handle(RenderGuiLayerEvent.Pre event) {
             super.onEvent(event);
         }
     }
@@ -59,30 +59,30 @@ public class NeoPrepareRenderOverlayEventManager {
     public static class PrepareRenderOverlayProxyHighest extends PrepareRenderOverlayProxy {
         static final PrepareRenderOverlayProxyHighest INSTANCE = new PrepareRenderOverlayProxyHighest();
         @SubscribeEvent(priority = net.neoforged.bus.api.EventPriority.HIGHEST, receiveCanceled = true)
-        public void onEvent(RenderGuiOverlayEvent.Pre e) { handle(e); }
+        public void onEvent(RenderGuiLayerEvent.Pre e) { handle(e); }
     }
 
     public static class PrepareRenderOverlayProxyHigh extends PrepareRenderOverlayProxy {
         static final PrepareRenderOverlayProxyHigh INSTANCE = new PrepareRenderOverlayProxyHigh();
         @SubscribeEvent(priority = net.neoforged.bus.api.EventPriority.HIGH, receiveCanceled = true)
-        public void onEvent(RenderGuiOverlayEvent.Pre e) { handle(e); }
+        public void onEvent(RenderGuiLayerEvent.Pre e) { handle(e); }
     }
 
     public static class PrepareRenderOverlayProxyNormal extends PrepareRenderOverlayProxy {
         static final PrepareRenderOverlayProxyNormal INSTANCE = new PrepareRenderOverlayProxyNormal();
         @SubscribeEvent(priority = net.neoforged.bus.api.EventPriority.NORMAL, receiveCanceled = true)
-        public void onEvent(RenderGuiOverlayEvent.Pre e) { handle(e); }
+        public void onEvent(RenderGuiLayerEvent.Pre e) { handle(e); }
     }
 
     public static class PrepareRenderOverlayProxyLow extends PrepareRenderOverlayProxy {
         static final PrepareRenderOverlayProxyLow INSTANCE = new PrepareRenderOverlayProxyLow();
         @SubscribeEvent(priority = net.neoforged.bus.api.EventPriority.LOW, receiveCanceled = true)
-        public void onEvent(RenderGuiOverlayEvent.Pre e) { handle(e); }
+        public void onEvent(RenderGuiLayerEvent.Pre e) { handle(e); }
     }
 
     public static class PrepareRenderOverlayProxyLowest extends PrepareRenderOverlayProxy {
         static final PrepareRenderOverlayProxyLowest INSTANCE = new PrepareRenderOverlayProxyLowest();
         @SubscribeEvent(priority = net.neoforged.bus.api.EventPriority.LOWEST, receiveCanceled = true)
-        public void onEvent(RenderGuiOverlayEvent.Pre e) { handle(e); }
+        public void onEvent(RenderGuiLayerEvent.Pre e) { handle(e); }
     }
 }

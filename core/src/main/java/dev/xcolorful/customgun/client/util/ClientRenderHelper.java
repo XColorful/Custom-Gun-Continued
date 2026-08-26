@@ -160,7 +160,7 @@ public class ClientRenderHelper {
 
         /**
          * 原版准心的反色效果，使在各种画面上都可见
-         * @see net.minecraft.client.gui.Gui#renderCrosshair
+         * @see net.minecraft.client.gui.Gui#extractCrosshair
          */
         public static void _enableCrosshair() {
             // [1.20.1, 1.21.4)

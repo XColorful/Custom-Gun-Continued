@@ -26,6 +26,8 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 
+import java.util.List;
+
 public class ClientRenderHelper {
 
     public static void blit(PoseStack poseStack, float x, float y, float uOffset, float vOffset, float pWidth, float height, float textureWidth, float textureHeight) {
@@ -106,6 +108,11 @@ public class ClientRenderHelper {
         // RenderSystem.setShaderTexture(0, oldId);
     }
 
+    @ApiStatus.Internal
+    public static void ensureMainRenderTargetStencil(Minecraft minecraft) {
+        RenderSystem.recordRenderCall(() -> ClientRenderUtils.getMainRenderTarget(minecraft).enableStencil());
+    }
+
     public static class GL {
 
         public static void _stencilFunc(int func, int ref, int readMask) {
@@ -179,6 +186,14 @@ public class ClientRenderHelper {
             // 改成RenderType管理
             // [1.21.6, )
             // 改成RenderPipeline管理
+        }
+
+        /**
+         * 仅{@link dev.xcolorful.customgun.client.model._AttachmentModelRender#getBedrockPartCenter}
+         */
+        @ApiStatus.Internal
+        public static Matrix4f _getModelViewMatrix() {
+            return RenderSystem.getModelViewMatrix();
         }
     }
 

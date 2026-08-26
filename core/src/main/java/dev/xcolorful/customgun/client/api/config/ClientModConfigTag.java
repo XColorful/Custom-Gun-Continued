@@ -40,6 +40,9 @@ public class ClientModConfigTag {
     public static final String bulletHoleParticleFadeThreshold_path = "BulletHoleParticleFadeThreshold";
     public static final String bulletHoleParticleFadeThreshold_comment = "The threshold for fading out when rendering bullet hole particles";
 
+    public static final String replaceVanillaCrosshair_path = "ReplaceVanillaCrosshair";
+    public static final String replaceVanillaCrosshair_comment = "Whether to replace the vanilla crosshair when holding a gun";
+
     public static final String crosshairType_path = "CrosshairType";
     public static final String crosshairType_comment = "The crosshair when holding a gun";
 

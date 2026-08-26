@@ -72,29 +72,32 @@ public final class ClientAmmoIndexInstance extends PojoInstance<AmmoIndex> {
             }
         }
 
-        {
-            BedrockModel bedrockModel = ClientResourceApi.getBedrockModel(this.ammoDisplayCache.getModelLocation());
+        @Nullable var modelLocation = this.ammoDisplayCache.getModelLocation();
+        if (modelLocation != null) {
+            @Nullable BedrockModel bedrockModel = ClientResourceApi.getBedrockModel(modelLocation);
             if (bedrockModel != null) {
                 this.ammoModel = AmmoModelObject.fromPojo(bedrockModel);
-                if (this.ammoModel == null) CustomGun.LOGGER.debug("ClientAmmoIndexInstance: Failed to create AmmoModelObject {}", this.ammoDisplayCache.getModelLocation());
+                if (this.ammoModel == null) CustomGun.LOGGER.debug("ClientAmmoIndexInstance: Failed to create AmmoModelObject {}", modelLocation);
             } else {
-                CustomGun.LOGGER.debug("ClientAmmoIndexInstance: BedrockModel {} not found", this.ammoDisplayCache.getModelLocation());
+                CustomGun.LOGGER.debug("ClientAmmoIndexInstance: BedrockModel {} not found", modelLocation);
             }
         }
-        _AmmoEntityDisplay ammoEntityDisplay = this.ammoDisplayCache.getAmmoEntityDisplay();
+        @Nullable _AmmoEntityDisplay ammoEntityDisplay = this.ammoDisplayCache.getAmmoEntityDisplay();
         if (ammoEntityDisplay != null) {
-            BedrockModel bedrockModel = ClientResourceApi.getBedrockModel(ammoEntityDisplay.getModelLocation());
+            @Nullable var entityModelLocation = ammoEntityDisplay.getModelLocation();
+            @Nullable BedrockModel bedrockModel = ClientResourceApi.getBedrockModel(entityModelLocation);
             if (bedrockModel != null) {
                 this.ammoEntityModel = AmmoModelObject.fromPojo(bedrockModel);
-                if (this.ammoEntityModel == null) CustomGun.LOGGER.debug("ClientAmmoIndexInstance: Failed to create AmmoModelObject (for entity) {}", ammoEntityDisplay.getModelLocation());
+                if (this.ammoEntityModel == null) CustomGun.LOGGER.debug("ClientAmmoIndexInstance: Failed to create AmmoModelObject (for entity) {}", entityModelLocation);
             }
         }
-        _ShellDisplay shellDisplay = this.ammoDisplayCache.getShellDisplay();
+        @Nullable _ShellDisplay shellDisplay = this.ammoDisplayCache.getShellDisplay();
         if (shellDisplay != null) {
-            BedrockModel bedrockModel = ClientResourceApi.getBedrockModel(shellDisplay.getModelLocation());
+            @Nullable var shellModelLocation = shellDisplay.getModelLocation();
+            @Nullable BedrockModel bedrockModel = ClientResourceApi.getBedrockModel(shellModelLocation);
             if (bedrockModel != null) {
                 this.ammoShellModel = AmmoModelObject.fromPojo(bedrockModel);
-                if (this.ammoShellModel == null) CustomGun.LOGGER.debug("ClientAmmoIndexInstance: Failed to create AmmoModelObject (for shell) {}", shellDisplay.getModelLocation());
+                if (this.ammoShellModel == null) CustomGun.LOGGER.debug("ClientAmmoIndexInstance: Failed to create AmmoModelObject (for shell) {}", shellModelLocation);
             }
         }
 

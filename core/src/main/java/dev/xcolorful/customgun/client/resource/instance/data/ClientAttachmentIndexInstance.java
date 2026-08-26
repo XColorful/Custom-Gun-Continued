@@ -57,23 +57,31 @@ public final class ClientAttachmentIndexInstance extends PojoInstance<Attachment
             return false;
         }
 
-        {
-            BedrockModel bedrockModel = ClientResourceApi.getBedrockModel(this.attachmentDisplayCache.getModelLocation());
+        @Nullable var modelLocation = this.attachmentDisplayCache.getModelLocation();
+        if (modelLocation != null) {
+            @Nullable BedrockModel bedrockModel = ClientResourceApi.getBedrockModel(modelLocation);
             if (bedrockModel != null) {
                 this.attachmentModel = AttachmentModelObject.fromPojo(bedrockModel);
-                if (this.attachmentModel == null) CustomGun.LOGGER.debug("ClientAttachmentIndexInstance: Failed to create AttachmentModelObject {}", this.attachmentDisplayCache.getModelLocation());
+                if (this.attachmentModel != null) {
+                    // 把 display 里的 scope/sight 标记同步到模型，否则倍镜不会走模板渲染，ocular 会显示成黑色
+                    this.attachmentModel.setEnableScope(this.attachmentDisplayCache.getEnableScope());
+                    this.attachmentModel.setEnableSight(this.attachmentDisplayCache.getEnableSight());
+                } else {
+                    CustomGun.LOGGER.debug("ClientAttachmentIndexInstance: Failed to create AttachmentModelObject {}", modelLocation);
+                }
             } else {
-                CustomGun.LOGGER.debug("ClientAttachmentIndexInstance: BedrockModel {} not found", this.attachmentDisplayCache.getModelLocation());
+                CustomGun.LOGGER.debug("ClientAttachmentIndexInstance: BedrockModel {} not found", modelLocation);
             }
         }
-        _LodDisplay lodDisplay = this.attachmentDisplayCache.getLodDisplay();
+        @Nullable _LodDisplay lodDisplay = this.attachmentDisplayCache.getLodDisplay();
         if (lodDisplay != null) {
-            BedrockModel bedrockModel = ClientResourceApi.getBedrockModel(lodDisplay.getModelLocation());
+            @Nullable var lodModelLocation = lodDisplay.getModelLocation();
+            @Nullable BedrockModel bedrockModel = ClientResourceApi.getBedrockModel(lodModelLocation);
             if (bedrockModel != null) {
                 this.attachmentModelLod = AttachmentModelObject.fromPojo(bedrockModel);
-                if (this.attachmentModelLod == null) CustomGun.LOGGER.debug("ClientAttachmentIndexInstance: Failed to create AttachmentModelObject (for lod) {}", lodDisplay.getModelLocation());
+                if (this.attachmentModelLod == null) CustomGun.LOGGER.debug("ClientAttachmentIndexInstance: Failed to create AttachmentModelObject (for lod) {}", lodModelLocation);
             } else {
-                CustomGun.LOGGER.debug("ClientAttachmentIndexInstance: BedrockModel (for lod) {} not found", lodDisplay.getModelLocation());
+                CustomGun.LOGGER.debug("ClientAttachmentIndexInstance: BedrockModel (for lod) {} not found", lodModelLocation);
             }
         }
 
@@ -100,7 +108,7 @@ public final class ClientAttachmentIndexInstance extends PojoInstance<Attachment
         return true;
     }
     @Override protected void logAllErrors(int errorMask) {
-        StringBuilder sb = new StringBuilder("ClientAttachmentIndexInstance: AttachmentDisplay ").append(this.getPojo().getDataLocation()).append(" is invalid because:");
+        StringBuilder sb = new StringBuilder("ClientAttachmentIndexInstance: AttachmentDisplay ").append(this.getPojo().getDisplayIndexLocation()).append(" is invalid because:");
         if ((errorMask & ERR_SCOPE_VIEW_FOV) != 0) sb.append("\n\t- scopeViewFov <= 0");
         if ((errorMask & ERR_SCOPE_ZOOM_SCALE) != 0) sb.append("\n\t- scopeZoomScale < 1");
         if ((errorMask & ERR_SCOPE_VIEW_INDEX) != 0) sb.append("\n\t- scopeViewIndex < 1");
@@ -151,7 +159,7 @@ public final class ClientAttachmentIndexInstance extends PojoInstance<Attachment
     }
 
     public @Nullable AttachmentData getAttachmentData() {
-        if (this.attachmentDisplayCache == null) {
+        if (this.attachmentDataCache == null) {
             AttachmentData attachmentData = ResourceApi.getAttachmentData(this.getPojo().getDataLocation());
             if (attachmentData != null && attachmentData.isValid()) this.attachmentDataCache = attachmentData;
         }

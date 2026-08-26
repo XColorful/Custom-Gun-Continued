@@ -8,12 +8,6 @@
 package dev.xcolorful.customgun.forge.item.gun;
 
 import dev.xcolorful.customgun.core.item.gun.GunItem;
-import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 
-/**
- * 由于已经不需要注入BEWLR，为了{@link IClientItemExtensions}而使用的注册黑魔法已经不需要了
- * <br>
- * 但还是保留这个实现，以便浏览演变历史，以及以后可能需要重载平台接口
- */
 public class ForgeGunItem extends GunItem {
 }

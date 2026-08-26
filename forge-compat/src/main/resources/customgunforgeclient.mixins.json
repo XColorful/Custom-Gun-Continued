@@ -7,6 +7,8 @@
     "entity.GunProjectileMixin",
     "gui.GuiMixin",
     "gui.LayeredDrawMixin",
+    "item.AmmoItemMixin",
+    "item.AttachmentItemMixin",
     "item.GunItemMixin"
   ],
   "injectors": {

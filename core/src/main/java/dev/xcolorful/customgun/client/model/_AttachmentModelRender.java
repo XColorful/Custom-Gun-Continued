@@ -7,7 +7,6 @@
 
 package dev.xcolorful.customgun.client.model;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import dev.xcolorful.customgun.client.api.entity.shooter.ILocalShooterGetter;
 import dev.xcolorful.customgun.client.compat.ar.AttachmentModelAR;

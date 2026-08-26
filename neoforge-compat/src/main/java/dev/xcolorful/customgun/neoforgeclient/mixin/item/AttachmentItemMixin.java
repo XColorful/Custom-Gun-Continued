@@ -1,9 +1,8 @@
 package dev.xcolorful.customgun.neoforgeclient.mixin.item;
 
-import dev.xcolorful.customgun.client.api.item.IAnimateGeoItem;
 import dev.xcolorful.customgun.client.api.item.IItemBEWLR;
-import dev.xcolorful.customgun.client.renderer.item.GunItemRenderer;
-import dev.xcolorful.customgun.core.item.gun.GunItem;
+import dev.xcolorful.customgun.client.renderer.item.AttachmentItemRenderer;
+import dev.xcolorful.customgun.core.item.attachment.AttachmentItem;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.world.item.Item;
 import net.neoforged.api.distmarker.Dist;
@@ -13,12 +12,12 @@ import org.spongepowered.asm.mixin.Mixin;
 
 import java.util.function.Consumer;
 
-@Mixin(GunItem.class)
-public abstract class GunItemMixin extends Item implements IAnimateGeoItem, IItemBEWLR {
+@Mixin(AttachmentItem.class)
+public abstract class AttachmentItemMixin extends Item implements IItemBEWLR {
 
-    public GunItemRenderer cgc$renderer;
+    public AttachmentItemRenderer cgc$renderer;
 
-    public GunItemMixin(Properties properties) {
+    public AttachmentItemMixin(Properties properties) {
         super(properties);
     }
 
@@ -31,24 +30,17 @@ public abstract class GunItemMixin extends Item implements IAnimateGeoItem, IIte
             @Deprecated(since = "1.21.4")
             @Override
             public BlockEntityWithoutLevelRenderer getCustomRenderer() {
-                return GunItemMixin.this.cgc$getBEWLR();
+                return AttachmentItemMixin.this.cgc$getBEWLR();
             }
         });
-    }
-
-    // --------IAnimateGeoItem--------
-
-    @Override
-    public GunItemRenderer cgc$getCustomRenderer() {
-        if (this.cgc$renderer == null) this.cgc$renderer = new GunItemRenderer();
-
-        return this.cgc$renderer;
     }
 
     // --------IItemBEWLR--------
 
     @Override
-    public GunItemRenderer cgc$getBEWLR() {
-        return this.cgc$getCustomRenderer();
+    public AttachmentItemRenderer cgc$getBEWLR() {
+        if (this.cgc$renderer == null) this.cgc$renderer = new AttachmentItemRenderer();
+
+        return this.cgc$renderer;
     }
 }

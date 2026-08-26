@@ -30,7 +30,7 @@ public class ClientGuiUtils {
     }
 
     public static boolean isGuiHidden(Minecraft minecraft) {
-        return minecraft.options.hideGui; // minecraft.gui.hud.isHidden();
+        return minecraft.gui.hud.isHidden();
     }
 
     public static void blitGuiTexture(GuiGraphicsExtractor guiGraphics,

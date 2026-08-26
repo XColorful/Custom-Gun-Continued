@@ -28,6 +28,9 @@ public class ClientGuiUtils {
     public static void setOverlay(Minecraft minecraft, Overlay overlay) {
         minecraft.setOverlay(overlay); // minecraft.gui.setOverlay(overlay)
     }
+    public static boolean isGuiHidden(Minecraft minecraft) {
+        return minecraft.options.hideGui; // minecraft.gui.hud.isHidden();
+    }
 
     public static void blitGuiTexture(GuiGraphicsExtractor guiGraphics,
                                       CustomTexture customTexture,

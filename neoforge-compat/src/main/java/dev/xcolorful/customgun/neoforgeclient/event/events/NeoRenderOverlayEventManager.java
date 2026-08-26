@@ -8,7 +8,7 @@ import dev.xcolorful.customgun.neoforge.event.events.AbstractNeoEventCommon;
 import dev.xcolorful.customgun.neoforgeclient.event.NeoRenderOverlayEvent;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.client.event.RenderGuiEvent;
+import net.neoforged.neoforge.client.event.RenderGuiOverlayEvent;
 import net.neoforged.neoforge.common.NeoForge;
 
 public class NeoRenderOverlayEventManager {
@@ -51,7 +51,7 @@ public class NeoRenderOverlayEventManager {
             return new NeoRenderOverlayEvent(event);
         }
 
-        protected void handle(RenderGuiEvent.Post event) {
+        protected void handle(RenderGuiOverlayEvent.Post event) {
             super.onEvent(event);
         }
     }
@@ -59,30 +59,30 @@ public class NeoRenderOverlayEventManager {
     public static class RenderOverlayProxyHighest extends RenderOverlayProxy {
         static final RenderOverlayProxyHighest INSTANCE = new RenderOverlayProxyHighest();
         @SubscribeEvent(priority = net.neoforged.bus.api.EventPriority.HIGHEST, receiveCanceled = true)
-        public void onEvent(RenderGuiEvent.Post e) { handle(e); }
+        public void onEvent(RenderGuiOverlayEvent.Post e) { handle(e); }
     }
 
     public static class RenderOverlayProxyHigh extends RenderOverlayProxy {
         static final RenderOverlayProxyHigh INSTANCE = new RenderOverlayProxyHigh();
         @SubscribeEvent(priority = net.neoforged.bus.api.EventPriority.HIGH, receiveCanceled = true)
-        public void onEvent(RenderGuiEvent.Post e) { handle(e); }
+        public void onEvent(RenderGuiOverlayEvent.Post e) { handle(e); }
     }
 
     public static class RenderOverlayProxyNormal extends RenderOverlayProxy {
         static final RenderOverlayProxyNormal INSTANCE = new RenderOverlayProxyNormal();
         @SubscribeEvent(priority = net.neoforged.bus.api.EventPriority.NORMAL, receiveCanceled = true)
-        public void onEvent(RenderGuiEvent.Post e) { handle(e); }
+        public void onEvent(RenderGuiOverlayEvent.Post e) { handle(e); }
     }
 
     public static class RenderOverlayProxyLow extends RenderOverlayProxy {
         static final RenderOverlayProxyLow INSTANCE = new RenderOverlayProxyLow();
         @SubscribeEvent(priority = net.neoforged.bus.api.EventPriority.LOW, receiveCanceled = true)
-        public void onEvent(RenderGuiEvent.Post e) { handle(e); }
+        public void onEvent(RenderGuiOverlayEvent.Post e) { handle(e); }
     }
 
     public static class RenderOverlayProxyLowest extends RenderOverlayProxy {
         static final RenderOverlayProxyLowest INSTANCE = new RenderOverlayProxyLowest();
         @SubscribeEvent(priority = net.neoforged.bus.api.EventPriority.LOWEST, receiveCanceled = true)
-        public void onEvent(RenderGuiEvent.Post e) { handle(e); }
+        public void onEvent(RenderGuiOverlayEvent.Post e) { handle(e); }
     }
 }

@@ -267,7 +267,7 @@ public class ResourceApi {
         if (CustomGun.getSideExecutor().getLogicalSide().isServer()) return _DataInstanceManager.ATTACHMENT_INSTALLABILITY.getAttachmentInstallability(attachmentLocation);
         else return SyncDataCache.INSTANCE.ATTACHMENT_INSTALLABILITY.getAttachmentInstallability(attachmentLocation);
     }
-    public static @Nullable Map<AttachmentModifierType, Object> getAttachmentModifiers(ResourceLocation attachmentLocation) {
+    public static @Nullable Map<AttachmentModifierType, Object> getAttachmentModifiers(Identifier attachmentLocation) {
         if (CustomGun.getSideExecutor().getLogicalSide().isServer()) return _DataInstanceManager.ATTACHMENT_MODIFIER.getModifiers(attachmentLocation);
         else return SyncDataCache.INSTANCE.ATTACHMENT_MODIFIER.getModifiers(attachmentLocation);
     }

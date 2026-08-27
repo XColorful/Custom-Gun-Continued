@@ -155,9 +155,17 @@ public class _GunModelRender {
         }
     }
 
+    // --------Compat--------
+    // 跨版本适配层
+
     private static void _clearStencilBuffer() {
-        ClientRenderHelper.GL._stencilMask(0xFF);
-        ClientRenderHelper.GL.glClearStencil(0);
-        ClientRenderHelper.GL._clear(GL11.GL_STENCIL_BUFFER_BIT);
+        // [1.20.1, 1.21.6)
+//        ClientRenderHelper.GL._clear(GL11.GL_STENCIL_BUFFER_BIT);
+
+        // [1.21.6, )
+        RenderTarget target = Minecraft.getInstance().getMainRenderTarget();
+        if (target.useStencil && target.getDepthTexture() != null) {
+            RenderSystem.getDevice().createCommandEncoder().clearStencilTexture(target.getDepthTexture(), 0);
+        }
     }
 }

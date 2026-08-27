@@ -10,6 +10,12 @@ package dev.xcolorful.customgun.client.util;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
+import dev.xcolorful.customgun.client.CustomGunClient;
+import dev.xcolorful.customgun.client.api.minecraft.pipeline.PipelineModifier;
+import dev.xcolorful.customgun.client.api.minecraft.stencil.IStencilOperator;
+import dev.xcolorful.customgun.client.api.minecraft.stencil.StencilFunction;
+import dev.xcolorful.customgun.client.api.minecraft.stencil.StencilOperation;
+import dev.xcolorful.customgun.client.api.minecraft.stencil.StencilState;
 import dev.xcolorful.customgun.client.compat.ar.ARCompat;
 import dev.xcolorful.customgun.client.compat.optifine.OptifineCompat;
 import net.minecraft.client.Minecraft;
@@ -25,8 +31,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
-
-import java.util.List;
 
 public class ClientRenderHelper {
 
@@ -58,9 +62,12 @@ public class ClientRenderHelper {
         boolean handled = OptifineCompat.onEnableItemEntityStencilTest();
         if (!handled) {
             Minecraft mc = Minecraft.getInstance();
-            ClientRenderUtils.getMainRenderTarget(mc).enableStencil();
+            ClientRenderUtils.getMainRenderTarget(mc).enableStencil(); // 1.21.4移除
+
+//            GL.stencilOperator.applyStencil(GL.stencilState); // 1.21.6
         }
 
+        // [1.20.1, 1.21.6)
         GL11.glEnable(GL11.GL_STENCIL_TEST);
     }
 
@@ -109,21 +116,85 @@ public class ClientRenderHelper {
 
     public static class GL {
 
+        /**
+         * 1.21.6 即时模式的模板状态被渲染管线覆盖
+         * 改为累积状态并写回 RenderSystem.STENCIL_TEST
+         */
+        @ApiStatus.AvailableSince("1.21.6")
+        @ApiStatus.Internal
+        private static final StencilState stencilState = new StencilState();
+        private static final IStencilOperator stencilOperator = CustomGunClient.getStencilOperator();
+
         public static void _stencilFunc(int func, int ref, int readMask) {
+            // [1.20.1, 1.21.6)
             RenderSystem.stencilFunc(func, ref, readMask);
+
+            // [1.21.6, )
+            if (true) return; // 让IDE保留下面的引用关系
+            stencilState.sFrontFunc = StencilFunction.of(func);
+            stencilState.sBackFunc = StencilFunction.of(func);
+            stencilState.sRef = ref;
+            stencilState.sReadMask = readMask;
+            stencilOperator.applyStencil(stencilState);
         }
         public static void _stencilOp(int stencilFail, int depthFail, int pass) {
+            // [1.20.1, 1.21.6)
             RenderSystem.stencilOp(stencilFail, depthFail, pass);
+            // [1.21.6, )
+
+            if (true) return; // 让IDE保留下面的引用关系
+            stencilState.sFrontFunc = StencilFunction.of(stencilFail);
+            stencilState.sFrontDepthFail = StencilOperation.of(depthFail);
+            stencilState.sFrontPass = StencilOperation.of(pass);
+            stencilState.sBackFail = StencilOperation.of(stencilFail);
+            stencilState.sBackDepthFail = StencilOperation.of(depthFail);
+            stencilState.sBackPass = StencilOperation.of(pass);
+            stencilOperator.applyStencil(stencilState);
         }
 
         public static void _colorMask(boolean red, boolean green, boolean blue, boolean alpha) {
+            // [1.20.1, 1.21.6)
             RenderSystem.colorMask(red, green, blue, alpha);
+
+            // [1.21.6, )
+            if (true) return; // 让IDE保留下面的引用关系
+            boolean off = !(red | green | blue | alpha);
+            if (off != stencilState.sColorWriteOff) {
+                if (off) {
+                    var pipelineModifier = PipelineModifier.NO_COLOR_WRITE;
+//                    RenderSystem.pushPipelineModifier(pipelineModifier);
+                } else {
+//                    RenderSystem.popPipelineModifier();
+                }
+                stencilState.sColorWriteOff = off;
+            }
         }
         public static void _depthMask(boolean flag) {
+            // [1.20.1, 1.21.6)
             RenderSystem.depthMask(flag);
+
+            // [1.21.6, )
+            if (true) return; // 让IDE保留下面的引用关系
+            boolean off = !flag;
+            if (off != stencilState.sDepthTestOff) {
+                if (off) {
+                    var pipelineModifier = PipelineModifier.NO_DEPTH_WRITE;
+//                    RenderSystem.pushPipelineModifier(pipelineModifier);
+                }
+                else {
+//                    RenderSystem.popPipelineModifier();
+                }
+                stencilState.sDepthWriteOff = off;
+            }
         }
         public static void _stencilMask(int mask) {
+            // [1.20.1, 1.21.6)
             RenderSystem.stencilMask(mask);
+
+            // [1.21.6, )
+            if (true) return; // 让IDE保留下面的引用关系
+            stencilState.sWriteMask = mask;
+            stencilOperator.applyStencil(stencilState);
         }
 
         public static void _clear(int mask) {
@@ -137,21 +208,53 @@ public class ClientRenderHelper {
 //          GlStateManager._clear(mask);
         }
         public static void glClearStencil(int s) {
+            // [1.20.1, 1.21.6)
             RenderSystem.clearStencil(s);
+
+            // [1.21.6, )
+            if (true) return; // 让IDE保留下面的引用关系
+            GL11.glClearStencil(s);
         }
 
         public static void _disableDepthTest() {
+            // [1.20.1, 1.21.6)
             RenderSystem.disableDepthTest();
+
+            // [1.21.6, )
+            if (true) return; // 让IDE保留下面的引用关系
+            if (!stencilState.sDepthTestOff) {
+                var pipelineModifier = PipelineModifier.NO_DEPTH_TEST;
+//                RenderSystem.pushPipelineModifier(pipelineModifier);
+                stencilState.sDepthTestOff = true;
+            }
         }
         public static void _enableDepthTest() {
+            // [1.20.1, 1.21.6)
             RenderSystem.enableDepthTest();
+
+            // [1.21.6, )
+            if (true) return; // 让IDE保留下面的引用关系
+            if (stencilState.sDepthTestOff) {
+//                RenderSystem.popPipelineModifier();
+                stencilState.sDepthTestOff = false;
+            }
         }
 
         public static void _enableBlend() {
+            // [1.20.1, 1.21.6)
             RenderSystem.enableBlend();
+
+            // [1.21.6, )
+            if (true) return; // 让IDE保留下面的引用关系
+            GlStateManager._enableBlend();
         }
         public static void _disableBlend() {
+            // [1.20.1, 1.21.6)
             RenderSystem.disableBlend();
+
+            // [1.21.6, )
+            if (true) return; // 让IDE保留下面的引用关系
+            GlStateManager._disableBlend();
         }
 
         /**

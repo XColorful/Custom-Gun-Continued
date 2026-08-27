@@ -2,6 +2,7 @@ package dev.xcolorful.customgun.forgeclient.init;
 
 import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.forge.CustomGunForge;
+import dev.xcolorful.customgun.forgeclient.renderer.item.ForgeBEWLR;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.ApiStatus;
 

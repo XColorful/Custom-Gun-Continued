@@ -112,12 +112,6 @@ public class ClientRenderHelper {
         // RenderSystem.setShaderTexture(0, oldId);
     }
 
-    @ApiStatus.Internal
-    public static void ensureMainRenderTargetStencil(Minecraft minecraft) {
-//        RenderSystem.recordRenderCall(() -> ClientRenderUtils.getMainRenderTarget(minecraft).enableStencil());
-        // 1.21.4起变成了构造函数时的参数
-    }
-
     public static class GL {
 
         public static void _stencilFunc(int func, int ref, int readMask) {

@@ -80,11 +80,12 @@ public abstract class GameRendererMixin {
     }
 
     /**
-     * 是一个 hack 实现。
      * <ul>
-     *     <li>因为 getFov 这个方法只有在构建 投影矩阵 的时候调用</li>
-     *     <li>所以可以根据 getFov 中的 pUseFovSetting 来判断当前准备渲染 Level 还是渲染 HandWithItem </li>
-     *     <li>至于为什么不直接对 renderItemInHand 这个方法 mixin ，是因为安装了 Optifine 之后，这个方法的内容被大幅度修改了</li>
+     *     1.21.6起:
+     *     <li>手部 FOV 在 {@code renderItemInHand} 之外计算 ({@code render} 里先 {@code getFov(camera, f, false)} 再 {@code renderItemInHand}）</li>
+     *     <li>导致下面 renderItemInHand 的 HEAD/RETURN 注入无法覆盖手部 FOV 计算时刻</li>
+     *     <li>因此改回用 {@code getFov} 的 {@code useFovSetting} 参数区分 world（true）与 hand（false）</li>
+     *     <li>这是 1.21.6 唯一能覆盖两个 FOV 计算点的位置</li>
      * </ul>
      */
     @Deprecated(since = "26.1.x")
@@ -93,23 +94,22 @@ public abstract class GameRendererMixin {
                                      float pPartialTicks,
                                      boolean pUseFOVSetting,
                                      CallbackInfoReturnable<Double> cir) {
-//        GunCameraHelper.State.renderItemInHand = !pUseFOVSetting;
+        GunCameraHelper.State.renderItemInHand = !pUseFOVSetting;
     }
-    /**
-     * 楼上说得对，但是时代是会变的，咱别管optifine了
-     */
+
+    // 等移植到26.1.x看还需不需要
     @Inject(method = "renderItemInHand", at = @At("HEAD"))
     private void cgc$beforeRenderItemInHand(Camera camera,
                                             float partialTick,
                                             Matrix4f projectionMatrix,
                                             CallbackInfo ci) {
-        GunCameraHelper.State.renderItemInHand = true;
+//        GunCameraHelper.State.renderItemInHand = true;
     }
     @Inject(method = "renderItemInHand", at = @At("RETURN"))
     private void cgc$afterRenderItemInHand(Camera camera,
                                            float partialTick,
                                            Matrix4f projectionMatrix,
                                            CallbackInfo ci) {
-        GunCameraHelper.State.renderItemInHand = false;
+//        GunCameraHelper.State.renderItemInHand = false;
     }
 }

@@ -1,6 +1,5 @@
 package dev.xcolorful.customgun.neoforgeclient.minecraft.pipeline;
 
-import dev.xcolorful.customgun.client.api.minecraft.pipeline.IPipelineModifier;
 import dev.xcolorful.customgun.client.api.minecraft.pipeline.PipelineModifier;
 import dev.xcolorful.customgun.neoforge.CustomGunNeoforge;
 import net.minecraft.resources.ResourceKey;
@@ -17,10 +16,12 @@ public enum NeoPipelineModifier {
     ;
 
     public final PipelineModifier pipelineModifier;
-    public final ResourceKey<IPipelineModifier> registryKey;
+    public final ResourceKey<net.neoforged.neoforge.client.pipeline.PipelineModifier> registryKey;
+    public final net.neoforged.neoforge.client.pipeline.PipelineModifier modifier;
     NeoPipelineModifier(PipelineModifier pipelineModifier) {
         this.pipelineModifier = pipelineModifier;
-        this.registryKey = CustomGunNeoforge.mcRegistry.createResourceKey(null, this.pipelineModifier.getRegistryLocation());
+        this.registryKey = CustomGunNeoforge.mcRegistry.createResourceKey(net.neoforged.neoforge.client.pipeline.PipelineModifier.MODIFIERS_KEY, this.pipelineModifier.getRegistryLocation());
+        this.modifier = pipelineModifier.getModifier()::apply;
     }
 
     public static NeoPipelineModifier of(PipelineModifier pipelineModifier) {

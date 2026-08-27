@@ -3,9 +3,9 @@ package dev.xcolorful.customgun.neoforgeclient.renderer.item;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.serialization.MapCodec;
 import dev.xcolorful.customgun.client.api.item.IItemBEWLR;
-import dev.xcolorful.customgun.client.api.renderer.item.SpecialModelRenderer;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.special.SpecialModelRenderer;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
@@ -14,7 +14,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 /*
-为了跨版本提前知道1.21.4neoforge的移植方式，添加此类作为占位符
+// 为了跨版本提前知道1.21.4neoforge的移植方式，添加此类作为占位符
  */
 /**
  * <ul>

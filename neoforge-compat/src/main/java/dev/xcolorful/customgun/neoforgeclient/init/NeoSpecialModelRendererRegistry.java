@@ -2,6 +2,7 @@ package dev.xcolorful.customgun.neoforgeclient.init;
 
 import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.neoforge.CustomGunNeoforge;
+import dev.xcolorful.customgun.neoforgeclient.renderer.item.NeoBEWLR;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.ApiStatus;
 

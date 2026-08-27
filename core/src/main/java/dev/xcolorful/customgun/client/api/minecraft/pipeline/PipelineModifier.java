@@ -14,11 +14,11 @@ public enum PipelineModifier implements ResourceTag.RegistryTag {
     ),
     NO_DEPTH_WRITE(PipelineModifierTag.NO_DEPTH_WRITE,
             (pipeline, name) ->
-                    null // pipeline.toBuilder().withLocation(name).withDepthWrite(false).build();
+                    null // pipeline.toBuilder().withLocation(name).withDepthWrite(false).build()
     ),
     NO_DEPTH_TEST(PipelineModifierTag.NO_DEPTH_TEST,
             (pipeline, name) ->
-                    null // pipeline.toBuilder().withLocation(name).withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST).build();
+                    null // pipeline.toBuilder().withLocation(name).withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST).build()
     ),
     ;
 

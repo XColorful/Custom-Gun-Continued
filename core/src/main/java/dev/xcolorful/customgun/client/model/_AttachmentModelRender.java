@@ -329,8 +329,11 @@ public class _AttachmentModelRender {
                             .color(255, 255, 255, 255)
                             .endVertex();
                 }
-                // [1.20.1, 1.21.6)
+                // [1.20.1, 1.21.1)
                 BufferUploader.drawWithShader(builder.end());
+
+                // [1.21.1, 1.21.6)
+//                BufferUploader.drawWithShader(builder.buildOrThrow());
 
                 // [1.21.6, )
                 /*

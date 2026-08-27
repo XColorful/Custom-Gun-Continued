@@ -8,6 +8,11 @@
 
 因此，无论渲染场景是什么，只要拿到了 `ItemStack`，就能通过 `IAnimateGeoItem.cgc$getCustomRenderer(stack)` 拿到它的渲染器。这个接口是各场景统一调度的枢纽。
 
+> **跨版本**：上文「拿到 `ItemStack` → 经 Mixin 接口取到 BEWLR 渲染器」这条运行时链路各版本一致；但把物品渲染器**注册进原版物品模型系统**的方式自 1.21.4 起变了——
+>
+> - 1.20.1–1.21.1：依赖 `IClientItemExtensions.initializeClient` + `getCustomRenderer()` 返回 `BlockEntityWithoutLevelRenderer`。
+> - 1.21.4+：原版移除 `BlockEntityWithoutLevelRenderer` 与上述两个方法，改为 `SpecialModelRenderer`（平台层经 `RegisterSpecialModelRendererEvent` 注册 codec `customgun:item_bewlr`）+ `assets/customgun/items/*.json` 里的 `minecraft:special` 模型类型，再桥接回 `IItemBEWLR.cgc$getBEWLR().renderByItem()`。
+
 ## 第一人称
 
 第一人称持枪不经过原版的手持物品渲染路径，而是由事件接管：

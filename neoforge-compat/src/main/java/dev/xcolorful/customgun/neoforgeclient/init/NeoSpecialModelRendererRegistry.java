@@ -1,9 +1,5 @@
 package dev.xcolorful.customgun.neoforgeclient.init;
 
-import dev.xcolorful.customgun.CustomGun;
-import dev.xcolorful.customgun.neoforge.CustomGunNeoforge;
-import dev.xcolorful.customgun.neoforgeclient.renderer.item.NeoBEWLR;
-import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.ApiStatus;
 
 /*
@@ -13,10 +9,8 @@ import org.jetbrains.annotations.ApiStatus;
 //@EventBusSubscriber(value = Dist.CLIENT, modid = CustomGun.MOD_ID)
 public class NeoSpecialModelRendererRegistry {
 
-    public static final ResourceLocation REGISTRY_LOCATION = CustomGunNeoforge.mcRegistry.createResourceLocation(String.format("%s:%s", CustomGun.MOD_ID, "item_bewlr"));
-
-    //    @SubscribeEvent
+//    @SubscribeEvent
     public static void onRegisterSpecialModelRenderer(Object event) {
-//        event.register(REGISTRY_LOCATION, NeoBEWLR.BewlrUnbaked.MAP_CODEC);
+//        event.register(IItemBEWLR.REGISTRY_LOCATION, NeoBEWLR.BewlrUnbaked.MAP_CODEC);
     }
 }

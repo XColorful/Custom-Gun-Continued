@@ -1,5 +1,6 @@
 package dev.xcolorful.customgun.client.api.minecraft.pipeline;
 
+import com.mojang.blaze3d.platform.DepthTestFunction;
 import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.core.api.minecraft.pipeline.PipelineModifierTag;
 import dev.xcolorful.customgun.core.api.resource.ResourceTag;
@@ -10,15 +11,15 @@ import org.jetbrains.annotations.ApiStatus;
 public enum PipelineModifier implements ResourceTag.RegistryTag {
     NO_COLOR_WRITE(PipelineModifierTag.NO_COLOR_WRITE,
             (pipeline, name) ->
-                    null // pipeline.toBuilder().withLocation(name).withColorWrite(false).build()
+                    pipeline.toBuilder().withLocation(name).withColorWrite(false).build()
     ),
     NO_DEPTH_WRITE(PipelineModifierTag.NO_DEPTH_WRITE,
             (pipeline, name) ->
-                    null // pipeline.toBuilder().withLocation(name).withDepthWrite(false).build()
+                    pipeline.toBuilder().withLocation(name).withDepthWrite(false).build()
     ),
     NO_DEPTH_TEST(PipelineModifierTag.NO_DEPTH_TEST,
             (pipeline, name) ->
-                    null // pipeline.toBuilder().withLocation(name).withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST).build()
+                    pipeline.toBuilder().withLocation(name).withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST).build()
     ),
     ;
 

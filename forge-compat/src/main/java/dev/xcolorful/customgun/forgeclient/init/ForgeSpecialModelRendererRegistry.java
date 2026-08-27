@@ -1,9 +1,5 @@
 package dev.xcolorful.customgun.forgeclient.init;
 
-import dev.xcolorful.customgun.CustomGun;
-import dev.xcolorful.customgun.forge.CustomGunForge;
-import dev.xcolorful.customgun.forgeclient.renderer.item.ForgeBEWLR;
-import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.ApiStatus;
 
 /*
@@ -13,10 +9,8 @@ import org.jetbrains.annotations.ApiStatus;
 //@Mod.EventBusSubscriber(value = Dist.CLIENT, modid = CustomGun.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ForgeSpecialModelRendererRegistry {
 
-    public static final ResourceLocation REGISTRY_LOCATION = CustomGunForge.mcRegistry.createResourceLocation(String.format("%s:%s", CustomGun.MOD_ID, "item_bewlr"));
-
 //    @SubscribeEvent
     public static void onRegisterSpecialModelRenderer(Object event) {
-//        event.register(REGISTRY_LOCATION, ForgeBEWLR.BewlrUnbaked.MAP_CODEC);
+//        event.register(IItemBEWLR.REGISTRY_LOCATION, ForgeBEWLR.BewlrUnbaked.MAP_CODEC);
     }
 }

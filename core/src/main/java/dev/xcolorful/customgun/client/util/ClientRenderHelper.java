@@ -107,11 +107,6 @@ public class ClientRenderHelper {
         // RenderSystem.setShaderTexture(0, oldId);
     }
 
-    @ApiStatus.Internal
-    public static void ensureMainRenderTargetStencil(Minecraft minecraft) {
-        RenderSystem.recordRenderCall(() -> ClientRenderUtils.getMainRenderTarget(minecraft).enableStencil());
-    }
-
     public static class GL {
 
         public static void _stencilFunc(int func, int ref, int readMask) {

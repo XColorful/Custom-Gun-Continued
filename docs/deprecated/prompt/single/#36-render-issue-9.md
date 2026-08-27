@@ -730,3 +730,99 @@ The dropped-item invisibility has a clear root cause. Let me confirm the current
 把枪械、配件、子弹丢到地上（掉落物），确认物品模型能正常显示、有影子，且悬浮高度正常（不浮空、不陷地）。红点/筒镜、第三人称、GUI 应保持正常。
 
 工作区未提交，等你检查。
+
+# 
+
+```
+成功修复。
+
+我现在完成了平台抽象层的封装（尚未提交到云端，你不要私自撤回），但是现在渲染带筒镜的枪的时候会立即崩溃，你检查以下我封装后的跟你刚才修改完的哪里没对上，修改完之后不要commit
+
+崩溃log如下：
+java.lang.IllegalStateException: Modifier stack is not empty: [ResourceKey[neoforge:pipeline_modifiers / customgun:no_color_write], ResourceKey[neoforge:pipeline_modifiers / customgun:no_color_write]]
+	at TRANSFORMER/neoforge@21.6.20-beta/net.neoforged.neoforge.client.pipeline.PipelineModifierStack.ensureEmpty(PipelineModifierStack.java:43) ~[neoforge-21.6.20-beta-universal.jar%23210!/:?]
+	at TRANSFORMER/minecraft@1.21.6/com.mojang.blaze3d.systems.RenderSystem.ensurePipelineModifiersEmpty(RenderSystem.java:470) ~[client-1.21.6-20250617.151856-srg.jar%23209!/:?]
+	at TRANSFORMER/neoforge@21.6.20-beta/net.neoforged.neoforge.client.ClientHooks.fireRenderFramePost(ClientHooks.java:1022) ~[neoforge-21.6.20-beta-universal.jar%23210!/:?]
+	at TRANSFORMER/minecraft@1.21.6/net.minecraft.client.Minecraft.runTick(Minecraft.java:1287) ~[client-1.21.6-20250617.151856-srg.jar%23209!/:?]
+	at TRANSFORMER/minecraft@1.21.6/net.minecraft.client.Minecraft.run(Minecraft.java:882) ~[client-1.21.6-20250617.151856-srg.jar%23209!/:?]
+	at TRANSFORMER/minecraft@1.21.6/net.minecraft.client.main.Main.main(Main.java:243) ~[client-1.21.6-20250617.151856-srg.jar%23209!/:?]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[?:?]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[?:?]
+	at MC-BOOTSTRAP/fml_loader@9.0.2/net.neoforged.fml.loading.targets.CommonLaunchHandler.runTarget(CommonLaunchHandler.java:132) ~[loader-9.0.2.jar%23116!/:9.0]
+	at MC-BOOTSTRAP/fml_loader@9.0.2/net.neoforged.fml.loading.targets.CommonLaunchHandler.clientService(CommonLaunchHandler.java:120) ~[loader-9.0.2.jar%23116!/:9.0]
+	at MC-BOOTSTRAP/fml_loader@9.0.2/net.neoforged.fml.loading.targets.NeoForgeClientLaunchHandler.runService(NeoForgeClientLaunchHandler.java:39) ~[loader-9.0.2.jar%23116!/:9.0]
+	at MC-BOOTSTRAP/fml_loader@9.0.2/net.neoforged.fml.loading.targets.CommonLaunchHandler.lambda$launchService$4(CommonLaunchHandler.java:114) ~[loader-9.0.2.jar%23116!/:9.0]
+	at MC-BOOTSTRAP/fml_loader@9.0.2/cpw.mods.modlauncher.LaunchServiceHandlerDecorator.launch(LaunchServiceHandlerDecorator.java:25) [loader-9.0.2.jar%23116!/:9.0]
+	at MC-BOOTSTRAP/fml_loader@9.0.2/cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:55) [loader-9.0.2.jar%23116!/:9.0]
+	at MC-BOOTSTRAP/fml_loader@9.0.2/cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:73) [loader-9.0.2.jar%23116!/:9.0]
+	at MC-BOOTSTRAP/fml_loader@9.0.2/cpw.mods.modlauncher.Launcher.run(Launcher.java:104) [loader-9.0.2.jar%23116!/:9.0]
+	at MC-BOOTSTRAP/fml_loader@9.0.2/cpw.mods.modlauncher.Launcher.main(Launcher.java:75) [loader-9.0.2.jar%23116!/:9.0]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[?:?]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[?:?]
+	at cpw.mods.bootstraplauncher/cpw.mods.bootstraplauncher.BootstrapLauncher.run(BootstrapLauncher.java:203) [bootstraplauncher-9.0.2.jar:?]
+	at cpw.mods.bootstraplauncher/cpw.mods.bootstraplauncher.BootstrapLauncher.main(BootstrapLauncher.java:62) [bootstraplauncher-9.0.2.jar:?]
+```
+
+# 
+
+The crash is a `PipelineModifier` stack imbalance — two `no_color_write` pushes without matching pops. Let me read the current state of my encapsulated code to see what changed.
+
+The crash is a modifier-stack leak caused by a bug in the encapsulated `_depthMask`. Let me read the encapsulation classes to confirm the exact field names and the `_stencilOp` bug too.
+
+I found the bugs. The encapsulation introduced two copy-paste errors in `ClientRenderHelper.GL`:
+
+1. `_depthMask` checks `sDepthTestOff` instead of `sDepthWriteOff` — this causes the `NO_DEPTH_WRITE` push to never pop, so the later `pop` in `_colorMask(true)` pops the wrong entry and leaks `NO_COLOR_WRITE` twice (the crash).
+2. `_stencilOp` assigns `sFrontFunc = StencilFunction.of(stencilFail)` instead of `sFrontFail = StencilOperation.of(stencilFail)` — corrupts the front-face comparison function.
+
+Let me fix both:
+
+Let me verify the rest of the encapsulation (the `applyStencil` mapping and the `push/popPipelineModifier` implementation) for any further mismatches:
+
+修复完成并编译通过。汇报如下。
+
+## 崩溃原因：封装时引入了两个复制粘贴错误
+
+崩溃是 `PipelineModifier` 栈不平衡（`ensurePipelineModifiersEmpty` 报错），根因在封装后的 `ClientRenderHelper.GL` 里有两处字段名抄错了：
+
+### 1. `_depthMask` 用错了判断字段（直接导致崩溃）
+
+封装后 `_depthMask` 里的开关判断写成了 `sDepthTestOff`，但它实际设置的是 `sDepthWriteOff`：
+
+```java
+boolean off = !flag;
+if (off != stencilState.sDepthTestOff) {   // 错：应为 sDepthWriteOff
+    ... push NO_DEPTH_WRITE ...
+    stencilState.sDepthWriteOff = off;      // 设的是 sDepthWriteOff
+}
+```
+
+结果 `_depthMask(false)` 每次都 push（因为 `sDepthTestOff` 永远没被它置真），`_depthMask(true)` 永远不 pop。于是 `_colorMask(true)` 里那个 `pop()` 弹掉的是栈顶的 `NO_DEPTH_WRITE`，而不是 `NO_COLOR_WRITE`，导致 `NO_COLOR_WRITE` 泄漏。`renderOcularStencil` + `renderOcularAndDivision` 两段各漏一次 → 栈里正好剩两个 `no_color_write` → 帧末 `ensurePipelineModifiersEmpty` 抛异常。
+
+### 2. `_stencilOp` 把 fail 操作写进了比较函数字段（崩溃修好后会导致枪身不被筒镜遮罩）
+
+封装后 `_stencilOp` 第一行写成了：
+
+```java
+stencilState.sFrontFunc = StencilFunction.of(stencilFail);  // 错：应为 sFrontFail = StencilOperation.of(stencilFail)
+```
+
+`stencilFail`（如 `GL_KEEP`）经 `StencilFunction.of` 会落到默认 `ALWAYS`，把 `_stencilFunc(GREATER/EQUAL)` 设好的正面比较函数覆盖掉，导致 `_GunModelRender.render` 里 `super_render`（枪身）用 `ALWAYS` 而非 `GREATER/127` 或 `EQUAL/0` 做模板测试，枪身会画进镜孔里。
+
+## 修改内容（`ClientRenderHelper.java`）
+
+- `_depthMask`：`stencilState.sDepthTestOff` → `stencilState.sDepthWriteOff`。
+- `_stencilOp`：`stencilState.sFrontFunc = StencilFunction.of(stencilFail)` → `stencilState.sFrontFail = StencilOperation.of(stencilFail)`。
+
+其余封装（`NeoStencilOperator.applyStencil` 的字段映射、`push/popPipelineModifier` 委托）核对过是正确的，未改动。
+
+## 验证情况
+
+- `./gradlew :core:compileJava --offline` → BUILD SUCCESSFUL。
+- 按 `renderOcularStencil` → `renderOcularAndDivision` 的调用顺序手工推演了 push/pop，修正后 `NO_COLOR_WRITE`/`NO_DEPTH_WRITE` 配对平衡，栈能清空。
+- 未进入游戏内验证。
+
+## 请你测试
+
+进游戏给枪装筒镜开镜，确认：不再崩溃；镜片圆形视野正常、枪身只在镜片圆外、准心只在圆内；红点、第三人称、GUI、掉落物保持正常。
+
+工作区未提交，等你检查。

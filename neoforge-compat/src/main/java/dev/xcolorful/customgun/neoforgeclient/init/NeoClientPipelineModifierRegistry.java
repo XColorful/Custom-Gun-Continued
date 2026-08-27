@@ -16,8 +16,8 @@ public class NeoClientPipelineModifierRegistry {
 //    @SubscribeEvent
     public static void onRegisterPipelineModifier(Object event) {
         CLIENT_PIPELINE_MODIFIER_REGISTRY.onRegisterPipelineModifiers((modifier) -> {
-            NeoPipelineModifier forgePipelineModifier = NeoPipelineModifier.of(modifier);
-            var registryKey = forgePipelineModifier.registryKey;
+            NeoPipelineModifier neoPipelineModifier = NeoPipelineModifier.of(modifier);
+            var registryKey = neoPipelineModifier.registryKey;
         });
     }
 }

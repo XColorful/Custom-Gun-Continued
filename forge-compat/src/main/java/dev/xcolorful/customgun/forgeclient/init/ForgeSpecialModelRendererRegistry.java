@@ -16,6 +16,6 @@ public class ForgeSpecialModelRendererRegistry {
 
 //    @SubscribeEvent
     public static void onRegisterSpecialModelRenderer(Object event) {
-//        event.register(REGISTRY_LOCATION, ForgeBEWLR.Unbaked.MAP_CODEC);
+//        event.register(REGISTRY_LOCATION, ForgeBEWLR.BewlrUnbaked.MAP_CODEC);
     }
 }

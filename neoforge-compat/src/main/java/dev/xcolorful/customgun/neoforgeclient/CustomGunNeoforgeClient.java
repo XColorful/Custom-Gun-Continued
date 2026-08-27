@@ -18,6 +18,7 @@ import dev.xcolorful.customgun.client.CustomGunClient;
 import dev.xcolorful.customgun.client.api.input.IKeyMapping;
 import dev.xcolorful.customgun.client.api.minecraft.access.IClientAccessTransformer;
 import dev.xcolorful.customgun.client.api.minecraft.item.IClientItemExtensionProvider;
+import dev.xcolorful.customgun.client.api.minecraft.stencil.IStencilOperator;
 import dev.xcolorful.customgun.core.api.event.IEventRegister;
 import dev.xcolorful.customgun.neoforgeclient.event.NeoClientEventRegister;
 import dev.xcolorful.customgun.neoforgeclient.input.NeoKeyMapping;
@@ -31,6 +32,7 @@ public class CustomGunNeoforgeClient {
     public static IKeyMapping.Creator keyMappingCreator;
     public static IClientAccessTransformer accessTransformer;
     public static IClientItemExtensionProvider clientItemExtensionProvider;
+    public static IStencilOperator stencilOperator;
 
     public static void init() {
         if (initialized) return;
@@ -41,7 +43,8 @@ public class CustomGunNeoforgeClient {
 
         CustomGunClient.init(CustomGunNeoforgeClient.keyMappingCreator,
                 CustomGunNeoforgeClient.accessTransformer,
-                CustomGunNeoforgeClient.clientItemExtensionProvider);
+                CustomGunNeoforgeClient.clientItemExtensionProvider,
+                CustomGunNeoforgeClient.stencilOperator);
         initialized = true;
     }
 }

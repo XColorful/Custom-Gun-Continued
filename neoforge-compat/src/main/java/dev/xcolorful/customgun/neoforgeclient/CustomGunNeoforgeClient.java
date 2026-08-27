@@ -24,6 +24,7 @@ import dev.xcolorful.customgun.neoforgeclient.event.NeoClientEventRegister;
 import dev.xcolorful.customgun.neoforgeclient.input.NeoKeyMapping;
 import dev.xcolorful.customgun.neoforgeclient.item.NeoClientItemExtensionProvider;
 import dev.xcolorful.customgun.neoforgeclient.minecraft.access.NeoClientAccessTransformer;
+import dev.xcolorful.customgun.neoforgeclient.minecraft.stencil.NeoStencilOperator;
 
 public class CustomGunNeoforgeClient {
 
@@ -40,6 +41,7 @@ public class CustomGunNeoforgeClient {
         CustomGunNeoforgeClient.keyMappingCreator = new NeoKeyMapping.Creator();
         CustomGunNeoforgeClient.accessTransformer = new NeoClientAccessTransformer();
         CustomGunNeoforgeClient.clientItemExtensionProvider = new NeoClientItemExtensionProvider();
+        CustomGunNeoforgeClient.stencilOperator = new NeoStencilOperator();
 
         CustomGunClient.init(CustomGunNeoforgeClient.keyMappingCreator,
                 CustomGunNeoforgeClient.accessTransformer,

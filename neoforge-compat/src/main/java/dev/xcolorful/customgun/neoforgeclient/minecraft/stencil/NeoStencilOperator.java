@@ -1,5 +1,6 @@
 package dev.xcolorful.customgun.neoforgeclient.minecraft.stencil;
 
+import dev.xcolorful.customgun.client.api.minecraft.pipeline.PipelineModifier;
 import dev.xcolorful.customgun.client.api.minecraft.stencil.IStencilOperator;
 import dev.xcolorful.customgun.client.api.minecraft.stencil.StencilState;
 import org.jetbrains.annotations.ApiStatus;
@@ -12,5 +13,13 @@ public class NeoStencilOperator implements IStencilOperator {
 
     @Override
     public void applyStencil(StencilState state) {
+    }
+
+    @Override
+    public void pushPipelineModifier(PipelineModifier modifier) {
+    }
+
+    @Override
+    public void popPipelineModifier() {
     }
 }

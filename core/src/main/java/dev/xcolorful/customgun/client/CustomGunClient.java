@@ -22,6 +22,7 @@ import dev.xcolorful.customgun.client.api.input.IInputKeyManager;
 import dev.xcolorful.customgun.client.api.input.IKeyMapping;
 import dev.xcolorful.customgun.client.api.minecraft.access.IClientAccessTransformer;
 import dev.xcolorful.customgun.client.api.minecraft.item.IClientItemExtensionProvider;
+import dev.xcolorful.customgun.client.api.minecraft.stencil.IStencilOperator;
 import dev.xcolorful.customgun.client.event.custom.ClientEventHandlers;
 import dev.xcolorful.customgun.client.gui.overlay.OverlayManager;
 import dev.xcolorful.customgun.client.init.ClientModConfig;
@@ -34,14 +35,17 @@ public class CustomGunClient {
     private static IKeyMapping.Creator keyMappingCreator;
     private static IClientAccessTransformer accessTransformer;
     private static IClientItemExtensionProvider clientItemExtensionProvider;
+    private static IStencilOperator stencilOperator;
 
     public static void init(IKeyMapping.Creator keyMappingCreator,
                             IClientAccessTransformer accessTransformer,
-                            IClientItemExtensionProvider clientItemExtensionProvider) {
+                            IClientItemExtensionProvider clientItemExtensionProvider,
+                            IStencilOperator stencilOperator) {
         if (initialized) return;
         CustomGunClient.keyMappingCreator = keyMappingCreator;
         CustomGunClient.accessTransformer = accessTransformer;
         CustomGunClient.clientItemExtensionProvider = clientItemExtensionProvider;
+        CustomGunClient.stencilOperator = stencilOperator;
 
         ClientModConfig.init();
 
@@ -64,6 +68,9 @@ public class CustomGunClient {
     }
     public static IClientItemExtensionProvider getClientItemExtensionProvider() {
         return clientItemExtensionProvider;
+    }
+    public static IStencilOperator getStencilOperator() {
+        return stencilOperator;
     }
 
     private static IInputKeyManager inputKeyManager;

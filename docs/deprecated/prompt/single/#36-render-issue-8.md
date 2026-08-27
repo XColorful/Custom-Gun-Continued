@@ -694,3 +694,38 @@ poseStack.pushPose(); {
 所以这次新增的 `items/gun.json`、`attachment.json`、`ammo.json`（`minecraft:special` 模型 + `customgun:geo_item` codec）以及 `RegisterSpecialModelRendererEvent` 那一整套，**只对 1.21.4+ 有意义**，不应回移植到 1.20.1–1.21.1。那两个分支继续走原来的 `getCustomRenderer()` 注册路径即可；我这次的新增文件（`items/`、`NeoGeoItemSpecialRenderer`、`NeoGeoItemSpecialRendererRegistry`）都是 1.21.4 分支专属。
 
 （`geo_base.json` 里的 `gui_light` 属于旧模型格式里就有的字段，但它放的是给 1.21.4 `special` 模型当 `base` 用的，1.20.1–1.21.1 用不到。）
+
+# 
+
+```
+我现在完成了对这个移植的最终修改，已经commit，当前状态是能工作的状态，以现在的代码为准：
+- 检查CGC渲染文档里是否有需要补充说明的
+- 修改后的内容将从1.20.1就可见，所以不是让你删掉1.20.1-1.21.1的内容改成1.21.4，而是在合适位置补充1.21.4起变成什么样
+- 由于只是注册方式的兼容，注意不应出现大量的文档修改，本次修改仅是给低版本浏览的时候一个“高版本注册方式有变”的提示
+
+完成后不要commit，我检查后会手动在core1.20.1的分支commit
+```
+
+# 
+
+Let me check the current committed code state to write accurate doc notes, then review the render docs.
+
+I'll add a concise cross-version note to the render entry-points doc where the item-renderer binding is described.
+
+完成。只改了渲染文档的一处，未 commit。
+
+## 修改内容
+
+在 [rendering-entry-points.md](app://localhost/epitaxy/docs/architecture/client/render/rendering-entry-points.md) 的「物品与渲染器的绑定」小节末尾补了一段「跨版本」提示（blockquote，两行要点）：
+
+- 明确「`ItemStack` → Mixin 接口 → BEWLR 渲染器」这条运行时链路各版本一致（不改动原文，保留给低版本读者）。
+- 补充注册方式的差异：1.20.1–1.21.1 走 `IClientItemExtensions.initializeClient` + `getCustomRenderer()` 返回 `BlockEntityWithoutLevelRenderer`；1.21.4+ 改为 `SpecialModelRenderer`（`RegisterSpecialModelRendererEvent` 注册 codec `customgun:item_bewlr`）+ `assets/customgun/items/*.json` 的 `minecraft:special` 模型，再桥接回 `IItemBEWLR.cgc$getBEWLR().renderByItem()`。
+
+## 为什么只改这一处
+
+其它渲染文档里对 BEWLR 的提及（`Home.md` 的「renderStatic → BEWLR」、`gui-and-tooltip.md` 的「renderByItem(GUI)」）都是描述**运行时链路**，不涉及「注册进物品模型系统」这件事，各版本通用，不需要加提示。真正描述注册/绑定机制的地方只有 `rendering-entry-points.md` 的「物品与渲染器的绑定」一节，所以补充在这里最合适，也符合“仅加一个提示、不做大改”的要求。
+
+## 校验
+
+- 注释里引用的 codec id `customgun:item_bewlr` 与当前代码 `IItemBEWLR.REGISTRY_LOCATION` 一致；`NeoBEWLR` / `NeoSpecialModelRendererRegistry` / `minecraft:special` 也一一对应，没有笔误。
+- `git status` 仅 `rendering-entry-points.md` 一个文件改动，未 commit，留给你在 core1.20.1 分支手动提交。

@@ -374,7 +374,12 @@ public class _AttachmentModelRender {
     public static Vector3f getBedrockPartCenter(PoseStack poseStack, @NotNull List<BedrockPart> path) {
         Vector3f result;
         poseStack.pushPose(); {
-//            poseStack.last().pose().mulLocal(ClientRenderHelper.GL._getModelViewMatrix()); // 加速渲染的兼容，正常应该不需要
+            /*
+            把模型空间换算到视图空间，与三角形扇（圆形目镜孔）保持同一坐标系
+            1.21.1及以前用的是过时的，乘了也没效果
+            1.21.4起是刚需
+             */
+            poseStack.last().pose().mulLocal(ClientRenderHelper.GL._getModelViewMatrix());
 
             for (int i = 0; i < path.size(); i++) {
                 BedrockPart part = path.get(i);

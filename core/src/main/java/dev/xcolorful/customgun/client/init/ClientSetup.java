@@ -5,8 +5,6 @@
 package dev.xcolorful.customgun.client.init;
 
 import dev.xcolorful.customgun.client.gui.overlay.sub.DefaultCrosshair;
-import dev.xcolorful.customgun.client.util.ClientRenderHelper;
-import net.minecraft.client.Minecraft;
 
 public class ClientSetup {
 
@@ -17,8 +15,18 @@ public class ClientSetup {
     private ClientSetup() {}
 
     public void onClientSetup() {
-        ClientRenderHelper.ensureMainRenderTargetStencil(Minecraft.getInstance()); // 没什么用，但可能增加一些兼容性
-
         DefaultCrosshair.init();
+    }
+
+    @FunctionalInterface
+    public interface MainRenderTargetConfig {
+        void enableStencil();
+    }
+    public void onConfigureMainRenderTarget(MainRenderTargetConfig config) {
+        /*
+        可以让第一次用模板的时候不会出现一帧黑屏
+        也可能增加一些对其他模组兼容性
+         */
+        config.enableStencil();
     }
 }

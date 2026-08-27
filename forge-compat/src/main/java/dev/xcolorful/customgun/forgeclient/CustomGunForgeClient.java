@@ -18,11 +18,13 @@ import dev.xcolorful.customgun.client.CustomGunClient;
 import dev.xcolorful.customgun.client.api.input.IKeyMapping;
 import dev.xcolorful.customgun.client.api.minecraft.access.IClientAccessTransformer;
 import dev.xcolorful.customgun.client.api.minecraft.item.IClientItemExtensionProvider;
+import dev.xcolorful.customgun.client.api.minecraft.stencil.IStencilOperator;
 import dev.xcolorful.customgun.core.api.event.IEventRegister;
 import dev.xcolorful.customgun.forgeclient.event.ForgeClientEventRegister;
 import dev.xcolorful.customgun.forgeclient.input.ForgeKeyMapping;
 import dev.xcolorful.customgun.forgeclient.item.ForgeClientItemExtensionProvider;
 import dev.xcolorful.customgun.forgeclient.minecraft.access.ForgeClientAccessTransformer;
+import dev.xcolorful.customgun.forgeclient.minecraft.stencil.ForgeStencilOperator;
 
 public class CustomGunForgeClient {
 
@@ -31,6 +33,7 @@ public class CustomGunForgeClient {
     public static IKeyMapping.Creator keyMappingCreator;
     public static IClientAccessTransformer accessTransformer;
     public static IClientItemExtensionProvider clientItemExtensionProvider;
+    public static IStencilOperator stencilOperator;
 
     public static void init() {
         if (initialized) return;
@@ -38,10 +41,12 @@ public class CustomGunForgeClient {
         CustomGunForgeClient.keyMappingCreator = new ForgeKeyMapping.Creator();
         CustomGunForgeClient.accessTransformer = new ForgeClientAccessTransformer();
         CustomGunForgeClient.clientItemExtensionProvider = new ForgeClientItemExtensionProvider();
+        CustomGunForgeClient.stencilOperator = new ForgeStencilOperator();
 
         CustomGunClient.init(CustomGunForgeClient.keyMappingCreator,
                 CustomGunForgeClient.accessTransformer,
-                CustomGunForgeClient.clientItemExtensionProvider);
+                CustomGunForgeClient.clientItemExtensionProvider,
+                CustomGunForgeClient.stencilOperator);
         initialized = true;
     }
 }

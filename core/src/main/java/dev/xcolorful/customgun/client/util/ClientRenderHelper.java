@@ -143,8 +143,8 @@ public class ClientRenderHelper {
         public static void _stencilOp(int stencilFail, int depthFail, int pass) {
             // [1.20.1, 1.21.6)
             RenderSystem.stencilOp(stencilFail, depthFail, pass);
-            // [1.21.6, )
 
+            // [1.21.6, )
             if (true) return; // 让IDE保留下面的引用关系
             stencilState.sFrontFunc = StencilFunction.of(stencilFail);
             stencilState.sFrontDepthFail = StencilOperation.of(depthFail);

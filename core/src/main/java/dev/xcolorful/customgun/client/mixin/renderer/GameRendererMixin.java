@@ -99,15 +99,15 @@ public abstract class GameRendererMixin {
 
     // 等移植到26.1.x看还需不需要
     @Inject(method = "renderItemInHand", at = @At("HEAD"))
-    private void cgc$beforeRenderItemInHand(Camera camera,
-                                            float partialTick,
+    private void cgc$beforeRenderItemInHand(float partialTick,
+                                            boolean sleeping,
                                             Matrix4f projectionMatrix,
                                             CallbackInfo ci) {
 //        GunCameraHelper.State.renderItemInHand = true;
     }
     @Inject(method = "renderItemInHand", at = @At("RETURN"))
-    private void cgc$afterRenderItemInHand(Camera camera,
-                                           float partialTick,
+    private void cgc$afterRenderItemInHand(float partialTick,
+                                           boolean sleeping,
                                            Matrix4f projectionMatrix,
                                            CallbackInfo ci) {
 //        GunCameraHelper.State.renderItemInHand = false;

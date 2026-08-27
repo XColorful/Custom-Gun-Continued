@@ -68,16 +68,16 @@ public class ClientRenderHelper {
         }
 
         // [1.20.1, 1.21.6)
-        GL11.glEnable(GL11.GL_STENCIL_TEST);
+//        GL11.glEnable(GL11.GL_STENCIL_TEST);
     }
 
     public static void disableItemEntityStencilTest() {
         RenderSystem.assertOnRenderThread();
         // [1.20.1, 1.21.6)
-        GL11.glDisable(GL11.GL_STENCIL_TEST);
+//        GL11.glDisable(GL11.GL_STENCIL_TEST);
 
         // [1.21.6, )
-//        RenderSystem.disableStencil();
+        RenderSystem.disableStencil();
     }
 
     public static void renderFirstPersonArm(LocalPlayer player, HumanoidArm hand, PoseStack matrixStack, int combinedLight) {
@@ -135,10 +135,9 @@ public class ClientRenderHelper {
 
         public static void _stencilFunc(int func, int ref, int readMask) {
             // [1.20.1, 1.21.6)
-            RenderSystem.stencilFunc(func, ref, readMask);
+//            RenderSystem.stencilFunc(func, ref, readMask);
 
             // [1.21.6, )
-            if (true) return; // 让IDE保留下面的引用关系
             stencilState.sFrontFunc = StencilFunction.of(func);
             stencilState.sBackFunc = StencilFunction.of(func);
             stencilState.sRef = ref;
@@ -147,11 +146,10 @@ public class ClientRenderHelper {
         }
         public static void _stencilOp(int stencilFail, int depthFail, int pass) {
             // [1.20.1, 1.21.6)
-            RenderSystem.stencilOp(stencilFail, depthFail, pass);
+//            RenderSystem.stencilOp(stencilFail, depthFail, pass);
 
             // [1.21.6, )
-            if (true) return; // 让IDE保留下面的引用关系
-            stencilState.sFrontFunc = StencilFunction.of(stencilFail);
+            stencilState.sFrontFail = StencilOperation.of(stencilFail);
             stencilState.sFrontDepthFail = StencilOperation.of(depthFail);
             stencilState.sFrontPass = StencilOperation.of(pass);
             stencilState.sBackFail = StencilOperation.of(stencilFail);
@@ -162,10 +160,9 @@ public class ClientRenderHelper {
 
         public static void _colorMask(boolean red, boolean green, boolean blue, boolean alpha) {
             // [1.20.1, 1.21.6)
-            RenderSystem.colorMask(red, green, blue, alpha);
+//            RenderSystem.colorMask(red, green, blue, alpha);
 
             // [1.21.6, )
-            if (true) return; // 让IDE保留下面的引用关系
             boolean off = !(red | green | blue | alpha);
             if (off != stencilState.sColorWriteOff) {
                 if (off) {
@@ -178,12 +175,11 @@ public class ClientRenderHelper {
         }
         public static void _depthMask(boolean flag) {
             // [1.20.1, 1.21.6)
-            RenderSystem.depthMask(flag);
+//            RenderSystem.depthMask(flag);
 
             // [1.21.6, )
-            if (true) return; // 让IDE保留下面的引用关系
             boolean off = !flag;
-            if (off != stencilState.sDepthTestOff) {
+            if (off != stencilState.sDepthWriteOff) {
                 if (off) {
                     stencilOperator.pushPipelineModifier(PipelineModifier.NO_DEPTH_WRITE);
                 } else {
@@ -194,10 +190,9 @@ public class ClientRenderHelper {
         }
         public static void _stencilMask(int mask) {
             // [1.20.1, 1.21.6)
-            RenderSystem.stencilMask(mask);
+//            RenderSystem.stencilMask(mask);
 
             // [1.21.6, )
-            if (true) return; // 让IDE保留下面的引用关系
             stencilState.sWriteMask = mask;
             stencilOperator.applyStencil(stencilState);
         }
@@ -214,19 +209,17 @@ public class ClientRenderHelper {
         }
         public static void glClearStencil(int s) {
             // [1.20.1, 1.21.6)
-            RenderSystem.clearStencil(s);
+//            RenderSystem.clearStencil(s);
 
             // [1.21.6, )
-            if (true) return; // 让IDE保留下面的引用关系
             GL11.glClearStencil(s);
         }
 
         public static void _disableDepthTest() {
             // [1.20.1, 1.21.6)
-            RenderSystem.disableDepthTest();
+//            RenderSystem.disableDepthTest();
 
             // [1.21.6, )
-            if (true) return; // 让IDE保留下面的引用关系
             if (!stencilState.sDepthTestOff) {
                 stencilOperator.pushPipelineModifier(PipelineModifier.NO_DEPTH_TEST);
                 stencilState.sDepthTestOff = true;
@@ -234,10 +227,9 @@ public class ClientRenderHelper {
         }
         public static void _enableDepthTest() {
             // [1.20.1, 1.21.6)
-            RenderSystem.enableDepthTest();
+//            RenderSystem.enableDepthTest();
 
             // [1.21.6, )
-            if (true) return; // 让IDE保留下面的引用关系
             if (stencilState.sDepthTestOff) {
                 stencilOperator.popPipelineModifier();
                 stencilState.sDepthTestOff = false;
@@ -246,18 +238,16 @@ public class ClientRenderHelper {
 
         public static void _enableBlend() {
             // [1.20.1, 1.21.6)
-            RenderSystem.enableBlend();
+//            RenderSystem.enableBlend();
 
             // [1.21.6, )
-            if (true) return; // 让IDE保留下面的引用关系
             GlStateManager._enableBlend();
         }
         public static void _disableBlend() {
             // [1.20.1, 1.21.6)
-            RenderSystem.disableBlend();
+//            RenderSystem.disableBlend();
 
             // [1.21.6, )
-            if (true) return; // 让IDE保留下面的引用关系
             GlStateManager._disableBlend();
         }
 

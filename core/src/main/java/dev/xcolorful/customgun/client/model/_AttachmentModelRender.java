@@ -328,7 +328,19 @@ public class _AttachmentModelRender {
                             centerX + cos * finalRad, centerY + sin * finalRad, -90.0f)
                             .setColor(255, 255, 255, 255);
                 }
-                renderType.draw(builder.buildOrThrow());
+                // [1.20.1, 1.21.1)
+//                BufferUploader.drawWithShader(builder.end());
+
+                // [1.21.1, 1.21.6)
+//                BufferUploader.drawWithShader(builder.buildOrThrow());
+
+                // [1.21.6, )
+                /*
+                1.21.6 起 RenderType#draw 会按该 RenderType 的顶点格式（POSITION_COLOR_TEX）解析网格
+                这里画的是 POSITION_COLOR 三角形扇，要改用 debugTriangleFan（POSITION_COLOR + TRIANGLE_FAN）
+                否则顶点数据被错误解析，圆形模板孔（GL_INVERT）画歪
+                 */
+                RenderType.debugTriangleFan().draw(builder.buildOrThrow());
             }
         }
 
@@ -401,11 +413,19 @@ public class _AttachmentModelRender {
         poseStack.popPose();
         return result;
     }
+
+    // --------Compat--------
+    // 跨版本适配层
     
     private static void _clearStencilBuffer() {
-        RenderTarget target = Minecraft.getInstance().getMainRenderTarget();
-        if (target.useStencil && target.getDepthTexture() != null) {
-            RenderSystem.getDevice().createCommandEncoder().clearStencilTexture(target.getDepthTexture(), 0);
-        }
+        // [1.20.1, 1.21.6)
+//        ClientRenderHelper.GL.glClearStencil(0);
+//        ClientRenderHelper.GL._clear(GL11.GL_STENCIL_BUFFER_BIT);
+
+        // [1.21.6, )
+       RenderTarget target = Minecraft.getInstance().getMainRenderTarget();
+       if (target.useStencil && target.getDepthTexture() != null) {
+           RenderSystem.getDevice().createCommandEncoder().clearStencilTexture(target.getDepthTexture(), 0);
+       }
     }
 }

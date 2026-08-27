@@ -1,6 +1,6 @@
 package dev.xcolorful.customgun.client.api.minecraft.pipeline;
 
-import com.mojang.blaze3d.pipeline.RenderPipeline;
+//import com.mojang.blaze3d.pipeline.RenderPipeline; // 1.21.4临时没有RenderPipeline
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -11,6 +11,6 @@ import org.jetbrains.annotations.ApiStatus;
 @FunctionalInterface
 public interface IPipelineModifier {
 
-    RenderPipeline apply(RenderPipeline pipeline,
+    Object apply(Object pipeline,
                          ResourceLocation pipelineLocation);
 }

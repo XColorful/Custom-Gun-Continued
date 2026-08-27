@@ -13,7 +13,7 @@ import javax.annotation.Nullable;
 /**
  * 为了跨版本提前知道原版1.21.4的移植方式，添加此类作为占位符
  */
-// @Deprecated(since = "1.21.4", forRemoval = false)
+@Deprecated(since = "1.21.4", forRemoval = false)
 @ApiStatus.AvailableSince("1.21.4")
 public interface SpecialModelRenderer<T> {
 

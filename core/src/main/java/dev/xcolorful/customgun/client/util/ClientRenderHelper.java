@@ -73,7 +73,11 @@ public class ClientRenderHelper {
 
     public static void disableItemEntityStencilTest() {
         RenderSystem.assertOnRenderThread();
+        // [1.20.1, 1.21.6)
         GL11.glDisable(GL11.GL_STENCIL_TEST);
+
+        // [1.21.6, )
+//        RenderSystem.disableStencil();
     }
 
     public static void renderFirstPersonArm(LocalPlayer player, HumanoidArm hand, PoseStack matrixStack, int combinedLight) {

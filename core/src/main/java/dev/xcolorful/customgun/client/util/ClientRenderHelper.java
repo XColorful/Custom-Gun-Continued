@@ -165,10 +165,9 @@ public class ClientRenderHelper {
             boolean off = !(red | green | blue | alpha);
             if (off != stencilState.sColorWriteOff) {
                 if (off) {
-                    var pipelineModifier = PipelineModifier.NO_COLOR_WRITE;
-//                    RenderSystem.pushPipelineModifier(pipelineModifier);
+                    stencilOperator.pushPipelineModifier(PipelineModifier.NO_COLOR_WRITE);
                 } else {
-//                    RenderSystem.popPipelineModifier();
+                    stencilOperator.popPipelineModifier();
                 }
                 stencilState.sColorWriteOff = off;
             }
@@ -182,11 +181,9 @@ public class ClientRenderHelper {
             boolean off = !flag;
             if (off != stencilState.sDepthTestOff) {
                 if (off) {
-                    var pipelineModifier = PipelineModifier.NO_DEPTH_WRITE;
-//                    RenderSystem.pushPipelineModifier(pipelineModifier);
-                }
-                else {
-//                    RenderSystem.popPipelineModifier();
+                    stencilOperator.pushPipelineModifier(PipelineModifier.NO_DEPTH_WRITE);
+                } else {
+                    stencilOperator.popPipelineModifier();
                 }
                 stencilState.sDepthWriteOff = off;
             }
@@ -227,8 +224,7 @@ public class ClientRenderHelper {
             // [1.21.6, )
             if (true) return; // 让IDE保留下面的引用关系
             if (!stencilState.sDepthTestOff) {
-                var pipelineModifier = PipelineModifier.NO_DEPTH_TEST;
-//                RenderSystem.pushPipelineModifier(pipelineModifier);
+                stencilOperator.pushPipelineModifier(PipelineModifier.NO_DEPTH_TEST);
                 stencilState.sDepthTestOff = true;
             }
         }
@@ -239,7 +235,7 @@ public class ClientRenderHelper {
             // [1.21.6, )
             if (true) return; // 让IDE保留下面的引用关系
             if (stencilState.sDepthTestOff) {
-//                RenderSystem.popPipelineModifier();
+                stencilOperator.popPipelineModifier();
                 stencilState.sDepthTestOff = false;
             }
         }

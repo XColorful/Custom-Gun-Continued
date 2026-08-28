@@ -342,7 +342,7 @@ public class _AttachmentModelRender {
                  */
 //                RenderType.debugTriangleFan().draw(builder.buildOrThrow());
 
-                // [1.21.11, )
+                // [1.21.11, , 26.2)
                 RenderTypes.debugTriangleFan().draw(builder.buildOrThrow());
             }
         }

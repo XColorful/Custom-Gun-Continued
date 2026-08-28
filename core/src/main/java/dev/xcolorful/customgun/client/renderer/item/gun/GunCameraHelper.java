@@ -176,6 +176,10 @@ public class GunCameraHelper implements IEventHandler {
             // [1.20.1, 26.1)
             result = !State.renderItemInHand;
 
+            /*
+            26.1 起 getFov 从 GameRenderer 移到了 Camera
+            区分 world/hand 的 useFovSetting 需要事件的 usedConfiguredFov 提供
+             */
             // [26.1, 26.2)
 //            result = Boolean.FALSE.equals(event.useConfiguredFov());
         }

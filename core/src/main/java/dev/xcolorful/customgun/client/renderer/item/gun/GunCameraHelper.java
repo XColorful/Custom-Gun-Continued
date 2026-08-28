@@ -160,21 +160,26 @@ public class GunCameraHelper implements IEventHandler {
     }
 
     private void onComputeFovEvent(IComputeFovEvent event) {
-        if (State.renderItemInHand) {
-            // 改手部渲染FOV
-            this._applyGunModelFovModifying(event);
-        } else {
+        if (_isLevelRenderFov(event)) {
             // 改世界渲染FOV
             this._applyScopeMagnification(event);
+        } else {
+            // 改手部渲染FOV
+            this._applyGunModelFovModifying(event);
         }
     }
     /**
      * 判断是否是世界渲染的 FOV，反之则是手部渲染 FOV 事件
-     * <br>
-     * @deprecated {@link IComputeFovEvent#useConfiguredFov()}在26.2被移除
      */
-    private boolean isLevelRenderFov(IComputeFovEvent event) {
-        return !State.renderItemInHand;
+    private boolean _isLevelRenderFov(IComputeFovEvent event) {
+        boolean result; {
+            // [1.20.1, 26.1)
+            result = !State.renderItemInHand;
+
+            // [26.1, 26.2)
+//            result = Boolean.FALSE.equals(event.useConfiguredFov());
+        }
+        return result;
     }
     private void _applyScopeMagnification(IComputeFovEvent event) {
         Entity entity = ClientRenderUtils.getEntity(event.getCamera());

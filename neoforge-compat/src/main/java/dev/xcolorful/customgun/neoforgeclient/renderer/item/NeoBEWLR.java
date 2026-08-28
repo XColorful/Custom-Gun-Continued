@@ -49,9 +49,12 @@ public class NeoBEWLR implements
                        boolean hasFoilType) {
         if (itemStack == null || !(itemStack.getItem() instanceof IItemBEWLR itemBEWLR)) return;
 
+        ItemDisplayContext itemDisplayContext = dev.xcolorful.customgun.client.api.renderer.item.ItemDisplayContextTracker.current();
+        if (true) itemDisplayContext = displayContext; // 26.1移除
+
         var bewlr = itemBEWLR.cgc$getBEWLR(); // 用var就跟ResourceLocation是一样的手法 (把import给隐身，省一个移植修改)，除此之外没别的用意
         bewlr.renderByItem(itemStack,
-                displayContext,
+                itemDisplayContext,
                 poseStack,
                 bufferSource,
                 packedLight, packedOverlay);

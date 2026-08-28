@@ -114,7 +114,29 @@ public class ClientRenderUtils {
             return RenderType.energySwirl(textureLocation, offsetX, offsetY);
         }
         public static RenderType entityCutout(ResourceLocation textureLocation) {
+            /*
+            在1.20.1
+            entityCutout -> ENTITY_CUTOUT (面剔除)
+            entityCutoutNoCull -> ENTITY_CUTOUT_NO_CULL
+             */
+            // [1.20.1, 1.21.11)
             return RenderType.entityCutout(textureLocation);
+
+            /*
+            在1.21.11
+            entityCutout -> ENTITY_CUTOUT (面剔除)
+            entityCutoutNoCull -> ENTITY_CUTOUT_NO_CULL
+             */
+            // [1.21.11, 26.1)
+//            return RenderTypes.entityCutout(textureLocation);
+
+            /*
+            在26.1
+            entityCutoutCull -> ENTITY_CUTOUT_CULL (面剔除)
+            entityCutout -> ENTITY_CUTOUT
+             */
+            // [26.1, )
+//            return RenderTypes.entityCutoutCull(textureLocation);
         }
         public static RenderType entityTranslucent(ResourceLocation textureLocation) {
             return RenderType.entityTranslucent(textureLocation);

@@ -5,7 +5,6 @@ import com.mojang.serialization.MapCodec;
 import dev.xcolorful.customgun.CustomGun;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.Vector3f;
@@ -24,7 +23,7 @@ import java.util.function.Consumer;
 public interface _SpecialModelRenderer<T> {
 
     void submit(@Nullable T patterns,
-                ItemDisplayContext displayContext,
+//                ItemDisplayContext displayContext, // 26.1移除
                 PoseStack poseStack,
                 SubmitNodeCollector nodeCollector,
                 int packedLight, int packedOverlay,

@@ -455,3 +455,69 @@ Both issue 2 (scope magnification) and issue 3 (sway) shared the same root cause
     - 「被 ocular 挡住的部分」具体是**镜身金属外壳**没挡住枪身，还是**镜片内**能看到不该有的枪身部分？最好能截个图或描述一下方向（比如是透过镜片看到枪身、还是镜身外圈处露枪身）。
 
 如果问题 2、3 测完确认已修复而问题 1 仍在，我会针对红点那条 `renderSight` 路径加最小化日志（只记录 stencil/depth 状态切换）来定位。
+
+# 
+
+```
+之前你修改完的状态下，仅剩问题1没解决，问题2、3解决了
+
+我刚才调整了跨版本的写法，但是现在改完后出现了问题，目前的异常是：
+- 开镜后fov没变，只是视角枪械配件ocular往屏幕中间移动到开镜状态，并且离ocular更近
+- 红点瞄准镜是enable_sight=true,enable_scope=false，问题还在
+
+你检查下当前状态以及，git暂存区里的写法，跟刚才你改完时的差异
+- 对于不影响因为我手贱改错的部分，如一些我刻意保留的注释，仍然保留
+- 由于上下文长度限制，本次对话不研究红点瞄准镜的问题，把状态修复完我验证完就结束
+```
+
+# 
+
+I found the bug. The user refactored my FOV fix into a `_isLevelRenderFov` method but inverted the logic. Let me verify the compile state first, then fix.
+
+The compile passes — the user's changes are syntactically valid. The only bug is the inverted `_isLevelRenderFov` logic. Let me fix it.
+
+状态已修复。问题根因与改动如下。
+
+## 根因
+
+你把手动改 FOV 时引入了一个**逻辑取反错误**。
+
+你把我的 `onComputeFovEvent` 里的判断重构成了 `_isLevelRenderFov(event)` 方法，但方法体写成了：
+
+```java
+result = Boolean.FALSE.equals(event.useConfiguredFov());
+```
+
+`useConfiguredFov()` 在 26.1.2 里 **true = 世界 FOV、false = 手部 FOV**（来自 `Camera.calculateFov`/`calculateHudFov` 的 `useFovSetting` 参数）。而方法名叫 `_isLevelRenderFov`（判断"是否是世界渲染 FOV"），所以 `Boolean.FALSE.equals(...)` 正好把世界/手部判断反了：
+
+- 世界 FOV 事件被当成手部 → 走 `_applyGunModelFovModifying`，倍镜缩放没套到世界视角 → "开镜后 fov 没变"
+- 手部 FOV 事件被当成世界 → 走 `_applyScopeMagnification`，倍镜缩放到手部模型 → "ocular 往屏幕中间移动、更近"
+
+## 修改
+
+[GunCameraHelper.java:184](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/client/renderer/item/gun/GunCameraHelper.java:184) 只改了这一行：
+
+```java
+result = Boolean.FALSE.equals(event.useConfiguredFov());
+```
+
+→
+
+```java
+result = Boolean.TRUE.equals(event.useConfiguredFov());
+```
+
+（等价于"useConfiguredFov == true 才是世界 FOV"，与上面 `[1.20.1, 26.1)` 分支里 `!State.renderItemInHand` 的语义一致。）
+
+## 保留了你刻意保留/改动的部分
+
+- `ItemDisplayContextTracker` 移到 `client/api/renderer/item/`，`NeoBEWLR`、`ItemStackRenderStateMixin` 的 import 已指向新位置，未动。
+- `_SpecialModelRenderer` 和 `NeoBEWLR` 里重新加回 `getExtents(Set<Vector3f>)`、`// 26.1移除`、`// @Deprecated(since = "1.21.11")` 等注释，均保留。
+- `ItemStackRenderStateMixin` 工作区里已恢复成完整可用的 mixin（`@Mixin`/`@Shadow`/`@Inject` 均启用），未动。
+- 你的 `_isLevelRenderFov` 方法结构、`// [1.20.1, 26.1)` / `// [26.1, 26.2)` 版本区间注释、以及 `GameRendererMixin` 里 `renderItemInHand` 的 `renderItemInHand = true/false` 赋值，都保留。
+
+## 验证
+
+`./gradlew :core:compileJava` → **BUILD SUCCESSFUL**。未 commit。
+
+你可以直接测开镜 FOV 是否恢复；红点问题本次不展开。

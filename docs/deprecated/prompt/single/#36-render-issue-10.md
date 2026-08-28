@@ -601,3 +601,44 @@ The scope rendering is now working, but the hand is incorrectly showing through 
 开镜（红点 / 筒镜）确认：ocular 范围内只显示准心，手不再出现；不开镜时手正常显示。
 
 我没有 commit，工作区保持修改状态。
+
+# 
+
+```
+我现在完成了对这个移植的最终修改，已经提交commit，当前状态是能工作的状态，以现在的代码为准：
+- 检查CGC渲染文档里是否有需要补充说明的
+- 修改后的内容将从1.20.1就可见，所以不是让你删掉1.20.1-1.21.10的内容改成1.21.10，而是在合适位置补充1.21.10起变成什么样
+- 由于只是即时渲染的差异，注意不应出现大量的文档修改，本次修改仅是给低版本浏览的时候一个“高版本渲染有变”的提示
+- 如果没有这个说明，考虑是否不应该添加这个说明
+
+完成后不要commit，我检查后会手动在core1.20.1的分支commit
+```
+
+# 
+
+The user has finalized their own implementation. Now I need to review the CGC render docs and add minimal "1.21.10 changed" notes where appropriate. Let me read the relevant documentation.
+
+I now have full context. The docs describe the render architecture generically, with one existing "跨版本" note about the item-renderer registration. The 1.21.10 port introduced three "immediate-rendering vs deferred/pipeline" differences worth flagging. Let me add minimal notes in the two most relevant files.
+
+完成。我只做了文档补充，没有改动任何代码，也没有 commit。
+
+## 检查结论
+
+CGC 渲染文档里只有一处既有跨版本说明（[rendering-entry-points.md](app://localhost/epitaxy/docs/architecture/client/render/rendering-entry-points.md) 的"物品渲染器注册方式 1.21.4 起变了"），但没有覆盖本次 1.21.10 的三处"即时渲染 → 延迟/管线"差异。这些差异从 1.20.1 的代码就可见，低版本浏览者确实需要一个"高版本有变"的提示，所以补了三行说明。
+
+## 补充的三处说明
+
+1. **[functional-renderers.md](app://localhost/epitaxy/docs/architecture/client/render/functional-renderers.md) 手臂渲染**：1.21.10 起原版 `AvatarRenderer#renderHand` 改经 `SubmitNodeCollector` 延迟提交，手会在模板测试关闭后才绘制、穿透镜片；CGC 因此让 `renderFirstPersonArm` 改回即时渲染手臂。
+    
+2. **[functional-renderers.md](app://localhost/epitaxy/docs/architecture/client/render/functional-renderers.md) 瞄具模板测试**：1.21.10 起 `enableStencil/disableStencil` 被移除，模板测试改由 `RenderPipeline` 携带，CGC 在 `NeoStencilOperator` 累积状态并经 mixin 注入。
+    
+3. **[rendering-entry-points.md](app://localhost/epitaxy/docs/architecture/client/render/rendering-entry-points.md) 物品渲染器**：1.21.10 起 `SpecialModelRenderer` 入口从 `render(MultiBufferSource)` 改为 `submit(SubmitNodeCollector)`，`NeoBEWLR.submit` 自行 flush 全局 buffer。
+    
+
+## 说明
+
+- 三处都是**追加**的块引用，没有删除或改写 1.20.1–1.21.10 的既有描述，符合"补充 1.21.10 起变成什么样"的要求。
+- 措辞与最终代码里的注释术语一致（如 `NeoStencilOperator` 里"再由 mixin 在管线应用时注入"）。
+- 只动了两个文档文件，改动量很小（3 行块引用）。
+
+工作区当前只有这两个文档文件的未提交修改，等你 review 后在 core1.20.1 分支手动 commit。

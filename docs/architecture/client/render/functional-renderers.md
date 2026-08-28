@@ -39,6 +39,8 @@
 
 `HandRender`（`Left` / `Right`）绑定到 `lefthand_pos` / `righthand_pos` 节点，仅第一人称生效。渲染时委托到模型渲染结束后，在定位组节点决定的位置和朝向上绘制 Minecraft 玩家手臂模型的对应部分。改装界面打开时手臂渲染被关闭（`setRenderHand(false)`）。
 
+> 1.21.10 起原版 `AvatarRenderer#renderHand` 改经 `SubmitNodeCollector` 延迟提交，手会在瞄具模板测试关闭后才被绘制、穿透镜片；CGC 因此让 `ClientRenderHelper.renderFirstPersonArm` 改回即时渲染手臂（`ModelPart.render`），使手的绘制仍处于模板测试期间。
+
 ## 文字渲染
 
 `TextRender` 绑定到 `GunDisplay.modelNodeTextDisplay` 指定的模型节点。渲染时先经占位符系统解析文本，再在节点位置用 `Font.drawInBatch` 绘制 3D 文本，支持颜色、阴影、缩放、光照等级配置。仅第一人称生效。
@@ -52,6 +54,8 @@
 3. 圆形遮罩通过绘制三角形扇写入模板，实现透过镜片看世界的圆形视野。
 
 这套逻辑在配件模型渲染内部完成，是配件模型区别于普通模型的核心。
+
+> 1.21.10 起 `RenderSystem.enableStencil/disableStencil` 被移除，模板测试改由 `RenderPipeline` 携带；CGC 在 `NeoStencilOperator` 里累积模板状态，并经 mixin 在管线应用时注入。
 
 ## 节点可见性
 

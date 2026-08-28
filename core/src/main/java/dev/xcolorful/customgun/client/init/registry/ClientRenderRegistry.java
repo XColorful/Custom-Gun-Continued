@@ -85,6 +85,8 @@ public class ClientRenderRegistry {
 
     @ApiStatus.AvailableSince("1.21.6")
     public static void onRegisterRenderPipelines(Consumer<Object> registrar) { // 1.21.4没有RenderPipeline
+//        if (true) return; // [1.21.10, )
+
 //        registrar.accept(LaserBeamRenderState.LASER_BEAM_PIPELINE);
 //        registrar.accept(LaserBeamRenderState.LASER_BEAM_ENTITY_PIPELINE);
 

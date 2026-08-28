@@ -181,7 +181,7 @@ public class GunCameraHelper implements IEventHandler {
             区分 world/hand 的 useFovSetting 需要事件的 usedConfiguredFov 提供
              */
             // [26.1, 26.2)
-//            result = Boolean.FALSE.equals(event.useConfiguredFov());
+//            result = Boolean.TRUE.equals(event.useConfiguredFov());
         }
         return result;
     }

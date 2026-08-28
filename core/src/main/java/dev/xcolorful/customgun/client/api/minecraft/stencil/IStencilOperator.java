@@ -11,4 +11,7 @@ public interface IStencilOperator {
     void pushPipelineModifier(PipelineModifier modifier);
 
     void popPipelineModifier();
+
+    @ApiStatus.AvailableSince("1.21.10")
+    void disableStencil();
 }

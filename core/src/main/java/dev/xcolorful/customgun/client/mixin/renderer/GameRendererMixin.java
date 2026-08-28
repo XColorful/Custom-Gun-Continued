@@ -102,12 +102,12 @@ public abstract class GameRendererMixin {
                                             float deltaPartialTick,
                                             Matrix4fc modelViewMatrix,
                                             CallbackInfo ci) {
-//        GunCameraHelper.State.renderItemInHand = true;
+        GunCameraHelper.State.renderItemInHand = true;
     }
     @Inject(method = "renderItemInHand", at = @At("RETURN"))
     private void cgc$afterRenderItemInHand(CameraRenderState cameraState,
                                            float deltaPartialTick,
                                            Matrix4fc modelViewMatrix, CallbackInfo ci) {
-//        GunCameraHelper.State.renderItemInHand = false;
+        GunCameraHelper.State.renderItemInHand = false;
     }
 }

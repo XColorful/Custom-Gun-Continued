@@ -3,6 +3,7 @@ package dev.xcolorful.customgun.neoforgeclient.renderer.item;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.serialization.MapCodec;
 import dev.xcolorful.customgun.client.api.item.IItemBEWLR;
+import dev.xcolorful.customgun.client.api.renderer.item.ItemDisplayContextTracker;
 import dev.xcolorful.customgun.client.api.renderer.item._SpecialModelRenderer;
 import dev.xcolorful.customgun.client.compat.oculus.OculusCompat;
 import net.minecraft.client.Minecraft;
@@ -49,7 +50,7 @@ public class NeoBEWLR implements
                        boolean hasFoil, int outlineColor) {
         if (itemStack == null || !(itemStack.getItem() instanceof IItemBEWLR itemBEWLR)) return;
 
-        ItemDisplayContext itemDisplayContext = dev.xcolorful.customgun.client.api.renderer.item.ItemDisplayContextTracker.current();
+        ItemDisplayContext itemDisplayContext = ItemDisplayContextTracker.current();
         if (true) itemDisplayContext = displayContext; // 26.1移除
 
         var bewlr = itemBEWLR.cgc$getBEWLR(); // 用var就跟ResourceLocation是一样的手法 (把import给隐身，省一个移植修改)，除此之外没别的用意

@@ -3,6 +3,7 @@ package dev.xcolorful.customgun.forgeclient.renderer.item;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.serialization.MapCodec;
 import dev.xcolorful.customgun.client.api.item.IItemBEWLR;
+import dev.xcolorful.customgun.client.api.renderer.item.ItemDisplayContextTracker;
 import dev.xcolorful.customgun.client.api.renderer.item._SpecialModelRenderer;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -42,9 +43,12 @@ public class ForgeBEWLR implements
                        boolean hasFoilType) {
         if (itemStack == null || !(itemStack.getItem() instanceof IItemBEWLR itemBEWLR)) return;
 
+        ItemDisplayContext itemDisplayContext = ItemDisplayContextTracker.current();
+        if (true) itemDisplayContext = displayContext; // 26.1移除
+
         var bewlr = itemBEWLR.cgc$getBEWLR(); // 用var就跟ResourceLocation是一样的手法 (把import给隐身，省一个移植修改)，除此之外没别的用意
         bewlr.renderByItem(itemStack,
-                displayContext,
+                itemDisplayContext,
                 poseStack,
                 bufferSource,
                 packedLight, packedOverlay);

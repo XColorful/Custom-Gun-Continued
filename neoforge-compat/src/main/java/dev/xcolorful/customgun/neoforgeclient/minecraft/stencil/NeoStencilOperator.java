@@ -10,6 +10,7 @@ import net.neoforged.neoforge.client.stencil.StencilPerFaceTest;
 import net.neoforged.neoforge.client.stencil.StencilTest;
 import org.jetbrains.annotations.ApiStatus;
 
+import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
@@ -34,7 +35,7 @@ public class NeoStencilOperator implements IStencilOperator {
                 StencilFunctionHelper.convert(state.sBackFunc)
         );
 
-        RenderSystem.enableStencil(new StencilTest(
+        CURRENT_STENCIL.set(new StencilTest(
                 front,
                 back,
                 state.sReadMask,
@@ -60,17 +61,18 @@ public class NeoStencilOperator implements IStencilOperator {
      * 这里把当前要生效的模板测试累积到 ThreadLocal，再由 mixin 在管线应用时注入。
      */
     @ApiStatus.AvailableSince("1.21.10")
-    private static final ThreadLocal<Object> CURRENT_STENCIL = new ThreadLocal<>();
+    private static final ThreadLocal<StencilTest> CURRENT_STENCIL = new ThreadLocal<>();
 
     /**
      * 缓存“基础管线 + 模板测试 -> 注入模板后的管线”，保证同一个 {@link RenderPipeline} 对象被复用，
      * 否则 {@code GlDevice#pipelineCache}（IdentityHashMap）每次都会重新编译管线。
      */
-    private static final Map<RenderPipeline, Map<Object, RenderPipeline>> STENCIL_PIPELINE_CACHE = new IdentityHashMap<>();
+    private static final Map<RenderPipeline, Map<StencilTest, RenderPipeline>> STENCIL_PIPELINE_CACHE = new IdentityHashMap<>();
 
     @ApiStatus.AvailableSince("1.21.10")
     @Override
     public void disableStencil() {
+        CURRENT_STENCIL.remove();
     }
 
     /**
@@ -79,6 +81,15 @@ public class NeoStencilOperator implements IStencilOperator {
     @ApiStatus.AvailableSince("1.21.10")
     @ApiStatus.Internal
     public static RenderPipeline applyStencilToPipeline(RenderPipeline pipeline) {
-        return null;
+        StencilTest stencil = CURRENT_STENCIL.get();
+        if (stencil == null) return pipeline;
+        if (pipeline.getStencilTest().filter(stencil::equals).isPresent()) return pipeline;
+
+        return STENCIL_PIPELINE_CACHE
+                .computeIfAbsent(pipeline, $ -> new HashMap<>())
+                .computeIfAbsent(stencil, s -> pipeline.toBuilder()
+                        .withStencilTest(s)
+                        .withLocation(pipeline.getLocation().withSuffix("/cgc_stencil"))
+                        .build());
     }
 }

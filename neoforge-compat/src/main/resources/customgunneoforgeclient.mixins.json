@@ -7,7 +7,8 @@
     "entity.GunProjectileMixin",
     "item.AmmoItemMixin",
     "item.AttachmentItemMixin",
-    "item.GunItemMixin"
+    "item.GunItemMixin",
+    "pipeline.RenderSystemMixin"
   ],
   "injectors": {
     "defaultRequire": 1

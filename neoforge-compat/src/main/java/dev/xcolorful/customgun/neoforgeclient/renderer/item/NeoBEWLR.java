@@ -49,12 +49,15 @@ public class NeoBEWLR implements
                        boolean hasFoil, int outlineColor) {
         if (itemStack == null || !(itemStack.getItem() instanceof IItemBEWLR itemBEWLR)) return;
 
+        ItemDisplayContext itemDisplayContext = dev.xcolorful.customgun.client.api.renderer.item.ItemDisplayContextTracker.current();
+        if (true) itemDisplayContext = displayContext; // 26.1移除
+
         var bewlr = itemBEWLR.cgc$getBEWLR(); // 用var就跟ResourceLocation是一样的手法 (把import给隐身，省一个移植修改)，除此之外没别的用意
         // 1.21.10 起 SpecialModelRenderer 改为 submit(SubmitNodeCollector)，不再由原版在 submit 后 endBatch。
         // renderByItem 里 GUI 槽位贴图会直接写入 bufferSource 而不 flush，需要在这里补上 flush；3D 模型渲染走全局 bufferSource 并自行 endBatch。
         MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
         bewlr.renderByItem(itemStack,
-                displayContext,
+                itemDisplayContext,
                 poseStack,
                 bufferSource,
                 packedLight, packedOverlay);

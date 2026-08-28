@@ -335,13 +335,16 @@ public class _AttachmentModelRender {
                 // [1.21.1, 1.21.6)
 //                BufferUploader.drawWithShader(builder.buildOrThrow());
 
-                // [1.21.6, )
+                // [1.21.6, 1.21.11)
                 /*
                 1.21.6 起 RenderType#draw 会按该 RenderType 的顶点格式（POSITION_COLOR_TEX）解析网格
                 这里画的是 POSITION_COLOR 三角形扇，要改用 debugTriangleFan（POSITION_COLOR + TRIANGLE_FAN）
                 否则顶点数据被错误解析，圆形模板孔（GL_INVERT）画歪
                  */
 //                RenderType.debugTriangleFan().draw(builder.buildOrThrow());
+
+                // [1.21.11, )
+//                RenderTypes.debugTriangleFan().draw(builder.buildOrThrow());
             }
         }
 

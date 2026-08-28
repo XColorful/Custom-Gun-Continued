@@ -21,6 +21,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -342,7 +343,7 @@ public class _AttachmentModelRender {
                  */
 //                RenderType.debugTriangleFan().draw(builder.buildOrThrow());
 
-                // [1.21.11, , 26.2)
+                // [1.21.11, 26.2)
                 RenderTypes.debugTriangleFan().draw(builder.buildOrThrow());
             }
         }

@@ -45,7 +45,7 @@ public class NeoBEWLR implements
 
     @Override
     public void submit(@Nullable ItemStack itemStack,
-                       ItemDisplayContext displayContext,
+//                       ItemDisplayContext displayContext, // 26.1移除
                        PoseStack poseStack,
                        SubmitNodeCollector nodeCollector,
                        int packedLight, int packedOverlay,
@@ -53,7 +53,7 @@ public class NeoBEWLR implements
         if (itemStack == null || !(itemStack.getItem() instanceof IItemBEWLR itemBEWLR)) return;
 
         ItemDisplayContext itemDisplayContext = ItemDisplayContextTracker.current();
-        if (true) itemDisplayContext = displayContext; // 26.1移除
+//        if (true) itemDisplayContext = displayContext; // 26.1移除
 
         var bewlr = itemBEWLR.cgc$getBEWLR(); // 用var就跟ResourceLocation是一样的手法 (把import给隐身，省一个移植修改)，除此之外没别的用意
         // 1.21.10 起 SpecialModelRenderer 改为 submit(SubmitNodeCollector)，不再由原版在 submit 后 endBatch。
@@ -101,11 +101,11 @@ public class NeoBEWLR implements
         return itemStack.getItem() instanceof IItemBEWLR ? itemStack : null;
     }
 
-    public record BewlrUnbaked() implements SpecialModelRenderer.Unbaked {
+    public record BewlrUnbaked() implements SpecialModelRenderer.Unbaked<ItemStack> {
         public static final MapCodec<BewlrUnbaked> MAP_CODEC = MapCodec.unit(new BewlrUnbaked());
 
         @Override
-        public @Nullable SpecialModelRenderer<?> bake(SpecialModelRenderer.BakingContext context) {
+        public @Nullable SpecialModelRenderer<ItemStack> bake(SpecialModelRenderer.BakingContext context) {
             return INSTANCE;
         }
 

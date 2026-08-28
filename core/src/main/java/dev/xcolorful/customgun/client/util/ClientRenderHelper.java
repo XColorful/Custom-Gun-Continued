@@ -104,7 +104,7 @@ public class ClientRenderHelper {
 
         var skinLocation = ClientRenderUtils.getSkinTextureLocation(player);
         boolean isSleeveVisible;
-        PlayerModel<?> model = renderer.getModel();
+        PlayerModel model = renderer.getModel();
         ModelPart arm;
         if (hand == HumanoidArm.RIGHT) {
             isSleeveVisible = player.isModelPartShown(PlayerModelPart.RIGHT_SLEEVE);

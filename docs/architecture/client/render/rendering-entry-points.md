@@ -13,6 +13,8 @@
 > - 1.20.1–1.21.1：依赖 `IClientItemExtensions.initializeClient` + `getCustomRenderer()` 返回 `BlockEntityWithoutLevelRenderer`。
 > - 1.21.4+：原版移除 `BlockEntityWithoutLevelRenderer` 与上述两个方法，改为 `SpecialModelRenderer`（平台层经 `RegisterSpecialModelRendererEvent` 注册 codec `customgun:item_bewlr`）+ `assets/customgun/items/*.json` 里的 `minecraft:special` 模型类型，再桥接回 `IItemBEWLR.cgc$getBEWLR().renderByItem()`。
 
+> 1.21.10 起 `SpecialModelRenderer` 的入口由 `render(MultiBufferSource)` 改为 `submit(SubmitNodeCollector)`，且原版不再在 submit 后 flush；`NeoBEWLR.submit` 因此自行 flush 全局 buffer。
+
 ## 第一人称
 
 第一人称持枪不经过原版的手持物品渲染路径，而是由事件接管：

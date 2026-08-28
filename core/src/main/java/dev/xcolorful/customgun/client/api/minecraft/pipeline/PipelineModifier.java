@@ -4,7 +4,7 @@ import com.mojang.blaze3d.platform.DepthTestFunction;
 import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.core.api.minecraft.pipeline.PipelineModifierTag;
 import dev.xcolorful.customgun.core.api.resource.ResourceTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.AvailableSince("1.21.6")
@@ -25,7 +25,7 @@ public enum PipelineModifier implements ResourceTag.RegistryTag {
 
     public final String typeName;
     public final String registryName;
-    public final ResourceLocation registryLocation;
+    public final Identifier registryLocation;
     public final IPipelineModifier modifier;
     PipelineModifier(String name, IPipelineModifier modifier) {
         this.typeName = name;
@@ -39,7 +39,7 @@ public enum PipelineModifier implements ResourceTag.RegistryTag {
     @Override public String getRegistryName() {
         return this.registryName;
     }
-    @Override public ResourceLocation getRegistryLocation() {
+    @Override public Identifier getRegistryLocation() {
         return this.registryLocation;
     }
 

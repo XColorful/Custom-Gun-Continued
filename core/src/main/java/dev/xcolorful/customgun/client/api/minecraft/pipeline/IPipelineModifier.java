@@ -1,7 +1,7 @@
 package dev.xcolorful.customgun.client.api.minecraft.pipeline;
 
 import com.mojang.blaze3d.pipeline.RenderPipeline;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -12,5 +12,5 @@ import org.jetbrains.annotations.ApiStatus;
 public interface IPipelineModifier {
 
     RenderPipeline apply(RenderPipeline pipeline,
-                         ResourceLocation pipelineLocation);
+                         Identifier pipelineLocation);
 }

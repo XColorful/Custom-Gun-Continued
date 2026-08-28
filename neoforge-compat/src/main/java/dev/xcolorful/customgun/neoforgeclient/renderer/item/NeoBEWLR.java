@@ -3,6 +3,7 @@ package dev.xcolorful.customgun.neoforgeclient.renderer.item;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.serialization.MapCodec;
 import dev.xcolorful.customgun.client.api.item.IItemBEWLR;
+import dev.xcolorful.customgun.client.api.renderer.item._SpecialModelRenderer;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.special.SpecialModelRenderer;
@@ -26,7 +27,8 @@ import org.jetbrains.annotations.Nullable;
  */
 @ApiStatus.AvailableSince("1.21.4")
 @OnlyIn(Dist.CLIENT)
-public class NeoBEWLR implements SpecialModelRenderer<ItemStack> {
+public class NeoBEWLR implements
+        _SpecialModelRenderer<ItemStack> {
 
     public static final NeoBEWLR INSTANCE = new NeoBEWLR();
 
@@ -54,11 +56,11 @@ public class NeoBEWLR implements SpecialModelRenderer<ItemStack> {
         return itemStack.getItem() instanceof IItemBEWLR ? itemStack : null;
     }
 
-    public record BewlrUnbaked() implements SpecialModelRenderer.Unbaked {
+    public record BewlrUnbaked() implements _SpecialModelRenderer.Unbaked {
         public static final MapCodec<BewlrUnbaked> MAP_CODEC = MapCodec.unit(new BewlrUnbaked());
 
         @Override
-        public SpecialModelRenderer<?> bake(EntityModelSet modelSet) {
+        public _SpecialModelRenderer<?> bake(EntityModelSet modelSet) {
             return INSTANCE;
         }
 

@@ -28,6 +28,7 @@ import org.jetbrains.annotations.Nullable;
 @ApiStatus.AvailableSince("1.21.4")
 @OnlyIn(Dist.CLIENT)
 public class NeoBEWLR implements
+        SpecialModelRenderer<ItemStack>,
         _SpecialModelRenderer<ItemStack> {
 
     public static final NeoBEWLR INSTANCE = new NeoBEWLR();
@@ -56,11 +57,11 @@ public class NeoBEWLR implements
         return itemStack.getItem() instanceof IItemBEWLR ? itemStack : null;
     }
 
-    public record BewlrUnbaked() implements _SpecialModelRenderer.Unbaked {
+    public record BewlrUnbaked() implements SpecialModelRenderer.Unbaked {
         public static final MapCodec<BewlrUnbaked> MAP_CODEC = MapCodec.unit(new BewlrUnbaked());
 
         @Override
-        public _SpecialModelRenderer<?> bake(EntityModelSet modelSet) {
+        public SpecialModelRenderer<?> bake(EntityModelSet modelSet) {
             return INSTANCE;
         }
 

@@ -16,8 +16,10 @@ import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
+import org.joml.Vector3fc;
 
 import java.util.Set;
+import java.util.function.Consumer;
 
 /*
 // 为了跨版本提前知道1.21.4neoforge的移植方式，添加此类作为占位符
@@ -75,6 +77,19 @@ public class NeoBEWLR implements
         output.add(new Vector3f(1.0F, 0.0F, 1.0F));
         output.add(new Vector3f(1.0F, 1.0F, 0.0F));
         output.add(new Vector3f(1.0F, 1.0F, 1.0F));
+    }
+    @Override
+    public void getExtents(Consumer<Vector3fc> output) {
+        // extents 为空会让 getModelBoundingBox() 得到无限大 AABB，ItemEntityRenderer 会据此把物品平移到无穷远，导致掉落物只看得见影子
+        // 默认给一个 1×1×1 格的近似包围盒（item 单位，与 getExtentsForGui 的 /16 约定一致）
+        output.accept(new Vector3f(0.0F, 0.0F, 0.0F));
+        output.accept(new Vector3f(0.0F, 0.0F, 1.0F));
+        output.accept(new Vector3f(0.0F, 1.0F, 0.0F));
+        output.accept(new Vector3f(0.0F, 1.0F, 1.0F));
+        output.accept(new Vector3f(1.0F, 0.0F, 0.0F));
+        output.accept(new Vector3f(1.0F, 0.0F, 1.0F));
+        output.accept(new Vector3f(1.0F, 1.0F, 0.0F));
+        output.accept(new Vector3f(1.0F, 1.0F, 1.0F));
     }
 
     @Override

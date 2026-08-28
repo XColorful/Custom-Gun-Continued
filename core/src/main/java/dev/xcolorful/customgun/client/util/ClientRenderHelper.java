@@ -102,7 +102,7 @@ public class ClientRenderHelper {
 
         var skinLocation = ClientRenderUtils.getSkinTextureLocation(player);
         boolean isSleeveVisible;
-        PlayerModel model = renderer.getModel();
+        var model = renderer.getModel();
         ModelPart arm;
         if (hand == HumanoidArm.RIGHT) {
             isSleeveVisible = player.isModelPartShown(PlayerModelPart.RIGHT_SLEEVE);
@@ -126,7 +126,10 @@ public class ClientRenderHelper {
         model.rightSleeve.visible = isSleeveVisible;
         model.leftArm.zRot = -0.1F;
         model.rightArm.zRot = 0.1F;
-        arm.render(matrixStack, buffer.getBuffer(RenderType.entityTranslucent(skinLocation)), combinedLight, OverlayTexture.NO_OVERLAY);
+        arm.render(matrixStack,
+                buffer.getBuffer(ClientRenderUtils.RenderType_.entityTranslucent(skinLocation)),
+                combinedLight,
+                OverlayTexture.NO_OVERLAY);
 
         ARCompat.resetRenderingLevel();
 

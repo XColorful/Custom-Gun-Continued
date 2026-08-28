@@ -1,9 +1,11 @@
 package dev.xcolorful.customgun.client.api.minecraft.pipeline;
 
-import com.mojang.blaze3d.platform.DepthTestFunction;
+import com.mojang.blaze3d.pipeline.ColorTargetState;
+import com.mojang.blaze3d.pipeline.DepthStencilState;
 import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.core.api.minecraft.pipeline.PipelineModifierTag;
 import dev.xcolorful.customgun.core.api.resource.ResourceTag;
+import java.util.Optional;
 import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -11,15 +13,22 @@ import org.jetbrains.annotations.ApiStatus;
 public enum PipelineModifier implements ResourceTag.RegistryTag {
     NO_COLOR_WRITE(PipelineModifierTag.NO_COLOR_WRITE,
             (pipeline, name) ->
-                    pipeline.toBuilder().withLocation(name).withColorWrite(false).build()
+                    pipeline.toBuilder().withLocation(name)
+                            .withColorTargetState(new ColorTargetState(pipeline.getColorTargetState().blendFunction(), ColorTargetState.WRITE_NONE))
+                            .build()
     ),
     NO_DEPTH_WRITE(PipelineModifierTag.NO_DEPTH_WRITE,
             (pipeline, name) ->
-                    pipeline.toBuilder().withLocation(name).withDepthWrite(false).build()
+                    pipeline.toBuilder().withLocation(name)
+                            .withDepthStencilState(Optional.ofNullable(pipeline.getDepthStencilState())
+                                    .map(state -> new DepthStencilState(state.depthTest(), false, state.depthBiasScaleFactor(), state.depthBiasConstant())))
+                            .build()
     ),
     NO_DEPTH_TEST(PipelineModifierTag.NO_DEPTH_TEST,
             (pipeline, name) ->
-                    pipeline.toBuilder().withLocation(name).withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST).build()
+                    pipeline.toBuilder().withLocation(name)
+                            .withDepthStencilState(Optional.empty())
+                            .build()
     ),
     ;
 

@@ -12,6 +12,7 @@
     "renderer.GameRendererMixin",
     "renderer.ItemInHandLayerMixin",
     "renderer.ItemInHandRendererMixin",
+    "renderer.ItemStackRenderStateMixin",
     "sound.SoundManagerMixin"
   ],
   "injectors": {

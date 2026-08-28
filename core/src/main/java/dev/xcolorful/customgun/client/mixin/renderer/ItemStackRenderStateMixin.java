@@ -1,4 +1,4 @@
-package dev.xcolorful.customgun.forgeclient.mixin.renderer;
+package dev.xcolorful.customgun.client.mixin.renderer;
 
 import dev.xcolorful.customgun.client.api.renderer.item.ItemDisplayContextTracker;
 import net.minecraft.world.item.ItemDisplayContext;

@@ -5,6 +5,7 @@ import com.mojang.serialization.MapCodec;
 import dev.xcolorful.customgun.CustomGun;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
@@ -22,12 +23,13 @@ import java.util.function.Consumer;
 @ApiStatus.AvailableSince("1.21.4")
 public interface _SpecialModelRenderer<T> {
 
-    void render(@Nullable T patterns,
+    void submit(@Nullable T patterns,
                 ItemDisplayContext displayContext,
                 PoseStack poseStack,
-                MultiBufferSource bufferSource,
+                SubmitNodeCollector nodeCollector,
                 int packedLight, int packedOverlay,
-                boolean hasFoilType
+                boolean hasFoilType,
+                int outlineColor
     );
 
 //  @Deprecated(since = "1.21.11")
@@ -59,6 +61,7 @@ public interface _SpecialModelRenderer<T> {
 
     @Nullable T extractArgument(ItemStack stack);
 
+    @Deprecated(since = "1.21.10")
     interface Unbaked {
 
         @Nullable

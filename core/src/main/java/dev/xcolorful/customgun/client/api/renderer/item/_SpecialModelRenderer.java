@@ -16,10 +16,11 @@ import java.util.function.Consumer;
 
 /**
  * 为了跨版本提前知道原版1.21.4的移植方式，添加此类作为占位符
+ * 同时复用default方法
  */
 @Deprecated(since = "1.21.4", forRemoval = false)
 @ApiStatus.AvailableSince("1.21.4")
-public interface SpecialModelRenderer<T> {
+public interface _SpecialModelRenderer<T> {
 
     void render(@Nullable T patterns,
                 ItemDisplayContext displayContext,
@@ -60,7 +61,8 @@ public interface SpecialModelRenderer<T> {
 
     interface Unbaked {
 
-        @Nullable SpecialModelRenderer<?> bake(EntityModelSet modelSet);
+        @Nullable
+        _SpecialModelRenderer<?> bake(EntityModelSet modelSet);
 
         MapCodec<? extends Unbaked> type();
     }

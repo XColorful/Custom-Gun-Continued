@@ -19,10 +19,14 @@ import dev.xcolorful.customgun.client.api.minecraft.stencil.StencilState;
 import dev.xcolorful.customgun.client.compat.ar.ARCompat;
 import dev.xcolorful.customgun.client.compat.optifine.OptifineCompat;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.PlayerModel;
+import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.PlayerModelPart;
 import org.jetbrains.annotations.ApiStatus;
@@ -76,8 +80,12 @@ public class ClientRenderHelper {
         // [1.20.1, 1.21.6)
 //        GL11.glDisable(GL11.GL_STENCIL_TEST);
 
-        // [1.21.6, )
+        // [1.21.6, 1.21.10)
         RenderSystem.disableStencil();
+
+        // [1.21.10, )
+        if (true) return; // 让IDE保留下面的引用关系
+        GL.stencilOperator.disableStencil();
     }
 
     public static void renderFirstPersonArm(LocalPlayer player, HumanoidArm hand, PoseStack matrixStack, int combinedLight) {
@@ -97,25 +105,31 @@ public class ClientRenderHelper {
 
         var skinLocation = ClientRenderUtils.getSkinTextureLocation(player);
         boolean isSleeveVisible;
+        PlayerModel model = renderer.getModel();
+        ModelPart arm;
         if (hand == HumanoidArm.RIGHT) {
             isSleeveVisible = player.isModelPartShown(PlayerModelPart.RIGHT_SLEEVE);
-
-            renderer.renderRightHand(matrixStack,
-                    buffer,
-                    combinedLight,
-                    skinLocation,
-                    isSleeveVisible,
-                    player);
+            arm = model.rightArm;
         } else {
             isSleeveVisible = player.isModelPartShown(PlayerModelPart.LEFT_SLEEVE);
-
-            renderer.renderLeftHand(matrixStack,
-                    buffer,
-                    combinedLight,
-                    skinLocation,
-                    isSleeveVisible,
-                    player);
+            arm = model.leftArm;
         }
+
+        /**
+         * <ul>
+         *     1.21.10起
+         *     <li>AvatarRenderer#renderHand 改成通过 SubmitNodeCollector 延迟提交</li>
+         *     <li>手会在模板测试关闭后才渲染，导致开镜时手穿透镜片</li>
+         *     <li>这里按 1.20.1-1.21.6 的即时模式直接渲染手臂，使手的渲染仍处于模板测试期间</li>
+         * </ul>
+         */
+        arm.resetPose();
+        arm.visible = true;
+        model.leftSleeve.visible = isSleeveVisible;
+        model.rightSleeve.visible = isSleeveVisible;
+        model.leftArm.zRot = -0.1F;
+        model.rightArm.zRot = 0.1F;
+        arm.render(matrixStack, buffer.getBuffer(RenderType.entityTranslucent(skinLocation)), combinedLight, OverlayTexture.NO_OVERLAY);
 
         ARCompat.resetRenderingLevel();
 

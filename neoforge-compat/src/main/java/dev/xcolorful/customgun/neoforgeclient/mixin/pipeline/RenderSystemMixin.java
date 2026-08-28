@@ -1,8 +1,12 @@
 package dev.xcolorful.customgun.neoforgeclient.mixin.pipeline;
 
 import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.blaze3d.systems.RenderSystem;
 import dev.xcolorful.customgun.neoforgeclient.minecraft.stencil.NeoStencilOperator;
 import org.jetbrains.annotations.ApiStatus;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /*
@@ -17,9 +21,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  * </ul>
  */
 @ApiStatus.AvailableSince("1.21.10")
-//@Mixin(RenderSystem.class)
+@Mixin(RenderSystem.class)
 public class RenderSystemMixin {
 
+    @Inject(method = "applyPipelineModifiers",
+            at = @At("RETURN"),
+            cancellable = true)
     private static void cgc$applyDynamicStencil(RenderPipeline pipeline,
                                                 CallbackInfoReturnable<RenderPipeline> cir) {
         cir.setReturnValue(NeoStencilOperator.applyStencilToPipeline(cir.getReturnValue()));

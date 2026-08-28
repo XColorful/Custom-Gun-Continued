@@ -97,7 +97,6 @@ public abstract class GameRendererMixin {
         GunCameraHelper.State.renderItemInHand = !pUseFOVSetting;
     }
 
-    // 等移植到26.1.x看还需不需要
     @Inject(method = "renderItemInHand", at = @At("HEAD"))
     private void cgc$beforeRenderItemInHand(Camera camera,
                                             float partialTick,

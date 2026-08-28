@@ -85,7 +85,6 @@ public class ClientRenderHelper {
 //        RenderSystem.disableStencil();
 
         // [1.21.10, )
-        if (true) return; // 让IDE保留下面的引用关系
         GL.stencilOperator.disableStencil();
     }
 

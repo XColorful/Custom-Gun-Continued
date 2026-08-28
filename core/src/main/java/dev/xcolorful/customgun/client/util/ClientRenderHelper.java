@@ -19,12 +19,10 @@ import dev.xcolorful.customgun.client.api.minecraft.stencil.StencilState;
 import dev.xcolorful.customgun.client.compat.ar.ARCompat;
 import dev.xcolorful.customgun.client.compat.optifine.OptifineCompat;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -106,7 +104,7 @@ public class ClientRenderHelper {
 
         var skinLocation = ClientRenderUtils.getSkinTextureLocation(player);
         boolean isSleeveVisible;
-        PlayerModel model = renderer.getModel();
+        var model = renderer.getModel();
         ModelPart arm;
         if (hand == HumanoidArm.RIGHT) {
             isSleeveVisible = player.isModelPartShown(PlayerModelPart.RIGHT_SLEEVE);
@@ -130,7 +128,10 @@ public class ClientRenderHelper {
         model.rightSleeve.visible = isSleeveVisible;
         model.leftArm.zRot = -0.1F;
         model.rightArm.zRot = 0.1F;
-        arm.render(matrixStack, buffer.getBuffer(RenderType.entityTranslucent(skinLocation)), combinedLight, OverlayTexture.NO_OVERLAY);
+        arm.render(matrixStack,
+                buffer.getBuffer(ClientRenderUtils.RenderType_.entityTranslucent(skinLocation)),
+                combinedLight,
+                OverlayTexture.NO_OVERLAY);
 
         ARCompat.resetRenderingLevel();
 

@@ -13,21 +13,47 @@ import org.jetbrains.annotations.ApiStatus;
 public enum PipelineModifier implements ResourceTag.RegistryTag {
     NO_COLOR_WRITE(PipelineModifierTag.NO_COLOR_WRITE,
             (pipeline, name) ->
-                    pipeline.toBuilder().withLocation(name)
-                            .withColorTargetState(new ColorTargetState(pipeline.getColorTargetState().blendFunction(), ColorTargetState.WRITE_NONE))
+                    // [1.20.1, 1.21.6)
+//                    null
+                    // [1.21.6, 26.1.x)
+                    pipeline.toBuilder()
+                            .withLocation(name)
+//                            .withColorWrite(false) // [1.21.6, 26.1.x)
+                            .withColorTargetState(new ColorTargetState( // [26.1.x, )
+                                    pipeline.getColorTargetState().blendFunction(),
+                                    pipeline.getColorTargetState().format(), // [26.2, )
+                                    ColorTargetState.WRITE_NONE
+                                    )
+                            )
                             .build()
     ),
     NO_DEPTH_WRITE(PipelineModifierTag.NO_DEPTH_WRITE,
             (pipeline, name) ->
-                    pipeline.toBuilder().withLocation(name)
-                            .withDepthStencilState(Optional.ofNullable(pipeline.getDepthStencilState())
-                                    .map(state -> new DepthStencilState(state.depthTest(), false, state.depthBiasScaleFactor(), state.depthBiasConstant())))
+                    // [1.20.1, 1.21.6)
+//                    null
+                    // [1.21.6, 26.1.x)
+                    pipeline.toBuilder()
+                            .withLocation(name)
+//                            .withDepthWrite(false) // [1.21.6, 26.1.x)
+                            .withDepthStencilState(Optional.ofNullable(pipeline.getDepthStencilState()) // [26.1.x, )
+                                    .map(state -> new DepthStencilState(state.depthTest(),
+                                                    false,
+                                                    state.depthBiasScaleFactor(),
+                                                    state.depthBiasConstant()
+                                            )
+                                    )
+                            )
                             .build()
     ),
     NO_DEPTH_TEST(PipelineModifierTag.NO_DEPTH_TEST,
             (pipeline, name) ->
-                    pipeline.toBuilder().withLocation(name)
-                            .withDepthStencilState(Optional.empty())
+                    // [1.20.1, 1.21.6)
+//                    null
+                    // [1.21.6, 26.1.x)
+                    pipeline.toBuilder()
+                            .withLocation(name)
+//                            .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST) // [1.21.6, 26.1.x)
+                            .withDepthStencilState(Optional.empty()) // [26.1.x, )
                             .build()
     ),
     ;

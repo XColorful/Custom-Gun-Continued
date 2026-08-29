@@ -118,9 +118,7 @@ public final class GunDisplayInstance extends PojoInstance<GunDisplay> {
             }
         }
 
-        if (ClientModEvent.get().hasLoggedOnce()) {
-            this.reloadAmmoParticleOption();
-        }
+        this.reloadAmmoParticleOption();
 
         this.gunSoundsCache = pojo.getGunSounds();
 
@@ -207,6 +205,7 @@ public final class GunDisplayInstance extends PojoInstance<GunDisplay> {
         }
     }
     private void reloadAmmoParticleOption() {
+        if (!ClientModEvent.get().isLoggedOn()) return;
         this.ammoParticleLoaded = true;
 
         var pojo = this.getPojo();

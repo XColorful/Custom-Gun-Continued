@@ -212,6 +212,7 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
             PoseStack _matrixStack = new PoseStack();
             _matrixStack.last().set(pose);
 
+            // flush 阶段节点已被清空，先保存当前（已清空）状态，恢复动画状态绘制，最后再还原已清空状态
             List<NodeTransform> cleanedTransforms = new ArrayList<>(parts.size()); { // [26.2, )
                 for (int i = 0; i < parts.size(); i++) {
                     BedrockPart part = parts.get(i);

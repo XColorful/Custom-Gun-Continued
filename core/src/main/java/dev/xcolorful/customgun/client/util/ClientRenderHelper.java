@@ -288,7 +288,7 @@ public class ClientRenderHelper {
             // [1.20.1, 1.21.6)
             RenderSystem.disableBlend();
 
-            // [1.21.6, )
+            // [1.21.6, 26.2)
             if (true) return; // 让IDE保留下面的引用关系
             GlStateManager._disableBlend();
 

@@ -13,6 +13,7 @@ import dev.xcolorful.customgun.client.api.model.IModelObjectRender;
 import dev.xcolorful.customgun.client.api.model.bedrock.IBedrockRenderer;
 import dev.xcolorful.customgun.client.api.renderer.model.IModelComponentRenderer;
 import dev.xcolorful.customgun.client.compat.oculus.OculusCompat;
+import dev.xcolorful.customgun.client.model.bedrock.NodeTransform;
 import dev.xcolorful.customgun.client.util.ClientRenderHelper;
 import dev.xcolorful.customgun.core.api.resource.assets.model.bedrock.geometry.NodeName;
 import dev.xcolorful.customgun.client.model.bedrock.BedrockPart;
@@ -194,31 +195,65 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
         @Nullable SubmitNodeCollector collector = ClientRenderHelper.FirstPersonArmHelper.getFirstPersonArmCollector();
         if (collector == null) return;
 
+        List<BedrockPart> parts = new ArrayList<>(); { // [26.2, )
+            for (IBedrockRenderer renderer : this.modelMap_values()) {
+                parts.add(renderer.getModelRenderer());
+            }
+        }
+        List<NodeTransform> animatedTransforms = new ArrayList<>(parts.size()); { // [26.2, )
+            for (BedrockPart part : parts) {
+                animatedTransforms.add(NodeTransform.capture(part));
+            }
+        }
+
         RenderType bakedRenderType = ClientRenderHelper.bakePipelineState(renderType); // [26.2, )
 
         collector.submitCustomGeometry(matrixStack, renderType, (pose, builder) -> {
             PoseStack _matrixStack = new PoseStack();
             _matrixStack.last().set(pose);
 
-            {
-                for (int i = 0; i < this.shouldRender.size(); i++) {
-                    this.shouldRender.get(i)
-                            .render(_matrixStack,
-                                    transformType,
-                                    builder,
-                                    light, overlay,
-                                    red, green, blue, alpha);
+            List<NodeTransform> cleanedTransforms = new ArrayList<>(parts.size()); { // [26.2, )
+                for (int i = 0; i < parts.size(); i++) {
+                    BedrockPart part = parts.get(i);
+                    cleanedTransforms.add(NodeTransform.capture(part));
+                }
+                for (int i = 0; i < animatedTransforms.size(); i++) {
+                    NodeTransform transform = animatedTransforms.get(i);
+                    transform.apply();
                 }
             }
 
-            for (int i = 0; i < this.delegateRenderers.size(); i++) {
-                IModelComponentRenderer renderer = delegateRenderers.get(i);
-                renderer.render(_matrixStack,
-                        builder,
-                        transformType,
-                        light, overlay);
+            try {
+                matrixStack.pushPose(); {
+                    for (int i = 0; i < this.shouldRender.size(); i++) {
+                        this.shouldRender.get(i)
+                                .render(_matrixStack,
+                                        transformType,
+                                        builder,
+                                        light, overlay,
+                                        red, green, blue, alpha);
+                    }
+                }
+                matrixStack.popPose();
+
+//                if (!OculusCompat.endBatch(bufferSource)) {
+//                    bufferSource.endBatch();
+//                }
+
+                for (int i = 0; i < this.delegateRenderers.size(); i++) {
+                    IModelComponentRenderer renderer = delegateRenderers.get(i);
+                    renderer.render(_matrixStack,
+                            builder,
+                            transformType,
+                            light, overlay);
+                }
+                this.delegateRenderers = new ArrayList<>();
+            } finally {
+                for (int i = 0; i < cleanedTransforms.size(); i++) { // [26.2, )
+                    NodeTransform transform = cleanedTransforms.get(i);
+                    transform.apply();
+                }
             }
-            this.delegateRenderers = new ArrayList<>();
         }
         );
     }

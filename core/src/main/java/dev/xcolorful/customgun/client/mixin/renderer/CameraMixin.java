@@ -4,6 +4,9 @@ import dev.xcolorful.customgun.client.renderer.item.gun.GunCameraHelper;
 import org.jetbrains.annotations.ApiStatus;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+/*
+为了跨版本提前知道26.1neoforge的移植方式，添加此类作为占位符
+ */
 @ApiStatus.AvailableSince("26.1.x")
 //@Mixin(Camera.class)
 public class CameraMixin {

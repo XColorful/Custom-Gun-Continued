@@ -2,6 +2,7 @@ package dev.xcolorful.customgun.neoforgeclient.renderer.item;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.serialization.MapCodec;
+import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.api.item.IItemBEWLR;
 import dev.xcolorful.customgun.client.api.renderer.item.ItemDisplayContextTracker;
 import dev.xcolorful.customgun.client.api.renderer.item._SpecialModelRenderer;
@@ -94,14 +95,14 @@ public class NeoBEWLR implements
     public void getExtents(Consumer<Vector3fc> output) {
         // extents 为空会让 getModelBoundingBox() 得到无限大 AABB，ItemEntityRenderer 会据此把物品平移到无穷远，导致掉落物只看得见影子
         // 默认给一个 1×1×1 格的近似包围盒（item 单位，与 getExtentsForGui 的 /16 约定一致）
-        output.add(new Vector3f(0.0F, 0.0F, 0.0F));
-        output.add(new Vector3f(0.0F, 0.0F, 1.0F));
-        output.add(new Vector3f(0.0F, 1.0F, 0.0F));
-        output.add(new Vector3f(0.0F, 1.0F, 1.0F));
-        output.add(new Vector3f(1.0F, 0.0F, 0.0F));
-        output.add(new Vector3f(1.0F, 0.0F, 1.0F));
-        output.add(new Vector3f(1.0F, 1.0F, 0.0F));
-        output.add(new Vector3f(1.0F, 1.0F, 1.0F));
+        output.accept(new Vector3f(0.0F, 0.0F, 0.0F));
+        output.accept(new Vector3f(0.0F, 0.0F, 1.0F));
+        output.accept(new Vector3f(0.0F, 1.0F, 0.0F));
+        output.accept(new Vector3f(0.0F, 1.0F, 1.0F));
+        output.accept(new Vector3f(1.0F, 0.0F, 0.0F));
+        output.accept(new Vector3f(1.0F, 0.0F, 1.0F));
+        output.accept(new Vector3f(1.0F, 1.0F, 0.0F));
+        output.accept(new Vector3f(1.0F, 1.0F, 1.0F));
     }
 
     @Override

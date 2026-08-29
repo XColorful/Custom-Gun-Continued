@@ -20,9 +20,10 @@ public class ClientModEvent {
     }
     private ClientModEvent() {}
 
-    private boolean LOGGED_ONCE = false;
+    private boolean IS_LOGGED_ON = false;
     public void onClientLoggingIn(LocalPlayer player, Connection connection) {
-        LOGGED_ONCE = true;
+        IS_LOGGED_ON = true;
+
         if (connection != null && !connection.isMemoryConnection()) {
             _AllDataManager.clearInstance();
             SyncDataCache.INSTANCE.clear();
@@ -38,11 +39,12 @@ public class ClientModEvent {
      * </ul>
      * @return 是否进过存档
      */
-    public boolean hasLoggedOnce() {
-        return LOGGED_ONCE;
+    public boolean isLoggedOn() {
+        return IS_LOGGED_ON;
     }
 
     public void onClientLoggingOut(LocalPlayer player, Connection connection) {
+        IS_LOGGED_ON = false;
     }
 
     public void onClientPlayerClone(LocalPlayer oldPlayer, LocalPlayer newPlayer) {

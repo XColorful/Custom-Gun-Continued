@@ -97,10 +97,17 @@ public class GunCameraHelper implements IEventHandler {
         public static final MathUtil.SecondOrderDynamics WORLD_FOV_DYNAMICS = new MathUtil.SecondOrderDynamics(0.5f, 1.2f, 0.5f, 0);
         public static final MathUtil.SecondOrderDynamics ITEM_MODEL_FOV_DYNAMICS = new MathUtil.SecondOrderDynamics(0.5f, 1.2f, 0.5f, 0);
         /**
-         * 由{@link GameRendererMixin}设置
+         * <ul>
+         *     <li>true -> 世界 FOV</li>
+         *     <li>false -> 手部/HUD FOV</li>
+         * </ul>
+         * [1.20.1, 26.1) 由{@link GameRendererMixin}设置
          */
         @ApiStatus.Internal
-        public static boolean renderItemInHand = false;
+        public static boolean isLevelFov = false;
+        public static boolean renderItemInHand() {
+            return !isLevelFov;
+        }
     }
     private static PolynomialSplineFunction pitchSplineFunction;
     private static PolynomialSplineFunction yawSplineFunction;
@@ -160,30 +167,13 @@ public class GunCameraHelper implements IEventHandler {
     }
 
     private void onComputeFovEvent(IComputeFovEvent event) {
-        if (_isLevelRenderFov(event)) {
+        if (State.isLevelFov) {
             // 改世界渲染FOV
             this._applyScopeMagnification(event);
         } else {
             // 改手部渲染FOV
             this._applyGunModelFovModifying(event);
         }
-    }
-    /**
-     * 判断是否是世界渲染的 FOV，反之则是手部渲染 FOV 事件
-     */
-    private boolean _isLevelRenderFov(IComputeFovEvent event) {
-        boolean result; {
-            // [1.20.1, 26.1)
-//            result = !State.renderItemInHand;
-
-            /*
-            26.1 起 getFov 从 GameRenderer 移到了 Camera
-            区分 world/hand 的 useFovSetting 需要事件的 usedConfiguredFov 提供
-             */
-            // [26.1, 26.2)
-            result = Boolean.TRUE.equals(event.useConfiguredFov());
-        }
-        return result;
     }
     private void _applyScopeMagnification(IComputeFovEvent event) {
         Entity entity = ClientRenderUtils.getEntity(event.getCamera());

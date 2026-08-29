@@ -12,6 +12,8 @@ import com.mojang.math.Axis;
 import dev.xcolorful.customgun.client.animation.screen.RefitScreenTransformState;
 import dev.xcolorful.customgun.client.api.entity.shooter.ILocalShooterGetter;
 import dev.xcolorful.customgun.client.api.event.render.ItemInHandBobEvent;
+import dev.xcolorful.customgun.client.api.event.render.LevelBobEvent;
+import dev.xcolorful.customgun.client.api.event.render.RenderBobEvent;
 import dev.xcolorful.customgun.client.api.renderer.KeepingItemRenderer;
 import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
 import dev.xcolorful.customgun.client.model.AttachmentModelObject;
@@ -43,6 +45,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
@@ -77,6 +80,9 @@ public class GunRendererAddon implements ICustomEventHandler {
             }
             case ITEM_IN_HAND_BOB_VIEW_EVENT -> {
                 onItemInHandBobView((ItemInHandBobEvent.View) event);
+            }
+            case LEVEL_BOB_VIEW_EVENT -> {
+                onLevelBobView((LevelBobEvent.View) event);
             }
             default -> {
                 onReceiveWrongEvent(eventType);
@@ -136,10 +142,27 @@ public class GunRendererAddon implements ICustomEventHandler {
         MuzzleFlashRender.onShoot(currentTimeMillis);
     }
 
+    private void onItemInHandBobView(ItemInHandBobEvent.View event) {
+        this._onCancelVanillaRenderBobView(event);
+    }
+    /**
+     * <ul>
+     *     26.2起
+     *     <li>viewBobbing 同时施加在世界（投影矩阵）和手部（poseStack）上</li>
+     *     <li>取消事件会导致"视角摇晃"也没了，但为保持1.20.1-26.2统一，1.20.1-26.1.2也给他取消掉</li>
+     * </ul>
+     */
+    @ApiStatus.AvailableSince("26.2")
+    private void onLevelBobView(LevelBobEvent.View event) {
+        this._onCancelVanillaRenderBobView(event);
+        // TODO 手动模拟"视频设置-视角摇晃" (不是右下角手持物品的晃动)
+        // 26.2手动mixin改原版level bob是不在考虑范围内的
+        return;
+    }
     /**
      * 当主手拿着枪械物品的时候，取消应用在它上面的 viewBobbing，以便应用自定义的跑步/走路动画
      */
-    private void onItemInHandBobView(ItemInHandBobEvent.View event) {
+    private void _onCancelVanillaRenderBobView(RenderBobEvent event) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null) return;
 

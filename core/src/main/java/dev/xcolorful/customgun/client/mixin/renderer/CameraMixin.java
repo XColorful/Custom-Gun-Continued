@@ -1,11 +1,15 @@
 package dev.xcolorful.customgun.client.mixin.renderer;
 
 import dev.xcolorful.customgun.client.renderer.item.gun.GunCameraHelper;
+import net.minecraft.client.Camera;
 import org.jetbrains.annotations.ApiStatus;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @ApiStatus.AvailableSince("26.1.x")
-//@Mixin(Camera.class)
+@Mixin(Camera.class)
 public class CameraMixin {
 
     /**
@@ -16,10 +20,12 @@ public class CameraMixin {
      *     <li>这里在两者入口标记 {@link GunCameraHelper.State#isLevelFov}，供 {@link GunCameraHelper} 区分</li>
      * </ul>
      */
+    @Inject(method = "calculateFov", at = @At("HEAD"))
     private void cgc$markLevelFov(float partialTicks,
                                   CallbackInfoReturnable<Float> cir) {
         GunCameraHelper.State.isLevelFov = true;
     }
+    @Inject(method = "calculateHudFov", at = @At("HEAD"))
     private void cgc$markHudFov(float partialTicks,
                                 CallbackInfoReturnable<Float> cir) {
         GunCameraHelper.State.isLevelFov = false;

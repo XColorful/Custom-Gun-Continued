@@ -7,6 +7,7 @@ import dev.xcolorful.customgun.client.api.event.IPrepareRenderOverlayEvent;
 import dev.xcolorful.customgun.client.api.gui.GuiSize;
 import dev.xcolorful.customgun.client.api.gui.overlay.BuiltinOverlayType;
 import dev.xcolorful.customgun.client.api.gui.overlay.IOverlaySubManager;
+import dev.xcolorful.customgun.client.api.gui.screen.IScreen;
 import dev.xcolorful.customgun.client.api.minecraft.texture.CustomTexture;
 import dev.xcolorful.customgun.client.compat.shouldersurfing.ShoulderSurfingCompat;
 import dev.xcolorful.customgun.client.config.RenderConfig;
@@ -19,8 +20,10 @@ import dev.xcolorful.customgun.core.api.event.IEvent;
 import dev.xcolorful.customgun.core.api.event.IEventHandler;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * 模组内置的准心渲染
@@ -57,8 +60,6 @@ public class DefaultCrosshair implements IOverlaySubManager, IEventHandler {
                 ClientGuiUtils.isGuiHidden(mc)
                 // 当前不是第一人称
                 || !mc.options.getCameraType().isFirstPerson()
-                // 当前有打开任意screen
-                || ClientGuiUtils.getCurrentScreen(mc) != null
                 // 不在游戏内
                 || !ClientInputUtils.isInGameWorld()
                 // 旁观模式
@@ -74,7 +75,8 @@ public class DefaultCrosshair implements IOverlaySubManager, IEventHandler {
     @ApiStatus.Internal
     public static final int CROSSHAIR_SIZE = 64 / GuiSize._sizeToPixelRatio; // 在1920x1080p屏幕中间绘制64x64像素
     private void onPrepareRenderOverlay(IPrepareRenderOverlayEvent event) {
-        LocalPlayer localPlayer = Minecraft.getInstance().player;
+        Minecraft mc = Minecraft.getInstance();
+        LocalPlayer localPlayer = mc.player;
         if (localPlayer == null) return;
 
         if ( // 状态检查
@@ -93,8 +95,25 @@ public class DefaultCrosshair implements IOverlaySubManager, IEventHandler {
                 || ShoulderSurfingCompat.showCrosshair()
         ) return;
 
+        // screen检查
+        boolean hideOverlay = false;
+        @Nullable Screen screen = ClientGuiUtils.getCurrentScreen(mc); {
+            if (screen != null) {
+                // 当前有screen
+                
+                @Nullable IScreen<?> iScreen = screen instanceof IScreen<?> _iScreen ? _iScreen : null;
+                if (iScreen == null) {
+                    // 不是本模组能检查的screen接口，不接管逻辑
+                    return;
+                } else {
+                    hideOverlay = iScreen.hideOverlay();
+                }
+            }
+        }
+
         // --------接管原版渲染--------
         event.setCanceled(true);
+        if (hideOverlay) return;
 
         if ( // 隐藏渲染检查
                 // 瞄准状态下隐藏

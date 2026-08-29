@@ -19,6 +19,7 @@ import dev.xcolorful.customgun.client.renderer.model.BeamRender;
 import dev.xcolorful.customgun.client.resource.assets.display.AttachmentDisplay;
 import dev.xcolorful.customgun.client.resource.instance.data.ClientAttachmentIndexInstance;
 import dev.xcolorful.customgun.client.util.ClientRenderHelper;
+import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import dev.xcolorful.customgun.core.api.item.IAttachment;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.attachment.AttachmentCategory;

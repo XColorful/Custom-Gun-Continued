@@ -318,7 +318,7 @@ public class _AttachmentModelRender {
             float centerX = ocularCenter.x() * 16 * 90;
             float centerY = ocularCenter.y() * 16 * 90;
 
-            RenderType bakedRenderType = ClientRenderHelper.bakePipelineState(renderType); // [26.2, )
+//            RenderType bakedRenderType = ClientRenderHelper.bakePipelineState(RenderTypes.debugTriangleFan()); // [26.2, )
 
             {
                 builder = tesselator.begin(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR);

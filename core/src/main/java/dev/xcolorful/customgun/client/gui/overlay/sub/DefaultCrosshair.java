@@ -100,7 +100,7 @@ public class DefaultCrosshair implements IOverlaySubManager, IEventHandler {
         @Nullable Screen screen = ClientGuiUtils.getCurrentScreen(mc); {
             if (screen != null) {
                 // 当前有screen
-                
+
                 @Nullable IScreen<?> iScreen = screen instanceof IScreen<?> _iScreen ? _iScreen : null;
                 if (iScreen == null) {
                     // 不是本模组能检查的screen接口，不接管逻辑

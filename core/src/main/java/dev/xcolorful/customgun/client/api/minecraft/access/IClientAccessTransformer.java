@@ -2,7 +2,7 @@ package dev.xcolorful.customgun.client.api.minecraft.access;
 
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import org.jetbrains.annotations.ApiStatus;
 
 public interface IClientAccessTransformer {

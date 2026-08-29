@@ -1,5 +1,27 @@
 ### 0.0.x
 
+#### 0.0.8
+- Press refit key to close gun refit screen
+- Add built-in crosshair with vanilla render style
+- Add render config `ReplaceVanillaCrosshair`
+- Hide built-in crosshair on gun refit screen
+- Add assets script location backwork compatibility
+- Add `AttachmentDisplay` scopeViewIndex backwork compatibility
+- Add assets texture resource location backwork compatibility
+- Sync attachment modifier data
+
+A gun mod must render the guns:
+- Render gun in first person & third person view
+- Render gun, attachment, ammo item in GUI
+
+Fix:
+- Correct `GunDisplay` ammo particle validation
+- Fix `AttachmentDisplay` enableScope, enableSight not read
+- Gun no longer flickering out for 1-2 frames in the gun refit screen
+
+1.21.1+:
+- Fix resource pack loading failure on startup
+
 #### 0.0.7
 - Add render config `DisableGunTilting`
 

@@ -16,6 +16,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
+import org.joml.Vector3fc;
 
 import java.util.Set;
 import java.util.function.Consumer;
@@ -64,7 +65,16 @@ public class NeoBEWLR implements
 //  @Deprecated(since = "1.21.11")
     @ApiStatus.AvailableSince("1.21.6")
     public void getExtents(Set<Vector3f> output) {
-        this.getExtents(output::add);
+        // extents 为空会让 getModelBoundingBox() 得到无限大 AABB，ItemEntityRenderer 会据此把物品平移到无穷远，导致掉落物只看得见影子
+        // 默认给一个 1×1×1 格的近似包围盒（item 单位，与 getExtentsForGui 的 /16 约定一致）
+        output.add(new Vector3f(0.0F, 0.0F, 0.0F));
+        output.add(new Vector3f(0.0F, 0.0F, 1.0F));
+        output.add(new Vector3f(0.0F, 1.0F, 0.0F));
+        output.add(new Vector3f(0.0F, 1.0F, 1.0F));
+        output.add(new Vector3f(1.0F, 0.0F, 0.0F));
+        output.add(new Vector3f(1.0F, 0.0F, 1.0F));
+        output.add(new Vector3f(1.0F, 1.0F, 0.0F));
+        output.add(new Vector3f(1.0F, 1.0F, 1.0F));
     }
     /**
      * 给物品模型提供包围盒
@@ -75,7 +85,7 @@ public class NeoBEWLR implements
      * @param output
      */
     @ApiStatus.AvailableSince("1.21.11")
-    public void getExtents(Consumer<Vector3f> output) {
+    public void getExtents(Consumer<Vector3fc> output) {
         // extents 为空会让 getModelBoundingBox() 得到无限大 AABB，ItemEntityRenderer 会据此把物品平移到无穷远，导致掉落物只看得见影子
         // 默认给一个 1×1×1 格的近似包围盒（item 单位，与 getExtentsForGui 的 /16 约定一致）
         output.accept(new Vector3f(0.0F, 0.0F, 0.0F));

@@ -1,5 +1,7 @@
 package dev.xcolorful.customgun.client.api.minecraft.pipeline;
 
+import dev.xcolorful.customgun.client.CustomGunClient;
+import dev.xcolorful.customgun.client.api.minecraft.access.IClientAccessTransformer;
 import net.minecraft.client.renderer.RenderType;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -17,6 +19,8 @@ public class RenderTypePipelineBake {
      * </ul>
      */
     public static RenderType bakePipelineState(RenderType base) {
+        IClientAccessTransformer accessTransformer = CustomGunClient.getAccessTransformer();
+
         // [1.20.1, 26.2)
         return base;
 
@@ -26,19 +30,8 @@ public class RenderTypePipelineBake {
 //            return base;
 //        }
 //
-//        RenderSetup state = base.state;
-//        RenderSetup newState = new RenderSetup(
-//                modified,
-//                state.textures,
-//                state.useLightmap,
-//                state.useOverlay,
-//                state.layeringTransform,
-//                state.outputTarget,
-//                state.textureTransform,
-//                state.outlineProperty,
-//                state.affectsCrumbling,
-//                state.sortOnUpload
-//        );
+//        RenderSetup state = accessTransformer.getState(base);
+//        RenderSetup newState = accessTransformer.new_RenderSetup(modified, state);
 //        return RenderType.create(RENDER_TYPE_NAME, newState);
     }
 }

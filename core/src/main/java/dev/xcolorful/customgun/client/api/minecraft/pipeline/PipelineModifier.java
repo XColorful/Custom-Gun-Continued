@@ -33,7 +33,7 @@ public enum PipelineModifier implements ResourceTag.RegistryTag {
                     pipeline.toBuilder()
                             .withLocation(name)
                             .withDepthWrite(false) // [1.21.6, 26.1.x)
-//                            .withDepthStencilState(Optional.ofNullable(pipeline.getDepthStencilState()) // [26.1.x, 26.2)
+//                            .withDepthStencilState(Optional.ofNullable(pipeline.getDepthStencilState()) // [26.1.x, )
 //                                    .map(state -> new DepthStencilState(state.depthTest(),
 //                                                    false,
 //                                                    state.depthBiasScaleFactor(),

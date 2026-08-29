@@ -27,8 +27,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(GameRenderer.class)
 public abstract class GameRendererMixin {
 
-    @Shadow
-    public abstract Minecraft getMinecraft();
+    /*
+    对不存在的方法shadow会导致整个类的mixin失效
+    不需要的方法就不要去shadow
+     */
+//    @Deprecated(since = "26.2")
+//    @Shadow
+//    public abstract Minecraft getMinecraft();
 
     @Shadow
     public abstract void render(float pPartialTicks, long pNanoTime,
@@ -39,7 +44,7 @@ public abstract class GameRendererMixin {
                               PoseStack poseStack,
                               float pPartialTicks, CallbackInfo ci) {
         // 取消受伤导致的视角摇晃
-        if (this.getMinecraft().getCameraEntity() instanceof LocalPlayer player && !player.isDeadOrDying()) {
+        if (Minecraft.getInstance().getCameraEntity() instanceof LocalPlayer player && !player.isDeadOrDying()) {
             if (GunHurtBobTweak.onHurtBobTweak(player, poseStack, pPartialTicks)) {
                 ci.cancel();
                 return;

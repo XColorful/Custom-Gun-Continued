@@ -36,6 +36,7 @@ public class ClientEventHandlers {
         CoreEventHandlers.register(customEventRegister, GunHurtBobTweak.get(), CustomEventType.PROJECTILE_HIT_ENTITY_EVENT, EventPriority.NORMAL, false);
         CoreEventHandlers.register(customEventRegister, GunRendererAddon.get(), CustomEventType.GUN_FIRE_EVENT, EventPriority.NORMAL, false);
         CoreEventHandlers.register(customEventRegister, GunRendererAddon.get(), CustomEventType.ITEM_IN_HAND_BOB_VIEW_EVENT, EventPriority.NORMAL, false);
+        CoreEventHandlers.register(customEventRegister, GunRendererAddon.get(), CustomEventType.LEVEL_BOB_VIEW_EVENT, EventPriority.NORMAL, false);
         CoreEventHandlers.register(customEventRegister, GunCameraHelper.Addon.get(), CustomEventType.GUN_FIRE_EVENT, EventPriority.NORMAL, false);
         CoreEventHandlers.register(customEventRegister, GunCameraHelper.Addon.get(), CustomEventType.BEFORE_RENDER_HAND_EVENT, EventPriority.NORMAL, false);
         CoreEventHandlers.register(customEventRegister, _LocalHitHandler.get(), CustomEventType.PROJECTILE_HIT_ENTITY_FINISH_EVENT, EventPriority.NORMAL, false);

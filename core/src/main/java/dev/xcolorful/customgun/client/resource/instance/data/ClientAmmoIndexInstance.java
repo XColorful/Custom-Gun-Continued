@@ -11,6 +11,7 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
+import dev.xcolorful.customgun.client.init.ClientModEvent;
 import dev.xcolorful.customgun.client.model.AmmoModelObject;
 import dev.xcolorful.customgun.client.resource.assets.display.AmmoDisplay;
 import dev.xcolorful.customgun.client.resource.assets.display._ModelTransform;
@@ -20,7 +21,6 @@ import dev.xcolorful.customgun.client.resource.assets.display.ammo._ShellDisplay
 import dev.xcolorful.customgun.client.resource.assets.model.BedrockModel;
 import dev.xcolorful.customgun.core.resource.data.index.AmmoIndex;
 import dev.xcolorful.customgun.core.resource.instance.PojoInstance;
-import dev.xcolorful.customgun.core.util.ComponentUtils;
 import net.minecraft.commands.arguments.ParticleArgument;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -36,6 +36,7 @@ public final class ClientAmmoIndexInstance extends PojoInstance<AmmoIndex> {
     private @Nullable AmmoModelObject ammoShellModel;
 
     private AmmoDisplay ammoDisplayCache;
+    private boolean ammoParticleLoaded = false;
     private @Nullable ParticleOptions ammoParticleOptionsCache;
 
     private ClientAmmoIndexInstance(@NotNull AmmoIndex pojo) {
@@ -60,18 +61,8 @@ public final class ClientAmmoIndexInstance extends PojoInstance<AmmoIndex> {
             CustomGun.LOGGER.debug("ClientAmmoIndexInstance: AmmoDisplay {} not valid", pojo.getDisplayIndexLocation());
             return false;
         }
-        {
-            _AmmoParticle ammoParticle = this.ammoDisplayCache.getAmmoParticle();
-            var particleRl = ammoParticle.getParticleLocation();
-            try {
-                this.ammoParticleOptionsCache = ParticleArgument.readParticle(new StringReader(particleRl.toString()), BuiltInRegistries.PARTICLE_TYPE.asLookup());
-            } catch (CommandSyntaxException e) {
-                CustomGun.LOGGER.debug("ClientAmmoIndexInstance: ParticleArgument.readParticle({}) failed", particleRl, e);
-            }
-            if (this.ammoParticleOptionsCache == null) {
-                CustomGun.LOGGER.debug("ClientAmmoIndexInstance: AmmoParticle {} not valid", particleRl);
-            }
-        }
+
+        this.reloadAmmoParticleOption();
 
         @Nullable var modelLocation = this.ammoDisplayCache.getModelLocation();
         if (modelLocation != null) {
@@ -109,6 +100,20 @@ public final class ClientAmmoIndexInstance extends PojoInstance<AmmoIndex> {
 
         return true;
     }
+    private void reloadAmmoParticleOption() {
+        this.ammoParticleLoaded = true;
+
+        _AmmoParticle ammoParticle = this.ammoDisplayCache.getAmmoParticle();
+        var particleRl = ammoParticle.getParticleLocation();
+        try {
+            this.ammoParticleOptionsCache = ParticleArgument.readParticle(new StringReader(particleRl.toString()), BuiltInRegistries.PARTICLE_TYPE.asLookup());
+        } catch (CommandSyntaxException e) {
+            CustomGun.LOGGER.debug("ClientAmmoIndexInstance: ParticleArgument.readParticle({}) failed", particleRl, e);
+        }
+        if (this.ammoParticleOptionsCache == null) {
+            CustomGun.LOGGER.debug("ClientAmmoIndexInstance: AmmoParticle {} not valid", particleRl);
+        }
+    }
 
     // --------Getter--------
 
@@ -116,6 +121,7 @@ public final class ClientAmmoIndexInstance extends PojoInstance<AmmoIndex> {
         return this.ammoDisplayCache;
     }
     public @Nullable ParticleOptions getParticleOptions() {
+        if (!this.ammoParticleLoaded) this.reloadAmmoParticleOption();
         return this.ammoParticleOptionsCache;
     }
     public @Nullable AmmoModelObject getAmmoModel() {

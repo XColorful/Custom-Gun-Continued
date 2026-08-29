@@ -95,7 +95,7 @@ public class _AttachmentModelRender {
         ClientRenderHelper.enableItemEntityStencilTest();
 
         // 清空模板缓冲区、准备绘制模板缓冲
-        _AttachmentModelRender._clearStencilBuffer();
+        _AttachmentModelRender._clearStencilBuffer(matrixStack);
         if (_this.ocularRingPath != null) {
             ClientRenderHelper.GL._stencilFunc(GL11.GL_ALWAYS, 0, 0xFF);
             ClientRenderHelper.GL._stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
@@ -139,7 +139,7 @@ public class _AttachmentModelRender {
         ClientRenderHelper.enableItemEntityStencilTest();
 
         // 清空模板缓冲区、准备绘制模板缓冲
-        _AttachmentModelRender._clearStencilBuffer();
+        _AttachmentModelRender._clearStencilBuffer(matrixStack);
 
         // 渲染目镜外环
         if (_this.ocularRingPath != null) {
@@ -180,7 +180,7 @@ public class _AttachmentModelRender {
         ClientRenderHelper.enableItemEntityStencilTest();
 
         // 清空模板缓冲区、准备绘制模板缓冲
-        _AttachmentModelRender._clearStencilBuffer();
+        _AttachmentModelRender._clearStencilBuffer(matrixStack);
 
         // 渲染目镜以写入模板桓冲值
         renderOcularStencil(_this, matrixStack, transformType, renderType, light, overlay, false);
@@ -422,14 +422,26 @@ public class _AttachmentModelRender {
 
     // --------Compat--------
     // 跨版本适配层
-    
-    private static void _clearStencilBuffer() {
+
+    private static void _clearStencilBuffer(PoseStack matrixStack) {
         // [1.20.1, 1.21.6)
         ClientRenderHelper.GL.glClearStencil(0);
         ClientRenderHelper.GL._clear(GL11.GL_STENCIL_BUFFER_BIT);
 
-        // [1.21.6, )
-//        RenderTarget target = Minecraft.getInstance().getMainRenderTarget();
+        // [1.21.6, 26.2)
+//        RenderTarget target = ClientRenderUtils.getMainRenderTarget(Minecraft.getInstance());
+//        if (target.useStencil && target.getDepthTexture() != null) {
+//            RenderSystem.getDevice().createCommandEncoder().clearStencilTexture(target.getDepthTexture(), 0);
+//        }
+
+        /*
+        26.2 的延迟渲染框架不会清模板，而之前的 deferred 三角扇只在当前瞄具附近覆盖
+        上一把枪的 ocular 模板残留会持续到下一把枪
+        这里改用立即执行的 clearStencilTexture
+        清空整个模板缓冲区：它在 submit 阶段清空，scope 几何在 flush 阶段写入，顺序为 清空→写入
+         */
+        // [26.2, )
+//        RenderTarget target = ClientRenderUtils.getMainRenderTarget(Minecraft.getInstance());
 //        if (target.useStencil && target.getDepthTexture() != null) {
 //            RenderSystem.getDevice().createCommandEncoder().clearStencilTexture(target.getDepthTexture(), 0);
 //        }

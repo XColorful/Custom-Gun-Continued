@@ -3,7 +3,7 @@ package dev.xcolorful.customgun.neoforgeclient.minecraft.access;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import dev.xcolorful.customgun.client.api.minecraft.access.IClientAccessTransformer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 
 public class NeoClientAccessTransformer implements IClientAccessTransformer {
 

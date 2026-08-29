@@ -1,7 +1,10 @@
 package dev.xcolorful.customgun.client.api.minecraft.pipeline;
 
+import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.blaze3d.systems.RenderSystem;
 import dev.xcolorful.customgun.client.CustomGunClient;
 import dev.xcolorful.customgun.client.api.minecraft.access.IClientAccessTransformer;
+import net.minecraft.client.renderer.rendertype.RenderSetup;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -22,16 +25,16 @@ public class RenderTypePipelineBake {
         IClientAccessTransformer accessTransformer = CustomGunClient.getAccessTransformer();
 
         // [1.20.1, 26.2)
-        return base;
+//        return base;
 
         // [26.2, )
-//        RenderPipeline modified = RenderSystem.applyPipelineModifiers(base.pipeline());
-//        if (modified == base.pipeline()) {
-//            return base;
-//        }
-//
-//        RenderSetup state = accessTransformer.getState(base);
-//        RenderSetup newState = accessTransformer.new_RenderSetup(modified, state);
-//        return RenderType.create(RENDER_TYPE_NAME, newState);
+        RenderPipeline modified = RenderSystem.applyPipelineModifiers(base.pipeline());
+        if (modified == base.pipeline()) {
+            return base;
+        }
+
+        RenderSetup state = accessTransformer.getState(base);
+        RenderSetup newState = accessTransformer.new_RenderSetup(modified, state);
+        return RenderType.create(RENDER_TYPE_NAME, newState);
     }
 }

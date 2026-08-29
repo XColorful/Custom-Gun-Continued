@@ -8,11 +8,9 @@
 package dev.xcolorful.customgun.client.model;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import dev.xcolorful.customgun.client.api.model.IModelObjectRender;
 import dev.xcolorful.customgun.client.api.model.bedrock.IBedrockRenderer;
 import dev.xcolorful.customgun.client.api.renderer.model.IModelComponentRenderer;
-import dev.xcolorful.customgun.client.compat.oculus.OculusCompat;
 import dev.xcolorful.customgun.client.model.bedrock.NodeTransform;
 import dev.xcolorful.customgun.client.util.ClientRenderHelper;
 import dev.xcolorful.customgun.core.api.resource.assets.model.bedrock.geometry.NodeName;
@@ -208,10 +206,7 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
 
         RenderType bakedRenderType = ClientRenderHelper.bakePipelineState(renderType); // [26.2, )
 
-        collector.submitCustomGeometry(matrixStack, renderType, (pose, builder) -> {
-            PoseStack _matrixStack = new PoseStack();
-            _matrixStack.last().set(pose);
-
+        collector.submitCustomGeometry(matrixStack, bakedRenderType, (pose, builder) -> {
             // flush 阶段节点已被清空，先保存当前（已清空）状态，恢复动画状态绘制，最后再还原已清空状态
             List<NodeTransform> cleanedTransforms = new ArrayList<>(parts.size()); { // [26.2, )
                 for (int i = 0; i < parts.size(); i++) {
@@ -225,7 +220,10 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
             }
 
             try {
-                matrixStack.pushPose(); {
+                PoseStack _matrixStack = new PoseStack();
+                _matrixStack.last().set(pose);
+
+                {
                     for (int i = 0; i < this.shouldRender.size(); i++) {
                         this.shouldRender.get(i)
                                 .render(_matrixStack,
@@ -235,7 +233,6 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
                                         red, green, blue, alpha);
                     }
                 }
-                matrixStack.popPose();
 
 //                if (!OculusCompat.endBatch(bufferSource)) {
 //                    bufferSource.endBatch();

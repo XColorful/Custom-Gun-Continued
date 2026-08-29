@@ -10,6 +10,7 @@
     "model.HumanoidModelMixin",
     "model.PlayerModelMixin",
     "renderer.CameraMixin",
+    "renderer.CustomFeatureRendererSubmitMixin",
     "renderer.GameRendererMixin",
     "renderer.ItemInHandLayerMixin",
     "renderer.ItemInHandRendererMixin",

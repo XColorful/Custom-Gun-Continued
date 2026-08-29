@@ -2,13 +2,16 @@ package dev.xcolorful.customgun.client.mixin.renderer;
 
 import dev.xcolorful.customgun.client.model._AttachmentModelRender;
 import org.jetbrains.annotations.ApiStatus;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /*
 为了跨版本提前知道26.2neoforge的移植方式，添加此类作为占位符
  */
 @ApiStatus.AvailableSince("26.2")
-//@Mixin(targets = "net.minecraft.client.renderer.feature.CustomFeatureRenderer$Submit")
+@Mixin(targets = "net.minecraft.client.renderer.feature.CustomFeatureRenderer$Submit")
 public class CustomFeatureRendererSubmitMixin {
 
     /**
@@ -21,6 +24,7 @@ public class CustomFeatureRendererSubmitMixin {
      *     <li>这里让自定义几何体不参与 batch 分组，改走按提交顺序保留的 unbatched 列表</li>
      * </ul>
      */
+    @Inject(method = "batchKey", at = @At("HEAD"), cancellable = true)
     private void cgc$preserveSubmitOrder(CallbackInfoReturnable<Object> cir) {
         cir.setReturnValue(null);
     }

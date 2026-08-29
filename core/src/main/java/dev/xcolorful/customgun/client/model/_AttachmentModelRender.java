@@ -225,7 +225,7 @@ public class _AttachmentModelRender {
 
             RenderType bakedRenderType = ClientRenderHelper.bakePipelineState(renderType); // [26.2, )
 
-            collector.submitCustomGeometry(poseStack, renderType, (pose, vertexConsumer) -> {
+            collector.submitCustomGeometry(poseStack, bakedRenderType, (pose, vertexConsumer) -> {
                 PoseStack _poseStack = new PoseStack();
                 _poseStack.last().set(pose);
                 part.visible = true; {
@@ -310,9 +310,9 @@ public class _AttachmentModelRender {
             float centerX = ocularCenter.x() * 16 * 90;
             float centerY = ocularCenter.y() * 16 * 90;
 
-//            RenderType bakedRenderType = ClientRenderHelper.bakePipelineState(RenderTypes.debugTriangleFan()); // [26.2, )
+            RenderType bakedRenderType = ClientRenderHelper.bakePipelineState(RenderTypes.debugTriangleFan()); // [26.2, )
 
-            collector.submitCustomGeometry(matrixStack, renderType, (pose, builder) -> {
+            collector.submitCustomGeometry(matrixStack, bakedRenderType, (pose, builder) -> {
                 builder.addVertex(pose,
                     centerX, centerY, -90.0f)
                     .setColor(255, 255, 255, 255);

@@ -130,7 +130,10 @@ public class ClientRenderHelper {
          *     <li>这里按 1.20.1-1.21.6 的即时模式直接渲染手臂，使手的渲染仍处于模板测试期间</li>
          * </ul>
          */
-        {
+        collector.submitCustomGeometry(matrixStack, bakedRenderType, (pose, vertexConsumer) -> {
+            PoseStack _poseStack = new PoseStack();
+            _poseStack.last().set(pose);
+
             ARCompat.setRenderingLevel();
             arm.resetPose();
             arm.visible = true;
@@ -138,13 +141,14 @@ public class ClientRenderHelper {
             model.rightSleeve.visible = isSleeveVisible;
             model.leftArm.zRot = -0.1F;
             model.rightArm.zRot = 0.1F;
-            arm.render(matrixStack,
-                    buffer.getBuffer(ClientRenderUtils.RenderType_.entityTranslucent(skinLocation)),
+            arm.render(_poseStack,
+                    vertexConsumer,
                     combinedLight,
                     OverlayTexture.NO_OVERLAY);
 
             ARCompat.resetRenderingLevel();
         }
+        );
 
         // RenderSystem.setShaderTexture(0, oldId);
     }

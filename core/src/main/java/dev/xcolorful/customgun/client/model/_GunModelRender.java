@@ -182,7 +182,6 @@ public class _GunModelRender {
                                     int light, int overlay,
                                     ItemStack gunItem) {
         // [26.2, )
-        if (true) return; // 让IDE保留下面的引用关系
         _renderAttachments(_this, matrixStack, transformType, light, overlay, gunItem);
         if (transformType.firstPerson() && _this.getRenderHand()) {
             _renderHandInternal(_this, matrixStack, light, HumanoidArm.LEFT);

@@ -249,9 +249,9 @@ public class _GunModelRender {
 //        ClientRenderHelper.GL._clear(GL11.GL_STENCIL_BUFFER_BIT);
 
         // [1.21.6, )
-//        RenderTarget target = ClientRenderUtils.getMainRenderTarget(Minecraft.getInstance());
-//        if (target.useStencil && target.getDepthTexture() != null) {
-//            RenderSystem.getDevice().createCommandEncoder().clearStencilTexture(target.getDepthTexture(), 0);
-//        }
+        RenderTarget target = ClientRenderUtils.getMainRenderTarget(Minecraft.getInstance());
+        if (target.useStencil && target.getDepthTexture() != null) {
+            RenderSystem.getDevice().createCommandEncoder().clearStencilTexture(target.getDepthTexture(), 0);
+        }
     }
 }

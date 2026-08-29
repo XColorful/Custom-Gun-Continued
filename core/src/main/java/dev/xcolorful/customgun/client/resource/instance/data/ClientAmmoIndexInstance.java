@@ -101,6 +101,7 @@ public final class ClientAmmoIndexInstance extends PojoInstance<AmmoIndex> {
         return true;
     }
     private void reloadAmmoParticleOption() {
+        if (!ClientModEvent.get().isLoggedOn()) return;
         this.ammoParticleLoaded = true;
 
         _AmmoParticle ammoParticle = this.ammoDisplayCache.getAmmoParticle();

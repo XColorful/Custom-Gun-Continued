@@ -17,4 +17,11 @@ public interface IScreen<T extends Screen> {
     void resetScreen();
 
     void closeScreen();
+
+    /**
+     * @return 打开该screen时是否隐藏overlay
+     */
+    default boolean hideOverlay() {
+        return false;
+    }
 }

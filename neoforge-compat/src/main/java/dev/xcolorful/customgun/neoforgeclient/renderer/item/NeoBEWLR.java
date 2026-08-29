@@ -17,6 +17,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
+import org.joml.Vector3fc;
 
 import java.util.Set;
 
@@ -69,6 +70,27 @@ public class NeoBEWLR implements
 
     @Override
     public void getExtents(Set<Vector3f> output) {
+        // extents 为空会让 getModelBoundingBox() 得到无限大 AABB，ItemEntityRenderer 会据此把物品平移到无穷远，导致掉落物只看得见影子
+        // 默认给一个 1×1×1 格的近似包围盒（item 单位，与 getExtentsForGui 的 /16 约定一致）
+        output.add(new Vector3f(0.0F, 0.0F, 0.0F));
+        output.add(new Vector3f(0.0F, 0.0F, 1.0F));
+        output.add(new Vector3f(0.0F, 1.0F, 0.0F));
+        output.add(new Vector3f(0.0F, 1.0F, 1.0F));
+        output.add(new Vector3f(1.0F, 0.0F, 0.0F));
+        output.add(new Vector3f(1.0F, 0.0F, 1.0F));
+        output.add(new Vector3f(1.0F, 1.0F, 0.0F));
+        output.add(new Vector3f(1.0F, 1.0F, 1.0F));
+    }
+    /**
+     * 给物品模型提供包围盒
+     * <ul>
+     *     <li>{@link net.minecraft.client.renderer.entity.ItemEntityRenderer}（掉落物悬浮高度/平铺）</li>
+     *     <li>{@code net.minecraft.client.gui.render.state.GuiItemRenderState}（仅当 assets/{@link CustomGun#MOD_ID}/items/*.json 里 oversized_in_gui=true 时才用）</li>
+     * </ul>
+     * @param output
+     */
+    @ApiStatus.AvailableSince("1.21.11")
+    public void getExtents(Consumer<Vector3fc> output) {
         // extents 为空会让 getModelBoundingBox() 得到无限大 AABB，ItemEntityRenderer 会据此把物品平移到无穷远，导致掉落物只看得见影子
         // 默认给一个 1×1×1 格的近似包围盒（item 单位，与 getExtentsForGui 的 /16 约定一致）
         output.add(new Vector3f(0.0F, 0.0F, 0.0F));

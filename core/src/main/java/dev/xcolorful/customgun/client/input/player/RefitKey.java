@@ -84,17 +84,15 @@ public final class RefitKey extends InputKey {
         if (player == null || player.isSpectator() // 旁观模式
         ) return;
 
-        if (ClientInputUtils.isGameplayFocused()) {
+        if (ClientGuiUtils.getCurrentScreen(mc) instanceof IGunRefitScreen<?> screen) {
+            // 在装配界面，优先关闭界面
+            screen.closeScreen();
+        } else if (ClientInputUtils.isGameplayFocused()) {
             ItemStack gunItem = player.getMainHandItem();
             @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
             if (iGun == null) return;
 
-            // 有其他界面，不强制覆盖
-            if (ClientGuiUtils.getCurrentScreen(mc) != null) return;
-
             ClientGuiUtils.setCurrentScreen(mc, GunRefitScreen.create().asScreen());
-        } else if (ClientGuiUtils.getCurrentScreen(mc) instanceof IGunRefitScreen<?> screen) {
-            screen.closeScreen();
         }
     }
 }

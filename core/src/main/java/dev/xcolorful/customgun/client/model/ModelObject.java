@@ -194,6 +194,8 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
         @Nullable SubmitNodeCollector collector = ClientRenderHelper.FirstPersonArmHelper.getFirstPersonArmCollector();
         if (collector == null) return;
 
+        RenderType bakedRenderType = ClientRenderHelper.bakePipelineState(renderType); // [26.2, )
+
         collector.submitCustomGeometry(matrixStack, renderType, (pose, builder) -> {
             PoseStack _matrixStack = new PoseStack();
             _matrixStack.last().set(pose);

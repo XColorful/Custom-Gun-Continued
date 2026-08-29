@@ -13,6 +13,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import dev.xcolorful.customgun.client.CustomGunClient;
 import dev.xcolorful.customgun.client.api.minecraft.pipeline.PipelineModifier;
+import dev.xcolorful.customgun.client.api.minecraft.pipeline.RenderTypePipelineBake;
 import dev.xcolorful.customgun.client.api.minecraft.stencil.IStencilOperator;
 import dev.xcolorful.customgun.client.api.minecraft.stencil.StencilFunction;
 import dev.xcolorful.customgun.client.api.minecraft.stencil.StencilOperation;
@@ -22,6 +23,7 @@ import dev.xcolorful.customgun.client.compat.optifine.OptifineCompat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.player.AvatarRenderer;
@@ -86,6 +88,14 @@ public class ClientRenderHelper {
         GL.stencilOperator.disableStencil();
     }
 
+    /**
+     * 26.2 提交 + 延迟渲染：把当前模板/颜色写入等管线状态烘焙进 RenderType，使 flush 阶段绘制仍用正确管线
+     */
+    @ApiStatus.AvailableSince("26.2")
+    public static RenderType bakePipelineState(RenderType renderType) {
+        return RenderTypePipelineBake.bakePipelineState(renderType);
+    }
+
     public static void renderFirstPersonArm(LocalPlayer player, HumanoidArm hand, PoseStack matrixStack, int combinedLight) {
         @Nullable SubmitNodeCollector collector = FirstPersonArmHelper.FIRST_PERSON_ARM_COLLECTOR.get();
         if (collector == null) return;
@@ -97,8 +107,6 @@ public class ClientRenderHelper {
         AvatarRenderer<?> renderer = renderManager.getPlayerRenderer(player);
         // int oldId = RenderSystem.getShaderTexture(0);
         // RenderSystem.setShaderTexture(0, ClientRenderUtils.getSkinTextureLocation(player));
-
-        ARCompat.setRenderingLevel();
 
         var skinLocation = ClientRenderUtils.getSkinTextureLocation(player);
         boolean isSleeveVisible;
@@ -112,6 +120,8 @@ public class ClientRenderHelper {
             arm = model.leftArm;
         }
 
+        RenderType bakedRenderType = bakePipelineState(ClientRenderUtils.RenderType_.entityTranslucent(skinLocation)); // [26.2, )
+
         /**
          * <ul>
          *     1.21.10起
@@ -120,18 +130,21 @@ public class ClientRenderHelper {
          *     <li>这里按 1.20.1-1.21.6 的即时模式直接渲染手臂，使手的渲染仍处于模板测试期间</li>
          * </ul>
          */
-        arm.resetPose();
-        arm.visible = true;
-        model.leftSleeve.visible = isSleeveVisible;
-        model.rightSleeve.visible = isSleeveVisible;
-        model.leftArm.zRot = -0.1F;
-        model.rightArm.zRot = 0.1F;
-        arm.render(matrixStack,
-                buffer.getBuffer(ClientRenderUtils.RenderType_.entityTranslucent(skinLocation)),
-                combinedLight,
-                OverlayTexture.NO_OVERLAY);
+        {
+            ARCompat.setRenderingLevel();
+            arm.resetPose();
+            arm.visible = true;
+            model.leftSleeve.visible = isSleeveVisible;
+            model.rightSleeve.visible = isSleeveVisible;
+            model.leftArm.zRot = -0.1F;
+            model.rightArm.zRot = 0.1F;
+            arm.render(matrixStack,
+                    buffer.getBuffer(ClientRenderUtils.RenderType_.entityTranslucent(skinLocation)),
+                    combinedLight,
+                    OverlayTexture.NO_OVERLAY);
 
-        ARCompat.resetRenderingLevel();
+            ARCompat.resetRenderingLevel();
+        }
 
         // RenderSystem.setShaderTexture(0, oldId);
     }

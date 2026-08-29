@@ -222,6 +222,9 @@ public class _AttachmentModelRender {
                 path.get(i).translate_rotate_scale(poseStack);
             }
             BedrockPart part = path.get(path.size() - 1);
+
+            RenderType bakedRenderType = ClientRenderHelper.bakePipelineState(renderType); // [26.2, )
+
             collector.submitCustomGeometry(poseStack, renderType, (pose, vertexConsumer) -> {
                 PoseStack _poseStack = new PoseStack();
                 _poseStack.last().set(pose);
@@ -306,6 +309,8 @@ public class _AttachmentModelRender {
             Vector3f ocularCenter = getBedrockPartCenter(matrixStack, ocularNodePath);
             float centerX = ocularCenter.x() * 16 * 90;
             float centerY = ocularCenter.y() * 16 * 90;
+
+            RenderType bakedRenderType = ClientRenderHelper.bakePipelineState(renderType); // [26.2, )
 
             collector.submitCustomGeometry(matrixStack, renderType, (pose, builder) -> {
                 builder.addVertex(pose,

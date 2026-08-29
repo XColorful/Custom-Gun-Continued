@@ -11,6 +11,7 @@ import dev.xcolorful.customgun.client.model.bedrock.BedrockPart;
 import dev.xcolorful.customgun.client.renderer.model.ShellRender;
 import dev.xcolorful.customgun.core.api.item.attachment.AttachmentCategory;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumMap;
@@ -30,6 +31,12 @@ public interface IGunModelObjectRenderer extends IGunModelObjectRender {
     @Nullable List<BedrockPart> getGroundOriginPath();
     @Nullable List<BedrockPart> getMuzzleFlashPosPath();
     @Nullable List<BedrockPart> getScopePosPath();
+    @ApiStatus.AvailableSince("26.2")
+    @Nullable List<BedrockPart> getLeftHandPosPath();
+    @ApiStatus.AvailableSince("26.2")
+    @Nullable List<BedrockPart> getRightHandPosPath();
+    @ApiStatus.AvailableSince("26.2")
+    @Nullable List<BedrockPart> getAttachmentPosPath(AttachmentCategory category);
     @Nullable List<BedrockPart> getRefitAttachmentViewPath(AttachmentCategory type);
     @Nullable ShellRender getShellRender(int index);
     @Nullable BedrockPart getRootNode();

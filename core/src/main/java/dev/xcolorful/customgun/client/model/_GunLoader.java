@@ -162,6 +162,8 @@ public class _GunLoader {
         _this.groundOriginPath = _this.getPath(_this.modelMap_get(NodeName.GROUND_ORIGIN.getName()));
         _this.muzzleFlashPosPath = _this.getPath(_this.modelMap_get(NodeName.MUZZLE_FLASH_ORIGIN.getName()));
         _this.scopePosPath = _this.getPath(_this.modelMap_get(AttachmentCategory.SCOPE.name().toLowerCase() + NodeName.Suffix.ATTACHMENT_POS.getName()));
+        _this.leftHandPosPath = _this.getPath(_this.modelMap_get(NodeName.LEFTHAND_POS.getName()));
+        _this.rightHandPosPath = _this.getPath(_this.modelMap_get(NodeName.RIGHTHAND_POS.getName()));
         _this.laserBeamPaths = _this.getPath(_this.modelMap_get(NodeName.LASER_BEAM.getName()));
 
         @Nullable IBedrockRenderer root = _this.modelMap_get(NodeName.ROOT.getName());
@@ -244,6 +246,9 @@ public class _GunLoader {
             if (category == AttachmentCategory.NONE || category == AttachmentCategory.SCOPE) {
                 continue;
             }
+
+            // 缓存非瞄具配件的定位组路径，26.2 延迟渲染下在 submit 阶段渲染配件
+            _this.attachmentPosPaths.put(category, _this.getPath(_this.modelMap_get(POSITION_NODE_NAME[i])));
 
             _this.setFunctionalRenderer(POSITION_NODE_NAME[i], bedrockPart -> {
                 bedrockPart.visible = false;

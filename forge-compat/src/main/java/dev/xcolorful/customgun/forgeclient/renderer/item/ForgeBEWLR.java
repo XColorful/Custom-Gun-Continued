@@ -46,12 +46,23 @@ public class ForgeBEWLR implements
         ItemDisplayContext itemDisplayContext = ItemDisplayContextTracker.current();
         if (true) itemDisplayContext = displayContext; // 26.1移除
 
+        /*
+        1.21.10 起 SpecialModelRenderer 改为 submit(SubmitNodeCollector)，不再由原版在 submit 后 endBatch
+        renderByItem 里 GUI 槽位贴图会直接写入 bufferSource 而不 flush，需要在这里补上 flush
+        3D 模型渲染走全局 bufferSource 并自行 endBatch
+         */
+//        MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource(); // [1.21.10, 26.2)
+
         var bewlr = itemBEWLR.cgc$getBEWLR(); // 用var就跟ResourceLocation是一样的手法 (把import给隐身，省一个移植修改)，除此之外没别的用意
         bewlr.renderByItem(itemStack,
                 itemDisplayContext,
                 poseStack,
                 bufferSource,
                 packedLight, packedOverlay);
+
+//        if (!OculusCompat.endBatch(bufferSource)) { // [1.21.10, 26.2)
+//            bufferSource.endBatch();
+//        }
     }
 
     @Override

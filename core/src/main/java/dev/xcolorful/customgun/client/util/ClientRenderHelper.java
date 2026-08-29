@@ -277,7 +277,7 @@ public class ClientRenderHelper {
             // [1.20.1, 1.21.6)
 //            RenderSystem.disableBlend();
 
-            // [1.21.6, )
+            // [1.21.6, 26.2)
             GlStateManager._disableBlend();
 
             // [26.2, )

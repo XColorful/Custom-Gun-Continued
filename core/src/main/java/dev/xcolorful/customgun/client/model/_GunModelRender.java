@@ -118,10 +118,11 @@ public class _GunModelRender {
         { // 渲染
             _renderScope(_this, matrixStack, transformType, renderType, light, overlay, gunItem);
 
-            _renderHand(_this, matrixStack, transformType, renderType, light, overlay, gunItem);
-
             ClientRenderHelper.GL._stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
             _this.super_render(matrixStack, transformType, renderType, light, overlay);
+
+            _renderHand(_this, matrixStack, transformType, renderType, light, overlay, gunItem);
+
             ClientRenderHelper.disableItemEntityStencilTest();
             _GunModelRender._clearStencilBuffer();
         }
@@ -248,10 +249,12 @@ public class _GunModelRender {
         // [1.20.1, 1.21.6)
 //        ClientRenderHelper.GL._clear(GL11.GL_STENCIL_BUFFER_BIT);
 
-        // [1.21.6, )
+        // [1.21.6, 26.2)
         RenderTarget target = ClientRenderUtils.getMainRenderTarget(Minecraft.getInstance());
         if (target.useStencil && target.getDepthTexture() != null) {
             RenderSystem.getDevice().createCommandEncoder().clearStencilTexture(target.getDepthTexture(), 0);
         }
+
+        // [26.2, )
     }
 }

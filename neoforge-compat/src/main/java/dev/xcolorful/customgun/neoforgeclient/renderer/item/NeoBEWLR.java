@@ -5,9 +5,6 @@ import com.mojang.serialization.MapCodec;
 import dev.xcolorful.customgun.client.api.item.IItemBEWLR;
 import dev.xcolorful.customgun.client.api.renderer.item.ItemDisplayContextTracker;
 import dev.xcolorful.customgun.client.api.renderer.item._SpecialModelRenderer;
-import dev.xcolorful.customgun.client.compat.oculus.OculusCompat;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.special.SpecialModelRenderer;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -60,18 +57,18 @@ public class NeoBEWLR implements
         renderByItem 里 GUI 槽位贴图会直接写入 bufferSource 而不 flush，需要在这里补上 flush
         3D 模型渲染走全局 bufferSource 并自行 endBatch
          */
-        MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource(); // [1.21.10, 26.2)
+//        MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource(); // [1.21.10, 26.2)
 
         var bewlr = itemBEWLR.cgc$getBEWLR(); // 用var就跟ResourceLocation是一样的手法 (把import给隐身，省一个移植修改)，除此之外没别的用意
         bewlr.renderByItem(itemStack,
                 itemDisplayContext,
                 poseStack,
-                bufferSource,
+                nodeCollector,
                 packedLight, packedOverlay);
 
-       if (!OculusCompat.endBatch(bufferSource)) { // [1.21.10, 26.2)
-           bufferSource.endBatch();
-       }
+//       if (!OculusCompat.endBatch(bufferSource)) { // [1.21.10, 26.2)
+//           bufferSource.endBatch();
+//       }
     }
 
     @Override

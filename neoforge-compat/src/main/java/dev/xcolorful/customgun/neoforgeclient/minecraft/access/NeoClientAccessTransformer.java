@@ -3,6 +3,7 @@ package dev.xcolorful.customgun.neoforgeclient.minecraft.access;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import dev.xcolorful.customgun.client.api.minecraft.access.IClientAccessTransformer;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.rendertype.RenderSetup;
 import net.minecraft.client.renderer.rendertype.RenderType;
 
 public class NeoClientAccessTransformer implements IClientAccessTransformer {
@@ -14,18 +15,27 @@ public class NeoClientAccessTransformer implements IClientAccessTransformer {
         minecraft.startUseItem();
     }
 
-    @Override public Object
+    @Override public RenderSetup
     getState(
             RenderType renderType
     ) {
-        return null; // renderType.state;
+        return renderType.state;
     }
 
-    @Override public Object
+    @Override public RenderSetup
     new_RenderSetup(
             RenderPipeline renderPipeline,
-            Object renderSetup
+            RenderSetup renderSetup
     ) {
-        return null;
+        return new RenderSetup(renderPipeline,
+                renderSetup.textures,
+                renderSetup.useLightmap,
+                renderSetup.useOverlay,
+                renderSetup.layeringTransform,
+                renderSetup.outputTarget,
+                renderSetup.textureTransform,
+                renderSetup.outlineProperty,
+                renderSetup.affectsCrumbling,
+                renderSetup.sortOnUpload);
     }
 }

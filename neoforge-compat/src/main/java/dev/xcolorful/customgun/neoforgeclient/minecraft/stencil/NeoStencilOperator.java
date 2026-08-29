@@ -1,5 +1,6 @@
 package dev.xcolorful.customgun.neoforgeclient.minecraft.stencil;
 
+import com.mojang.blaze3d.pipeline.ColorTargetState;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.xcolorful.customgun.client.api.minecraft.pipeline.PipelineModifier;
@@ -87,9 +88,25 @@ public class NeoStencilOperator implements IStencilOperator {
 
         return STENCIL_PIPELINE_CACHE
                 .computeIfAbsent(pipeline, $ -> new HashMap<>())
-                .computeIfAbsent(stencil, s -> pipeline.toBuilder()
-                        .withStencilTest(s)
-                        .withLocation(pipeline.getLocation().withSuffix("/cgc_stencil"))
-                        .build());
+                .computeIfAbsent(stencil, s -> {
+                    /*
+                    RenderPipeline#toBuilder 不会把 activeColorTargetStateCount 复制进 builder
+                    直接 build() 会回退到 ColorTargetState.DEFAULT（WRITE_ALL 且无混合），从而丢掉 NO_COLOR_WRITE（颜色掩码）与混合状态
+                    这里显式把各颜色目标写回 builder
+                     */
+                    RenderPipeline.Builder builder = pipeline.toBuilder();
+                    ColorTargetState[] colorTargets = pipeline.getColorTargetStates();
+                    if (colorTargets != null) {
+                        for (int i = 0; i < colorTargets.length; i++) {
+                            if (colorTargets[i] != null) {
+                                builder.withColorTargetState(i, colorTargets[i]);
+                            }
+                        }
+                    }
+                    return builder
+                            .withStencilTest(s)
+                            .withLocation(pipeline.getLocation().withSuffix("/cgc_stencil"))
+                            .build();
+                });
     }
 }

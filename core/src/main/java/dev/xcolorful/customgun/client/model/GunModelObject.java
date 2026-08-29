@@ -27,6 +27,7 @@ import dev.xcolorful.customgun.core.api.resource.assets.model.bedrock.geometry.N
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -77,6 +78,21 @@ public class GunModelObject extends AnimatedModelObject implements IGunModelObje
      * 瞄具配件定位组的路径。其他配件不需要存路径，只需要替换渲染。但是瞄具定位组需要用来辅助第一人称瞄准的摄像机定位。
      */
     @Nullable List<BedrockPart> scopePosPath;
+    /**
+     * 左手定位组路径（26.2 延迟渲染下手臂在 submit 阶段渲染）
+     */
+    @ApiStatus.AvailableSince("26.2")
+    @Nullable List<BedrockPart> leftHandPosPath;
+    /**
+     * 右手定位组路径
+     */
+    @ApiStatus.AvailableSince("26.2")
+    @Nullable List<BedrockPart> rightHandPosPath;
+    /**
+     * 非瞄具配件定位组路径（laser/grip/muzzle/magazine 等），26.2 延迟渲染下在 submit 阶段渲染
+     */
+    @ApiStatus.AvailableSince("26.2")
+    final EnumMap<AttachmentCategory, List<BedrockPart>> attachmentPosPaths = new EnumMap<>(AttachmentCategory.class);
     /**
      * 枪口火焰定位组
      */
@@ -213,6 +229,18 @@ public class GunModelObject extends AnimatedModelObject implements IGunModelObje
     }
     @Override public @Nullable List<BedrockPart> getScopePosPath() {
         return this.scopePosPath;
+    }
+    @ApiStatus.AvailableSince("26.2")
+    public @Nullable List<BedrockPart> getLeftHandPosPath() {
+        return this.leftHandPosPath;
+    }
+    @ApiStatus.AvailableSince("26.2")
+    public @Nullable List<BedrockPart> getRightHandPosPath() {
+        return this.rightHandPosPath;
+    }
+    @ApiStatus.AvailableSince("26.2")
+    public @Nullable List<BedrockPart> getAttachmentPosPath(AttachmentCategory category) {
+        return this.attachmentPosPaths.get(category);
     }
     @Override public @Nullable List<BedrockPart> getRefitAttachmentViewPath(AttachmentCategory type) {
         return this.refitAttachmentViewPath.get(type);

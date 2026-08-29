@@ -19,6 +19,7 @@ import dev.xcolorful.customgun.client.api.model.gun.GunModelType;
 import dev.xcolorful.customgun.client.api.model.gun.IGunModelType;
 import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
 import dev.xcolorful.customgun.client.api.sound.gun.GunSoundType;
+import dev.xcolorful.customgun.client.init.ClientModEvent;
 import dev.xcolorful.customgun.client.model.GunModelObject;
 import dev.xcolorful.customgun.client.resource.assets.animation.BedrockAnimation;
 import dev.xcolorful.customgun.client.resource.assets.display.GunDisplay;
@@ -55,6 +56,7 @@ public final class GunDisplayInstance extends PojoInstance<GunDisplay> {
 
     private @Nullable Int2ObjectArrayMap<_SurroundDisplay> surroundDisplayByHotbarCache;
     private @Nullable Color tracerColorCache;
+    private boolean ammoParticleLoaded = false;
     private @Nullable ParticleOptions ammoParticleOptionsCache;
     private Map<GunSoundType, Identifier> gunSoundsCache;
 
@@ -115,22 +117,10 @@ public final class GunDisplayInstance extends PojoInstance<GunDisplay> {
             }
         }
 
-        _AmmoDisplayOverride ammoDisplayOverride = pojo.getAmmoDisplayOverride();
-        if (ammoDisplayOverride != null) {
-            this.tracerColorCache = ammoDisplayOverride.getTracerColor();
-            @Nullable _AmmoParticle ammoParticle = ammoDisplayOverride.getAmmoParticle();
-            if (ammoParticle != null) {
-                var particleRl = ammoParticle.getParticleLocation();
-                try {
-                    this.ammoParticleOptionsCache = ParticleArgument.readParticle(new StringReader(particleRl.toString()), CustomGun.getRegistryAccess());
-                } catch (CommandSyntaxException e) {
-                    CustomGun.LOGGER.debug("GunDisplayInstance: ParticleArgument.readParticle({}) failed", particleRl, e);
-                }
-                if (this.ammoParticleOptionsCache == null) {
-                    CustomGun.LOGGER.debug("GunDisplayInstance: AmmoParticle {} not valid", particleRl);
-                }
-            }
+        if (ClientModEvent.get().hasLoggedOnce()) {
+            this.reloadAmmoParticleOption();
         }
+
         this.gunSoundsCache = pojo.getGunSounds();
 
         AnimController animController;
@@ -215,6 +205,27 @@ public final class GunDisplayInstance extends PojoInstance<GunDisplay> {
             return new AnimController(new ArrayList<>(), gunModel);
         }
     }
+    private void reloadAmmoParticleOption() {
+        this.ammoParticleLoaded = true;
+
+        var pojo = this.getPojo();
+        _AmmoDisplayOverride ammoDisplayOverride = pojo.getAmmoDisplayOverride();
+        if (ammoDisplayOverride != null) {
+            this.tracerColorCache = ammoDisplayOverride.getTracerColor();
+            @Nullable _AmmoParticle ammoParticle = ammoDisplayOverride.getAmmoParticle();
+            if (ammoParticle != null) {
+                var particleRl = ammoParticle.getParticleLocation();
+                try {
+                    this.ammoParticleOptionsCache = ParticleArgument.readParticle(new StringReader(particleRl.toString()), CustomGun.getRegistryAccess());
+                } catch (CommandSyntaxException e) {
+                    CustomGun.LOGGER.debug("GunDisplayInstance: ParticleArgument.readParticle({}) failed", particleRl, e);
+                }
+                if (this.ammoParticleOptionsCache == null) {
+                    CustomGun.LOGGER.debug("GunDisplayInstance: AmmoParticle {} not valid", particleRl);
+                }
+            }
+        }
+    }
     private void reloadScriptParams() {
         this.animStateMachineParams = new LuaTable();
 
@@ -246,6 +257,7 @@ public final class GunDisplayInstance extends PojoInstance<GunDisplay> {
         return ammoDisplayOverride != null ? ammoDisplayOverride.getAmmoParticle() : null;
     }
     public @Nullable ParticleOptions getParticleOptions() {
+        if (!this.ammoParticleLoaded) this.reloadAmmoParticleOption();
         return this.ammoParticleOptionsCache;
     }
     public @Nullable Identifier getGunSound(GunSoundType gunSoundType) {

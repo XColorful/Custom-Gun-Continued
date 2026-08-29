@@ -199,6 +199,8 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
         MultiBufferSource.BufferSource bufferSource = mc.renderBuffers().bufferSource();
         VertexConsumer builder = bufferSource.getBuffer(renderType);
 
+        RenderType bakedRenderType = ClientRenderHelper.bakePipelineState(renderType); // [26.2, )
+
         {
             matrixStack.pushPose(); {
                 for (int i = 0; i < this.shouldRender.size(); i++) {

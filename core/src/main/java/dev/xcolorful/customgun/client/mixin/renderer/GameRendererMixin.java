@@ -55,7 +55,7 @@ public abstract class GameRendererMixin {
 
         // 触发其他事件
         boolean cancel; {
-            if (GunCameraHelper.State.renderItemInHand) {
+            if (GunCameraHelper.State.renderItemInHand()) {
                 cancel = CustomGun.getEventPoster().postCustomEvent(new ItemInHandBobEvent.Hurt());
             } else {
                 cancel = CustomGun.getEventPoster().postCustomEvent(new LevelBobEvent.Hurt());
@@ -72,7 +72,7 @@ public abstract class GameRendererMixin {
                               PoseStack poseStack,
                               float pPartialTicks, CallbackInfo ci) {
         boolean cancel; {
-            if (GunCameraHelper.State.renderItemInHand) {
+            if (GunCameraHelper.State.renderItemInHand()) {
                 cancel = CustomGun.getEventPoster().postCustomEvent(new ItemInHandBobEvent.View());
             } else {
                 cancel = CustomGun.getEventPoster().postCustomEvent(new LevelBobEvent.View());
@@ -92,6 +92,7 @@ public abstract class GameRendererMixin {
      *     <li>因此改回用 {@code getFov} 的 {@code useFovSetting} 参数区分 world（true）与 hand（false）</li>
      *     <li>这是 1.21.6 唯一能覆盖两个 FOV 计算点的位置</li>
      * </ul>
+     * @deprecated 自26.1.x，改用{@link CameraMixin}
      */
     @Deprecated(since = "26.1.x")
     @Inject(method = "getFov", at = @At("HEAD"))
@@ -99,21 +100,23 @@ public abstract class GameRendererMixin {
                                      float pPartialTicks,
                                      boolean pUseFOVSetting,
                                      CallbackInfoReturnable<Double> cir) {
-        GunCameraHelper.State.renderItemInHand = !pUseFOVSetting;
+        GunCameraHelper.State.isLevelFov = pUseFOVSetting;
     }
 
-    @Inject(method = "renderItemInHand", at = @At("HEAD"))
-    private void cgc$beforeRenderItemInHand(Camera camera,
-                                            float partialTick,
-                                            Matrix4f projectionMatrix,
-                                            CallbackInfo ci) {
+//    @Deprecated(since = "1.21.6")
+//    @Inject(method = "renderItemInHand", at = @At("HEAD"))
+//    private void cgc$beforeRenderItemInHand(Camera camera,
+//                                            float partialTick,
+//                                            Matrix4f projectionMatrix,
+//                                            CallbackInfo ci) {
 //        GunCameraHelper.State.renderItemInHand = true;
-    }
-    @Inject(method = "renderItemInHand", at = @At("RETURN"))
-    private void cgc$afterRenderItemInHand(Camera camera,
-                                           float partialTick,
-                                           Matrix4f projectionMatrix,
-                                           CallbackInfo ci) {
+//    }
+//    @Deprecated(since = "1.21.6")
+//    @Inject(method = "renderItemInHand", at = @At("RETURN"))
+//    private void cgc$afterRenderItemInHand(Camera camera,
+//                                           float partialTick,
+//                                           Matrix4f projectionMatrix,
+//                                           CallbackInfo ci) {
 //        GunCameraHelper.State.renderItemInHand = false;
-    }
+//    }
 }

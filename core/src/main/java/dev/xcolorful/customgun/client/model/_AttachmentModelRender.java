@@ -222,12 +222,15 @@ public class _AttachmentModelRender {
                 path.get(i).translate_rotate_scale(poseStack);
             }
             BedrockPart part = path.get(path.size() - 1);
+
+            RenderType bakedRenderType = ClientRenderHelper.bakePipelineState(renderType); // [26.2, )
+
             {
                 part.visible = true; {
                     Minecraft mc = Minecraft.getInstance();
 
                     MultiBufferSource.BufferSource bufferSource = mc.renderBuffers().bufferSource();
-                    VertexConsumer vertexConsumer = bufferSource.getBuffer(renderType);
+                    VertexConsumer vertexConsumer = bufferSource.getBuffer(bakedRenderType);
                     part.render(poseStack,
                             transformType,
                             vertexConsumer,
@@ -314,6 +317,8 @@ public class _AttachmentModelRender {
             Vector3f ocularCenter = getBedrockPartCenter(matrixStack, ocularNodePath);
             float centerX = ocularCenter.x() * 16 * 90;
             float centerY = ocularCenter.y() * 16 * 90;
+
+            RenderType bakedRenderType = ClientRenderHelper.bakePipelineState(renderType); // [26.2, )
 
             {
                 builder = tesselator.begin(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR);

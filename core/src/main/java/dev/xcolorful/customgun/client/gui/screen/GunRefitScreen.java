@@ -371,6 +371,11 @@ public class GunRefitScreen extends NoBackgroundScreen implements IGunRefitScree
         this.onClose();
     }
 
+    @Override
+    public boolean hideOverlay() {
+        return true;
+    }
+
     // --------Cache--------
     // tacz跟渲染/gui有关的，涉及读ResourceApi的，倾向于是零缓存的设计(免思考打法)，这是待重构的
     // 只不过这里没太大用处

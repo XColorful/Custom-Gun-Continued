@@ -1,6 +1,6 @@
 package dev.xcolorful.customgun.client.api.minecraft.pipeline;
 
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.AvailableSince("26.2")

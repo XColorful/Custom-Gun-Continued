@@ -1,7 +1,7 @@
 [English](#English)
 
 # 自定义枪械永续wiki
-> wiki 版本：`0.0.8`.5
+> wiki 版本：`0.0.8`.6
 
 > 推荐安装[Stylus](https://chromewebstore.google.com/detail/stylus/clngdbkpkpeebahjckkjfobafhncgmne)插件并使用配置[Stylus-Obsidian-Topaz-Nord.json](https://github.com/XColorful/XColorful.github.io/blob/main/stylus/Stylus-Obsidian-Topaz-Nord.json)
 
@@ -46,6 +46,11 @@
 
 - [模组版本](https://github.com/XColorful/Custom-Gun-Continued/wiki/Mod-version)
 
+## 开发者
+
+- [模组开发说明](https://github.com/XColorful/Custom-Gun-Continued/wiki/Mod-development-instructions)
+- [模组兼容框架](https://github.com/XColorful/Custom-Gun-Continued/wiki/Mod-compat-framework)
+
 ## 许可证
 
 - Wiki 文档：[CC-BY-SA-4.0](https://creativecommons.org/licenses/by-sa/4.0/)
@@ -59,7 +64,7 @@
 除非另有明确说明，代码、图片及其他材料也不属于本许可证的适用范围
 
 # English
-> wiki verison: `0.0.8`.5
+> wiki verison: `0.0.8`.6
 
 > Recommend installing the [Stylus](https://chromewebstore.google.com/detail/stylus/clngdbkpkpeebahjckkjfobafhncgmne) extension and using the configuration [Stylus-Obsidian-Topaz-Nord.json](https://github.com/XColorful/XColorful.github.io/blob/main/stylus/Stylus-Obsidian-Topaz-Nord.json)
 
@@ -103,6 +108,11 @@
 ## About
 
 - [Mod version](https://github.com/XColorful/Custom-Gun-Continued/wiki/Mod-version#English)
+
+## Developer
+
+- [Mod development instructions](https://github.com/XColorful/Custom-Gun-Continued/wiki/Mod-development-instructions#English)
+- [Mod compat framework](https://github.com/XColorful/Custom-Gun-Continued/wiki/Mod-compat-framework#English)
 
 ## License
 

@@ -83,6 +83,9 @@
 				- [资源包材质](https://github.com/XColorful/Custom-Gun-Continued/wiki/Resourcepack-texture)
 	- 关于模组
 		- [模组版本](https://github.com/XColorful/Custom-Gun-Continued/wiki/Mod-version)
+	- 开发者
+		- [模组开发说明](https://github.com/XColorful/Custom-Gun-Continued/wiki/Mod-development-instructions)
+		- [模组兼容框架](https://github.com/XColorful/Custom-Gun-Continued/wiki/Mod-compat-framework)
 
 - [Home](https://github.com/XColorful/Custom-Gun-Continued/wiki#English)
 	- Configuration
@@ -165,3 +168,6 @@
 				- [Resourcepack texture](https://github.com/XColorful/Custom-Gun-Continued/wiki/Resourcepack-texture#English)
 	- About
 		- [Mod version](https://github.com/XColorful/Custom-Gun-Continued/wiki/Mod-version#English)
+	- Developer
+		- [Mod development instructions](https://github.com/XColorful/Custom-Gun-Continued/wiki/Mod-development-instructions#English)
+		- [Mod compat framework](https://github.com/XColorful/Custom-Gun-Continued/wiki/Mod-compat-framework#English)

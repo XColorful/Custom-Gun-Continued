@@ -1,7 +1,7 @@
 [English](#English)
 
 # 模组版本
-> wiki 版本：`0.0.8`.0
+> wiki 版本：`0.0.8`.1
 
 ## 版本号命名
 
@@ -49,7 +49,7 @@ wiki 版本号格式为：`模组版本`.`wiki版本数`
 - 否则，单独描述更新说明
 
 # English
-> wiki version: `0.0.8`.0
+> wiki version: `0.0.8`.1
 
 ## Version naming
 

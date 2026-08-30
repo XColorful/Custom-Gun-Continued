@@ -1,7 +1,7 @@
 [English](#English)
 
 # 渲染配置
-> wiki 版本：`0.0.7`.5
+> wiki 版本：`0.0.8`.6
 
 路径：`render`
 - `EnableLaserFadeOut`（bool）：是否对激光应用淡出效果
@@ -11,6 +11,8 @@
 - `BulletHoleParticleFadeThreshold`（浮点，0.0~1.0）：弹孔粒子渲染淡出阈值
 - `ReplaceVanillaCrosshair`（bool）：持枪时是否替换原版准心
 - `CrosshairType`（枚举）：持枪时的准星样式
+	- `DEFAULT`
+	- `BLANK`
 	- `EMPTY`
 	- `DOT_1`
 	- `CIRCLE_1`、`CIRCLE_2`、`CIRCLE_3`
@@ -56,7 +58,7 @@
 ```
 
 # English
-> wiki verison: `0.0.7`.5
+> wiki verison: `0.0.8`.6
 
 ## Render Config
 
@@ -68,6 +70,8 @@ Path: `render`
 - `BulletHoleParticleFadeThreshold` (float, 0.0~1.0): The threshold for fading out when rendering bullet hole particles
 - `ReplaceVanillaCrosshair`(bool): Whether to replace the vanilla crosshair when holding a gun
 - `CrosshairType` (enum): The crosshair when holding a gun
+	- `DEFAULT`
+	- `BLANK`
 	- `EMPTY`
 	- `DOT_1`
 	- `CIRCLE_1`, `CIRCLE_2`, `CIRCLE_3`

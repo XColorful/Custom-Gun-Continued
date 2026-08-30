@@ -1,7 +1,7 @@
 [English](#English)
 
 # 自定义枪械永续wiki
-> wiki 版本：`0.0.8`.6
+> wiki 版本：`0.0.8`.7
 
 > 推荐安装[Stylus](https://chromewebstore.google.com/detail/stylus/clngdbkpkpeebahjckkjfobafhncgmne)插件并使用配置[Stylus-Obsidian-Topaz-Nord.json](https://github.com/XColorful/XColorful.github.io/blob/main/stylus/Stylus-Obsidian-Topaz-Nord.json)
 
@@ -27,7 +27,7 @@
 
 ## 指令
 
-- [配件锁定指令](https://github.com/XColorful/Custom-Gun-Continued/wiki/Attachment-lock-command)
+- [配件锁指令](https://github.com/XColorful/Custom-Gun-Continued/wiki/Attachment-lock-command)
 - [配置指令](https://github.com/XColorful/Custom-Gun-Continued/wiki/Config-command)
 - [转换指令](https://github.com/XColorful/Custom-Gun-Continued/wiki/Convert-command)
 - [调试指令](https://github.com/XColorful/Custom-Gun-Continued/wiki/Debug-command)

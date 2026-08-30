@@ -17,7 +17,7 @@
 		- 服务端配置
 			- [同步配置](https://github.com/XColorful/Custom-Gun-Continued/wiki/Sync-config)
 	- 指令
-		- [配件锁定指令](https://github.com/XColorful/Custom-Gun-Continued/wiki/Attachment-lock-command)
+		- [配件锁指令](https://github.com/XColorful/Custom-Gun-Continued/wiki/Attachment-lock-command)
 		- [配置指令](https://github.com/XColorful/Custom-Gun-Continued/wiki/Config-command)
 		- [转换指令](https://github.com/XColorful/Custom-Gun-Continued/wiki/Convert-command)
 		- [调试指令](https://github.com/XColorful/Custom-Gun-Continued/wiki/Debug-command)

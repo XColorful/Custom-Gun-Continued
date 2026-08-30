@@ -49,7 +49,7 @@ wiki 版本号格式为：`模组版本`.`wiki版本数`
 - 否则，单独描述更新说明
 
 # English
-> wiki version: `0.0.8`.1
+> wiki version: `0.0.8`.2
 
 ## Version naming
 
@@ -80,9 +80,6 @@ The mod version format is: `Year`.`Month`.`Version number`
 ### Changelog
 
 - If other release types intervene between two releases of the same type, the changelog will not repeat previously covered details
-    
-      
-    
 
 ## Wiki version naming
 

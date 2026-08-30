@@ -55,6 +55,9 @@
 
 - 代码：[GPL-3.0-only](https://www.gnu.org/licenses/gpl-3.0.txt)
 - 资产：[CC-BY-SA-4.0](https://creativecommons.org/licenses/by-sa/4.0/)
+- Agent Skill：[MIT](https://opensource.org/license/mit)
+
+Agent Skill 与本模组代码的许可证相互独立。除非另有明确说明，Agent Skill 中由本项目作者创作的代码、提示词、配置及相关内容均采用 MIT 许可证。
 
 # Custom Gun Continued
 
@@ -106,3 +109,6 @@ Derivative content:
 
 - Code: [GPL-3.0-only](https://www.gnu.org/licenses/gpl-3.0.txt)
 - Assets: [CC-BY-SA-4.0](https://creativecommons.org/licenses/by-sa/4.0/)
+- Agent Skill: [MIT](https://opensource.org/license/mit)
+
+The Agent Skill is licensed independently from the code of this mod. Unless otherwise stated, code, prompts, configuration, and related content in the Agent Skill created by the project authors are licensed under the MIT License.

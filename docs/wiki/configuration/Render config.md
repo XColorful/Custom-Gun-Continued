@@ -41,7 +41,7 @@
 	BulletHoleParticleLife = 400
 	BulletHoleParticleFadeThreshold = 0.98
 	ReplaceVanillaCrosshair = true
-	CrosshairType = "DOT_1"
+	CrosshairType = "DEFAULT"
 	HitMarketStartPosition = 4.0
 	HeadShotDebugHitbox = false
 	GunHUDEnable = true
@@ -100,7 +100,7 @@ Path: `render`
 	BulletHoleParticleLife = 400
 	BulletHoleParticleFadeThreshold = 0.98
 	ReplaceVanillaCrosshair = true
-	CrosshairType = "DOT_1"
+	CrosshairType = "DEFAULT"
 	HitMarketStartPosition = 4.0
 	HeadShotDebugHitbox = false
 	GunHUDEnable = true

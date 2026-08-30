@@ -22,7 +22,7 @@
 |正式版发布|`Y.M.x`|✅|✅|自定义枪械永续 `Y.M.x`|Release|
 |内容更新|`Y.M.x`|✅||开发版 `Y.M.x`|Beta|
 |不稳定内容更新|`Y.M.x`|✅||开发版 `Y.M.x` (Pre-release)|Alpha|
-|临时修复版|`Y.M.x`.`x`|❌|❌|开发版 `Y.M.x` (Pre-release)|Alpha|
+|临时修复版|`Y.M.x`.`x`|❌|❌|开发版 `Y.M.x`.`x` (Pre-release)|Alpha|
 |（早期）测试版发布|`0.0.x`|✅|✅|自定义枪械永续 `0.0.x` (Pre-releases)|Alpha|
 |（早期）测试内容更新|`0.0.x`|✅||开发版 `0.0.x` (Pre-releases)|Alpha|
 
@@ -70,7 +70,7 @@ The mod version format is: `Year`.`Month`.`Version number`
 |Official release|`Y.M.x`|✅|✅|自定义枪械永续 `Y.M.x`|Release|
 |Content update|`Y.M.x`|✅||开发版 `Y.M.x`|Beta|
 |Unstable content update|`Y.M.x`|✅||开发版 `Y.M.x` (Pre-release)|Alpha|
-|Hotfix version|`Y.M.x`.`x`|❌|❌|开发版 `Y.M.x` (Pre-release)|Alpha|
+|Hotfix version|`Y.M.x`.`x`|❌|❌|开发版 `Y.M.x`.`x` (Pre-release)|Alpha|
 |(Early) Beta release|`0.0.x`|✅|✅|自定义枪械永续 `0.0.x` (Pre-releases)|Alpha|
 |(Early) Beta content update|`0.0.x`|✅||开发版 `0.0.x` (Pre-releases)|Alpha|
 

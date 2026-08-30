@@ -1,7 +1,7 @@
 [English](#English)
 
 # 模组开发说明
-> wiki 版本：`0.0.8`.0
+> wiki 版本：`0.0.8`.1
 
 ## 开发原理
 
@@ -51,17 +51,17 @@
 - 当前正处于新内容分支的跨版本同步阶段，直接提交至主分支并附带`#PR号`
 - 仅需进行轻量修复（如文档勘误、代码格式与规范调整）
 
-### 开发路线
+## 开发路线
 > 以下规范仅适用于本模组，亦可供其他模组开发参考
 
-#### 一般原则
+### 一般原则
 
 本模组名“自定义枪械永续”既是模组目标，也是对该原则的概括：
 - 自定义：设计时应考虑或留有自定义扩展性
 - 枪械专精：提供跟枪械模组相关的接口，便于直接使用
 - 可持续性：跨版本统一的模组不应该依赖一个不跨版本的模组，否则将导致无法延续
 
-#### 并行开发
+### 并行开发
 
 有利于并行开发的方式：
 - 解耦程序与美术：两者并行开发，更新进度互不干扰
@@ -76,7 +76,7 @@
 	- 避免制造“精英准入”的心理门槛
 	- 便于更多人借助 AI Agent 参与生态的并行构建
 
-#### 扩展模组
+### 扩展模组
 
 本模组将原本内置的一些功能外置（如[自定义枪械永续配置扩展](https://github.com/XColorful/CGC-Config-Addon)）：
 - 如果某个功能本身就需安装额外模组，那么它就不应被视为由主模组直接提供的核心功能
@@ -92,7 +92,7 @@
 	- 各扩展可按各自节奏独立更新，无需经由主模组集中审核
 	- [并行开发](#并行开发)，避免增加主模组维护压力
 
-#### 兼容模组
+### 兼容模组
 
 内置模组兼容的好处：
 - 帮玩家提前规避潜在的冲突与兼容性问题
@@ -105,7 +105,7 @@
 设计意图与示例见[模组兼容框架](https://github.com/XColorful/Custom-Gun-Continued/wiki/Mod-compat-framework)
 
 # English
-> wiki version: `0.0.8`.0
+> wiki version: `0.0.8`.1
 
 ## Development fundamentals
 
@@ -155,17 +155,17 @@ Cases where creating a new branch (the first two steps) is currently skipped:
 - Currently in the cross-version sync phase of a feature branch; commit directly to the main branch with the `#PR number`
 - Only lightweight fixes are required (such as documentation errata, code formatting, and style adjustments)
 
-### Development roadmap
+## Development roadmap
 > The following guidelines apply specifically to this mod, but can also serve as a reference for other mod development
 
-#### General principles
+### General principles
 
 The mod name "Custom Gun Continued" is both the goal of the mod and a summary of these principles:
 - Customization: Designs should consider or leave space for custom extensibility
 - Gun Specialization: Provide gun-mod-related interfaces for ease of direct use
 - Sustainability: A cross-version unified mod should not depend on a non-cross-version mod, otherwise it will fail to continue
 
-#### Parallel development
+### Parallel development
 
 Practices beneficial to parallel development:
 - Decouple code and assets: Develop both in parallel so update progress does not interfere with each other
@@ -180,7 +180,7 @@ Advantages of splitting features into multiple mods for parallel development:
     - Avoids creating a psychological barrier of "elite-only access"
     - Facilitates broader community participation in building the ecosystem using AI Agents in parallel
 
-#### Addon mods
+### Addon mods
 
 This mod externalizes some previously built-in features (e.g., [CGC Config Addon](https://github.com/XColorful/CGC-Config-Addon)):
 - If a feature requires installing an extra mod in the first place, it should not be considered a core feature directly provided by the main mod
@@ -196,7 +196,7 @@ Both "built-in integration" and "splitting into addons" have pros and cons:
     - Allows each addon to update independently at its own pace without centralized review by the main mod
     - Enables [Parallel development](#Parallel-development), avoiding additional maintenance pressure on the main mod
 
-#### Compatible mods
+### Compatible mods
 
 Benefits of built-in mod compatibility:
 - Helps players avoid potential conflicts and compatibility issues in advance

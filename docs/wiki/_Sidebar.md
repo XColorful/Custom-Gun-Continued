@@ -81,6 +81,8 @@
 				- [Player animator动画](https://github.com/XColorful/Custom-Gun-Continued/wiki/Player-animator-animation)
 			- textures
 				- [资源包材质](https://github.com/XColorful/Custom-Gun-Continued/wiki/Resourcepack-texture)
+	- 关于模组
+		- [模组版本](https://github.com/XColorful/Custom-Gun-Continued/wiki/Mod-version)
 
 - [Home](https://github.com/XColorful/Custom-Gun-Continued/wiki#English)
 	- Configuration
@@ -161,3 +163,5 @@
 				- [Player animator animation](https://github.com/XColorful/Custom-Gun-Continued/wiki/Player-animator-animation#English)
 			- textures
 				- [Resourcepack texture](https://github.com/XColorful/Custom-Gun-Continued/wiki/Resourcepack-texture#English)
+	- About
+		- [Mod version](https://github.com/XColorful/Custom-Gun-Continued/wiki/Mod-version#English)

@@ -40,7 +40,7 @@
 > - 新时代的开发者，联合起来！
 
 # English
-> wiki version: `0.0.8`.0
+> wiki version: `0.0.8`.1
 
 Bringing development skills to newcomers.
 

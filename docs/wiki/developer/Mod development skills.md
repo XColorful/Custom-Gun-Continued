@@ -1,7 +1,7 @@
 [English](#English)
 
 # 模组开发skills
-> wiki 版本：`0.0.8`.0
+> wiki 版本：`0.0.8`.1
 
 将开发技能带给新人。
 
@@ -9,6 +9,8 @@
 
 开发过程中通用的基础技能，不限于具体项目
 > “我作为一个开发者应该会什么？"
+
+- [向AI求助](https://github.com/XColorful/Custom-Gun-Continued/wiki/Ask-AI-for-help)：遇到问题时，**先尝试获取信息，再寻求他人帮助**。
 
 ## 项目规范
 
@@ -46,6 +48,8 @@ Bringing development skills to newcomers.
 
 General development skills that apply beyond any specific project.
 > “What should I know as a developer?”
+
+- [Ask AI for help](https://github.com/XColorful/Custom-Gun-Continued/wiki/Ask-AI-for-help#English): When you run into a problem, **try gathering info first before asking for help**.
 
 ## Project conventions
 

@@ -86,7 +86,7 @@
 	- 开发者
 		- [模组开发说明](https://github.com/XColorful/Custom-Gun-Continued/wiki/Mod-development-instructions)
 		- [模组兼容框架](https://github.com/XColorful/Custom-Gun-Continued/wiki/Mod-compat-framework)
-		- [模组开发skills](https://github.com/XColorful/Custom-Gun-Continued/wiki/Mod-developement-skill)
+		- [模组开发skills](https://github.com/XColorful/Custom-Gun-Continued/wiki/Mod-development-skills)
 
 - [Home](https://github.com/XColorful/Custom-Gun-Continued/wiki#English)
 	- Configuration
@@ -172,4 +172,4 @@
 	- Developer
 		- [Mod development instructions](https://github.com/XColorful/Custom-Gun-Continued/wiki/Mod-development-instructions#English)
 		- [Mod compat framework](https://github.com/XColorful/Custom-Gun-Continued/wiki/Mod-compat-framework#English)
-		- [Mod development skills](https://github.com/XColorful/Custom-Gun-Continued/wiki/Mod-developement-skills#English)
+		- [Mod development skills](https://github.com/XColorful/Custom-Gun-Continued/wiki/Mod-development-skills#English)

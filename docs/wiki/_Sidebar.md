@@ -87,7 +87,12 @@
 		- [模组开发说明](https://github.com/XColorful/Custom-Gun-Continued/wiki/Mod-development-instructions)
 		- [模组兼容框架](https://github.com/XColorful/Custom-Gun-Continued/wiki/Mod-compat-framework)
 		- [模组开发skills](https://github.com/XColorful/Custom-Gun-Continued/wiki/Mod-development-skills)
-
+			- 基础技能
+				- [向AI求助](https://github.com/XColorful/Custom-Gun-Continued/wiki/Ask-AI-for-help)
+				- [学习社区的积累](https://github.com/XColorful/Custom-Gun-Continued/wiki/Learn-from-the-community)
+				- [常见机制](https://github.com/XColorful/Custom-Gun-Continued/wiki/Common-mechanism)
+				- [目录结构](https://github.com/XColorful/Custom-Gun-Continued/wiki/Directory-structure)
+---
 - [Home](https://github.com/XColorful/Custom-Gun-Continued/wiki#English)
 	- Configuration
 		- Common configuration
@@ -173,3 +178,8 @@
 		- [Mod development instructions](https://github.com/XColorful/Custom-Gun-Continued/wiki/Mod-development-instructions#English)
 		- [Mod compat framework](https://github.com/XColorful/Custom-Gun-Continued/wiki/Mod-compat-framework#English)
 		- [Mod development skills](https://github.com/XColorful/Custom-Gun-Continued/wiki/Mod-development-skills#English)
+			- Fundamentals
+				- [Ask AI for help](https://github.com/XColorful/Custom-Gun-Continued/wiki/Ask-AI-for-help#English)
+				- [Learn from the community](https://github.com/XColorful/Custom-Gun-Continued/wiki/Learn-from-the-community#English)
+				- [Common mechanism](https://github.com/XColorful/Custom-Gun-Continued/wiki/Common-mechanism#English)
+				- [Directory structure](https://github.com/XColorful/Custom-Gun-Continued/wiki/Directory-structure#English)

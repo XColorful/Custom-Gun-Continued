@@ -51,7 +51,7 @@ General development skills that apply beyond any specific mod.
 > “What should I know as a developer?”
 
 - [Ask AI for help](https://github.com/XColorful/Custom-Gun-Continued/wiki/Ask-AI-for-help#English): When you run into a problem, **try gathering info first before asking for help**.
-- [Learn from the community](https://github.com/XColorful/Custom-Gun-Continued/wiki/Learn-from-the-community): **Learn how those who came before us did it** in the open source community.
+- [Learn from the community](https://github.com/XColorful/Custom-Gun-Continued/wiki/Learn-from-the-community#English): **Learn how those who came before us did it** in the open source community.
 
 ## Project conventions
 

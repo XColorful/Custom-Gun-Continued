@@ -1,7 +1,7 @@
 [English](#English)
 
 # 模组开发skills
-> wiki 版本：`0.0.8`.2
+> wiki 版本：`0.0.8`.3
 
 将开发技能带给新人。
 
@@ -10,8 +10,9 @@
 开发过程中通用的基础技能，不限于具体模组
 > “我作为一个开发者应该会什么？"
 
-- [向AI求助](https://github.com/XColorful/Custom-Gun-Continued/wiki/Ask-AI-for-help)：遇到问题时，**先尝试获取信息，再寻求他人帮助**。
-- [学习社区的积累](https://github.com/XColorful/Custom-Gun-Continued/wiki/Learn-from-the-community)：从开源社区中**学习前人是怎么做的**。
+- ⭐[向AI求助](https://github.com/XColorful/Custom-Gun-Continued/wiki/Ask-AI-for-help)：遇到问题时，**先尝试获取信息，再寻求他人帮助**。
+- ⭐[学习社区的积累](https://github.com/XColorful/Custom-Gun-Continued/wiki/Learn-from-the-community)：从开源社区中**学习前人是怎么做的**。
+- [常见机制](https://github.com/XColorful/Custom-Gun-Continued/wiki/Common-mechanism)：模组开发需要了解和经常用到的机制。
 
 ## 项目规范
 
@@ -41,7 +42,7 @@
 > - 新时代的开发者，联合起来！
 
 # English
-> wiki version: `0.0.8`.2
+> wiki version: `0.0.8`.3
 
 Bringing development skills to newcomers.
 
@@ -50,8 +51,9 @@ Bringing development skills to newcomers.
 General development skills that apply beyond any specific mod.
 > “What should I know as a developer?”
 
-- [Ask AI for help](https://github.com/XColorful/Custom-Gun-Continued/wiki/Ask-AI-for-help#English): When you run into a problem, **try gathering info first before asking for help**.
-- [Learn from the community](https://github.com/XColorful/Custom-Gun-Continued/wiki/Learn-from-the-community#English): **Learn how those who came before us did it** in the open source community.
+- ⭐[Ask AI for help](https://github.com/XColorful/Custom-Gun-Continued/wiki/Ask-AI-for-help#English): When you run into a problem, **try gathering info first before asking for help**.
+- ⭐[Learn from the community](https://github.com/XColorful/Custom-Gun-Continued/wiki/Learn-from-the-community#English): **Learn how those who came before us did it** in the open source community.
+- [Common mechanism](https://github.com/XColorful/Custom-Gun-Continued/wiki/Common-mechanism#English): Mechanisms you need to understand and often use when developing mods.
 
 ## Project conventions
 

@@ -1,7 +1,7 @@
 [English](#English)
 
 # 常见机制
-> wiki 版本：`0.0.8`.0
+> wiki 版本：`0.0.8`.1
 
 模组开发需要了解和经常用到的机制。
 
@@ -103,7 +103,7 @@ flowchart LR
 
 ### 事件原理
 
-假设你想在 Minecraft 执行某段逻辑的时候顺便执行自己的逻辑，于是利用[💉注入机制](#💉注入机制)往里塞了一段代码😈：
+假设你想在 Minecraft 执行某段逻辑的时候顺便执行自己的逻辑，于是利用[💉注入机制](#注入机制)往里塞了一段代码😈：
 - 当模组的其他模块也需要往该位置注入时，你又写了一遍注入逻辑😕
 - 同时，还需要手动调整两个注入谁先谁后🤨
 - 不幸的是，其他模组也可能想要这么做，引发了 _Mixin_ 冲突😨
@@ -131,7 +131,7 @@ flowchart LR
 - 如果只需要在某些时刻执行，监听轮询事件则浪费性能
 
 # English
-> wiki version: `0.0.8`.0
+> wiki version: `0.0.8`.1
 
 Mechanisms you need to understand and often use when developing mods.
 
@@ -233,7 +233,7 @@ If a _Mixin_ doesn't seem to work, check the game log and ask:
 
 ### How events work
 
-Suppose you want to run your own logic when Minecraft runs a certain piece of logic, so you use the [💉Injection](#💉Injection) to put some code in there😈:
+Suppose you want to run your own logic when Minecraft runs a certain piece of logic, so you use the [💉Injection](#Injection) to put some code in there😈:
 - When another part of your mod also needs to inject code at the same place, you have to write the injection logic again😕
 - You also have to manually decide which injection runs first🤨
 - Unfortunately, other mods may want to do the same thing too, causing _Mixin_ conflicts😨

@@ -93,6 +93,7 @@
 				- [常见机制](https://github.com/XColorful/Custom-Gun-Continued/wiki/Common-mechanism)
 				- [目录结构](https://github.com/XColorful/Custom-Gun-Continued/wiki/Directory-structure)
 				- [如何添加功能](https://github.com/XColorful/Custom-Gun-Continued/wiki/How-to-add-features)
+				- [面对历史遗留问题](https://github.com/XColorful/Custom-Gun-Continued/wiki/Facing-legacy-issues)
 ---
 - [Home](https://github.com/XColorful/Custom-Gun-Continued/wiki#English)
 	- 🛠️Configuration
@@ -185,3 +186,4 @@
 				- [Common mechanism](https://github.com/XColorful/Custom-Gun-Continued/wiki/Common-mechanism#English)
 				- [Directory structure](https://github.com/XColorful/Custom-Gun-Continued/wiki/Directory-structure#English)
 				- [How to add features](https://github.com/XColorful/Custom-Gun-Continued/wiki/How-to-add-features#English)
+				- [Facing legacy issues](https://github.com/XColorful/Custom-Gun-Continued/wiki/Facing-legacy-issues#English)

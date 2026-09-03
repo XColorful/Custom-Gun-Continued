@@ -16,6 +16,7 @@ import dev.xcolorful.customgun.core.api.resource.data.DataFolderType;
 import dev.xcolorful.customgun.core.init.registry.ModRecipe;
 import dev.xcolorful.customgun.core.network.message.ServerMessageSyncGunPack;
 import dev.xcolorful.customgun.core.recipe.TableRecipe;
+import dev.xcolorful.customgun.core.recipe._TableResultRaw;
 import dev.xcolorful.customgun.core.resource.data.*;
 import dev.xcolorful.customgun.core.resource.network.SyncDataType;
 import dev.xcolorful.customgun.core.util.SendUtils;
@@ -182,7 +183,8 @@ public class _AllDataManager implements IEventHandler {
         _DataInstanceManager.reload();
 
         /**
-         * TODO 上面reload结束后，下面的{@link TableRecipe#prepare()}应该能拿到所依赖Pojo instance数据，但是貌似没有
+         * 见 {@link ITagsUpdatedEvent} 说明
+         * 影响{@link _TableResultRaw#prepareTableResultOrEmpty()}
          */
         var _this = getCurrent();
         if (_this != null && _this.recipeManager != null) {

@@ -7,7 +7,8 @@
 
 package dev.xcolorful.customgun.core.recipe;
 
-import dev.xcolorful.customgun.CustomGun;
+import dev.xcolorful.customgun.core.api.common.McLogicalSide;
+import dev.xcolorful.customgun.core.api.event.ITagsUpdatedEvent;
 import dev.xcolorful.customgun.core.api.item.AmmoProperty;
 import dev.xcolorful.customgun.core.api.item.AttachmentProperty;
 import dev.xcolorful.customgun.core.api.item.GunProperty;
@@ -46,11 +47,12 @@ public class _TableResultRaw {
         this.pojoLocation = pojoLocation;
         this.resultCount = resultCount;
     }
-
     /**
-     * TODO {@link dev.xcolorful.customgun.core.resource._AllDataManager#onTagsUpdateEvent}调用的时候疑似还没有Pojo instance?
-     * 需要直接读原始Pojo
-     * 调试指令为{@link dev.xcolorful.customgun.core.command.sub.DebugCommand#testAllRecipes}
+     * 见 {@link ITagsUpdatedEvent} 说明
+     * <ul>
+     *     <li>这里读原始 Pojo，是因为执行这个函数的时候，{@link ResourceApi}会被错误的{@link McLogicalSide}给误判</li>
+     *     <li>导致拿不到 Pojo instance</li>
+     * </ul>
      */
     public @NotNull TableResult prepareTableResultOrEmpty() {
         return switch (this.recipeResultType) {
@@ -65,17 +67,13 @@ public class _TableResultRaw {
         return new TableResult(ItemStack.EMPTY, TabGroup.GUN_CUSTOM.registryLocation);
     }
     private @NotNull TableResult _getGunItemOrEmpty() {
-        // TODO ↓目前读到的是 0
-//        CustomGun.LOGGER.debug("All gun index instance: {}", ResourceApi.getAllGunIndexInstance().size());
         @Nullable GunIndex gunIndex = ResourceApi.getGunIndex(this.pojoLocation);
         if (gunIndex == null) {
-            CustomGun.LOGGER.debug("getGunItemOrEmpty: index {} null", this.pojoLocation); // 测试log，待删
             return _getEmpty();
         }
 
         @Nullable GunData gunData = ResourceApi.getGunData(gunIndex.getDataLocation());
         if (gunData == null) {
-            CustomGun.LOGGER.debug("getGunItemOrEmpty: data {} null", this.pojoLocation); // 测试log，待删
             return _getEmpty();
         }
 
@@ -105,7 +103,6 @@ public class _TableResultRaw {
     private @NotNull TableResult _getAttachmentItemOrEmpty() {
         @Nullable AttachmentIndex attachmentIndex = ResourceApi.getAttachmentIndex(this.pojoLocation);
         if (attachmentIndex == null) {
-            CustomGun.LOGGER.debug("getAttachmentItemOrEmpty: index {} null", this.pojoLocation); // 测试log，待删
             return _getEmpty();
         }
 
@@ -131,7 +128,6 @@ public class _TableResultRaw {
     private @NotNull TableResult _getAmmoItemOrEmpty() {
         @Nullable AmmoIndex ammoIndex = ResourceApi.getAmmoIndex(this.pojoLocation);
         if (ammoIndex == null) {
-            CustomGun.LOGGER.debug("getAmmoItemOrEmpty: index {} null", this.pojoLocation); // 测试log，待删
             return _getEmpty();
         }
 

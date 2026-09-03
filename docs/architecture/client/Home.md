@@ -28,7 +28,7 @@
 ### 模组兼容
 > _./client/compat_
 
-[模组兼容框架](/docs/architecture/core/compat/mod-compat-framework.md)
+[模组兼容框架](/docs/wiki/developer/Mod%20compat%20framework.md)
 - ar：加速渲染
 - oculus：Oculus
 - optifine：Optifine
@@ -217,7 +217,7 @@ Module division based on the `dev.xcolorful.customgun.client` top-level package
 ### Mod Compat
 > _./client/compat_
 
-[Mod compat framework](/docs/architecture/core/compat/mod-compat-framework.md#English)
+[Mod compat framework](/docs/wiki/developer/Mod%20compat%20framework.md#English)
 - ar: Accelerated Rendering
 - oculus: Oculus
 - optifine: Optifine

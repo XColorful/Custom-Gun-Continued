@@ -1,6 +1,7 @@
 [English](#English)
 
 # 模组兼容框架
+> wiki version: `0.0.8`.0
 
 ## 设计意图
 
@@ -95,6 +96,7 @@ protected static void render(...) {
 - 当主模组进行重构并与注入点发生冲突时，**不负责研究如何修改**该注入点
 
 # English
+> wiki version: `0.0.8`.0
 
 ## Design Intent
 

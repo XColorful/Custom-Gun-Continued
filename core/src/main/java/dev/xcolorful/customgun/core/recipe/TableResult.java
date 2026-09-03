@@ -58,10 +58,10 @@ public class TableResult {
         }
     }
 
-    public ItemStack getResultItem() {
-        return this.resultItem;
+    public @NotNull ItemStack getResultItem() {
+        return this.resultItem != null ? this.resultItem : ItemStack.EMPTY;
     }
-    public ResourceLocation getTabGroupLocation() {
-        return this.tabGroupLocation;
+    public @NotNull ResourceLocation getTabGroupLocation() {
+        return this.tabGroupLocation != null ? this.tabGroupLocation : TabGroup.GUN_CUSTOM.registryLocation;
     }
 }

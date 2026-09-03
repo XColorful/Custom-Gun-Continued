@@ -1,7 +1,7 @@
 [English](#English)
 
 # 目录结构
-> wiki 版本：`0.0.8`.0
+> wiki 版本：`0.0.8`.1
 
 模组中常见的目录结构。
 
@@ -54,7 +54,7 @@
     ├───sound
     ├───util
     │
-    └───MainModClass.java // 模组主类
+    └───ModMainClass.java // 模组主类
 ```
 
 - 这只是一个常见的结构，并不代表必须遵守
@@ -89,7 +89,7 @@
 - _./util/_：工具类，可用于重复利用一些经常使用的代码
 
 # English
-> wiki version: `0.0.8`.0
+> wiki version: `0.0.8`.1
 
 Common directory structures in mods.
 
@@ -142,7 +142,7 @@ Don't worry about how long this directory structure looks🥲🙅. In reality, *
     ├───sound
     ├───util
     │
-    └───MainModClass.java // Main mod class
+    └───ModMainClass.java // Main mod class
 ```
 
 - This is just a common structure and is not something you have to follow

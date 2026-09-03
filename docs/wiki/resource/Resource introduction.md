@@ -1,9 +1,9 @@
 [English](#English)
 
 # 资源文件说明
-> wiki 版本：`0.0.1`.0
+> wiki 版本：`0.0.8`.1
 
-## 数据包
+## 📊数据包
 
 ```
 └─datapacks
@@ -84,7 +84,7 @@
 	- recipes
 		- [配方数据](https://github.com/XColorful/Custom-Gun-Continued/wiki/Recipe-data)
 
-## 资源包
+## 🖼️资源包
 
 ```
 └─resourcepacks
@@ -161,9 +161,9 @@
 		- [资源包材质](https://github.com/XColorful/Custom-Gun-Continued/wiki/Resourcepack-texture)
 
 # English
-> wiki verison: `0.0.1`.0
+> wiki verison: `0.0.8`.1
 
-## Datapack
+## 📊Datapack
 
 ```
 └─datapacks
@@ -244,7 +244,7 @@
 	- recipes
 		- [Recipe data](https://github.com/XColorful/Custom-Gun-Continued/wiki/Recipe-data#English)
 
-## Resourcepack
+## 🖼️Resourcepack
 
 ```
 └─resourcepacks

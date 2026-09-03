@@ -485,7 +485,7 @@ public interface IGunScriptBackCompat extends IGunScriptContextAccess {
         ItemStack gunItem = this.getGunItem();
         @NotNull var attachmentLocation = iGun.getAttachmentLocation(gunItem, attachmentCategory);
         if (ResourceTag.NULL_LOCATION.equals(attachmentLocation)) return EMPTY_ATTACHMENT_ID;
-        else return attachmentCategory.toString();
+        else return attachmentLocation.toString();
     }
 
     default @Nullable LivingEntity getShooter() {

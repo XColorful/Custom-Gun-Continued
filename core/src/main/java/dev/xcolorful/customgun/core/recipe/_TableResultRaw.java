@@ -7,6 +7,7 @@
 
 package dev.xcolorful.customgun.core.recipe;
 
+import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.core.api.item.AmmoProperty;
 import dev.xcolorful.customgun.core.api.item.AttachmentProperty;
 import dev.xcolorful.customgun.core.api.item.GunProperty;
@@ -24,9 +25,6 @@ import dev.xcolorful.customgun.core.resource.data.data.GunData;
 import dev.xcolorful.customgun.core.resource.data.index.AmmoIndex;
 import dev.xcolorful.customgun.core.resource.data.index.AttachmentIndex;
 import dev.xcolorful.customgun.core.resource.data.index.GunIndex;
-import dev.xcolorful.customgun.core.resource.instance.data.AmmoIndexInstance;
-import dev.xcolorful.customgun.core.resource.instance.data.AttachmentIndexInstance;
-import dev.xcolorful.customgun.core.resource.instance.data.GunIndexInstance;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -37,38 +35,49 @@ import org.jetbrains.annotations.Nullable;
  * 等待到实际需要使用配方时再进行初始化
  */
 public class _TableResultRaw {
-    private final @Nullable RecipeResultType recipeResultType;
+    private final @NotNull RecipeResultType recipeResultType;
     private final ResourceLocation pojoLocation;
     private final int resultCount;
 
-    public _TableResultRaw(@NotNull String recipeResultType,
+    public _TableResultRaw(@NotNull RecipeResultType recipeResultType,
                            @NotNull ResourceLocation pojoLocation,
                            int resultCount) {
-        this.recipeResultType = RecipeResultType.fromString(recipeResultType);
+        this.recipeResultType = recipeResultType;
         this.pojoLocation = pojoLocation;
         this.resultCount = resultCount;
     }
 
-    public @NotNull TableResult getTableResultOrEmpty() {
-        if (this.recipeResultType == null) {
-            return getEmpty();
-        }
+    /**
+     * TODO {@link dev.xcolorful.customgun.core.resource._AllDataManager#onTagsUpdateEvent}调用的时候疑似还没有Pojo instance?
+     * 需要直接读原始Pojo
+     * 调试指令为{@link dev.xcolorful.customgun.core.command.sub.DebugCommand#testAllRecipes}
+     */
+    public @NotNull TableResult prepareTableResultOrEmpty() {
         return switch (this.recipeResultType) {
-            case GUN -> this.getGunItemOrEmpty();
-            case ATTACHMENT -> this.getAttachmentItemOrEmpty();
-            case AMMO -> this.getAmmoItemOrEmpty();
-            default -> getEmpty();
+            case GUN -> this._getGunItemOrEmpty();
+            case ATTACHMENT -> this._getAttachmentItemOrEmpty();
+            case AMMO -> this._getAmmoItemOrEmpty();
+            case CUSTOM -> _getEmpty();
+            // 增加类型使此处强制编译不通过
         };
     }
-    private static @NotNull TableResult getEmpty() {
+    private static @NotNull TableResult _getEmpty() {
         return new TableResult(ItemStack.EMPTY, TabGroup.GUN_CUSTOM.registryLocation);
     }
-    private @NotNull TableResult getGunItemOrEmpty() {
-        @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(this.pojoLocation);
-        if (gunIndexInstance == null) return getEmpty();
+    private @NotNull TableResult _getGunItemOrEmpty() {
+        // TODO ↓目前读到的是 0
+//        CustomGun.LOGGER.debug("All gun index instance: {}", ResourceApi.getAllGunIndexInstance().size());
+        @Nullable GunIndex gunIndex = ResourceApi.getGunIndex(this.pojoLocation);
+        if (gunIndex == null) {
+            CustomGun.LOGGER.debug("getGunItemOrEmpty: index {} null", this.pojoLocation); // 测试log，待删
+            return _getEmpty();
+        }
 
-        GunIndex gunIndex = gunIndexInstance.getPojo();
-        GunData gunData = gunIndexInstance.getGunData();
+        @Nullable GunData gunData = ResourceApi.getGunData(gunIndex.getDataLocation());
+        if (gunData == null) {
+            CustomGun.LOGGER.debug("getGunItemOrEmpty: data {} null", this.pojoLocation); // 测试log，待删
+            return _getEmpty();
+        }
 
         // item
         ItemStack gunItem = GunBuilder.create(ModItems.GUN.get())
@@ -93,11 +102,12 @@ public class _TableResultRaw {
 
         return new TableResult(gunItem, tabGroup.registryLocation);
     }
-    private @NotNull TableResult getAttachmentItemOrEmpty() {
-        @Nullable AttachmentIndexInstance attachmentIndexInstance = ResourceApi.getAttachmentIndexInstance(this.pojoLocation);
-        if (attachmentIndexInstance == null) return getEmpty();
-
-        AttachmentIndex attachmentIndex = attachmentIndexInstance.getPojo();
+    private @NotNull TableResult _getAttachmentItemOrEmpty() {
+        @Nullable AttachmentIndex attachmentIndex = ResourceApi.getAttachmentIndex(this.pojoLocation);
+        if (attachmentIndex == null) {
+            CustomGun.LOGGER.debug("getAttachmentItemOrEmpty: index {} null", this.pojoLocation); // 测试log，待删
+            return _getEmpty();
+        }
 
         // item
         ItemStack attachmentItem = AttachmentBuilder.create(ModItems.ATTACHMENT.get())
@@ -118,9 +128,12 @@ public class _TableResultRaw {
 
         return new TableResult(attachmentItem, tabGroup.registryLocation);
     }
-    private @NotNull TableResult getAmmoItemOrEmpty() {
-        @Nullable AmmoIndexInstance ammoIndexInstance = ResourceApi.getAmmoIndexInstance(this.pojoLocation);
-        if (ammoIndexInstance == null) return getEmpty();
+    private @NotNull TableResult _getAmmoItemOrEmpty() {
+        @Nullable AmmoIndex ammoIndex = ResourceApi.getAmmoIndex(this.pojoLocation);
+        if (ammoIndex == null) {
+            CustomGun.LOGGER.debug("getAmmoItemOrEmpty: index {} null", this.pojoLocation); // 测试log，待删
+            return _getEmpty();
+        }
 
         // item
         ItemStack ammoItem = AmmoBuilder.create(ModItems.AMMO.get())
@@ -128,14 +141,13 @@ public class _TableResultRaw {
                 .setProperty(AmmoProperty.AMMO_LOCATION,
                         ResourceLocation.class,
                         this.pojoLocation)
+                .setProperty(AmmoProperty.AMMO_COUNT,
+                        Integer.class,
+                        this.resultCount)
                 .build();
 
         // tab group
-        AmmoCategory ammoCategory; {
-            AmmoIndex ammoIndex = ammoIndexInstance.getPojo();
-            ammoCategory = ammoIndex.getAmmoCategory();
-        }
-        TabGroup tabGroup = _getAmmoTabGroup(ammoCategory);
+        TabGroup tabGroup = _getAmmoTabGroup(ammoIndex.getAmmoCategory());
 
         return new TableResult(ammoItem, tabGroup.registryLocation);
     }

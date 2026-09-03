@@ -178,6 +178,12 @@ public class _AllDataManager implements IEventHandler {
 //        if (!event.getLogicalSide().isServer()) return;
         if (event.getUpdateCause() != ITagsUpdatedEvent.UpdateCause.SERVER_DATA_LOAD) return;
 
+        // 需要等ResourcePojoManager#apply全结束才执行
+        _DataInstanceManager.reload();
+
+        /**
+         * TODO 上面reload结束后，下面的{@link TableRecipe#prepare()}应该能拿到所依赖Pojo instance数据，但是貌似没有
+         */
         var _this = getCurrent();
         if (_this != null && _this.recipeManager != null) {
             List<TableRecipe> tableRecipes = _this.recipeManager.getAllRecipesFor(ModRecipe.TABLE_RECIPE_CRAFTING.get());
@@ -185,9 +191,6 @@ public class _AllDataManager implements IEventHandler {
                 tableRecipe.prepare();
             }
         }
-
-        // 需要等ResourcePojoManager#apply全结束才执行
-        _DataInstanceManager.reload();
     }
 
     private static void onDatapackSyncEvent(IDatapackSyncEvent event) {

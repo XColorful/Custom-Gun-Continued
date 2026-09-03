@@ -84,3 +84,81 @@ public ResourceLocation getTabGroupLocation() {
 
 - 只改了 [TableResult.java](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/core/recipe/TableResult.java) 一个文件，未 commit。
 - 请在 1.20.1 / 1.20.2 连接多人游戏测试确认是否还复现。如果仍复现，请把完整堆栈（`latest.log`/`debug.log` 里 `EncoderException` 上方的 `at ...` 调用链）发我，我可以据此进一步定位是否还有第二个 null 来源。
+
+# 
+
+```
+你对比我跟TaCZ的设计差异，看看我怎么改来完成TaCZ已有的功能
+不需要把类名、调用链路改成跟TaCZ完全一样
+已有的迁移映射见./docs-tacz/TaCZ Migration Mapping.md
+
+TaCZ的源码应该添加到目录，你可以通过IDEA访问源码
+
+修改完后不要commit，我来检查方案是否合适
+```
+
+# 
+
+I now understand the TaCZ design fully. The key finding: TaCZ's `GunSmithTableResultSerializer` creates a `RawGunTableResult` (or a direct `ItemStack`) at deserialization time, and `init()` resolves it later — exactly the CGC `_TableResultRaw` + `prepare()` design, but CGC's `TableResult.fromPojo` never wires it up. Let me verify the current state of the files and apply the fix.
+
+Now I'll apply the fix. First, the imports in `TableResult.java`:
+
+Now the ammo count fix in `_TableResultRaw.java`:
+
+I found a critical ordering issue. Let me re-read the current `_AllDataManager.onTagsUpdateEvent` to confirm the exact state.
+
+对比完成，已补齐 CGC 配方结果解析（TaCZ 的 `GunSmithTableResult`/`RawGunTableResult` 对应功能）。共改了 3 个文件，未 commit。
+
+## 设计差异对比
+
+TaCZ 的配方结果分三步，CGC 都有对应物，但**缺了中间的「接线」那一步**：
+
+|步骤|TaCZ|CGC（改前）|
+|---|---|---|
+|反序列化时生成「结果占位」|`GunSmithTableResultSerializer.deserialize` 读 JSON，GUN/AMMO/ATTACHMENT 时 `new RawGunTableResult(type,id,count)`，CUSTOM 时 `CraftingHelper.getItemStack(item)`|`TableResult.fromPojo` 直接 `new TableResult(pojo, null, null, null)` —— **丢掉了 type/id/count，没建 `_TableResultRaw`**|
+|懒解析（reload 完成后）|`GunSmithTableResult.init()` → `RawGunTableResult.init()` 构建 ItemStack|`TableResult.prepare()` → `_TableResultRaw.getTableResultOrEmpty()` —— 已有，但 `raw` 恒为 null，等于空操作|
+|触发时机|`CommonAssetsManager.onReload(TagsUpdatedEvent)` → `recipe.init()`|`_AllDataManager.onTagsUpdateEvent` → `tableRecipe.prepare()` —— 已有|
+
+所以根因是：`_TableResultRaw` 和 `prepare()` 这套骨架早就在，只是 `fromPojo` 从没把 `raw` 接上。
+
+## 改动
+
+**1. [TableResult.java](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/core/recipe/TableResult.java) — 补上 `fromPojo` 接线**
+
+```java
+public static TableResult fromPojo(_TableResultData pojo) {
+    RecipeResultType resultType = pojo.getResultType();
+    if (resultType == null) {
+        return new TableResult(pojo, ItemStack.EMPTY, pojo.getTabGroupLocation(), null);
+    }
+    int resultCount = Math.max(1, pojo.getResultCount());
+    return switch (resultType) {
+        case GUN, ATTACHMENT, AMMO -> {           // 引用型：建 raw，交给 prepare() 懒解析
+            ResourceLocation pojoLocation = pojo.getPojoLocation();
+            if (pojoLocation == null) yield new TableResult(pojo, ItemStack.EMPTY, pojo.getTabGroupLocation(), null);
+            yield new TableResult(pojo, null, pojo.getTabGroupLocation(),
+                    new _TableResultRaw(resultType.toString(), pojoLocation, resultCount));
+        }
+        case CUSTOM -> new TableResult(pojo, buildCustomResult(pojo, resultCount), pojo.getTabGroupLocation(), null); // 直接物品
+    };
+}
+```
+
+`buildCustomResult` 从 `_ResultItemData`（item_location + item_nbt）直接构造 ItemStack，对应 TaCZ 的 CUSTOM 分支（`CraftingHelper.getItemStack`）。
+
+**2. [_TableResultRaw.java](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/core/recipe/_TableResultRaw.java) — 补子弹数量**
+
+`getAmmoItemOrEmpty()` 漏了 `ammoItem.setCount(this.resultCount)`（枪和配件都有，唯独子弹没有），对应 TaCZ `RawGunTableResult.getAmmoStack()` 的 `.setCount(count)`。
+
+**3. [_AllDataManager.java](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/core/resource/_AllDataManager.java) — 修正初始化顺序**
+
+这是接线后暴露出来的**连带 bug**：`prepare()` 通过 `ResourceApi.getGunIndexInstance()` 读 `_DataInstanceManager` 里的**实例**，但原代码里 `_DataInstanceManager.reload()`（构建实例）排在 `tableRecipe.prepare()` **之后**，导致 `prepare()` 解析时索引实例还是空的，结果永远解析成空物品。已把 `reload()` 提前到 `prepare()` 之前。
+
+## 关于 Deprecated 的部分
+
+迁移映射里 `RawGunTableResult.extraData`（`GunResult`：ammoCount + attachments）和 `nbt` 都标注了 `_Deprecated_`，CGC 的 `_TableResultData`/文档里也把它们划掉了（`~~ammo_count~~`、`~~nbt~~`），所以我没有实现它们——只补了 `type/id/count` 这条主路径。如果后续需要「配方产物预装子弹/预装配件」，需要另行把 `GunResult` 接回来。
+
+## 说明
+
+- 只改了当前 1.20.1 分支（按 CLAUDE.md 不切分支、不 commit）。recipe 这套代码在 1.20.1/1.20.2/1.20.4 之间是同一份，这三处改动对其它分支同样适用。
+- 建议测试点：加载带 `table_recipe` 配方 JSON 的枪包，`/reload` 后看服务端日志，再连接客户端确认配方同步不再 NPE、且产物物品是真实枪械/配件/子弹（不再是空物品）。

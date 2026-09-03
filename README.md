@@ -55,6 +55,19 @@
 
 - 代码：[GPL-3.0-only](https://www.gnu.org/licenses/gpl-3.0.txt)
 - 资产：[CC-BY-SA-4.0](https://creativecommons.org/licenses/by-sa/4.0/)
+- Wiki 文档：[CC-BY-SA-4.0](https://creativecommons.org/licenses/by-sa/4.0/)
+- Agent Skill：[MIT](https://opensource.org/license/mit)
+
+### 声明
+
+Wiki 文档：
+- 除非另有明确说明，本 Wiki 中由本项目作者创作的文档内容采用 [CC-BY-SA-4.0](https://creativecommons.org/licenses/by-sa/4.0/) 许可证
+- 本许可证不适用于第三方内容或衍生自其他项目的内容，包括受 [TaCZ](https://github.com/MCModderAnchor/TACZ) 或其他上游项目许可证约束的内容。此类内容仍受其各自许可证及使用条件的约束
+- 除非另有明确说明，代码、图片及其他材料也不属于本许可证的适用范围
+
+Agent Skill：
+- Agent Skill 与本模组代码的许可证相互独立
+- 除非另有明确说明，Agent Skill 中由本项目作者创作的代码、提示词、配置及相关内容均采用 [MIT](https://opensource.org/license/mit) 许可证
 
 # Custom Gun Continued
 
@@ -106,3 +119,16 @@ Derivative content:
 
 - Code: [GPL-3.0-only](https://www.gnu.org/licenses/gpl-3.0.txt)
 - Assets: [CC-BY-SA-4.0](https://creativecommons.org/licenses/by-sa/4.0/)
+- Wiki documents: [CC-BY-SA-4.0](https://creativecommons.org/licenses/by-sa/4.0/)
+- Agent Skill: [MIT](https://opensource.org/license/mit)
+
+### Notice
+
+Wiki documents:
+- Unless otherwise stated, documentation content in this Wiki created by the project authors is licensed under the [CC-BY-SA-4.0](https://creativecommons.org/licenses/by-sa/4.0/) License.
+- This license does not apply to third-party content or content derived from other projects, including content subject to the licenses of [TaCZ](https://github.com/MCModderAnchor/TACZ) or other upstream projects. Such content remains subject to its respective license and usage terms.
+- Code, images, and other materials are also excluded from the scope of this license unless explicitly stated otherwise.
+
+Agent Skill:
+- The Agent Skill is licensed independently from the code of this mod.
+- Unless otherwise stated, code, prompts, configuration, and related content in the Agent Skill created by the project authors are licensed under the [MIT](https://opensource.org/license/mit) License.

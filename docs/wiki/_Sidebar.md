@@ -3,21 +3,21 @@
 > - [**回到中文顶部**](#)
 ---
 - [主页](https://github.com/XColorful/Custom-Gun-Continued/wiki)
-	- 配置文件
-		- 双端配置
+	- 🛠️配置文件
+		- ⚙️双端配置
 			- [子弹配置](https://github.com/XColorful/Custom-Gun-Continued/wiki/Ammo-config)
 			- [枪械配置](https://github.com/XColorful/Custom-Gun-Continued/wiki/Gun-config)
 			- [杂项配置](https://github.com/XColorful/Custom-Gun-Continued/wiki/Other-config)
-		- 客户端配置
+		- ⚙️客户端配置
 			- [按键配置](https://github.com/XColorful/Custom-Gun-Continued/wiki/Key-config)
 			- [渲染配置](https://github.com/XColorful/Custom-Gun-Continued/wiki/Render-config)
 			- [资源配置](https://github.com/XColorful/Custom-Gun-Continued/wiki/Resource-config)
 			- [声音配置](https://github.com/XColorful/Custom-Gun-Continued/wiki/Sound-config)
 			- [开镜配置](https://github.com/XColorful/Custom-Gun-Continued/wiki/Zoom-config)
-		- 服务端配置
+		- ⚙️服务端配置
 			- [同步配置](https://github.com/XColorful/Custom-Gun-Continued/wiki/Sync-config)
-	- 指令
-		- [配件锁定指令](https://github.com/XColorful/Custom-Gun-Continued/wiki/Attachment-lock-command)
+	- ⌨️指令
+		- [配件锁指令](https://github.com/XColorful/Custom-Gun-Continued/wiki/Attachment-lock-command)
 		- [配置指令](https://github.com/XColorful/Custom-Gun-Continued/wiki/Config-command)
 		- [转换指令](https://github.com/XColorful/Custom-Gun-Continued/wiki/Convert-command)
 		- [调试指令](https://github.com/XColorful/Custom-Gun-Continued/wiki/Debug-command)
@@ -25,8 +25,8 @@
 		- [隐藏提示框指令](https://github.com/XColorful/Custom-Gun-Continued/wiki/Hide-tooltip-part-command)
 		- [枪包列表指令](https://github.com/XColorful/Custom-Gun-Continued/wiki/List-pack-command)
 		- [重载指令](https://github.com/XColorful/Custom-Gun-Continued/wiki/Reload-command)
-	- [资源文件说明](https://github.com/XColorful/Custom-Gun-Continued/wiki/Resource-introduction)
-		- data
+	- 📦[资源文件说明](https://github.com/XColorful/Custom-Gun-Continued/wiki/Resource-introduction)
+		- 📊data
 			- cgc_data
 				- attachments
 					- [配件数据](https://github.com/XColorful/Custom-Gun-Continued/wiki/Attachment-data)
@@ -54,7 +54,7 @@
 				- [枪械配件数据](https://github.com/XColorful/Custom-Gun-Continued/wiki/Gun-attachment-data)
 			- recipes
 				- [配方数据](https://github.com/XColorful/Custom-Gun-Continued/wiki/Recipe-data)
-		- assets
+		- 🖼️assets
 			- cgc_animations
 				- [基岩版动画](https://github.com/XColorful/Custom-Gun-Continued/wiki/Bedrock-animation)
 				- [glTF动画](https://github.com/XColorful/Custom-Gun-Continued/wiki/Gltf-animation)
@@ -81,22 +81,35 @@
 				- [Player animator动画](https://github.com/XColorful/Custom-Gun-Continued/wiki/Player-animator-animation)
 			- textures
 				- [资源包材质](https://github.com/XColorful/Custom-Gun-Continued/wiki/Resourcepack-texture)
-
+	- ℹ️关于模组
+		- [模组版本](https://github.com/XColorful/Custom-Gun-Continued/wiki/Mod-version)
+	- 🧑‍💻开发者
+		- [模组开发说明](https://github.com/XColorful/Custom-Gun-Continued/wiki/Mod-development-instructions)
+		- [模组兼容框架](https://github.com/XColorful/Custom-Gun-Continued/wiki/Mod-compat-framework)
+		- [模组开发skills](https://github.com/XColorful/Custom-Gun-Continued/wiki/Mod-development-skills)
+			- 基础技能
+				- [向AI求助](https://github.com/XColorful/Custom-Gun-Continued/wiki/Ask-AI-for-help)
+				- [学习社区的积累](https://github.com/XColorful/Custom-Gun-Continued/wiki/Learn-from-the-community)
+				- [常见机制](https://github.com/XColorful/Custom-Gun-Continued/wiki/Common-mechanism)
+				- [目录结构](https://github.com/XColorful/Custom-Gun-Continued/wiki/Directory-structure)
+				- [如何添加功能](https://github.com/XColorful/Custom-Gun-Continued/wiki/How-to-add-features)
+				- [面对历史遗留问题](https://github.com/XColorful/Custom-Gun-Continued/wiki/Facing-legacy-issues)
+---
 - [Home](https://github.com/XColorful/Custom-Gun-Continued/wiki#English)
-	- Configuration
-		- Common configuration
+	- 🛠️Configuration
+		- ⚙️Common configuration
 			- [Ammo config](https://github.com/XColorful/Custom-Gun-Continued/wiki/Ammo-config#English)
 			- [Gun config](https://github.com/XColorful/Custom-Gun-Continued/wiki/Gun-config#English)
 			- [Other config](https://github.com/XColorful/Custom-Gun-Continued/wiki/Other-config#English)
-		- Client configuration
+		- ⚙️Client configuration
 			- [Key config](https://github.com/XColorful/Custom-Gun-Continued/wiki/Key-config#English)
 			- [Render config](https://github.com/XColorful/Custom-Gun-Continued/wiki/Render-config#English)
 			- [Resource config](https://github.com/XColorful/Custom-Gun-Continued/wiki/Resource-config#English)
 			- [Sound config](https://github.com/XColorful/Custom-Gun-Continued/wiki/Sound-config#English)
 			- [Zoom config](https://github.com/XColorful/Custom-Gun-Continued/wiki/Zoom-config#English)
-		- Server configuration
+		- ⚙️Server configuration
 			- [Sync config](https://github.com/XColorful/Custom-Gun-Continued/wiki/Sync-config#English)
-	- Command
+	- ⌨️Command
 		- [Attachment lock command](https://github.com/XColorful/Custom-Gun-Continued/wiki/Attachment-lock-command#English)
 		- [Config command](https://github.com/XColorful/Custom-Gun-Continued/wiki/Config-command#English)
 		- [Convert command](https://github.com/XColorful/Custom-Gun-Continued/wiki/Convert-command#English)
@@ -105,8 +118,8 @@
 		- [Hide tooltip part command](https://github.com/XColorful/Custom-Gun-Continued/wiki/Hide-tooltip-part-command#English)
 		- [List pack command](https://github.com/XColorful/Custom-Gun-Continued/wiki/List-pack-command#English)
 		- [Reload command](https://github.com/XColorful/Custom-Gun-Continued/wiki/Reload-command#English)
-	- [Resource introduction](https://github.com/XColorful/Custom-Gun-Continued/wiki/Resource-introduction#English)
-		- data
+	- 📦[Resource introduction](https://github.com/XColorful/Custom-Gun-Continued/wiki/Resource-introduction#English)
+		- 📊data
 			- cgc_data
 				- attachments
 					- [Attachment data](https://github.com/XColorful/Custom-Gun-Continued/wiki/Attachment-data#English)
@@ -134,7 +147,7 @@
 				- [Gun attachment data](https://github.com/XColorful/Custom-Gun-Continued/wiki/Gun-attachment-data#English)
 			- recipes
 				- [Recipe data](https://github.com/XColorful/Custom-Gun-Continued/wiki/Recipe-data#English)
-		- assets
+		- 🖼️assets
 			- cgc_animations
 				- [Bedrock animation](https://github.com/XColorful/Custom-Gun-Continued/wiki/Bedrock-animation#English)
 				- [glTF animation](https://github.com/XColorful/Custom-Gun-Continued/wiki/Gltf-animation#English)
@@ -161,3 +174,16 @@
 				- [Player animator animation](https://github.com/XColorful/Custom-Gun-Continued/wiki/Player-animator-animation#English)
 			- textures
 				- [Resourcepack texture](https://github.com/XColorful/Custom-Gun-Continued/wiki/Resourcepack-texture#English)
+	- ℹ️About
+		- [Mod version](https://github.com/XColorful/Custom-Gun-Continued/wiki/Mod-version#English)
+	- 🧑‍💻Developer
+		- [Mod development instructions](https://github.com/XColorful/Custom-Gun-Continued/wiki/Mod-development-instructions#English)
+		- [Mod compat framework](https://github.com/XColorful/Custom-Gun-Continued/wiki/Mod-compat-framework#English)
+		- [Mod development skills](https://github.com/XColorful/Custom-Gun-Continued/wiki/Mod-development-skills#English)
+			- Fundamentals
+				- [Ask AI for help](https://github.com/XColorful/Custom-Gun-Continued/wiki/Ask-AI-for-help#English)
+				- [Learn from the community](https://github.com/XColorful/Custom-Gun-Continued/wiki/Learn-from-the-community#English)
+				- [Common mechanism](https://github.com/XColorful/Custom-Gun-Continued/wiki/Common-mechanism#English)
+				- [Directory structure](https://github.com/XColorful/Custom-Gun-Continued/wiki/Directory-structure#English)
+				- [How to add features](https://github.com/XColorful/Custom-Gun-Continued/wiki/How-to-add-features#English)
+				- [Facing legacy issues](https://github.com/XColorful/Custom-Gun-Continued/wiki/Facing-legacy-issues#English)

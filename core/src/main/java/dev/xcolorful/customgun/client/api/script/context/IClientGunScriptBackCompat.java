@@ -278,4 +278,7 @@ public interface IClientGunScriptBackCompat extends IClientGunScriptContextAcces
     @Deprecated(forRemoval = false) default boolean shouldSlide() {
         return this.shouldTilting();
     }
+    @Deprecated(forRemoval = false) default boolean isOverHeat() {
+        return this.isOverheat();
+    }
 }

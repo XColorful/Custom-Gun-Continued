@@ -90,6 +90,12 @@ public interface IClientGunScriptBackCompat extends IClientGunScriptContextAcces
     // --------IGunScriptBackCompat--------
 
     @Override
+    default boolean isAiming() {
+        @Nullable ILocalShooter iLocalShooter = this.getILocalShooter();
+        return iLocalShooter != null && iLocalShooter.cgc$isAim();
+    }
+
+    @Override
     default float getAimingProgress() {
         @Nullable ILocalShooter iLocalShooter = this.getILocalShooter();
         if (iLocalShooter == null) return 0;

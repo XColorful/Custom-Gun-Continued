@@ -176,6 +176,14 @@ public interface IGunScriptBackCompat extends IGunScriptContextAccess {
     }
 
     /**
+     * 玩家当前是否处于瞄准状态
+     */
+    default boolean isAiming() {
+        @Nullable ILivingShooter iLivingShooter = this.getILivingShooter();
+        return iLivingShooter != null && iLivingShooter.cgc$getShooterProperty().isAiming;
+    }
+
+    /**
      * @return 范围 0~1。0 代表未瞄准，1 代表瞄准完成。
      */
     default float getAimingProgress() {

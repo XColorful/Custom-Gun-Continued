@@ -142,7 +142,7 @@ Don't worry about how long this directory structure looks🥲🙅. In reality, *
     ├───sound
     ├───util
     │
-    └───ModMainClass.java // Main mod class
+    └───ModMainClass.java // Mod main class
 ```
 
 - This is just a common structure and is not something you have to follow

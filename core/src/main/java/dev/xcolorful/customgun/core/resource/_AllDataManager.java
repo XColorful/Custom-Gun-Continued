@@ -16,6 +16,7 @@ import dev.xcolorful.customgun.core.api.resource.data.DataFolderType;
 import dev.xcolorful.customgun.core.init.registry.ModRecipe;
 import dev.xcolorful.customgun.core.network.message.ServerMessageSyncGunPack;
 import dev.xcolorful.customgun.core.recipe.TableRecipe;
+import dev.xcolorful.customgun.core.recipe._TableResultRaw;
 import dev.xcolorful.customgun.core.resource.data.*;
 import dev.xcolorful.customgun.core.resource.network.SyncDataType;
 import dev.xcolorful.customgun.core.util.SendUtils;
@@ -178,6 +179,13 @@ public class _AllDataManager implements IEventHandler {
 //        if (!event.getLogicalSide().isServer()) return;
         if (event.getUpdateCause() != ITagsUpdatedEvent.UpdateCause.SERVER_DATA_LOAD) return;
 
+        // 需要等ResourcePojoManager#apply全结束才执行
+        _DataInstanceManager.reload();
+
+        /**
+         * 见 {@link ITagsUpdatedEvent} 说明
+         * 影响{@link _TableResultRaw#prepareTableResultOrEmpty()}
+         */
         var _this = getCurrent();
         if (_this != null && _this.recipeManager != null) {
             var tableRecipeHolders = _this.recipeManager.getAllRecipesFor(ModRecipe.TABLE_RECIPE_CRAFTING.get());
@@ -186,9 +194,6 @@ public class _AllDataManager implements IEventHandler {
                 tableRecipe.prepare();
             }
         }
-
-        // 需要等ResourcePojoManager#apply全结束才执行
-        _DataInstanceManager.reload();
     }
 
     private static void onDatapackSyncEvent(IDatapackSyncEvent event) {

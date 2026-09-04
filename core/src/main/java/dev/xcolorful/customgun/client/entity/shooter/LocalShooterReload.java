@@ -87,7 +87,7 @@ public final class LocalShooterReload extends LocalShooterAspect {
         boolean hasAmmo = iGun.getMagAmmoCountWithBarrel(gunItem, boltType) > 0;
 
         // 触发 reload，停止播放声音
-        SoundPlayManager.get().stopCurrentSound();
+        SoundPlayManager.get().stopMainTrackSound();
         var soundLocation = !hasAmmo ? GunSoundType.RELOAD_EMPTY_SOUND : GunSoundType.RELOAD_TACTICAL_SOUND;
         SoundPlayManager.get().playGunSound(gunDisplayInstance.getGunSound(soundLocation),
                 this.localShooter);

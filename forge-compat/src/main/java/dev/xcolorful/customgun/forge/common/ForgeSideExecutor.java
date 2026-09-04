@@ -1,5 +1,6 @@
 package dev.xcolorful.customgun.forge.common;
 
+import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.core.api.common.ISideExecutor;
 import dev.xcolorful.customgun.core.api.common.McLogicalSide;
 import dev.xcolorful.customgun.core.api.common.McSide;
@@ -24,6 +25,13 @@ public class ForgeSideExecutor implements ISideExecutor {
 
     @Override
     public McLogicalSide getLogicalSide() {
+        /*
+        EffectiveSide.get() 对不在 SidedThreadGroup 里的线程（如 资源reload 的完成线程）一律返回 CLIENT
+        专用服务端可以用物理 side 兜底
+        单人游戏仍然存在无法区分服务端逻辑的问题
+         */
+        if (CustomGun.getMcSide().isServerSide()) return McLogicalSide.SERVER;
+
         return McSideHelper.convert(EffectiveSide.get());
     }
 

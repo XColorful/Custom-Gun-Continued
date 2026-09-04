@@ -26,7 +26,7 @@ import java.util.List;
 
 public class TableRecipe implements Recipe<Inventory> {
     public static final TableRecipe EMPTY = new TableRecipe(CustomGun.getMcRegistry().createResourceLocation(CustomGun.MOD_ID + ":null"),
-            TableResult.fromPojo(new _TableResultData()),
+            TableResult.fromPojo(new _TableResultData().applyBackCompatibility()),
             List.of());
 
     private ResourceLocation recipeLocation;

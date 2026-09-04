@@ -13,6 +13,7 @@ import dev.xcolorful.customgun.client.resource.network.SyncDataCache;
 import dev.xcolorful.customgun.core.api.item.attachment.modifier.AttachmentModifierType;
 import dev.xcolorful.customgun.core.init.registry.ModRecipe;
 import dev.xcolorful.customgun.core.recipe.TableRecipe;
+import dev.xcolorful.customgun.core.resource.ResourcePojo;
 import dev.xcolorful.customgun.core.resource._AllDataManager;
 import dev.xcolorful.customgun.core.resource._DataInstanceManager;
 import dev.xcolorful.customgun.core.resource.data.data.AttachmentData;
@@ -27,6 +28,7 @@ import dev.xcolorful.customgun.core.resource.data.modtags.AttachmentTagData;
 import dev.xcolorful.customgun.core.resource.data.modtags.GunAttachmentData;
 import dev.xcolorful.customgun.core.resource.data.recipefilter.RecipeFilterData;
 import dev.xcolorful.customgun.core.resource.data.script.DataScript;
+import dev.xcolorful.customgun.core.resource.instance.PojoInstance;
 import dev.xcolorful.customgun.core.resource.instance.data.AmmoIndexInstance;
 import dev.xcolorful.customgun.core.resource.instance.data.AttachmentIndexInstance;
 import dev.xcolorful.customgun.core.resource.instance.data.BlockIndexInstance;
@@ -42,6 +44,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * 资源API
+ * <ul>
+ *     <li>正常使用请获取返回{@link PojoInstance}的接口</li>
+ *     <li>返回{@link ResourcePojo}的接口仅有Pojo自身的validation</li>
+ * </ul>
+ */
 public class ResourceApi {
 
     // --------data--------

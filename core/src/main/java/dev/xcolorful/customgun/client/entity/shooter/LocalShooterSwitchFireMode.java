@@ -61,6 +61,17 @@ public final class LocalShooterSwitchFireMode extends LocalShooterAspect {
 
         // 动画状态机转移状态
         LuaAnimStateMachine<GunAnimStateContext> animStateMachine = gunDisplayInstance.getAnimStateMachine();
+        this._triggerSwitchFireMode(animStateMachine);
+    }
+    /**
+     * <ul>
+     *     同时触发新旧两种输入来兼容旧脚本
+     *     <li>两者是同一逻辑输入的别名，对只识别其中一种的脚本而言，另一种输入只会走到 transition 的 default 分支并返回 nil</li>
+     *     <li>要是有脚本会刻意记录无效调用（有副作用），已经拆成单独的函数方便 Mixin 了 (需要额外维护当前是哪个状态机脚本）</li>
+     * </ul>
+     */
+    private void _triggerSwitchFireMode(LuaAnimStateMachine<GunAnimStateContext> animStateMachine) {
+        animStateMachine.trigger(GunAnimationState.INPUT_SWITCH_FIRE_MODE.typeNameOld);
         animStateMachine.trigger(GunAnimationState.INPUT_SWITCH_FIRE_MODE.getConstantName());
     }
 }

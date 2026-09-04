@@ -90,6 +90,12 @@ public interface IClientGunScriptBackCompat extends IClientGunScriptContextAcces
     // --------IGunScriptBackCompat--------
 
     @Override
+    default boolean isAiming() {
+        @Nullable ILocalShooter iLocalShooter = this.getILocalShooter();
+        return iLocalShooter != null && iLocalShooter.cgc$isAim();
+    }
+
+    @Override
     default float getAimingProgress() {
         @Nullable ILocalShooter iLocalShooter = this.getILocalShooter();
         if (iLocalShooter == null) return 0;
@@ -271,5 +277,8 @@ public interface IClientGunScriptBackCompat extends IClientGunScriptContextAcces
     }
     @Deprecated(forRemoval = false) default boolean shouldSlide() {
         return this.shouldTilting();
+    }
+    @Deprecated(forRemoval = false) default boolean isOverHeat() {
+        return this.isOverheat();
     }
 }

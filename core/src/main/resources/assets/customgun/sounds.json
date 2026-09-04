@@ -1,0 +1,10 @@
+{
+  "gun": {
+    "subtitle": "subtitle.customgun.sound",
+    "sounds": [
+      {
+        "name": "customgun:sound/0.001"
+      }
+    ]
+  }
+}

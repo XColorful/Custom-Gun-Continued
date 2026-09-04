@@ -125,3 +125,147 @@ All call sites are now converted. Let me verify there are no compile errors in t
 - 现在对不带 `isMainTrackSound` 的 8 参重载的调用点引用数为 0：剩余出现的 `playClientSound(` 只有 74/86 行两个重载的定义、79 行 8 参重载内部委托给 9 参的 `false`，以及 `_ServerMessageSound` 里 42/49 行两处注释掉的旧代码（非实际调用）。
 
 一处提醒：`sounds.json` 目前指向 `customgun:sound/0.001` 且字幕键为 `subtitle.customgun.sound`，与我上一轮加的 `empty.ogg`（`sounds/gun/empty.ogg`）和 `subtitle.customgun.gun` 已不一致——这是你的改动，我没动；如果需要我把残留的 `empty.ogg`/字幕键对齐到新命名，告诉我即可。
+
+# 
+
+```
+tacz的draw sound被移到了AnimateGeoItemRenderer，并且在Simple Bedrock Model里调用，而不在FirstPersonRenderEvent
+cgc移除了对SBM的捆绑，恢复了FirstPersonRender
+分析tacz+SBM的调用链路，看现在cgc怎么恢复drawSound
+```
+
+# 
+
+分析完成。下面是完整的调用链路和恢复方案。
+
+## 一、TaCZ + SBM 的 draw sound 链路
+
+**关键点**：TaCZ 的 draw sound 已经不在 `LocalPlayerDraw.doDraw`（那里只剩被注释掉的 `drawFuture` 预定逻辑），也不在 `FirstPersonRenderEvent`，而是搬进了渲染器，由 SBM 驱动。
+
+1. [AnimateGeoItemRenderer.java:325-387](app://localhost/epitaxy/local_dc120550-c77f-4707-9bd2-df2dd55c99ca) 实现 SBM 的 `IFPGeoItemRenderer.createAnimationInstance()`，返回一个 `IFPAnimationInstance`。
+    - `triggerDraw()`：`tryInit()`（draw 动画）+ `SoundPlayManager.playDrawSound()`（draw 音效），用 `drawn` 标志幂等。
+    - `triggerPutAway()`：`tryExit()`（收枪动画）+ `playPutAwaySound()`。
+2. SBM 的 [FirstPersonRenderHandler.java](app://localhost/epitaxy/local_dc120550-c77f-4707-9bd2-df2dd55c99ca) 负责驱动：
+    - `onClientTick` 检测到物品/变体切换 → `beginSwitch` → `previousInstance.triggerPutAway()`（收枪音效+动画）。
+    - `tickAnimation`（渲染 tick，每帧）→ `tickHandAnimation` → `activeInstance.triggerDraw()`（draw 音效+动画，靠 `drawn` 幂等）。
+
+即：**draw 音效 = 渲染 tick 里、与 draw 动画（`tryInit`）捆绑触发**。
+
+## 二、CGC 现状
+
+1. CGC 移除了 SBM 依赖。`AnimateGeoItemRenderer.createAnimationInstance()` 现在返回 `Object`（不再是 `IFPAnimationInstance`），里面的 `triggerDraw()`/`triggerPutAway()`/`getPutAwayDuration()`/`isSameItem()`/`blockOffhandRender()` 全成了没有接口、没有调用方的**死代码**（`@Override` 都注释掉了）。draw 音效逻辑就死在这里。
+2. CGC 恢复了 [FirstPersonRender.java](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/client/renderer/shooter/FirstPersonRender.java)，注册到 `RENDER_HAND_EVENT`（第一人称手部渲染）。它已经做了 draw **动画**：[第 100-102 行](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/client/renderer/shooter/FirstPersonRender.java:100) 在 `needReInit` 时调用 `renderer.tryInit(...)`。
+3. 收枪（put-away）音效已恢复：`LocalShooterDraw._doPutAway` 里 `tryExit` + play put-away sound。
+4. **draw 音效未恢复**：`_doDraw` 的预定逻辑注释掉了，`triggerDraw` 是孤儿死代码。
+
+## 三、恢复方案
+
+把死代码 `triggerDraw` 里的音效逻辑，搬到 `FirstPersonRender.onRenderHand` 的 `tryInit` 旁边——这正好对应 TaCZ 的 `tickHandAnimation → triggerDraw`：
+
+```java
+if (!iGun.switchItemNeedReset(player.getMainHandItem(), gunItem) && renderer.needReInit(gunItem)) {
+    renderer.tryInit(gunItem, player, event.getPartialTick());
+
+    @Nullable GunDisplayInstance display = ClientResourceApi.getGunDisplayInstance(gunItem);
+    if (display != null) {
+        SoundPlayManager.get().stopMainTrackSound();
+        SoundPlayManager.get().playClientSound(display.getGunSound(GunSoundType.DRAW_SOUND),
+                1.0f, 1.0f, player, false,
+                GunConfig.DEFAULT_GUN_OTHER_SOUND_DISTANCE.get(),
+                true, SoundConfig.DEFAULT_SOUND_CONCURRENCY_LIMIT.get(),
+                true);
+    }
+}
+```
+
+幂等性已经由 `needReInit` 保证：`tryInit` 后状态机 `isInitialized()==true`，下一帧 `needReInit` 返回 false，所以 draw 音效每个掏枪周期只播一次，无需再引入 `drawn` 标志。
+
+## 四、需要注意的两点
+
+1. **第三人称**：CGC 把第一人称(`FirstPersonRender`/`RENDER_HAND_EVENT`)和第三人称(`_LocalAnimHandler._tickAnimRender`/`RENDER_FRAME_EVENT`)拆开了，两处都调用 `tryInit`。TaCZ 里 SBM 在渲染 tick 每帧触发、不分人称。如果要对齐「第三人称也播 draw sound」，`_LocalAnimHandler.java:132` 的 `tryInit` 旁边也要补一份同样逻辑；否则只有第一人称有声。
+2. **死代码清理**：`AnimateGeoItemRenderer` 里那段返回 `Object` 的 `createAnimationInstance` 以及 `getPutAwayDuration`/`isSameItem`/`blockOffhandRender` 是 SBM 时代的残留，恢复 draw sound 后可以整个删掉，避免和新逻辑重复。
+
+需要我直接按方案在 `FirstPersonRender.onRenderHand`（以及第三人称的 `_LocalAnimHandler`）落地 draw sound 并清掉死代码吗？
+
+# 
+
+```
+AnimateGeoItemRenderer里注释掉的死逻辑不要移除
+
+落地draw sound
+```
+
+# 
+
+I'll implement the draw sound in both the first-person (`FirstPersonRender`) and third-person (`_LocalAnimHandler`) render paths. Let me make the edits:
+
+Now let me verify there are no compile errors in the modified files:
+
+已完成 draw sound 的落地，两处渲染路径都已补上，死代码未动。
+
+## 改动
+
+**1. 第一人称 [FirstPersonRender.java](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/client/renderer/shooter/FirstPersonRender.java:99)**
+
+在 `renderer.tryInit(...)`（draw 动画）之后补上 draw 音效，对齐 `_doPutAway` 的收枪音效写法：
+
+```java
+if (!iGun.switchItemNeedReset(player.getMainHandItem(), gunItem) && renderer.needReInit(gunItem)) {
+    renderer.tryInit(gunItem, player, event.getPartialTick());
+
+    @Nullable GunDisplayInstance gunDisplayInstance = ClientResourceApi.getGunDisplayInstance(gunItem);
+    if (gunDisplayInstance != null) {
+        SoundPlayManager.get().stopMainTrackSound();
+        SoundPlayManager.get().playClientSound(gunDisplayInstance.getGunSound(GunSoundType.DRAW_SOUND),
+                1.0f, 1.0f, player, false,
+                GunConfig.DEFAULT_GUN_OTHER_SOUND_DISTANCE.get(),
+                true, SoundConfig.DEFAULT_SOUND_CONCURRENCY_LIMIT.get(),
+                true);
+    }
+}
+```
+
+**2. 第三人称 [_LocalAnimHandler.java](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/client/entity/shooter/player/_LocalAnimHandler.java:130)**
+
+同样在 `_tickAnimRender` 里的 `tryInit` 之后补上同一段 draw 音效（TaCZ 里 SBM 在渲染 tick 每帧触发 `triggerDraw`，不分人称）。
+
+## 关键点
+
+- **幂等**：靠 `needReInit` 保证——`tryInit` 后状态机 `isInitialized()==true`，下一帧 `needReInit` 返回 false，所以每个掏枪周期只播一次，无需 `drawn` 标志。
+- **参数对齐**：`DRAW_SOUND` 走 `isMainTrackSound=true`（对应 TaCZ 的 `playDrawSound` 会设置 `tmpSoundInstance`），与 `_doPutAway` 的 `PUT_AWAY_SOUND` 完全对称；`stopMainTrackSound()` 在播放前打断上一个主音轨音效。
+- **两处互斥无重复**：`FirstPersonRender` 只在第一人称（`RENDER_HAND_EVENT`）触发，`_LocalAnimHandler._tickAnimRender` 在第一人称时直接 return，二者不会同时播。
+- **未动死代码**：`AnimateGeoItemRenderer` 里那段注释掉的 `createAnimationInstance`/`triggerDraw`/`triggerPutAway` 等按你的要求原样保留。
+
+两个改动文件经 IDE 检查均无编译错误。
+
+# 
+
+```
+现在第一人称切枪会正常播放
+当第三人称，且在两把枪之间切的时候，第二把枪的抬枪动画的声音没有播放；从非枪械切到枪械时，会播放掏枪声音
+检查一下问题并修复。
+```
+
+# 
+
+I found the root cause. Let me verify the exact current state of the relevant code sections before editing:
+
+修复完成。
+
+## 根因
+
+第三人称的 `_LocalAnimHandler` 与第一人称的 `FirstPersonRender` 用了**不同的物品来源**：
+
+- **第一人称**（正常）：`FirstPersonRender.onRenderHand` 用的是 `event.getItemStack()`，即 `KeepingItemRenderer` 保留的「正在渲染的物品」。切枪期间这个物品还是旧枪 A，配合 `switchItemNeedReset` 守卫，`tryInit`（掏枪 + draw 音效）会被推迟到收枪过渡结束、真正渲染新枪 B 时才执行。
+- **第三人称**（出问题）：`_LocalAnimHandler.onRenderFrame` 用的是 `player.getMainHandItem()`，切枪后立刻就是新枪 B。于是 `tryInit(B)` + draw 音效在收枪过渡刚开始时就触发了（此时画面还显示旧枪 A），导致第二把枪的抬枪音效「没有」在抬枪时播放。
+
+这也解释了为什么「非枪械→枪械」正常：那个场景没有 `_doPutAway`，没有 `keep`，保留物品直接就是新枪 B，所以 draw 音效照常。
+
+## 改动（[`_LocalAnimHandler.java`](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/client/entity/shooter/player/_LocalAnimHandler.java)）
+
+1. `onRenderFrame` 里把物品来源从 `player.getMainHandItem()` 改成 `KeepingItemRenderer.cgc$getRenderer().cgc$getCurrentItem()`（保留物品），与第一人称路径对齐。
+2. `_tickAnimRender` 的 `tryInit` 条件加上 `!iGun.switchItemNeedReset(player.getMainHandItem(), gunItem)` 守卫，与 `FirstPersonRender` 一致，避免过渡期间误触发旧枪的重新初始化。
+
+改动后第三人称的 draw 触发时机与第一人称一致：收枪过渡结束后、真正渲染新枪时才初始化状态机并播放 draw 音效。
+
+文件经 IDE 检查无编译错误。

@@ -189,7 +189,7 @@ public final class LocalShooterShoot extends LocalShooterAspect {
         switch (shooterFireResult) {
             case OVERHEATED, NO_AMMO -> {
                 if (playDrySound) {
-                    SoundPlayManager.get().playGunSound(gunDisplayInstance.getGunSound(GunSoundType.DRY_FIRE_SOUND),
+                    SoundPlayManager.get().playShootSound(gunDisplayInstance.getGunSound(GunSoundType.DRY_FIRE_SOUND),
                             1.0f,
                             this.localShooter,
                             GunConfig.DEFAULT_GUN_OTHER_SOUND_DISTANCE.get(),
@@ -320,17 +320,17 @@ public final class LocalShooterShoot extends LocalShooterAspect {
                 animStateMachine.trigger(GunAnimationState.INPUT_SHOOT.getConstantName());
 
                 // 开火需要打断检视
-                SoundPlayManager.get().stopCurrentSound(gunDisplayInstance, GunSoundType.INSPECT_SOUND);
+                SoundPlayManager.get().stopMainTrackSound(gunDisplayInstance, GunSoundType.INSPECT_SOUND);
 
                 if (_useSilenceSound()) {
-                    SoundPlayManager.get().playGunSound(
+                    SoundPlayManager.get().playShootSound(
                             gunDisplayInstance.getGunSound(GunSoundType.SILENCE_SOUND),
                             0.6f,
                             this.localShooter,
                             GunConfig.DEFAULT_GUN_FIRE_SOUND_DISTANCE.get() * gunData.getFireSoundData().getSilencedMultiplier(),
                             false);
                 } else {
-                    SoundPlayManager.get().playGunSound(
+                    SoundPlayManager.get().playShootSound(
                             gunDisplayInstance.getGunSound(GunSoundType.SHOOT_SOUND),
                             0.8f,
                             this.localShooter,

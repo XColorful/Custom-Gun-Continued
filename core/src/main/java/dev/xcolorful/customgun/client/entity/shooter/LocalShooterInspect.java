@@ -60,7 +60,7 @@ public final class LocalShooterInspect extends LocalShooterAspect {
                 : iGun.getMagAmmoCount(gunItem) > 0;
 
         // 触发 inspect，停止播放声音
-        SoundPlayManager.get().stopCurrentSound();
+        SoundPlayManager.get().stopMainTrackSound();
         var soundLocation = gunDisplayInstance.getGunSound(!hasInspectAmmo ? GunSoundType.INSPECT_EMPTY_SOUND : GunSoundType.INSPECT_SOUND);
         SoundPlayManager.get().playGunSound(soundLocation,
                 this.localShooter);

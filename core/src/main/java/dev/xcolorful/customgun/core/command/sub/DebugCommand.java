@@ -21,6 +21,7 @@ import dev.xcolorful.customgun.client.resource._AllAssetsManager;
 import dev.xcolorful.customgun.core.api.entity.IEntityHitboxHistory;
 import dev.xcolorful.customgun.core.api.entity.ILivingShooter;
 import dev.xcolorful.customgun.core.api.entity.hitbox.IEntityHitboxHistoryGetter;
+import dev.xcolorful.customgun.core.api.resource.ResourceApi;
 import dev.xcolorful.customgun.core.entity.projectile.GunProjectile;
 import dev.xcolorful.customgun.core.init.registry.ModEntities;
 import dev.xcolorful.customgun.core.resource.ResourcePojo;
@@ -72,6 +73,8 @@ public class DebugCommand {
                                 .executes(DebugCommand::testGunProjectileMixin))
                         .then(Commands.literal("IEntityHitboxHistory")
                                 .executes(DebugCommand::testEntityHitboxHistory)))
+                .then(Commands.literal("testAllRecipes")
+                        .executes(DebugCommand::testAllRecipes))
                 .then(Commands.argument(ENABLE, BoolArgumentType.bool())
                         .executes(DebugCommand::setValue));
     }
@@ -271,6 +274,14 @@ public class DebugCommand {
             }
         } else {
             source.sendFailure(Component.literal("Player is not IEntityHitboxHistory"));
+        }
+        return Command.SINGLE_SUCCESS;
+    }
+    private static int testAllRecipes(CommandContext<CommandSourceStack> context) {
+        int cnt = 1;
+        for (var entry : ResourceApi.getAllTableRecipe().entrySet()) {
+            var tableRecipe = entry.getValue();
+            CustomGun.LOGGER.debug("testAllRecipes {}: rl: {}, result: {}", cnt++, entry.getKey(), tableRecipe.getResultItem().getHoverName().getString());
         }
         return Command.SINGLE_SUCCESS;
     }

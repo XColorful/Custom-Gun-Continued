@@ -67,15 +67,21 @@ public final class SoundPlayManager implements IEventHandler {
     private boolean ALLOW_DRY_FIRE = true;
 
     /**
-     * 临时缓存，用于停止播放的
+     * <ul>
+     *     主音频轨道
+     *     <li>全局唯一</li>
+     *     <li>可用于当前动画音效</li>
+     *     <li>可被其他音频覆盖或打断</li>
+     * </ul>
      */
-    private ResourceSoundInstance currentSoundInstance = null;
+    private ResourceSoundInstance mainTrackSound = null;
 
     public @Nullable ResourceSoundInstance playClientSound(@Nullable ResourceLocation soundLocation,
-                                                            float volume, float pitch,
-                                                            @NotNull Entity entity, boolean relative,
-                                                            float soundDistance,
-                                                            boolean trackEntity, int concurrencyLimit) {
+                                                           float volume, float pitch,
+                                                           @NotNull Entity entity, boolean relative,
+                                                           float soundDistance,
+                                                           boolean trackEntity, int concurrencyLimit,
+                                                           boolean isMainTrackSound) {
         var soundPath = this.getSoundPath(soundLocation);
         if (soundPath == null) return null;
 
@@ -89,17 +95,18 @@ public final class SoundPlayManager implements IEventHandler {
 
         if (concurrencyLimit > 0) trackGunSound(entity.getId(), entity.getUUID(), soundLocation, soundInstance);
 
+        if (isMainTrackSound) this.mainTrackSound = soundInstance;
         return soundInstance;
     }
 
-    public void stopCurrentSound() {
-        if (currentSoundInstance != null) currentSoundInstance.setStop();
+    public void stopMainTrackSound() {
+        if (this.mainTrackSound != null) this.mainTrackSound.setStop();
     }
-    public void stopCurrentSound(GunDisplayInstance gunDisplayIndex, GunSoundType animationName) {
-        if (currentSoundInstance == null) return;
-        var soundLocation = currentSoundInstance.getSoundLocation();
+    public void stopMainTrackSound(GunDisplayInstance gunDisplayIndex, GunSoundType animationName) {
+        if (this.mainTrackSound == null) return;
+        var soundLocation = this.mainTrackSound.getSoundLocation();
         if (soundLocation != null && soundLocation.equals(gunDisplayIndex.getGunSound(animationName))) {
-            currentSoundInstance.setStop();
+            this.mainTrackSound.setStop();
         }
     }
 
@@ -236,7 +243,8 @@ public final class SoundPlayManager implements IEventHandler {
         return this.playClientSound(soundLocation,
                 volume, pitch,
                 entity, !trackEntity,
-                soundDistance, trackEntity, SoundConfig.HIGH_FREQUENCY_SOUND_CONCURRENCY_LIMIT.get());
+                soundDistance, trackEntity, SoundConfig.HIGH_FREQUENCY_SOUND_CONCURRENCY_LIMIT.get(),
+                false);
     }
 
     public void playerRefitSound(ItemStack attachmentItem, LivingEntity player, AttachmentSoundType soundType) {
@@ -249,19 +257,21 @@ public final class SoundPlayManager implements IEventHandler {
         if (soundLocation != null) this.playClientSound(soundLocation,
                 1.0f, 1.0f,
                 player, false,
-                GunConfig.DEFAULT_GUN_OTHER_SOUND_DISTANCE.get(), true, SoundConfig.HIGH_FREQUENCY_SOUND_CONCURRENCY_LIMIT.get());
+                GunConfig.DEFAULT_GUN_OTHER_SOUND_DISTANCE.get(), true, SoundConfig.HIGH_FREQUENCY_SOUND_CONCURRENCY_LIMIT.get(),
+                false);
     }
 
-    public void playGunSound(@Nullable ResourceLocation soundLocation,
-                             float volume,
-                             @NotNull LivingEntity localPlayer,
-                             float soundDistance,
-                             boolean trackEntity) {
+    public void playShootSound(@Nullable ResourceLocation soundLocation,
+                               float volume,
+                               @NotNull LivingEntity localPlayer,
+                               float soundDistance,
+                               boolean trackEntity) {
         this.playClientSound(soundLocation,
                 volume, 0.9f + localPlayer.getRandom().nextFloat() * 0.125f,
                 localPlayer, false,
                 soundDistance,
-                trackEntity, SoundConfig.HIGH_FREQUENCY_SOUND_CONCURRENCY_LIMIT.get());
+                trackEntity, SoundConfig.HIGH_FREQUENCY_SOUND_CONCURRENCY_LIMIT.get(),
+                false);
     }
     public void playGunSound(@Nullable ResourceLocation soundLocation,
                              @NotNull LivingEntity localPlayer) {
@@ -269,7 +279,8 @@ public final class SoundPlayManager implements IEventHandler {
                 1.0f, 1.0f,
                 localPlayer, false,
                 GunConfig.DEFAULT_GUN_OTHER_SOUND_DISTANCE.get(),
-                true, SoundConfig.HIGH_FREQUENCY_SOUND_CONCURRENCY_LIMIT.get());
+                true, SoundConfig.HIGH_FREQUENCY_SOUND_CONCURRENCY_LIMIT.get(),
+                true);
     }
 
     // --------Deprecated--------

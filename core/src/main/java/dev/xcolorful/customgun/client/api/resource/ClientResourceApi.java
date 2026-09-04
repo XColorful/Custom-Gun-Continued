@@ -27,6 +27,8 @@ import dev.xcolorful.customgun.client.resource.instance.data.ClientBlockIndexIns
 import dev.xcolorful.customgun.client.resource.instance.data.ClientGunIndexInstance;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
+import dev.xcolorful.customgun.core.resource.ResourcePojo;
+import dev.xcolorful.customgun.core.resource.instance.PojoInstance;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
@@ -39,6 +41,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * 客户端资源API
+ * <ul>
+ *     <li>正常使用请获取返回{@link PojoInstance}的接口</li>
+ *     <li>返回{@link ResourcePojo}的接口仅有Pojo自身的validation</li>
+ * </ul>
+ */
 public class ClientResourceApi {
 
     // --------gunpack info--------

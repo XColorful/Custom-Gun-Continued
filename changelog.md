@@ -1,5 +1,14 @@
 ### 0.0.x
 
+#### 0.0.9
+- Fix connection disconnects caused by recipe serialization when joining dedicated servers
+- Fix the mod's data pack recipe not loaded
+
+Back compatibility:
+- Fix data pack script API `getAttachment` not return attachment's resource location
+- Add `isAiming`, `isOverHeat` to resource pack script API
+- Add animation state `INPUT_FIRE_SELECT` to resource pack script
+
 #### 0.0.8
 - Press refit key to close gun refit screen
 - Add built-in crosshair with vanilla render style

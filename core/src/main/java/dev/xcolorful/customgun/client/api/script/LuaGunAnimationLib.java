@@ -27,9 +27,12 @@ public class LuaGunAnimationLib implements LuaLibrary {
     private final Map<String, Object> constantMap = Maps.newHashMap();
 
     public LuaGunAnimationLib() {
-        // 映射 GunAnimationState 常量字段
-        for (GunAnimationState state : GunAnimationState.values()) {
-            constantMap.put(state.name(), state.getConstantName());
+        { // 映射 GunAnimationState 常量字段
+            for (GunAnimationState state : GunAnimationState.values()) {
+                constantMap.put(state.name(), state.getConstantName());
+            }
+            // 兼容旧 TaCZ 脚本：旧常量名 INPUT_FIRE_SELECT 与旧值 "fire_select"（新名 INPUT_SWITCH_FIRE_MODE）
+            constantMap.put("INPUT_FIRE_SELECT", GunAnimationState.INPUT_SWITCH_FIRE_MODE.typeNameOld);
         }
 
         // 映射 ReloadState.StateType 枚举

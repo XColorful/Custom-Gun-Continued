@@ -12,12 +12,18 @@ import dev.xcolorful.customgun.client.api.event.IRenderHandEvent;
 import dev.xcolorful.customgun.client.api.item.IAnimateGeoItem;
 import dev.xcolorful.customgun.client.api.renderer.KeepingItemRenderer;
 import dev.xcolorful.customgun.client.api.renderer.item.IAnimateGeoItemRenderer;
+import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
+import dev.xcolorful.customgun.client.api.sound.gun.GunSoundType;
+import dev.xcolorful.customgun.client.config.SoundConfig;
 import dev.xcolorful.customgun.client.renderer.item.AnimateGeoItemRenderer;
+import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
+import dev.xcolorful.customgun.client.sound.SoundPlayManager;
 import dev.xcolorful.customgun.core.api.event.EventType;
 import dev.xcolorful.customgun.core.api.event.IEvent;
 import dev.xcolorful.customgun.core.api.event.IEventHandler;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
+import dev.xcolorful.customgun.core.config.GunConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.InteractionHand;
@@ -98,6 +104,17 @@ public class FirstPersonRender implements IEventHandler {
         // 物品处于后台时，阻止状态机初始化
         if (!iGun.switchItemNeedReset(player.getMainHandItem(), gunItem) && renderer.needReInit(gunItem)) {
             renderer.tryInit(gunItem, player, event.getPartialTick());
+
+            @Nullable GunDisplayInstance gunDisplayInstance = ClientResourceApi.getGunDisplayInstance(gunItem);
+            if (gunDisplayInstance != null) {
+                SoundPlayManager.get().stopMainTrackSound();
+                SoundPlayManager.get().playClientSound(gunDisplayInstance.getGunSound(GunSoundType.DRAW_SOUND),
+                        1.0f, 1.0f,
+                        player, false,
+                        GunConfig.DEFAULT_GUN_OTHER_SOUND_DISTANCE.get(),
+                        true, SoundConfig.DEFAULT_SOUND_CONCURRENCY_LIMIT.get(),
+                        true);
+            }
         }
 
         // 防止内存泄漏

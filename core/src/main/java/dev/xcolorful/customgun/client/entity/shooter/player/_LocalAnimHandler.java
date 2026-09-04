@@ -14,16 +14,21 @@ import dev.xcolorful.customgun.client.api.event.IClientTickEvent;
 import dev.xcolorful.customgun.client.api.event.IPrepareClientTickEvent;
 import dev.xcolorful.customgun.client.api.event.IRenderFrameEvent;
 import dev.xcolorful.customgun.client.api.item.IAnimateGeoItem;
+import dev.xcolorful.customgun.client.api.renderer.KeepingItemRenderer;
 import dev.xcolorful.customgun.client.api.renderer.item.IAnimateGeoItemRenderer;
 import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
+import dev.xcolorful.customgun.client.api.sound.gun.GunSoundType;
+import dev.xcolorful.customgun.client.config.SoundConfig;
 import dev.xcolorful.customgun.client.renderer.item.AnimateGeoItemRenderer;
 import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
+import dev.xcolorful.customgun.client.sound.SoundPlayManager;
 import dev.xcolorful.customgun.client.util.ClientInputUtils;
 import dev.xcolorful.customgun.core.api.event.EventType;
 import dev.xcolorful.customgun.core.api.event.IEvent;
 import dev.xcolorful.customgun.core.api.event.IEventHandler;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
+import dev.xcolorful.customgun.core.config.GunConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.item.ItemStack;
@@ -108,7 +113,7 @@ public class _LocalAnimHandler implements IEventHandler {
             return;
         }
 
-        ItemStack gunItem = player.getMainHandItem();
+        ItemStack gunItem = KeepingItemRenderer.cgc$getRenderer().cgc$getCurrentItem();
 
         this._tickAnimRender(event, player, gunItem);
     }
@@ -128,8 +133,19 @@ public class _LocalAnimHandler implements IEventHandler {
         if (renderer == null) return;
 
         // 如果物品不一样了，先尝试初始化状态机
-        if (renderer.needReInit(gunItem)) {
+        if (!iGun.switchItemNeedReset(player.getMainHandItem(), gunItem) && renderer.needReInit(gunItem)) {
             renderer.tryInit(gunItem, player, event.getPartialTick());
+
+            @Nullable GunDisplayInstance gunDisplayInstance = ClientResourceApi.getGunDisplayInstance(gunItem);
+            if (gunDisplayInstance != null) {
+                SoundPlayManager.get().stopMainTrackSound();
+                SoundPlayManager.get().playClientSound(gunDisplayInstance.getGunSound(GunSoundType.DRAW_SOUND),
+                        1.0f, 1.0f,
+                        player, false,
+                        GunConfig.DEFAULT_GUN_OTHER_SOUND_DISTANCE.get(),
+                        true, SoundConfig.DEFAULT_SOUND_CONCURRENCY_LIMIT.get(),
+                        true);
+            }
         }
 
         renderer.visualUpdate(gunItem);

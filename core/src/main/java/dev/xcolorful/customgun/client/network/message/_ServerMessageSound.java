@@ -58,6 +58,7 @@ public class _ServerMessageSound {
                 message.volume(), message.pitch(),
                 livingEntity, false,
                 message.distance(),
-                true, SoundConfig.HIGH_FREQUENCY_SOUND_CONCURRENCY_LIMIT.get());
+                true, SoundConfig.HIGH_FREQUENCY_SOUND_CONCURRENCY_LIMIT.get(),
+                false);
     }
 }

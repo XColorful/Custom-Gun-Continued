@@ -128,11 +128,12 @@ public final class LocalShooterDraw extends LocalShooterAspect {
         @Nullable GunDisplayInstance gunDisplayInstance = ClientResourceApi.getGunDisplayInstance(lastItem);
         if (gunDisplayInstance == null) return;
 
-        SoundPlayManager.get().stopCurrentSound();
+        SoundPlayManager.get().stopMainTrackSound();
         SoundPlayManager.get().playClientSound(gunDisplayInstance.getGunSound(GunSoundType.PUT_AWAY_SOUND),
                 1.0f, 1.0f,
                 this.localShooter, false,
                 GunConfig.DEFAULT_GUN_OTHER_SOUND_DISTANCE.get(),
-                true, SoundConfig.DEFAULT_SOUND_CONCURRENCY_LIMIT.get());
+                true, SoundConfig.DEFAULT_SOUND_CONCURRENCY_LIMIT.get(),
+                true);
      }
 }

@@ -19,7 +19,7 @@ public class GunScriptMethodTag {
     public static final String START_RELOAD = ScriptMethodTag.START_RELOAD;
     public static final String TICK_RELOAD = ScriptMethodTag.TICK_RELOAD;
     public static final String INTERRUPT_RELOAD = ScriptMethodTag.INTERRUPT_RELOAD;
-    public static final String TICK_HEAT = ScriptMethodTag.TICK_HEAT;
+    public static final String TICK_HEAT = ScriptMethodTag.TICK_HEAT_COOLDOWN;
     public static final String CALCULATE_SPREAD = ScriptMethodTag.CALCULATE_SPREAD;
     public static final String HANDLE_SHOOT_HEAT = ScriptMethodTag.HANDLE_SHOOT_HEAT;
 

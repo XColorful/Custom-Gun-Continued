@@ -1,7 +1,7 @@
 [English](#English)
 
 # 调试指令
-> wiki 版本：`0.0.4`.3
+> wiki 版本：`0.0.9`.4
 
 ## 服务端指令
 
@@ -41,6 +41,16 @@
 
 测试已加载的自定义配方的合成物品
 
+### 展示弹匣子弹
+> _/customgun debug showMagAmmo_
+
+查看当前手持枪械子弹
+
+### 设置弹匣子弹
+> _/customgun debug setMagAmmo [ammo]_
+
+设置当前手持枪械子弹
+
 ## 客户端指令
 
 ### 测试声音文件
@@ -56,7 +66,7 @@
 - `target`（字面量）：测试目标，可选值为`IAnimateGeoItem`
 
 # English
-> wiki verison: `0.0.4`.3
+> wiki verison: `0.0.9`.4
 
 ## Server command
 
@@ -95,6 +105,16 @@ Verify that Mixin is correctly applied
 > _/customgun debug testAllRecipes_
 
 Test the crafted items from loaded custom recipes.
+
+### Show magazine ammo
+> _/customgun debug showMagAmmo_
+
+View the ammo of the currently held gun.
+
+### Set magazine ammo
+> _/customgun debug setMagAmmo [ammo]_
+
+Set the ammo of the currently held gun.
 
 ## Client command
 

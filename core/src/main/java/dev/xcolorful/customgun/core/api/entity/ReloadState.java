@@ -133,7 +133,7 @@ public class ReloadState {
         }
 
         public boolean isReloadFeeding() {
-            return this == StateType.EMPTY_RELOAD_FEEDING || this.category == StateCategory.TACTICAL_RELOAD;
+            return this == StateType.EMPTY_RELOAD_FEEDING || this == StateType.TACTICAL_RELOAD_FEEDING;
         }
 
         /**

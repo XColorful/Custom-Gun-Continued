@@ -178,14 +178,13 @@ public final class LocalShooterShoot extends LocalShooterAspect {
             return ShootResult.UNKNOWN_FAIL;
         }
 
-        boolean playDrySound = true;
         { // 3. IGunRuntime操作结果 -> Shooter状态
             /**
              * {@link IGunAttackRuntime#shooterFire}的默认实现为{@link IGunAttackRuntime#shooterFire}
              */
             @NotNull IGunAttackRuntime.ShooterFireResult shooterFireResult = iGun.shooterFire(null, iGun, gunItem, iLivingShooter, localShooter, null, null, this.localShooterProperty.chargeProgress);
             if (!shooterFireResult.isSuccess()) {
-                return _onShooterFireFailed(shooterFireResult, gunDisplayInstance, playDrySound);
+                return _onShooterFireFailed(shooterFireResult, gunDisplayInstance);
             }
             // 切换状态锁，不允许换弹、检视等行为进行
             this.localShooterProperty.lockState(SHOOT_LOCKED_CONDITION);
@@ -201,16 +200,17 @@ public final class LocalShooterShoot extends LocalShooterAspect {
     }
     @ApiStatus.Internal
     private ShootResult _onShooterFireFailed(@NotNull IGunAttackRuntime.ShooterFireResult shooterFireResult,
-                                             @NotNull GunDisplayInstance gunDisplayInstance,
-                                             boolean playDrySound) {
+                                             @NotNull GunDisplayInstance gunDisplayInstance) {
         switch (shooterFireResult) {
             case OVERHEATED, NO_AMMO -> {
-                if (playDrySound) {
-                    SoundPlayManager.get().playShootSound(gunDisplayInstance.getGunSound(GunSoundType.DRY_FIRE_SOUND),
+                SoundPlayManager soundPlayManager = SoundPlayManager.get();
+                if (soundPlayManager.getEnableDryFireSound()) {
+                    soundPlayManager.playShootSound(gunDisplayInstance.getGunSound(GunSoundType.DRY_FIRE_SOUND),
                             1.0f,
                             this.localShooter,
                             GunConfig.DEFAULT_GUN_OTHER_SOUND_DISTANCE.get(),
                             false);
+                    soundPlayManager.setEnableDryFireSound(false);
                 }
             }
             case NO_BARREL_AMMO -> {

@@ -178,7 +178,7 @@ public final class ShootKey extends InputKey implements IEventHandler {
             LocalShooterSprint.forceDisableSprint = true;
         else {
             this.lastShootSuccess = false; // 松开扳机才重置，否则半自动下一次按压会被误判为已成功而阻止开火
-            SoundPlayManager.get().resetDryFireSound(); // 没按开火,后面没开火成功允许触发音效
+            SoundPlayManager.get().setEnableDryFireSound(true); // 没按开火,后面没开火成功允许触发音效
             // 不提前返回, 需要减少蓄力进度
         }
 

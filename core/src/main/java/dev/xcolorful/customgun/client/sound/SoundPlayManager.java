@@ -115,11 +115,11 @@ public final class SoundPlayManager implements IEventHandler {
         this.stopAndClearTrackedSounds();
     }
 
-    public boolean isAllowDryFire() {
+    public boolean getEnableDryFireSound() {
         return ALLOW_DRY_FIRE;
     }
-    public void resetDryFireSound() {
-        ALLOW_DRY_FIRE = true;
+    public void setEnableDryFireSound(boolean enable) {
+        ALLOW_DRY_FIRE = enable;
     }
 
     public void onClientTick(IClientTickEvent event) {

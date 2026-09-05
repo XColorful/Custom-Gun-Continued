@@ -56,7 +56,7 @@ public class _DefaultGunCharge {
     private static long _getChargeElapsedMs(@NotNull ShooterProperty shooterProperty) {
         if (shooterProperty.shootTimestamp >= 0) {
             // 上次开枪到现在的时间
-            long startTimestamp = shooterProperty.baseTimestamp + shooterProperty.shootTimestamp;
+            long startTimestamp = shooterProperty.serverBaseTimestamp + shooterProperty.shootTimestamp;
             return System.currentTimeMillis() - startTimestamp;
         } else if (shooterProperty.drawFinishTimestamp >= 0) {
             // 切完枪到现在的时间

@@ -77,7 +77,7 @@ public final class GunData extends ResourcePojo<GunData> {
     private float putAwayTime = 0.4f;
     private float sprintSwitchTime = 0.2f;
     private float aimTime = 0.2f;
-    private float boltActionTime = 0f;
+    private float boltActionTime = 0f; // 默认为0，使得没填该数值的(通常为步枪)也能秒上弹
     private float boltFeedTime = -1f;
 
     private static final GunData PARSER = new GunData();

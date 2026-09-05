@@ -372,9 +372,11 @@ public final class LocalShooterShoot extends LocalShooterAspect {
     }
     private long _getShootCooldown(IGun iGun, ItemStack gunItem, @NotNull GunData gunData) {
         FireModeType fireModeType = iGun.getFireModeType(gunItem);
-        long coolDown = fireModeType == FireModeType.BURST
-                ? (long) (gunData.getBurstData().getShootIntervalSeconds() * 1000f) - (System.currentTimeMillis() - this.localShooterProperty.clientShootTimestamp)
+        long shootInterval = fireModeType == FireModeType.BURST
+                ? (long) (gunData.getBurstData().getShootIntervalSeconds() * 1000f)
                 : LivingShooterShoot._getShootInterval(this.localShooter, gunData, fireModeType, iGun, gunItem);
-        return Math.max(coolDown, 0);
+
+        long cooldown = shootInterval - (System.currentTimeMillis() - this.localShooterProperty.clientShootTimestamp);
+        return Math.max(cooldown, 0);
     }
 }

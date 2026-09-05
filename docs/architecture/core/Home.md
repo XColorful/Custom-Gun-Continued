@@ -229,6 +229,7 @@
 - ScriptUtils：LuaJ工具
 - SendUtils：网络消息统一发送入口
 	- 所有消息发送均通过此处，与网络实现（`NetworkHandler`）解耦
+- Vec3Utils：`Vec3`相关兼容封装
 - WorldUtils：游戏内世界相关操作
 
 # English
@@ -458,4 +459,5 @@ Module division based on the `dev.xcolorful.customgun.core` top-level package
 - ScriptUtils: LuaJ utilities
 - SendUtils: Unified entry point for sending network messages
 	- All network messages must be sent through this utility, decoupling callers from the underlying `NetworkHandler`
+- Vec3Utils: Compatibility wrappers for `Vec3`
 - WorldUtils: In-game world related operations

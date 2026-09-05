@@ -22,8 +22,10 @@ import org.jetbrains.annotations.NotNull;
 public interface IGunActionRuntime {
 
     /**
-     * 开始拉栓时调用，返回 bolt 状态
-     * @return 是否开始 bolt
+     * 开始拉栓时调用
+     * <br>
+     * 多次调用不产生副作用，可用于检测是否能拉栓
+     * @return 是否可以开始 bolt
      */
     boolean startBolt(ShooterProperty shooterProperty,
                       @NotNull IGun iGun, @NotNull ItemStack gunItem,
@@ -48,6 +50,7 @@ public interface IGunActionRuntime {
      * 调用时会执行{@link IGunActionRuntime#canReload}检查，检查通过后触发{@link ShooterReloadEvent}
      * <br>
      * 开始换弹时调用
+     * @return 是否开始换弹
      */
     boolean startReload(ShooterProperty shooterProperty,
                         @NotNull IGun iGun, @NotNull ItemStack gunItem,

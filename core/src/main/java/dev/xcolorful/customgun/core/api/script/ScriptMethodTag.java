@@ -21,7 +21,7 @@ public class ScriptMethodTag {
     public static final String START_RELOAD = "start_reload";
     public static final String TICK_RELOAD = "tick_reload";
     public static final String INTERRUPT_RELOAD = "interrupt_reload";
-    public static final String TICK_HEAT = "tick_heat";
+    public static final String TICK_HEAT_COOLDOWN = "tick_heat_cooldown"; public static final String TICK_HEAT_COOLDOWN_OLD1 = "tick_heat";
     public static final String CALCULATE_SPREAD = "calculate_spread"; public static final String CALCULATE_SPREAD_OLD1 = "calcSpread";
     public static final String HANDLE_SHOOT_HEAT = "handle_shoot_heat";
 

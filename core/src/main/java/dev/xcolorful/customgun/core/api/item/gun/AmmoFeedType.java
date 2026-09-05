@@ -23,7 +23,7 @@ public enum AmmoFeedType implements ResourceTag.CategoryTag {
     MAGAZINE(AmmoFeedTypeTag.MAGAZINE,
             true),
     /**
-     * 手动供弹
+     * 手动供弹(逐发装填)
      */
     MANUAL(AmmoFeedTypeTag.MANUAL,
             true),

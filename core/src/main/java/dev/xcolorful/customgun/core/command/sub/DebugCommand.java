@@ -21,6 +21,8 @@ import dev.xcolorful.customgun.client.resource._AllAssetsManager;
 import dev.xcolorful.customgun.core.api.entity.IEntityHitboxHistory;
 import dev.xcolorful.customgun.core.api.entity.ILivingShooter;
 import dev.xcolorful.customgun.core.api.entity.hitbox.IEntityHitboxHistoryGetter;
+import dev.xcolorful.customgun.core.api.item.IGun;
+import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
 import dev.xcolorful.customgun.core.api.resource.ResourceApi;
 import dev.xcolorful.customgun.core.entity.projectile.GunProjectile;
 import dev.xcolorful.customgun.core.init.registry.ModEntities;
@@ -32,9 +34,11 @@ import dev.xcolorful.customgun.core.resource.data.index.GunIndex;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
 
@@ -75,6 +79,11 @@ public class DebugCommand {
                                 .executes(DebugCommand::testEntityHitboxHistory)))
                 .then(Commands.literal("testAllRecipes")
                         .executes(DebugCommand::testAllRecipes))
+                .then(Commands.literal("showMagAmmo")
+                        .executes(DebugCommand::showMagAmmo))
+                .then(Commands.literal("setMagAmmo")
+                        .then(Commands.argument("ammo", IntegerArgumentType.integer(0))
+                                .executes(DebugCommand::setMagAmmo)))
                 .then(Commands.argument(ENABLE, BoolArgumentType.bool())
                         .executes(DebugCommand::setValue));
     }
@@ -283,6 +292,51 @@ public class DebugCommand {
             var tableRecipe = entry.getValue();
             CustomGun.LOGGER.debug("testAllRecipes {}: rl: {}, result: {}", cnt++, entry.getKey(), tableRecipe.getResultItem().getHoverName().getString());
         }
+        return Command.SINGLE_SUCCESS;
+    }
+    private static int showMagAmmo(CommandContext<CommandSourceStack> context) {
+        CommandSourceStack source = context.getSource();
+        Player player = source.getPlayer();
+        if (player == null) return 0;
+
+        ItemStack gunItem = player.getMainHandItem();
+        @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
+        if (iGun == null) return 0;
+
+        MutableComponent component = Component.empty(); {
+            component.append(gunItem.getDisplayName());
+            int magAmmoLimit = iGun.getMagAmmoLimit(gunItem);
+
+            int barrelAmmoCount = iGun.getBarrelAmmoCount(gunItem);
+            int magAmmoCount = iGun.getMagAmmoCount(gunItem);
+            component.append(String.format(" %s %s/%s", barrelAmmoCount, magAmmoCount, magAmmoLimit));
+        }
+        source.sendSuccess(() -> component, false);
+        return Command.SINGLE_SUCCESS;
+    }
+    private static int setMagAmmo(CommandContext<CommandSourceStack> context) {
+        CommandSourceStack source = context.getSource();
+        Player player = source.getPlayer();
+        if (player == null) return 0;
+
+        ItemStack gunItem = player.getMainHandItem();
+        @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
+        if (iGun == null) return 0;
+
+        MutableComponent component = Component.empty(); {
+            component.append(gunItem.getDisplayName());
+            int magAmmoLimit = iGun.getMagAmmoLimit(gunItem);
+
+            int barrelAmmoCount = iGun.getBarrelAmmoCount(gunItem);
+            int magAmmoCount = iGun.getMagAmmoCount(gunItem);
+            component.append(String.format(" %s %s/%s", barrelAmmoCount, magAmmoCount, magAmmoLimit));
+
+            int ammo = IntegerArgumentType.getInteger(context, "ammo");
+            iGun.setMagAmmoCount(gunItem, ammo);
+            magAmmoCount = iGun.getMagAmmoCount(gunItem);
+            component.append(String.format(" -> %s/%s", magAmmoCount, magAmmoLimit));
+        }
+        source.sendSuccess(() -> component, false);
         return Command.SINGLE_SUCCESS;
     }
 }

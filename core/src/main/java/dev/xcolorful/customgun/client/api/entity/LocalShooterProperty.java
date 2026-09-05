@@ -29,13 +29,16 @@ public class LocalShooterProperty {
      * 点击按钮的时间戳，防止客户端点击按钮后误触开火
      */
     public static long clientClickButtonTimestamp = -1L;
+    /**
+     * 跟服务端同步的基时间戳
+     */
+    public static long clientBaseTimestamp = -1L;
 
     private final LocalPlayer cgc$localPlayer;
     public LocalShooterProperty(LocalPlayer cgc$localPlayer) {
         this.cgc$localPlayer = cgc$localPlayer;
     }
 
-    public long clientBaseTimestamp = -1L;
     /**
      * 与射击有关的几个变量
      */

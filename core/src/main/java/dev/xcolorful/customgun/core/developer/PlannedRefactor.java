@@ -44,4 +44,6 @@ public class PlannedRefactor {
     public static final boolean CACHE_ITEM_STACK_FOR_RENDER = false;
     // 统一枪械api，避免到处拉屎
     public static final boolean UNIFY_GUN_API = false;
+    // 添加机制来在开火时/手动输入按键时才拉栓
+    public static final boolean AUTO_BOLT = true;
 }

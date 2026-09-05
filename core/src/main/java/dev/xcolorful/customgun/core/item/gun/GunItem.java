@@ -158,10 +158,10 @@ public class GunItem extends Item implements IGun, GunDataAccessor {
                 .evalByScript(gunItem, scriptApi, modifierType, value);
     }
     // ----IGunStateRuntime----
-    @Override public void tickHeat(ShooterProperty shooterProperty, @NotNull IGun iGun, @NotNull ItemStack gunItem, ILivingShooter iLivingShooter, LivingEntity livingShooter) {
+    @Override public void tickHeatCooldown(ShooterProperty shooterProperty, @NotNull IGun iGun, @NotNull ItemStack gunItem, ILivingShooter iLivingShooter, LivingEntity livingShooter) {
         CustomGun.getGunManager().getManagerGroup(this.getManagerGroupTag(gunItem))
                 .gunStateManager()
-                .tickHeat(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter);
+                .tickHeatCooldown(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter);
     }
 
     // --------IAnimationItem--------

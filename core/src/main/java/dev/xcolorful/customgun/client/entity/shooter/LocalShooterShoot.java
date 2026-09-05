@@ -100,32 +100,34 @@ public final class LocalShooterShoot extends LocalShooterAspect {
          */
         final float alphaProgress = isCharging ? chargeData.getChargePerTick() : chargeData.getRecoverPerTick(); // 每 tick
 
-        final boolean isChargingBefore = this.localShooterProperty.isCharging; // 用于HOLD的回溯
         this.localShooterProperty.isCharging = isCharging;
 
+        // ----按优先级次序----
+
+        // 1. 不允许蓄力
         if (!isChargeEnabled) {
-            // 不允许蓄力 -> 减少蓄力进度
             this.localShooterProperty.chargeProgress = currentChargeProgress - alphaProgress;
             return false;
         }
 
+        // 2. 在蓄力
         assert isChargeEnabled;
         if (isCharging) {
-            // 在蓄力 -> 增加进度
             this.localShooterProperty.chargeProgress = currentChargeProgress + alphaProgress;
             // 蓄满 且 蓄满自动开火 -> 充能足够
             return this.localShooterProperty.chargeProgress >= maxCharge && chargeType.autoShootIfCharged();
         }
 
-        if (currentChargeProgress > chargeData.getFireThreshold()) {
-            // 不在蓄力，但充能足够
-            this.localShooterProperty.isCharging = isChargingBefore;
+        // 3. 不在蓄力
+        assert !isCharging;
+        this.localShooterProperty.chargeProgress = currentChargeProgress - alphaProgress;
+
+        if (chargeType.partialShoot() && currentChargeProgress >= chargeData.getFireThreshold()) {
+            // 不需要满充能，且达到阈值
             return true;
-        } else {
-            // 不在蓄力，且充能不够 -> 减少蓄力进度
-            this.localShooterProperty.chargeProgress = currentChargeProgress - alphaProgress;
-            return false;
         }
+
+        return false;
     }
 
     /**

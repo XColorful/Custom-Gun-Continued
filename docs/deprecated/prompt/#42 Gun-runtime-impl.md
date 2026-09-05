@@ -550,3 +550,58 @@ Tick3 按住 → lastShootSuccess=false → 又开火
 - 逻辑推演：SLR/AWM 按住现在只开一枪、松手再按才再开；taurus500 按住蓄满自动开火、中途松手进度回落。
 
 一点说明（未改动，仅提醒）：`_isChargeEnough` 里 `else if (currentChargeProgress > fireThreshold)` 这个「松手即开火」分支没有区分蓄力类型——对 `AUTO` 类型，若某把枪 `fire_threshold < max_charge`，松手也会误触发开火（原版只有 HOLD 会在松手时开火）。目前测试的三把枪不受影响（taurus500 的 threshold == max_charge，此分支永远进不去），所以我没有动它，符合最小改动原则。如需一并修正可以再说。
+
+# 
+
+```
+我对LocalShooterShoot进行了修改。目前测试下hold不会再释放时射击，你看看怎么修改，以及是否不需要为了hold回溯而缓存before？
+```
+
+# 
+
+Let me check the current compilation status of the user's edited files.
+
+Let me verify `doCharge_isChargeEnough` (and its deprecated alias) isn't invoked more than once per tick anywhere else.
+
+Let me check how charging data is retrieved, since `doCharge_isChargeEnough` and `_recoverChargeAfterShoot` use different accessors.
+
+I've now fully traced the logic. Let me apply the fixes to `_isChargeEnough`.
+
+我已经完成了分析和修改。让我总结一下。
+
+## 结论
+
+你的 `partialShoot()` 重构本身是**正确的**——它恰好补上了我上一轮末尾提到的隐患（「松手即开火」分支不区分蓄力类型，AUTO 在 `fire_threshold < max_charge` 时也会松手误触发）。`partialShoot()` 对 HOLD 返回 `true`、对 AUTO/DELAY 返回 `false`，语义正确，并且**没有改变 HOLD 的开火判定**（HOLD 走 `partialShoot() && currentChargeProgress >= fireThreshold`，等价于原来的 `else if (currentChargeProgress > fireThreshold)`）。
+
+我做了两处修改，见 [LocalShooterShoot.java](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/client/entity/shooter/LocalShooterShoot.java):
+
+## 1. `>` → `>=`（这是唯一与 TaCZ 原版不一致的地方）
+
+原版 TaCZ 是 `chargeProgress >= fireThreshold`，CGC 一直写成了 `>`。当蓄力进度恰好落在阈值上时会漏判。
+
+## 2. 删掉 `isChargingBefore`（回答你的第二个问题：不需要）
+
+`isChargingBefore` 只服务于 `LocalShooterProperty.isCharging` 这个标志位，而它唯一的消费者是脚本 API `cgc$isCharging()` / Lua `isCharging()`——**开火判定完全不读它**。它复制的是原版一个「顺带」产生的副作用：原版 `return true` 直接跳过了 `data.isCharging = false`，于是松手开火那一 tick 标志位仍停留在 `true`。删掉后，松手那一 tick `isCharging` 会正确地变成 `false`（玩家已经松手了），语义更干净。
+
+最终 `_isChargeEnough` 变成：
+
+```java
+// 3. 不在蓄力
+this.localShooterProperty.chargeProgress = currentChargeProgress - alphaProgress;
+
+if (chargeType.partialShoot() && currentChargeProgress >= chargeData.getFireThreshold()) {
+    return true;
+}
+return false;
+```
+
+## 一个需要你确认的诚实提醒
+
+对于 **rhino357**（datapack 里唯一启用的 `hold` 枪：`increase_per_tick=0.1`、`fire_threshold=0.15`），蓄力只会落在 `0.1 / 0.2 / 0.3`，永远不会恰好等于 `0.15`，所以 **`>` vs `>=` 其实不改变它的行为**。
+
+也就是说，如果「hold 不触发」是在 rhino357 上复现的，那我这个 `>=` 修的不是根因。为了继续排查，我需要你告诉我复现时的具体现象：
+
+- 松手后是**完全没有任何开火动画/声音/子弹**，还是**有动画但没子弹**，还是**蓄力条根本没涨**？
+- 是第一次开火就复现，还是第二次（打完一发后立刻再蓄力）才复现？
+
+如果是「蓄力条没涨」，那就得回头看 `doShoot` 在按住期间是否为 `true` 了；如果是「第二次才复现」，则可能和 `charge_during_cooldown=false` 导致的 `isChargeEnabled` 在冷却期变 `false` 有关。这两条路径都值得加日志确认，但需要你先告诉我上面哪一种现象。

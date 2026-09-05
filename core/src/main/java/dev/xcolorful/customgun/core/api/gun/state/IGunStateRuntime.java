@@ -17,10 +17,20 @@ import org.jetbrains.annotations.NotNull;
 public interface IGunStateRuntime {
 
     /**
-     * 过热 tick 处理
-     * 默认不做任何事情
+     * 过热冷却 tick
+     * <br>
+     * 默认不做其他事情
      */
-    void tickHeat(ShooterProperty shooterProperty,
-                  @NotNull IGun iGun, @NotNull ItemStack gunItem,
-                  ILivingShooter iLivingShooter, LivingEntity livingShooter);
+    void tickHeatCooldown(ShooterProperty shooterProperty,
+                          @NotNull IGun iGun, @NotNull ItemStack gunItem,
+                          ILivingShooter iLivingShooter, LivingEntity livingShooter);
+
+    // --------Deprecated--------
+
+    @Deprecated(forRemoval = false)
+    default void tickHeat(ShooterProperty shooterProperty,
+                          @NotNull IGun iGun, @NotNull ItemStack gunItem,
+                          ILivingShooter iLivingShooter, LivingEntity livingShooter) {
+        this.tickHeatCooldown(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter);
+    }
 }

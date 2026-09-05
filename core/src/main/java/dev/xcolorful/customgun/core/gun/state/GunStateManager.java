@@ -35,9 +35,9 @@ public class GunStateManager implements IGunStateManager {
     // --------IGunStateRuntime--------
 
     @Override
-    public void tickHeat(ShooterProperty shooterProperty,
-                         @NotNull IGun iGun, @NotNull ItemStack gunItem,
-                         ILivingShooter iLivingShooter, LivingEntity livingShooter) {
+    public void tickHeatCooldown(ShooterProperty shooterProperty,
+                                 @NotNull IGun iGun, @NotNull ItemStack gunItem,
+                                 ILivingShooter iLivingShooter, LivingEntity livingShooter) {
         long heatTimestamp = shooterProperty != null ? shooterProperty.heatTimestamp : -1;
         GunScriptApi scriptApi = GunScriptApi.of(iLivingShooter, livingShooter, iGun, gunItem);
         @Nullable LuaFunction function = scriptApi.getFunction(ScriptMethodType.TICK_HEAT);
@@ -49,6 +49,6 @@ public class GunStateManager implements IGunStateManager {
             return;
         }
 
-        _DefaultGunState.tickHeat(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter, heatTimestamp);
+        _DefaultGunState.tickHeatCooldown(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter, heatTimestamp);
     }
 }

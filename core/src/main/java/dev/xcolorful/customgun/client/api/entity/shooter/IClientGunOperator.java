@@ -51,6 +51,8 @@ public interface IClientGunOperator extends ICommonGunOperator {
     ShootResult cgc$localShoot();
     /**
      * 执行充能，并判断充能是否足够，不代表能开火
+     * <br>
+     * 调用频率需严格满足 1 次 / tick
      * @return 是否满足射击所需的充能 (充能进度满/不需要充能)
      */
     boolean cgc$doCharge_isChargeEnough(boolean doShoot);

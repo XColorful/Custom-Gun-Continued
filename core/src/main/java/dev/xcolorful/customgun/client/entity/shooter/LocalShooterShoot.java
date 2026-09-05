@@ -303,10 +303,7 @@ public final class LocalShooterShoot extends LocalShooterAspect {
                 if (localPlayer == null) return;
 
                 ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(localPlayer);
-
-
-                McLogicalSide logicalSide = CustomGun.getSideExecutor().getLogicalSide();
-                if (CustomGun.getEventPoster().postCustomEvent(new GunFireEvent(logicalSide,
+                if (CustomGun.getEventPoster().postCustomEvent(new GunFireEvent(McLogicalSide.CLIENT,
                         iGun, gunItem, iLivingShooter, localPlayer))) {
                     return;
                 }

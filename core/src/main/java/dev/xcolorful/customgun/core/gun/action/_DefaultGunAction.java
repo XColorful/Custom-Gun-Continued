@@ -54,9 +54,28 @@ public class _DefaultGunAction {
         ) return false;
 
         // 检查是否有子弹可拉栓
-        boolean hasAmmo = iGun.useInventoryAmmo(gunItem)
-                ? iGun.hasInventoryAmmo(livingShooter, gunItem) // 背包直读
-                : iGun.getMagAmmoCount(gunItem) > 0;
+        boolean hasAmmo; {
+            /**
+             * 以 {@link IGun#boltBarrelAmmo} 为准
+             */
+            if (iGun.useInventoryAmmo(gunItem)) {
+                // 背包直读
+                if (livingShooter == null) hasAmmo = false;
+                else if (!iLivingShooter.cgc$needCheckAmmo()) {
+                    // 不需要检查子弹
+                    hasAmmo = true;
+                } else if (iGun.useDummyAmmo(gunItem)) {
+                    // 虚拟备弹
+                    hasAmmo = iGun.getDummyAmmoCount(gunItem) > 0;
+                } else {
+                    // 背包物品
+                    hasAmmo = iGun.hasInventoryAmmo(livingShooter, gunItem);
+                }
+            } else {
+                // 消耗弹匣子弹
+                hasAmmo = iGun.getMagAmmoCount(gunItem) > 0;
+            }
+        }
         if (!hasAmmo) return false;
 
         return true;

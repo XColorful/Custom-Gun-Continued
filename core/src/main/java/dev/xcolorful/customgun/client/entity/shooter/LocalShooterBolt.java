@@ -15,9 +15,12 @@ import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
 import dev.xcolorful.customgun.client.api.sound.gun.GunSoundType;
 import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
 import dev.xcolorful.customgun.client.sound.SoundPlayManager;
+import dev.xcolorful.customgun.core.api.entity.ILivingShooter;
+import dev.xcolorful.customgun.core.api.entity.shooter.ILivingShooterGetter;
 import dev.xcolorful.customgun.core.api.entity.shooter.ISynGunState;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
+import dev.xcolorful.customgun.core.developer.PlannedRefactor;
 import dev.xcolorful.customgun.core.entity.shooter.LivingShooterBolt;
 import dev.xcolorful.customgun.core.network.message.ClientMessagePlayerBoltGun;
 import dev.xcolorful.customgun.core.util.SendUtils;
@@ -48,6 +51,10 @@ public final class LocalShooterBolt extends LocalShooterAspect {
         ) return;
 
         { // 3. IGunRuntime操作结果 -> Shooter状态
+            ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(this.localShooter);
+            boolean canStartBolt = iGun.startBolt(iLivingShooter.cgc$getShooterProperty(), iGun, gunItem, iLivingShooter, this.localShooter);
+            if (!canStartBolt) return;
+
             this.localShooterProperty.isBolting = true;
         } { // 3.1 锁上状态锁
             this.localShooterProperty.lockState(ISynGunState::cgc$getSynIsBolting);
@@ -77,8 +84,9 @@ public final class LocalShooterBolt extends LocalShooterAspect {
             return;
         }
 
-        // TODO ↓这个太简单粗暴了
-        this.bolt();
+        if (PlannedRefactor.AUTO_BOLT) {
+            this.bolt();
+        }
 
         if (this.localShooterProperty.isBolting) {
             // 对于客户端来说，膛内弹药被填入的状态同步到客户端的瞬间，bolt 过程才算完全结束

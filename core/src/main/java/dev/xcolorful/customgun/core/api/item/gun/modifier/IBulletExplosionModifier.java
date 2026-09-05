@@ -25,15 +25,17 @@ public interface IBulletExplosionModifier<T extends ResourcePojo<T>> extends IGu
                                                             @NotNull GunData gunData) {
         var explosion = gunData.getBulletData().getExplosionData();
         if (explosion == null) return null;
-        var base = new _ExplosionData();
-        base.setEnableExplode(explosion.getEnableExplode());
 
-        base.setExplodeDamage(explosion.getExplodeDamage());
-        base.setExplodeScale(explosion.getExplodeScale());
-        base.setMaxDelaySeconds(explosion.getMaxDelaySeconds());
+        var base = new _ExplosionData(); {
+            base.setEnableExplode(explosion.getEnableExplode());
 
-        base.setEnableKnockback(explosion.getEnableKnockback());
-        base.setEnableWorldDestruction(explosion.getEnableWorldDestruction());
+            base.setExplodeDamage(explosion.getExplodeDamage());
+            base.setExplodeScale(explosion.getExplodeScale());
+            base.setMaxDelaySeconds(explosion.getMaxDelaySeconds());
+
+            base.setEnableKnockback(explosion.getEnableKnockback());
+            base.setEnableWorldDestruction(explosion.getEnableWorldDestruction());
+        }
         return base;
     }
 

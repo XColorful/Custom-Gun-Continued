@@ -126,13 +126,17 @@ public final class LocalShooterShoot extends LocalShooterAspect {
         @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return ShootResult.NOT_GUN;
 
-        var gunLocation = iGun.getGunLocation(gunItem);
-        @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(gunLocation);
-        @Nullable GunDisplayInstance gunDisplayInstance = ClientResourceApi.getGunDisplayInstance(gunItem);
-        if (gunIndexInstance == null || gunDisplayInstance == null) return ShootResult.ID_NOT_EXIST;
+        @Nullable GunDisplayInstance gunDisplayInstance;
+        GunData gunData;
+        long cooldown; {
+            var gunLocation = iGun.getGunLocation(gunItem);
+            @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(gunLocation);
+            gunDisplayInstance = ClientResourceApi.getGunDisplayInstance(gunItem);
+            if (gunIndexInstance == null || gunDisplayInstance == null) return ShootResult.ID_NOT_EXIST;
 
-        GunData gunData = gunIndexInstance.getGunData();
-        long cooldown = _getShootCooldown(iGun, gunItem, gunData);
+            gunData = gunIndexInstance.getGunData();
+            cooldown = _getShootCooldown(iGun, gunItem, gunData);
+        }
 
         if ( // 2.1 检查状态锁
                 // 如果上一次异步开火的效果还未执行，则直接返回
@@ -322,7 +326,7 @@ public final class LocalShooterShoot extends LocalShooterAspect {
                 // 开火需要打断检视
                 SoundPlayManager.get().stopMainTrackSound(gunDisplayInstance, GunSoundType.INSPECT_SOUND);
 
-                if (_useSilenceSound()) {
+                if (_useSuppressedSound()) {
                     SoundPlayManager.get().playShootSound(
                             gunDisplayInstance.getGunSound(GunSoundType.SILENCE_SOUND),
                             0.6f,
@@ -342,7 +346,7 @@ public final class LocalShooterShoot extends LocalShooterAspect {
             count.getAndIncrement();
         }, delay, period, TimeUnit.MILLISECONDS);
     }
-    private boolean _useSilenceSound() {
+    private boolean _useSuppressedSound() {
         ShooterGunModifierCache shooterGunModifierCache = ILivingShooterGetter.cgc$fromLivingEntity(this.localShooter).cgc$getGunModifierCache();
         if (shooterGunModifierCache == null) return false;
 

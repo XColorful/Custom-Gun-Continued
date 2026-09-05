@@ -7,6 +7,7 @@
 
 package dev.xcolorful.customgun.core.api.script;
 
+import dev.xcolorful.customgun.core.api.gun.action.IGunActionRuntime;
 import dev.xcolorful.customgun.core.api.resource.ResourceTag;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -21,6 +22,9 @@ public enum ScriptMethodType implements ResourceTag.ConstantTag, IScriptMethodTy
     // IGunModifier
     UPDATE_MODIFIER_CACHE(ScriptMethodTag.UPDATE_MODIFIER_CACHE, ScriptMethodTag.UPDATE_MODIFIER_CACHE_OLD1),
     // IGunRuntime
+    /**
+     * 脚本实现该方法时，不应该引入副作用，即满足{@link IGunActionRuntime#startBolt}
+     */
     START_BOLT(ScriptMethodTag.START_BOLT, null),
     TICK_BOLT(ScriptMethodTag.TICK_BOLT, null),
     SHOOTER_FIRE(ScriptMethodTag.SHOOTER_FIRE, null),
@@ -29,7 +33,7 @@ public enum ScriptMethodType implements ResourceTag.ConstantTag, IScriptMethodTy
     START_RELOAD(ScriptMethodTag.START_RELOAD, null),
     TICK_RELOAD(ScriptMethodTag.TICK_RELOAD, null),
     INTERRUPT_RELOAD(ScriptMethodTag.INTERRUPT_RELOAD, null),
-    TICK_HEAT(ScriptMethodTag.TICK_HEAT, null),
+    TICK_HEAT(ScriptMethodTag.TICK_HEAT_COOLDOWN, ScriptMethodTag.TICK_HEAT_COOLDOWN_OLD1),
     CALCULATE_SPREAD(ScriptMethodTag.CALCULATE_SPREAD, ScriptMethodTag.CALCULATE_SPREAD_OLD1),
     HANDLE_SHOOT_HEAT(ScriptMethodTag.HANDLE_SHOOT_HEAT, null),
     // AnimStateMachine

@@ -216,29 +216,37 @@ public class _DefaultGunAction {
                                            @NotNull IGun iGun, @NotNull ItemStack gunItem,
                                            ILivingShooter iLivingShooter, LivingEntity livingShooter,
                                            boolean isTactical) {
-        int needAmmoCount = iGun.getMagAmmoLimit(gunItem) - iGun.getMagAmmoCount(gunItem);
+        int magAmmoCount = iGun.getMagAmmoCount(gunItem);
+        int needAmmoCount = iGun.getMagAmmoLimit(gunItem) - magAmmoCount;
         _ReloadData reloadData = gunData.getReloadData();
         boolean needConsumeAmmo = iLivingShooter.cgc$needCheckAmmo() || reloadData.getFreeAmmoFeed();
-        int consumedAmmo = 0;
+        int consumedAmmo;
         AmmoFeedType ammoFeedType = reloadData.getAmmoFeedType();
         switch (ammoFeedType) {
-            // TODO
-            case MAGAZINE -> {
-                if (needConsumeAmmo) consumedAmmo = consumeAmmoFromPlayer(iGun, gunItem, iLivingShooter, livingShooter, needAmmoCount);
+            case MAGAZINE, MANUAL -> {
+                // 手动供弹只能装一发
+                if (ammoFeedType == AmmoFeedType.MANUAL) needAmmoCount = Math.min(needAmmoCount, 1);
+
+                consumedAmmo = needConsumeAmmo ? consumeAmmoFromPlayer(iGun, gunItem, iLivingShooter, livingShooter, needAmmoCount)
+                        : needAmmoCount;
                 if (consumedAmmo > 0) {
+                    iGun.setMagAmmoCount(gunItem, magAmmoCount + consumedAmmo);
                 }
             }
-            case MANUAL -> {
-            }
             case FUEL -> {
-                if (needConsumeAmmo) consumedAmmo = consumeAmmoFromPlayer(iGun, gunItem, iLivingShooter, livingShooter, needAmmoCount);
+                // 消耗单个燃料物品补满弹药
+                consumedAmmo = needConsumeAmmo ? consumeAmmoFromPlayer(iGun, gunItem, iLivingShooter, livingShooter, 1)
+                        : needAmmoCount;
                 if (consumedAmmo > 0) {
+                    iGun.setMagAmmoCount(gunItem, magAmmoCount + needAmmoCount);
                 }
             }
             case INVENTORY -> {
+                // 背包直读不需要把子弹装到枪上
             }
             // 增加类型需检查
         }
+
         // 如果不是战术换弹，需要执行上膛
         if (!isTactical) {
             iGun.boltBarrelAmmo(livingShooter, gunItem);
@@ -251,6 +259,8 @@ public class _DefaultGunAction {
     public static int consumeAmmoFromPlayer(IGun iGun, ItemStack gunItem,
                                             @Nullable ILivingShooter iLivingShooter, @Nullable LivingEntity livingShooter,
                                             int neededAmount) {
+        if (neededAmount <= 0) return 0;
+
         // 如果处于背包直读并且创造模式不消耗的情况
         if (iGun.useInventoryAmmo(gunItem) && !(iLivingShooter == null || iLivingShooter.cgc$needCheckAmmo())) return neededAmount;
 

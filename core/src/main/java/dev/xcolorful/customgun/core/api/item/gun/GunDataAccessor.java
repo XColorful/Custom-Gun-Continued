@@ -381,14 +381,16 @@ public interface GunDataAccessor extends IGunDataAccess {
         if (gunIndexInstance == null) return 0;
 
         GunData gunData = gunIndexInstance.getGunData();
-        MagazineCategory magazineCategory = MagazineCategory.NONE;
-        {
+        MagazineCategory magazineCategory = MagazineCategory.NONE; {
             var attachmentLocation = this.getAttachmentLocation(gunItem, AttachmentCategory.MAGAZINE);
             AttachmentData attachmentData = ResourceApi.getAttachmentData(attachmentLocation);
             if (attachmentData != null) magazineCategory = attachmentData.getMagazineCategory();
         }
-        if (magazineCategory == null || magazineCategory == MagazineCategory.NONE)
+
+        if (magazineCategory == null || magazineCategory == MagazineCategory.NONE) {
             return gunData.getDefaultMagSize();
+        }
+
         int[] extendedMagAmmoSize = gunData.getExtendedMagAmmoSize();
         int index = magazineCategory.getIndex() - 1;
         if (index < 0 || index >= extendedMagAmmoSize.length) return 0;

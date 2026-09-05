@@ -24,6 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.Varargs;
+import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 
 public class GunActionManager implements IGunActionManager {
     public static final GunActionManager INSTANCE = new GunActionManager();
@@ -100,7 +101,7 @@ public class GunActionManager implements IGunActionManager {
         @Nullable LuaFunction function = scriptApi.getFunction(ScriptMethodType.TICK_RELOAD);
         if (function != null) {
             ReloadState reloadState = new ReloadState();
-            Varargs varargs = function.invoke(function);
+            Varargs varargs = function.invoke(CoerceJavaToLua.coerce(scriptApi));
             try {
                 int typeOrdinary = varargs.arg(1).checkint();
                 long countDown = varargs.arg(2).checklong();

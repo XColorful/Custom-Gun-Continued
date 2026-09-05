@@ -40,9 +40,7 @@ import dev.xcolorful.customgun.core.api.resource.ResourceApi;
 import dev.xcolorful.customgun.core.api.resource.ResourceTag;
 import dev.xcolorful.customgun.core.developer.PlannedRefactor;
 import dev.xcolorful.customgun.core.entity.shooter.LivingShooterAim;
-import dev.xcolorful.customgun.core.item.attachment.modifier.RecoilDataModifier;
 import dev.xcolorful.customgun.core.resource.data.data.GunData;
-import dev.xcolorful.customgun.core.resource.data.data.attachment._RecoilDataModifierData;
 import dev.xcolorful.customgun.core.resource.data.data.gun._RecoilData;
 import dev.xcolorful.customgun.core.resource.instance.data.GunIndexInstance;
 import dev.xcolorful.customgun.core.util.MathUtil;
@@ -57,9 +55,6 @@ import org.apache.commons.math3.analysis.polynomials.PolynomialSplineFunction;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class GunCameraHelper implements IEventHandler {
     private static class GunCameraHelperHolder {
@@ -158,9 +153,9 @@ public class GunCameraHelper implements IEventHandler {
         if (yawSplineFunction != null && yawSplineFunction.isValidPoint(timeTotal)) {
             double value = yawSplineFunction.value(timeTotal);
             if (isShoulderSurfing) {
-                ShoulderSurfingCompat.setXRot(ShoulderSurfingCompat.getYRot() - (float) (value - yRotO));
+                ShoulderSurfingCompat.setYRot(ShoulderSurfingCompat.getYRot() - (float) (value - yRotO));
             } else {
-                localPlayer.setXRot(localPlayer.getYRot() - (float) (value - yRotO));
+                localPlayer.setYRot(localPlayer.getYRot() - (float) (value - yRotO));
             }
             yRotO = value;
         }
@@ -354,11 +349,8 @@ public class GunCameraHelper implements IEventHandler {
 
             _RecoilData modifiedRecoilData; {
                 // 获取所有配件对摄像机后坐力的修改
-                List<_RecoilDataModifierData> modifiers = new ArrayList<>();
-                @Nullable _RecoilDataModifierData recoilDataModifierData = IRecoilDataModifier.getValue(shooterGunModifierCache, AttachmentModifierType.RECOIL_DATA);
-                if (recoilDataModifierData != null) modifiers.add(recoilDataModifierData);
-                _RecoilData recoilData = gunData.getRecoilData();
-                modifiedRecoilData = RecoilDataModifier.INSTANCE.eval(modifiers, recoilData);
+                modifiedRecoilData = IRecoilDataModifier.getValue(shooterGunModifierCache, AttachmentModifierType.RECOIL_DATA);
+                if (modifiedRecoilData == null) modifiedRecoilData = gunData.getRecoilData();
             }
 
             pitchSplineFunction = GunRecoilCalculator.getSplineFunction(modifiedRecoilData.getPitchRecoils(), aimingRecoilModifier);

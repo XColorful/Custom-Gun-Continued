@@ -14,6 +14,7 @@ import dev.xcolorful.customgun.core.api.resource.ResourceApi;
 import dev.xcolorful.customgun.core.resource.data.data.GunData;
 import dev.xcolorful.customgun.core.resource.data.data.gun._HeatData;
 import dev.xcolorful.customgun.core.resource.instance.data.GunIndexInstance;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
@@ -23,10 +24,10 @@ import org.jetbrains.annotations.Nullable;
 @ApiStatus.Internal
 public class _DefaultGunState {
 
-    protected static void tickHeat(ShooterProperty shooterProperty,
-                                   @NotNull IGun iGun, @NotNull ItemStack gunItem,
-                                   ILivingShooter iLivingShooter, LivingEntity livingShooter,
-                                   long heatTimestamp) {
+    protected static void tickHeatCooldown(ShooterProperty shooterProperty,
+                                           @NotNull IGun iGun, @NotNull ItemStack gunItem,
+                                           ILivingShooter iLivingShooter, LivingEntity livingShooter,
+                                           long heatTimestamp) {
         var gunLocation = iGun.getGunLocation(gunItem);
         @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(gunLocation);
         if (gunIndexInstance == null) return;
@@ -37,29 +38,31 @@ public class _DefaultGunState {
 
         if (!iGun.hasHeat(gunItem)) return;
 
+        float heatCount;
+        float maxHeat = heatData.getMaxHeat();
         long currentTimeMillis = System.currentTimeMillis();
         if (iGun.hasOverheatLock(gunItem)) {
             // 过热锁
             if (currentTimeMillis - heatTimestamp < heatData.getOverheatLocktimeMs()) return;
 
-            float heatAmount = iGun.getHeatCount(gunItem)
+            heatCount = iGun.getHeatCount(gunItem)
                     - ((float) (currentTimeMillis - heatTimestamp) / 10_000f)
                     * heatData.getCoolingSpeedMultiplier();
-            iGun.setHeatCount(gunItem, heatAmount);
+            iGun.setHeatCount(gunItem, Mth.clamp(heatCount, 0, maxHeat));
 
             // 解除过热锁
-            if (heatAmount <= 0) {
+            if (heatCount <= 0) {
                 iGun.setOverheatLock(gunItem, false);
             }
         } else {
             // 降温
             if (currentTimeMillis - heatTimestamp < heatData.getCoolingDelayMs()) return;
 
-            float heatAmount = iGun.getHeatCount(gunItem)
+            heatCount = iGun.getHeatCount(gunItem)
                     - ((float) (currentTimeMillis - heatTimestamp) / 10_000f)
                     * heatData.getCoolingSpeedMultiplier();
 
-            iGun.setHeatCount(gunItem, heatAmount);
+            iGun.setHeatCount(gunItem, Mth.clamp(heatCount, 0, maxHeat));
         }
     }
 }

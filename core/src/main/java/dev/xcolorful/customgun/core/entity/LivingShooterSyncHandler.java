@@ -97,6 +97,9 @@ public class LivingShooterSyncHandler implements IEventHandler {
         newHolder.syncData = dataMap;
     }
 
+    /**
+     * 玩家进入/切换维度
+     */
     private void onPlayerJoinWorld(IEntityJoinLevelEvent event) {
 //        if (!event.getLogicalSide().isServer()) return;
         Entity entity = event.getEntity();

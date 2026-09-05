@@ -72,10 +72,15 @@ public final class LocalShooterShoot extends LocalShooterAspect {
         }
 
         // 检查是否有充能数据
-        FireModeType fireModeType = iGun.getFireModeType(gunItem);
-        @Nullable Map<FireModeType, _ChargingData> chargingDataMap = GunDataAccessor._getChargingData(iGun, gunItem);
-        @Nullable _ChargingData chargeData = chargingDataMap != null ? chargingDataMap.get(fireModeType) : null;
-        if (chargeData == null) return doShoot;
+        @Nullable _ChargingData chargeData; {
+            FireModeType fireModeType = iGun.getFireModeType(gunItem);
+            @Nullable Map<FireModeType, _ChargingData> chargingDataMap = GunDataAccessor._getChargingData(iGun, gunItem);
+            chargeData = chargingDataMap != null ? chargingDataMap.get(fireModeType) : null;
+        }
+        if (chargeData == null) {
+            // 没有充能数据就不修改输入值
+            return doShoot;
+        }
 
         boolean isChargeEnabled = chargeData.getEnableChargeDuringCooldown() || _getShootCooldown(iGun, gunItem) < SHOOT_COOLDOWN_MS;
         final float maxCharge = chargeData.getMaxCharge();
@@ -90,24 +95,29 @@ public final class LocalShooterShoot extends LocalShooterAspect {
 
         final boolean isCharging = (doShoot || (chargeType.unstoppableIfStarted() && currentChargeProgress > 0)) // 手动蓄力/自动蓄力
                 && isChargeEnabled;
-        final float alphaProgress = isCharging ? chargeData.getChargePerTick() : chargeData.getRecoverPerTick();
+        /**
+         * 此处需限制调用频率为 1 次 / tick
+         */
+        final float alphaProgress = isCharging ? chargeData.getChargePerTick() : chargeData.getRecoverPerTick(); // 每 tick
 
         final boolean isChargingBefore = this.localShooterProperty.isCharging; // 用于HOLD的回溯
         this.localShooterProperty.isCharging = isCharging;
 
         if (!isChargeEnabled) {
-            // 减少蓄力进度并直接返回
+            // 不允许蓄力 -> 减少蓄力进度
             this.localShooterProperty.chargeProgress = currentChargeProgress - alphaProgress;
             return false;
         }
 
-        assert isChargeEnabled = true;
+        assert isChargeEnabled;
         if (isCharging) {
-            // 蓄力则增加进度
+            // 在蓄力 -> 增加进度
             this.localShooterProperty.chargeProgress = currentChargeProgress + alphaProgress;
             // 蓄满 且 蓄满自动开火 -> 充能足够
             return this.localShooterProperty.chargeProgress >= maxCharge && chargeType.autoShootIfCharged();
-        } else if (currentChargeProgress > chargeData.getFireThreshold()) {
+        }
+
+        if (currentChargeProgress > chargeData.getFireThreshold()) {
             // 不在蓄力，但充能足够
             this.localShooterProperty.isCharging = isChargingBefore;
             return true;

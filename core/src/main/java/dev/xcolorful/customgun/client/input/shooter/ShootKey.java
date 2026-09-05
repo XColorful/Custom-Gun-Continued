@@ -151,7 +151,9 @@ public final class ShootKey extends InputKey implements IEventHandler {
     }
     /**
      * 只读 this 状态
-     * 返回是否成功
+     * <br>
+     * 涉及{@link ILocalShooter#cgc$doCharge_isChargeEnough}，因此调用频率需满足 1 次 / tick
+     * @return 返回是否成功
      */
     private boolean _checkAndDoShoot() {
         if (!ClientInputUtils.isGameplayFocused()) return false; // 不在焦点

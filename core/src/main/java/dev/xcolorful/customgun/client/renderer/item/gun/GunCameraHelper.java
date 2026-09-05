@@ -153,9 +153,9 @@ public class GunCameraHelper implements IEventHandler {
         if (yawSplineFunction != null && yawSplineFunction.isValidPoint(timeTotal)) {
             double value = yawSplineFunction.value(timeTotal);
             if (isShoulderSurfing) {
-                ShoulderSurfingCompat.setXRot(ShoulderSurfingCompat.getYRot() - (float) (value - yRotO));
+                ShoulderSurfingCompat.setYRot(ShoulderSurfingCompat.getYRot() - (float) (value - yRotO));
             } else {
-                localPlayer.setXRot(localPlayer.getYRot() - (float) (value - yRotO));
+                localPlayer.setYRot(localPlayer.getYRot() - (float) (value - yRotO));
             }
             yRotO = value;
         }

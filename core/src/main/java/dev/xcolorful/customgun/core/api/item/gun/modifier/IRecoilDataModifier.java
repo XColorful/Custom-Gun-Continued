@@ -29,13 +29,13 @@ public interface IRecoilDataModifier<T extends ResourcePojo<T>> extends IGunModi
         return result;
     }
 
-    static @Nullable _RecoilDataModifierData getValue(ShooterGunModifierCache cache, IGunModifierHolder modifierType) {
+    static @Nullable _RecoilData getValue(ShooterGunModifierCache cache, IGunModifierHolder modifierType) {
         return cache.getValue(modifierType, IRecoilDataModifier.class);
     }
-    static void setValue(ShooterGunModifierCache cache, IGunModifierHolder modifierHolder, _RecoilDataModifierData value) {
+    static void setValue(ShooterGunModifierCache cache, IGunModifierHolder modifierHolder, _RecoilData value) {
         cache.setValue(modifierHolder, IRecoilDataModifier.class, value);
     }
-    static @NotNull _RecoilDataModifierData evalByScript(GunScriptApi scriptApi, @NotNull _RecoilDataModifierData value) {
+    static @NotNull _RecoilData evalByScript(GunScriptApi scriptApi, @NotNull _RecoilData value) {
         return scriptApi.getIGun().evalByScript(scriptApi.getGunItem(), scriptApi, GunModifierType.RECOIL_DATA, value);
     }
 }

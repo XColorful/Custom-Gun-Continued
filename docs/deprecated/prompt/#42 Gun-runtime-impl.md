@@ -307,3 +307,93 @@ The git state needs verification — let me confirm my four real fixes are actua
 其余文件（`ReloadKey`、`LocalShooterReload`、`LivingShooterReload`、`GunActionManager`、`ClientMessagePlayerReloadGun`、`LocalShooterProperty`、`IGunScriptBackCompat`）都已还原到改动前的状态，不再有日志或多余改动。
 
 按项目规则，我没有提交或推送，等你审阅。
+
+# 
+---
+
+```
+浏览当前git暂存区，LocalShooterShoot的[CGC-DEBUG] doShoot 7之后，GunCameraHelper的[CGC-DEBUG] _initCameraRecoil 1到2之间会抛异常：class dev.xcolorful.customgun.core.resource.data.data.gun._RecoilData cannot be cast to class dev.xcolorful.customgun.core.resource.data.data.attachment._RecoilDataModifierData (dev.xcolorful.customgun.core.resource.data.data.gun._RecoilData and dev.xcolorful.customgun.core.resource.data.data.attachment._RecoilDataModifierData are in module customgun@0.0.9 of loader 'TRANSFORMER' @43b5021c)
+临时在LocalShooterShoot加了try，之后的逻辑正常
+
+辅助快速浏览：
+- 看看IRecoilDataModifier、ShooterGunModifierCache、RecoilDataModifier有没有强转问题
+
+- 可以通过IDEA的mcp访问tacz源码
+- tacz类到cgc的迁移映射在./docs-tacz/TaCZ Migration Mapping.md
+
+检查问题所在并尝试修复
+```
+
+# 
+
+I'll investigate this ClassCastException. Let me start by finding the relevant files.
+
+I've found the root cause. Let me make the fix across the three files.
+
+The problem: `IRecoilDataModifier.getValue` (and `setValue`/`evalByScript`) are typed to return `_RecoilDataModifierData` (the `K`/input type), but `ShooterGunModifierCache.getValue` returns `V` (the evaluated output type). For recoil, `V` is `_RecoilData`. So the cache stores a `_RecoilData` and the consumer casts it to `_RecoilDataModifierData` → ClassCastException.
+
+构建通过（`isSuccess: true`，仅剩与本次无关的既有弃用警告）。
+
+## 结论
+
+异常根因是 **`IRecoilDataModifier` 的三个静态方法的返回类型写错了**，不是 `ShooterGunModifierCache` 或 `RecoilDataModifier` 的强转本身。
+
+**类型链梳理：**
+
+- `IRecoilDataModifier extends IGunModifier<T, _RecoilDataModifierData, _RecoilData>`，即 `K = _RecoilDataModifierData`（配件输入数据）、`V = _RecoilData`（求值结果）。
+- `ShooterGunModifierCache.getValue(...)` 返回的是 **`V`**（缓存里存的是 `RecoilDataModifier.eval` 求值后的结果，类型 `_RecoilData`），而不是 `K`。
+- 但 `IRecoilDataModifier.getValue/setValue/evalByScript` 的签名却写成了 `_RecoilDataModifierData`（`K`）。
+
+于是缓存里实际放的是枪械自身的 `_RecoilData`（因为 `RecoilDataModifier.eval` 目前是 TODO，直接 `return base`），而 `GunCameraHelper._initCameraRecoil` 把它强转成 `_RecoilDataModifierData` → `ClassCastException`。
+
+对比同目录其它 modifier（如 `IMuzzleModifier.getValue` 返回 `FireSoundType`=`V`、`IDamageCalculationModifier.getValue` 返回 `List<_DistanceDamageData>`=`V`），`IRecoilDataModifier` 是唯一一个把 `getValue` 写成 `K` 的。
+
+## 已做的修改
+
+1. **[IRecoilDataModifier.java](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/core/api/item/gun/modifier/IRecoilDataModifier.java:32)**：`getValue/setValue/evalByScript` 的 `_RecoilDataModifierData` 全部改为 `_RecoilData`（`V`）。
+2. **[GunCameraHelper.java](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/client/renderer/item/gun/GunCameraHelper.java:352)**：`_initCameraRecoil` 不再手动收集 modifier 列表再调 `RecoilDataModifier.INSTANCE.eval`（那段是迁移残留、类型还错了），改为直接 `IRecoilDataModifier.getValue(...)` 取缓存里已求值的 `_RecoilData`，为空时回退到 `gunData.getRecoilData()`；同时清理了 `RecoilDataModifier`、`_RecoilDataModifierData`、`ArrayList`、`List` 四个无用 import。
+3. **[LocalShooterShoot.java](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/client/entity/shooter/LocalShooterShoot.java:304)**：移除了你临时加的 `try { ... } catch (Exception e) { ... }`（根因已修，留着它会吞掉以后真正的异常，违反 fail-loud）。`[CGC-DEBUG]` 日志我先保留着，方便你进游戏复核，确认后可以一起删掉。
+
+## 还需你决策的遗留项（未改动）
+
+- **`RecoilDataModifier.eval` 仍是 `// TODO`，直接 `return base`**（[RecoilDataModifier.java:31](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/core/item/attachment/modifier/RecoilDataModifier.java:31)）。所以现在崩溃没了、基础后坐力曲线正常工作，但**配件的后坐力修改（`_RecoilDataModifierData` 的 pitch/yaw 缩放）实际不会被应用**。要让它生效需要按 TACZ 的 `RecoilModifier` 语义实现 `eval`（pitch/yaw 各用一个 `_SimpleModifierData` 缩放后坐力关键帧的 `range`），这是另一个功能实现，涉及幅度缩放语义，我没擅自替你定。
+- 配套的 **`IRecoilDataModifier.getBase` 里也有 `// TODO copy`**，目前直接返回共享的 `gunData.getRecoilData()` 引用。将来实现 `eval` 时若原地修改会污染全局枪械数据，需要先做拷贝。
+
+我没有提交或推送，等你审阅。
+
+# 
+
+```
+那你检查一下所有IGunModifier和AttachmentModifier子类是否有该问题，把类型检查都修正
+```
+
+# 
+
+I'll systematically audit every `I*Modifier` interface against its `IGunModifier<T, K, V>` binding, checking whether `getValue`/`setValue`/`evalByScript` use `V` (the evaluated output type) or `K` (the input data type).
+
+The audit is complete. I found exactly one more instance of the same bug. Let me fix it.
+
+审计完成，构建通过（`isSuccess: true`，仅剩既有弃用警告）。
+
+## 审计范围
+
+- **20 个 `I*Modifier` 接口**（`extends IGunModifier<T, K, V>`），逐个核对了 `getValue` / `setValue` / `evalByScript` / `getBase` 的返回/参数类型是否用的是 `V`（求值结果类型）而非 `K`（配件输入数据类型）。
+- **20 个 `*Modifier` 实现类**（`extends AttachmentModifier<K, V>`），核对了 `getModifier`（应返回 `K`）与 `eval(Collection<K>, V)`（应返回 `V`）是否一致。
+
+## 发现并修复的问题
+
+|文件|问题|修正|
+|---|---|---|
+|[IRecoilDataModifier.java](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/core/api/item/gun/modifier/IRecoilDataModifier.java:32)|`getValue`/`setValue`/`evalByScript` 全用 `K`（`_RecoilDataModifierData`）|上一轮已改为 `V`（`_RecoilData`）|
+|[IFireAspectModifier.java](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/core/api/item/gun/modifier/IFireAspectModifier.java:31)|`setValue` 用 `K`（`_FireAspectModifierData`），而它的 `getValue`/`evalByScript` 已经正确返回 `V`（`Boolean`）|本轮改为 `Boolean`|
+
+`IFireAspectModifier` 的 `setValue` 是唯一残留的同款 bug——它的 `getValue` 返回 `Boolean`（`V`），但 `setValue` 却收 `_FireAspectModifierData`（`K`），两个方向类型不对称。该 `setValue` 在代码库内无调用者（纯 API 面），改动安全；`getValue` 的实际调用点 [_GunProjectileConstructor.java:81](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/core/entity/projectile/_GunProjectileConstructor.java:81) 本就按 `Boolean` 使用，不受影响。
+
+## 其余全部正确
+
+- 另外 18 个接口（`IAdsModifier`、`IArmorIgnoreModifier`、`IBulletExplosionModifier`、`IBulletSpeedModifier`、`IDamageCalculationModifier`、`IEffectiveRangeModifier`、`IHeadshotMultiplierModifier`、`IKnockbackStrengthModifier`、`IMagazineCategoryModifier`、`IMeleeModifier`、`IMuzzleModifier`、`IOtherInaccuracyModifier`、`IPierceCountModifier`、`IProneInaccuracyModifier`、`IRpmModifier`、`ISneakInaccuracyModifier`、`IWeightModifier`、`IAimInaccuracyModifier`）的 `getValue`/`setValue`/`evalByScript`/`getBase` 全部正确使用 `V`。
+- 20 个实现类的 `getModifier`（返回 `K`）与 `eval`（返回 `V`）全部类型一致。
+
+其中 `IMeleeModifier` 和 `IMagazineCategoryModifier` 属于 `K == V`（`_MeleeModifierData` / `MagazineCategory`），天然无歧义。
+
+未提交、未推送。本轮改动仅 `IFireAspectModifier.java` 一个文件（外加上一轮的三个文件），等你审阅。

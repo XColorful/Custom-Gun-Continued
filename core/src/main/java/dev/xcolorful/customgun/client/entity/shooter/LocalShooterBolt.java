@@ -20,6 +20,7 @@ import dev.xcolorful.customgun.core.api.entity.shooter.ILivingShooterGetter;
 import dev.xcolorful.customgun.core.api.entity.shooter.ISynGunState;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
+import dev.xcolorful.customgun.core.developer.PlannedRefactor;
 import dev.xcolorful.customgun.core.entity.shooter.LivingShooterBolt;
 import dev.xcolorful.customgun.core.network.message.ClientMessagePlayerBoltGun;
 import dev.xcolorful.customgun.core.util.SendUtils;
@@ -83,9 +84,9 @@ public final class LocalShooterBolt extends LocalShooterAspect {
             return;
         }
 
-        // TODO ↓这个太简单粗暴了
-        // 添加设置来手动控制拉栓
-        this.bolt();
+        if (PlannedRefactor.AUTO_BOLT) {
+            this.bolt();
+        }
 
         if (this.localShooterProperty.isBolting) {
             // 对于客户端来说，膛内弹药被填入的状态同步到客户端的瞬间，bolt 过程才算完全结束

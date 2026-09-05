@@ -16,6 +16,7 @@ import net.minecraft.server.level.ServerPlayer;
 import java.util.function.Consumer;
 
 /**
+ * 射击包，表示点击了一次射击
  * @param timestamp 这里的 timestamp 应该是基于 base timestamp 的相对值
  */
 public record ClientMessagePlayerShoot(long timestamp,

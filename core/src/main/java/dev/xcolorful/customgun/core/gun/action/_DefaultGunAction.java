@@ -34,7 +34,7 @@ import java.util.List;
 public class _DefaultGunAction {
 
     /**
-     * 限定{@link BoltType#MANUAL_ACTION}
+     * 限定{@link BoltType#useBarrelAmmo()}
      */
     protected static boolean startBolt(ShooterProperty shooterProperty,
                                       @NotNull IGun iGun, @NotNull ItemStack gunItem,

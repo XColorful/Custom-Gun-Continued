@@ -37,6 +37,6 @@ public interface ILivingShooter extends IGunOperator, IShooterState, ISynGunStat
 
     @Override
     @Deprecated default ShootResult cgc$shoot(Supplier<Float> pitch, Supplier<Float> yaw) {
-        return this.cgc$shoot(pitch, yaw, System.currentTimeMillis() - this.cgc$getShooterProperty().baseTimestamp, 0.0f);
+        return this.cgc$shoot(pitch, yaw, System.currentTimeMillis() - this.cgc$getShooterProperty().serverBaseTimestamp, 0.0f);
     }
 }

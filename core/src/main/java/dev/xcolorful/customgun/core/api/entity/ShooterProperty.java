@@ -23,7 +23,7 @@ public class ShooterProperty {
     /**
      * 基时间戳，用于一些需要精密计算时间的场景。目前只有 shoot 使用。
      */
-    public long baseTimestamp = System.currentTimeMillis();
+    public long serverBaseTimestamp = System.currentTimeMillis();
     /**
      * 射击时间戳，射击成功时更新，单位 ms。
      * 用于计算射击的冷却时间。

@@ -42,8 +42,8 @@ public class ClientMessageSyncBaseTimestamp implements IMessage<ClientMessageSyn
                 }
 
                 ShooterProperty shooterProperty = ILivingShooterGetter.cgc$fromLivingEntity(player).cgc$getShooterProperty();
-                shooterProperty.baseTimestamp = timestamp;
-                CustomGun.LOGGER.debug(MARKER, "Update server base timestamp: {}", shooterProperty.baseTimestamp);
+                shooterProperty.serverBaseTimestamp = timestamp;
+                CustomGun.LOGGER.debug(MARKER, "Update {} server base timestamp: {}", player.getName().getString(), shooterProperty.serverBaseTimestamp);
             });
         }
     }

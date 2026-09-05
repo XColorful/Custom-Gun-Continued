@@ -37,7 +37,8 @@ public class GunScriptManager implements IGunScriptManager {
         try {
             @Nullable LuaFunction function = scriptApi.getFunction(ScriptMethodType.UPDATE_MODIFIER_CACHE);
             if (function == null) { // 检查是否是函数
-                CustomGun.LOGGER.warn("GunScriptManager: Missing function {}", ScriptMethodType.UPDATE_MODIFIER_CACHE.getConstantName());
+                // TODO ↓触发太频繁了，暂时先suppress warning
+//                CustomGun.LOGGER.warn("GunScriptManager: Missing function {}", ScriptMethodType.UPDATE_MODIFIER_CACHE.getConstantName());
                 return value;
             }
 

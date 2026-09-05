@@ -48,6 +48,7 @@ public interface IGunActionRuntime {
      * 调用时会执行{@link IGunActionRuntime#canReload}检查，检查通过后触发{@link ShooterReloadEvent}
      * <br>
      * 开始换弹时调用
+     * @return 是否开始换弹
      */
     boolean startReload(ShooterProperty shooterProperty,
                         @NotNull IGun iGun, @NotNull ItemStack gunItem,

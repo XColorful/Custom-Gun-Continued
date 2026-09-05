@@ -162,7 +162,7 @@ public interface IGunScriptBackCompat extends IGunScriptContextAccess {
         @Nullable ILivingShooter iLivingShooter = this.getILivingShooter();
         ShooterProperty shooterProperty = iLivingShooter != null ? iLivingShooter.cgc$getShooterProperty() : null;
         if (shooterProperty == null) return;
-        shooterProperty.shootTimestamp -= alpha;
+        shooterProperty.reloadTimestamp -= alpha;
     }
 
     /**
@@ -359,6 +359,7 @@ public interface IGunScriptBackCompat extends IGunScriptContextAccess {
      */
     default int putAmmoInMagazine(int amount) {
         if (amount < 0) return 0;
+
         int maxAmmoCount = this.getMaxAmmoCount();
         int currentAmmoCount = this.getAmmoCountInMagazine();
         int newAmmoCount = currentAmmoCount + amount;

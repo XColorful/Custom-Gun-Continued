@@ -26,19 +26,20 @@ public interface IMeleeModifier<T extends ResourcePojo<T>> extends IGunModifier<
     @Override
     default @Nullable _MeleeModifierData getBase(@NotNull IGun iGun, @NotNull ItemStack gunItem,
                                                   @NotNull GunData gunData) {
-        _MeleeData source = gunData.getMeleeData();
-        _DefaultMeleeData defaultMeleeData = source.getDefaultMeleeData();
-        _MeleeModifierData base = new _MeleeModifierData();
+        _MeleeModifierData base = new _MeleeModifierData(); {
+            _MeleeData source = gunData.getMeleeData();
+            _DefaultMeleeData defaultMeleeData = source.getDefaultMeleeData();
 
-        base.setMeleeDamage(defaultMeleeData.getMeleeDamage());
-        base.setMeleeDistance(source.getGunBaseLength());
-        base.setRangeAngle(defaultMeleeData.getRangeAngle());
+            base.setMeleeDamage(defaultMeleeData.getMeleeDamage());
+            base.setMeleeDistance(source.getGunBaseLength());
+            base.setRangeAngle(defaultMeleeData.getRangeAngle());
 
-        base.setDamageDelaySeconds(defaultMeleeData.getDamageDelaySeconds());
-        base.setExtraCooldown(defaultMeleeData.getBaseCooldown());
+            base.setDamageDelaySeconds(defaultMeleeData.getDamageDelaySeconds());
+            base.setExtraCooldown(defaultMeleeData.getBaseCooldown());
 
-        base.setKnockbackStrength(defaultMeleeData.getKnockbackStrength());
-        base.setTargetEffect(new ArrayList<>());
+            base.setKnockbackStrength(defaultMeleeData.getKnockbackStrength());
+            base.setTargetEffect(new ArrayList<>());
+        }
         return base;
     }
 

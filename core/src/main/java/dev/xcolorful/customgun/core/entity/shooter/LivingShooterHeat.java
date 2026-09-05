@@ -29,7 +29,7 @@ public final class LivingShooterHeat extends LivingShooterAspect {
         if (iGun == null) return;
 
         { // 3. IGunRuntime操作结果 -> Shooter状态
-            iGun.tickHeat(this.shooterProperty, iGun, currentGunItem, ILivingShooterGetter.cgc$fromLivingEntity(this.livingShooter), this.livingShooter);
+            iGun.tickHeatCooldown(this.shooterProperty, iGun, currentGunItem, ILivingShooterGetter.cgc$fromLivingEntity(this.livingShooter), this.livingShooter);
         }
     }
 }

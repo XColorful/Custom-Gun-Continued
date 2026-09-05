@@ -72,10 +72,15 @@ public final class LocalShooterShoot extends LocalShooterAspect {
         }
 
         // 检查是否有充能数据
-        FireModeType fireModeType = iGun.getFireModeType(gunItem);
-        @Nullable Map<FireModeType, _ChargingData> chargingDataMap = GunDataAccessor._getChargingData(iGun, gunItem);
-        @Nullable _ChargingData chargeData = chargingDataMap != null ? chargingDataMap.get(fireModeType) : null;
-        if (chargeData == null) return doShoot;
+        @Nullable _ChargingData chargeData; {
+            FireModeType fireModeType = iGun.getFireModeType(gunItem);
+            @Nullable Map<FireModeType, _ChargingData> chargingDataMap = GunDataAccessor._getChargingData(iGun, gunItem);
+            chargeData = chargingDataMap != null ? chargingDataMap.get(fireModeType) : null;
+        }
+        if (chargeData == null) {
+            // 没有充能数据就不修改输入值
+            return doShoot;
+        }
 
         boolean isChargeEnabled = chargeData.getEnableChargeDuringCooldown() || _getShootCooldown(iGun, gunItem) < SHOOT_COOLDOWN_MS;
         final float maxCharge = chargeData.getMaxCharge();
@@ -90,31 +95,39 @@ public final class LocalShooterShoot extends LocalShooterAspect {
 
         final boolean isCharging = (doShoot || (chargeType.unstoppableIfStarted() && currentChargeProgress > 0)) // 手动蓄力/自动蓄力
                 && isChargeEnabled;
-        final float alphaProgress = isCharging ? chargeData.getChargePerTick() : chargeData.getRecoverPerTick();
+        /**
+         * 此处需限制调用频率为 1 次 / tick
+         */
+        final float alphaProgress = isCharging ? chargeData.getChargePerTick() : chargeData.getRecoverPerTick(); // 每 tick
 
-        final boolean isChargingBefore = this.localShooterProperty.isCharging; // 用于HOLD的回溯
         this.localShooterProperty.isCharging = isCharging;
 
+        // ----按优先级次序----
+
+        // 1. 不允许蓄力
         if (!isChargeEnabled) {
-            // 减少蓄力进度并直接返回
             this.localShooterProperty.chargeProgress = currentChargeProgress - alphaProgress;
             return false;
         }
 
-        assert isChargeEnabled = true;
+        // 2. 在蓄力
+        assert isChargeEnabled;
         if (isCharging) {
-            // 蓄力则增加进度
             this.localShooterProperty.chargeProgress = currentChargeProgress + alphaProgress;
             // 蓄满 且 蓄满自动开火 -> 充能足够
             return this.localShooterProperty.chargeProgress >= maxCharge && chargeType.autoShootIfCharged();
-        } else if (currentChargeProgress > chargeData.getFireThreshold()) {
-            // 不在蓄力，但充能足够
-            this.localShooterProperty.isCharging = isChargingBefore;
-            return true;
-        } else {
-            // 不在蓄力，且充能不够
-            return false;
         }
+
+        // 3. 不在蓄力
+        assert !isCharging;
+        this.localShooterProperty.chargeProgress = currentChargeProgress - alphaProgress;
+
+        if (chargeType.partialShoot() && currentChargeProgress >= chargeData.getFireThreshold()) {
+            // 不需要满充能，且达到阈值
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -126,13 +139,17 @@ public final class LocalShooterShoot extends LocalShooterAspect {
         @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return ShootResult.NOT_GUN;
 
-        var gunLocation = iGun.getGunLocation(gunItem);
-        @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(gunLocation);
-        @Nullable GunDisplayInstance gunDisplayInstance = ClientResourceApi.getGunDisplayInstance(gunItem);
-        if (gunIndexInstance == null || gunDisplayInstance == null) return ShootResult.ID_NOT_EXIST;
+        @Nullable GunDisplayInstance gunDisplayInstance;
+        GunData gunData;
+        long cooldown; {
+            var gunLocation = iGun.getGunLocation(gunItem);
+            @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(gunLocation);
+            gunDisplayInstance = ClientResourceApi.getGunDisplayInstance(gunItem);
+            if (gunIndexInstance == null || gunDisplayInstance == null) return ShootResult.ID_NOT_EXIST;
 
-        GunData gunData = gunIndexInstance.getGunData();
-        long cooldown = _getShootCooldown(iGun, gunItem, gunData);
+            gunData = gunIndexInstance.getGunData();
+            cooldown = _getShootCooldown(iGun, gunItem, gunData);
+        }
 
         if ( // 2.1 检查状态锁
                 // 如果上一次异步开火的效果还未执行，则直接返回
@@ -161,14 +178,13 @@ public final class LocalShooterShoot extends LocalShooterAspect {
             return ShootResult.UNKNOWN_FAIL;
         }
 
-        boolean playDrySound = true;
         { // 3. IGunRuntime操作结果 -> Shooter状态
             /**
              * {@link IGunAttackRuntime#shooterFire}的默认实现为{@link IGunAttackRuntime#shooterFire}
              */
             @NotNull IGunAttackRuntime.ShooterFireResult shooterFireResult = iGun.shooterFire(null, iGun, gunItem, iLivingShooter, localShooter, null, null, this.localShooterProperty.chargeProgress);
             if (!shooterFireResult.isSuccess()) {
-                return _onShooterFireFailed(shooterFireResult, gunDisplayInstance, playDrySound);
+                return _onShooterFireFailed(shooterFireResult, gunDisplayInstance);
             }
             // 切换状态锁，不允许换弹、检视等行为进行
             this.localShooterProperty.lockState(SHOOT_LOCKED_CONDITION);
@@ -184,16 +200,17 @@ public final class LocalShooterShoot extends LocalShooterAspect {
     }
     @ApiStatus.Internal
     private ShootResult _onShooterFireFailed(@NotNull IGunAttackRuntime.ShooterFireResult shooterFireResult,
-                                             @NotNull GunDisplayInstance gunDisplayInstance,
-                                             boolean playDrySound) {
+                                             @NotNull GunDisplayInstance gunDisplayInstance) {
         switch (shooterFireResult) {
             case OVERHEATED, NO_AMMO -> {
-                if (playDrySound) {
-                    SoundPlayManager.get().playShootSound(gunDisplayInstance.getGunSound(GunSoundType.DRY_FIRE_SOUND),
+                SoundPlayManager soundPlayManager = SoundPlayManager.get();
+                if (soundPlayManager.getEnableDryFireSound()) {
+                    soundPlayManager.playShootSound(gunDisplayInstance.getGunSound(GunSoundType.DRY_FIRE_SOUND),
                             1.0f,
                             this.localShooter,
                             GunConfig.DEFAULT_GUN_OTHER_SOUND_DISTANCE.get(),
                             false);
+                    soundPlayManager.setEnableDryFireSound(false);
                 }
             }
             case NO_BARREL_AMMO -> {
@@ -283,11 +300,14 @@ public final class LocalShooterShoot extends LocalShooterAspect {
                         && this.localShooterProperty.lockedCondition != null) {
                     return;
                 }
+
                 // 记录新的开火时间戳
                 this.localShooterProperty.clientLastShootTimestamp = this.localShooterProperty.clientShootTimestamp;
                 this.localShooterProperty.clientShootTimestamp = System.currentTimeMillis();
+
+                // 仅第一发才发包给服务端，表示点击了一次射击
                 SendUtils.sendMessageToServer(new ClientMessagePlayerShoot(
-                        this.localShooterProperty.clientShootTimestamp - this.localShooterProperty.clientBaseTimestamp,
+                        this.localShooterProperty.clientShootTimestamp - LocalShooterProperty.clientBaseTimestamp,
                         chargeProgress)
                 );
             }
@@ -299,10 +319,7 @@ public final class LocalShooterShoot extends LocalShooterAspect {
                 if (localPlayer == null) return;
 
                 ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(localPlayer);
-
-
-                McLogicalSide logicalSide = CustomGun.getSideExecutor().getLogicalSide();
-                if (CustomGun.getEventPoster().postCustomEvent(new GunFireEvent(logicalSide,
+                if (CustomGun.getEventPoster().postCustomEvent(new GunFireEvent(McLogicalSide.CLIENT,
                         iGun, gunItem, iLivingShooter, localPlayer))) {
                     return;
                 }
@@ -322,7 +339,7 @@ public final class LocalShooterShoot extends LocalShooterAspect {
                 // 开火需要打断检视
                 SoundPlayManager.get().stopMainTrackSound(gunDisplayInstance, GunSoundType.INSPECT_SOUND);
 
-                if (_useSilenceSound()) {
+                if (_useSuppressedSound()) {
                     SoundPlayManager.get().playShootSound(
                             gunDisplayInstance.getGunSound(GunSoundType.SILENCE_SOUND),
                             0.6f,
@@ -342,7 +359,7 @@ public final class LocalShooterShoot extends LocalShooterAspect {
             count.getAndIncrement();
         }, delay, period, TimeUnit.MILLISECONDS);
     }
-    private boolean _useSilenceSound() {
+    private boolean _useSuppressedSound() {
         ShooterGunModifierCache shooterGunModifierCache = ILivingShooterGetter.cgc$fromLivingEntity(this.localShooter).cgc$getGunModifierCache();
         if (shooterGunModifierCache == null) return false;
 
@@ -371,9 +388,11 @@ public final class LocalShooterShoot extends LocalShooterAspect {
     }
     private long _getShootCooldown(IGun iGun, ItemStack gunItem, @NotNull GunData gunData) {
         FireModeType fireModeType = iGun.getFireModeType(gunItem);
-        long coolDown = fireModeType == FireModeType.BURST
-                ? (long) (gunData.getBurstData().getShootIntervalSeconds() * 1000f) - (System.currentTimeMillis() - this.localShooterProperty.clientShootTimestamp)
+        long shootInterval = fireModeType == FireModeType.BURST
+                ? (long) (gunData.getBurstData().getShootIntervalSeconds() * 1000f)
                 : LivingShooterShoot._getShootInterval(this.localShooter, gunData, fireModeType, iGun, gunItem);
-        return Math.max(coolDown, 0);
+
+        long cooldown = shootInterval - (System.currentTimeMillis() - this.localShooterProperty.clientShootTimestamp);
+        return Math.max(cooldown, 0);
     }
 }

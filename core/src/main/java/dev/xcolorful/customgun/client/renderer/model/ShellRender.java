@@ -117,25 +117,25 @@ public class ShellRender implements IModelComponentRenderer {
             if (clientAmmoIndexInstance == null) return;
         }
 
-        @Nullable AmmoModelObject ammoModelObject;
+        @Nullable AmmoModelObject ammoShellModelObject;
         @Nullable _ShellDisplay shellDisplay;
         { // 获取子弹display
-            ammoModelObject = clientAmmoIndexInstance.getAmmoModel();
-            if (ammoModelObject == null) return;
+            ammoShellModelObject = clientAmmoIndexInstance.getAmmoShellModel();
+            if (ammoShellModelObject == null) return;
 
             AmmoDisplay ammoDisplay = clientAmmoIndexInstance.getAmmoDisplay();
             shellDisplay = ammoDisplay.getShellDisplay();
             if (shellDisplay == null) return;
         }
 
-        this.renderShell(poseStack, gunModelObject, ammoModelObject, shellDisplay, shellEjectionParam);
+        this.renderShell(poseStack, gunModelObject, ammoShellModelObject, shellDisplay, shellEjectionParam);
     }
 
     private void renderShell(PoseStack poseStack,
-                                    GunModelObject gunModelObject,
-                                    AmmoModelObject ammoModelObject,
-                                    _ShellDisplay shellDisplay,
-                                    _ShellEjectionParam shellEjectionParam) {
+                             GunModelObject gunModelObject,
+                             AmmoModelObject ammoModelObject,
+                             _ShellDisplay shellDisplay,
+                             _ShellEjectionParam shellEjectionParam) {
         @Nullable var shellTextureLocation = shellDisplay.getTextureLocation();
         if (shellTextureLocation == null) return;
 

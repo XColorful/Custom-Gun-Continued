@@ -76,7 +76,7 @@ public class _DefaultGunFire {
             @Nullable _HeatData heatData = gunData.getHeatData();
             float heatInaccuracy = 1f;
             if (heatData != null) {
-                float maxHeat = heatData.getMaxHeat();;
+                float maxHeat = heatData.getMaxHeat();
                 float heatCount = iGun.getHeatCount(gunItem);
                 heatInaccuracy *= Mth.lerp(heatCount / maxHeat, heatData.getMinInaccuracyByHeat(), heatData.getMaxInaccuracyByHeat());
             }
@@ -163,11 +163,11 @@ public class _DefaultGunFire {
         { // 0. 枪械数据异常
             if (
                 // 射击者死亡
-                    livingShooter == null
-                            // 射击者死亡
-                            || livingShooter.isDeadOrDying()
-                            // 主手不再持该枪械
-                            || !livingShooter.getMainHandItem().equals(gunItem) || livingShooter.getMainHandItem().isEmpty()
+                livingShooter == null
+                // 射击者死亡
+                || livingShooter.isDeadOrDying()
+                // 主手不再持该枪械
+                || !livingShooter.getMainHandItem().equals(gunItem) || livingShooter.getMainHandItem().isEmpty()
             ) return IGunAttackRuntime.GunFireResult.ERROR;
         }
 
@@ -181,7 +181,21 @@ public class _DefaultGunFire {
         }
 
         { // 1. 过热锁 + 过热处理
-            // TODO
+            @Nullable _HeatData heatData = gunData.getHeatData();
+            if (heatData != null) {
+                // 仅在有过热数据时处理
+
+                float heatCount = iGun.getHeatCount(gunItem) + heatData.getHeatPerShot();
+                float maxHeat = heatData.getMaxHeat();
+                iGun.setHeatCount(gunItem, Mth.clamp(heatCount, 0, maxHeat));
+
+                // 过热检查
+                if (heatCount >= maxHeat) {
+                    // 过热
+                    iGun.setOverheatLock(gunItem, true);
+                    return IGunAttackRuntime.GunFireResult.OVERHEATED;
+                }
+            }
         }
 
         BoltType boltType = gunData.getBoltType();

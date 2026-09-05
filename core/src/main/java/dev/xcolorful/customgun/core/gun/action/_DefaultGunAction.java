@@ -47,21 +47,23 @@ public class _DefaultGunAction {
         @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(gunLocation);
         if (gunIndexInstance == null) return false;
 
-        // 检查 bolt 类型是否是 manual action
+        // 检查是否使用枪管子弹
         BoltType boltType = gunIndexInstance.getGunData().getBoltType();
-        if (!boltType.useBarrelAmmo() || boltType.autoBoltBarrelAmmo()) return false;
+        if (!boltType.useBarrelAmmo()
+//                || boltType.autoBoltBarrelAmmo() // 取消这个限制，使得全自动步枪也能在拿到手后上一下弹
+        ) return false;
 
         // 检查是否有子弹可拉栓
         boolean hasAmmo = iGun.useInventoryAmmo(gunItem)
                 ? iGun.hasInventoryAmmo(livingShooter, gunItem) // 背包直读
-                : iGun.getMagAmmoCount(gunItem) < 1;
+                : iGun.getMagAmmoCount(gunItem) > 0;
         if (!hasAmmo) return false;
 
         return true;
     }
 
     /**
-     * {@link _DefaultGunAction#startBolt}已经限定了{@link BoltType#MANUAL_ACTION}
+     * {@link _DefaultGunAction#startBolt}已经限定了{@link BoltType#useBarrelAmmo()}
      * @return 是否还在拉栓
      */
     protected static boolean tickBolt(ShooterProperty shooterProperty,

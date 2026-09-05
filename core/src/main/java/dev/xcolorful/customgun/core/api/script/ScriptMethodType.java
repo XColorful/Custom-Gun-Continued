@@ -7,6 +7,7 @@
 
 package dev.xcolorful.customgun.core.api.script;
 
+import dev.xcolorful.customgun.core.api.gun.action.IGunActionRuntime;
 import dev.xcolorful.customgun.core.api.resource.ResourceTag;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -21,6 +22,9 @@ public enum ScriptMethodType implements ResourceTag.ConstantTag, IScriptMethodTy
     // IGunModifier
     UPDATE_MODIFIER_CACHE(ScriptMethodTag.UPDATE_MODIFIER_CACHE, ScriptMethodTag.UPDATE_MODIFIER_CACHE_OLD1),
     // IGunRuntime
+    /**
+     * 脚本实现该方法时，不应该引入副作用，即满足{@link IGunActionRuntime#startBolt}
+     */
     START_BOLT(ScriptMethodTag.START_BOLT, null),
     TICK_BOLT(ScriptMethodTag.TICK_BOLT, null),
     SHOOTER_FIRE(ScriptMethodTag.SHOOTER_FIRE, null),

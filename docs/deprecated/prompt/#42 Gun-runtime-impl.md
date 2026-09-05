@@ -128,3 +128,182 @@ Let me verify all instrumented files compile cleanly:
 
 按项目规则，我停在改动完成后等待你审阅，没有提交或推送。
 
+# 
+
+```
+反复测试都只有两个log，继续排查并尝试修复：
+
+[05Sep2026 12:54:13.218] [Render thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [CGC-DEBUG] reload.key: R pressed, magAmmo=29/30 barrel=1
+[05Sep2026 12:54:13.218] [Render thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [CGC-DEBUG] reload.client: enter, stateLock=true, magAmmo=29/30 barrel=1
+```
+
+# 
+
+The logs pinpoint the break: `reload.client: enter, stateLock=true` means the client state lock is stuck, so every R press bails at `if (clientStateLock) return;`. Let me trace the lock release path.
+
+The lock is stuck at `true` on every press, so the packet is never sent — that's the break. I need to see _why_ `tickStateLock()` never releases. Let me inspect the sync keys and their defaults.
+
+The build is green. Let me report what the logs revealed and what I've added.
+
+## 定位结果：断点在客户端状态锁
+
+你贴的两条日志在**同一时刻、同一个 Render thread**，并且 `stateLock=true`——这说明：
+
+1. 按下 R → `reload.key` 命中；
+2. `LocalShooterReload.reload()` 一进来，`clientStateLock` 已经是 `true`，于是 `if (clientStateLock) return;` **直接返回，连包都没发给服务器**（所以没有 `reload.packet` / `reload.server` 任何日志）。
+
+也就是说，**换弹根本没走到 canReload / 服务器那一层，而是被客户端状态锁挡住了**。这个锁是在之前某个动作（拉栓/切枪/开火/换弹）里被 `lockState()` 置为 `true`，但一直没被 `tickStateLock()` 释放。
+
+## 为此我补了状态锁的追踪日志
+
+我在 [LocalShooterProperty.java](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/client/api/entity/LocalShooterProperty.java) 里给 `lockState()` 和 `tickStateLock()` 加了 `[CGC-DEBUG] stateLock:` 前缀日志：
+
+- 上锁时：`stateLock: locked, lockTimestamp=..., hasCondition=...`
+- 每 tick 卡住时会打印具体是哪个条件在挡：
+    - `stateLock: waiting condition, lockTime=...ms`
+    - `stateLock: blocked by reloading state=...`
+    - `stateLock: blocked by shootCoolDown=...`
+    - `stateLock: blocked by drawCoolDown=...`
+    - `stateLock: blocked by bolting`
+    - `stateLock: blocked by meleeCoolDown=...`
+    - 释放时：`stateLock: releasing`
+
+这样下次测试就能直接看到**是哪一项卡住了**（开火冷却 / 切枪冷却 / 换弹状态 / 拉栓 / 近战冷却）。
+
+## 我的怀疑方向（待新日志确认）
+
+锁的释放条件里，最容易"卡死"的是两个冷却值 `shootCoolDown` / `drawCoolDown`——它们由服务器每 tick 同步，客户端只读 `cgc$getSynShootCooldown()` / `cgc$getSynDrawCooldown()`。如果这两个值（或换弹状态）同步成了一个持续 >0 的值，锁就永远放不掉。最可能的根因是 **时间戳基准（`baseTimestamp` / `clientBaseTimestamp`）没有正确对齐**，导致服务端把冷却算成一个巨大的、永不归零的值。
+
+请再跑一次，把带 `[CGC-DEBUG]` 前缀的日志（尤其是 `stateLock:` 开头的那些行）发我。如果你能顺便贴出**开火那一下到第一次按 R 之间**的日志，我就能确认是不是 `blocked by shootCoolDown` 且数值是异常大。
+
+如果你希望我不等新日志、直接按"时间戳未对齐导致冷却卡死"这个方向先加一道保护性修复（例如在冷却计算里钳制 `interval` 的异常值、或对基准时间戳做兜底对齐），告诉我，我马上做。
+
+# 
+
+```
+刚进游戏的日志如下：
+[05Sep2026 13:12:19.585] [Render thread/DEBUG] [dev.xcolorful.customgun.CustomGun/]: ServerMessageSyncGunPack: reload AssetsInstanceManager: 253.3072 ms
+[05Sep2026 13:12:19.851] [Render thread/DEBUG] [dev.xcolorful.customgun.CustomGun/SYNC_BASE_TIMESTAMP]: Update Client base timestamp: 1788585138911
+[05Sep2026 13:12:19.857] [Server thread/DEBUG] [dev.xcolorful.customgun.CustomGun/cgc_sync_base_timestamp]: Update server base timestamp: 1788585139852
+[05Sep2026 13:12:20.762] [Render thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [CGC-DEBUG] stateLock: locked, lockTimestamp=1788585140762, hasCondition=true
+[05Sep2026 13:12:20.773] [Render thread/WARN] [dev.xcolorful.customgun.CustomGun/]: Failed to get soundPath from soundLocation null
+[05Sep2026 13:12:20.777] [Render thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [CGC-DEBUG] stateLock: locked, lockTimestamp=1788585140777, hasCondition=true
+[05Sep2026 13:12:20.840] [Render thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [CGC-DEBUG] stateLock: waiting condition, lockTime=63ms
+[05Sep2026 13:12:20.850] [Render thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [CGC-DEBUG] stateLock: waiting condition, lockTime=73ms
+
+按下装弹前后的日志如下，继续排查并尝试修复
+[05Sep2026 13:12:34.226] [Render thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [CGC-DEBUG] stateLock: waiting condition, lockTime=58ms
+[05Sep2026 13:12:34.276] [Render thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [CGC-DEBUG] stateLock: waiting condition, lockTime=108ms
+[05Sep2026 13:12:34.325] [Render thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [CGC-DEBUG] stateLock: waiting condition, lockTime=157ms
+[05Sep2026 13:12:34.374] [Render thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [CGC-DEBUG] stateLock: waiting condition, lockTime=206ms
+[05Sep2026 13:12:34.424] [Render thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [CGC-DEBUG] stateLock: releasing
+[05Sep2026 13:12:34.424] [Render thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [CGC-DEBUG] stateLock: locked, lockTimestamp=1788585154424, hasCondition=true
+[05Sep2026 13:12:34.425] [Render thread/WARN] [dev.xcolorful.customgun.CustomGun/]: Failed to get soundPath from soundLocation null
+[05Sep2026 13:12:34.469] [Render thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [CGC-DEBUG] stateLock: waiting condition, lockTime=45ms
+[05Sep2026 13:12:34.520] [Render thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [CGC-DEBUG] stateLock: waiting condition, lockTime=96ms
+[05Sep2026 13:12:34.576] [Render thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [CGC-DEBUG] stateLock: waiting condition, lockTime=152ms
+[05Sep2026 13:12:34.623] [Render thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [CGC-DEBUG] stateLock: waiting condition, lockTime=199ms
+[05Sep2026 13:12:34.657] [Render thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [CGC-DEBUG] reload.key: R pressed, magAmmo=29/30 barrel=1
+[05Sep2026 13:12:34.657] [Render thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [CGC-DEBUG] reload.client: enter, stateLock=true, magAmmo=29/30 barrel=1
+[05Sep2026 13:12:34.677] [Render thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [CGC-DEBUG] stateLock: releasing
+[05Sep2026 13:12:34.677] [Render thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [CGC-DEBUG] stateLock: locked, lockTimestamp=1788585154677, hasCondition=true
+[05Sep2026 13:12:34.677] [Render thread/WARN] [dev.xcolorful.customgun.CustomGun/]: Failed to get soundPath from soundLocation null
+[05Sep2026 13:12:34.729] [Render thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [CGC-DEBUG] stateLock: waiting condition, lockTime=52ms
+[05Sep2026 13:12:34.781] [Render thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [CGC-DEBUG] stateLock: waiting condition, lockTime=104ms
+[05Sep2026 13:12:34.816] [Render thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [CGC-DEBUG] stateLock: waiting condition, lockTime=139ms
+[05Sep2026 13:12:34.865] [Render thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [CGC-DEBUG] stateLock: waiting condition, lockTime=188ms
+[05Sep2026 13:12:34.917] [Render thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [CGC-DEBUG] stateLock: waiting condition, lockTime=240ms
+[05Sep2026 13:12:34.977] [Render thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [CGC-DEBUG] stateLock: releasing
+[05Sep2026 13:12:34.978] [Render thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [CGC-DEBUG] stateLock: locked, lockTimestamp=1788585154978, hasCondition=true
+[05Sep2026 13:12:34.978] [Render thread/WARN] [dev.xcolorful.customgun.CustomGun/]: Failed to get soundPath from soundLocation null
+```
+
+# 
+
+Let me trace what's repeatedly locking the state. The `stateLock: locked` + null-sound pattern needs identifying — let me find the sound warning source and the lock callers.
+
+Found the smoking gun. Let me check the original TACZ bolt logic to confirm the intended behavior.
+
+The root cause is clear now. `LocalShooterBolt.tickAutoBolt()` runs every tick and calls `bolt()`, which — unlike TACZ — is missing the "is this actually a manual-action bolt gun" checks. So for the AK (closed-bolt), it locks the state, sends a bolt packet, and plays a null sound every ~250ms forever, holding the state lock ~50% of the time and blocking reload.
+
+Let me fix the client `bolt()` and the server-side inverted ammo check.
+
+构建通过（`isSuccess: true`，无任何告警）。
+
+## 根因找到了：自动拉栓在死循环地抢状态锁
+
+日志的签名非常清晰，是一个无限循环：
+
+```
+stateLock: locked            ← 上锁
+Failed to get soundPath ...  ← 播放了一个 null 的拉栓音效
+stateLock: waiting condition  ← 等服务器确认（等了 250ms 超时）
+stateLock: releasing          ← 超时释放
+stateLock: locked            ← 立刻又被锁上
+... 无限重复
+```
+
+这个循环的元凶是 [LocalShooterBolt.tickAutoBolt()](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/client/entity/shooter/LocalShooterBolt.java)：
+
+- 它每个客户端 tick 都被调用（`LocalPlayerMixin.cgc$onLocalTick` → `cgc$localBolt.tickAutoBolt()`）。
+- 它无条件调用 `bolt()`。
+- 而 CGC 的 `bolt()` **缺了 TACZ 原版里那三个判断**（是不是手动上膛的枪、膛内有没有子弹、弹匣里有没有子弹），所以对 AK（`closed_bolt`，会自动上膛）也照样去拉栓：
+    1. `lockState(...)` 抢状态锁；
+    2. 发包给服务器；
+    3. 播放一个空的拉栓音效（就是 `Failed to get soundPath from soundLocation null`）。
+
+服务器端对 AK 的 `startBolt` 返回 false（`autoBoltBarrelAmmo() == true`），所以 `synIsBolting` 永远不变 true，客户端锁等满 250ms 超时释放，然后下一 tick `tickAutoBolt` 又把它锁上。于是状态锁大约有一半时间处于 `true`，你按 R 的时候正好撞上 `if (clientStateLock) return;` 就直接被挡回去了。
+
+## 修复内容
+
+**1. [LocalShooterBolt.bolt()](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/client/entity/shooter/LocalShooterBolt.java)** — 补回 TACZ 原版的三个判断：
+
+```java
+BoltType boltType = gunIndexInstance.getGunData().getBoltType();
+if (boltType != BoltType.MANUAL_ACTION) return;   // 非手动上膛不拉栓
+if (iGun.hasBarrelAmmo(gunItem)) return;          // 膛内已有子弹不拉栓
+if (iGun.getMagAmmoCount(gunItem) < 1) return;    // 弹匣没子弹不拉栓
+```
+
+这样 `tickAutoBolt` 对 AK 这类自动上膛的枪就变成空操作，死循环和锁占立即消失。
+
+**2. [_DefaultGunAction.startBolt()](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/core/gun/action/_DefaultGunAction.java)** — 顺带修了一个逻辑反转的 bug（对栓动步枪 Kar98 这类才有影响，和 AK 无关）：
+
+```java
+: iGun.getMagAmmoCount(gunItem) > 0;   // 之前是 < 1，语义正好反了
+```
+
+之前是"弹匣**有**子弹时不拉栓、**空**的时候反而拉栓"，现在改成正确的"有子弹才拉栓"。
+
+## 请你验证
+
+重新进游戏，应该不会再看到那一串 `stateLock: locked` + `Failed to get soundPath` + `releasing` 的循环了，按 R 换弹也应该能正常走完 `reload.key → reload.client → reload.packet → reload.server → ...` 整条链路。
+
+按项目规则，我停在改动完成后等你审阅，没有提交或推送。
+
+# 
+
+```
+修复了，你把测试日志都清掉
+```
+
+# 
+
+Let me see the full diff so I can clean up precisely, keeping only the real fixes.
+
+I'll remove all the `[CGC-DEBUG]` logs and the logging-only imports, keeping the actual fixes. Let me revert them file by file.
+
+Let me verify all `[CGC-DEBUG]` logs are gone and the code still compiles.
+
+The git state needs verification — let me confirm my four real fixes are actually present in the files.
+
+已清理完毕。所有 `[CGC-DEBUG]` 日志都从 Java 代码中移除了（grep 确认只剩 `docs/deprecated/prompt/#42 Gun-runtime-impl.md` 这个提示词文档里还保留着原始文字，那是你本来的文件，我没动）。
+
+最终保留的改动只有两个真正的修复，构建通过（`isSuccess: true`，仅剩与本次无关的既有弃用告警）：
+
+1. [LocalShooterBolt.java](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/client/entity/shooter/LocalShooterBolt.java) — `bolt()` 补回"仅手动上膛且膛空且有子弹才拉栓"的判断，修掉了自动拉栓死循环抢锁的问题。
+2. [_DefaultGunAction.java](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/core/gun/action/_DefaultGunAction.java) — `startBolt` 的弹药判断从反了的 `< 1` 改成 `> 0`。
+
+其余文件（`ReloadKey`、`LocalShooterReload`、`LivingShooterReload`、`GunActionManager`、`ClientMessagePlayerReloadGun`、`LocalShooterProperty`、`IGunScriptBackCompat`）都已还原到改动前的状态，不再有日志或多余改动。
+
+按项目规则，我没有提交或推送，等你审阅。

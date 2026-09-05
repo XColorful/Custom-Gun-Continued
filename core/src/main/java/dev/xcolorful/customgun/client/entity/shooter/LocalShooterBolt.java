@@ -15,6 +15,8 @@ import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
 import dev.xcolorful.customgun.client.api.sound.gun.GunSoundType;
 import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
 import dev.xcolorful.customgun.client.sound.SoundPlayManager;
+import dev.xcolorful.customgun.core.api.entity.ILivingShooter;
+import dev.xcolorful.customgun.core.api.entity.shooter.ILivingShooterGetter;
 import dev.xcolorful.customgun.core.api.entity.shooter.ISynGunState;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
@@ -48,6 +50,10 @@ public final class LocalShooterBolt extends LocalShooterAspect {
         ) return;
 
         { // 3. IGunRuntime操作结果 -> Shooter状态
+            ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(this.localShooter);
+            boolean canStartBolt = iGun.startBolt(iLivingShooter.cgc$getShooterProperty(), iGun, gunItem, iLivingShooter, this.localShooter);
+            if (!canStartBolt) return;
+
             this.localShooterProperty.isBolting = true;
         } { // 3.1 锁上状态锁
             this.localShooterProperty.lockState(ISynGunState::cgc$getSynIsBolting);
@@ -78,6 +84,7 @@ public final class LocalShooterBolt extends LocalShooterAspect {
         }
 
         // TODO ↓这个太简单粗暴了
+        // 添加设置来手动控制拉栓
         this.bolt();
 
         if (this.localShooterProperty.isBolting) {

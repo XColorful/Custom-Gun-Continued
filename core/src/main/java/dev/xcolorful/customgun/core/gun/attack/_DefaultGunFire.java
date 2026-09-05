@@ -163,11 +163,11 @@ public class _DefaultGunFire {
         { // 0. 枪械数据异常
             if (
                 // 射击者死亡
-                    livingShooter == null
-                            // 射击者死亡
-                            || livingShooter.isDeadOrDying()
-                            // 主手不再持该枪械
-                            || !livingShooter.getMainHandItem().equals(gunItem) || livingShooter.getMainHandItem().isEmpty()
+                livingShooter == null
+                // 射击者死亡
+                || livingShooter.isDeadOrDying()
+                // 主手不再持该枪械
+                || !livingShooter.getMainHandItem().equals(gunItem) || livingShooter.getMainHandItem().isEmpty()
             ) return IGunAttackRuntime.GunFireResult.ERROR;
         }
 

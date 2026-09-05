@@ -14,18 +14,34 @@ import dev.xcolorful.customgun.core.resource.ResourcePojo;
 import dev.xcolorful.customgun.core.resource.data.data.GunData;
 import dev.xcolorful.customgun.core.resource.data.data.attachment._RecoilDataModifierData;
 import dev.xcolorful.customgun.core.resource.data.data.gun._RecoilData;
+import dev.xcolorful.customgun.core.resource.data.data.gun.recoil._RecoilEntryData;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public interface IRecoilDataModifier<T extends ResourcePojo<T>> extends IGunModifier<T, _RecoilDataModifierData, _RecoilData> {
 
     @Override
     default @Nullable _RecoilData getBase(@NotNull IGun iGun, @NotNull ItemStack gunItem,
                                                        @NotNull GunData gunData) {
-        _RecoilData source = gunData.getRecoilData();
-        // TODO copy
-        _RecoilData result = source;
+        _RecoilData result = new _RecoilData(); {
+            _RecoilData source = gunData.getRecoilData();
+            result.setPitchRecoils(_copyRecoilEntries(source.getPitchRecoils()));
+            result.setYawRecoils(_copyRecoilEntries(source.getYawRecoils()));
+        }
+        return result;
+    }
+    private static List<_RecoilEntryData> _copyRecoilEntries(List<_RecoilEntryData> source) {
+        List<_RecoilEntryData> result = new ArrayList<>(source.size());
+        for (_RecoilEntryData entry : source) {
+            _RecoilEntryData copy = new _RecoilEntryData();
+            copy.setTime(entry.getTime());
+            copy.setRange(entry.getRange().clone());
+            result.add(copy);
+        }
         return result;
     }
 

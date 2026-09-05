@@ -397,3 +397,74 @@ The audit is complete. I found exactly one more instance of the same bug. Let me
 其中 `IMeleeModifier` 和 `IMagazineCategoryModifier` 属于 `K == V`（`_MeleeModifierData` / `MagazineCategory`），天然无歧义。
 
 未提交、未推送。本轮改动仅 `IFireAspectModifier.java` 一个文件（外加上一轮的三个文件），等你审阅。
+
+# 
+
+```
+现在后坐力表现是不正常的，一开火就会飘到头顶
+完成IRecoilDataModifier getBase的copy，以及剩余的计算，按照tacz的功能实现，并报告一下是怎么应用后坐计算的？每个后坐力range的数值都统一乘倍率？
+检查是没应用配件计算还是哪里出问题导致后坐力异常。
+
+后坐力数据可以看游戏目录下：
+- .\saves\新的世界\datapacks\classic_battleroyale_gun\data\cbrg\data\guns\beryl_m762_data.json
+- .\saves\新的世界\datapacks\tacz_default_gun\data\tacz\data\guns\ak47_data.json
+```
+
+# 
+
+I found the actual cause of the abnormal recoil. Let me confirm my full understanding, then implement the fixes.
+
+The **"flies to top of head"** bug is in the horizontal-recoil block: it calls `setXRot(... getYRot() ...)` — writing the _yaw_ value into the _pitch_. That snaps the view to an extreme angle. This is separate from the missing attachment calculation (which would only leave the small base recoil).
+
+Let me implement all three fixes.
+
+全部完成，构建通过（仅剩既有弃用警告）。
+
+## 结论：两个独立问题
+
+### 问题 1（导致「飘到头顶」的真正原因）——水平后坐写错了轴
+
+[GunCameraHelper.java:152](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/client/renderer/item/gun/GunCameraHelper.java:152) 的水平后坐块里，两处都调用了 `setXRot`（俯仰角 setter），但传入的却是 `getYRot()`（水平角）：
+
+```java
+localPlayer.setXRot(localPlayer.getYRot() - (float)(value - yRotO)); // setXRot + getYRot
+```
+
+这会把**俯仰角直接覆盖成水平角**（一个 0~360 的大角度），一开火视角就被甩到极值。已改为 `setYRot(... getYRot() ...)`（越肩视角分支同理 `ShoulderSurfingCompat.setYRot`）。这与 TACZ 原版一致。
+
+**这跟「配件计算没应用」无关**——配件计算缺失最多让后坐力保持基础值（下面数据里只有 0.66°~1.75°，很小），不会飘到头顶。飘到头顶是这条 setXRot/setYRot 混用导致的。
+
+### 问题 2（配件后坐力修改没实现）——已完成
+
+补上了 `getBase` 的深拷贝和 `RecoilDataModifier.eval`。
+
+## 后坐力是怎么应用的？
+
+先说明数据流。你给的 JSON 用 `"value"` 和 `"pitch"`/`"yaw"`，分别命中 `_RecoilEntryDataTag.RANGE_OLD1 = "value"` 和 `_RecoilDataTag.PITCH_RECOIL_OLD1 = "pitch"`，所以**数据加载是正确的**：
+
+- ak47：pitch `[0.66, 0.66]`（上跳 0.66°），yaw `[-0.23, 0.18]`
+- beryl_m762：pitch `1.75°`，yaw `±0.4°`
+
+计算链路（与 TACZ 完全一致）：
+
+1. 每发子弹，`GunRecoilCalculator.getSplineFunction` 对每个关键帧在 `range` 内随机采样一个值，用三次样条插值成 `后坐力(时间ms)` 曲线，x 坐标 = `time*1000+30`。
+2. `_applyCameraRecoil` 每帧用 `value(当前时间) - value(上一帧)` 去改玩家朝向，累积效果就是曲线当前值。
+
+**回答你的问题：是的，每个后坐力 `range` 的数值统一乘同一个倍率。** 配件对后坐力的修改是「每个轴一个标量」，而不是逐关键帧分别设置：
+
+- pitch 倍率 = `(1 + addend) * (1 + percent) * multiplier`
+- yaw 倍率同理，独立计算
+
+把这个标量乘到该轴**所有**关键帧的 `range[0]` 和 `range[1]` 上。数学上等价于对采样值乘倍率，因为 `(min*s + rand*(max*s − min*s)) = (min + rand*(max−min)) * s`。
+
+## 改动清单
+
+1. **[GunCameraHelper.java:152](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/client/renderer/item/gun/GunCameraHelper.java:152)**：水平后坐 `setXRot`→`setYRot`（两处）。
+2. **[IRecoilDataModifier.java:23](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/core/api/item/gun/modifier/IRecoilDataModifier.java:23)**：`getBase` 改为深拷贝（原来直接返回共享引用，`// TODO copy`），避免 `eval` 原地修改污染全局枪械数据。
+3. **[RecoilDataModifier.java:30](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/core/item/attachment/modifier/RecoilDataModifier.java:30)**：`eval` 实现——收集所有配件的 `pitch_recoil`/`yaw_recoil` 的 `_SimpleModifierData`，分别用 `evalSimpleModifierData(..., 1f)` 折算出 pitch/yaw 倍率，再对 `_RecoilData` 的每个关键帧 `range` 统一缩放，返回新的 `_RecoilData`（不修改入参 base）。
+
+## 一个需要你知道的语义差异（非 bug，仅供参考）
+
+TACZ 里配件倍率是作用在 `aimingRecoilModifier` 上：`(aimingRecoilModifier + addend) * (1+percent) * multiplier`。而 CGC 把两者拆开了——配件 `addend` 折进「base=1.0」，`aimingRecoilModifier`（开镜减后坐 + 趴下倍率）由 `getSplineFunction` 单独乘。当 `aimingRecoilModifier == 1`（未开镜/未趴下）或 `addend == 0`（后坐配件通常只用 percent/multiplier）时二者完全一致；只有在「开镜且 addend≠0」这种罕见组合下会有细微差别。目前后坐配件基本不使用 addend，所以实际无感。
+
+未提交、未推送，等你审阅。

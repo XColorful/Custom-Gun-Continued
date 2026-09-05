@@ -76,7 +76,7 @@ public class _DefaultGunFire {
             @Nullable _HeatData heatData = gunData.getHeatData();
             float heatInaccuracy = 1f;
             if (heatData != null) {
-                float maxHeat = heatData.getMaxHeat();;
+                float maxHeat = heatData.getMaxHeat();
                 float heatCount = iGun.getHeatCount(gunItem);
                 heatInaccuracy *= Mth.lerp(heatCount / maxHeat, heatData.getMinInaccuracyByHeat(), heatData.getMaxInaccuracyByHeat());
             }
@@ -187,7 +187,7 @@ public class _DefaultGunFire {
 
                 float heatCount = iGun.getHeatCount(gunItem) + heatData.getHeatPerShot();
                 float maxHeat = heatData.getMaxHeat();
-                iGun.setHeatCount(gunItem, Math.min(heatCount, maxHeat));
+                iGun.setHeatCount(gunItem, Mth.clamp(heatCount, 0, maxHeat));
 
                 // 过热检查
                 if (heatCount >= maxHeat) {

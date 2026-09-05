@@ -70,9 +70,10 @@ public interface IGunScriptBackCompat extends IGunScriptContextAccess {
 
         IGun iGun = this.getIGun();
         ItemStack gunItem = this.getGunItem();
-        float newHeat = Math.min(iGun.getHeatCount(gunItem) + heatData.getHeatPerShot(), heatData.getMaxHeat());
-        iGun.setHeatCount(gunItem, newHeat);
-        if (newHeat >= heatData.getMaxHeat()) {
+        float heatCount = iGun.getHeatCount(gunItem) + heatData.getHeatPerShot();
+        float maxHeat = heatData.getMaxHeat();
+        iGun.setHeatCount(gunItem, Mth.clamp(heatCount, 0, maxHeat));
+        if (heatCount >= maxHeat) {
             iGun.setOverheatLock(gunItem, true);
         }
     }
@@ -515,7 +516,11 @@ public interface IGunScriptBackCompat extends IGunScriptContextAccess {
     default void setHeatAmount(float amount) {
         IGun iGun = this.getIGun();
         ItemStack gunItem = this.getGunItem();
-        iGun.setHeatCount(gunItem, amount);
+        @Nullable _HeatData heatData = getHeatData();
+        if (heatData != null) {
+            float maxHeat = heatData.getMaxHeat();
+            iGun.setHeatCount(gunItem, Mth.clamp(amount, 0, maxHeat));
+        }
     }
 
     default float getHeatAmount() {

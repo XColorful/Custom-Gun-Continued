@@ -115,11 +115,11 @@ public final class SoundPlayManager implements IEventHandler {
         this.stopAndClearTrackedSounds();
     }
 
-    public boolean isAllowDryFire() {
+    public boolean getEnableDryFireSound() {
         return ALLOW_DRY_FIRE;
     }
-    public void resetDryFireSound() {
-        ALLOW_DRY_FIRE = true;
+    public void setEnableDryFireSound(boolean enable) {
+        ALLOW_DRY_FIRE = enable;
     }
 
     public void onClientTick(IClientTickEvent event) {
@@ -225,11 +225,13 @@ public final class SoundPlayManager implements IEventHandler {
     }
 
     private ResourceLocation getSoundPath(ResourceLocation soundLocation) {
-        var pathLocation = SOUND_PATH_CACHE.get(soundLocation);
-        if (pathLocation != null) return pathLocation;
-        pathLocation = ResourceSoundInstance.getPathLocation(soundLocation);
-        if (pathLocation != null) SOUND_PATH_CACHE.put(soundLocation, pathLocation);
+        if (SOUND_PATH_CACHE.containsKey(soundLocation)) {
+            return SOUND_PATH_CACHE.get(soundLocation);
+        }
+
+        var pathLocation = ResourceSoundInstance.getPathLocation(soundLocation);
         if (pathLocation == null) CustomGun.LOGGER.warn("Failed to get soundPath from soundLocation {}", soundLocation);
+        SOUND_PATH_CACHE.put(soundLocation, pathLocation);
         return pathLocation;
     }
 

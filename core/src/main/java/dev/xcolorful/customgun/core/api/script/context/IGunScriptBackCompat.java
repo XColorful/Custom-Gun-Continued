@@ -70,9 +70,10 @@ public interface IGunScriptBackCompat extends IGunScriptContextAccess {
 
         IGun iGun = this.getIGun();
         ItemStack gunItem = this.getGunItem();
-        float newHeat = Math.min(iGun.getHeatCount(gunItem) + heatData.getHeatPerShot(), heatData.getMaxHeat());
-        iGun.setHeatCount(gunItem, newHeat);
-        if (newHeat >= heatData.getMaxHeat()) {
+        float heatCount = iGun.getHeatCount(gunItem) + heatData.getHeatPerShot();
+        float maxHeat = heatData.getMaxHeat();
+        iGun.setHeatCount(gunItem, Mth.clamp(heatCount, 0, maxHeat));
+        if (heatCount >= maxHeat) {
             iGun.setOverheatLock(gunItem, true);
         }
     }
@@ -139,7 +140,7 @@ public interface IGunScriptBackCompat extends IGunScriptContextAccess {
         @Nullable ILivingShooter iLivingShooter = this.getILivingShooter();
         ShooterProperty shooterProperty = iLivingShooter != null ? iLivingShooter.cgc$getShooterProperty() : null;
         if (shooterProperty == null) return 0;
-        return shooterProperty.lastShootTimestamp - shooterProperty.baseTimestamp;
+        return shooterProperty.lastShootTimestamp - shooterProperty.serverBaseTimestamp;
     }
 
     /**
@@ -162,7 +163,7 @@ public interface IGunScriptBackCompat extends IGunScriptContextAccess {
         @Nullable ILivingShooter iLivingShooter = this.getILivingShooter();
         ShooterProperty shooterProperty = iLivingShooter != null ? iLivingShooter.cgc$getShooterProperty() : null;
         if (shooterProperty == null) return;
-        shooterProperty.shootTimestamp -= alpha;
+        shooterProperty.reloadTimestamp -= alpha;
     }
 
     /**
@@ -359,6 +360,7 @@ public interface IGunScriptBackCompat extends IGunScriptContextAccess {
      */
     default int putAmmoInMagazine(int amount) {
         if (amount < 0) return 0;
+
         int maxAmmoCount = this.getMaxAmmoCount();
         int currentAmmoCount = this.getAmmoCountInMagazine();
         int newAmmoCount = currentAmmoCount + amount;
@@ -514,7 +516,11 @@ public interface IGunScriptBackCompat extends IGunScriptContextAccess {
     default void setHeatAmount(float amount) {
         IGun iGun = this.getIGun();
         ItemStack gunItem = this.getGunItem();
-        iGun.setHeatCount(gunItem, amount);
+        @Nullable _HeatData heatData = getHeatData();
+        if (heatData != null) {
+            float maxHeat = heatData.getMaxHeat();
+            iGun.setHeatCount(gunItem, Mth.clamp(amount, 0, maxHeat));
+        }
     }
 
     default float getHeatAmount() {

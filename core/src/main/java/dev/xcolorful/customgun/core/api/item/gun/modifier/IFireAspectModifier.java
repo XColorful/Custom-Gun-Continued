@@ -28,7 +28,7 @@ public interface IFireAspectModifier<T extends ResourcePojo<T>> extends IGunModi
     static @Nullable Boolean getValue(ShooterGunModifierCache cache, IGunModifierHolder modifierType) {
         return cache.getValue(modifierType, IFireAspectModifier.class);
     }
-    static void setValue(ShooterGunModifierCache cache, IGunModifierHolder modifierHolder, _FireAspectModifierData value) {
+    static void setValue(ShooterGunModifierCache cache, IGunModifierHolder modifierHolder, Boolean value) {
         cache.setValue(modifierHolder, IFireAspectModifier.class, value);
     }
     static @NotNull Boolean evalByScript(GunScriptApi scriptApi, @NotNull Boolean value) {

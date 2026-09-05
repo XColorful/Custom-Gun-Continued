@@ -17,23 +17,28 @@ public enum ChargeType implements ResourceTag.CategoryTag {
     /**
      * 按住扳机蓄力，蓄满后自动发射
      */
-    AUTO(ChargeTypeTag.AUTO, true, false),
+    AUTO(ChargeTypeTag.AUTO,
+            true, false, true),
     /**
      * 按住扳机蓄力，直到松开扳机才发射（如果满足阈值）
      */
-    HOLD(ChargeTypeTag.HOLD, true, true),
+    HOLD(ChargeTypeTag.HOLD,
+            true, true, false),
     /**
      * 按下扳机后自动进行蓄力，蓄满后自动发射，无法取消
      */
-    DELAY(ChargeTypeTag.DELAY, false, false);
+    DELAY(ChargeTypeTag.DELAY,
+            false, false, true);
 
     public final String typeName;
     public final boolean needHolding;
     public final boolean manualShoot;
-    ChargeType(String name, boolean needHolding, boolean manualShoot) {
+    public final boolean needMaxCharge;
+    ChargeType(String name, boolean needHolding, boolean manualShoot, boolean needMaxCharge) {
         this.typeName = name;
         this.needHolding = needHolding;
         this.manualShoot = manualShoot;
+        this.needMaxCharge = needMaxCharge;
     }
     @Override public String getTagName() {
         return this.typeName;
@@ -62,6 +67,12 @@ public enum ChargeType implements ResourceTag.CategoryTag {
      */
     public boolean autoShootIfCharged() {
         return !this.manualShoot;
+    }
+    /**
+     * @return 是否能在部分蓄力状态(达到阈值)下开火
+     */
+    public boolean partialShoot() {
+        return !this.needMaxCharge;
     }
 
     private static final Map<String, ChargeType> CHARGE_TYPES = new HashMap<>();

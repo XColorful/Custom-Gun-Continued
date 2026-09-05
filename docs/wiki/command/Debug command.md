@@ -1,7 +1,7 @@
 [English](#English)
 
 # 调试指令
-> wiki 版本：`0.0.4`.3
+> wiki 版本：`0.0.8`.3
 
 ## 服务端指令
 
@@ -56,7 +56,7 @@
 - `target`（字面量）：测试目标，可选值为`IAnimateGeoItem`
 
 # English
-> wiki verison: `0.0.4`.3
+> wiki verison: `0.0.8`.3
 
 ## Server command
 

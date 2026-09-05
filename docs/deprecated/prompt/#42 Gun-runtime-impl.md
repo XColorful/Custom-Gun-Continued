@@ -468,3 +468,85 @@ localPlayer.setXRot(localPlayer.getYRot() - (float)(value - yRotO)); // setXRot 
 TACZ 里配件倍率是作用在 `aimingRecoilModifier` 上：`(aimingRecoilModifier + addend) * (1+percent) * multiplier`。而 CGC 把两者拆开了——配件 `addend` 折进「base=1.0」，`aimingRecoilModifier`（开镜减后坐 + 趴下倍率）由 `getSplineFunction` 单独乘。当 `aimingRecoilModifier == 1`（未开镜/未趴下）或 `addend == 0`（后坐配件通常只用 percent/multiplier）时二者完全一致；只有在「开镜且 addend≠0」这种罕见组合下会有细微差别。目前后坐配件基本不使用 addend，所以实际无感。
 
 未提交、未推送，等你审阅。
+
+# 
+---
+
+```
+- 当前对于非全自动fire mode类型，按住左键仍然会最大速度射击，而不需要松开鼠标再按
+- 蓄力武器，疑似在蓄力未满并松开后，仍然保留蓄力进度
+
+辅助快速浏览：
+- CGC射击逻辑在ShootKey、LocalShooterShoot
+- 可以通过IDEA的mcp访问tacz源码
+- tacz类到cgc的迁移映射在./docs-tacz/TaCZ Migration Mapping.md
+
+测试枪械为SLR, AWM, taurus500，data在游戏目录下：
+- .\saves\新的世界s\datapacks\classic_battleroyale_gun\data\cbrg\data\guns\slr_data.json
+- .\saves\新的世界\datapacks\tacz_default_gun\data\tacz\data\guns\ai_awp_data.json
+- .\saves\新的世界\datapacks\tacz_default_gun\data\tacz\data\guns\taurus500_data.json
+
+检查并修复该问题
+```
+
+# 
+
+I'll start by understanding the codebase structure and locating the relevant shooting logic.
+
+Let me locate the key shooting logic files.
+
+I found the core logic. Let me examine the original TaCZ implementation for comparison and check the git history of these files.
+
+Let me examine the charge type and charging data classes in CGC.
+
+Let me check how `isCharging` and `chargeProgress` are consumed, and find the `ILocalShooter` interface methods.
+
+Let me read the test gun data files to confirm the fire modes and charge settings.
+
+Let me verify the charging data tag mapping to confirm `recover_per_tick` reads from `decrease_per_tick`.
+
+I've confirmed both root causes. Let me apply the fixes.
+
+**Bug 1** — `ShootKey.lastShootSuccess` is overwritten every tick with the return value of `checkAndDoShoot()`. For semi-auto, the tick after a successful shot sets `doShoot=false` → `checkAndDoShoot()` returns `false` → `lastShootSuccess` flips back to `false`, so the next tick fires again. The fix: only set it on success, and reset it on trigger release (matching the original TaCZ `ShootKey`).
+
+**Bug 2** — In `_isChargeEnough`, the `else` branch (not charging, below fire threshold) returns `false` without decreasing charge progress, so a partial charge persists after releasing.
+
+Let me verify the final state of both modified files.
+
+Both fixes are in place. Let me verify they compile by checking the build setup and running a compile.
+
+No compilation errors. Let me review the final diff.
+
+两个问题都已定位并修复。以下是结论。
+
+## 根因
+
+两个 bug 分别出在客户端开火判定和蓄力进度更新两处，且都是 CGC 重构时偏离了 TaCZ 原版逻辑导致的。
+
+**Bug 1（半自动按住连发）— [ShootKey.java](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/client/input/shooter/ShootKey.java)**
+
+`lastShootSuccess` 本应是「自上次松扳机以来，是否已成功开过火」，用于阻止半自动在按住时连续开火。但重构后它每个 tick 都被 `checkAndDoShoot()` 的返回值覆盖：
+
+```
+Tick1 按下 → 开火成功 → lastShootSuccess = true
+Tick2 按住 → doShoot=false → checkAndDoShoot 返回 false → lastShootSuccess = false  ← 被覆盖
+Tick3 按住 → lastShootSuccess=false → 又开火
+```
+
+于是半自动（SLR、AWM、taurus500 都是 `fire_mode: "semi"`）每两 tick 开一枪，等效于最大射速连发。原版 TaCZ 的 `lastTimeShootSuccess` 只在「松开扳机」时重置，从不用每 tick 的返回值覆盖。
+
+**Bug 2（蓄力未满松开后进度保留）— [LocalShooterShoot.java](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/client/entity/shooter/LocalShooterShoot.java)**
+
+`_isChargeEnough` 里，非蓄力且进度未达阈值的 `else` 分支只 `return false`，没有像原版那样 `chargeProgress -= decreasePerTick`。于是 taurus500（`type: "auto"`，`max_charge=0.5`）中途松手后进度停留在原位，下次按住只需再补一点点就能触发。
+
+## 修复
+
+1. `tickShoot` 不再用返回值覆盖 `lastShootSuccess`；改为在「未按下」分支里重置（对齐原版 `else { lastTimeShootSuccess = false; ... }`）。
+2. `_isChargeEnough` 的 `else` 分支补上进度衰减 `chargeProgress = currentChargeProgress - alphaProgress`（`alphaProgress` 在非蓄力时即 `recoverPerTick`，对应 JSON 里的 `decrease_per_tick`）。
+
+## 验证
+
+- 两处改动均通过 IntelliJ 检查（`get_file_problems` 无错误）。
+- 逻辑推演：SLR/AWM 按住现在只开一枪、松手再按才再开；taurus500 按住蓄满自动开火、中途松手进度回落。
+
+一点说明（未改动，仅提醒）：`_isChargeEnough` 里 `else if (currentChargeProgress > fireThreshold)` 这个「松手即开火」分支没有区分蓄力类型——对 `AUTO` 类型，若某把枪 `fire_threshold < max_charge`，松手也会误触发开火（原版只有 HOLD 会在松手时开火）。目前测试的三把枪不受影响（taurus500 的 threshold == max_charge，此分支永远进不去），所以我没有动它，符合最小改动原则。如需一并修正可以再说。

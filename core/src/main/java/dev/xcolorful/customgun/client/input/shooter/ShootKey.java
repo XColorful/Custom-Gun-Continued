@@ -116,8 +116,14 @@ public final class ShootKey extends InputKey implements IEventHandler {
 
     private enum ShootInput { PRESS, RELEASE }
     private final Queue<ShootInput> inputQueue = new ConcurrentLinkedQueue<>();
-    private boolean hasPressedShoot = false; // 本tick是否出现过按压
-    private boolean isShootReleased = false; // 本tick最后是否为释放状态 (会被最新press覆盖)
+    /**
+     * 本tick是否出现过按压
+     */
+    private boolean hasPressedShoot = false;
+    /**
+     * 本tick最后是否为释放状态 (会被最新press覆盖)
+     */
+    private boolean isShootReleased = false;
 
     /**
      * 清空上一tick信息 + 消费输入队列
@@ -141,14 +147,13 @@ public final class ShootKey extends InputKey implements IEventHandler {
     }
     private boolean lastShootSuccess = false;
     private void tickShoot(IClientTickEvent event) {
-        this.lastShootSuccess = checkAndDoShoot();
-
+        _checkAndDoShoot();
     }
     /**
      * 只读 this 状态
      * 返回是否成功
      */
-    private boolean checkAndDoShoot() {
+    private boolean _checkAndDoShoot() {
         if (!ClientInputUtils.isGameplayFocused()) return false; // 不在焦点
 
         LocalShooterSprint.forceDisableSprint = false;
@@ -170,6 +175,7 @@ public final class ShootKey extends InputKey implements IEventHandler {
         if (shootPressed) // 按住开火键就禁止奔跑
             LocalShooterSprint.forceDisableSprint = true;
         else {
+            this.lastShootSuccess = false; // 松开扳机才重置，否则半自动下一次按压会被误判为已成功而阻止开火
             SoundPlayManager.get().resetDryFireSound(); // 没按开火,后面没开火成功允许触发音效
             // 不提前返回, 需要减少蓄力进度
         }

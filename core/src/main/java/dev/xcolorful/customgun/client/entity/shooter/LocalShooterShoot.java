@@ -112,7 +112,8 @@ public final class LocalShooterShoot extends LocalShooterAspect {
             this.localShooterProperty.isCharging = isChargingBefore;
             return true;
         } else {
-            // 不在蓄力，且充能不够
+            // 不在蓄力，且充能不够 -> 减少蓄力进度
+            this.localShooterProperty.chargeProgress = currentChargeProgress - alphaProgress;
             return false;
         }
     }

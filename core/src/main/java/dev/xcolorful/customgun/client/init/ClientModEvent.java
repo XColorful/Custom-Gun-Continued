@@ -4,10 +4,19 @@
 
 package dev.xcolorful.customgun.client.init;
 
+import dev.xcolorful.customgun.client.api.entity.LocalShooterProperty;
+import dev.xcolorful.customgun.client.api.event.ClientDelayedEvent;
+import dev.xcolorful.customgun.client.entity.shooter.LocalShooterShoot;
 import dev.xcolorful.customgun.client.entity.shooter.player._LocalPlayerHandler;
+import dev.xcolorful.customgun.client.network.message._ServerMessageSyncBaseTimestamp;
 import dev.xcolorful.customgun.client.resource._AssetsInstanceManager;
 import dev.xcolorful.customgun.client.resource.network.SyncDataCache;
+import dev.xcolorful.customgun.client.util.ClientMcUtils;
+import dev.xcolorful.customgun.core.entity.LivingShooterSyncHandler;
+import dev.xcolorful.customgun.core.network.message.ClientMessageSyncBaseTimestamp;
 import dev.xcolorful.customgun.core.resource._AllDataManager;
+import dev.xcolorful.customgun.core.util.SendUtils;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.Connection;
 
@@ -24,11 +33,27 @@ public class ClientModEvent {
     public void onClientLoggingIn(LocalPlayer player, Connection connection) {
         IS_LOGGED_ON = true;
 
+        this._syncTimestamp(player);
+
         if (connection != null && !connection.isMemoryConnection()) {
             _AllDataManager.clearInstance();
             SyncDataCache.INSTANCE.clear();
             _AssetsInstanceManager.clear();
         }
+    }
+    /**
+     * <ul>
+     *     在客户端首次登录的时候重新向服务端请求一次{@link LocalShooterProperty#clientBaseTimestamp}
+     *     <li>光靠 {@link LivingShooterSyncHandler#onPlayerJoinWorld} 会使进入世界第一发子弹过不了判定 (客户端稍微有点延迟)</li>
+     *     <li>需要客户端登录的时候重新通知服务端再进行一次同步</li>
+     *     <li>使用{@link ClientMcUtils#schedule}同步的时间戳，实际发包时{@link LocalShooterShoot#doShoot}的延迟差异会比{@link ClientDelayedEvent}要好</li>
+     * </ul>
+     */
+    private void _syncTimestamp(LocalPlayer player) {
+        ClientMcUtils.schedule(Minecraft.getInstance(), () -> {
+            _ServerMessageSyncBaseTimestamp.updateBaseTimestamp(System.currentTimeMillis());
+            SendUtils.sendMessageToServer(new ClientMessageSyncBaseTimestamp());
+        });
     }
 
     /**

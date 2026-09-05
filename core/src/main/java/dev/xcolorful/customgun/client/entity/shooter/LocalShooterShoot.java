@@ -300,11 +300,14 @@ public final class LocalShooterShoot extends LocalShooterAspect {
                         && this.localShooterProperty.lockedCondition != null) {
                     return;
                 }
+
                 // 记录新的开火时间戳
                 this.localShooterProperty.clientLastShootTimestamp = this.localShooterProperty.clientShootTimestamp;
                 this.localShooterProperty.clientShootTimestamp = System.currentTimeMillis();
+
+                // 仅第一发才发包给服务端，表示点击了一次射击
                 SendUtils.sendMessageToServer(new ClientMessagePlayerShoot(
-                        this.localShooterProperty.clientShootTimestamp - this.localShooterProperty.clientBaseTimestamp,
+                        this.localShooterProperty.clientShootTimestamp - LocalShooterProperty.clientBaseTimestamp,
                         chargeProgress)
                 );
             }

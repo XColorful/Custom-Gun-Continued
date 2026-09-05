@@ -140,7 +140,7 @@ public interface IGunScriptBackCompat extends IGunScriptContextAccess {
         @Nullable ILivingShooter iLivingShooter = this.getILivingShooter();
         ShooterProperty shooterProperty = iLivingShooter != null ? iLivingShooter.cgc$getShooterProperty() : null;
         if (shooterProperty == null) return 0;
-        return shooterProperty.lastShootTimestamp - shooterProperty.baseTimestamp;
+        return shooterProperty.lastShootTimestamp - shooterProperty.serverBaseTimestamp;
     }
 
     /**

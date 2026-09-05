@@ -7,6 +7,7 @@
 
 package dev.xcolorful.customgun.core.entity.shooter;
 
+import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.core.api.entity.ILivingShooter;
 import dev.xcolorful.customgun.core.api.entity.ShootResult;
 import dev.xcolorful.customgun.core.api.entity.ShooterProperty;
@@ -153,7 +154,7 @@ public final class LivingShooterShoot extends LivingShooterAspect {
         // 根据 tick time 和 允许的网络延迟波动 计算 时间戳的接受窗口
         MinecraftServer server = ((ServerLevel) this.livingShooter.level()).getServer();
         double tickTime = Math.max(server.tickTimes[server.getTickCount() % 100] * 1.0E-6D, 50);
-        long alpha = currentTimeMillis - this.shooterProperty.baseTimestamp - clientFromBaseToCurrentTimeMs;
+        long alpha = currentTimeMillis - this.shooterProperty.serverBaseTimestamp - clientFromBaseToCurrentTimeMs;
         if (alpha < -NETWORK_DELAY_MS || alpha > NETWORK_DELAY_MS + tickTime * 2) { // 允许 +- 300ms 的网络波动、窗口下限再扩大 2 个 tick time 时间(最坏情况射击会延迟2个 tick)
             if (this.livingShooter instanceof ServerPlayer player) {
                 SendUtils.sendMessageToPlayer(player, new ServerMessageSyncBaseTimestamp());
@@ -179,7 +180,7 @@ public final class LivingShooterShoot extends LivingShooterAspect {
         @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return 0;
 
-        return _getShootCooldown(iGun, gunItem, System.currentTimeMillis() - this.shooterProperty.baseTimestamp);
+        return _getShootCooldown(iGun, gunItem, System.currentTimeMillis() - this.shooterProperty.serverBaseTimestamp);
     }
     /**
      * 查询指定的 timestamp 下的射击冷却。根据情况返回值可能超过枪械的射击间隔。

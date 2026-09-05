@@ -33,7 +33,7 @@ public enum ScriptMethodType implements ResourceTag.ConstantTag, IScriptMethodTy
     START_RELOAD(ScriptMethodTag.START_RELOAD, null),
     TICK_RELOAD(ScriptMethodTag.TICK_RELOAD, null),
     INTERRUPT_RELOAD(ScriptMethodTag.INTERRUPT_RELOAD, null),
-    TICK_HEAT(ScriptMethodTag.TICK_HEAT, null),
+    TICK_HEAT(ScriptMethodTag.TICK_HEAT_COOLDOWN, ScriptMethodTag.TICK_HEAT_COOLDOWN_OLD1),
     CALCULATE_SPREAD(ScriptMethodTag.CALCULATE_SPREAD, ScriptMethodTag.CALCULATE_SPREAD_OLD1),
     HANDLE_SHOOT_HEAT(ScriptMethodTag.HANDLE_SHOOT_HEAT, null),
     // AnimStateMachine

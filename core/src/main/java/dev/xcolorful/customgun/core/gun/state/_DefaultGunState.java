@@ -23,10 +23,10 @@ import org.jetbrains.annotations.Nullable;
 @ApiStatus.Internal
 public class _DefaultGunState {
 
-    protected static void tickHeat(ShooterProperty shooterProperty,
-                                   @NotNull IGun iGun, @NotNull ItemStack gunItem,
-                                   ILivingShooter iLivingShooter, LivingEntity livingShooter,
-                                   long heatTimestamp) {
+    protected static void tickHeatCooldown(ShooterProperty shooterProperty,
+                                           @NotNull IGun iGun, @NotNull ItemStack gunItem,
+                                           ILivingShooter iLivingShooter, LivingEntity livingShooter,
+                                           long heatTimestamp) {
         var gunLocation = iGun.getGunLocation(gunItem);
         @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(gunLocation);
         if (gunIndexInstance == null) return;

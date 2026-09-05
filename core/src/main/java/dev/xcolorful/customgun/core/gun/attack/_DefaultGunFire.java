@@ -181,7 +181,21 @@ public class _DefaultGunFire {
         }
 
         { // 1. 过热锁 + 过热处理
-            // TODO
+            @Nullable _HeatData heatData = gunData.getHeatData();
+            if (heatData != null) {
+                // 仅在有过热数据时处理
+
+                float heatCount = iGun.getHeatCount(gunItem) + heatData.getHeatPerShot();
+                float maxHeat = heatData.getMaxHeat();
+                iGun.setHeatCount(gunItem, Math.min(heatCount, maxHeat));
+
+                // 过热检查
+                if (heatCount >= maxHeat) {
+                    // 过热
+                    iGun.setOverheatLock(gunItem, true);
+                    return IGunAttackRuntime.GunFireResult.OVERHEATED;
+                }
+            }
         }
 
         BoltType boltType = gunData.getBoltType();

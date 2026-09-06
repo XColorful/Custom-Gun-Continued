@@ -8,7 +8,10 @@
 package dev.xcolorful.customgun.core.api.item.ammo;
 
 import dev.xcolorful.customgun.core.api.item.AmmoProperty;
+import dev.xcolorful.customgun.core.api.resource.ResourceApi;
 import dev.xcolorful.customgun.core.api.resource.ResourceTag;
+import dev.xcolorful.customgun.core.resource.data.index.AmmoIndex;
+import dev.xcolorful.customgun.core.resource.instance.data.AmmoIndexInstance;
 import dev.xcolorful.customgun.core.util.NBTUtils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -33,6 +36,16 @@ public interface AmmoDataAccessor extends AmmoNBTAccessor, IAmmoDataAccess {
         @NotNull CompoundTag customDataTag = NBTUtils.getCustomDataTag(customData);
         this.setAmmoLocation(customDataTag, ammoLocation);
         NBTUtils.setCustomDataTag(ammoItem, customDataTag);
+    }
+
+    @Override
+    default int getAmmoMaxStackSize(ItemStack ammoItem) {
+        var ammoLocation = this.getAmmoLocation(ammoItem);
+        @Nullable AmmoIndexInstance ammoIndexInstance = ResourceApi.getAmmoIndexInstance(ammoLocation);
+        if (ammoIndexInstance == null) return 1;
+
+        AmmoIndex ammoIndex = ammoIndexInstance.getPojo();
+        return ammoIndex.getMaxStackSize();
     }
 
     @Override

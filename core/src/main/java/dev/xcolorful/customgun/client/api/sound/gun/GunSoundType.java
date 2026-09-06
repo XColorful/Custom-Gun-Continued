@@ -38,8 +38,8 @@ public enum GunSoundType implements ResourceTag.CategoryTag {
     BOLT_SOUND(GunSoundTypeTag.BOLT_SOUND,null, true),
     SWITCH_FIRE_MODE(GunSoundTypeTag.SWITCH_FIRE_MODE, GunSoundTypeTag.SWITCH_FIRE_MODE_OLD1, true),
     // 反馈
-    HEAD_HIT_SOUND(GunSoundTypeTag.HEAD_HIT_SOUND,null, false),
-    FLESH_HIT_SOUND(GunSoundTypeTag.FLESH_HIT_SOUND,null, false),
+    HIT_SOUND(GunSoundTypeTag.HIT_SOUND, GunSoundTypeTag.HIT_SOUND_OLD1, false),
+    HEADSHOT_SOUND(GunSoundTypeTag.HEADSHOT_SOUND, GunSoundTypeTag.HEADSHOT_SOUND_OLD1, false),
     KILL_SOUND(GunSoundTypeTag.KILL_SOUND,null, false);
 
     public final String typeName;

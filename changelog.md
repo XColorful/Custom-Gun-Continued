@@ -1,5 +1,14 @@
 ### 0.0.x
 
+#### 0.0.10
+- Add gun reload, shoot, overheat mechanisms
+- Add attachment recoil modifier
+- Calculate gun projectile spawn pos with shooter latency
+- Add ammo item max stack size
+- Fix resource pack sounds not played
+- Fix initial shot timestamp offset issue
+- Optimize entity hitbox history storage
+
 #### 0.0.9
 - Fix connection disconnects caused by recipe serialization when joining dedicated servers
 - Fix the mod's data pack recipe not loaded

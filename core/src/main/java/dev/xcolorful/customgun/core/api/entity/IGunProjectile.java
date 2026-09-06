@@ -1,9 +1,14 @@
 package dev.xcolorful.customgun.core.api.entity;
 
 import dev.xcolorful.customgun.core.api.entity.projectile.IGunProjectileDataAccess;
+import dev.xcolorful.customgun.core.api.entity.shooter.ILivingShooterGetter;
+import dev.xcolorful.customgun.core.api.entity.shooter.IShooterState;
 import dev.xcolorful.customgun.core.api.projectile.IProjectileRuntime;
 import dev.xcolorful.customgun.core.resource.instance.data.AmmoIndexInstance;
 import dev.xcolorful.customgun.core.resource.instance.data.GunIndexInstance;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /*
@@ -15,6 +20,17 @@ import org.jetbrains.annotations.Nullable;
  */
 public interface IGunProjectile extends IProjectileRuntime,
         IGunProjectileDataAccess {
+
+    /**
+     * @return 枪射物出生位置
+     */
+    default @NotNull Vec3 getProjectileSpawnPos(@Nullable LivingEntity livingShooter) {
+        if (livingShooter != null) {
+            ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(livingShooter);
+            return iLivingShooter.cgc$getShooterEyePos(livingShooter, true);
+        }
+        return IShooterState.getShooterEyePos(null, true);
+    }
 
     // --------Getter & Setter--------
 

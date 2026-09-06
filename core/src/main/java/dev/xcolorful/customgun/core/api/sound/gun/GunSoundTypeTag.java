@@ -31,8 +31,8 @@ public class GunSoundTypeTag {
     public static final String SWITCH_FIRE_MODE = "switch_fire_mode"; public static final String SWITCH_FIRE_MODE_OLD1 = "fire_select";
 
     // 反馈相关
-    public static final String HEAD_HIT_SOUND = "head_hit";
-    public static final String FLESH_HIT_SOUND = "flesh_hit";
+    public static final String HIT_SOUND = "hit"; public static final String HIT_SOUND_OLD1 = "flesh_hit";
+    public static final String HEADSHOT_SOUND = "headshot"; public static final String HEADSHOT_SOUND_OLD1 = "head_hit";
     public static final String KILL_SOUND = "kill";
 
     private GunSoundTypeTag() {}

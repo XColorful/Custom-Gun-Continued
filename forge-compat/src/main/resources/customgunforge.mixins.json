@@ -1,0 +1,12 @@
+{
+  "package": "dev.xcolorful.customgun.forge.mixin",
+  "minVersion": "0.8",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "customgun.refmap.json",
+  "mixins": [
+    "entity.GunProjectileMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

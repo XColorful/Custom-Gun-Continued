@@ -354,3 +354,120 @@ Forge 和 NeoForge 在 1.20.2 这里**分叉了**：
 - [ForgeNetworkAdapter.java](app://localhost/epitaxy/forge-compat/src/main/java/dev/xcolorful/customgun/forge/network/ForgeNetworkAdapter.java) — 用 `net.minecraftforge.network.*`（`SimpleChannel`/`NetworkRegistry` 这套在 1.20.2 换成了 `ChannelBuilder` 体系）
 
 另外 `ForgeHooks.getEntitySpawnPacket` 是 `@ApiStatus.Internal`，和旧的 `NetworkHooks.getEntitySpawningPacket` 一样属于内部 API，mixin 里用没问题，但升级时记得留意签名变化。需要我继续处理 `ForgeNetworkAdapter` 吗？
+
+# 
+---
+
+```
+模组移植到1.21.1neoforge，现在要处理dev.xcolorful.customgun.neoforge.mixin.entity.GunProjectileMixin，找net.neoforged.neoforge.network.NetworkHooks和net.neoforged.neoforge.entity.IEntityAdditionalSpawnData怎么移植
+
+当前IDEA打开了1.21.1forge, 1.21.1neoforge和1.20.4的窗口供浏览源码
+```
+
+# 
+
+I'll start by reading the mixin file to see what needs porting, then investigate the NeoForge 1.21.1 APIs.
+
+The forge 1.21.1 port already solved this with `ForgeHooks.getEntitySpawnPacket` + `net.minecraftforge.entity.IEntityAdditionalSpawnData`. Now I need the NeoForge 1.21.1 equivalents. Let me determine the exact NeoForge version and search its API.
+
+NeoForge 21.1.219 (1.21.1). Both symbols returned empty even with external sources — confirming `NetworkHooks` and `IEntityAdditionalSpawnData` were removed in the 1.20.5 networking rewrite. Let me verify the index works and find the replacement API.
+
+IDEA index works — so `NetworkHooks` and `IEntityAdditionalSpawnData` are genuinely gone in NeoForge 21.1.219. The mod already has a payload-based network adapter. Let me read the existing network files and the entity, plus find how NeoForge 1.21.1 sends extra spawn data.
+
+Now I understand the mod's existing payload infrastructure. Let me find how NeoForge 1.21.1 sends extra entity spawn data — checking `ServerEntity`, vanilla `getAddEntityPacket`, and any NeoForge spawn helper.
+
+Found it: `IEntityAdditionalSpawnData` → **`net.neoforged.neoforge.entity.IEntityWithComplexSpawn`** (note: buffer is now `RegistryFriendlyByteBuf`). Now I need the `NetworkHooks.getEntitySpawningPacket` replacement. Let me read the full interface and find how NeoForge builds the spawn packet for it.
+
+`getEntitySpawningPacket` is confirmed gone, and `IEntityWithComplexSpawn` is just the interface. Let me find how NeoForge constructs the spawn packet that carries this extra data — checking `ClientboundAddEntityPacket` and searching NeoForge sources for the caller of `writeSpawnData`.
+
+The vanilla `ClientboundAddEntityPacket` is unchanged, so NeoForge's extra spawn data must be triggered elsewhere. Let me find the caller of `IEntityWithComplexSpawn.writeSpawnData` inside the NeoForge sources jar directly.
+
+`IEntityExtension.java` looks like the key — it's NeoForge's entity extension with default methods. Let me read it and grep the jar for who calls the complex-spawn methods.
+
+Found the key: `IEntityExtension.java` references `IEntityWithComplexSpawn` at line 397. Let me read the full file.
+
+Now I have the mechanism. Let me confirm the full flow: find `AdvancedAddEntityPayload` and read the NeoForge-patched `ServerEntity.sendPairingData` to see whether `getAddEntityPacket` is still needed.
+
+Now let me confirm the client side actually overrides the clamped velocity — find where `AdvancedAddEntityPayload` is handled and `readSpawnData` is invoked.
+
+I now have the complete picture. Let me verify this mixin is the only neoforge place using these removed APIs, and check whether `RegistryFriendlyByteBuf` extends `FriendlyByteBuf` (so the core `encode/decodeInitialSyncData` signatures need no change).
+
+研究完成。两个 API 在 NeoForge 1.21.1 (21.1.219) 里都已经被移除了，对应的替换方案我已经从 NeoForge 源码里确认清楚了。
+
+## 结论
+
+|旧 API (1.20.2)|1.21.1 替代|
+|---|---|
+|`net.neoforged.neoforge.entity.IEntityAdditionalSpawnData`|`net.neoforged.neoforge.entity.IEntityWithComplexSpawn`|
+|`net.neoforged.neoforge.network.NetworkHooks.getEntitySpawningPacket(...)`|**直接删掉 `getAddEntityPacket` 覆写**，NeoForge 会自动打包|
+
+## 关键机制（为什么这样改）
+
+NeoForge 1.20.5 重写了网络层。`IEntityWithComplexSpawn` 的签名和旧接口几乎一样，唯一区别是缓冲区类型从 `FriendlyByteBuf` 换成了 `RegistryFriendlyByteBuf`（`RegistryFriendlyByteBuf extends FriendlyByteBuf`，所以核心里的 `encode/decodeInitialSyncData(FriendlyByteBuf)` 不需要改）。
+
+额外生成数据的发送也不再走 `getAddEntityPacket` 了，而是自动完成。调用链是：
+
+- `ServerEntity.sendPairingData` → `entity.sendPairingData(...)`（[IEntityExtension.java:397](app://localhost/epitaxy/neoforge-compat/.gradle/repositories/ng_dummy_ng/net/neoforged/neoforge/21.1.219/neoforge-21.1.219-sources.jar!/net/neoforged/neoforge/common/extensions/IEntityExtension.java)）——当实体实现了 `IEntityWithComplexSpawn` 时，自动追加一个 `AdvancedAddEntityPayload`；
+- 服务端写入走 `AdvancedAddEntityPayload(Entity)` → `writeCustomData` → `writeSpawnData`；
+- 客户端在 `ClientPayloadHandler.handle(AdvancedAddEntityPayload, ...)` 里拿到实体后调用 `readSpawnData`。
+
+因为额外数据包是在原版 `ClientboundAddEntityPacket` **之后**同一个 `ClientboundBundlePacket` 里发出的，客户端会先建出带 ±3.9 clamp 速度的实体，再被 `decodeInitialSyncData` 里的 `setDeltaMovement` 覆盖成真实速度——绕开 clamp 的目的依然成立。
+
+## 需要改的地方（[GunProjectileMixin.java](app://localhost/epitaxy/neoforge-compat/src/main/java/dev/xcolorful/customgun/neoforge/mixin/entity/GunProjectileMixin.java)）
+
+1. import：`IEntityAdditionalSpawnData` → `IEntityWithComplexSpawn`；新增 `net.minecraft.network.RegistryFriendlyByteBuf`；
+2. 删掉 `getAddEntityPacket` 覆写，连带删掉已不再使用的 import：`Packet`、`ClientGamePacketListener`、`ServerEntity`、`NetworkHooks`、`org.jetbrains.annotations.NotNull`；
+3. `writeSpawnData` / `readSpawnData` 参数类型 `FriendlyByteBuf` → `RegistryFriendlyByteBuf`；
+4. 顺带修正 Javadoc：`{@link IEntityAdditionalSpawnData}` → `{@link IEntityWithComplexSpawn}`，且第 19 行的「在 Forge 下」是复制自 forge 版的笔误，应改为「在 NeoForge 下」。
+
+改完后大致是这样：
+
+```java
+package dev.xcolorful.customgun.neoforge.mixin.entity;
+
+import dev.xcolorful.customgun.core.entity.projectile.GunProjectile;
+import dev.xcolorful.customgun.neoforge.entity.projectile.NeoGunProjectile;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
+import org.spongepowered.asm.mixin.Mixin;
+
+/**
+ * <ul>
+ *     <li>让 {@link GunProjectile} 在 NeoForge 下实现 {@link IEntityWithComplexSpawn}</li>
+ *     <li>以绕过原版 {@code ClientboundAddEntityPacket} 对初速度 ±3.9 的 clamp</li>
+ *     <li>并同步客户端渲染与移动仿真所需的枪射物状态</li>
+ * </ul>
+ *
+ * <ul>
+ *     注:
+ *     <li>服务端通过 {@code new GunProjectile(...)} 直接创建（不经过 EntityType 工厂）</li>
+ *     <li>因此必须在 {@link GunProjectile} 上通过 Mixin 实现该接口，而非依赖 {@link NeoGunProjectile} 拦截注册</li>
+ * </ul>
+ */
+@Mixin(GunProjectile.class)
+public abstract class GunProjectileMixin extends Projectile implements IEntityWithComplexSpawn {
+
+    public GunProjectileMixin(EntityType<? extends Projectile> entityType, Level level) {
+        super(entityType, level);
+    }
+
+    @Override
+    public void writeSpawnData(RegistryFriendlyByteBuf buffer) {
+        GunProjectile _this = (GunProjectile) (Object) this;
+        _this.encodeInitialSyncData(buffer);
+    }
+
+    @Override
+    public void readSpawnData(RegistryFriendlyByteBuf additionalData) {
+        GunProjectile _this = (GunProjectile) (Object) this;
+        _this.decodeInitialSyncData(additionalData);
+    }
+}
+```
+
+这个 mixin 是 neoforge-compat 里唯一用到这两个被删 API 的文件，改这一处就够了。
+
+需要我直接把这个改动应用到这个文件吗？

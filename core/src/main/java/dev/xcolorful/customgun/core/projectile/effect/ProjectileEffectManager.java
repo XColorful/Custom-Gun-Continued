@@ -21,12 +21,15 @@ public class ProjectileEffectManager implements IProjectileEffectManager {
     @Override
     public void impactEffect(IProjectileProcessRuntime.TickContext tickContext,
                              IGunProjectile iGunProjectile, Entity gunProjectile) {
+        if (tickContext.logicalSide.isClient()) return;
+        // ----仅逻辑服务端执行----
+
     }
 
     @Override
     public void moveEffect(IProjectileProcessRuntime.TickContext tickContext,
                            IGunProjectile iGunProjectile, Entity gunProjectile) {
-        if (!gunProjectile.level().isClientSide()) return;
+        if (tickContext.logicalSide.isServer()) return;
         // ----仅逻辑客户端执行----
 
     }

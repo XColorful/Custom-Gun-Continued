@@ -15,6 +15,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -69,12 +70,17 @@ public class ProjectileImpactManager implements IProjectileImpactManager {
     @Override
     public void preImpactTick(IProjectileProcessRuntime.TickContext tickContext,
                               IGunProjectile iGunProjectile, Entity gunProjectile) {
+        if (tickContext.logicalSide.isClient()) return;
+        // ----仅逻辑服务端执行----
         // TODO 爆炸的信息在 什么时候 什么方式 写入比较好? (要通用性抽象)
     }
 
     @Override
     public void impactTick(IProjectileProcessRuntime.TickContext tickContext,
                            IGunProjectile iGunProjectile, Entity gunProjectile) {
+        if (tickContext.logicalSide.isClient()) return;
+        // ----仅逻辑服务端执行----
+
         int pierce = iGunProjectile.getPierce(gunProjectile);
         if (pierce <= 0) {
             gunProjectile.discard();
@@ -133,6 +139,7 @@ public class ProjectileImpactManager implements IProjectileImpactManager {
 
     // --------IBulletVictimEntityImpact--------
 
+    @ApiStatus.Internal
     public static boolean cgc$onProjectileImpact(IProjectilePhysicsRuntime.EntityHitResult entityHitResult,
                                                  IGunProjectile iGunProjectile, Entity gunProjectile) {
         return true;
@@ -140,6 +147,7 @@ public class ProjectileImpactManager implements IProjectileImpactManager {
 
     // --------IBulletVictimImpactBlock--------
 
+    @ApiStatus.Internal
     public static boolean cgc$onProjectileImpact(BlockHitResult blockHitResult,
                                                  IGunProjectile iGunProjectile, Entity gunProjectile) {
         // TODO

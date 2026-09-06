@@ -8,6 +8,7 @@
 package dev.xcolorful.customgun.core.entity.projectile;
 
 import dev.xcolorful.customgun.CustomGun;
+import dev.xcolorful.customgun.core.api.common.McLogicalSide;
 import dev.xcolorful.customgun.core.api.entity.IGunProjectile;
 import dev.xcolorful.customgun.core.api.entity.projectile.GunProjectileDataAccessor;
 import dev.xcolorful.customgun.core.api.entity.shooter.ILivingShooterGetter;
@@ -128,7 +129,8 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
         super.tick();
 
         ProjectileManagerGroup group = CustomGun.getProjectileManager().getProjectileManagerGroup(this.getManagerGroupTag(this));
-        TickContext tickContext = new TickContext(group);
+        McLogicalSide logicalSide = this.level().isClientSide() ? McLogicalSide.CLIENT : McLogicalSide.SERVER;
+        TickContext tickContext = new TickContext(group, logicalSide);
 
         if (PlannedRefactor.ON_PROJECTILE_TICK_EVENT) {
             return;

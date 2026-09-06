@@ -71,6 +71,9 @@ public class ProjectilePhysicsManager implements IProjectilePhysicsManager {
         tickContext.deltaMovement = gunProjectile.getDeltaMovement();
         tickContext.endPos = tickContext.startPos.add(tickContext.deltaMovement);
 
+        if (tickContext.logicalSide.isClient()) return;
+        // ----仅逻辑服务端执行----
+
         // ----Block射线检测----
 
         ClipContext context = new ClipContext(tickContext.startPos, tickContext.endPos, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, gunProjectile);

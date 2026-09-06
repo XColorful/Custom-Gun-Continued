@@ -219,6 +219,7 @@ public class _DefaultGunFire {
                         livingShooter,
                         context.gunLocation, context.gunDisplayLocation, context.ammoLocation);
                 // TODO GunProjectile applyShotgunDamageSpread, setShotDamageMultiplier
+                // 子弹旋转角度和速度
                 iGun.doBulletSpread(iLivingShooter.cgc$getShooterProperty(),
                         iGun, gunItem,
                         iLivingShooter, livingShooter,

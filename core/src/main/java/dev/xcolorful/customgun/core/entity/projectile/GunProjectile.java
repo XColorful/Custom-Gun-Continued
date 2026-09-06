@@ -99,7 +99,7 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
     public static GunProjectile create(EntityType<? extends Projectile> entityType, Level level,
                                        @Nullable Vec3 spawnPos,
                                        @Nullable LivingEntity livingShooter,
-                                       ResourceLocation gunLocation, ResourceLocation gunDisplayLocation, ResourceLocation ammoLocation) {
+                                       Identifier gunLocation, Identifier gunDisplayLocation, Identifier ammoLocation) {
         return new GunProjectile(entityType, level,
                 spawnPos,
                 livingShooter,

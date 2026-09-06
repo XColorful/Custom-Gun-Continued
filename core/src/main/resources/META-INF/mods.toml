@@ -18,6 +18,8 @@ config="customgun.mixins.json"
 [[mixins]]
 config="customgunclient.mixins.json"
 [[mixins]]
+config="customgunneoforge.mixins.json"
+[[mixins]]
 config="customgunneoforgeclient.mixins.json"
 
 [[accessTransformers]]

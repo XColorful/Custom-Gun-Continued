@@ -15,7 +15,7 @@ import dev.xcolorful.customgun.core.api.entity.IGunProjectile;
 import dev.xcolorful.customgun.core.api.entity.projectile.IGunProjectileGetter;
 import dev.xcolorful.customgun.core.api.entity.victim.IBulletVictimEntityGetter;
 import dev.xcolorful.customgun.core.api.event.projectile.ProjectileHitEntityEvent;
-import dev.xcolorful.customgun.core.api.event.projectile.ProjectileKillEntityEvent;
+import dev.xcolorful.customgun.core.api.event.projectile.ProjectileHitEntityFinishEvent;
 import dev.xcolorful.customgun.core.api.projectile.physics.IProjectilePhysicsRuntime;
 import dev.xcolorful.customgun.core.network.message.event.ServerMessageGunHurt;
 import net.minecraft.client.Minecraft;
@@ -41,7 +41,7 @@ public class _ServerMessageGunHurt {
         IProjectilePhysicsRuntime.EntityHitResult entityHitResult = new IProjectilePhysicsRuntime.EntityHitResult(victimEntity, null, message.isHeadShot());
         IBulletVictimEntity iBulletVictimEntity = IBulletVictimEntityGetter.fromEntity(victimEntity);
 
-        ProjectileHitEntityEvent event = new ProjectileKillEntityEvent(McLogicalSide.CLIENT, context,
+        ProjectileHitEntityEvent event = new ProjectileHitEntityFinishEvent(McLogicalSide.CLIENT, context,
                 iGunProjectile, gunProjectile,
                 entityHitResult, iBulletVictimEntity);
         CustomGun.getEventPoster().postCustomEvent(event);

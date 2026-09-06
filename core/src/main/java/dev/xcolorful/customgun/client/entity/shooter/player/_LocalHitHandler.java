@@ -77,7 +77,7 @@ public class _LocalHitHandler implements ICustomEventHandler {
         }
         if (gunDisplayInstance == null) return;
 
-        SoundPlayManager.get().playGunSound(gunDisplayInstance.getGunSound(isHeadshot ? GunSoundType.HEAD_HIT_SOUND : GunSoundType.FLESH_HIT_SOUND),
+        SoundPlayManager.get().playGunSound(gunDisplayInstance.getGunSound(isHeadshot ? GunSoundType.HEADSHOT_SOUND : GunSoundType.HIT_SOUND),
                 localPlayer);
     }
 

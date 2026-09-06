@@ -3,11 +3,15 @@ package dev.xcolorful.customgun.neoforgeclient.mixin.item;
 import dev.xcolorful.customgun.client.api.item.IItemBEWLR;
 import dev.xcolorful.customgun.client.compat.minecraft.BlockEntityWithoutLevelRenderer;
 import dev.xcolorful.customgun.client.renderer.item.AmmoItemRenderer;
+import dev.xcolorful.customgun.core.api.item.IAmmo;
+import dev.xcolorful.customgun.core.api.item.ammo.IAmmoGetter;
 import dev.xcolorful.customgun.core.item.ammo.AmmoItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 
 import java.util.function.Consumer;
@@ -19,6 +23,16 @@ public abstract class AmmoItemMixin extends Item implements IItemBEWLR {
 
     public AmmoItemMixin(Properties properties) {
         super(properties);
+    }
+
+    // --------IItemExtension--------
+
+    @Override
+    public int getMaxStackSize(ItemStack ammoItem) {
+        @Nullable IAmmo iAmmo = IAmmoGetter.fromItemStack(ammoItem);
+        if (iAmmo == null) return super.getMaxStackSize(ammoItem);
+
+        return iAmmo.getAmmoMaxStackSize(ammoItem);
     }
 
     // --------IClientItemExtensions-------

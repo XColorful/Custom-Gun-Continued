@@ -23,6 +23,7 @@ import dev.xcolorful.customgun.core.resource.data.data.gun.bullet.damage._Distan
 import dev.xcolorful.customgun.core.resource.instance.data.AmmoIndexInstance;
 import dev.xcolorful.customgun.core.resource.instance.data.GunIndexInstance;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -205,6 +206,16 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
         }
 
         this.rebuildCache();
+    }
+
+    // --------初始同步--------
+    // 可用于Forge IEntityAdditionalSpawnData
+
+    public void encodeInitialSyncData(FriendlyByteBuf buffer) {
+        _GunProjectileSync.encodeInitialSyncData(this, buffer);
+    }
+    public void decodeInitialSyncData(FriendlyByteBuf buffer) {
+        _GunProjectileSync.decodeInitialSyncData(this, buffer);
     }
 
     // --------IGunProjectile--------

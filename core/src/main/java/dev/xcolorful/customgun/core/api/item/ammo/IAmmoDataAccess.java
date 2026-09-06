@@ -26,6 +26,8 @@ public interface IAmmoDataAccess extends IAmmoStateAccess,
     @NotNull Identifier getAmmoLocation(ItemStack ammoItem);
     void setAmmoLocation(ItemStack ammoItem, Identifier ammoLocation);
 
+    int getAmmoMaxStackSize(ItemStack ammoItem);
+
     /**
      * 获取子弹数量
      */

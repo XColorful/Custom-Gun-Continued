@@ -9,8 +9,6 @@
 
 😎[wiki](https://github.com/XColorful/Custom-Gun-Continued/wiki) | 📄[docs](https://github.com/XColorful/Custom-Gun-Continued/tree/HEAD/docs)
 
-`本模组目前处于开发阶段，功能尚不完整，暂无法正常投入使用`
-
 本模组是基于采用 [GPL-3.0-only](https://www.gnu.org/licenses/gpl-3.0.txt) 许可证的 [TaCZ](https://github.com/MCModderAnchor/TACZ) 1.1.8 的衍生作品；由于 [CC-BY-NC-ND-4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/)，本模组**不包含原资产**。
 
 ---
@@ -72,8 +70,6 @@ Agent Skill：
 # Custom Gun Continued
 
 😎[wiki](https://github.com/XColorful/Custom-Gun-Continued/wiki) | 📄[docs](https://github.com/XColorful/Custom-Gun-Continued/tree/HEAD/docs)
-
-`This mod is currently under development with incomplete features, and is not ready for normal use`
 
 This mod is a derivative work based on [TaCZ](https://github.com/MCModderAnchor/TACZ) 1.1.8, licensed under [GPL-3.0-only](https://www.gnu.org/licenses/gpl-3.0.txt). Due to the original art assets being licensed under [CC-BY-NC-ND-4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/), this mod **does not include any original assets**.
 

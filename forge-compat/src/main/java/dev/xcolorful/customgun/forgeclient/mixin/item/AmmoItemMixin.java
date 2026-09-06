@@ -27,10 +27,14 @@ public abstract class AmmoItemMixin extends Item implements IItemBEWLR {
 
     // --------IForgeItem--------
 
-    @Override
+    /**
+     * @deprecated 1.21.1forge移至 {@link dev.xcolorful.customgun.forge.mixin.item.ItemStackMixin}
+     */
+    @Deprecated(since = "1.21.1")
+//    @Override
     public int getMaxStackSize(ItemStack ammoItem) {
         @Nullable IAmmo iAmmo = IAmmoGetter.fromItemStack(ammoItem);
-        if (iAmmo == null) return super.getMaxStackSize(ammoItem);
+        if (iAmmo == null) return 1;
 
         return iAmmo.getAmmoMaxStackSize(ammoItem);
     }

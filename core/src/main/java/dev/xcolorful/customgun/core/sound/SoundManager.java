@@ -86,11 +86,15 @@ public class SoundManager {
     /**
      * 爆头击中声音
      */
-    public static final String HEAD_HIT_SOUND = GunSoundTypeTag.HEAD_HIT_SOUND;
+    public static final String HEADSHOT_SOUND = GunSoundTypeTag.HEADSHOT_SOUND;
+    @Deprecated
+    public static final String HEAD_HIT_SOUND = GunSoundTypeTag.HEADSHOT_SOUND;
     /**
      * 普通击中声音
      */
-    public static final String FLESH_HIT_SOUND = GunSoundTypeTag.FLESH_HIT_SOUND;
+    public static final String HIT_SOUND = GunSoundTypeTag.HIT_SOUND;
+    @Deprecated
+    public static final String FLESH_HIT_SOUND = GunSoundTypeTag.HIT_SOUND_OLD1;
     /**
      * 击杀的声音
      */

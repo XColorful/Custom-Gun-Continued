@@ -8,6 +8,7 @@
 package dev.xcolorful.customgun.core.entity.projectile;
 
 import dev.xcolorful.customgun.CustomGun;
+import dev.xcolorful.customgun.core.api.common.McLogicalSide;
 import dev.xcolorful.customgun.core.api.entity.IGunProjectile;
 import dev.xcolorful.customgun.core.api.entity.projectile.GunProjectileDataAccessor;
 import dev.xcolorful.customgun.core.api.entity.shooter.ILivingShooterGetter;
@@ -23,6 +24,7 @@ import dev.xcolorful.customgun.core.resource.data.data.gun.bullet.damage._Distan
 import dev.xcolorful.customgun.core.resource.instance.data.AmmoIndexInstance;
 import dev.xcolorful.customgun.core.resource.instance.data.GunIndexInstance;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -34,6 +36,7 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -45,7 +48,6 @@ import java.util.List;
  */
 public class GunProjectile extends Projectile implements IGunProjectile, GunProjectileDataAccessor {
 
-    protected Vec3 spawnPos;
     protected final DataCache dataCache = new DataCache();
     protected final StateCache stateCache = new StateCache();
 
@@ -61,23 +63,47 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
 //    private float cgc$cameraYRot;
 //    private float @Nullable [] cgc$firstPersonRenderOffset;
 
+    /**
+     * 原版工厂方法
+     * 客户端收包的时候会调用
+     */
+    @ApiStatus.Internal
     public GunProjectile(EntityType<? extends Projectile> entityType, Level level) {
-        super(entityType, level);
+        this(entityType, level,
+                Vec3.ZERO,
+                null,
+                ResourceTag.NULL_LOCATION, ResourceTag.NULL_LOCATION, ResourceTag.NULL_LOCATION);
     }
+    @ApiStatus.Internal
     public GunProjectile(EntityType<? extends Projectile> entityType, Level level,
+                         @Nullable Vec3 spawnPos,
                          @Nullable LivingEntity livingShooter,
                          ResourceLocation gunLocation, ResourceLocation gunDisplayLocation, ResourceLocation ammoLocation) {
-        this(entityType, level);
+        super(entityType, level);
+        if (spawnPos == null) spawnPos = this.getProjectileSpawnPos(livingShooter);
+        this.setPos(spawnPos); // Entity 本身的位置设置
         this.setOwner(livingShooter);
+
         this.setGunLocation(this, gunLocation);
         this.setGunDisplayLocation(this, gunDisplayLocation);
         this.setAmmoLocation(this, ammoLocation);
-        this.spawnPos = this.position();
 
         this.rebuildCache();
 
         @Nullable ShooterGunModifierCache shooterGunModifierCache = livingShooter != null ? ILivingShooterGetter.cgc$fromLivingEntity(livingShooter).cgc$getGunModifierCache() : null;
         this.constructInitData(shooterGunModifierCache);
+    }
+    /**
+     * 可用于 Mixin 注入点
+     */
+    public static GunProjectile create(EntityType<? extends Projectile> entityType, Level level,
+                                       @Nullable Vec3 spawnPos,
+                                       @Nullable LivingEntity livingShooter,
+                                       ResourceLocation gunLocation, ResourceLocation gunDisplayLocation, ResourceLocation ammoLocation) {
+        return new GunProjectile(entityType, level,
+                spawnPos,
+                livingShooter,
+                gunLocation, gunDisplayLocation, ammoLocation);
     }
 
     @Override
@@ -103,7 +129,8 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
         super.tick();
 
         ProjectileManagerGroup group = CustomGun.getProjectileManager().getProjectileManagerGroup(this.getManagerGroupTag(this));
-        TickContext tickContext = new TickContext(group);
+        McLogicalSide logicalSide = this.level().isClientSide() ? McLogicalSide.CLIENT : McLogicalSide.SERVER;
+        TickContext tickContext = new TickContext(group, logicalSide);
 
         if (PlannedRefactor.ON_PROJECTILE_TICK_EVENT) {
             return;
@@ -181,6 +208,16 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
         }
 
         this.rebuildCache();
+    }
+
+    // --------初始同步--------
+    // 可用于Forge IEntityAdditionalSpawnData
+
+    public void encodeInitialSyncData(FriendlyByteBuf buffer) {
+        _GunProjectileSync.encodeInitialSyncData(this, buffer);
+    }
+    public void decodeInitialSyncData(FriendlyByteBuf buffer) {
+        _GunProjectileSync.decodeInitialSyncData(this, buffer);
     }
 
     // --------IGunProjectile--------

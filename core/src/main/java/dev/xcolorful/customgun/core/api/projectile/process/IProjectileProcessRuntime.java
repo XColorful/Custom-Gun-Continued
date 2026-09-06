@@ -1,5 +1,6 @@
 package dev.xcolorful.customgun.core.api.projectile.process;
 
+import dev.xcolorful.customgun.core.api.common.McLogicalSide;
 import dev.xcolorful.customgun.core.api.entity.IGunProjectile;
 import dev.xcolorful.customgun.core.api.projectile.ProjectileManagerGroup;
 import dev.xcolorful.customgun.core.api.projectile.physics.IProjectilePhysicsRuntime;
@@ -16,6 +17,7 @@ public interface IProjectileProcessRuntime {
 
     final class TickContext {
         public final ProjectileManagerGroup group;
+        public final McLogicalSide logicalSide;
         // ----preImpactTick----
         // ----physicTick----
         public Vec3 startPos;
@@ -26,8 +28,9 @@ public interface IProjectileProcessRuntime {
         // ----impactTick----
         // ----physicMove----
 
-        public TickContext(ProjectileManagerGroup group) {
+        public TickContext(ProjectileManagerGroup group, McLogicalSide logicalSide) {
             this.group = group;
+            this.logicalSide = logicalSide;
         }
     }
 }

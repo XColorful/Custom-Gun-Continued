@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.Mixin;
 
 /**
  * <ul>
- *     <li>让 {@link GunProjectile} 在 Forge 下实现 {@link IEntityAdditionalSpawnData}</li>
+ *     <li>让 {@link GunProjectile} 在 NeoForge 下实现 {@link IEntityAdditionalSpawnData}</li>
  *     <li>以绕过原版 {@code ClientboundAddEntityPacket} 对初速度 ±3.9 的 clamp</li>
  *     <li>并同步客户端渲染与移动仿真所需的枪射物状态</li>
  * </ul>

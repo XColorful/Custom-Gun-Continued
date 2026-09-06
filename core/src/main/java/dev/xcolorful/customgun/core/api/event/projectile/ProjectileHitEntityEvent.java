@@ -78,6 +78,10 @@ public class ProjectileHitEntityEvent extends GunProjectileEvent implements ILog
     public @NotNull IProjectilePhysicsRuntime.EntityHitResult getEntityHitResult() {
         return this.entityHitResult;
     }
+    /**
+     * 不保证对应 {@link Context#getVictimEntity()}
+     * @return 事件构造时传入的 {@link IBulletVictimEntity}
+     */
     public @Nullable IBulletVictimEntity getIBulletVictimEntity() {
         return this.iBulletVictimEntity;
     }
@@ -86,7 +90,7 @@ public class ProjectileHitEntityEvent extends GunProjectileEvent implements ILog
     public @Nullable CommandSourceStack createCommandSourceStack(@Nullable CommandSource source) {
         if (this.logicalSide.isClient()) return null;
 
-        Entity victimEntity = this.getVictimEntity();
+        Entity victimEntity = this.getHitResult_VictimEntity();
         if (!(victimEntity.level() instanceof ServerLevel serverLevel)) return null;
 
         return new CommandSourceStack(
@@ -123,6 +127,9 @@ public class ProjectileHitEntityEvent extends GunProjectileEvent implements ILog
         @Nullable DamageSource piercerDamage;
         boolean headshot = false;
         float headshotMultiplier = 1;
+
+        public Context() {
+        }
 
         // --------Getter & Setter--------
 
@@ -192,14 +199,17 @@ public class ProjectileHitEntityEvent extends GunProjectileEvent implements ILog
 
     // --------便利方法--------
 
-    public Entity getVictimEntity() {
+    /**
+     * 获取实际使用的 victimEntity 应改用 {@link Context#getVictimEntity()}
+     */
+    public Entity getHitResult_VictimEntity() {
         return this.getEntityHitResult().entity();
     }
 
     @Deprecated
     @ApiStatus.Internal
     public void buildDefaultContext() {
-        context.victimEntity = this.getVictimEntity();
+        context.victimEntity = this.getHitResult_VictimEntity();
         context.causingEntity = this.getGunProjectile();
         if (context.causingEntity instanceof Projectile projectile) {
             @Nullable Entity livingShooter = projectile.getOwner();

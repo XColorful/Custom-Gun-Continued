@@ -12,9 +12,8 @@ public class ModEntities {
     public static final IRegistrar<EntityType<?>> ENTITY_TYPES = CustomGun.getRegistrarFactory().createEntityTypes(CustomGun.MOD_ID);
 
 
-    public static final IRegistryObject<EntityType<GunProjectile>> GUN_PROJECTILE = ENTITY_TYPES.registerEntity(CustomEntityType.GUN_PROJECTILE.getTagName(), GunProjectile.class,
-            factory -> EntityType.Builder
-                    .of(factory, MobCategory.MISC)
+    public static final IRegistryObject<EntityType<GunProjectile>> GUN_PROJECTILE = ENTITY_TYPES.register(CustomEntityType.GUN_PROJECTILE.getRegistryLocation().getPath(), () -> EntityType.Builder
+            .<GunProjectile>of(GunProjectile::new, MobCategory.MISC)
                     .sized(0.0625f, 0.0625f) // BlockBench模型尺寸
                     .noSummon()
                     .noSave()
@@ -23,5 +22,6 @@ public class ModEntities {
                     .clientTrackingRange(8)
                     // 原版发包同步间隔4ticks (200ms)
                     .updateInterval(4)
+            .build(CustomEntityType.GUN_PROJECTILE.getRegistryLocation().getPath())
     );
 }

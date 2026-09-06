@@ -5,6 +5,7 @@ import dev.xcolorful.customgun.core.api.init.registry.IRegistrar;
 import dev.xcolorful.customgun.core.api.init.registry.IRegistryObject;
 import dev.xcolorful.customgun.core.api.minecraft.entity.CustomEntityType;
 import dev.xcolorful.customgun.core.entity.projectile.GunProjectile;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 
@@ -22,6 +23,6 @@ public class ModEntities {
                     .clientTrackingRange(8)
                     // 原版发包同步间隔4ticks (200ms)
                     .updateInterval(4)
-            .build(CustomEntityType.GUN_PROJECTILE.getRegistryLocation().getPath())
+            .build(CustomGun.getMcRegistry().createResourceKey(Registries.ENTITY_TYPE, CustomEntityType.GUN_PROJECTILE.getRegistryLocation()))
     );
 }

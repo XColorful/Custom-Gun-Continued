@@ -33,7 +33,12 @@ public class ProjectileProcessManager implements IProjectileProcessManager {
 
         // 生命周期
         int lifetimeTicks = iGunProjectile.getLifetimeTicks(gunProjectile) - 1;
-        if (lifetimeTicks > 0) iGunProjectile.setLifetimeTicks(gunProjectile, lifetimeTicks);
-        else gunProjectile.discard();
+        if (lifetimeTicks > 0) {
+            if (tickContext.logicalSide.isServer()) {
+                iGunProjectile.setLifetimeTicks(gunProjectile, lifetimeTicks);
+            }
+        } else {
+            gunProjectile.discard();
+        }
     }
 }

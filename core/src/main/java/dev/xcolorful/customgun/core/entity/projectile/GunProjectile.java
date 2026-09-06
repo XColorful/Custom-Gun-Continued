@@ -31,6 +31,7 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -58,23 +59,48 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
 //    private float cgc$cameraYRot;
 //    private float @Nullable [] cgc$firstPersonRenderOffset;
 
+    /**
+     * 原版工厂方法
+     */
+    @Deprecated(forRemoval = false)
     public GunProjectile(EntityType<? extends Projectile> entityType, Level level) {
-        super(entityType, level);
+        this(entityType, level,
+                Vec3.ZERO,
+                null,
+                ResourceTag.NULL_LOCATION, ResourceTag.NULL_LOCATION, ResourceTag.NULL_LOCATION);
     }
+    @ApiStatus.Internal
     public GunProjectile(EntityType<? extends Projectile> entityType, Level level,
+                         @Nullable Vec3 spawnPos,
                          @Nullable LivingEntity livingShooter,
                          ResourceLocation gunLocation, ResourceLocation gunDisplayLocation, ResourceLocation ammoLocation) {
-        this(entityType, level);
+        super(entityType, level);
+        if (spawnPos == null) spawnPos = this.getProjectileSpawnPos(livingShooter);
+        this.setPos(spawnPos); // Entity 本身的位置设置
         this.setOwner(livingShooter);
+
         this.setGunLocation(this, gunLocation);
         this.setGunDisplayLocation(this, gunDisplayLocation);
         this.setAmmoLocation(this, ammoLocation);
-        this.spawnPos = this.position();
+
+        this.spawnPos = this.position(); // 最终生效的出生位置
 
         this.rebuildCache();
 
         @Nullable ShooterGunModifierCache shooterGunModifierCache = livingShooter != null ? ILivingShooterGetter.cgc$fromLivingEntity(livingShooter).cgc$getGunModifierCache() : null;
         this.constructInitData(shooterGunModifierCache);
+    }
+    /**
+     * 可用于 Mixin 注入点
+     */
+    public static GunProjectile create(EntityType<? extends Projectile> entityType, Level level,
+                                       @Nullable Vec3 spawnPos,
+                                       @Nullable LivingEntity livingShooter,
+                                       ResourceLocation gunLocation, ResourceLocation gunDisplayLocation, ResourceLocation ammoLocation) {
+        return new GunProjectile(entityType, level,
+                spawnPos,
+                livingShooter,
+                gunLocation, gunDisplayLocation, ammoLocation);
     }
 
     @Override

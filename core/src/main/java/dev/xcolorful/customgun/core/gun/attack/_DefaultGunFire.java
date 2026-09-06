@@ -214,14 +214,15 @@ public class _DefaultGunFire {
             Level level = livingShooter.level();
 
             for (int i = 0; i < context.bulletSplitAmount; i++) {
-                GunProjectile gunProjectile = new GunProjectile(ModEntities.GUN_PROJECTILE.get(), level,
+                GunProjectile gunProjectile = GunProjectile.create(ModEntities.GUN_PROJECTILE.get(), level,
+                        null,
                         livingShooter,
                         context.gunLocation, context.gunDisplayLocation, context.ammoLocation);
                 // TODO GunProjectile applyShotgunDamageSpread, setShotDamageMultiplier
                 iGun.doBulletSpread(iLivingShooter.cgc$getShooterProperty(),
                         iGun, gunItem,
                         iLivingShooter, livingShooter,
-                        IGunProjectileGetter.fromEntity(gunProjectile), gunProjectile,
+                        IGunProjectileGetter.fromGunProjectile(gunProjectile), gunProjectile,
                         i,
                         currentPitch, currentYaw, context.bulletSpeed, context.inaccuracy);
                 level.addFreshEntity(gunProjectile);

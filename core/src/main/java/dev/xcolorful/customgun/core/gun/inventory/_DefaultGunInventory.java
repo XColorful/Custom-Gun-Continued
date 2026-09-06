@@ -210,7 +210,8 @@ public class _DefaultGunInventory {
                 continue;
             }
 
-            int existAmmoCount = iAmmo.getAmmoCount(slotItemReadOnly);
+            // slotItemReadOnly 是槽位的活引用，extractItem 已将其 shrink 清空，须从抽出的 modifiedItem 读取数量
+            int existAmmoCount = iAmmo.getAmmoCount(modifiedItem);
             int currentExtract;
             if (existAmmoCount <= requiredAmmoCount) {
                 // 全部扣除

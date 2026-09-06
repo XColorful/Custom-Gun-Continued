@@ -5,6 +5,7 @@ import dev.xcolorful.customgun.forge.entity.projectile.ForgeGunProjectile;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.server.level.ServerEntity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
@@ -34,7 +35,7 @@ public abstract class GunProjectileMixin extends Projectile implements IEntityAd
     }
 
     @Override
-    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
+    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket(ServerEntity serverEntity) {
         return ForgeHooks.getEntitySpawnPacket((GunProjectile) (Object) this);
     }
 

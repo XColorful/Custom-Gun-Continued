@@ -61,8 +61,9 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
 
     /**
      * 原版工厂方法
+     * 客户端收包的时候会调用
      */
-    @Deprecated(forRemoval = false)
+    @ApiStatus.Internal
     public GunProjectile(EntityType<? extends Projectile> entityType, Level level) {
         this(entityType, level,
                 Vec3.ZERO,

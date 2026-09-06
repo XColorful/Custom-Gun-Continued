@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2024-2026 MCModderAnchor (https://github.com/MCModderAnchor)
- * SPDX-License-Identifier: GPL-3.0-only
- *
- * Source: https://github.com/MCModderAnchor/TACZ
- */
-
 package dev.xcolorful.customgun.forge.mixin.entity;
 
 import dev.xcolorful.customgun.core.entity.projectile.GunProjectile;

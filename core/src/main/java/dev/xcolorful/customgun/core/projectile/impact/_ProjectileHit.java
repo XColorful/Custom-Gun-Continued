@@ -30,7 +30,6 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.entity.PartEntity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -85,7 +84,6 @@ public class _ProjectileHit {
                                                        ProjectileHitEntityEvent hitEvent) {
         Entity victimEntity = hitEvent.context.getVictimEntity();
         @Nullable LivingEntity victimLivingEntity = victimEntity instanceof LivingEntity _livingEntity ? _livingEntity : null;
-        Entity victimEntityCore = victimEntity instanceof PartEntity<?> partEntity ? partEntity : victimEntity;
         Entity directEntity = gunProjectile; // 出伤工具 (子弹)
         @Nullable Entity causingEntity = hitEvent.context.getCausingEntity();
         if (victimEntity == null || victimEntity.isRemoved()) {
@@ -112,7 +110,7 @@ public class _ProjectileHit {
 
         boolean isDeadBefore = victimLivingEntity != null && victimLivingEntity.isDeadOrDying();
         { // 出伤
-            assert victimEntityCore != null;
+            assert victimEntity != null;
 
             @Nullable DamageSource bulletDamage;
             @Nullable DamageSource pierceDamage;
@@ -126,7 +124,7 @@ public class _ProjectileHit {
                     // 有普通伤害
                     && (bulletDamage = hitEvent.context.getBulletDamage()) != null && armorIgnorePercent < 1
             ) {
-                victimEntityCore.invulnerableTime = 0; // 取消无敌时间
+                victimEntity.invulnerableTime = 0; // 取消无敌时间
                 victimEntity.hurt(bulletDamage, damage * (1 - armorIgnorePercent));
             }
 
@@ -138,7 +136,7 @@ public class _ProjectileHit {
                     // 有穿甲伤害
                     && (pierceDamage = hitEvent.context.getPiercerDamage()) != null && armorIgnorePercent > 0
             ) {
-                victimEntityCore.invulnerableTime = 0; // 取消无敌时间
+                victimEntity.invulnerableTime = 0; // 取消无敌时间
                 victimEntity.hurt(pierceDamage, damage * armorIgnorePercent);
             }
         }
@@ -205,7 +203,6 @@ public class _ProjectileHit {
                                                 Entity directEntity,
                                                 @Nullable Entity causingEntity) {
         EntityType<?> victimEntityType = victimEntity.getType();
-        Entity victimEntityCore = victimEntity instanceof PartEntity<?> partEntity ? partEntity : victimEntity;
 
         DamageSource bulletDamage;
         DamageSource pierceDamage; {

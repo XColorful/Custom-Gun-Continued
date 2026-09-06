@@ -42,7 +42,9 @@ public class ProjectileImpactManager implements IProjectileImpactManager {
      */
     protected boolean onNonBulletVictimHit(IProjectilePhysicsRuntime.EntityHitResult entityHitResult,
                                            IGunProjectile iGunProjectile, Entity gunProjectile) {
-        return PlannedRefactor.ON_NON_BULLET_VICTIM_HIT;
+        if (PlannedRefactor.ON_NON_BULLET_VICTIM_HIT) {}
+        // TODO ↓暂时先用默认的
+        return cgc$onProjectileImpact(entityHitResult, iGunProjectile, gunProjectile);
     }
 
     /**
@@ -139,10 +141,16 @@ public class ProjectileImpactManager implements IProjectileImpactManager {
 
     // --------IBulletVictimEntityImpact--------
 
+    /**
+     * 枪射物命中受弹实体的默认逻辑
+     * @param iGunProjectile 枪射物
+     * @param gunProjectile 枪射物实体
+     * @return 是否算作处理了
+     */
     @ApiStatus.Internal
     public static boolean cgc$onProjectileImpact(IProjectilePhysicsRuntime.EntityHitResult entityHitResult,
                                                  IGunProjectile iGunProjectile, Entity gunProjectile) {
-        return true;
+        return _ProjectileHit.onProjectileHitEntity(entityHitResult, iGunProjectile, gunProjectile);
     }
 
     // --------IBulletVictimImpactBlock--------

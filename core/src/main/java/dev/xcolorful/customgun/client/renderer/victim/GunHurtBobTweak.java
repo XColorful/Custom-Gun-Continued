@@ -45,7 +45,7 @@ public class GunHurtBobTweak implements ICustomEventHandler {
     private void onProjectileHit(ProjectileHitEntityEvent event) {
         if (event.getLogicalSide().isServer()) return;
 
-        @Nullable Entity victimEntity = event.getVictimEntity();
+        @Nullable Entity victimEntity = event.context.getVictimEntity();
         LocalPlayer localPlayer = Minecraft.getInstance().player;
         if (localPlayer != null && localPlayer.equals(victimEntity)) {
             // 受伤的是自己 -> 触发受伤晃动的镜头调整

@@ -45,7 +45,6 @@ import java.util.List;
  */
 public class GunProjectile extends Projectile implements IGunProjectile, GunProjectileDataAccessor {
 
-    protected Vec3 spawnPos;
     protected final DataCache dataCache = new DataCache();
     protected final StateCache stateCache = new StateCache();
 
@@ -85,8 +84,6 @@ public class GunProjectile extends Projectile implements IGunProjectile, GunProj
         this.setGunLocation(this, gunLocation);
         this.setGunDisplayLocation(this, gunDisplayLocation);
         this.setAmmoLocation(this, ammoLocation);
-
-        this.spawnPos = this.position(); // 最终生效的出生位置
 
         this.rebuildCache();
 

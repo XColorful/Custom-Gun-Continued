@@ -13,6 +13,7 @@ import dev.xcolorful.customgun.core.api.entity.shooter.ILivingShooterGetter;
 import dev.xcolorful.customgun.core.api.entity.shooter.IShooterLatency;
 import dev.xcolorful.customgun.core.config.OtherConfig;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
@@ -28,7 +29,7 @@ import java.util.Arrays;
 public class ServerPlayerMixin implements IEntityHitboxHistory, IShooterLatency {
 
     @Shadow
-    public int latency;
+    public ServerGamePacketListenerImpl connection;
 
     @Inject(method = "restoreFrom", at = @At("RETURN"))
     public void cgc$initLivingShooter(ServerPlayer pThat, boolean pKeepEverything, CallbackInfo ci) {
@@ -98,7 +99,7 @@ public class ServerPlayerMixin implements IEntityHitboxHistory, IShooterLatency 
 
     @Override
     public int cgc$getShooterLatencyMs() {
-        return this.latency;
+        return this.connection.latency();
     }
 
     // 测试代码，可删

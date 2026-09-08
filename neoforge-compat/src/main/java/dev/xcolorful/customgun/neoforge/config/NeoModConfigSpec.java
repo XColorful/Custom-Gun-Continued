@@ -18,7 +18,6 @@ public class NeoModConfigSpec<T> implements IModConfigSpec<T> {
     @Override
     public void set(T value) {
         configValue.set(value);
-        if (true) return; // 让IDE保留下面的引用关系
 
         // [1.21.1neoforge, )
         // 自 1.21.1neoforge 起 set 不会自动 save

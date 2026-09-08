@@ -26,6 +26,7 @@ import dev.xcolorful.customgun.core.network.message.ClientMessagePlayerBoltGun;
 import dev.xcolorful.customgun.core.util.SendUtils;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 public final class LocalShooterBolt extends LocalShooterAspect {
@@ -34,6 +35,7 @@ public final class LocalShooterBolt extends LocalShooterAspect {
         super(localShooter, localShooterProperty);
     }
 
+    @ApiStatus.Internal public static final String BOLT_STATE = "LocalShooterBolt#bolt";
     /**
      * 对齐{@link LivingShooterBolt#bolt()}
      */
@@ -44,7 +46,9 @@ public final class LocalShooterBolt extends LocalShooterAspect {
         if (iGun == null) return;
 
         if ( // 2.1 检查状态锁
-                this.localShooterProperty.clientStateLock) return;
+                // 调用频繁，使用无日志版本
+                this.localShooterProperty.clientStateLock() // this.localShooterProperty.clientStateLock(BOLT_STATE)
+        ) return;
         else if ( // 2.2 检查状态
                 // 检查是否在拉栓
                 this.localShooterProperty.isBolting
@@ -57,7 +61,7 @@ public final class LocalShooterBolt extends LocalShooterAspect {
 
             this.localShooterProperty.isBolting = true;
         } { // 3.1 锁上状态锁
-            this.localShooterProperty.lockState(ISynGunState::cgc$getSynIsBolting);
+            this.localShooterProperty.lockState(BOLT_STATE, ISynGunState::cgc$getSynIsBolting);
         }
 
         SendUtils.sendMessageToServer(new ClientMessagePlayerBoltGun());

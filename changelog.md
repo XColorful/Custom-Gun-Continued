@@ -4,7 +4,7 @@
 - Add state lock logs for local gun operations
 
 1.20.2+
-Fix Mixin injection issue and inability to use /tp on 1.21.4+
+- Fix Mixin injection issue and inability to use /tp on 1.21.4+
 
 1.21.1+neoforge
 - Fix configuration changes not being saved

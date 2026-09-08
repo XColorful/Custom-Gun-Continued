@@ -23,6 +23,7 @@ import dev.xcolorful.customgun.core.network.message.ClientMessagePlayerSwitchFir
 import dev.xcolorful.customgun.core.util.SendUtils;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 public final class LocalShooterSwitchFireMode extends LocalShooterAspect {
@@ -31,6 +32,7 @@ public final class LocalShooterSwitchFireMode extends LocalShooterAspect {
         super(localShooter, localShooterProperty);
     }
 
+    @ApiStatus.Internal public static final String SWITCH_FIRE_MODE_OPERATION = "LocalShooterSwitchFireMode#switchFireMode";
     public void switchFireMode() {
         // 1. 手持枪械检查
         ItemStack gunItem = this.localShooter.getMainHandItem();
@@ -38,7 +40,7 @@ public final class LocalShooterSwitchFireMode extends LocalShooterAspect {
         if (iGun == null) return;
 
         if ( // 2.1 检查状态锁
-                this.localShooterProperty.clientStateLock
+                this.localShooterProperty.clientStateLock(SWITCH_FIRE_MODE_OPERATION)
         ) return;
 
         // 3. IGunRuntime操作结果 -> Shooter状态

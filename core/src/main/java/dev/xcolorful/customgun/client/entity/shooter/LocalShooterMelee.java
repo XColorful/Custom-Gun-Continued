@@ -25,6 +25,7 @@ import dev.xcolorful.customgun.core.network.message.ClientMessagePlayerMelee;
 import dev.xcolorful.customgun.core.util.SendUtils;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 public final class LocalShooterMelee extends LocalShooterAspect {
@@ -33,6 +34,7 @@ public final class LocalShooterMelee extends LocalShooterAspect {
         super(localShooter, localShooterProperty);
     }
 
+    @ApiStatus.Internal public static final String MELEE_STATE = "LocalShooterMelee#prepareMelee";
     public void prepareMelee() {
         // 1. 手持枪械检查
         ItemStack gunItem = this.localShooter.getMainHandItem();
@@ -40,7 +42,7 @@ public final class LocalShooterMelee extends LocalShooterAspect {
         if (iGun == null) return;
 
         if ( // 2.1 检查状态锁
-                this.localShooterProperty.clientStateLock
+                this.localShooterProperty.clientStateLock(MELEE_STATE)
         ) return;
 
         @Nullable IGunAttackRuntime.MeleePreparation meleePreparation;
@@ -51,7 +53,7 @@ public final class LocalShooterMelee extends LocalShooterAspect {
                 return;
             }
         } { // 3.1 锁上状态锁
-            this.localShooterProperty.lockState(_iLivingShooter -> _iLivingShooter.cgc$getSynMeleeCooldown() > 0);
+            this.localShooterProperty.lockState(MELEE_STATE, _iLivingShooter -> _iLivingShooter.cgc$getSynMeleeCooldown() > 0);
         }
 
         _doMelee(iGun, gunItem, meleePreparation.meleeType());

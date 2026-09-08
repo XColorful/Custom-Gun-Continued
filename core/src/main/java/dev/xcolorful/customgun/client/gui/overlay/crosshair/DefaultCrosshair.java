@@ -1,4 +1,4 @@
-package dev.xcolorful.customgun.client.gui.overlay.sub;
+package dev.xcolorful.customgun.client.gui.overlay.crosshair;
 
 import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.CustomGunClient;

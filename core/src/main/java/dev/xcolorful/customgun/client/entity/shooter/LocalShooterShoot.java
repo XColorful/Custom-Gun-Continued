@@ -130,6 +130,7 @@ public final class LocalShooterShoot extends LocalShooterAspect {
         return false;
     }
 
+    @ApiStatus.Internal public static final String SHOOT_STATE = "LocalShooterShoot#shoot";
     /**
      * 执行一次射击
      */
@@ -159,7 +160,7 @@ public final class LocalShooterShoot extends LocalShooterAspect {
         ) return ShootResult.UNKNOWN_FAIL;
 
         // 如果状态锁正在准备锁定，且不是开火的状态锁，则不允许开火
-        if (this.localShooterProperty.clientStateLock
+        if (this.localShooterProperty.clientStateLock(SHOOT_STATE)
                 && this.localShooterProperty.lockedCondition != SHOOT_LOCKED_CONDITION
                 && this.localShooterProperty.lockedCondition != null) {
             this.localShooterProperty.isShootRecorded = true;
@@ -187,13 +188,13 @@ public final class LocalShooterShoot extends LocalShooterAspect {
                 return _onShooterFireFailed(shooterFireResult, gunDisplayInstance);
             }
             // 切换状态锁，不允许换弹、检视等行为进行
-            this.localShooterProperty.lockState(SHOOT_LOCKED_CONDITION);
+            this.localShooterProperty.lockState(SHOOT_STATE, SHOOT_LOCKED_CONDITION);
             this.localShooterProperty.isShootRecorded = false;
         }
 
         // 调用开火逻辑
         float finalChargeProgress = this.localShooterProperty.chargeProgress;
-        this.doShoot(gunDisplayInstance, iGun, gunItem, gunData, cooldown, finalChargeProgress);
+        this._doShoot(gunDisplayInstance, iGun, gunItem, gunData, cooldown, finalChargeProgress);
 
         this._recoverChargeAfterShoot(iGun, gunItem, gunData);
         return ShootResult.SUCCESS;
@@ -256,8 +257,8 @@ public final class LocalShooterShoot extends LocalShooterAspect {
         }
     }
 
-    private void doShoot(GunDisplayInstance gunDisplayInstance, IGun iGun, ItemStack gunItem,
-                         GunData gunData, long delay, float chargeProgress) {
+    private void _doShoot(GunDisplayInstance gunDisplayInstance, IGun iGun, ItemStack gunItem,
+                          GunData gunData, long delay, float chargeProgress) {
         FireModeType fireModeType = iGun.getFireModeType(gunItem);
         BoltType boltType = gunData.getBoltType();
         // 获取总余弹数
@@ -295,11 +296,11 @@ public final class LocalShooterShoot extends LocalShooterAspect {
             // 以下逻辑只需要执行一次
             if (count.get() == 0) {
                 // 如果状态锁正在准备锁定，且不是开火的状态锁，则不允许开火(主要用于防止切枪后开火动作覆盖切枪动作)
-                if (this.localShooterProperty.clientStateLock
+                if (
+                        this.localShooterProperty.clientStateLock(SHOOT_STATE) // 经常会被shoot自身给拦住，所以复用string
                         && this.localShooterProperty.lockedCondition != SHOOT_LOCKED_CONDITION
-                        && this.localShooterProperty.lockedCondition != null) {
-                    return;
-                }
+                        && this.localShooterProperty.lockedCondition != null
+                ) return;
 
                 // 记录新的开火时间戳
                 this.localShooterProperty.clientLastShootTimestamp = this.localShooterProperty.clientShootTimestamp;

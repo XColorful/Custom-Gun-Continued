@@ -7,10 +7,13 @@
 
 package dev.xcolorful.customgun.client.api.entity;
 
+import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.core.api.entity.ILivingShooter;
 import dev.xcolorful.customgun.core.api.entity.ReloadState;
 import dev.xcolorful.customgun.core.api.entity.shooter.ILivingShooterGetter;
 import net.minecraft.client.player.LocalPlayer;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.concurrent.Executors;
@@ -47,11 +50,8 @@ public class LocalShooterProperty {
     public volatile boolean isShootRecorded = true;
     public float chargeProgress = 0f;
     public boolean isCharging = false;
-    /**
-     * 这个状态锁表示：任意时刻，正在进行的枪械操作只能为一个。
-     * 主要用于防止客户端操作表现效果重复执行。
-     */
-    public volatile boolean clientStateLock = false;
+
+    private volatile @Nullable String clientMainState = null;
     /**
      * 用于标记 bolt 是否已经执行完成，防止因为客户端、服务端异步产生的数据不同步而造成的重复 bolt
      */
@@ -86,10 +86,35 @@ public class LocalShooterProperty {
     public long lockTimestamp = -1;
 
     /**
-     * 锁上状态锁
+     * 调试用，设置{@link #clientStateLock(String)}是否记录日志
      */
-    public void lockState(@Nullable Predicate<ILivingShooter> lockedCondition) {
-        clientStateLock = true;
+    @ApiStatus.Internal public static volatile boolean log_clientStateLock = true;
+    /**
+     * 当需要用状态锁来判断是否该执行操作时，若状态锁存在，则会自动记录日志；若不需要日志，则调用 {@link #clientStateLock()}
+     * @param operation 当前需要执行的操作名称 (建议使用类名+方法名)，仅用于日志记录；该名称与当前状态锁名称一致时，不进行日志记录
+     * @return 当前是否有状态锁
+     */
+    public boolean clientStateLock(@NotNull String operation) {
+        String state = this.clientMainState;
+        if (state != null) {
+            if (log_clientStateLock && !operation.equals(state)) CustomGun.LOGGER.debug("LocalShooterProperty: operation {} failed, current state: {}", operation, state);
+            return true;
+        }
+        return false;
+    }
+    /**
+     * {@link #clientStateLock(String)}的无日志版本
+     */
+    public boolean clientStateLock() {
+        return this.clientMainState != null;
+    }
+
+    /**
+     * 锁上状态锁
+     * @param state 状态锁名称 (建议使用类名+方法名)，仅用于日志记录
+     */
+    public void lockState(@NotNull String state, @Nullable Predicate<ILivingShooter> lockedCondition) {
+        clientMainState = state;
         lockTimestamp = System.currentTimeMillis();
         this.lockedCondition = lockedCondition;
     }
@@ -125,7 +150,7 @@ public class LocalShooterProperty {
             return;
         }
         // 释放状态锁
-        clientStateLock = false;
+        clientMainState = null;
     }
 
     /**
@@ -144,6 +169,6 @@ public class LocalShooterProperty {
         // 重置拉栓状态
         isBolting = false;
         // 打开状态锁
-        clientStateLock = false;
+        clientMainState = null;
     }
 }

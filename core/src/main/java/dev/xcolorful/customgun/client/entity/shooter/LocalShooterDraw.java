@@ -28,6 +28,7 @@ import dev.xcolorful.customgun.core.network.message.ClientMessagePlayerDrawGun;
 import dev.xcolorful.customgun.core.util.SendUtils;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 public final class LocalShooterDraw extends LocalShooterAspect {
@@ -48,6 +49,7 @@ public final class LocalShooterDraw extends LocalShooterAspect {
         this.readyToDraw = readyToDraw;
     }
 
+    @ApiStatus.Internal public static final String DRAW_STATE = "LocalShooterDraw#draw";
     public void draw(ItemStack lastItem) {
         // 重置各个状态
         long currentTimeMillis = System.currentTimeMillis();
@@ -56,7 +58,7 @@ public final class LocalShooterDraw extends LocalShooterAspect {
         if (this.localShooterProperty.clientDrawFinishTimestamp < 0) this.localShooterProperty.clientDrawFinishTimestamp = currentTimeMillis;
 
         // 锁上状态锁
-        this.localShooterProperty.lockState(operator -> operator.cgc$getSynDrawCooldown() > 0);
+        this.localShooterProperty.lockState(DRAW_STATE, operator -> operator.cgc$getSynDrawCooldown() > 0);
 
         @Nullable IGun lastIGun = IGunGetter.fromItemStack(lastItem);
         ItemStack currentItem = this.localShooter.getMainHandItem();

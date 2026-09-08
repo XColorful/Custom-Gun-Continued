@@ -25,6 +25,7 @@ import dev.xcolorful.customgun.core.resource.data.data.GunData;
 import dev.xcolorful.customgun.core.resource.instance.data.GunIndexInstance;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 public final class LocalShooterInspect extends LocalShooterAspect {
@@ -33,6 +34,7 @@ public final class LocalShooterInspect extends LocalShooterAspect {
         super(localShooter, localShooterProperty);
     }
 
+    @ApiStatus.Internal public static final String INSPECT_OPERATION = "LocalShooterInspect#inspect";
     public void inspect() {
         ItemStack gunItem = this.localShooter.getMainHandItem();
         @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
@@ -45,7 +47,7 @@ public final class LocalShooterInspect extends LocalShooterAspect {
         }
 
         // 检查状态锁
-        if (this.localShooterProperty.clientStateLock) return;
+        if (this.localShooterProperty.clientStateLock(INSPECT_OPERATION)) return;
 
         var gunLocation = iGun.getGunLocation(gunItem);
         @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(gunLocation);

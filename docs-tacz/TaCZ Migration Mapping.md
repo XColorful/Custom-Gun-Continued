@@ -859,9 +859,9 @@ Notation:
 
 |com.tacz.guns.client.event|dev.xcolorful.customgun.client.gui|
 |---|---|
-|`RenderCrosshairEvent`.onRenderOverlay|overlay.sub.`DefaultCrosshair`.onPrepareRenderOverlay|
+|`RenderCrosshairEvent`.onRenderOverlay|overlay.crosshair.`DefaultCrosshair`.onPrepareRenderOverlay|
 |`RenderCrosshairEvent`.onRenderTick|_Deprecated_|
-|`RenderCrosshairEvent`.renderCrosshair|overlay.sub.`DefaultCrosshair`.\_renderCrosshair|
+|`RenderCrosshairEvent`.renderCrosshair|overlay.crosshair.`DefaultCrosshair`.\_renderCrosshair|
 |`RenderCrosshairEvent`.renderHitMarker|_Deprecated_|
 
 |com.tacz.guns.client.event|dev.xcolorful.customgun.client.api.gui|

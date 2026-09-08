@@ -4,7 +4,7 @@
 
 package dev.xcolorful.customgun.client.init;
 
-import dev.xcolorful.customgun.client.gui.overlay.sub.DefaultCrosshair;
+import dev.xcolorful.customgun.client.gui.overlay.crosshair.DefaultCrosshair;
 
 public class ClientSetup {
 

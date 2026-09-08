@@ -1,5 +1,14 @@
 ### 0.0.x
 
+#### 0.0.11
+- Add state lock logs for local gun operations
+
+1.20.2+
+Fix Mixin injection issue and inability to use /tp on 1.21.4+
+
+1.21.1+neoforge
+- Fix configuration changes not being saved
+
 #### 0.0.10
 - Add gun reload, shoot, overheat mechanisms
 - Add attachment recoil modifier

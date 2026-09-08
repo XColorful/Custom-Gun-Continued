@@ -29,6 +29,7 @@ import dev.xcolorful.customgun.core.resource.instance.data.GunIndexInstance;
 import dev.xcolorful.customgun.core.util.SendUtils;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 public final class LocalShooterReload extends LocalShooterAspect {
@@ -37,6 +38,7 @@ public final class LocalShooterReload extends LocalShooterAspect {
         super(localShooter, localShooterProperty);
     }
 
+    @ApiStatus.Internal public static final String RELOAD_STATE = "LocalShooterReload#reload";
     /**
      * 对齐{@link LivingShooterReload#reload()}
      */
@@ -47,7 +49,7 @@ public final class LocalShooterReload extends LocalShooterAspect {
         if (iGun == null) return;
 
         if ( // 2.1 检查状态锁
-                this.localShooterProperty.clientStateLock
+                this.localShooterProperty.clientStateLock(RELOAD_STATE)
         ) return;
         else if ( // 2.2 检查状态
                 // 射击后冷却100ms
@@ -61,7 +63,7 @@ public final class LocalShooterReload extends LocalShooterAspect {
                 return;
             }
         } { // 3.1锁上状态锁
-            this.localShooterProperty.lockState(_iLivingShooter -> _iLivingShooter.cgc$getSynReloadState().getStateType().isReloading());
+            this.localShooterProperty.lockState(RELOAD_STATE, _iLivingShooter -> _iLivingShooter.cgc$getSynReloadState().getStateType().isReloading());
             this.localShooterProperty.chargeProgress = 0f;
         }
 

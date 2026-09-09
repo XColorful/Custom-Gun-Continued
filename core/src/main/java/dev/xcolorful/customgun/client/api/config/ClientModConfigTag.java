@@ -52,8 +52,14 @@ public class ClientModConfigTag {
     public static final String headShotDebugHitbox_path = "HeadShotDebugHitbox";
     public static final String headShotDebugHitbox_comment = "Whether or not to display the head shot's hitbox";
 
-    public static final String gunHUDEnable_path = "GunHUDEnable";
-    public static final String gunHUDEnable_comment = "Whether or not to display the gun's HUD";
+    public static final String enableGunHUD_path = "EnableGunHUD";
+    public static final String enableGunHUD_comment = "Whether to display the gun's HUD";
+
+    public static final String keepDisplayGunHUD_path = "KeepDisplayGunHUD";
+    public static final String keepDisplayGunHUD_comment = "Whether to keep the gun's HUD displayed";
+
+    public static final String forceDisplayGunHUD_path = "ForceDisplayGunHUD";
+    public static final String forceDisplayGunHUD_comment = "Whether to force the gun's HUD to be displayed";
 
     public static final String killAmountEnable_path = "KillAmountEnable";
     public static final String killAmountEnable_comment = "Whether or not to display the kill amount";

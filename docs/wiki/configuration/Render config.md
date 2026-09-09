@@ -1,7 +1,7 @@
 [English](#English)
 
 # 渲染配置
-> wiki 版本：`0.0.8`.6
+> wiki 版本：`0.0.11`.7
 
 路径：`render`
 - `EnableLaserFadeOut`（bool）：是否对激光应用淡出效果
@@ -22,7 +22,9 @@
 	- `TRIDENT_1`、`TRIDENT_2`
 - `HitMarketStartPosition`（浮点，-1024.0~1024.0）：命中标记的起始位置
 - `HeadShotDebugHitbox`（bool）：是否显示爆头判定碰撞箱
-- `GunHUDEnable`（bool）：是否显示枪械HUD
+- `EnableGunHUD`（bool）：是否显示枪械HUD
+- `KeepDisplayGunHUD`（bool）：是否持续显示枪械HUD
+- `ForceDisplayGunHUD`（bool）：是否强制显示枪械HUD
 - `KillAmountEnable`（bool）：是否显示击杀数
 - `KillAmountDurationSecond`（浮点）：击杀数显示持续时间（秒）
 - `TargetRenderDistance`（整数）：目标最远渲染距离
@@ -44,7 +46,9 @@
 	CrosshairType = "DEFAULT"
 	HitMarketStartPosition = 4.0
 	HeadShotDebugHitbox = false
-	GunHUDEnable = true
+	EnableGunHUD = true
+	KeepDisplayGunHUD = false
+	ForceDisplayGunHUD = false
 	KillAmountEnable = true
 	KillAmountDurationSecond = 3.0
 	TargetRenderDistance = 128
@@ -58,7 +62,7 @@
 ```
 
 # English
-> wiki verison: `0.0.8`.6
+> wiki verison: `0.0.11`.7
 
 ## Render Config
 
@@ -81,7 +85,9 @@ Path: `render`
 	- `TRIDENT_1`, `TRIDENT_2`
 - `HitMarketStartPosition` (float, -1024.0~1024.0): The starting position of the hit marker
 - `HeadShotDebugHitbox` (bool): Whether to display the head shot's hitbox
-- `GunHUDEnable` (bool): Whether to display the gun's HUD
+- `EnableGunHUD` (bool): Whether to display the gun's HUD
+- `KeepDisplayGunHUD` (bool): Whether to keep the gun's HUD displayed
+- `ForceDisplayGunHUD` (bool): Whether to force the gun's HUD to be displayed
 - `KillAmountEnable` (bool): Whether to display the kill amount
 - `KillAmountDurationSecond` (float): The duration of the kill amount, in seconds
 - `TargetRenderDistance` (integer): The farthest render distance of the target, including minecarts type
@@ -103,7 +109,9 @@ Path: `render`
 	CrosshairType = "DEFAULT"
 	HitMarketStartPosition = 4.0
 	HeadShotDebugHitbox = false
-	GunHUDEnable = true
+	EnableGunHUD = true
+	KeepDisplayGunHUD = false
+	ForceDisplayGunHUD = false
 	KillAmountEnable = true
 	KillAmountDurationSecond = 3.0
 	TargetRenderDistance = 128

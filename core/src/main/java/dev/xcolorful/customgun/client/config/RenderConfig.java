@@ -22,7 +22,9 @@ public class RenderConfig {
     public static IModConfigSpec<CrosshairType> CROSSHAIR_TYPE;
     public static IModConfigSpec<Double> HIT_MARKET_START_POSITION;
     public static IModConfigSpec<Boolean> HEAD_SHOT_DEBUG_HITBOX;
-    public static IModConfigSpec<Boolean> GUN_HUD_ENABLE;
+    public static IModConfigSpec<Boolean> ENABLE_GUN_HUD;
+    public static IModConfigSpec<Boolean> KEEP_DISPLAY_GUN_HUD;
+    public static IModConfigSpec<Boolean> FORCE_DISPLAY_GUN_HUD;
     public static IModConfigSpec<Boolean> KILL_AMOUNT_ENABLE;
     public static IModConfigSpec<Double> KILL_AMOUNT_DURATION_SECOND;
     public static IModConfigSpec<Integer> TARGET_RENDER_DISTANCE;
@@ -64,8 +66,14 @@ public class RenderConfig {
         builder.addComment(ClientModConfigTag.headShotDebugHitbox_comment);
         HEAD_SHOT_DEBUG_HITBOX = builder.addConfig(ClientModConfigTag.headShotDebugHitbox_path, false);
 
-        builder.addComment(ClientModConfigTag.gunHUDEnable_comment);
-        GUN_HUD_ENABLE = builder.addConfig(ClientModConfigTag.gunHUDEnable_path, true);
+        builder.addComment(ClientModConfigTag.enableGunHUD_comment);
+        ENABLE_GUN_HUD = builder.addConfig(ClientModConfigTag.enableGunHUD_path, true);
+
+        builder.addComment(ClientModConfigTag.keepDisplayGunHUD_comment);
+        KEEP_DISPLAY_GUN_HUD = builder.addConfig(ClientModConfigTag.keepDisplayGunHUD_path, false);
+
+        builder.addComment(ClientModConfigTag.forceDisplayGunHUD_comment);
+        FORCE_DISPLAY_GUN_HUD = builder.addConfig(ClientModConfigTag.forceDisplayGunHUD_path, false);
 
         builder.addComment(ClientModConfigTag.killAmountEnable_comment);
         KILL_AMOUNT_ENABLE = builder.addConfig(ClientModConfigTag.killAmountEnable_path, true);
@@ -106,4 +114,5 @@ public class RenderConfig {
 
     @Deprecated(forRemoval = true) public static IModConfigSpec<Boolean> FIRST_PERSON_BULLET_TRACER_ENABLE;
     @Deprecated(forRemoval = true) public static IModConfigSpec<Boolean> ENABLE_RESOURCE_LOCATION_IN_TOOLTIP;
+    @Deprecated(forRemoval = true) public static IModConfigSpec<Boolean> _GUN_HUD_ENABLE;
 }

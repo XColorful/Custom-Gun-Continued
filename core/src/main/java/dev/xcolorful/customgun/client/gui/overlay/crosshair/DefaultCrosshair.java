@@ -79,13 +79,14 @@ public class DefaultCrosshair implements IOverlaySubManager, IEventHandler {
         LocalPlayer localPlayer = mc.player;
         if (localPlayer == null) return;
 
+        // 未启用功能
+        if (!this.isEnabled()) return;
+
         if ( // 状态检查
                 // 不需要渲染的状态
                 _shouldForceDisableOverlay()
                 // 不是需要接管的overlay
                 || !this.getOverlayName().equals(event.getRegistryLocation().getPath())
-                // 不接管原版准心
-                || !RenderConfig.REPLACE_VANILLA_CROSSHAIR.get()
         ) return;
 
         if ( // 特殊检查

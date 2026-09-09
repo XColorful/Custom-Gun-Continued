@@ -24,9 +24,10 @@ import java.util.Map;
 
 public class InteractFilterData {
     /**
-     * 默认给用，默认一般玩家不知道去哪设置
+     * 默认给用 -> 默认一般玩家不知道去哪设置
+     * 默认不给用 -> 避免所有普通方块也显示 (更重要)
      */
-    private static boolean DEFAULT_RESULT = true;
+    private static boolean DEFAULT_RESULT = false;
     // 方块
     private static final Map<ResourceLocation, Boolean> BLOCK_FILTER = new HashMap<>();
     // 实体

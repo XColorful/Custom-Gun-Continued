@@ -2,8 +2,10 @@ package dev.xcolorful.customgun.client.gui.overlay.gunhud;
 
 import dev.xcolorful.customgun.core.api.event.*;
 import dev.xcolorful.customgun.core.api.event.gun.GunFireEvent;
+import dev.xcolorful.customgun.core.api.event.shooter.LivingShooterEvent;
 import dev.xcolorful.customgun.core.api.event.shooter.ShooterDrawEvent;
 import dev.xcolorful.customgun.core.api.event.shooter.ShooterFireEvent;
+import dev.xcolorful.customgun.core.api.event.shooter.ShooterSwitchFireModeEvent;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -24,11 +26,13 @@ public class _GunHudTrigger implements ICustomEventHandler {
         eventRegister.register(INSTANCE, CustomEventType.SHOOTER_DRAW_EVENT, EventPriority.LOWEST, true);
         eventRegister.register(INSTANCE, CustomEventType.SHOOTER_FIRE_EVENT, EventPriority.LOWEST, true);
         eventRegister.register(INSTANCE, CustomEventType.GUN_FIRE_EVENT, EventPriority.LOWEST, false);
+        eventRegister.register(INSTANCE, CustomEventType.SHOOTER_SWITCH_FIRE_MODE_EVENT, EventPriority.LOWEST, false);
     }
     protected void unregister(ICustomEventRegister eventRegister) {
         eventRegister.unregister(INSTANCE, CustomEventType.SHOOTER_DRAW_EVENT, EventPriority.LOWEST, true);
         eventRegister.unregister(INSTANCE, CustomEventType.SHOOTER_FIRE_EVENT, EventPriority.LOWEST, true);
         eventRegister.unregister(INSTANCE, CustomEventType.GUN_FIRE_EVENT, EventPriority.LOWEST, false);
+        eventRegister.unregister(INSTANCE, CustomEventType.SHOOTER_SWITCH_FIRE_MODE_EVENT, EventPriority.LOWEST, false);
     }
 
     @Override public String getEventHandlerName() {
@@ -37,13 +41,16 @@ public class _GunHudTrigger implements ICustomEventHandler {
     @Override public void handleEvent(CustomEventType eventType, ICustomEvent event) {
         switch (eventType) {
             case SHOOTER_DRAW_EVENT -> {
-                onShooterDraw((ShooterDrawEvent) event);
+                onLivingShooter((ShooterDrawEvent) event);
             }
             case SHOOTER_FIRE_EVENT -> {
-                onShooterFire((ShooterFireEvent) event);
+                onLivingShooter((ShooterFireEvent) event);
             }
             case GUN_FIRE_EVENT -> {
                 onGunFire((GunFireEvent) event);
+            }
+            case SHOOTER_SWITCH_FIRE_MODE_EVENT -> {
+                onLivingShooter((ShooterSwitchFireModeEvent) event);
             }
             default -> {
                 onReceiveWrongEvent(eventType);
@@ -51,12 +58,7 @@ public class _GunHudTrigger implements ICustomEventHandler {
         }
     }
 
-    private void onShooterDraw(ShooterDrawEvent event) {
-        if (event.getLogicalSide().isServer()) return;
-
-        DefaultGunHud.INSTANCE.setForceRefresh();
-    }
-    private void onShooterFire(ShooterFireEvent event) {
+    private void onLivingShooter(LivingShooterEvent event) {
         if (event.getLogicalSide().isServer()) return;
 
         DefaultGunHud.INSTANCE.setForceRefresh();

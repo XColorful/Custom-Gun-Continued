@@ -77,7 +77,7 @@ public class S2CMessageSyncedEntityDataMapping extends LoginIndexHolder implemen
         try {
             block.await();
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            CustomGun.LOGGER.error("Interrupted while waiting for synced key mappings from server", e);
         }
         context.setHandled();
         context.reply(new C2SMessageAcknowledge());

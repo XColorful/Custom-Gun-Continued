@@ -21,7 +21,7 @@ import dev.xcolorful.customgun.core.api.item.gun.modifier.IRpmModifier;
 import dev.xcolorful.customgun.core.api.resource.ResourceApi;
 import dev.xcolorful.customgun.core.config.SyncConfig;
 import dev.xcolorful.customgun.core.network.message.shooter.S2CMessageShooterBaseTimestamp;
-import dev.xcolorful.customgun.core.network.message.shooter.S2CMessageShooterFire;
+import dev.xcolorful.customgun.core.network.message.shooter.S2CMessageShooterShoot;
 import dev.xcolorful.customgun.core.resource.data.data.GunData;
 import dev.xcolorful.customgun.core.resource.data.data.gun._FireModeAdjustData;
 import dev.xcolorful.customgun.core.resource.data.data.gun._HeatData;
@@ -106,7 +106,7 @@ public final class LivingShooterShoot extends LivingShooterAspect {
             this.shooterProperty.heatTimestamp = currentTimeMillis;
             // 发包通知客户端
             SendUtils.sendMessageToNearbyPlayers(this.livingShooter,
-                    new S2CMessageShooterFire(this.livingShooter.getId(), gunItem));
+                    new S2CMessageShooterShoot(this.livingShooter.getId(), gunItem));
         }
 
         /**

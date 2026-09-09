@@ -15,7 +15,7 @@ import dev.xcolorful.customgun.core.api.entity.shooter.ILivingShooterGetter;
 import dev.xcolorful.customgun.core.api.event.shooter.ShooterFireEvent;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
-import dev.xcolorful.customgun.core.network.message.shooter.S2CMessageShooterFire;
+import dev.xcolorful.customgun.core.network.message.shooter.S2CMessageShooterShoot;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.world.entity.LivingEntity;
@@ -24,9 +24,9 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 @ApiStatus.Internal
-public class _S2CMessageShooterFire {
+public class _S2CMessageShooterShoot {
 
-    public static void doClientEvent(S2CMessageShooterFire message) {
+    public static void doClientEvent(S2CMessageShooterShoot message) {
         ClientLevel level = Minecraft.getInstance().level;
         if (level == null) return;
 

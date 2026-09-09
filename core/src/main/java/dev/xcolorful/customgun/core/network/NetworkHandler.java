@@ -100,7 +100,7 @@ public class NetworkHandler {
         adapter.registerMessage(ID_COUNT.getAndIncrement(), S2CMessageShooterMelee.class, S2CMessageShooterMelee::decode, MessageDirection.SERVER_TO_CLIENT);
         adapter.registerMessage(ID_COUNT.getAndIncrement(), S2CMessageShooterReload.class, S2CMessageShooterReload::decode, MessageDirection.SERVER_TO_CLIENT);
         adapter.registerMessage(ID_COUNT.getAndIncrement(), S2CMessageShooterReloadFeed.class, S2CMessageShooterReloadFeed::decode, MessageDirection.SERVER_TO_CLIENT);
-        adapter.registerMessage(ID_COUNT.getAndIncrement(), S2CMessageShooterFire.class, S2CMessageShooterFire::decode, MessageDirection.SERVER_TO_CLIENT);
+        adapter.registerMessage(ID_COUNT.getAndIncrement(), S2CMessageShooterShoot.class, S2CMessageShooterShoot::decode, MessageDirection.SERVER_TO_CLIENT);
 
         adapter.registerMessage(ID_COUNT.getAndIncrement(), S2CMessageShooterBaseTimestamp.class, S2CMessageShooterBaseTimestamp::decode, MessageDirection.SERVER_TO_CLIENT);
         adapter.registerMessage(ID_COUNT.getAndIncrement(), C2SMessageShooterBaseTimestamp.class, C2SMessageShooterBaseTimestamp::decode, MessageDirection.CLIENT_TO_SERVER);

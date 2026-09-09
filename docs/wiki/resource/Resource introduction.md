@@ -1,7 +1,7 @@
 [English](#English)
 
 # 资源文件说明
-> wiki 版本：`0.0.8`.1
+> wiki 版本：`0.0.11`.2
 
 ## 📊数据包
 
@@ -177,7 +177,7 @@
 		- [资源包材质](https://github.com/XColorful/Custom-Gun-Continued/wiki/Resourcepack-texture)
 
 # English
-> wiki verison: `0.0.8`.1
+> wiki verison: `0.0.11`.2
 
 ## 📊Datapack
 

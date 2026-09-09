@@ -54,6 +54,13 @@
 				- [枪械配件数据](https://github.com/XColorful/Custom-Gun-Continued/wiki/Gun-attachment-data)
 			- recipes
 				- [配方数据](https://github.com/XColorful/Custom-Gun-Continued/wiki/Recipe-data)
+			- tags
+				- blocks
+					- interact_key
+						- [方块交互过滤](https://github.com/XColorful/Custom-Gun-Continued/wiki/Interact-key-block-filter)
+				- entity_types
+					- interact_key
+						- [实体交互过滤](https://github.com/XColorful/Custom-Gun-Continued/wiki/Interact-key-entity-filter)
 		- 🖼️assets
 			- cgc_animations
 				- [基岩版动画](https://github.com/XColorful/Custom-Gun-Continued/wiki/Bedrock-animation)
@@ -147,6 +154,13 @@
 				- [Gun attachment data](https://github.com/XColorful/Custom-Gun-Continued/wiki/Gun-attachment-data#English)
 			- recipes
 				- [Recipe data](https://github.com/XColorful/Custom-Gun-Continued/wiki/Recipe-data#English)
+			- tags
+				- blocks
+					- interact_key
+						- [Block interaction filter](https://github.com/XColorful/Custom-Gun-Continued/wiki/Interact-key-block-filter#English)
+				- entity_types
+					- interact_key
+						- [Entity interaction filter](https://github.com/XColorful/Custom-Gun-Continued/wiki/Interact-key-entity-filter#English)
 		- 🖼️assets
 			- cgc_animations
 				- [Bedrock animation](https://github.com/XColorful/Custom-Gun-Continued/wiki/Bedrock-animation#English)

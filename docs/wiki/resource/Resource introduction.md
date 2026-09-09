@@ -51,8 +51,17 @@
                 │  └─gun_attachments
                 │         *.json
                 │
-                └─recipes
-                        *.json
+                ├─recipes
+                │      *.json
+                └─tags
+                   ├─blocks
+                   |  └─interact_key
+                   |         blacklist.json
+                   |         whitelist.json
+                   └─entity_types
+                      └─interact_key
+                             blacklist.json
+                             whitelist.json
 ```
 
 - data
@@ -83,6 +92,13 @@
 		- [枪械配件数据](https://github.com/XColorful/Custom-Gun-Continued/wiki/Gun-attachment-data)
 	- recipes
 		- [配方数据](https://github.com/XColorful/Custom-Gun-Continued/wiki/Recipe-data)
+    - tags
+	    - blocks
+		    - interact_key
+			    - [方块交互过滤](https://github.com/XColorful/Custom-Gun-Continued/wiki/Interact-key-block-filter)
+		- entity_types
+			- interact_key
+			    - [实体交互过滤](https://github.com/XColorful/Custom-Gun-Continued/wiki/Interact-key-entity-filter)
 
 ## 🖼️资源包
 
@@ -211,8 +227,17 @@
                 │  └─gun_attachments
                 │         *.json
                 │
-                └─recipes
-                        *.json
+                ├─recipes
+                │      *.json
+                └─tags
+                   ├─blocks
+                   |  └─interact_key
+                   |         blacklist.json
+                   |         whitelist.json
+                   └─entity_types
+                      └─interact_key
+                             blacklist.json
+                             whitelist.json
 ```
 
 - data
@@ -243,6 +268,13 @@
 		- [Gun attachment data](https://github.com/XColorful/Custom-Gun-Continued/wiki/Gun-attachment-data#English)
 	- recipes
 		- [Recipe data](https://github.com/XColorful/Custom-Gun-Continued/wiki/Recipe-data#English)
+    - tags
+	    - blocks
+		    - interact_key
+			    - [Block interaction filter](https://github.com/XColorful/Custom-Gun-Continued/wiki/Interact-key-block-filter#English)
+		- entity_types
+			- interact_key
+			    - [Entity interaction filter](https://github.com/XColorful/Custom-Gun-Continued/wiki/Interact-key-entity-filter#English)
 
 ## 🖼️Resourcepack
 

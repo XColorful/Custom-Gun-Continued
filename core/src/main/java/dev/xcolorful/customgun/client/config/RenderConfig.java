@@ -68,6 +68,7 @@ public class RenderConfig {
 
         builder.addComment(ClientModConfigTag.enableGunHUD_comment);
         ENABLE_GUN_HUD = builder.addConfig(ClientModConfigTag.enableGunHUD_path, true);
+        GUN_HUD_ENABLE = ENABLE_GUN_HUD;
 
         builder.addComment(ClientModConfigTag.keepDisplayGunHUD_comment);
         KEEP_DISPLAY_GUN_HUD = builder.addConfig(ClientModConfigTag.keepDisplayGunHUD_path, false);
@@ -114,5 +115,5 @@ public class RenderConfig {
 
     @Deprecated(forRemoval = true) public static IModConfigSpec<Boolean> FIRST_PERSON_BULLET_TRACER_ENABLE;
     @Deprecated(forRemoval = true) public static IModConfigSpec<Boolean> ENABLE_RESOURCE_LOCATION_IN_TOOLTIP;
-    @Deprecated(forRemoval = true) public static IModConfigSpec<Boolean> _GUN_HUD_ENABLE;
+    @Deprecated(forRemoval = true) public static IModConfigSpec<Boolean> GUN_HUD_ENABLE;
 }

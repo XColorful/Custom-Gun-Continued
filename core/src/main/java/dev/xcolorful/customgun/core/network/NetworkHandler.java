@@ -27,13 +27,15 @@ import java.util.function.Predicate;
 
 public class NetworkHandler {
     private static NetworkHandler INSTANCE;
+
     private final INetworkAdapter adapter;
     private final AtomicInteger ID_COUNT = new AtomicInteger(0);
     private final AtomicInteger HANDSHAKE_ID_COUNT = new AtomicInteger(0);
-    public static final String PROTOCOL_VERSION = "1.0.5";
+
+    public static final int protocol_version = 12;
+    public static final String PROTOCOL_VERSION = String.valueOf(protocol_version);
     public static boolean isProtocolAccepted(String remoteVersion) {
         return remoteVersion.equals(PROTOCOL_VERSION);
-//                || remoteVersion.equals("x.x.x"); // 后续添加
     }
     public static Predicate<String> getProtocolAcceptancePredicate() {
         return NetworkHandler::isProtocolAccepted;

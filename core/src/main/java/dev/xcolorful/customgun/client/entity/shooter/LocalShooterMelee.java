@@ -21,7 +21,7 @@ import dev.xcolorful.customgun.core.api.gun.attack.IGunAttackRuntime;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
 import dev.xcolorful.customgun.core.api.item.gun.MeleeType;
-import dev.xcolorful.customgun.core.network.message.ClientMessagePlayerMelee;
+import dev.xcolorful.customgun.core.network.message.shooter.C2SMessageShooterMelee;
 import dev.xcolorful.customgun.core.util.SendUtils;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.item.ItemStack;
@@ -75,7 +75,7 @@ public final class LocalShooterMelee extends LocalShooterAspect {
         SoundPlayManager.get().playGunSound(gunDisplayInstance.getGunSound(gunSoundType),
                 this.localShooter);
         // 发送执行近战的数据包，通知服务器
-        SendUtils.sendMessageToServer(new ClientMessagePlayerMelee());
+        SendUtils.sendMessageToServer(new C2SMessageShooterMelee());
 
         // 动画状态机转移状态
         LuaAnimStateMachine<GunAnimStateContext> animStateMachine = gunDisplayInstance.getAnimStateMachine();

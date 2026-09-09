@@ -19,7 +19,7 @@ import dev.xcolorful.customgun.core.api.entity.shooter.ILivingShooterGetter;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
 import dev.xcolorful.customgun.core.entity.shooter.modifier.ShooterGunModifierManager;
-import dev.xcolorful.customgun.core.network.message.ClientMessagePlayerSwitchFireMode;
+import dev.xcolorful.customgun.core.network.message.shooter.C2SMessageShooterSwitchFireMode;
 import dev.xcolorful.customgun.core.util.SendUtils;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.item.ItemStack;
@@ -47,7 +47,7 @@ public final class LocalShooterSwitchFireMode extends LocalShooterAspect {
         boolean success = iGun.switchFireMode(null, iGun, gunItem, ILivingShooterGetter.cgc$fromLivingEntity(this.localShooter), this.localShooter);
         if (!success) return;
 
-        SendUtils.sendMessageToServer(new ClientMessagePlayerSwitchFireMode());
+        SendUtils.sendMessageToServer(new C2SMessageShooterSwitchFireMode());
 
         // 刷新配件缓存
         ShooterGunModifierManager.postChangeEvent(this.localShooter, gunItem);

@@ -281,7 +281,7 @@ public class _DefaultGunAction {
         CustomGun.getEventPoster().postCustomEvent(new ShooterReloadFeedEvent(logicalSide,
                 iLivingShooter, livingShooter, iGun, gunItem));
         // 发包通知客户端
-        SendUtils.sendMessageToTrackingEntityAndSelf(livingShooter,
+        SendUtils.sendMessageToNearbyPlayersAndSelf(livingShooter, // 客户端只接受item更新，不知道是否是reload feed，所以还要发给自己
                 new ServerMessageGunReloadFeed(livingShooter.getId(), gunItem));
     }
     /**

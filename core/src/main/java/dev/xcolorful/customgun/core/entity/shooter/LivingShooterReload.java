@@ -69,7 +69,7 @@ public final class LivingShooterReload extends LivingShooterAspect {
         }
 
         // 发包通知客户端
-        SendUtils.sendMessageToTrackingEntityAndSelf(this.livingShooter,
+        SendUtils.sendMessageToNearbyPlayersAndSelf(this.livingShooter, // 客户端reload时只检查canReload，没有post事件，所以还要发给自己
                 new ServerMessageGunReload(this.livingShooter.getId(), gunItem));
 
         // 执行服务端 reload 相关内容

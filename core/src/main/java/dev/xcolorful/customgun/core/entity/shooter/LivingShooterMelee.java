@@ -65,7 +65,7 @@ public final class LivingShooterMelee extends LivingShooterAspect {
 
         this.shooterProperty.meleeTimestamp = currentTimeMillis;
 
-        SendUtils.sendMessageToTrackingEntity(this.livingShooter,
+        SendUtils.sendMessageToNearbyPlayers(this.livingShooter,
                 new ServerMessageGunMelee(this.livingShooter.getId(), gunItem));
     }
 

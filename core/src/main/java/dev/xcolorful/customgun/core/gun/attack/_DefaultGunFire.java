@@ -176,7 +176,7 @@ public class _DefaultGunFire {
                     iGun, gunItem, iLivingShooter, livingShooter))) {
                 return IGunAttackRuntime.GunFireResult.SUCCESS;
             } else {
-                SendUtils.sendMessageToTrackingEntity(livingShooter, new ServerMessageGunFire(livingShooter.getId(), gunItem));
+                SendUtils.sendMessageToNearbyPlayers(livingShooter, new ServerMessageGunFire(livingShooter.getId(), gunItem));
             }
         }
 

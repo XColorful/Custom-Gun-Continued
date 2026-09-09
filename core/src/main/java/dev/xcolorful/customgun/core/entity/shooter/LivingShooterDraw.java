@@ -60,7 +60,7 @@ public final class LivingShooterDraw extends LivingShooterAspect {
         CustomGun.getEventPoster().postCustomEvent(new ShooterDrawEvent(McLogicalSide.SERVER,
                 iLivingShooter, this.livingShooter, lastItem, gunItemSupplier.get()));
 
-        SendUtils.sendMessageToTrackingEntity(this.livingShooter,
+        SendUtils.sendMessageToNearbyPlayers(this.livingShooter,
                 new ServerMessageGunDraw(this.livingShooter.getId(), lastItem, gunItemSupplier.get()));
 
         this.shooterProperty.currentGunItem = gunItemSupplier;

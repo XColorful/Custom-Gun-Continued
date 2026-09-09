@@ -71,7 +71,7 @@ public class LivingShooterSyncHandler implements IEventHandler {
             }
             List<DataEntry<?, ?>> trackingEntries = entries.stream().filter(entry -> entry.getKey().syncMode().isTracking()).collect(Collectors.toList());
             if (!trackingEntries.isEmpty()) {
-                SendUtils.sendMessageToTrackingEntity(entity, new ServerMessageUpdateEntityData(entity.getId(), trackingEntries));
+                SendUtils.sendMessageToNearbyPlayers(entity, new ServerMessageUpdateEntityData(entity.getId(), trackingEntries));
             }
             holder.clean();
         }

@@ -7,7 +7,6 @@
 
 package dev.xcolorful.customgun.core.entity.shooter;
 
-import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.core.api.entity.ILivingShooter;
 import dev.xcolorful.customgun.core.api.entity.ShootResult;
 import dev.xcolorful.customgun.core.api.entity.ShooterProperty;
@@ -106,7 +105,7 @@ public final class LivingShooterShoot extends LivingShooterAspect {
             this.shooterProperty.shootTimestamp = clientFromBaseToCurrentTimeMs;
             this.shooterProperty.heatTimestamp = currentTimeMillis;
             // 发包通知客户端
-            SendUtils.sendMessageToTrackingEntity(this.livingShooter,
+            SendUtils.sendMessageToNearbyPlayers(this.livingShooter,
                     new ServerMessageGunShoot(this.livingShooter.getId(), gunItem));
         }
 

@@ -39,7 +39,7 @@ public final class LivingShooterSwitchFireMode extends LivingShooterAspect {
         boolean success = iGun.switchFireMode(this.shooterProperty, iGun, gunItem, ILivingShooterGetter.cgc$fromLivingEntity(this.livingShooter), this.livingShooter);
         if (!success) return;
 
-        SendUtils.sendMessageToTrackingEntity(this.livingShooter,
+        SendUtils.sendMessageToNearbyPlayers(this.livingShooter,
                 new ServerMessageGunSwitchFireMode(this.livingShooter.getId(), gunItem));
 
         // 刷新配件缓存

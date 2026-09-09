@@ -5,17 +5,17 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package dev.xcolorful.customgun.client.network.message.event;
+package dev.xcolorful.customgun.client.network.message.shooter;
 
 import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.util.ClientWorldUtils;
 import dev.xcolorful.customgun.core.api.common.McLogicalSide;
 import dev.xcolorful.customgun.core.api.entity.ILivingShooter;
 import dev.xcolorful.customgun.core.api.entity.shooter.ILivingShooterGetter;
-import dev.xcolorful.customgun.core.api.event.shooter.ShooterFireEvent;
+import dev.xcolorful.customgun.core.api.event.shooter.ShooterReloadEvent;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
-import dev.xcolorful.customgun.core.network.message.shooter.S2CMessageShooterFire;
+import dev.xcolorful.customgun.core.network.message.shooter.S2CMessageShooterReload;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.world.entity.LivingEntity;
@@ -24,18 +24,19 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 @ApiStatus.Internal
-public class _ServerMessageGunShoot {
+public class _S2CMessageShooterReload {
 
-    public static void doClientEvent(S2CMessageShooterFire message) {
+    public static void doClientEvent(S2CMessageShooterReload message) {
         ClientLevel level = Minecraft.getInstance().level;
         if (level == null) return;
+
 
         @Nullable LivingEntity livingShooter = ClientWorldUtils.getLivingEntityById(level, message.shooterId());
         @Nullable ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromEntity(livingShooter);
         ItemStack gunItem = message.gunItem();
         @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
 
-        ShooterFireEvent event = new ShooterFireEvent(McLogicalSide.CLIENT,
+        ShooterReloadEvent event = new ShooterReloadEvent(McLogicalSide.CLIENT,
                 iLivingShooter, livingShooter,
                 iGun, gunItem);
         CustomGun.getEventPoster().postCustomEvent(event);

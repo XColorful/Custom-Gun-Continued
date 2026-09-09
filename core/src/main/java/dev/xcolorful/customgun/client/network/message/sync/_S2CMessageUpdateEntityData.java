@@ -5,7 +5,7 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package dev.xcolorful.customgun.client.network.message;
+package dev.xcolorful.customgun.client.network.message.sync;
 
 import dev.xcolorful.customgun.client.util.ClientWorldUtils;
 import dev.xcolorful.customgun.core.entity.sync.SyncedEntityData;
@@ -16,7 +16,7 @@ import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
-public class _ServerMessageUpdateEntityData {
+public class _S2CMessageUpdateEntityData {
 
     public static void onHandle(S2CMessageUpdateEntityData message) {
         ClientLevel level = Minecraft.getInstance().level;

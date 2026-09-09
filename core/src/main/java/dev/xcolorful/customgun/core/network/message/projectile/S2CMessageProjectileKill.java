@@ -8,7 +8,7 @@
 package dev.xcolorful.customgun.core.network.message.projectile;
 
 import dev.xcolorful.customgun.CustomGun;
-import dev.xcolorful.customgun.client.network.message.event._ServerMessageGunKill;
+import dev.xcolorful.customgun.client.network.message.projectile._S2CMessageProjectileKill;
 import dev.xcolorful.customgun.core.api.network.message.IMessage;
 import dev.xcolorful.customgun.core.util.NetworkUtils;
 import net.minecraft.network.FriendlyByteBuf;
@@ -48,7 +48,7 @@ public record S2CMessageProjectileKill(int bulletId, int victimEntityId, int sho
     @Override
     public void handle(S2CMessageProjectileKill message, Consumer<Runnable> handler, NetworkContext context) {
         if (CustomGun.getSideExecutor().getLogicalSide().isClient()) {
-            handler.accept(() -> _ServerMessageGunKill.onKill(message));
+            handler.accept(() -> _S2CMessageProjectileKill.onKill(message));
         }
     }
 }

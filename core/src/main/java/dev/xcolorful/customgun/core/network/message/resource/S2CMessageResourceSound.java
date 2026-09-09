@@ -8,7 +8,7 @@
 package dev.xcolorful.customgun.core.network.message.resource;
 
 import dev.xcolorful.customgun.CustomGun;
-import dev.xcolorful.customgun.client.network.message._ServerMessageSound;
+import dev.xcolorful.customgun.client.network.message.resource._S2CMessageResourceSound;
 import dev.xcolorful.customgun.core.api.common.McSide;
 import dev.xcolorful.customgun.core.api.network.message.IMessage;
 import dev.xcolorful.customgun.core.util.NetworkUtils;
@@ -49,7 +49,7 @@ public record S2CMessageResourceSound(int entityId,
         if (CustomGun.getSideExecutor().getLogicalSide().isClient()) {
             handler.accept(() -> {
                 CustomGun.getSideExecutor().executeOn(McSide.CLIENT, () -> () ->
-                        _ServerMessageSound.playSound(message)
+                        _S2CMessageResourceSound.playSound(message)
                 );
             });
         }

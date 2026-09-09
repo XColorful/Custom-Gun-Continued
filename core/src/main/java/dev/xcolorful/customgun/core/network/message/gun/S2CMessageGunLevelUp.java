@@ -8,7 +8,7 @@
 package dev.xcolorful.customgun.core.network.message.gun;
 
 import dev.xcolorful.customgun.CustomGun;
-import dev.xcolorful.customgun.client.network.message._ServerMessageLevelUp;
+import dev.xcolorful.customgun.client.network.message.gun._S2CMessageGunLevelUp;
 import dev.xcolorful.customgun.core.api.common.McSide;
 import dev.xcolorful.customgun.core.api.network.message.IMessage;
 import dev.xcolorful.customgun.core.util.NetworkUtils;
@@ -38,7 +38,7 @@ public record S2CMessageGunLevelUp(ItemStack gun,
         if (CustomGun.getSideExecutor().getLogicalSide().isClient()) {
             handler.accept(() -> {
                 CustomGun.getSideExecutor().executeOn(McSide.CLIENT, () -> () ->
-                        _ServerMessageLevelUp.onLevelUp(message)
+                        _S2CMessageGunLevelUp.onLevelUp(message)
                 );
             });
         }

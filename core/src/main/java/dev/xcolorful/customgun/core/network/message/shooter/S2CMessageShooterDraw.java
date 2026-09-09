@@ -8,7 +8,7 @@
 package dev.xcolorful.customgun.core.network.message.shooter;
 
 import dev.xcolorful.customgun.CustomGun;
-import dev.xcolorful.customgun.client.network.message.event._ServerMessageGunDraw;
+import dev.xcolorful.customgun.client.network.message.shooter._S2CMessageShooterDraw;
 import dev.xcolorful.customgun.core.api.network.message.IMessage;
 import dev.xcolorful.customgun.core.util.NetworkUtils;
 import net.minecraft.network.FriendlyByteBuf;
@@ -38,7 +38,7 @@ public record S2CMessageShooterDraw(int entityId,
     @Override
     public void handle(S2CMessageShooterDraw message, Consumer<Runnable> handler, NetworkContext context) {
         if (CustomGun.getSideExecutor().getLogicalSide().isClient()) {
-            handler.accept(() -> _ServerMessageGunDraw.doClientEvent(message));
+            handler.accept(() -> _S2CMessageShooterDraw.doClientEvent(message));
         }
     }
 }

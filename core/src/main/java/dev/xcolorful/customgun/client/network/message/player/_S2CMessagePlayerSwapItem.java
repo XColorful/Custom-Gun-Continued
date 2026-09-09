@@ -5,7 +5,7 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package dev.xcolorful.customgun.client.network.message.event;
+package dev.xcolorful.customgun.client.network.message.player;
 
 import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.api.event.player.SwapItemWithOffHandEvent;
@@ -13,7 +13,7 @@ import dev.xcolorful.customgun.core.network.message.player.S2CMessagePlayerSwapI
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
-public class _ServerMessageSwapItem {
+public class _S2CMessagePlayerSwapItem {
 
     public static void doClientEvent(S2CMessagePlayerSwapItem message) {
         CustomGun.getEventPoster().postCustomEvent(new SwapItemWithOffHandEvent());

@@ -5,7 +5,7 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package dev.xcolorful.customgun.client.network.message;
+package dev.xcolorful.customgun.client.network.message.shooter;
 
 import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.api.entity.LocalShooterProperty;
@@ -14,7 +14,7 @@ import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
 @ApiStatus.Internal
-public class _ServerMessageSyncBaseTimestamp {
+public class _S2CMessageShooterBaseTimestamp {
     private static final Marker MARKER = MarkerFactory.getMarker("SYNC_BASE_TIMESTAMP");
 
     public static void updateBaseTimestamp(long timestamp) {

@@ -5,7 +5,7 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package dev.xcolorful.customgun.client.network.message;
+package dev.xcolorful.customgun.client.network.message.shooter;
 
 import dev.xcolorful.customgun.client.api.gui.screen.refit.IGunRefitScreen;
 import dev.xcolorful.customgun.client.util.ClientGuiUtils;
@@ -15,7 +15,7 @@ import net.minecraft.client.player.LocalPlayer;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
-public class _ServerMessageRefreshRefitScreen {
+public class _S2CMessageShooterRefit_refresh {
 
     public static void updateScreen() {
         Minecraft mc = Minecraft.getInstance();

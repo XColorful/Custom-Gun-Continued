@@ -8,7 +8,7 @@
 package dev.xcolorful.customgun.core.network.message.resource;
 
 import dev.xcolorful.customgun.CustomGun;
-import dev.xcolorful.customgun.client.network.message._ServerMessageSyncGunPack;
+import dev.xcolorful.customgun.client.network.message.resource._S2CMessageSyncDataPack;
 import dev.xcolorful.customgun.core.api.network.message.IMessage;
 import dev.xcolorful.customgun.core.resource.network.SyncDataType;
 import dev.xcolorful.customgun.core.util.NetworkUtils;
@@ -39,7 +39,7 @@ public record S2CMessageSyncDataPack(Map<SyncDataType, Map<ResourceLocation, Str
             Connection connection = context.connection();
             boolean remoteConnection = connection != null && !connection.isMemoryConnection();
             // 客户端侧可以异步解析Pojo，把enqueue的handler传过去
-            _ServerMessageSyncGunPack.doSync(message, handler, remoteConnection);
+            _S2CMessageSyncDataPack.doSync(message, handler, remoteConnection);
         }
     }
 }

@@ -5,7 +5,7 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package dev.xcolorful.customgun.client.network.message;
+package dev.xcolorful.customgun.client.network.message.gun;
 
 import dev.xcolorful.customgun.core.network.message.gun.S2CMessageGunLevelUp;
 import net.minecraft.client.Minecraft;
@@ -14,7 +14,7 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
-public class _ServerMessageLevelUp {
+public class _S2CMessageGunLevelUp {
 
     public static void onLevelUp(S2CMessageGunLevelUp message) {
         int level = message.level();

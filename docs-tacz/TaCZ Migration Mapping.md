@@ -526,11 +526,6 @@ Notation:
 |`LoginIndexHolder`|`LoginIndexHolder`|
 |`NetworkHandler`|`NetworkHandler`|
 
-|com.tacz.guns.network|dev.xcolorful.customgun.client.network|
-|---|---|
-|message.event.`*`|message.event.`_*`|
-|message.`*Message*`|message.`_*Message*`|
-
 |com.tacz.guns.network|dev.xcolorful.customgun.core.api.network|
 |---|---|
 |`IMessage`|message.`IMessage`|

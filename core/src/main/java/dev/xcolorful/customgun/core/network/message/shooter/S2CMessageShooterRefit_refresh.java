@@ -8,7 +8,7 @@
 package dev.xcolorful.customgun.core.network.message.shooter;
 
 import dev.xcolorful.customgun.CustomGun;
-import dev.xcolorful.customgun.client.network.message._ServerMessageRefreshRefitScreen;
+import dev.xcolorful.customgun.client.network.message.shooter._S2CMessageShooterRefit_refresh;
 import dev.xcolorful.customgun.core.api.common.McSide;
 import dev.xcolorful.customgun.core.api.network.message.IMessage;
 import net.minecraft.network.FriendlyByteBuf;
@@ -31,7 +31,7 @@ public class S2CMessageShooterRefit_refresh implements IMessage<S2CMessageShoote
     @Override
     public void handle(S2CMessageShooterRefit_refresh message, Consumer<Runnable> handler, NetworkContext context) {
         if (CustomGun.getSideExecutor().getLogicalSide().isClient()) {
-            handler.accept(() -> CustomGun.getSideExecutor().executeOn(McSide.CLIENT, () -> _ServerMessageRefreshRefitScreen::updateScreen
+            handler.accept(() -> CustomGun.getSideExecutor().executeOn(McSide.CLIENT, () -> _S2CMessageShooterRefit_refresh::updateScreen
             ));
         }
     }

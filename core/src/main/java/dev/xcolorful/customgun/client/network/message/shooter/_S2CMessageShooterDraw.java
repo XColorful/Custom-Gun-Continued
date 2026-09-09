@@ -5,39 +5,34 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package dev.xcolorful.customgun.client.network.message.event;
+package dev.xcolorful.customgun.client.network.message.shooter;
 
 import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.util.ClientWorldUtils;
 import dev.xcolorful.customgun.core.api.common.McLogicalSide;
 import dev.xcolorful.customgun.core.api.entity.ILivingShooter;
 import dev.xcolorful.customgun.core.api.entity.shooter.ILivingShooterGetter;
-import dev.xcolorful.customgun.core.api.event.shooter.ShooterMeleeEvent;
-import dev.xcolorful.customgun.core.api.item.IGun;
-import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
-import dev.xcolorful.customgun.core.network.message.shooter.S2CMessageShooterMelee;
+import dev.xcolorful.customgun.core.api.event.shooter.ShooterDrawEvent;
+import dev.xcolorful.customgun.core.network.message.shooter.S2CMessageShooterDraw;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 @ApiStatus.Internal
-public class _ServerMessageGunMelee {
+public class _S2CMessageShooterDraw {
 
-    public static void doClientEvent(S2CMessageShooterMelee message) {
+    public static void doClientEvent(S2CMessageShooterDraw message) {
         ClientLevel level = Minecraft.getInstance().level;
         if (level == null) return;
 
-        @Nullable LivingEntity livingShooter = ClientWorldUtils.getLivingEntityById(level, message.shooterId());
+        @Nullable LivingEntity livingShooter = ClientWorldUtils.getLivingEntityById(level, message.entityId());
         @Nullable ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromEntity(livingShooter);
-        ItemStack gunItem = message.gunItem();
-        @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
 
-        ShooterMeleeEvent event = new ShooterMeleeEvent(McLogicalSide.CLIENT,
+        ShooterDrawEvent event = new ShooterDrawEvent(McLogicalSide.CLIENT,
                 iLivingShooter, livingShooter,
-                iGun, gunItem);
+                message.previousGunItem(), message.currentGunItem());
         CustomGun.getEventPoster().postCustomEvent(event);
     }
 }

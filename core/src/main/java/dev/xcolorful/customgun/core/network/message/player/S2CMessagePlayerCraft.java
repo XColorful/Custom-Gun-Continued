@@ -8,7 +8,7 @@
 package dev.xcolorful.customgun.core.network.message.player;
 
 import dev.xcolorful.customgun.CustomGun;
-import dev.xcolorful.customgun.client.network.message._ServerMessageCraft;
+import dev.xcolorful.customgun.client.network.message.player._S2CMessagePlayerCraft;
 import dev.xcolorful.customgun.core.api.common.McSide;
 import dev.xcolorful.customgun.core.api.network.message.IMessage;
 import net.minecraft.network.FriendlyByteBuf;
@@ -32,7 +32,7 @@ public record S2CMessagePlayerCraft(int menuId)
         if (CustomGun.getSideExecutor().getLogicalSide().isClient()) {
             handler.accept(() -> {
                 CustomGun.getSideExecutor().executeOn(McSide.CLIENT, () -> () ->
-                        _ServerMessageCraft.updateScreen(message.menuId)
+                        _S2CMessagePlayerCraft.updateScreen(message.menuId)
                 );
             });
         }

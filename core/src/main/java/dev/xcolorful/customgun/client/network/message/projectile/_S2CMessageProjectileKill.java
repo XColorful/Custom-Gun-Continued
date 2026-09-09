@@ -5,7 +5,7 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package dev.xcolorful.customgun.client.network.message.event;
+package dev.xcolorful.customgun.client.network.message.projectile;
 
 import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.util.ClientWorldUtils;
@@ -27,7 +27,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @ApiStatus.Internal
-public class _ServerMessageGunKill {
+public class _S2CMessageProjectileKill {
 
     public static void onKill(S2CMessageProjectileKill message) {
         ClientLevel level = Minecraft.getInstance().level;

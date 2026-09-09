@@ -5,7 +5,7 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package dev.xcolorful.customgun.client.network.message;
+package dev.xcolorful.customgun.client.network.message.resource;
 
 import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.resource._AssetsInstanceManager;
@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
 @ApiStatus.Internal
-public class _ServerMessageSyncGunPack {
+public class _S2CMessageSyncDataPack {
     private static final AtomicLong TICKET_COUNTER = new AtomicLong(0);
     private static volatile long lastActiveTicket = -1;
     private static volatile long lastCompletedTicket = -1;

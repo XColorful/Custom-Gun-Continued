@@ -5,7 +5,7 @@
  * Source: https://github.com/MCModderAnchor/TACZ
  */
 
-package dev.xcolorful.customgun.client.network.message;
+package dev.xcolorful.customgun.client.network.message.resource;
 
 import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
 import dev.xcolorful.customgun.client.api.sound.gun.GunSoundType;
@@ -20,7 +20,7 @@ import net.minecraft.world.entity.LivingEntity;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
-public class _ServerMessageSound {
+public class _S2CMessageResourceSound {
 
     public static void playSound(S2CMessageResourceSound message) {
         ClientLevel level = Minecraft.getInstance().level;

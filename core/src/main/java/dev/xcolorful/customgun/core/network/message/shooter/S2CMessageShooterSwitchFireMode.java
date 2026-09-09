@@ -8,7 +8,7 @@
 package dev.xcolorful.customgun.core.network.message.shooter;
 
 import dev.xcolorful.customgun.CustomGun;
-import dev.xcolorful.customgun.client.network.message.event._ServerMessageGunSwitchFireMode;
+import dev.xcolorful.customgun.client.network.message.shooter._S2CMessageShooterSwitchFireMode;
 import dev.xcolorful.customgun.core.api.network.message.IMessage;
 import dev.xcolorful.customgun.core.util.NetworkUtils;
 import net.minecraft.network.FriendlyByteBuf;
@@ -35,7 +35,7 @@ public record S2CMessageShooterSwitchFireMode(int shooterId,
     @Override
     public void handle(S2CMessageShooterSwitchFireMode message, Consumer<Runnable> handler, NetworkContext context) {
         if (CustomGun.getSideExecutor().getLogicalSide().isClient()) {
-            handler.accept(() -> _ServerMessageGunSwitchFireMode.doClientEvent(message));
+            handler.accept(() -> _S2CMessageShooterSwitchFireMode.doClientEvent(message));
         }
     }
 }

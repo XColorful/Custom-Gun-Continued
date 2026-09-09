@@ -8,7 +8,7 @@
 package dev.xcolorful.customgun.core.network.message.shooter;
 
 import dev.xcolorful.customgun.CustomGun;
-import dev.xcolorful.customgun.client.network.message.event._ServerMessageGunReload;
+import dev.xcolorful.customgun.client.network.message.shooter._S2CMessageShooterReload;
 import dev.xcolorful.customgun.core.api.network.message.IMessage;
 import dev.xcolorful.customgun.core.util.NetworkUtils;
 import net.minecraft.network.FriendlyByteBuf;
@@ -35,7 +35,7 @@ public record S2CMessageShooterReload(int shooterId,
     @Override
     public void handle(S2CMessageShooterReload message, Consumer<Runnable> handler, NetworkContext context) {
         if (CustomGun.getSideExecutor().getLogicalSide().isClient()) {
-            handler.accept(() -> _ServerMessageGunReload.doClientEvent(message));
+            handler.accept(() -> _S2CMessageShooterReload.doClientEvent(message));
         }
     }
 }

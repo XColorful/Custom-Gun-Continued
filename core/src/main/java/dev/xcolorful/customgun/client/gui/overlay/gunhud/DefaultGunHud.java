@@ -11,6 +11,7 @@ import dev.xcolorful.customgun.client.util.ClientGuiUtils;
 import dev.xcolorful.customgun.core.api.event.*;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
+import dev.xcolorful.customgun.core.entity.shooter.LivingShooterAspect;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.player.LocalPlayer;
@@ -54,7 +55,7 @@ public class DefaultGunHud implements IOverlaySubManager, IEventHandler {
 
     private void onClientTick(IClientTickEvent event) {
         this._check_tickHud(event);
-        this.forceRefresh = false;
+        if (this.forceRefresh > 0) this.forceRefresh--;
     }
 
     private void onPrepareRenderGui(IPrepareRenderGuiEvent event) {
@@ -71,7 +72,7 @@ public class DefaultGunHud implements IOverlaySubManager, IEventHandler {
     }
 
     private boolean isEnabledBefore = false;
-    private boolean forceRefresh = false;
+    private int forceRefresh = 0;
     private final _GunHudState state = new _GunHudState();
     private final _GunHudTrigger trigger = _GunHudTrigger.INSTANCE;
 
@@ -107,7 +108,7 @@ public class DefaultGunHud implements IOverlaySubManager, IEventHandler {
 
         if ( // 刷新
                 // 强制刷新
-                this.forceRefresh
+                this.forceRefresh > 0
                 // 配置持续显示
                 || this.shouldKeepDisplay()) {
             this.state.setPendingMessage(_GunHudBuilder.getMessage(localPlayer, iGun, gunItem));
@@ -123,8 +124,9 @@ public class DefaultGunHud implements IOverlaySubManager, IEventHandler {
         this.state.setConsumed();
     }
 
+    private static final int refreshTicks = LivingShooterAspect.NETWORK_DELAY_MS / 50;
     protected void setForceRefresh() {
-        this.forceRefresh = true;
+        this.forceRefresh = refreshTicks; // 执行完操作后持续几个tick，等服务器回消息
     }
 
     // --------IOverlaySubManager--------

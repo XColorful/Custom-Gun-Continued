@@ -23,7 +23,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class InteractFilterData {
-    private static boolean DEFAULT_RESULT = false;
+    /**
+     * 默认给用，默认一般玩家不知道去哪设置
+     */
+    private static boolean DEFAULT_RESULT = true;
     // 方块
     private static final Map<ResourceLocation, Boolean> BLOCK_FILTER = new HashMap<>();
     // 实体

@@ -17,7 +17,7 @@ import dev.xcolorful.customgun.core.api.entity.victim.IBulletVictimEntityGetter;
 import dev.xcolorful.customgun.core.api.event.projectile.ProjectileHitEntityEvent;
 import dev.xcolorful.customgun.core.api.event.projectile.ProjectileHitEntityFinishEvent;
 import dev.xcolorful.customgun.core.api.projectile.physics.IProjectilePhysicsRuntime;
-import dev.xcolorful.customgun.core.network.message.event.ServerMessageGunHurt;
+import dev.xcolorful.customgun.core.network.message.projectile.S2CMessageProjectileHit;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.world.entity.Entity;
@@ -29,7 +29,7 @@ import org.jetbrains.annotations.Nullable;
 @ApiStatus.Internal
 public class _ServerMessageGunHurt {
 
-    public static void onHurt(ServerMessageGunHurt message) {
+    public static void onHurt(S2CMessageProjectileHit message) {
         ClientLevel level = Minecraft.getInstance().level;
         if (level == null) return;
 
@@ -46,7 +46,7 @@ public class _ServerMessageGunHurt {
                 entityHitResult, iBulletVictimEntity);
         CustomGun.getEventPoster().postCustomEvent(event);
     }
-    private static @NotNull ProjectileHitEntityEvent.Context getContext(ServerMessageGunHurt message, @Nullable Entity victimEntity, @Nullable LivingEntity livingShooter) {
+    private static @NotNull ProjectileHitEntityEvent.Context getContext(S2CMessageProjectileHit message, @Nullable Entity victimEntity, @Nullable LivingEntity livingShooter) {
         var gunLocation = message.gunLocation();
         var gunDisplayLocation = message.gunDisplayLocation();
         float damage = message.damage();

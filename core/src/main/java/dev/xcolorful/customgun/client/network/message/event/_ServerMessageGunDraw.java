@@ -13,7 +13,7 @@ import dev.xcolorful.customgun.core.api.common.McLogicalSide;
 import dev.xcolorful.customgun.core.api.entity.ILivingShooter;
 import dev.xcolorful.customgun.core.api.entity.shooter.ILivingShooterGetter;
 import dev.xcolorful.customgun.core.api.event.shooter.ShooterDrawEvent;
-import dev.xcolorful.customgun.core.network.message.event.ServerMessageGunDraw;
+import dev.xcolorful.customgun.core.network.message.shooter.S2CMessageShooterDraw;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.world.entity.LivingEntity;
@@ -23,7 +23,7 @@ import org.jetbrains.annotations.Nullable;
 @ApiStatus.Internal
 public class _ServerMessageGunDraw {
 
-    public static void doClientEvent(ServerMessageGunDraw message) {
+    public static void doClientEvent(S2CMessageShooterDraw message) {
         ClientLevel level = Minecraft.getInstance().level;
         if (level == null) return;
 

@@ -18,8 +18,8 @@ import dev.xcolorful.customgun.core.api.event.projectile.ProjectileKillEntityEve
 import dev.xcolorful.customgun.core.api.minecraft.damage.CustomDamageType;
 import dev.xcolorful.customgun.core.api.projectile.physics.IProjectilePhysicsRuntime;
 import dev.xcolorful.customgun.core.init.registry.ModDamageTypes;
-import dev.xcolorful.customgun.core.network.message.event.ServerMessageGunHurt;
-import dev.xcolorful.customgun.core.network.message.event.ServerMessageGunKill;
+import dev.xcolorful.customgun.core.network.message.projectile.S2CMessageProjectileHit;
+import dev.xcolorful.customgun.core.network.message.projectile.S2CMessageProjectileKill;
 import dev.xcolorful.customgun.core.resource.data.data.gun.bullet.damage._DistanceDamageData;
 import dev.xcolorful.customgun.core.util.SendUtils;
 import net.minecraft.core.RegistryAccess;
@@ -150,8 +150,8 @@ public class _ProjectileHit {
                     entityHitResult, hitEvent.getIBulletVictimEntity()));
             if (causingEntity != null) {
                 // 仅在有伤害源实体才发包
-                ServerMessageGunKill message; {
-                    message = new ServerMessageGunKill(gunProjectile.getId(), victimEntity.getId(), causingEntity.getId(),
+                S2CMessageProjectileKill message; {
+                    message = new S2CMessageProjectileKill(gunProjectile.getId(), victimEntity.getId(), causingEntity.getId(),
                             hitEvent.context.getGunLocation(), iGunProjectile.getGunDisplayLocation(gunProjectile),
                             baseDamage, hitEvent.context.isHeadshot(), hitEvent.context.getHeadshotMultiplier());
                 }
@@ -166,8 +166,8 @@ public class _ProjectileHit {
                     entityHitResult, hitEvent.getIBulletVictimEntity()));
             if (causingEntity != null) {
                 // 仅在有伤害源实体才发包
-                ServerMessageGunHurt message; {
-                    message = new ServerMessageGunHurt(gunProjectile.getId(), victimEntity.getId(), causingEntity.getId(),
+                S2CMessageProjectileHit message; {
+                    message = new S2CMessageProjectileHit(gunProjectile.getId(), victimEntity.getId(), causingEntity.getId(),
                             hitEvent.context.getGunLocation(), iGunProjectile.getGunDisplayLocation(gunProjectile),
                             baseDamage, hitEvent.context.isHeadshot(), hitEvent.context.getHeadshotMultiplier());
                 }

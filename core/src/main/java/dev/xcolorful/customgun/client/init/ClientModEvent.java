@@ -13,7 +13,7 @@ import dev.xcolorful.customgun.client.resource._AssetsInstanceManager;
 import dev.xcolorful.customgun.client.resource.network.SyncDataCache;
 import dev.xcolorful.customgun.client.util.ClientMcUtils;
 import dev.xcolorful.customgun.core.entity.LivingShooterSyncHandler;
-import dev.xcolorful.customgun.core.network.message.ClientMessageSyncBaseTimestamp;
+import dev.xcolorful.customgun.core.network.message.shooter.C2SMessageShooterBaseTimestamp;
 import dev.xcolorful.customgun.core.resource._AllDataManager;
 import dev.xcolorful.customgun.core.util.SendUtils;
 import net.minecraft.client.Minecraft;
@@ -52,7 +52,7 @@ public class ClientModEvent {
     private void _syncTimestamp(LocalPlayer player) {
         ClientMcUtils.schedule(Minecraft.getInstance(), () -> {
             _ServerMessageSyncBaseTimestamp.updateBaseTimestamp(System.currentTimeMillis());
-            SendUtils.sendMessageToServer(new ClientMessageSyncBaseTimestamp());
+            SendUtils.sendMessageToServer(new C2SMessageShooterBaseTimestamp());
         });
     }
 

@@ -13,7 +13,7 @@ import dev.xcolorful.customgun.client.config.SoundConfig;
 import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
 import dev.xcolorful.customgun.client.sound.SoundPlayManager;
 import dev.xcolorful.customgun.client.util.ClientWorldUtils;
-import dev.xcolorful.customgun.core.network.message.ServerMessageSound;
+import dev.xcolorful.customgun.core.network.message.resource.S2CMessageResourceSound;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.world.entity.LivingEntity;
@@ -22,7 +22,7 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.Internal
 public class _ServerMessageSound {
 
-    public static void playSound(ServerMessageSound message) {
+    public static void playSound(S2CMessageResourceSound message) {
         ClientLevel level = Minecraft.getInstance().level;
         if (level == null) return;
         LivingEntity livingEntity = ClientWorldUtils.getLivingEntityById(level, message.entityId());

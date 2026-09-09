@@ -15,7 +15,7 @@ import dev.xcolorful.customgun.core.api.entity.shooter.ILivingShooterGetter;
 import dev.xcolorful.customgun.core.api.event.shooter.ShooterSwitchFireModeEvent;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
-import dev.xcolorful.customgun.core.network.message.event.ServerMessageGunSwitchFireMode;
+import dev.xcolorful.customgun.core.network.message.shooter.S2CMessageShooterSwitchFireMode;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.world.entity.LivingEntity;
@@ -26,7 +26,7 @@ import org.jetbrains.annotations.Nullable;
 @ApiStatus.Internal
 public class _ServerMessageGunSwitchFireMode {
 
-    public static void doClientEvent(ServerMessageGunSwitchFireMode message) {
+    public static void doClientEvent(S2CMessageShooterSwitchFireMode message) {
         ClientLevel level = Minecraft.getInstance().level;
         if (level == null) return;
 

@@ -36,7 +36,7 @@ public enum CustomEventType {
     SHOOTER_FIRE_EVENT(ShooterFireEvent.class),
     SHOOTER_GUN_MODIFIER_CACHE_EVENT(ShooterGunModifierCacheEvent.class),
     SHOOTER_INSPECT_EVENT(ShooterInspectEvent.class),
-    SHOOTER_PREPARE_MELEE_EVENT(ShooterPrepareMeleeEvent.class),
+    SHOOTER_PREPARE_MELEE_EVENT(ShooterMeleeEvent.class),
     SHOOTER_RELOAD_EVENT(ShooterReloadEvent.class),
     SHOOTER_RELOAD_FEED_EVENT(ShooterReloadFeedEvent.class),
     SHOOTER_RELOAD_FINISH_EVENT(ShooterReloadFinishEvent.class),

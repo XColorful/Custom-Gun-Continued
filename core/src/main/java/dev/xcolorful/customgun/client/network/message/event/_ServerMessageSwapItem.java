@@ -9,13 +9,13 @@ package dev.xcolorful.customgun.client.network.message.event;
 
 import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.api.event.player.SwapItemWithOffHandEvent;
-import dev.xcolorful.customgun.core.network.message.event.ServerMessageSwapItem;
+import dev.xcolorful.customgun.core.network.message.player.S2CMessagePlayerSwapItem;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
 public class _ServerMessageSwapItem {
 
-    public static void doClientEvent(ServerMessageSwapItem message) {
+    public static void doClientEvent(S2CMessagePlayerSwapItem message) {
         CustomGun.getEventPoster().postCustomEvent(new SwapItemWithOffHandEvent());
     }
 }

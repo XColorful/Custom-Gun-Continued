@@ -12,7 +12,7 @@ import dev.xcolorful.customgun.core.api.entity.shooter.ILivingShooterGetter;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
 import dev.xcolorful.customgun.core.entity.shooter.modifier.ShooterGunModifierManager;
-import dev.xcolorful.customgun.core.network.message.event.ServerMessageGunSwitchFireMode;
+import dev.xcolorful.customgun.core.network.message.shooter.S2CMessageShooterSwitchFireMode;
 import dev.xcolorful.customgun.core.util.SendUtils;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
@@ -40,7 +40,7 @@ public final class LivingShooterSwitchFireMode extends LivingShooterAspect {
         if (!success) return;
 
         SendUtils.sendMessageToNearbyPlayers(this.livingShooter,
-                new ServerMessageGunSwitchFireMode(this.livingShooter.getId(), gunItem));
+                new S2CMessageShooterSwitchFireMode(this.livingShooter.getId(), gunItem));
 
         // 刷新配件缓存
         ShooterGunModifierManager.postChangeEvent(this.livingShooter, gunItem);

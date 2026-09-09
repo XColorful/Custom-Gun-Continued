@@ -28,7 +28,7 @@ import dev.xcolorful.customgun.core.api.sound.gun.GunSoundTypeTag;
 import dev.xcolorful.customgun.core.config.AmmoConfig;
 import dev.xcolorful.customgun.core.entity.projectile.GunProjectile;
 import dev.xcolorful.customgun.core.init.registry.ModEntities;
-import dev.xcolorful.customgun.core.network.message.event.ServerMessageGunFire;
+import dev.xcolorful.customgun.core.network.message.gun.S2CMessageGunFire;
 import dev.xcolorful.customgun.core.resource.data.data.AttachmentData;
 import dev.xcolorful.customgun.core.resource.data.data.GunData;
 import dev.xcolorful.customgun.core.resource.data.data.attachment._MuzzleModifierData;
@@ -176,7 +176,7 @@ public class _DefaultGunFire {
                     iGun, gunItem, iLivingShooter, livingShooter))) {
                 return IGunAttackRuntime.GunFireResult.SUCCESS;
             } else {
-                SendUtils.sendMessageToNearbyPlayers(livingShooter, new ServerMessageGunFire(livingShooter.getId(), gunItem));
+                SendUtils.sendMessageToNearbyPlayers(livingShooter, new S2CMessageGunFire(livingShooter.getId(), gunItem));
             }
         }
 

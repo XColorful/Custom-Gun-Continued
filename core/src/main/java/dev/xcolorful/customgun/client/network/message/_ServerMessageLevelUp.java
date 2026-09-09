@@ -7,7 +7,7 @@
 
 package dev.xcolorful.customgun.client.network.message;
 
-import dev.xcolorful.customgun.core.network.message.ServerMessageLevelUp;
+import dev.xcolorful.customgun.core.network.message.gun.S2CMessageGunLevelUp;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -16,7 +16,7 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.Internal
 public class _ServerMessageLevelUp {
 
-    public static void onLevelUp(ServerMessageLevelUp message) {
+    public static void onLevelUp(S2CMessageGunLevelUp message) {
         int level = message.level();
         ItemStack gun = message.gun();
         Player player = Minecraft.getInstance().player;

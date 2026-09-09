@@ -10,7 +10,7 @@ package dev.xcolorful.customgun.client.network.message;
 import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.resource._AssetsInstanceManager;
 import dev.xcolorful.customgun.client.resource.network.SyncDataCache;
-import dev.xcolorful.customgun.core.network.message.ServerMessageSyncGunPack;
+import dev.xcolorful.customgun.core.network.message.resource.S2CMessageSyncDataPack;
 import dev.xcolorful.customgun.core.resource._AllDataManager;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -25,7 +25,7 @@ public class _ServerMessageSyncGunPack {
     private static volatile long lastActiveTicket = -1;
     private static volatile long lastCompletedTicket = -1;
 
-    public static void doSync(ServerMessageSyncGunPack message, Consumer<Runnable> handler, boolean remoteConnection) {
+    public static void doSync(S2CMessageSyncDataPack message, Consumer<Runnable> handler, boolean remoteConnection) {
         if (remoteConnection) {
             _AllDataManager.clearInstance();
         }

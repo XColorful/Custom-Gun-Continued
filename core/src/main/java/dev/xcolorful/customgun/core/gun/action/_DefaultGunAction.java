@@ -19,7 +19,7 @@ import dev.xcolorful.customgun.core.api.item.gun.BoltType;
 import dev.xcolorful.customgun.core.api.item.gun.FireModeType;
 import dev.xcolorful.customgun.core.api.minecraft.capability.IInventoryCapability;
 import dev.xcolorful.customgun.core.api.resource.ResourceApi;
-import dev.xcolorful.customgun.core.network.message.event.ServerMessageGunReloadFeed;
+import dev.xcolorful.customgun.core.network.message.shooter.S2CMessageShooterReloadFeed;
 import dev.xcolorful.customgun.core.resource.data.data.GunData;
 import dev.xcolorful.customgun.core.resource.data.data.gun._ReloadData;
 import dev.xcolorful.customgun.core.resource.data.data.gun.reload._ReloadCooldownData;
@@ -282,7 +282,7 @@ public class _DefaultGunAction {
                 iLivingShooter, livingShooter, iGun, gunItem));
         // 发包通知客户端
         SendUtils.sendMessageToNearbyPlayersAndSelf(livingShooter, // 客户端只接受item更新，不知道是否是reload feed，所以还要发给自己
-                new ServerMessageGunReloadFeed(livingShooter.getId(), gunItem));
+                new S2CMessageShooterReloadFeed(livingShooter.getId(), gunItem));
     }
     /**
      * 获取不到玩家 则 只能消耗枪械上的子弹

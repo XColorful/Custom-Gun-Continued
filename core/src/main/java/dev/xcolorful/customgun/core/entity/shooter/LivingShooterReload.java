@@ -15,7 +15,7 @@ import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.gun.BoltType;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
 import dev.xcolorful.customgun.core.api.resource.ResourceApi;
-import dev.xcolorful.customgun.core.network.message.event.ServerMessageGunReload;
+import dev.xcolorful.customgun.core.network.message.shooter.S2CMessageShooterReload;
 import dev.xcolorful.customgun.core.resource.data.data.GunData;
 import dev.xcolorful.customgun.core.resource.instance.data.GunIndexInstance;
 import dev.xcolorful.customgun.core.util.SendUtils;
@@ -70,7 +70,7 @@ public final class LivingShooterReload extends LivingShooterAspect {
 
         // 发包通知客户端
         SendUtils.sendMessageToNearbyPlayersAndSelf(this.livingShooter, // 客户端reload时只检查canReload，没有post事件，所以还要发给自己
-                new ServerMessageGunReload(this.livingShooter.getId(), gunItem));
+                new S2CMessageShooterReload(this.livingShooter.getId(), gunItem));
 
         // 执行服务端 reload 相关内容
         this._doReload(currentTimeMillis, iGun, gunItem);

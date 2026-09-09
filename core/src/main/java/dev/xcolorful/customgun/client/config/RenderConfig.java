@@ -29,7 +29,7 @@ public class RenderConfig {
     public static IModConfigSpec<Double> KILL_AMOUNT_DURATION_SECOND;
     public static IModConfigSpec<Integer> TARGET_RENDER_DISTANCE;
     public static IModConfigSpec<Boolean> ENABLE_FIRST_PERSON_BULLET_TRACER;
-    public static IModConfigSpec<Boolean> DISABLE_INTERACT_HUD_TEXT;
+    public static IModConfigSpec<Boolean> ENABLE_SHOOTER_OPERATION_HUD;
     public static IModConfigSpec<Boolean> AUTO_SELECT_GUN_SMITH_TABLE_FILTER;
     public static IModConfigSpec<Integer> DAMAGE_COUNTER_RESET_TIME;
     public static IModConfigSpec<Boolean> DISABLE_MOVEMENT_ATTRIBUTE_FOV;
@@ -89,8 +89,9 @@ public class RenderConfig {
         ENABLE_FIRST_PERSON_BULLET_TRACER = builder.addConfig(ClientModConfigTag.enableFirstPersonBulletTracer_path, true);
         FIRST_PERSON_BULLET_TRACER_ENABLE = ENABLE_FIRST_PERSON_BULLET_TRACER;
 
-        builder.addComment(ClientModConfigTag.disableInteractHudText_comment);
-        DISABLE_INTERACT_HUD_TEXT = builder.addConfig(ClientModConfigTag.disableInteractHudText_path, false);
+        builder.addComment(ClientModConfigTag.enableShooterOperationHUD_comment);
+        ENABLE_SHOOTER_OPERATION_HUD = builder.addConfig(ClientModConfigTag.enableShooterOperationHUD_path, true);
+        DISABLE_INTERACT_HUD_TEXT_ = ENABLE_SHOOTER_OPERATION_HUD;
 
         builder.addComment(ClientModConfigTag.autoSelectGunSmithTableFilter_comment);
         AUTO_SELECT_GUN_SMITH_TABLE_FILTER = builder.addConfig(ClientModConfigTag.autoSelectGunSmithTableFilter_path, true);
@@ -116,4 +117,5 @@ public class RenderConfig {
     @Deprecated(forRemoval = true) public static IModConfigSpec<Boolean> FIRST_PERSON_BULLET_TRACER_ENABLE;
     @Deprecated(forRemoval = true) public static IModConfigSpec<Boolean> ENABLE_RESOURCE_LOCATION_IN_TOOLTIP;
     @Deprecated(forRemoval = true) public static IModConfigSpec<Boolean> GUN_HUD_ENABLE;
+    @Deprecated(forRemoval = true) public static IModConfigSpec<Boolean> DISABLE_INTERACT_HUD_TEXT_;
 }

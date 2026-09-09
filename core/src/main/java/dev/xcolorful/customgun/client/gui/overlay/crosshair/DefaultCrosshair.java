@@ -53,8 +53,7 @@ public class DefaultCrosshair implements IOverlaySubManager, IEventHandler {
     /**
      * @return 是否处于不应该渲染overlay的状态
      */
-    private boolean _shouldForceDisableOverlay() {
-        Minecraft mc = Minecraft.getInstance();
+    private boolean _shouldForceDisableOverlay(Minecraft mc) {
         if ( // 状态检查
                 // 按F1 (不显示GUI)
                 ClientGuiUtils.isGuiHidden(mc)
@@ -84,7 +83,7 @@ public class DefaultCrosshair implements IOverlaySubManager, IEventHandler {
 
         if ( // 状态检查
                 // 不需要渲染的状态
-                _shouldForceDisableOverlay()
+                _shouldForceDisableOverlay(mc)
                 // 不是需要接管的overlay
                 || !this.getOverlayName().equals(event.getRegistryLocation().getPath())
         ) return;

@@ -1,7 +1,7 @@
 [English](#English)
 
 # 渲染配置
-> wiki 版本：`0.0.11`.7
+> wiki 版本：`0.0.11`.8
 
 路径：`render`
 - `EnableLaserFadeOut`（bool）：是否对激光应用淡出效果
@@ -29,7 +29,7 @@
 - `KillAmountDurationSecond`（浮点）：击杀数显示持续时间（秒）
 - `TargetRenderDistance`（整数）：目标最远渲染距离
 - `EnableFirstPersonBulletTracer`（bool）：是否渲染第一人称曳光弹轨迹
-- `DisableInteractHudText`（bool）：禁用屏幕中央的交互HUD文本
+- `EnableShooterOperationHUD`（bool）：是否显示射手操作HUD
 - `AutoSelectGunSmithTableFilter`（bool）：手持枪械/配件/子弹打开改装台时是否自动选择过滤
 - `DamageCounterResetTime`（整数，≥10）：伤害计数器重置时间（毫秒）
 - `DisableMovementAttributeFov`（bool）：持枪时禁用移动速度属性对FOV的影响
@@ -53,7 +53,7 @@
 	KillAmountDurationSecond = 3.0
 	TargetRenderDistance = 128
 	EnableFirstPersonBulletTracer = true
-	DisableInteractHudText = false
+	EnableShooterOperationHUD = true
 	AutoSelectGunSmithTableFilter = true
 	DamageCounterResetTime = 2000
 	DisableMovementAttributeFov = true
@@ -62,7 +62,7 @@
 ```
 
 # English
-> wiki verison: `0.0.11`.7
+> wiki verison: `0.0.11`.8
 
 ## Render Config
 
@@ -92,7 +92,7 @@ Path: `render`
 - `KillAmountDurationSecond` (float): The duration of the kill amount, in seconds
 - `TargetRenderDistance` (integer): The farthest render distance of the target, including minecarts type
 - `EnableFirstPersonBulletTracer` (bool): Whether to render first person bullet trail
-- `DisableInteractHudText` (bool): Disable the interact HUD text in the center of the screen
+- `EnableShooterOperationHUD` (bool): Whether to display the shooter operation's HUD
 - `AutoSelectGunSmithTableFilter` (bool): Whether to automatically select the gun smith table's held item filter
 - `DamageCounterResetTime` (integer, ≥10): Max time the damage counter will reset
 - `DisableMovementAttributeFov` (bool): Disable the FOV effect from the movement speed attribute while holding a gun
@@ -116,7 +116,7 @@ Path: `render`
 	KillAmountDurationSecond = 3.0
 	TargetRenderDistance = 128
 	EnableFirstPersonBulletTracer = true
-	DisableInteractHudText = false
+	EnableShooterOperationHUD = true
 	AutoSelectGunSmithTableFilter = true
 	DamageCounterResetTime = 2000
 	DisableMovementAttributeFov = true

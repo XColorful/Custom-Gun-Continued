@@ -73,8 +73,8 @@ public class ClientModConfigTag {
     public static final String enableFirstPersonBulletTracer_path = "EnableFirstPersonBulletTracer";
     public static final String enableFirstPersonBulletTracer_comment = "Whether or not to render first person bullet trail";
 
-    public static final String disableInteractHudText_path = "DisableInteractHudText";
-    public static final String disableInteractHudText_comment = "Disable the interact hud text in center of the screen";
+    public static final String enableShooterOperationHUD_path = "EnableShooterOperationHUD";
+    public static final String enableShooterOperationHUD_comment = "Whether to display the shooter operation's HUD";
 
     public static final String autoSelectGunSmithTableFilter_path = "AutoSelectGunSmithTableFilter";
     public static final String autoSelectGunSmithTableFilter_comment = "Whether or not to automatically select the gun smith table's held item filter when opening it with a gun, attachment or ammo in main hand";

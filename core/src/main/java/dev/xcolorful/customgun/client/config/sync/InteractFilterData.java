@@ -62,6 +62,9 @@ public class InteractFilterData {
     }
 
     public static boolean canInteract(BlockState blockState) {
+        // 避免空气干扰
+        if (blockState.isAir()) return false;
+
         Block block = blockState.getBlock();
         // ResourceLocation 过滤
         Boolean allowed = BLOCK_FILTER.get(CustomGun.getMcRegistry().getBlockRl(block));

@@ -88,6 +88,7 @@ public class NetworkHandler {
         adapter.registerMessage(ID_COUNT.getAndIncrement(), ServerMessageGunSwitchFireMode.class, ServerMessageGunSwitchFireMode::decode, MessageDirection.SERVER_TO_CLIENT);
         adapter.registerMessage(ID_COUNT.getAndIncrement(), ServerMessageGunMelee.class, ServerMessageGunMelee::decode, MessageDirection.SERVER_TO_CLIENT);
         adapter.registerMessage(ID_COUNT.getAndIncrement(), ServerMessageGunReload.class, ServerMessageGunReload::decode, MessageDirection.SERVER_TO_CLIENT);
+        adapter.registerMessage(ID_COUNT.getAndIncrement(), ServerMessageGunReloadFeed.class, ServerMessageGunReloadFeed::decode, MessageDirection.SERVER_TO_CLIENT);
         adapter.registerMessage(ID_COUNT.getAndIncrement(), ServerMessageGunShoot.class, ServerMessageGunShoot::decode, MessageDirection.SERVER_TO_CLIENT);
 
         adapter.registerMessage(ID_COUNT.getAndIncrement(), ServerMessageSyncBaseTimestamp.class, ServerMessageSyncBaseTimestamp::decode, MessageDirection.SERVER_TO_CLIENT);

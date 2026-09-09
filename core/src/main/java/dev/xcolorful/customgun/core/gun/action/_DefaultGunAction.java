@@ -8,20 +8,24 @@
 package dev.xcolorful.customgun.core.gun.action;
 
 import dev.xcolorful.customgun.CustomGun;
+import dev.xcolorful.customgun.core.api.common.McLogicalSide;
 import dev.xcolorful.customgun.core.api.entity.ILivingShooter;
 import dev.xcolorful.customgun.core.api.entity.ReloadState;
 import dev.xcolorful.customgun.core.api.entity.ShooterProperty;
+import dev.xcolorful.customgun.core.api.event.shooter.ShooterReloadFeedEvent;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.gun.AmmoFeedType;
 import dev.xcolorful.customgun.core.api.item.gun.BoltType;
 import dev.xcolorful.customgun.core.api.item.gun.FireModeType;
 import dev.xcolorful.customgun.core.api.minecraft.capability.IInventoryCapability;
 import dev.xcolorful.customgun.core.api.resource.ResourceApi;
+import dev.xcolorful.customgun.core.network.message.event.ServerMessageGunReloadFeed;
 import dev.xcolorful.customgun.core.resource.data.data.GunData;
 import dev.xcolorful.customgun.core.resource.data.data.gun._ReloadData;
 import dev.xcolorful.customgun.core.resource.data.data.gun.reload._ReloadCooldownData;
 import dev.xcolorful.customgun.core.resource.data.data.gun.reload._ReloadFeedData;
 import dev.xcolorful.customgun.core.resource.instance.data.GunIndexInstance;
+import dev.xcolorful.customgun.core.util.SendUtils;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
@@ -272,6 +276,13 @@ public class _DefaultGunAction {
         if (!isTactical) {
             iGun.boltBarrelAmmo(livingShooter, gunItem);
         }
+
+        McLogicalSide logicalSide = CustomGun.getSideExecutor().getLogicalSide();
+        CustomGun.getEventPoster().postCustomEvent(new ShooterReloadFeedEvent(logicalSide,
+                iLivingShooter, livingShooter, iGun, gunItem));
+        // 发包通知客户端
+        SendUtils.sendMessageToTrackingEntityAndSelf(livingShooter,
+                new ServerMessageGunReloadFeed(livingShooter.getId(), gunItem));
     }
     /**
      * 获取不到玩家 则 只能消耗枪械上的子弹

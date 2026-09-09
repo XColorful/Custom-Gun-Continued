@@ -69,7 +69,7 @@ public final class LivingShooterReload extends LivingShooterAspect {
         }
 
         // 发包通知客户端
-        SendUtils.sendMessageToTrackingEntity(this.livingShooter,
+        SendUtils.sendMessageToTrackingEntityAndSelf(this.livingShooter,
                 new ServerMessageGunReload(this.livingShooter.getId(), gunItem));
 
         // 执行服务端 reload 相关内容

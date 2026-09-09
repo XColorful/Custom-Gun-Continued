@@ -470,7 +470,7 @@ public final class GunData extends ResourcePojo<GunData> {
         this.burstData = this.burstData == null ? new _BurstData().applyBackCompatibility() : this.burstData.applyBackCompatibility();
 
         this.meleeData = this.meleeData == null ? new _MeleeData().applyBackCompatibility() : this.meleeData.applyBackCompatibility();
-        this.heatData = this.heatData == null ? new _HeatData().applyBackCompatibility() : this.heatData.applyBackCompatibility();
+        if (this.heatData != null) this.heatData.applyBackCompatibility();
         if (this.chargingData == null) this.chargingData = new HashMap<>();
         else this.chargingData.values().forEach(_ChargingData::applyBackCompatibility);
 

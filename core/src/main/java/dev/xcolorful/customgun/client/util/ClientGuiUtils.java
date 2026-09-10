@@ -1,8 +1,10 @@
 package dev.xcolorful.customgun.client.util;
 
+import dev.xcolorful.customgun.client.CustomGunClient;
 import dev.xcolorful.customgun.client.api.minecraft.texture.CustomTexture;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Overlay;
 import net.minecraft.client.gui.screens.Screen;
@@ -30,6 +32,17 @@ public class ClientGuiUtils {
 
     public static boolean isGuiHidden(Minecraft minecraft) {
         return minecraft.options.hideGui; // minecraft.gui.hud.isHidden();
+    }
+
+    public static @Nullable Component getActionBarMessage(Gui gui) {
+        return CustomGunClient.getAccessTransformer().getOverlayMessageString(gui);
+    }
+    public static void setActionBarMessage(Gui gui, Component message, boolean animatedColor) {
+        // [1.20.1, 26.2)
+        gui.setOverlayMessage(message, animatedColor);
+
+        // [26.2, )
+//        gui.hud.setOverlayMessage(message, animatedColor);
     }
 
     public static void blitGuiTexture(GuiGraphics guiGraphics,

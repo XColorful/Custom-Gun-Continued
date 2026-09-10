@@ -22,8 +22,8 @@ import dev.xcolorful.customgun.core.api.item.gun.BoltType;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
 import dev.xcolorful.customgun.core.api.resource.ResourceApi;
 import dev.xcolorful.customgun.core.entity.shooter.LivingShooterReload;
-import dev.xcolorful.customgun.core.network.message.ClientMessagePlayerCancelReload;
-import dev.xcolorful.customgun.core.network.message.ClientMessagePlayerReloadGun;
+import dev.xcolorful.customgun.core.network.message.shooter.C2SMessageShooterReload_cancel;
+import dev.xcolorful.customgun.core.network.message.shooter.C2SMessageShooterReload;
 import dev.xcolorful.customgun.core.resource.data.data.GunData;
 import dev.xcolorful.customgun.core.resource.instance.data.GunIndexInstance;
 import dev.xcolorful.customgun.core.util.SendUtils;
@@ -68,7 +68,7 @@ public final class LocalShooterReload extends LocalShooterAspect {
         }
 
         // 发包通知服务器
-        SendUtils.sendMessageToServer(new ClientMessagePlayerReloadGun());
+        SendUtils.sendMessageToServer(new C2SMessageShooterReload());
 
         // 执行客户端 reload 相关内容
         this._doReload(iGun, gunItem);
@@ -109,7 +109,7 @@ public final class LocalShooterReload extends LocalShooterAspect {
         // 3. IGunRuntime操作结果 -> Shooter状态
         // 暂无
 
-        SendUtils.sendMessageToServer(new ClientMessagePlayerCancelReload());
+        SendUtils.sendMessageToServer(new C2SMessageShooterReload_cancel());
 
         this.doCancelReload(gunItem);
     }

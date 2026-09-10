@@ -10,7 +10,7 @@ package dev.xcolorful.customgun.core.sound;
 import dev.xcolorful.customgun.core.api.sound.attachment.AttachmentSoundTypeTag;
 import dev.xcolorful.customgun.core.api.sound.gun.GunSoundTypeTag;
 import dev.xcolorful.customgun.core.developer.PlannedRefactor;
-import dev.xcolorful.customgun.core.network.message.ServerMessageSound;
+import dev.xcolorful.customgun.core.network.message.resource.S2CMessageResourceSound;
 import dev.xcolorful.customgun.core.util.SendUtils;
 import dev.xcolorful.customgun.core.util.WorldUtils;
 import net.minecraft.core.BlockPos;
@@ -114,7 +114,7 @@ public class SoundManager {
         if (PlannedRefactor.ON_SEND_SOUND_MESSAGE) return;
         if (sourceEntity.level() instanceof ServerLevel serverLevel) {
             BlockPos pos = sourceEntity.blockPosition();
-            ServerMessageSound soundMessage = new ServerMessageSound(sourceEntity.getId(), gunId, gunDisplayId, soundName, volume, pitch, distance);
+            S2CMessageResourceSound soundMessage = new S2CMessageResourceSound(sourceEntity.getId(), gunId, gunDisplayId, soundName, volume, pitch, distance);
             serverLevel.getChunkSource().chunkMap.getPlayers(WorldUtils.chunkPos(pos), false).stream()
                     .filter(p -> p.distanceToSqr(pos.getX(), pos.getY(), pos.getZ()) < distance * distance)
                     .filter(p -> p.getId() != sourceEntity.getId())

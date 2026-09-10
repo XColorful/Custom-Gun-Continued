@@ -24,6 +24,10 @@ import org.jetbrains.annotations.Nullable;
  * 射手生物{@link ILivingShooter} 装弹完成事件
  */
 public final class ShooterReloadFinishEvent extends ShooterReloadEvent {
+    @Override
+    public boolean isCancelable() {
+        return false;
+    }
 
     public ShooterReloadFinishEvent(McLogicalSide logicalSide,
                                     @Nullable ILivingShooter iLivingShooter, @Nullable LivingEntity livingShooter,

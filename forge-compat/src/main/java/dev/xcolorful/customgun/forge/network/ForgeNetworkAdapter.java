@@ -24,7 +24,7 @@ public class ForgeNetworkAdapter implements INetworkAdapter {
     private final SimpleChannel CHANNEL;
 
     public ForgeNetworkAdapter() {
-        int protocolVersion = NetworkHandler.PROTOCOL_VERSION;
+        int protocolVersion = NetworkHandler.protocol_version;
         Channel.VersionTest acceptedVersions = Channel.VersionTest.exact(protocolVersion);
         this.HANDSHAKE_CHANNEL = ChannelBuilder
                 .named(CustomGunForge.mcRegistry.createResourceLocation(String.format("%s:handshake", CustomGun.MOD_ID)))

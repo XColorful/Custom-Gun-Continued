@@ -20,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * 服务端 收到并处理 玩家交换主副手物品 后的通知
+ * 服务端 收到并处理 玩家交换主副手物品 后通知 客户端 的事件
  */
 public final class SwapItemWithOffHandEvent extends CustomEvent {
 

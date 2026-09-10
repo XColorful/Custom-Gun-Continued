@@ -14,7 +14,7 @@ import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
 import dev.xcolorful.customgun.core.api.resource.ResourceApi;
 import dev.xcolorful.customgun.core.entity.shooter.LivingShooterAim;
-import dev.xcolorful.customgun.core.network.message.ClientMessagePlayerAim;
+import dev.xcolorful.customgun.core.network.message.shooter.C2SMessageShooterAim;
 import dev.xcolorful.customgun.core.resource.data.data.GunData;
 import dev.xcolorful.customgun.core.resource.instance.data.GunIndexInstance;
 import dev.xcolorful.customgun.core.util.SendUtils;
@@ -38,7 +38,7 @@ public final class LocalShooterAim extends LocalShooterAspect {
 
         this.localShooterProperty.clientIsAiming = isAim;
 
-        SendUtils.sendMessageToServer(new ClientMessagePlayerAim(isAim));
+        SendUtils.sendMessageToServer(new C2SMessageShooterAim(isAim));
     }
 
     public float getRenderAimingProgress(float partialTicks) {

@@ -23,10 +23,10 @@ public class NeoClientAccessTransformer implements IClientAccessTransformer {
             Gui gui
     ) {
         // [1.20.1, 26.2)
-        return gui.overlayMessageString;
+//        return gui.overlayMessageString;
 
         // [26.2, )
-//        return gui.hud.overlayMessageString;
+        return gui.hud.overlayMessageString;
     }
 
     @Override public RenderSetup

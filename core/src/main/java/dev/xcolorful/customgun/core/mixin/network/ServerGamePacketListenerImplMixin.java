@@ -11,7 +11,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import dev.xcolorful.customgun.core.api.entity.ILivingShooter;
 import dev.xcolorful.customgun.core.api.entity.shooter.ILivingShooterGetter;
-import dev.xcolorful.customgun.core.network.message.event.ServerMessageSwapItem;
+import dev.xcolorful.customgun.core.network.message.player.S2CMessagePlayerSwapItem;
 import dev.xcolorful.customgun.core.util.SendUtils;
 import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
 import net.minecraft.server.level.ServerPlayer;
@@ -31,7 +31,7 @@ public class ServerGamePacketListenerImplMixin {
     @Inject(method = "handlePlayerAction", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerPlayer;stopUsingItem()V"))
     public void cgc$handleSwapOffhandDraw(ServerboundPlayerActionPacket packetIn, CallbackInfo ci) {
         player.inventoryMenu.broadcastChanges();
-        SendUtils.sendMessageToPlayer(player, new ServerMessageSwapItem());
+        SendUtils.sendMessageToPlayer(player, new S2CMessagePlayerSwapItem());
     }
 
     @WrapOperation(method = "handlePlayerCommand", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerPlayer;setSprinting(Z)V"))

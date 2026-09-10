@@ -157,7 +157,7 @@ public final class LocalShooterShoot extends LocalShooterAspect {
                 !this.localShooterProperty.isShootRecorded
                 // 射击冷却大于等于 1 tick 则不允许开火
                 || cooldown >= 50
-        ) return ShootResult.UNKNOWN_FAIL;
+        ) return ShootResult.STATE_LOCK;
 
         // 如果状态锁正在准备锁定，且不是开火的状态锁，则不允许开火
         if (this.localShooterProperty.clientStateLock(SHOOT_STATE)
@@ -176,7 +176,7 @@ public final class LocalShooterShoot extends LocalShooterAspect {
                 // 客户方防按键误触冷却 (已经在ShootKey利用ClientTickEvent触发了)
 //                System.currentTimeMillis() - LocalShooterProperty.clientClickButtonTimestamp < SHOOT_COOLDOWN_MS
         ) {
-            return ShootResult.UNKNOWN_FAIL;
+            return ShootResult.PRE_STATE_CHECK;
         }
 
         { // 3. IGunRuntime操作结果 -> Shooter状态

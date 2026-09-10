@@ -123,8 +123,7 @@ public class DebugCommand {
             jsonWriter.flush();
             source.sendSuccess(() -> Component.literal("IO Test Success! Saved to: " + TEST_OUTPUT), true);
         } catch (Exception e) {
-            source.sendFailure(Component.literal("IO Exception: " + e.getMessage()));
-            e.printStackTrace();
+            source.sendFailure(Component.literal("IO Exception: " + e));
         }
     }
 
@@ -163,8 +162,7 @@ public class DebugCommand {
             jsonWriter.flush();
             source.sendSuccess(() -> Component.literal("Data Test Success! Saved to: " + TEST_OUTPUT), true);
         } catch (Exception e) {
-            source.sendFailure(Component.literal("Exception: " + e.getMessage()));
-            e.printStackTrace();
+            source.sendFailure(Component.literal("Exception: " + e));
         }
     }
     private static void testDataAction(JsonWriter writer, GunData pojo) throws IOException {

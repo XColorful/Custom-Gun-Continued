@@ -214,11 +214,13 @@ public final class ShootKey extends InputKey implements IEventHandler {
         if (!allowContinuousShoot && this.lastShootSuccess) return false;
 
         // 执行开火
-        if (localShooter.cgc$localShoot() == ShootResult.SUCCESS) {
+        ShootResult shootResult = localShooter.cgc$localShoot();
+        if (shootResult == ShootResult.SUCCESS) {
             this.lastShootSuccess = true;
             this.onShootSuccess();
             return true;
         } else {
+            CustomGun.LOGGER.debug("ShootKey: local shoot failed ({})", shootResult);
             return false;
         }
     }

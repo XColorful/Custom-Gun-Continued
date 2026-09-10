@@ -4,6 +4,7 @@ import com.mojang.blaze3d.pipeline.RenderPipeline;
 import dev.xcolorful.customgun.client.api.minecraft.access.IClientAccessTransformer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.client.renderer.rendertype.RenderSetup;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.network.chat.Component;
@@ -27,6 +28,13 @@ public class NeoClientAccessTransformer implements IClientAccessTransformer {
 
         // [26.2, )
         return gui.hud.overlayMessageString;
+    }
+
+    @Override public void
+    ensureHasSentCarriedItem(
+            MultiPlayerGameMode gameMode
+    ) {
+        gameMode.ensureHasSentCarriedItem();
     }
 
     @Override public RenderSetup

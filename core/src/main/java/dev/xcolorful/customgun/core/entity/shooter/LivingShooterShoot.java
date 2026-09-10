@@ -7,6 +7,7 @@
 
 package dev.xcolorful.customgun.core.entity.shooter;
 
+import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.core.api.entity.ILivingShooter;
 import dev.xcolorful.customgun.core.api.entity.ShootResult;
 import dev.xcolorful.customgun.core.api.entity.ShooterProperty;
@@ -91,7 +92,7 @@ public final class LivingShooterShoot extends LivingShooterAspect {
                 || iLivingShooter.cgc$_getMeleeCooldownMs(currentTimeMillis) > 0
                 // 服务端射击冷却
                 || SyncConfig.SERVER_SHOOT_COOLDOWN_V.get() && isInServerShootCooldown(currentTimeMillis, clientFromBaseToCurrentTimeMs)
-        ) return ShootResult.UNKNOWN_FAIL;
+        ) return ShootResult.PRE_STATE_CHECK;
 
         { // 3. IGunRuntime操作结果 -> Shooter状态
             /**
@@ -99,7 +100,7 @@ public final class LivingShooterShoot extends LivingShooterAspect {
              */
             @NotNull IGunAttackRuntime.ShooterFireResult shooterFireResult = iGun.shooterFire(this.shooterProperty, iGun, gunItem, iLivingShooter, this.livingShooter, pitch, yaw, chargeProgress);
             if (!shooterFireResult.isSuccess()) {
-                return ShootResult.UNKNOWN_FAIL;
+                return ShootResult.SHOOTER_FIRE_FAILED;
             }
             this.shooterProperty.lastShootTimestamp = this.shooterProperty.shootTimestamp;
             this.shooterProperty.shootTimestamp = clientFromBaseToCurrentTimeMs;
@@ -114,7 +115,7 @@ public final class LivingShooterShoot extends LivingShooterAspect {
          */
         @NotNull IGunAttackRuntime.GunFireResult gunFireResult = iGun.gunFire(this.shooterProperty, iGun, gunItem, iLivingShooter, this.livingShooter, pitch, yaw);
         if (!gunFireResult.isSuccess()) {
-            return ShootResult.UNKNOWN_FAIL;
+            return ShootResult.GUN_FIRE_FAILED;
         }
         return ShootResult.SUCCESS;
     }
@@ -148,8 +149,11 @@ public final class LivingShooterShoot extends LivingShooterAspect {
     private boolean isInServerShootCooldown(IGun iGun, ItemStack gunItem,
                                             long currentTimeMillis, long clientFromBaseToCurrentTimeMs) {
         // 判断射击是否正在冷却
-        long coolDown = _getShootCooldown(iGun, gunItem, clientFromBaseToCurrentTimeMs);
-        if (coolDown > 0) return true;
+        long cooldown = _getShootCooldown(iGun, gunItem, clientFromBaseToCurrentTimeMs);
+        if (cooldown > 0) {
+            CustomGun.LOGGER.debug("LivingShooterShoot: {} shoot in shoot cooldown (cooldown: {})", this.livingShooter.getName().getString(), cooldown);
+            return true;
+        }
 
         // 根据 tick time 和 允许的网络延迟波动 计算 时间戳的接受窗口
         MinecraftServer server = ((ServerLevel) this.livingShooter.level()).getServer();
@@ -159,6 +163,7 @@ public final class LivingShooterShoot extends LivingShooterAspect {
             if (this.livingShooter instanceof ServerPlayer player) {
                 SendUtils.sendMessageToPlayer(player, new S2CMessageShooterBaseTimestamp());
             }
+            CustomGun.LOGGER.debug("LivingShooterShoot: {} isInServerShootCooldown (alpha: {})", this.livingShooter.getName().getString(), alpha);
             return true;
         }
 

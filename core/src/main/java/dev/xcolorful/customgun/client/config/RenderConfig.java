@@ -91,7 +91,7 @@ public class RenderConfig {
 
         builder.addComment(ClientModConfigTag.enableShooterOperationHUD_comment);
         ENABLE_SHOOTER_OPERATION_HUD = builder.addConfig(ClientModConfigTag.enableShooterOperationHUD_path, true);
-        DISABLE_INTERACT_HUD_TEXT_ = ENABLE_SHOOTER_OPERATION_HUD;
+        DISABLE_INTERACT_HUD_TEXT = ENABLE_SHOOTER_OPERATION_HUD;
 
         builder.addComment(ClientModConfigTag.autoSelectGunSmithTableFilter_comment);
         AUTO_SELECT_GUN_SMITH_TABLE_FILTER = builder.addConfig(ClientModConfigTag.autoSelectGunSmithTableFilter_path, true);
@@ -117,5 +117,5 @@ public class RenderConfig {
     @Deprecated(forRemoval = true) public static IModConfigSpec<Boolean> FIRST_PERSON_BULLET_TRACER_ENABLE;
     @Deprecated(forRemoval = true) public static IModConfigSpec<Boolean> ENABLE_RESOURCE_LOCATION_IN_TOOLTIP;
     @Deprecated(forRemoval = true) public static IModConfigSpec<Boolean> GUN_HUD_ENABLE;
-    @Deprecated(forRemoval = true) public static IModConfigSpec<Boolean> DISABLE_INTERACT_HUD_TEXT_;
+    @Deprecated(forRemoval = true) public static IModConfigSpec<Boolean> DISABLE_INTERACT_HUD_TEXT;
 }

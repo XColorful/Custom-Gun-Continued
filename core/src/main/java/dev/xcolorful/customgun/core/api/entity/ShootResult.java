@@ -93,5 +93,10 @@ public enum ShootResult {
      * @deprecated 完全在{@code LocalShooterShoot._onShooterFireFailed()}内部处理
      */
     @Deprecated
-    OVERHEATED
+    OVERHEATED,
+
+    STATE_LOCK,
+    PRE_STATE_CHECK,
+    SHOOTER_FIRE_FAILED,
+    GUN_FIRE_FAILED,
 }

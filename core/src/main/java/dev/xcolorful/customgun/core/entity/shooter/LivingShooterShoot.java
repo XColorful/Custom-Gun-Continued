@@ -7,7 +7,6 @@
 
 package dev.xcolorful.customgun.core.entity.shooter;
 
-import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.core.api.entity.ILivingShooter;
 import dev.xcolorful.customgun.core.api.entity.ShootResult;
 import dev.xcolorful.customgun.core.api.entity.ShooterProperty;
@@ -21,8 +20,8 @@ import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
 import dev.xcolorful.customgun.core.api.item.gun.modifier.IRpmModifier;
 import dev.xcolorful.customgun.core.api.resource.ResourceApi;
 import dev.xcolorful.customgun.core.config.SyncConfig;
-import dev.xcolorful.customgun.core.network.message.ServerMessageSyncBaseTimestamp;
-import dev.xcolorful.customgun.core.network.message.event.ServerMessageGunShoot;
+import dev.xcolorful.customgun.core.network.message.shooter.S2CMessageShooterBaseTimestamp;
+import dev.xcolorful.customgun.core.network.message.shooter.S2CMessageShooterShoot;
 import dev.xcolorful.customgun.core.resource.data.data.GunData;
 import dev.xcolorful.customgun.core.resource.data.data.gun._FireModeAdjustData;
 import dev.xcolorful.customgun.core.resource.data.data.gun._HeatData;
@@ -106,8 +105,8 @@ public final class LivingShooterShoot extends LivingShooterAspect {
             this.shooterProperty.shootTimestamp = clientFromBaseToCurrentTimeMs;
             this.shooterProperty.heatTimestamp = currentTimeMillis;
             // 发包通知客户端
-            SendUtils.sendMessageToTrackingEntity(this.livingShooter,
-                    new ServerMessageGunShoot(this.livingShooter.getId(), gunItem));
+            SendUtils.sendMessageToNearbyPlayers(this.livingShooter,
+                    new S2CMessageShooterShoot(this.livingShooter.getId(), gunItem));
         }
 
         /**
@@ -158,7 +157,7 @@ public final class LivingShooterShoot extends LivingShooterAspect {
         long alpha = currentTimeMillis - this.shooterProperty.serverBaseTimestamp - clientFromBaseToCurrentTimeMs;
         if (alpha < -NETWORK_DELAY_MS || alpha > NETWORK_DELAY_MS + tickTime * 2) { // 允许 +- 300ms 的网络波动、窗口下限再扩大 2 个 tick time 时间(最坏情况射击会延迟2个 tick)
             if (this.livingShooter instanceof ServerPlayer player) {
-                SendUtils.sendMessageToPlayer(player, new ServerMessageSyncBaseTimestamp());
+                SendUtils.sendMessageToPlayer(player, new S2CMessageShooterBaseTimestamp());
             }
             return true;
         }

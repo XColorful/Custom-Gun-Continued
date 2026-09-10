@@ -32,6 +32,7 @@ import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Predicate;
 
 public class NetworkHandler {
     private static NetworkHandler INSTANCE;

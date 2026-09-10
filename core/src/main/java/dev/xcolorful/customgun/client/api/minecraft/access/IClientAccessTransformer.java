@@ -3,6 +3,7 @@ package dev.xcolorful.customgun.client.api.minecraft.access;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.ApiStatus;
@@ -18,6 +19,11 @@ public interface IClientAccessTransformer {
     @Nullable Component
     getOverlayMessageString(
             Gui gui
+    );
+
+    void
+    ensureHasSentCarriedItem(
+            MultiPlayerGameMode gameMode
     );
 
     @ApiStatus.AvailableSince("26.2")

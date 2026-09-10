@@ -13,7 +13,7 @@ import dev.xcolorful.customgun.core.api.entity.IGunProjectile;
 import dev.xcolorful.customgun.core.api.entity.ILivingShooter;
 import dev.xcolorful.customgun.core.api.entity.ShooterProperty;
 import dev.xcolorful.customgun.core.api.event.shooter.ShooterFireEvent;
-import dev.xcolorful.customgun.core.api.event.shooter.ShooterPrepareMeleeEvent;
+import dev.xcolorful.customgun.core.api.event.shooter.ShooterMeleeEvent;
 import dev.xcolorful.customgun.core.api.gun.attack.IGunAttackManager;
 import dev.xcolorful.customgun.core.api.gun.attack.IGunAttackRuntime;
 import dev.xcolorful.customgun.core.api.script.context.GunScriptApi;
@@ -119,7 +119,7 @@ public class GunAttackManager implements IGunAttackManager {
     public @Nullable MeleePreparation prepareMelee(@NotNull IGun iGun, @NotNull ItemStack gunItem,
                                                    ILivingShooter iLivingShooter, LivingEntity livingShooter) {
         McLogicalSide logicalSide = CustomGun.getSideExecutor().getLogicalSide();
-        if (CustomGun.getEventPoster().postCustomEvent(new ShooterPrepareMeleeEvent(logicalSide,
+        if (CustomGun.getEventPoster().postCustomEvent(new ShooterMeleeEvent(logicalSide,
                 iLivingShooter, livingShooter, iGun, gunItem))) {
             return null;
         }

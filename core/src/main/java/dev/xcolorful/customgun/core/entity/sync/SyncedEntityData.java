@@ -10,7 +10,7 @@ package dev.xcolorful.customgun.core.entity.sync;
 import com.google.common.collect.ImmutableSet;
 import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.core.init.CommonSetup;
-import dev.xcolorful.customgun.core.network.message.handshake.ServerMessageSyncedEntityDataMapping;
+import dev.xcolorful.customgun.core.network.message.handshake.S2CMessageSyncedEntityDataMapping;
 import it.unimi.dsi.fastutil.ints.Int2ReferenceMap;
 import it.unimi.dsi.fastutil.ints.Int2ReferenceOpenHashMap;
 import it.unimi.dsi.fastutil.objects.*;
@@ -183,7 +183,7 @@ public class SyncedEntityData {
         return client ? this.clientClassNameCapabilityCache : this.serverClassNameCapabilityCache;
     }
 
-    public boolean updateMappings(ServerMessageSyncedEntityDataMapping message) {
+    public boolean updateMappings(S2CMessageSyncedEntityDataMapping message) {
         this.syncedIdToKey.clear();
 
         List<Pair<Identifier, Identifier>> missingKeys = new ArrayList<>();

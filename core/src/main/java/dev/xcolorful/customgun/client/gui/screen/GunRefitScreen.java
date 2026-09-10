@@ -28,9 +28,9 @@ import dev.xcolorful.customgun.core.api.item.attachment.AttachmentCategory;
 import dev.xcolorful.customgun.core.api.item.attachment.IAttachmentGetter;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
 import dev.xcolorful.customgun.core.developer.PlannedRefactor;
-import dev.xcolorful.customgun.core.network.message.ClientMessageLaserColor;
-import dev.xcolorful.customgun.core.network.message.ClientMessageRefitGun;
-import dev.xcolorful.customgun.core.network.message.ClientMessageUnloadAttachment;
+import dev.xcolorful.customgun.core.network.message.shooter.C2SMessageShooterRefit_laserColor;
+import dev.xcolorful.customgun.core.network.message.shooter.C2SMessageShooterRefit_install;
+import dev.xcolorful.customgun.core.network.message.shooter.C2SMessageShooterRefit_unload;
 import dev.xcolorful.customgun.core.util.InventoryUtils;
 import dev.xcolorful.customgun.core.util.SendUtils;
 import net.minecraft.client.Minecraft;
@@ -204,7 +204,7 @@ public class GunRefitScreen extends NoBackgroundScreen implements IGunRefitScree
         SoundPlayManager.get().playerRefitSound(attachmentItem, localPlayer, AttachmentSoundType.UNINSTALL_SOUND);
 
         int selectSlot = InventoryUtils.getSelectedSlot(inventory);
-        SendUtils.sendMessageToServer(new ClientMessageUnloadAttachment(selectSlot, RefitScreenTransformState.get().getCurrentTransformType()));
+        SendUtils.sendMessageToServer(new C2SMessageShooterRefit_unload(selectSlot, RefitScreenTransformState.get().getCurrentTransformType()));
     }
     private void _addAttachmentLaser(ItemStack attachmentItem) {
         @Nullable IAttachment iAttachment = IAttachmentGetter.fromItemStack(attachmentItem);
@@ -323,7 +323,7 @@ public class GunRefitScreen extends NoBackgroundScreen implements IGunRefitScree
         SoundPlayManager.get().playerRefitSound(attachmentItem, localPlayer, AttachmentSoundType.INSTALL_SOUND);
 
         int selectSlot = InventoryUtils.getSelectedSlot(inventory);
-        SendUtils.sendMessageToServer(new ClientMessageRefitGun(slotIndex, selectSlot, RefitScreenTransformState.get().getCurrentTransformType()));
+        SendUtils.sendMessageToServer(new C2SMessageShooterRefit_install(slotIndex, selectSlot, RefitScreenTransformState.get().getCurrentTransformType()));
     }
 
     @Override
@@ -346,7 +346,7 @@ public class GunRefitScreen extends NoBackgroundScreen implements IGunRefitScree
 
             if (!hsvSliderGroup.isDirty()) continue;
 
-            SendUtils.sendMessageToServer(new ClientMessageLaserColor(gunItem, selectSlot));
+            SendUtils.sendMessageToServer(new C2SMessageShooterRefit_laserColor(gunItem, selectSlot));
         }
     }
 

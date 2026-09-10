@@ -108,6 +108,9 @@ public final class ShootKey extends InputKey implements IEventHandler {
         this.onShootKeyInput(event.getAction());
     }
     private void onShootKeyInput(int action) {
+        // 不在焦点就不进input队列，否则从screen点击回去的时候会误触
+        if (!ClientInputUtils.isGameplayFocused()) return;
+
         switch (action) {
             case GLFW.GLFW_PRESS -> this.inputQueue.offer(ShootInput.PRESS);
             case GLFW.GLFW_RELEASE -> this.inputQueue.offer(ShootInput.RELEASE);

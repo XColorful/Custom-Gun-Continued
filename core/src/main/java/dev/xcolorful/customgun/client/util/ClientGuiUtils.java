@@ -40,10 +40,10 @@ public class ClientGuiUtils {
     }
     public static void setActionBarMessage(Gui gui, Component message, boolean animatedColor) {
         // [1.20.1, 26.2)
-        gui.setOverlayMessage(message, animatedColor);
+//        gui.setOverlayMessage(message, animatedColor);
 
         // [26.2, )
-//        gui.hud.setOverlayMessage(message, animatedColor);
+        gui.hud.setOverlayMessage(message, animatedColor);
     }
 
     public static void blitGuiTexture(GuiGraphicsExtractor guiGraphics,

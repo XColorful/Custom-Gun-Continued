@@ -4,6 +4,7 @@ package dev.xcolorful.customgun.neoforgeclient.minecraft.access;
 import dev.xcolorful.customgun.client.api.minecraft.access.IClientAccessTransformer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
@@ -26,6 +27,13 @@ public class NeoClientAccessTransformer implements IClientAccessTransformer {
 
         // [26.2, )
 //        return gui.hud.overlayMessageString;
+    }
+
+    @Override public void
+    ensureHasSentCarriedItem(
+            MultiPlayerGameMode gameMode
+    ) {
+        gameMode.ensureHasSentCarriedItem();
     }
 
     @Override public Object

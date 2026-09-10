@@ -26,7 +26,7 @@ public class NeoNetworkAdapter implements INetworkAdapter {
 
     private final SimpleChannel HANDSHAKE_CHANNEL;
     private final SimpleChannel CHANNEL;
-    private final String protocolVersionString = String.valueOf(NetworkHandler.PROTOCOL_VERSION);
+    private final String protocolVersionString = NetworkHandler.PROTOCOL_VERSION;
 
     public NeoNetworkAdapter() {
         ResourceLocation handshakeName = CustomGunNeoforge.mcRegistry.createResourceLocation(String.format("%s:handshake", CustomGun.MOD_ID));

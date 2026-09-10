@@ -32,7 +32,7 @@ import dev.xcolorful.customgun.core.api.resource.ResourceApi;
 import dev.xcolorful.customgun.core.config.GunConfig;
 import dev.xcolorful.customgun.core.entity.shooter.LivingShooterShoot;
 import dev.xcolorful.customgun.core.gun.attack._DefaultGunFire;
-import dev.xcolorful.customgun.core.network.message.ClientMessagePlayerShoot;
+import dev.xcolorful.customgun.core.network.message.shooter.C2SMessageShooterShoot;
 import dev.xcolorful.customgun.core.resource.data.data.GunData;
 import dev.xcolorful.customgun.core.resource.data.data.gun._ChargingData;
 import dev.xcolorful.customgun.core.resource.instance.data.GunIndexInstance;
@@ -307,7 +307,7 @@ public final class LocalShooterShoot extends LocalShooterAspect {
                 this.localShooterProperty.clientShootTimestamp = System.currentTimeMillis();
 
                 // 仅第一发才发包给服务端，表示点击了一次射击
-                SendUtils.sendMessageToServer(new ClientMessagePlayerShoot(
+                SendUtils.sendMessageToServer(new C2SMessageShooterShoot(
                         this.localShooterProperty.clientShootTimestamp - LocalShooterProperty.clientBaseTimestamp,
                         chargeProgress)
                 );

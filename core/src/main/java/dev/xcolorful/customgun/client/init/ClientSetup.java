@@ -5,6 +5,8 @@
 package dev.xcolorful.customgun.client.init;
 
 import dev.xcolorful.customgun.client.gui.overlay.crosshair.DefaultCrosshair;
+import dev.xcolorful.customgun.client.gui.overlay.gunhud.DefaultGunHud;
+import dev.xcolorful.customgun.client.gui.overlay.shooteroperation.DefaultShooterOperation;
 
 public class ClientSetup {
 
@@ -15,7 +17,16 @@ public class ClientSetup {
     private ClientSetup() {}
 
     public void onClientSetup() {
+
+        this._onBuiltinAddonClientSetup();
+    }
+    /**
+     * 模组内置的扩展模块，相当于可拆卸的独立扩展模组
+     */
+    private void _onBuiltinAddonClientSetup() {
         DefaultCrosshair.init();
+        DefaultGunHud.init();
+        DefaultShooterOperation.init();
     }
 
     @FunctionalInterface

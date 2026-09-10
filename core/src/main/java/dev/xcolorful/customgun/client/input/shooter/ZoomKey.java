@@ -22,7 +22,7 @@ import dev.xcolorful.customgun.client.init.registry.ClientInputCategory;
 import dev.xcolorful.customgun.client.input.InputKey;
 import dev.xcolorful.customgun.client.util.ClientInputUtils;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
-import dev.xcolorful.customgun.core.network.message.ClientMessagePlayerZoom;
+import dev.xcolorful.customgun.core.network.message.shooter.C2SMessageShooterZoom;
 import dev.xcolorful.customgun.core.util.SendUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -87,7 +87,7 @@ public final class ZoomKey extends InputKey {
         ILocalShooter localShooter = ILocalShooterGetter.fromLocalPlayer(player);
         if (!localShooter.cgc$isAim()) return; // 不在瞄准
 
-        SendUtils.sendMessageToServer(new ClientMessagePlayerZoom());
+        SendUtils.sendMessageToServer(new C2SMessageShooterZoom());
     }
 
     // --------Deprecated--------

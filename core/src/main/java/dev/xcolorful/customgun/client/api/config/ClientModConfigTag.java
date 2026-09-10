@@ -52,8 +52,14 @@ public class ClientModConfigTag {
     public static final String headShotDebugHitbox_path = "HeadShotDebugHitbox";
     public static final String headShotDebugHitbox_comment = "Whether or not to display the head shot's hitbox";
 
-    public static final String gunHUDEnable_path = "GunHUDEnable";
-    public static final String gunHUDEnable_comment = "Whether or not to display the gun's HUD";
+    public static final String enableGunHUD_path = "EnableGunHUD";
+    public static final String enableGunHUD_comment = "Whether to display the gun's HUD";
+
+    public static final String keepDisplayGunHUD_path = "KeepDisplayGunHUD";
+    public static final String keepDisplayGunHUD_comment = "Whether to keep the gun's HUD displayed";
+
+    public static final String forceDisplayGunHUD_path = "ForceDisplayGunHUD";
+    public static final String forceDisplayGunHUD_comment = "Whether to force the gun's HUD to be displayed";
 
     public static final String killAmountEnable_path = "KillAmountEnable";
     public static final String killAmountEnable_comment = "Whether or not to display the kill amount";
@@ -67,8 +73,8 @@ public class ClientModConfigTag {
     public static final String enableFirstPersonBulletTracer_path = "EnableFirstPersonBulletTracer";
     public static final String enableFirstPersonBulletTracer_comment = "Whether or not to render first person bullet trail";
 
-    public static final String disableInteractHudText_path = "DisableInteractHudText";
-    public static final String disableInteractHudText_comment = "Disable the interact hud text in center of the screen";
+    public static final String enableShooterOperationHUD_path = "EnableShooterOperationHUD";
+    public static final String enableShooterOperationHUD_comment = "Whether to display the shooter operation's HUD";
 
     public static final String autoSelectGunSmithTableFilter_path = "AutoSelectGunSmithTableFilter";
     public static final String autoSelectGunSmithTableFilter_comment = "Whether or not to automatically select the gun smith table's held item filter when opening it with a gun, attachment or ammo in main hand";

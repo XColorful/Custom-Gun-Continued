@@ -14,7 +14,7 @@ import dev.xcolorful.customgun.core.api.resource.INetworkCacheReloadListener;
 import dev.xcolorful.customgun.core.api.resource.ResourceApi;
 import dev.xcolorful.customgun.core.api.resource.data.DataFolderType;
 import dev.xcolorful.customgun.core.init.registry.ModRecipe;
-import dev.xcolorful.customgun.core.network.message.ServerMessageSyncGunPack;
+import dev.xcolorful.customgun.core.network.message.resource.S2CMessageSyncDataPack;
 import dev.xcolorful.customgun.core.recipe.TableRecipe;
 import dev.xcolorful.customgun.core.recipe._TableResultRaw;
 import dev.xcolorful.customgun.core.resource.data.*;
@@ -203,7 +203,7 @@ public class _AllDataManager implements IEventHandler {
     private static void onDatapackSyncEvent(IDatapackSyncEvent event) {
         if (getCurrent() == null) return;
 
-        ServerMessageSyncGunPack message = new ServerMessageSyncGunPack(getCurrent().getNetworkCache());
+        S2CMessageSyncDataPack message = new S2CMessageSyncDataPack(getCurrent().getNetworkCache());
         event.getRelevantPlayers().forEach(player -> SendUtils.sendMessageToPlayer(player, message));
     }
 

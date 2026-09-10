@@ -24,7 +24,7 @@ import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
 import dev.xcolorful.customgun.core.config.GunConfig;
 import dev.xcolorful.customgun.core.entity.shooter.modifier.ShooterGunModifierManager;
-import dev.xcolorful.customgun.core.network.message.ClientMessagePlayerDrawGun;
+import dev.xcolorful.customgun.core.network.message.shooter.C2SMessageShooterDraw;
 import dev.xcolorful.customgun.core.util.SendUtils;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.item.ItemStack;
@@ -75,7 +75,7 @@ public final class LocalShooterDraw extends LocalShooterAspect {
         CustomGun.getEventPoster().postCustomEvent(new ShooterDrawEvent(McLogicalSide.CLIENT,
                 iLivingShooter, this.localShooter, lastItem, currentItem));
 
-        SendUtils.sendMessageToServer(new ClientMessagePlayerDrawGun());
+        SendUtils.sendMessageToServer(new C2SMessageShooterDraw());
 
         // 异步放映收枪动画（切出动画）
         if (lastIGun != null) {

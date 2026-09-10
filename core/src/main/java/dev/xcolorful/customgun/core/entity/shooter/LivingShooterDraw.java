@@ -17,7 +17,7 @@ import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
 import dev.xcolorful.customgun.core.api.resource.ResourceApi;
 import dev.xcolorful.customgun.core.entity.shooter.modifier.ShooterGunModifierManager;
-import dev.xcolorful.customgun.core.network.message.event.ServerMessageGunDraw;
+import dev.xcolorful.customgun.core.network.message.shooter.S2CMessageShooterDraw;
 import dev.xcolorful.customgun.core.resource.data.data.GunData;
 import dev.xcolorful.customgun.core.resource.instance.data.GunIndexInstance;
 import dev.xcolorful.customgun.core.util.SendUtils;
@@ -60,8 +60,8 @@ public final class LivingShooterDraw extends LivingShooterAspect {
         CustomGun.getEventPoster().postCustomEvent(new ShooterDrawEvent(McLogicalSide.SERVER,
                 iLivingShooter, this.livingShooter, lastItem, gunItemSupplier.get()));
 
-        SendUtils.sendMessageToTrackingEntity(this.livingShooter,
-                new ServerMessageGunDraw(this.livingShooter.getId(), lastItem, gunItemSupplier.get()));
+        SendUtils.sendMessageToNearbyPlayers(this.livingShooter,
+                new S2CMessageShooterDraw(this.livingShooter.getId(), lastItem, gunItemSupplier.get()));
 
         this.shooterProperty.currentGunItem = gunItemSupplier;
 

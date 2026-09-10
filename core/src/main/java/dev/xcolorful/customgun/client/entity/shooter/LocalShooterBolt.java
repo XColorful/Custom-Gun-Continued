@@ -22,7 +22,7 @@ import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
 import dev.xcolorful.customgun.core.developer.PlannedRefactor;
 import dev.xcolorful.customgun.core.entity.shooter.LivingShooterBolt;
-import dev.xcolorful.customgun.core.network.message.ClientMessagePlayerBoltGun;
+import dev.xcolorful.customgun.core.network.message.shooter.C2SMessageShooterBolt;
 import dev.xcolorful.customgun.core.util.SendUtils;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.item.ItemStack;
@@ -64,7 +64,7 @@ public final class LocalShooterBolt extends LocalShooterAspect {
             this.localShooterProperty.lockState(BOLT_STATE, ISynGunState::cgc$getSynIsBolting);
         }
 
-        SendUtils.sendMessageToServer(new ClientMessagePlayerBoltGun());
+        SendUtils.sendMessageToServer(new C2SMessageShooterBolt());
         @Nullable GunDisplayInstance gunDisplayInstance = ClientResourceApi.getGunDisplayInstance(gunItem);
         if (gunDisplayInstance == null) return;
 

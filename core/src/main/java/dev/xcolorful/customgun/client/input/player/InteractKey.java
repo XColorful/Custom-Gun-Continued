@@ -102,13 +102,14 @@ public final class InteractKey extends InputKey implements IEventHandler {
         if (!ClientInputUtils.isGameplayFocused()) return; // 不在焦点
 
         Minecraft mc = Minecraft.getInstance();
+
+        HitResult hitResult = mc.hitResult;
+        if (hitResult == null) return;
+
         LocalPlayer player = mc.player;
         if (IGunGetter.fromMainHand(player) == null // 主手没枪
                 || player.isSpectator() // 旁观模式
         ) return;
-
-        HitResult hitResult = mc.hitResult;
-        if (hitResult == null) return;
 
         // 方块交互
         if (hitResult instanceof BlockHitResult blockHitResult) {
@@ -132,12 +133,15 @@ public final class InteractKey extends InputKey implements IEventHandler {
         LocalPlayer player = mc.player;
         if (player == null) return;
 
-        if (this.keyMapping.get().isDown()) return; // 按了交互键
-
-        if (IGunGetter.fromMainHand(player) == null) return; // 主手没枪
-
         HitResult hitResult = mc.hitResult;
         if (hitResult == null) return;
+
+        if (
+                // 按了交互键
+                this.keyMapping.get().isDown()
+                // 主手没枪
+                || IGunGetter.fromMainHand(player) == null
+        ) return;
 
         // 方块交互
         if (hitResult instanceof BlockHitResult blockHitResult) {

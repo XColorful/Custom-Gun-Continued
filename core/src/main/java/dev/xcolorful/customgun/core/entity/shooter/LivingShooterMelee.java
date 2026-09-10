@@ -16,7 +16,7 @@ import dev.xcolorful.customgun.core.api.item.attachment.AttachmentCategory;
 import dev.xcolorful.customgun.core.api.item.gun.GunDataAccessor;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
 import dev.xcolorful.customgun.core.api.item.gun.MeleeType;
-import dev.xcolorful.customgun.core.network.message.event.ServerMessageGunMelee;
+import dev.xcolorful.customgun.core.network.message.shooter.S2CMessageShooterMelee;
 import dev.xcolorful.customgun.core.resource.data.data.attachment._MeleeModifierData;
 import dev.xcolorful.customgun.core.resource.data.data.gun.melee._DefaultMeleeData;
 import dev.xcolorful.customgun.core.util.SendUtils;
@@ -65,8 +65,8 @@ public final class LivingShooterMelee extends LivingShooterAspect {
 
         this.shooterProperty.meleeTimestamp = currentTimeMillis;
 
-        SendUtils.sendMessageToTrackingEntity(this.livingShooter,
-                new ServerMessageGunMelee(this.livingShooter.getId(), gunItem));
+        SendUtils.sendMessageToNearbyPlayers(this.livingShooter,
+                new S2CMessageShooterMelee(this.livingShooter.getId(), gunItem));
     }
 
     public long getMeleeCooldownMs(long currentTimeMillis) {

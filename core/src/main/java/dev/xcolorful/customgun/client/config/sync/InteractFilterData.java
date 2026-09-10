@@ -23,6 +23,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class InteractFilterData {
+    /**
+     * 默认给用 -> 默认一般玩家不知道去哪设置
+     * 默认不给用 -> 避免所有普通方块也显示 (更重要)
+     */
     private static boolean DEFAULT_RESULT = false;
     // 方块
     private static final Map<ResourceLocation, Boolean> BLOCK_FILTER = new HashMap<>();
@@ -59,6 +63,9 @@ public class InteractFilterData {
     }
 
     public static boolean canInteract(BlockState blockState) {
+        // 避免空气干扰
+        if (blockState.isAir()) return false;
+
         Block block = blockState.getBlock();
         // ResourceLocation 过滤
         Boolean allowed = BLOCK_FILTER.get(CustomGun.getMcRegistry().getBlockRl(block));

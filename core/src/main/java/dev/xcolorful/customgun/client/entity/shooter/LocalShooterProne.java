@@ -13,7 +13,7 @@ import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
 import dev.xcolorful.customgun.core.api.resource.ResourceApi;
 import dev.xcolorful.customgun.core.entity.shooter.LivingShooterAspect;
 import dev.xcolorful.customgun.core.entity.shooter.LivingShooterProne;
-import dev.xcolorful.customgun.core.network.message.ClientMessagePlayerProne;
+import dev.xcolorful.customgun.core.network.message.shooter.C2SMessageShooterProne;
 import dev.xcolorful.customgun.core.resource.data.data.GunData;
 import dev.xcolorful.customgun.core.resource.instance.data.GunIndexInstance;
 import dev.xcolorful.customgun.core.util.SendUtils;
@@ -74,7 +74,7 @@ public final class LocalShooterProne extends LocalShooterAspect {
 
         _setPronePose(isProne);
 
-        SendUtils.sendMessageToServer(new ClientMessagePlayerProne(isProne));
+        SendUtils.sendMessageToServer(new C2SMessageShooterProne(isProne));
     }
 
     public void tickProne() {

@@ -12,8 +12,8 @@ import dev.xcolorful.customgun.core.entity.sync.DataEntry;
 import dev.xcolorful.customgun.core.entity.sync.SyncDataHolder;
 import dev.xcolorful.customgun.core.entity.sync.SyncedDataKey;
 import dev.xcolorful.customgun.core.entity.sync.SyncedEntityData;
-import dev.xcolorful.customgun.core.network.message.ServerMessageSyncBaseTimestamp;
-import dev.xcolorful.customgun.core.network.message.ServerMessageUpdateEntityData;
+import dev.xcolorful.customgun.core.network.message.shooter.S2CMessageShooterBaseTimestamp;
+import dev.xcolorful.customgun.core.network.message.sync.S2CMessageUpdateEntityData;
 import dev.xcolorful.customgun.core.util.SendUtils;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -67,11 +67,11 @@ public class LivingShooterSyncHandler implements IEventHandler {
             }
             List<DataEntry<?, ?>> selfEntries = entries.stream().filter(entry -> entry.getKey().syncMode().isSelf()).collect(Collectors.toList());
             if (!selfEntries.isEmpty() && entity instanceof ServerPlayer serverPlayer) {
-                SendUtils.sendMessageToPlayer(serverPlayer, new ServerMessageUpdateEntityData(entity.getId(), selfEntries));
+                SendUtils.sendMessageToPlayer(serverPlayer, new S2CMessageUpdateEntityData(entity.getId(), selfEntries));
             }
             List<DataEntry<?, ?>> trackingEntries = entries.stream().filter(entry -> entry.getKey().syncMode().isTracking()).collect(Collectors.toList());
             if (!trackingEntries.isEmpty()) {
-                SendUtils.sendMessageToTrackingEntity(entity, new ServerMessageUpdateEntityData(entity.getId(), trackingEntries));
+                SendUtils.sendMessageToNearbyPlayers(entity, new S2CMessageUpdateEntityData(entity.getId(), trackingEntries));
             }
             holder.clean();
         }
@@ -107,13 +107,13 @@ public class LivingShooterSyncHandler implements IEventHandler {
             return;
         }
 
-        SendUtils.sendMessageToPlayer(serverPlayer, new ServerMessageSyncBaseTimestamp());
+        SendUtils.sendMessageToPlayer(serverPlayer, new S2CMessageShooterBaseTimestamp());
 
         SyncDataHolder holder = SyncedEntityData.instance().getSyncDataHolder(serverPlayer);
         if (holder != null) {
             List<DataEntry<?, ?>> entries = holder.gatherAll();
             if (!entries.isEmpty()) {
-                SendUtils.sendMessageToPlayer(serverPlayer, new ServerMessageUpdateEntityData(entity.getId(), entries));
+                SendUtils.sendMessageToPlayer(serverPlayer, new S2CMessageUpdateEntityData(entity.getId(), entries));
             }
         }
     }
@@ -130,7 +130,7 @@ public class LivingShooterSyncHandler implements IEventHandler {
             List<DataEntry<?, ?>> entries = holder.gatherAll();
             entries.removeIf(entry -> !entry.getKey().syncMode().isTracking());
             if (!entries.isEmpty()) {
-                SendUtils.sendMessageToPlayer(serverPlayer, new ServerMessageUpdateEntityData(entity.getId(), entries));
+                SendUtils.sendMessageToPlayer(serverPlayer, new S2CMessageUpdateEntityData(entity.getId(), entries));
             }
         }
     }

@@ -8,6 +8,7 @@
 package dev.xcolorful.customgun.client.entity.shooter;
 
 import dev.xcolorful.customgun.CustomGun;
+import dev.xcolorful.customgun.client.CustomGunClient;
 import dev.xcolorful.customgun.client.api.entity.LocalShooterProperty;
 import dev.xcolorful.customgun.client.api.item.IAnimateGeoItem;
 import dev.xcolorful.customgun.client.api.renderer.item.IAnimateGeoItemRenderer;
@@ -26,6 +27,8 @@ import dev.xcolorful.customgun.core.config.GunConfig;
 import dev.xcolorful.customgun.core.entity.shooter.modifier.ShooterGunModifierManager;
 import dev.xcolorful.customgun.core.network.message.shooter.C2SMessageShooterDraw;
 import dev.xcolorful.customgun.core.util.SendUtils;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
@@ -75,6 +78,14 @@ public final class LocalShooterDraw extends LocalShooterAspect {
         CustomGun.getEventPoster().postCustomEvent(new ShooterDrawEvent(McLogicalSide.CLIENT,
                 iLivingShooter, this.localShooter, lastItem, currentItem));
 
+        @Nullable MultiPlayerGameMode gameMode = Minecraft.getInstance().gameMode;
+        if (gameMode != null) {
+            /*
+            需要确保服务端收到当前slot已经切换，不然会误以为还在用旧的物品
+            当手持一把半自动枪并按住开火键切换到下一把全自动枪时，服务端读的是半自动枪的开火频率，会稳定触发服务端拒绝客户端开火
+             */
+            CustomGunClient.getAccessTransformer().ensureHasSentCarriedItem(gameMode);
+        }
         SendUtils.sendMessageToServer(new C2SMessageShooterDraw());
 
         // 异步放映收枪动画（切出动画）

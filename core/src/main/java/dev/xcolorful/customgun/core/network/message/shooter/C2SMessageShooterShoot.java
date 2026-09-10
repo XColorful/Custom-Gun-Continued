@@ -8,6 +8,8 @@
 package dev.xcolorful.customgun.core.network.message.shooter;
 
 import dev.xcolorful.customgun.CustomGun;
+import dev.xcolorful.customgun.core.api.entity.ILivingShooter;
+import dev.xcolorful.customgun.core.api.entity.ShootResult;
 import dev.xcolorful.customgun.core.api.entity.shooter.ILivingShooterGetter;
 import dev.xcolorful.customgun.core.api.network.message.IMessage;
 import net.minecraft.network.FriendlyByteBuf;
@@ -41,7 +43,11 @@ public record C2SMessageShooterShoot(long timestamp,
                     return;
                 }
 
-                ILivingShooterGetter.cgc$fromLivingEntity(player).cgc$shoot(player::getXRot, player::getYRot, message.timestamp, message.chargeProgress);
+                ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(player);
+                ShootResult shootResult = iLivingShooter.cgc$shoot(player::getXRot, player::getYRot, message.timestamp, message.chargeProgress);
+                if (shootResult != ShootResult.SUCCESS) {
+                    CustomGun.LOGGER.debug("C2SMessageShooterShoot: {} shoot failed ({})", player.getName().getString(), shootResult);
+                }
             });
         }
     }

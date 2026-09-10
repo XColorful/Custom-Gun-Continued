@@ -220,7 +220,6 @@ public final class ShootKey extends InputKey implements IEventHandler {
             this.onShootSuccess();
             return true;
         } else {
-            CustomGun.LOGGER.debug("ShootKey: local shoot failed ({})", shootResult);
             return false;
         }
     }

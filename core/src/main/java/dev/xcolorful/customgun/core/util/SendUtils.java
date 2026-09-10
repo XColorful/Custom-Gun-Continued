@@ -20,10 +20,16 @@ public class SendUtils {
         NetworkHandler.get().sendToAllPlayers(message);
     }
 
-    public static <T extends IMessage<?>> void sendMessageToTrackingEntity(@NotNull Entity centerEntity, T message) {
+    /**
+     * 将 Message 发给该实体周围的 {@link ServerPlayer}，不包括实体自己
+     */
+    public static <T extends IMessage<?>> void sendMessageToNearbyPlayers(@NotNull Entity centerEntity, T message) {
         NetworkHandler.get().sendToTrackingEntity(centerEntity, message);
     }
-    public static <T extends IMessage<?>> void sendMessageToTrackingEntityAndSelf(@NotNull Entity centerEntity, T message) {
+    /**
+     * 将 Message 发给该实体周围的 {@link ServerPlayer}，如果实体本身是{@link ServerPlayer}，则也会发送给自己
+     */
+    public static <T extends IMessage<?>> void sendMessageToNearbyPlayersAndSelf(@NotNull Entity centerEntity, T message) {
         NetworkHandler.get().sendToTrackingEntityAndSelf(centerEntity, message);
     }
 

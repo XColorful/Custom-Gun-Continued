@@ -1,5 +1,17 @@
 ### 0.0.x
 
+#### 0.0.12
+- Add built-in gun HUD
+- Add built-in shooter operation HUD
+- Add built-in interact key filter
+
+Network:
+- Update network protocol version to `12`, which prevents connections between new and older versions
+
+Fix:
+- Prevent accidental firing when clicking to close the screen
+- Fix inability to shoot after switching guns while firing
+
 #### 0.0.11
 - Add state lock logs for local gun operations
 

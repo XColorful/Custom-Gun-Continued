@@ -23,7 +23,12 @@ public enum DataFolderType implements ResourceTag {
     @Deprecated RECIPE(DataFolderName.RECIPE),
     SCRIPT(DataFolderName.SCRIPT),
     @Deprecated LOOT_INJECTOR(DataFolderName.LOOT_INJECTOR),
-    MOD_TAG(DataFolderName.MOD_TAG);
+    MOD_TAG(DataFolderName.MOD_TAG),
+    /**
+     * 原版目录，{@link dev.xcolorful.customgun.core.api.resource.data.tag}
+     */
+    @Deprecated VANILLA_TAGS(DataFolderName.VANILLA_TAGS),
+    ;
 
     public final String folderName;
     DataFolderType(String folderName) {

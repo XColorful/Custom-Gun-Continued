@@ -19,6 +19,7 @@ public class DataFolderName {
     public static final String SCRIPT = CustomGun.MOD_ID_SHORT + "_scripts"; public static final String SCRIPT_OLD1 = "scripts";
     public static final String LOOT_INJECTOR = CustomGun.MOD_ID_OLD1 + "_loot_injectors";
     public static final String MOD_TAG = CustomGun.MOD_ID_SHORT + "_tags"; public static final String MOD_TAGS_OLD1 = CustomGun.MOD_ID_OLD1 + "_tags";
+    public static final String VANILLA_TAGS = "tags";
 
     private DataFolderName() {}
 }

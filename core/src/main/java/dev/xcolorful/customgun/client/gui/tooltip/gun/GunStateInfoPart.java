@@ -8,6 +8,7 @@
 package dev.xcolorful.customgun.client.gui.tooltip.gun;
 
 import dev.xcolorful.customgun.client.api.item.gun.GunTooltipMask;
+import dev.xcolorful.customgun.client.gui.overlay.gunhud._GunHudBuilder;
 import dev.xcolorful.customgun.client.gui.tooltip.AbstractTooltipPart;
 import dev.xcolorful.customgun.client.resource.assets.display.GunDisplay;
 import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
@@ -53,6 +54,7 @@ public final class GunStateInfoPart extends AbstractTooltipPart implements GunTo
          * TaCZ到处都在重新拉一大坨枪的逻辑，是其根深蒂固的问题
          * 这里只显示枪的子弹
          * 如果要硬核，唯一标准应为{@link IGun#consumeAmmoOnce}，即以枪的逻辑为标准
+         * 目前还有调用 {@link _GunHudBuilder#getMessage}
          */
         if (PlannedRefactor.UNIFY_GUN_API) {}
 

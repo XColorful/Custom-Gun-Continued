@@ -182,6 +182,7 @@
 ### 工具
 > _./client/util_
 
+- ClientEntityUtils：实体工具及相关兼容封装
 - ClientGuiUtils：客户端 GUI 操作封装
 - ClientJsonUtils：客户端 JSON 序列化封装
 - ClientMcUtils：客户端 Minecraft 操作封装
@@ -371,6 +372,7 @@ Module division based on the `dev.xcolorful.customgun.client` top-level package
 ### Utility
 > _./client/util_
 
+- ClientEntityUtils: Entity utilities and compatibility wrappers
 - ClientGuiUtils: Client GUI operations wrapper
 - ClientJsonUtils: Client JSON serialization wrapper
 - ClientMcUtils: Client Minecraft operations wrapper

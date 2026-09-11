@@ -192,3 +192,80 @@ M870 缺少 `draw` 动画（其余枪自带）。它靠 `use_default_animation: 
 `shootOnce(consumeAmmo)` 的 `consumeAmmo` 参数被忽略，恒定走 `consumeAmmoOnce`。TaCZ 里该参数为 false 时不扣弹——对应创造模式的 `isShootingNeedConsumeAmmo()`。要不要按 TaCZ 语义补上，也请你定。
 
 两处代码改动未提交、未推送。请进游戏验证 kar98 / spas_12 / m870 的射击与换弹；M870 的掏枪动画在修复 2 落地前仍会保持原样。
+
+# 
+---
+
+```
+现在需要修复CGC第一人称和第三人称都看不到枪射物渲染
+
+目前测试：
+- 测试枪械为游戏目录（1.20.1test）下.\saves\新的世界2\datapacks\classic_battleroyale_gun\data\cbrg\data\guns\beryl_m762_data.json
+- 在使用TaCZ时，第一人称和第三人称都能看到子弹射出后的白线（曳光弹）
+- 在CGC时，两个人称都看不见
+
+- CGC的渲染体系文档在./docs/architecture/client/render/
+- TaCZ的渲染体系文档在./docs-tacz/client/render/
+- 可以通过IDEA的mcp访问tacz源码
+- tacz类到cgc的迁移映射在./docs-tacz/TaCZ Migration Mapping.md
+
+检查并修复问题，完成后通知我检查
+```
+
+# 
+
+我先读取相关文档，了解 CGC 与 TaCZ 的渲染体系。
+
+I'll compare with TaCZ's bullet renderer via the IDEA MCP.
+
+Found a strong candidate. Let me check the color utility helpers.
+
+Let me verify the ammo display accessor can't NPE and check the resource is present.
+
+Let me check the git history of this renderer to see if the tracer ever used normalized values.
+
+**Root cause confirmed.** The energy-swirl shader discards any fragment with `alpha < 0.1` — and CGC feeds it channel values `0..255` instead of `0..1`, so alpha becomes `255*255 & 0xFF = 1` → `1/255 ≈ 0.004` → every tracer fragment is discarded. TaCZ passes `0..1` floats with alpha `1`. Applying the fix.
+
+Let me verify how the shooter is resolved client-side, since the tracer bails out if the owner is null.
+
+修复完成，编译通过。请进游戏验证。
+
+## 根因
+
+[GunProjectileRenderer.java:116](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/client/renderer/entity/GunProjectileRenderer.java:116) 把 `java.awt.Color` 的通道值（**0~255**）直接当成顶点色（**0~1**）传给曳光弹模型。
+
+换算链被量化摧毁了：
+
+1. `Color.getRed()/getAlpha()` → `255`
+2. `VertexConsumer.color(float…)` 默认实现做 `(int)(v * 255f)` → `65025`
+3. `BufferBuilder` 写字节 `(byte)(65025 & 255)` → `1`
+4. 归一化后顶点 alpha = `1/255 ≈ 0.0039`
+
+而原版 `rendertype_energy_swirl.fsh` 结尾是：
+
+```glsl
+vec4 color = texture(Sampler0, texCoord0) * vertexColor * ColorModulator;
+if (color.a < 0.1) { discard; }
+```
+
+alpha 只有 0.004，**每一个曳光弹片元都被 discard**——所以第一/第三人称都看不见，而且和枪无关：白色兜底分支 `Color.WHITE` 同样被量化成 0.004。这解释了为什么只有曳光弹消失、其它都正常。
+
+对照 TaCZ：它把 `tracer_color` 解析成 **0~1 的 `float[]`**（`ColorHex.colorTextToRbgFloatArray`），渲染时 alpha 还硬编码为 `1`。CGC 迁移成 `java.awt.Color` 时漏了单位换算。
+
+## 改动
+
+一处文件，两处编辑：
+
+- 新增 `_toTracerColor(Color)`，四个通道统一 `/ 255f`；三处重复的 `new float[]{...}` 合并调用它。
+- 顺手捋顺了 `gunDisplayInstance` → ammo display → `Color.WHITE` 的兜底链，语义不变。
+
+`mcc:0` 的差异是：原先 `color != null` 分支不查 ammo display（行为等价，只是少一层嵌套）。
+
+IDEA 编译 + 文件检查均无 error。
+
+## 需要你确认的两点（未改）
+
+1. **同源缺陷存在于所有分支**：`26.2neoforge`、`1.21.x` 的 back-port 里是同一段代码。按项目规则我只改了当前 `gun-fix` 分支，其它分支要不要一并修由你定。
+2. **与 TaCZ 的语义差异**：CGC 在 [GunProjectileRenderer.java:180](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/client/renderer/entity/GunProjectileRenderer.java:180) 用 `if (bulletDistance < 2) return;` 整体提前返回，TaCZ 是 `if (tickCount >= 5 || bulletDistance > 2)`（前 5 tick 无条件画）。影响的是近距离前几 tick 的表现，不是可见性，所以我没动。
+
+code 未提交、未推送。

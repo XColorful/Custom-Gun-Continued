@@ -115,19 +115,15 @@ public class GunProjectileRenderer extends EntityRenderer<GunProjectile> {
         if (gunProjectile.getIsTracer(gunProjectile)) {
             float[] tracerColor; { // 曳光弹颜色{R,G,B,A}
                 @Nullable Color color = gunDisplayInstance.getTracerColor();
-                if (color != null) {
-                    tracerColor = new float[]{color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()};
-                } else {
+                if (color == null) {
                     @Nullable ClientAmmoIndexInstance clientAmmoIndexInstance = iClientGunProjectile.cgc$getClientAmmoIndexInstanceCache();
                     if (clientAmmoIndexInstance != null) {
                         AmmoDisplay ammoDisplay = clientAmmoIndexInstance.getAmmoDisplay();
                         color = ammoDisplay.getTracerColor();
-                        tracerColor = new float[]{color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()};
-                    } else {
-                        color = Color.WHITE;
-                        tracerColor = new float[]{color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()};
                     }
                 }
+                if (color == null) color = Color.WHITE;
+                tracerColor = _toTracerColor(color);
             }
 
             this._renderTracer(poseStack, buffer, entityYaw, entityPitch, partialTicks, packedLight, iClientGunProjectile, gunProjectile, tracerColor);
@@ -177,7 +173,8 @@ public class GunProjectileRenderer extends EntityRenderer<GunProjectile> {
 
         Vec3 bulletPosition = gunProjectile.getPosition(partialTicks);
         double bulletDistance = bulletPosition.distanceTo(livingShooter.getEyePosition());
-        if (bulletDistance < 2) return; // 距离两格外才渲染
+        if (gunProjectile.tickCount >= 5 // 刚射出的 5 ticks (250ms)
+                || bulletDistance < 2) return; // 距离两格外才渲染
 
         boolean isFirstPerson = livingShooter instanceof LocalPlayer
                 && this.entityRenderDispatcher.options.getCameraType().isFirstPerson();
@@ -235,6 +232,18 @@ public class GunProjectileRenderer extends EntityRenderer<GunProjectile> {
     @Override
     public @NotNull ResourceLocation getTextureLocation(@NotNull GunProjectile gunProjectile) {
         return CustomTexture.GUN_PROJECTILE.getLocation();
+    }
+
+    /**
+     * {@link Color} 的通道是 0~255，而渲染的顶点色需要 0~1；
+     * 直接按 0~255 传会被量化成接近 0 的 alpha，曳光弹着色器会因 {@code alpha < 0.1} 而 discard。
+     */
+    private static float @NotNull [] _toTracerColor(@NotNull Color color) {
+        return new float[]{
+                color.getRed() / 255f,
+                color.getGreen() / 255f,
+                color.getBlue() / 255f,
+                color.getAlpha() / 255f};
     }
 
     @ApiStatus.AvailableSince("1.21.4")

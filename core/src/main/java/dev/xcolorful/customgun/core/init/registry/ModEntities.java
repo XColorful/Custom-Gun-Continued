@@ -22,6 +22,8 @@ public class ModEntities {
                     .clientTrackingRange(8)
                     // 原版发包同步间隔4ticks (200ms)
                     .updateInterval(4)
+                    // 不接收速度更新，否则跟本地计算冲突
+                    .setShouldReceiveVelocityUpdates(false)
             .build(CustomEntityType.GUN_PROJECTILE.getRegistryLocation().getPath())
     );
 }

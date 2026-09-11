@@ -32,11 +32,13 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -59,6 +61,25 @@ public class GunProjectileRenderer extends EntityRenderer<GunProjectile> {
     }
 
     // --------EntityRenderer--------
+
+    /**
+     * <ul>
+     *     跳过渲染距离判定，只做视锥体裁剪
+     *     <li>原版 {@code Entity#shouldRenderAtSqrDistance} 用 碰撞箱尺寸*64 作为渲染距离上限</li>
+     *     <li>枪射物碰撞箱极小，会被限制在很近距离，曳光弹就永远画不出来</li>
+     * </ul>
+     */
+    @Override
+    public boolean shouldRender(@NotNull GunProjectile gunProjectile,
+                                @NotNull Frustum frustum,
+                                double camX, double camY, double camZ) {
+        AABB aabb = gunProjectile.getBoundingBoxForCulling().inflate(0.5);
+        if (aabb.hasNaN() || aabb.getSize() == 0.0) {
+            aabb = new AABB(gunProjectile.getX() - 2.0, gunProjectile.getY() - 2.0, gunProjectile.getZ() - 2.0,
+                    gunProjectile.getX() + 2.0, gunProjectile.getY() + 2.0, gunProjectile.getZ() + 2.0);
+        }
+        return frustum.isVisible(aabb);
+    }
 
     @ApiStatus.AvailableSince("1.21.4")
 //    @Override
@@ -171,9 +192,12 @@ public class GunProjectileRenderer extends EntityRenderer<GunProjectile> {
         if (livingShooter == null) return;
 
         Vec3 bulletPosition = gunProjectile.getPosition(partialTicks);
-        double bulletDistance = bulletPosition.distanceTo(livingShooter.getEyePosition());
-        if (gunProjectile.tickCount >= 5 // 刚射出的 5 ticks (250ms)
-                || bulletDistance < 2) return; // 距离两格外才渲染
+        if (
+                // 前2tick(100ms)要是飞不出两格，就强制渲染
+                gunProjectile.tickCount > 2
+                // 距离两格内
+                || bulletPosition.distanceTo(livingShooter.getEyePosition()) < 2
+        ) return;
 
         boolean isFirstPerson = livingShooter instanceof LocalPlayer
                 && this.entityRenderDispatcher.options.getCameraType().isFirstPerson();

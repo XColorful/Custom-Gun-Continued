@@ -30,6 +30,7 @@ import dev.xcolorful.customgun.core.resource.data.data.GunData;
 import dev.xcolorful.customgun.core.resource.data.data.gun._BurstData;
 import dev.xcolorful.customgun.core.resource.data.data.gun._ChargingData;
 import dev.xcolorful.customgun.core.resource.data.data.gun._HeatData;
+import dev.xcolorful.customgun.core.resource.instance.data.AttachmentIndexInstance;
 import dev.xcolorful.customgun.core.resource.instance.data.GunIndexInstance;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
@@ -315,8 +316,9 @@ public interface IGunScriptBackCompat extends IGunScriptContextAccess {
         IGun iGun = this.getIGun();
         ItemStack gunItem = this.getGunItem();
         var attachmentLocation = iGun.getAttachmentLocation(gunItem, AttachmentCategory.MAGAZINE);
-        AttachmentData attachmentData = ResourceApi.getAttachmentData(attachmentLocation);
-        if (attachmentData == null) return 0;
+        @Nullable AttachmentIndexInstance attachmentIndexInstance = ResourceApi.getAttachmentIndexInstance(attachmentLocation);
+        if (attachmentIndexInstance == null) return 0;
+        AttachmentData attachmentData = attachmentIndexInstance.getAttachmentData();
         @Nullable MagazineCategory magazineCategory = attachmentData.getMagazineCategory();
         return magazineCategory != null ? magazineCategory.getIndex() : 0;
     }

@@ -13,9 +13,12 @@ import dev.xcolorful.customgun.core.api.resource.data.data.gun._BulletDataTag;
 import dev.xcolorful.customgun.core.resource.ResourcePojo;
 import dev.xcolorful.customgun.core.resource.data.data.gun.bullet._BulletSkillData;
 import dev.xcolorful.customgun.core.resource.data.data.gun.bullet._ExplosionData;
+import dev.xcolorful.customgun.core.resource.data.data.gun.bullet.damage._DistanceDamageData;
 import dev.xcolorful.customgun.core.util.JsonUtils;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.io.IOException;
+import java.util.List;
 
 public final class _BulletData extends ResourcePojo<_BulletData> {
 
@@ -53,7 +56,7 @@ public final class _BulletData extends ResourcePojo<_BulletData> {
                 String key = reader.nextName();
                 switch (key) {
                     case _BulletDataTag.DISPLAY_DAMAGE, _BulletDataTag.DISPLAY_DAMAGE_OLD1 -> pojo.displayDamage = JsonUtils.readFloat(reader);
-                    case _BulletDataTag.BULLET_SKILL, _BulletDataTag.BULLET_SKILL_OLD1 -> pojo.bulletSkillData = JsonUtils.read(reader, _BulletSkillData::fromJson);
+                    case _BulletDataTag.BULLET_SKILL -> pojo.bulletSkillData = JsonUtils.read(reader, _BulletSkillData::fromJson); case _BulletDataTag.BULLET_SKILL_OLD1 -> pojo.bulletSkillDataOld = JsonUtils.read(reader, _BulletSkillData::fromJson);
 
                     case _BulletDataTag.LIFETIME_SECONDS, _BulletDataTag.LIFETIME_SECONDS_OLD1 -> pojo.lifetimeSeconds = JsonUtils.readFloat(reader);
                     case _BulletDataTag.BULLET_SPEED, _BulletDataTag.BULLET_SPEED_OLD1 -> pojo.bulletSpeed = JsonUtils.readFloat(reader);
@@ -207,9 +210,36 @@ public final class _BulletData extends ResourcePojo<_BulletData> {
 
     // --------Back compatibility--------
 
+    @ApiStatus.Internal
+    private _BulletSkillData bulletSkillDataOld;
+
     @Override
     public _BulletData applyBackCompatibility() {
-        this.bulletSkillData = this.bulletSkillData == null ? new _BulletSkillData().applyBackCompatibility() : this.bulletSkillData.applyBackCompatibility();
+        { // bulletSkillData兼容
+            if (bulletSkillDataOld != null & this.bulletSkillData == null) { // 只写了旧格式
+                this.bulletSkillData = this.bulletSkillDataOld;
+            }
+
+            this.bulletSkillData = this.bulletSkillData == null ? new _BulletSkillData().applyBackCompatibility() : this.bulletSkillData.applyBackCompatibility();
+
+            if (this.bulletSplitAmount > 1 & this.bulletSkillDataOld != null) {
+                /*
+                旧格式是子弹伤害写总的，运行时除掉split
+                新格式直接指定单个子弹伤害，运行时生成split个gun projectile
+                 */
+                assert this.bulletSkillData != null;
+                this.displayDamage /= (float) this.bulletSplitAmount;
+                List<_DistanceDamageData> damageCalculation = this.bulletSkillData.getDamageCalculation();
+                for (int i = 0; i < damageCalculation.size(); i++) {
+                    _DistanceDamageData distanceDamageData = damageCalculation.get(i);
+
+                    // 对(霰弹枪)分裂子弹提前除掉伤害
+                    distanceDamageData.setDamage(distanceDamageData.getDamage() / this.bulletSplitAmount);
+                }
+                this.bulletSkillData.setDamageCalculation(damageCalculation);
+            }
+            this.bulletSkillDataOld = null;
+        }
 
         this.explosionData = this.explosionData == null ? new _ExplosionData().applyBackCompatibility() : this.explosionData.applyBackCompatibility();
         return this;

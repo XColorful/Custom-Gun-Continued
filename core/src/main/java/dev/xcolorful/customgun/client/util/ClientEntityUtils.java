@@ -7,9 +7,9 @@ public class ClientEntityUtils {
 
     public static AABB getBoundingBoxForCulling(Entity entity) {
         // [1.21.1, 1.21.4)
-        return entity.getBoundingBoxForCulling();
+//        return entity.getBoundingBoxForCulling();
 
         // [1.21.4, )
-//        return entity.getBoundingBox();
+        return entity.getBoundingBox();
     }
 }

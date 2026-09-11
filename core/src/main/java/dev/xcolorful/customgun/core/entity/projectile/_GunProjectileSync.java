@@ -15,6 +15,9 @@ import net.minecraft.world.phys.Vec3;
 public class _GunProjectileSync {
     
     protected static void encodeInitialSyncData(GunProjectile _this, FriendlyByteBuf buffer) {
+        buffer.writeFloat(_this.getXRot());
+        buffer.writeFloat(_this.getYRot());
+
         Vec3 deltaMovement = _this.getDeltaMovement();
         buffer.writeDouble(deltaMovement.x);
         buffer.writeDouble(deltaMovement.y);
@@ -41,6 +44,9 @@ public class _GunProjectileSync {
         buffer.writeInt(owner != null ? owner.getId() : 0);
     }
     protected static void decodeInitialSyncData(GunProjectile _this, FriendlyByteBuf buffer) {
+        _this.setXRot(buffer.readFloat());
+        _this.setYRot(buffer.readFloat());
+
         _this.setDeltaMovement(
                 buffer.readDouble(),
                 buffer.readDouble(),

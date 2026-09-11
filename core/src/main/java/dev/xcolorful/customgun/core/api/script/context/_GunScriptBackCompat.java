@@ -13,6 +13,7 @@ import dev.xcolorful.customgun.core.api.entity.ShooterProperty;
 import dev.xcolorful.customgun.core.api.entity.shooter.ILivingShooterGetter;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
+import dev.xcolorful.customgun.core.gun.attack._DefaultGunAttack;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
@@ -34,7 +35,15 @@ public class _GunScriptBackCompat {
     protected static void shootOnce(GunScriptApi _this, boolean consumeAmmo) {
         @Nullable ILivingShooter iLivingShooter = _this.iLivingShooter;
         @Nullable ShooterProperty shooterProperty = iLivingShooter != null ? iLivingShooter.cgc$getShooterProperty() : null;
-        _this.iGun.gunFire(shooterProperty,
+        /*
+        调用IGun会再次派发到脚本，无限递归
+         */
+//        _this.iGun.gunFire(shooterProperty,
+//                _this.iGun, _this.gunItem,
+//                iLivingShooter, _this.livingShooter,
+//                _this.pitchSupplier, _this.yawSupplier);
+        // 直接使用默认实现
+        _DefaultGunAttack.gunFire(shooterProperty,
                 _this.iGun, _this.gunItem,
                 iLivingShooter, _this.livingShooter,
                 _this.pitchSupplier, _this.yawSupplier);

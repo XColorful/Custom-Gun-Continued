@@ -3,6 +3,7 @@ package dev.xcolorful.customgun.forgeclient.mixin.entity;
 import dev.xcolorful.customgun.client.api.entity.IClientGunProjectile;
 import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
 import dev.xcolorful.customgun.client.model.AmmoModelObject;
+import dev.xcolorful.customgun.client.particle.AmmoParticleSpawner;
 import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
 import dev.xcolorful.customgun.client.resource.instance.data.ClientAmmoIndexInstance;
 import dev.xcolorful.customgun.client.resource.instance.data.ClientGunIndexInstance;
@@ -38,6 +39,22 @@ public abstract class GunProjectileMixin implements IClientGunProjectile {
         GunProjectile gunProjectile = (GunProjectile) (Object) this;
         this.cgc$clientGunIndexInstanceCache = ClientResourceApi.getClientGunIndexInstance(gunProjectile.getGunLocation(gunProjectile));
         this.cgc$gunDisplayInstanceCache = ClientResourceApi.getGunDisplayInstance(gunProjectile.getGunDisplayLocation(gunProjectile));
+    }
+
+    /**
+     * <ul>
+     *     客户端每 tick 沿弹道生成粒子拖尾
+     *     <li>必须注入在 {@code HEAD}（本 tick 位移之前）</li>
+     *     <li>粒子按 当前位置+本tick位移的随机比例 撒点</li>
+     *     <li>只有用位移前的坐标才能覆盖住本 tick 走过的整段弹道</li>
+     * </ul>
+     */
+    @Inject(method = "tick", at = @At("HEAD"))
+    private void cgc$spawnAmmoParticle(CallbackInfo ci) {
+        GunProjectile gunProjectile = (GunProjectile) (Object) this;
+        if (!gunProjectile.level().isClientSide()) return;
+
+        AmmoParticleSpawner.addParticle(gunProjectile, gunProjectile);
     }
 
     // --------IClientGunProjectile--------

@@ -42,11 +42,16 @@ public class GunActionManager implements IGunActionManager {
     public boolean startBolt(ShooterProperty shooterProperty,
                              @NotNull IGun iGun, @NotNull ItemStack gunItem,
                              ILivingShooter iLivingShooter, LivingEntity livingShooter) {
+        // 拉栓前置检查，先于脚本执行
+        if (!_DefaultGunAction.startBolt(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter)) {
+            return false;
+        }
+
         GunScriptApi scriptApi = GunScriptApi.of(iLivingShooter, livingShooter, iGun, gunItem);
         return switch (scriptApi.simpleCall(ScriptMethodType.START_BOLT)) {
-            case TRUE -> true;
             case FALSE -> false;
-            case UNKNOWN -> _DefaultGunAction.startBolt(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter);
+            // 前置检查已通过，脚本不拦截就视为放行
+            case TRUE, UNKNOWN -> true;
         };
     }
     @Override

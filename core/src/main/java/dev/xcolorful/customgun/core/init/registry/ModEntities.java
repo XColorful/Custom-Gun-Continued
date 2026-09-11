@@ -18,11 +18,12 @@ public class ModEntities {
                     .sized(0.0625f, 0.0625f) // BlockBench模型尺寸
                     .noSummon()
                     .noSave()
-                    // TODO 模组做完后可考虑修改
-                    // 可见范围8区块 (128格)
-                    .clientTrackingRange(8)
+                    // 可见范围20区块 (320格)
+                    .clientTrackingRange(20)
                     // 原版发包同步间隔4ticks (200ms)
                     .updateInterval(4)
+                    // 不接收速度更新，否则跟本地计算冲突
+                    .setShouldReceiveVelocityUpdates(false)
             .build(CustomGun.getMcRegistry().createResourceKey(Registries.ENTITY_TYPE, CustomEntityType.GUN_PROJECTILE.getRegistryLocation()))
     );
 }

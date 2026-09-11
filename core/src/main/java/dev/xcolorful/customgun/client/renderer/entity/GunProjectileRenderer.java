@@ -33,6 +33,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.state.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -40,6 +41,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -62,6 +64,25 @@ public class GunProjectileRenderer extends EntityRenderer<GunProjectile, GunProj
     }
 
     // --------EntityRenderer--------
+
+    /**
+     * <ul>
+     *     跳过渲染距离判定，只做视锥体裁剪
+     *     <li>原版 {@code Entity#shouldRenderAtSqrDistance} 用 碰撞箱尺寸*64 作为渲染距离上限</li>
+     *     <li>枪射物碰撞箱极小，会被限制在很近距离，曳光弹就永远画不出来</li>
+     * </ul>
+     */
+    @Override
+    public boolean shouldRender(@NotNull GunProjectile gunProjectile,
+                                @NotNull Frustum frustum,
+                                double camX, double camY, double camZ) {
+        AABB aabb = gunProjectile.getBoundingBoxForCulling().inflate(0.5);
+        if (aabb.hasNaN() || aabb.getSize() == 0.0) {
+            aabb = new AABB(gunProjectile.getX() - 2.0, gunProjectile.getY() - 2.0, gunProjectile.getZ() - 2.0,
+                    gunProjectile.getX() + 2.0, gunProjectile.getY() + 2.0, gunProjectile.getZ() + 2.0);
+        }
+        return frustum.isVisible(aabb);
+    }
 
     @ApiStatus.AvailableSince("1.21.4")
     @Override
@@ -121,19 +142,15 @@ public class GunProjectileRenderer extends EntityRenderer<GunProjectile, GunProj
         if (gunProjectile.getIsTracer(gunProjectile)) {
             float[] tracerColor; { // 曳光弹颜色{R,G,B,A}
                 @Nullable Color color = gunDisplayInstance.getTracerColor();
-                if (color != null) {
-                    tracerColor = new float[]{color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()};
-                } else {
+                if (color == null) {
                     @Nullable ClientAmmoIndexInstance clientAmmoIndexInstance = iClientGunProjectile.cgc$getClientAmmoIndexInstanceCache();
                     if (clientAmmoIndexInstance != null) {
                         AmmoDisplay ammoDisplay = clientAmmoIndexInstance.getAmmoDisplay();
                         color = ammoDisplay.getTracerColor();
-                        tracerColor = new float[]{color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()};
-                    } else {
-                        color = Color.WHITE;
-                        tracerColor = new float[]{color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()};
                     }
                 }
+                if (color == null) color = Color.WHITE;
+                tracerColor = _toTracerColor(color);
             }
 
             this._renderTracer(poseStack, buffer, entityYaw, entityPitch, partialTicks, packedLight, iClientGunProjectile, gunProjectile, tracerColor);
@@ -158,10 +175,9 @@ public class GunProjectileRenderer extends EntityRenderer<GunProjectile, GunProj
         @Nullable var textureLocation = ammoEntityDisplay.getTextureLocation();
         if (textureLocation == null) textureLocation = ClientRenderUtils.getMissingTextureLocation();
 
-        poseStack.mulPose(Axis.YP.rotationDegrees(entityYaw - 180.0F));
-        poseStack.mulPose(Axis.XP.rotationDegrees(entityPitch));
-
         poseStack.pushPose(); {
+            poseStack.mulPose(Axis.YP.rotationDegrees(entityYaw - 180.0F));
+            poseStack.mulPose(Axis.XP.rotationDegrees(entityPitch));
             poseStack.translate(0, 1.5, 0);
             poseStack.scale(-1, -1, 1);
             ammoEntityModelObject.render(poseStack,
@@ -182,8 +198,12 @@ public class GunProjectileRenderer extends EntityRenderer<GunProjectile, GunProj
         if (livingShooter == null) return;
 
         Vec3 bulletPosition = gunProjectile.getPosition(partialTicks);
-        double bulletDistance = bulletPosition.distanceTo(livingShooter.getEyePosition());
-        if (bulletDistance < 2) return; // 距离两格外才渲染
+        if (
+                // 前2tick(100ms)要是飞不出两格，就强制渲染
+                gunProjectile.tickCount > 2
+                // 距离两格内
+                || bulletPosition.distanceTo(livingShooter.getEyePosition()) < 2
+        ) return;
 
         boolean isFirstPerson = livingShooter instanceof LocalPlayer
                 && this.entityRenderDispatcher.options.getCameraType().isFirstPerson();
@@ -241,6 +261,18 @@ public class GunProjectileRenderer extends EntityRenderer<GunProjectile, GunProj
 //    @Override
     public @NotNull ResourceLocation getTextureLocation(@NotNull GunProjectile gunProjectile) {
         return CustomTexture.GUN_PROJECTILE.getLocation();
+    }
+
+    /**
+     * {@link Color} 的通道是 0~255，而渲染的顶点色需要 0~1；
+     * 直接按 0~255 传会被量化成接近 0 的 alpha，曳光弹着色器会因 {@code alpha < 0.1} 而 discard。
+     */
+    private static float @NotNull [] _toTracerColor(@NotNull Color color) {
+        return new float[]{
+                color.getRed() / 255f,
+                color.getGreen() / 255f,
+                color.getBlue() / 255f,
+                color.getAlpha() / 255f};
     }
 
     @ApiStatus.AvailableSince("1.21.4")

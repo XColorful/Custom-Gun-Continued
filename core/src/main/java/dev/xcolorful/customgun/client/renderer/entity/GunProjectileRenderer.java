@@ -22,6 +22,7 @@ import dev.xcolorful.customgun.client.resource.assets.display.AmmoDisplay;
 import dev.xcolorful.customgun.client.resource.assets.display.ammo._AmmoEntityDisplay;
 import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
 import dev.xcolorful.customgun.client.resource.instance.data.ClientAmmoIndexInstance;
+import dev.xcolorful.customgun.client.util.ClientEntityUtils;
 import dev.xcolorful.customgun.client.util.ClientRenderHelper;
 import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import dev.xcolorful.customgun.core.entity.projectile.GunProjectile;
@@ -73,7 +74,7 @@ public class GunProjectileRenderer extends EntityRenderer<GunProjectile> {
     public boolean shouldRender(@NotNull GunProjectile gunProjectile,
                                 @NotNull Frustum frustum,
                                 double camX, double camY, double camZ) {
-        AABB aabb = gunProjectile.getBoundingBoxForCulling().inflate(0.5);
+        AABB aabb = ClientEntityUtils.getBoundingBoxForCulling(gunProjectile).inflate(0.5);
         if (aabb.hasNaN() || aabb.getSize() == 0.0) {
             aabb = new AABB(gunProjectile.getX() - 2.0, gunProjectile.getY() - 2.0, gunProjectile.getZ() - 2.0,
                     gunProjectile.getX() + 2.0, gunProjectile.getY() + 2.0, gunProjectile.getZ() + 2.0);

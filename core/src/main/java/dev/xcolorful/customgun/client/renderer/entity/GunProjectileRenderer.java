@@ -148,10 +148,9 @@ public class GunProjectileRenderer extends EntityRenderer<GunProjectile> {
         @Nullable var textureLocation = ammoEntityDisplay.getTextureLocation();
         if (textureLocation == null) textureLocation = ClientRenderUtils.getMissingTextureLocation();
 
-        poseStack.mulPose(Axis.YP.rotationDegrees(entityYaw - 180.0F));
-        poseStack.mulPose(Axis.XP.rotationDegrees(entityPitch));
-
         poseStack.pushPose(); {
+            poseStack.mulPose(Axis.YP.rotationDegrees(entityYaw - 180.0F));
+            poseStack.mulPose(Axis.XP.rotationDegrees(entityPitch));
             poseStack.translate(0, 1.5, 0);
             poseStack.scale(-1, -1, 1);
             ammoEntityModelObject.render(poseStack,

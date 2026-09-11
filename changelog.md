@@ -1,5 +1,17 @@
 ### 0.0.x
 
+#### 0.0.13
+- Increase gun projectile max render distance to 20 chunks (320 blocks)
+
+Fix:
+- Fix reloaded ammo count when installed extended magazine
+- Fix resource pack script infinite bolt-cycling issue
+- Fix resource pack script recursive shoot issue
+- Fix gun projectile not rendering
+
+Back compatibility:
+- Adjust damage format for split bullets in `GunData`
+
 #### 0.0.12
 - Add built-in gun HUD
 - Add built-in shooter operation HUD

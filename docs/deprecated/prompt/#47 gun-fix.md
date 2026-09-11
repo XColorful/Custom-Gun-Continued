@@ -124,3 +124,71 @@ CGC 把 TaCZ 原版放在**调用方**的拉栓前置检查（[LocalPlayerBolt.b
 编译：`:core:compileJava` 通过。按项目规则，我停在这里，未提交、未推送。
 
 请你进游戏验证：`tacz:m870` / `tacz:spas_12` / `tacz:kar98` 从创造 tab 拿到手后应只拉一次栓（枪管 1、弹匣 4），随后可正常射击与换弹。
+
+# 
+
+```
+现在无限拉栓的问题解决了，又有新问题：
+- 切到M870后，看起来像是一直停在掏枪动画刚开始的状态，按开火有枪声，但是不消耗子弹；可以装弹，装弹后就处于正常的待机状态，但是仍然无法射击
+- tacz:spas_12、tacz:kar98掏枪动画正常，初始拉栓正常，但是开火有枪声却不消耗子弹；可以换弹，装弹后仍然无法射击
+- 在处于切枪结束、非换弹（可射击状态）下，均没有触发“LocalShooterProperty: operation LocalShooterShoot#shoot failed, current state:”日志
+
+继续排查并修复
+```
+
+# 
+
+现在射击链路出问题。我读一下开火/耗弹的实现。
+
+让我在测试目录的游戏日志里找证据。
+
+日志显示 kar98 状态是「barrel 1, mag 4/4」（满弹）却打不出子弹。查看 `ILivingShooter.cgc$shoot`。
+
+`_DefaultGunAttack.gunFire` 与实际开火是异步的。现在确认网络层的异常处理，这决定了 `shootOnce` 递归是否会被静默吞掉。
+
+找到关键机制了。先确认 `IGunAttackManager` 的结构，决定修复落点。
+
+找到了。`shootOnce` 回调用的是**调度器** `iGun.gunFire`，而不是默认实现 —— 脚本 `shoot` → `shootOnce` → `gunFire` → 脚本 `shoot` 无限递归，异常被 Forge 的 `enqueueWork`（`submitAsync` 返回的 future 被丢弃）静默吞掉，所以「有声、无耗弹、无报错」。
+
+用项目既有模式（`IGunScriptBackCompat` 已经这样调用 `_DefaultGunAction.consumeAmmoFromPlayer`）修复。
+
+修复完成并编译通过。快速核对 M870 动画资源是否有脚本引用的动画名。
+
+M870 的动画文件里**没有 `draw`**。`use_default_animation: "rifle"` 说明它复用默认步枪动画集。检查另两把枪。
+
+M870 缺少 `draw` 动画（其余枪自带）。它靠 `use_default_animation: "rifle"` 复用默认步枪动画集。查 CGC 对默认动画集的处理。
+
+我的前一处修复已被你提交（`ec38196a1`）。现在看 CGC 里创建动画控制器的位置，以决定 M870 缺失默认动画的修复落点。
+
+两处修复完成、编译通过。报告如下。
+
+## 修复 1：脚本枪「有声、不耗弹、打不出子弹」
+
+**根因**：`_GunScriptBackCompat.shootOnce` 回调的是**调度器**而不是默认实现。
+
+调用链：`LivingShooterShoot.shoot` → `GunAttackManager.gunFire` → 脚本 `gun_fire`（旧名 `shoot`）→ 脚本里 `api:shootOnce(...)` → 又回到 `iGun.gunFire` → `GunAttackManager.gunFire` → 脚本 `shoot` → …… 无限递归。
+
+对比 TaCZ：`ModernKineticGunScriptAPI.shootOnce` **内部就是完整开火实现**；CGC 迁移时把它改成了重新走一遍派发器。
+
+为什么你看到的现象是「有声但不耗弹、且无任何报错」：Forge 的 `NetworkEvent.Context.enqueueWork` 走 `BlockableEventLoop.submitAsync`，返回的 `CompletableFuture` 被丢弃，**包处理里的异常被静默吞掉**（[NetworkEvent.java:205](app://localhost/epitaxy/core/build/tmp/.cache/expanded/zip_360104c6fc04675d4421fcf7cf7ba91a/net/minecraftforge/network/NetworkEvent.java:205)）。所以服务端那一发根本没落地——不扣弹、不出弹、不报错；而 1P 枪声是客户端 `_doShoot` 自己播的，所以「有枪声」。
+
+受影响的是所有在逻辑脚本里定义 `shoot` 的枪：m870、kar98、spas_12、m1014、hk_mk23、db_short、devotion_lmg。
+
+**改动**（沿用项目既有模式：`IGunScriptBackCompat` 早就这么调 `_DefaultGunAction.consumeAmmoFromPlayer`）：
+
+- [_GunScriptBackCompat.shootOnce](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/core/api/script/context/_GunScriptBackCompat.java:34) → 改为调用 `_DefaultGunAttack.gunFire(...)`
+- [_DefaultGunAttack.gunFire](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/core/gun/attack/_DefaultGunAttack.java:145) → `protected static` 改为 `@ApiStatus.Internal public static`
+
+## 修复 2 未做（需要你定夺）：M870 卡在掏枪动画
+
+根因已确认，**不是脚本问题**：`m870.animation.json` 里**没有 `draw` 动画**，它靠 `"use_default_animation": "rifle"` 复用默认步枪动画集。TaCZ 会把内置的 `assets/tacz/animations/rifle_default.animation.json` 用 `providePrototypeIfAbsent` 合并进每把枪的控制器（枪自带的动画优先）；CGC 把这个功能删掉了——`GunDisplayTag` 里两个 tag 标了 `@Deprecated`、`GunDisplay` 里根本没解析、`AnimController.providePrototypeIfAbsent` **零调用者**。
+
+于是 M870 的 `runAnimation("draw")` 空转 → 停在 pre-draw 姿态（就是你说的「掏枪动画刚开始」）。kar98/spas_12 自带 `draw`，所以只有 M870 犯病——与你的观察完全吻合。
+
+要修需要：① 把 `rifle_default.animation.json` / `pistol_default.animation.json` 两个资源从 TaCZ 拷进 CGC；② 解析 `use_default_animation`/`default_animation`；③ 在 `GunDisplayInstance.loadAnimController` 里用 `providePrototypeIfAbsent` 合并。这属于**恢复一个功能 + 引入第三方资源文件**，我先不动，等你确认。
+
+## 另一个遗留差异（未改）
+
+`shootOnce(consumeAmmo)` 的 `consumeAmmo` 参数被忽略，恒定走 `consumeAmmoOnce`。TaCZ 里该参数为 false 时不扣弹——对应创造模式的 `isShootingNeedConsumeAmmo()`。要不要按 TaCZ 语义补上，也请你定。
+
+两处代码改动未提交、未推送。请进游戏验证 kar98 / spas_12 / m870 的射击与换弹；M870 的掏枪动画在修复 2 落地前仍会保持原样。

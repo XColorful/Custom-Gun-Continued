@@ -383,8 +383,11 @@ public interface GunDataAccessor extends IGunDataAccess {
         GunData gunData = gunIndexInstance.getGunData();
         MagazineCategory magazineCategory = MagazineCategory.NONE; {
             var attachmentLocation = this.getAttachmentLocation(gunItem, AttachmentCategory.MAGAZINE);
-            AttachmentData attachmentData = ResourceApi.getAttachmentData(attachmentLocation);
-            if (attachmentData != null) magazineCategory = attachmentData.getMagazineCategory();
+            @Nullable AttachmentIndexInstance attachmentIndexInstance = ResourceApi.getAttachmentIndexInstance(attachmentLocation);
+            if (attachmentIndexInstance != null) {
+                AttachmentData attachmentData = attachmentIndexInstance.getAttachmentData();
+                magazineCategory = attachmentData.getMagazineCategory();
+            }
         }
 
         if (magazineCategory == null || magazineCategory == MagazineCategory.NONE) {

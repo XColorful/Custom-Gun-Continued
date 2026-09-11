@@ -143,7 +143,8 @@ public class _DefaultGunAttack {
     /**
      * 对应原模组{@code AbstractGunItem.shoot()}，仅服务端触发
      */
-    protected static IGunAttackRuntime.GunFireResult gunFire(@Nullable ShooterProperty shooterProperty,
+    @ApiStatus.Internal
+    public static IGunAttackRuntime.GunFireResult gunFire(@Nullable ShooterProperty shooterProperty,
                                                              @NotNull IGun iGun, @NotNull ItemStack gunItem,
                                                              ILivingShooter iLivingShooter, LivingEntity livingShooter,
                                                              Supplier<Float> pitch, Supplier<Float> yaw) { // TODO 这两个参数写到GunScriptApi还是lua函数参数?

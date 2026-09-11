@@ -42,7 +42,6 @@ public class _ProjectileHit {
      */
     protected static boolean onProjectileHitEntity(IProjectilePhysicsRuntime.EntityHitResult entityHitResult,
                                                    IGunProjectile iGunProjectile, Entity gunProjectile) {
-        CustomGun.LOGGER.debug("onProjectileHitEntity");
         Entity victimEntity;
         Entity directEntity = gunProjectile; // 出伤工具 (子弹)
         @Nullable Entity causingEntity; // 使用工具的实体 (枪手)

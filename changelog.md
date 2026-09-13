@@ -1,5 +1,12 @@
 ### 0.0.x
 
+#### 0.0.14
+- Add vanilla damage type tags
+- Fix distance issue with gun sounds from other players
+
+1.21.1+
+- Fix gun projectile render offset in first person view
+
 #### 0.0.13
 - Increase gun projectile max render distance to 20 chunks (320 blocks)
 

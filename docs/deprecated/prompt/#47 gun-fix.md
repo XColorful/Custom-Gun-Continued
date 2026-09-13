@@ -1083,4 +1083,85 @@ if (pitchSplineFunction != null && pitchSplineFunction.isValidPoint(timeTotal)) 
 
 # 
 
+That's decisive and much better evidence than my code reading. The offset must be captured in a **different space** on 1.20.1. Let me find where the platforms diverge.
 
+GunItemRenderer and GunCameraHelper are byte-identical, yet the captured offset's space differs. Let me look for the platform-divergent part: `applyLevelCameraAnimation` / `applyFirstPersonGunTransform`.
+
+Code is byte-identical on both sides. Let me compare how each version applies the camera rotation to the hand-render pose stack.
+
+Found a real divergence candidate: 1.20.1 uses `camera.setAnglesInternal(...)`. Let me see what that does.
+
+`setAnglesInternal` sets `yRot`/`xRot` but **does not** touch `rotation`. Let me see the 1.20.1 `Camera.setup` ordering.
+
+This is the key insight I was missing. Let me verify the camera quaternion convention in each version.
+
+**Found the real difference.** The camera quaternion conventions changed between versions — that's the platform change you suspected.
+
+||摄像机 `rotation` 的构造|由此得到的摄像机旋转|
+|---|---|---|
+|1.20.1|`rotationYXZ(-yaw, +pitch, 0)`|`Qx(+pitch) · Qy(-180-yaw)`|
+|1.21.1|`rotationYXZ(π-yaw, -pitch, 0)`|`Qy(180-yaw) · Qx(-pitch)`|
+
+**pitch 的符号翻转了，变换顺序也变了。** 曳光弹里那对 `mulPose`（YN 然后 XN）只在 1.20.1 的约定下等于摄像机的逆；到了 1.21.1 就不再是逆变换，二次旋转由此产生。
+
+所以：**1.20.1 的代码是对的，不能动；1.21.1 需要把两个 mulPose 的顺序对调。** 我之前"删掉旋转"能在 1.21.1 上通过，是因为碰撞箱太小、沿弹道的分量本来就看不出——属于走运，不是正解。让我用这条逻辑重新验证并落成正确改法。
+
+The quaternion derivation keeps fighting me, so let me be guided by your empirical result (which is more reliable) and check one more thing: whether other CGC code depends on the old camera convention.
+
+Only the tracer consumes the offset, so the fix is well-isolated. Let me correct the comment to state the real cause (the camera convention change) instead of my earlier wrong "world space" claim.
+
+Build passes. Here's the answer.
+
+## 结论：1.20.1 不需要改，它的代码是对的
+
+根本原因是**两个版本的摄像机四元数约定不同**，而你怀疑的"forge 和 neoforge 都更新了平台逻辑"方向是对的 —— 但更准确地说，是 **vanilla 自己改的**（Forge/NeoForge 只是照搬），而且是 1.20.1 → 1.21.1 的跨越式改动。
+
+### 证据
+
+||摄像机 `Camera.rotation` 的构造|等价旋转|
+|---|---|---|
+|**1.20.1**|`rotationYXZ(-yaw, +pitch, 0)`<br>（[Camera.java:102](app://localhost/epitaxy/local_86c8ea88-2ebb-4e19-9ee7-3711dc48756a)）|`Qx(+pitch) · Qy(-180-yaw)`|
+|**1.21.1**|`rotationYXZ(π-yaw, -pitch, 0)`<br>（Camera.java:114）|`Qy(180-yaw) · Qx(-pitch)`|
+
+**pitch 的符号翻转了，两个旋转的合成顺序也调换了。** 而且在 GameRenderer 里施加方式也不同：
+
+- 1.20.1：`mulPose(XP(pitch))` 然后 `mulPose(YP(yaw+180))` —— 两次单独旋转
+- 1.21.1：`camera.rotation().conjugate()` 整体取共轭后**一次** `mulPose`
+
+### 为什么这会让曳光弹的旋转失效
+
+曳光弹里那对 `mulPose`（先 `YN(yaw+180)`、再 `XN(pitch)`）的意图是"**还原摄像机的 view 变换 → 在视图空间里施加偏移 → 再重放回去**"。
+
+- 在 **1.20.1 的约定**下，这个组合恰好等于摄像机的逆 → 语义成立 → **代码正确**
+- 到 **1.21.1**，俯仰符号和合成顺序都变了，它**不再是逆变换** → 变成二次旋转。yaw=0 时两次旋转的偏航部分互相抵消（所以你看不出来），yaw=±90 时抵消不掉，偏移被转成横向 → 就是你看到的起点横移
+
+这也解释了你的实测：1.21.1 去掉旋转正常、加上复现；1.20.1 恰好相反。**代码在两边逐字相同，变的只有平台。**
+
+### 三个交叉验证
+
+我把关键文件两两 diff 过了，确认分歧只可能在平台侧：
+
+- `GunItemRenderer.java`（含 `cacheMuzzlePosition`、`renderFirstPerson` 的 poseStack 构造）→ **逐字相同**
+- `GunCameraHelper.java` → **逐字相同**（384 行）
+- `renderHandsWithItems` / `applyItemArmTransform` → **逐字相同**
+
+也就是说 core 里没有任何一处能解释差异，唯一的变量就是上面那张表的摄像机约定。
+
+### 所以
+
+- **1.20.1 保持原样**（你回滚是对的，请不要应用那个改动）
+- 1.21.1 保留现在的写法（不加旋转）
+
+我把 1.21.1 的注释改成了**真实原因**（之前我写的"偏移是世界空间向量"是错的，已更正为上面的平台约定差异）。
+
+### 一个需要留意的连带风险
+
+`1.21.1` 与 `26.2` 之间大概率也有类似约定差异。这两处代码（`_renderTracer` 的旋转、`cacheMuzzlePosition`）在跨版本时需要**按版本分别验证**，不能照搬。要不要我在移植到 `26.2neoforge` 时顺手核对一下 Camera 的构造？
+
+## 本轮状态
+
+- 只动 `1.21.1forge` 一个文件（[GunProjectileRenderer.java](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/client/renderer/entity/GunProjectileRenderer.java:228)），+4/−8，IDEA 编译通过。
+- 1.20.1 **未改动**。
+- 代码未提交、未推送。
+
+关于 4.8°：就是后坐力，[GunCameraHelper.java:143](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/client/renderer/item/gun/GunCameraHelper.java:143) 直接写 `localPlayer.setXRot(...)` 改的是玩家真实俯仰角，客户端开火当帧就生效、服务端要等一个网络往返 —— 与弹道精度无关，不需要修。

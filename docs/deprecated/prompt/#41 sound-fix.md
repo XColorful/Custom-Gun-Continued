@@ -269,3 +269,247 @@ I found the root cause. Let me verify the exact current state of the relevant co
 改动后第三人称的 draw 触发时机与第一人称一致：收枪过渡结束后、真正渲染新枪时才初始化状态机并播放 draw 音效。
 
 文件经 IDE 检查无编译错误。
+
+# 
+---
+
+```
+现在自./docs/deprecated/prompt/#41 sound-fix.md之后，单人游戏是能播放声音了，但是多人游戏里开枪，别的玩家似乎没听到声音，即使离得很近
+
+需要继续检查发包问题并修复。
+```
+
+# 
+
+I'll start by reading the referenced sound-fix doc and understanding the current sound/network code.
+
+Now let me look at the sound network path — `SoundManager`, `_ServerMessageSound`, `PlannedRefactor`, and the shoot logic.
+
+Found a likely decode bug already (`writeVarInt` / `readInt` mismatch). Let me verify the send path is reached and check the codec/adapter and sound-type parsing.
+
+Confirmed the codec mismatch vs TaCZ. Now let me check how the adapter handles a decode failure, and confirm the client-side sound path.
+
+Let me check whether this encode/decode mismatch pattern exists elsewhere in the network messages.
+
+Two mismatches found so far. Let me systematically compare encode/decode type sequences across all message classes.
+
+Now let me verify the client-side playback path and `getGunSound`.
+
+Let me confirm the client-side sound lookup works for the `shoot_3p` tag.
+
+Root cause confirmed. The sender writes `distance` as a VarInt but the receiver reads a fixed-width int — the decode throws, Forge's event bus swallows the exception into a log line, and the sound never plays. TaCZ's original uses `writeInt`/`readInt` on both sides.
+
+Now let me audit the rest of the receive path for correctness (arg order, tag constants).
+
+Let me verify the change compiles.
+
+找到了根因，已修复。
+
+## 根因：`S2CMessageResourceSound` 编解码不对称（发包 bug）
+
+[S2CMessageResourceSound.java:33](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/core/network/message/resource/S2CMessageResourceSound.java:33) 写包用 `writeVarInt(distance)`，而 [第 43 行](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/core/network/message/resource/S2CMessageResourceSound.java:43) 读包用 `readInt()`。
+
+TaCZ 原版 [`ServerMessageSound`](app://localhost/epitaxy/local_7e61cce8-9c87-4b99-9620-be00b211ec82) 两端都是 `writeInt`/`readInt`——这是移植时只改了写侧。
+
+后果是确定性的：`distance` 通常约 48，`writeVarInt` 只写 **1 字节**，`readInt()` 却要读 **4 字节** → netty 抛 `IndexOutOfBoundsException`。我确认过 `FriendlyByteBuf.readInt()` 直接委托给底层 `ByteBuf.readInt()`（[FriendlyByteBuf.java:1236](app://localhost/epitaxy/core/build/tmp/.cache/expanded/zip_360104c6fc04675d4421fcf7cf7ba91a/net/minecraft/network/FriendlyByteBuf.java:1236)）。
+
+## 为什么表现为"没声音"而不是报错
+
+Forge 的 [`NetworkInstance.handleError`](app://localhost/epitaxy/local_7e61cce8-9c87-4b99-9620-be00b211ec82) 是**空方法**——event bus 把解码时抛出的异常静默吞掉了，既不打印日志也不断连。所以接收方客户端只是安静地什么都没发生。
+
+## 为什么单人游戏正常
+
+发送端在 `ServerLevel` 里，且过滤掉 `sourceEntity` 自己：
+
+- 单人游戏里没有任何"别的玩家"可发，这条发包路径根本没被走过；
+- 自己能听见的是本地 `SHOOT_SOUND`（`playShootSound`），走本地资源路径，不经过这个包。
+
+所以这个 bug 只在多人下暴露，且**只要有人开枪，其他人就永远听不到**.
+
+## 修复
+
+一行：`writeVarInt` → `writeInt`，与 TaCZ 对齐。
+
+## 排查时确认没问题的地方
+
+- `PlannedRefactor.ON_SEND_SOUND_MESSAGE = false` 并**没有**禁用发送。`if (PlannedRefactor.ON_SEND_SOUND_MESSAGE) return;` 在 false 时不会返回——#41 文档里"被提前返回、处于禁用状态"那句是误读。这个 flag 的语义是"重构完成后跳过旧逻辑"，翻成 true 才会真的断掉声音，别动它。
+- 消息注册方向、`chunkMap.getPlayers` + 距离过滤（与 TaCZ 一致）、`_S2CMessageResourceSound` 里 `getGunDisplayInstance(display, gun)` 的回退参数顺序、`"shoot_3p"`/`"silence_3p"` 与 `GunSoundType` 的映射、`playClientSound` 的 `trackEntity`/`concurrencyLimit`/`relative` 取值——均与 TaCZ 对齐，无需改动。
+
+## 另外发现一个同类隐患（未改动）
+
+[S2CMessageGunLevelUp.java:29](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/core/network/message/gun/S2CMessageGunLevelUp.java:29) 也是 `writeVarInt(level)` / `readInt()`，TaCZ 两端同样是 `writeInt`/`readInt`。我把所有消息类都扫了一遍，编解码类型序列不匹配的只有它和上面修掉的那个。它目前**没有任何发送方**（等级系统未实现），所以暂无实际影响。要一并修掉吗？
+
+## 验证
+
+- 修改文件经 IDEA 编译通过（只有与本次改动无关的既有 deprecation 警告）。
+- 字节层面的推理是确定的，但我没有真实的双客户端环境实跑。请你在多人（LAN 或专用服）里复测：另一名玩家近距离应能听到开枪声，且关闭消音器/装消音器时要分别听到 `shoot_3p` / `silence_3p`。
+
+改动已就绪，未提交。
+
+# 
+
+```
+还是没声音，继续排查问题并修复，可以加log测试
+
+另外，message不对称的我已经commit
+```
+
+# 
+
+Let me look at the client-side sound resource loading, which is the next link in the chain.
+
+Let me check how the 3P sound distance value is actually computed — this looks like it could be a multiplier, not a distance.
+
+Found the likely real cause — the sound distance is a **multiplier** (default 1.0), not a distance. Let me confirm against the shooter's own-sound call.
+
+The distance value is being used raw. Let me check what it should be, against TaCZ's data model.
+
+Let me check `EntityTrackingSoundInstance` before finalizing.
+
+Found it. Now let me apply the fix plus temporary debug logs.
+
+修复完成并编译通过。先说清一件事：**我上一轮的结论不完整**，抱歉。
+
+## 为什么修了 codec 还是没声音
+
+那个 `writeVarInt`/`readInt` 不对称确实是真的、也确实是 bug，但在当时的代码状态下**根本没有包发出去**——所以修它不会有任何变化。真正卡住的是另一个问题。
+
+## 真正的原因：把"倍率"当成了"距离"
+
+[_FireSoundData.java](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/core/resource/data/data/gun/_FireSoundData.java) 里：
+
+```java
+private float normalMultiplier = 1.0F;
+private float silencedMultiplier = 1.0F;
+```
+
+是**倍率**，默认 `1.0`。而 [_DefaultGunFire.java:100](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/core/gun/attack/_DefaultGunFire.java:100) 直接把它当绝对距离用了，发送时再 `(int)`：
+
+```java
+context.soundDistance = fireSoundData.getNormalMultiplier();      // = 1.0f
+...
+SoundManager.sendSoundToNearby(livingShooter, (int) context.soundDistance, ...)  // = 1
+```
+
+两个后果，正好对应你看到的现象：
+
+1. [SoundManager.java:118](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/core/sound/SoundManager.java:118) 的半径过滤是 `distanceToSqr(...) < distance * distance`，`distance = 1` → **只有 1 格内的玩家会收到包**，实际就是没人收到。这就是"即使离得很近"也没声。
+2. 即使发出去了，包里的 `distance = 1`，客户端 [ResourceSoundInstance.java:73](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/client/sound/ResourceSoundInstance.java:73) 会按 `1 - 距离/1` 算音量 → 听到也是 0。
+
+对照射手自己听到的声音，[LocalShooterShoot.java:355](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/client/entity/shooter/LocalShooterShoot.java:355) 用的是：
+
+```java
+GunConfig.DEFAULT_GUN_FIRE_SOUND_DISTANCE.get() * gunData.getFireSoundData().getNormalMultiplier()
+```
+
+—— 服务端这条路径漏了乘 `GunConfig.DEFAULT_GUN_FIRE_SOUND_DISTANCE`（默认 **64**）。TaCZ 原版的 `sound_distance` 属性也是绝对距离，不是倍率。
+
+## 改动
+
+**[_DefaultGunFire.java](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/core/gun/attack/_DefaultGunFire.java:98)** —— 让 `soundDistance` 真正是"格数"：
+
+```java
+int defaultDistance = GunConfig.DEFAULT_GUN_FIRE_SOUND_DISTANCE.get();
+context.soundDistance = defaultDistance * fireSoundData.getNormalMultiplier();   // 普通
+case SILENCED -> context.soundDistance = defaultDistance * fireSoundData.getSilencedMultiplier();
+case MUTED -> context.soundDistance = 0;                                         // 仍然不发包
+```
+
+发送处 `(int) context.soundDistance` 不用动。两个 bug 是**缺一不可**的关系：之前包发不出去（掩盖了 codec bug），现在包真的飞了，codec 那处修复才真正起作用。
+
+## 临时日志（4 处，都标了 `TODO(debug)`，可随时 discard）
+
+|位置|输出|
+|---|---|
+|[_DefaultGunFire.java:236](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/core/gun/attack/_DefaultGunFire.java:236)|服务端算出来的距离和消音标志|
+|[SoundManager.java:120](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/core/sound/SoundManager.java:120)|距离、**实际发给了几个玩家**|
+|[S2CMessageResourceSound.java:44](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/core/network/message/resource/S2CMessageResourceSound.java:44)|接收端解码出的字段|
+|[_S2CMessageResourceSound.java](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/client/network/message/resource/_S2CMessageResourceSound.java:25)|在哪一步被丢掉，或最终播放的音效路径|
+
+## 请这样测
+
+两名玩家靠近（几格内），一人开枪，然后在**服务端日志**里找：
+
+```
+[SOUND-DBG] doGunFire 3P: distance=64.0 silent=false
+[SOUND-DBG] sendSoundToNearby shooter=... sound=shoot_3p distance=64 targets=1
+```
+
+另一名玩家的**客户端日志**里应该紧跟着：
+
+```
+[SOUND-DBG] decode: ... sound=shoot_3p ... distance=64
+[SOUND-DBG] client play: Shoot3P -> <gunpack 音效路径> distance=64
+```
+
+- `targets=0` → 距离过滤器/区块还没覆盖到，把日志发我；
+- `client drop: no sound for Shoot3P in gun ...` → gunpack 这个枪的 display 里没定义 `shoot_3p`（资源包问题，不是代码问题）；
+- 装消音器时应该变成 `SILENCE_3P_SOUND` + `silencedMultiplier`。
+
+编译通过（IDEA 单文件编译，无错误）。改动未提交。
+
+# 
+
+```
+现在有声音了，日志如下，如果没问题就把日志清了
+
+主机：
+[14Sep2026 00:14:12.203] [Server thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [SOUND-DBG] doGunFire 3P: distance=64.0 silent=false
+[14Sep2026 00:14:12.205] [Server thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [SOUND-DBG] sendSoundToNearby shooter=1 sound=shoot_3p distance=64 targets=1
+[14Sep2026 00:14:13.988] [Server thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [SOUND-DBG] doGunFire 3P: distance=64.0 silent=false
+[14Sep2026 00:14:13.988] [Server thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [SOUND-DBG] sendSoundToNearby shooter=1 sound=shoot_3p distance=64 targets=1
+[14Sep2026 00:14:18.741] [Server thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [SOUND-DBG] doGunFire 3P: distance=64.0 silent=false
+[14Sep2026 00:14:18.741] [Server thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [SOUND-DBG] sendSoundToNearby shooter=1 sound=shoot_3p distance=64 targets=1
+[14Sep2026 00:14:19.341] [Server thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [SOUND-DBG] doGunFire 3P: distance=64.0 silent=false
+[14Sep2026 00:14:19.341] [Server thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [SOUND-DBG] sendSoundToNearby shooter=1 sound=shoot_3p distance=64 targets=1
+[14Sep2026 00:14:19.747] [Server thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [SOUND-DBG] doGunFire 3P: distance=64.0 silent=false
+[14Sep2026 00:14:19.747] [Server thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [SOUND-DBG] sendSoundToNearby shooter=1 sound=shoot_3p distance=64 targets=1
+[14Sep2026 00:14:49.659] [Server thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [SOUND-DBG] doGunFire 3P: distance=64.0 silent=false
+[14Sep2026 00:14:49.659] [Server thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [SOUND-DBG] sendSoundToNearby shooter=3 sound=shoot_3p distance=64 targets=1
+[14Sep2026 00:14:49.660] [Netty Local Client IO #0/INFO] [dev.xcolorful.customgun.CustomGun/]: [SOUND-DBG] decode: entityId=3 gun=cbrg:slr display=cbrg:slr_display sound=shoot_3p volume=0.8 pitch=0.9938605 distance=64
+[14Sep2026 00:14:49.666] [Render thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [SOUND-DBG] client play: shoot_3p -> cbrg:slr/slr_shoot distance=64 at (4.5, -60.0, -4.5)
+[14Sep2026 00:14:50.256] [Server thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [SOUND-DBG] doGunFire 3P: distance=64.0 silent=false
+[14Sep2026 00:14:50.256] [Server thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [SOUND-DBG] sendSoundToNearby shooter=3 sound=shoot_3p distance=64 targets=1
+[14Sep2026 00:14:50.256] [Netty Local Client IO #0/INFO] [dev.xcolorful.customgun.CustomGun/]: [SOUND-DBG] decode: entityId=3 gun=cbrg:slr display=cbrg:slr_display sound=shoot_3p volume=0.8 pitch=0.94272226 distance=64
+[14Sep2026 00:14:50.259] [Render thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [SOUND-DBG] client play: shoot_3p -> cbrg:slr/slr_shoot distance=64 at (4.5, -60.0, -4.5)
+
+其他玩家：
+[14Sep2026 00:14:12.613] [Netty Client IO #1/INFO] [dev.xcolorful.customgun.CustomGun/]: [SOUND-DBG] decode: entityId=1 gun=cbrg:slr display=cbrg:slr_display sound=shoot_3p volume=0.8 pitch=0.99381745 distance=64
+[14Sep2026 00:14:12.616] [Render thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [SOUND-DBG] client play: shoot_3p -> cbrg:slr/slr_shoot distance=64 at (7.372362832196393, -60.0, -6.311197232410021)
+[14Sep2026 00:14:14.400] [Netty Client IO #1/INFO] [dev.xcolorful.customgun.CustomGun/]: [SOUND-DBG] decode: entityId=1 gun=cbrg:slr display=cbrg:slr_display sound=shoot_3p volume=0.8 pitch=0.9766456 distance=64
+[14Sep2026 00:14:14.407] [Render thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [SOUND-DBG] client play: shoot_3p -> cbrg:slr/slr_shoot distance=64 at (6.408703149800386, -60.0, -4.686156909957091)
+[14Sep2026 00:14:19.150] [Netty Client IO #1/INFO] [dev.xcolorful.customgun.CustomGun/]: [SOUND-DBG] decode: entityId=1 gun=cbrg:slr display=cbrg:slr_display sound=shoot_3p volume=0.8 pitch=0.95351267 distance=64
+[14Sep2026 00:14:19.156] [Render thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [SOUND-DBG] client play: shoot_3p -> cbrg:slr/slr_shoot distance=64 at (6.280029296875, -60.0, -4.46484375)
+[14Sep2026 00:14:19.747] [Netty Client IO #1/INFO] [dev.xcolorful.customgun.CustomGun/]: [SOUND-DBG] decode: entityId=1 gun=cbrg:slr display=cbrg:slr_display sound=shoot_3p volume=0.8 pitch=1.0034751 distance=64
+[14Sep2026 00:14:19.750] [Render thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [SOUND-DBG] client play: shoot_3p -> cbrg:slr/slr_shoot distance=64 at (6.280029296875, -60.0, -4.46484375)
+[14Sep2026 00:14:20.154] [Netty Client IO #1/INFO] [dev.xcolorful.customgun.CustomGun/]: [SOUND-DBG] decode: entityId=1 gun=cbrg:slr display=cbrg:slr_display sound=shoot_3p volume=0.8 pitch=0.9440898 distance=64
+[14Sep2026 00:14:20.161] [Render thread/INFO] [dev.xcolorful.customgun.CustomGun/]: [SOUND-DBG] client play: shoot_3p -> cbrg:slr/slr_shoot distance=64 at (6.280029296875, -60.0, -4.46484375)
+```
+
+# 
+
+Logs confirm the whole chain works end to end. Removing the debug logs now.
+
+日志已全部清除，只剩修复本身。
+
+## 最终改动
+
+只有一个文件、4 处行：[_DefaultGunFire.java:98](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/core/gun/attack/_DefaultGunFire.java:98) 加上 `GunConfig` 的 import，把 `soundDistance` 从"倍率"改成"格数"：
+
+```java
+int defaultDistance = GunConfig.DEFAULT_GUN_FIRE_SOUND_DISTANCE.get();   // 默认 64
+context.soundDistance = defaultDistance * fireSoundData.getNormalMultiplier();
+case SILENCED -> context.soundDistance = defaultDistance * fireSoundData.getSilencedMultiplier();
+case MUTED -> context.soundDistance = 0;
+```
+
+其余三个文件（`SoundManager`、`S2CMessageResourceSound`、`_S2CMessageResourceSound`）已还原成和 HEAD 完全一致，没有残留临时日志或顺带重构。IDEA 单文件编译通过，无错误无警告。
+
+## 从日志确认的行为
+
+- 服务端：`distance=64 targets=1` —— 半径过滤和发包都正常。
+- 接收端：`decode` → `client play: shoot_3p -> cbrg:slr/slr_shoot distance=64` —— codec 解码正确、gunpack 音效解析成功。
+- 顺带一提：这个包里 `shoot_3p` 和 `shoot` 指向同一个文件 `cbrg:slr/slr_shoot`，所以远处听到的枪声和射手自己听到的是同一个音。如果想要第三人称有独立的枪声，那是资源包侧加一个 `shoot_3p` 音频的事，代码这边不用动。
+- `silent=true` 的路径这次测试没覆盖到，如果之后装消音器，预期是 `sound=silence_3p` + `distance = 64 × silencedMultiplier`。
+
+改动已就绪，未提交，等你 review。

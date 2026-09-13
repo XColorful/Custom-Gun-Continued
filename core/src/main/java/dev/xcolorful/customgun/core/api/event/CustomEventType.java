@@ -12,10 +12,7 @@
 package dev.xcolorful.customgun.core.api.event;
 
 import dev.xcolorful.customgun.core.api.event.gun.GunFireEvent;
-import dev.xcolorful.customgun.core.api.event.projectile.GunProjectileEvent;
-import dev.xcolorful.customgun.core.api.event.projectile.ProjectileHitBlockEvent;
-import dev.xcolorful.customgun.core.api.event.projectile.ProjectileHitEntityFinishEvent;
-import dev.xcolorful.customgun.core.api.event.projectile.ProjectileKillEntityEvent;
+import dev.xcolorful.customgun.core.api.event.projectile.*;
 import dev.xcolorful.customgun.core.api.event.shooter.*;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
@@ -28,7 +25,7 @@ public enum CustomEventType {
     GUN_FIRE_EVENT(GunFireEvent.class),
     // projectile
     PROJECTILE_HIT_BLOCK_EVENT(ProjectileHitBlockEvent.class),
-    PROJECTILE_HIT_ENTITY_EVENT(GunProjectileEvent.class),
+    PROJECTILE_HIT_ENTITY_EVENT(ProjectileHitEntityEvent.class),
     PROJECTILE_HIT_ENTITY_FINISH_EVENT(ProjectileHitEntityFinishEvent.class),
     PROJECTILE_KILL_ENTITY_EVENT(ProjectileKillEntityEvent.class),
     // shooter

@@ -269,3 +269,79 @@ I found the root cause. Let me verify the exact current state of the relevant co
 改动后第三人称的 draw 触发时机与第一人称一致：收枪过渡结束后、真正渲染新枪时才初始化状态机并播放 draw 音效。
 
 文件经 IDE 检查无编译错误。
+
+# 
+---
+
+```
+现在自./docs/deprecated/prompt/#41 sound-fix.md之后，单人游戏是能播放声音了，但是多人游戏里开枪，别的玩家似乎没听到声音，即使离得很近
+
+需要继续检查发包问题并修复。
+```
+
+# 
+
+I'll start by reading the referenced sound-fix doc and understanding the current sound/network code.
+
+Now let me look at the sound network path — `SoundManager`, `_ServerMessageSound`, `PlannedRefactor`, and the shoot logic.
+
+Found a likely decode bug already (`writeVarInt` / `readInt` mismatch). Let me verify the send path is reached and check the codec/adapter and sound-type parsing.
+
+Confirmed the codec mismatch vs TaCZ. Now let me check how the adapter handles a decode failure, and confirm the client-side sound path.
+
+Let me check whether this encode/decode mismatch pattern exists elsewhere in the network messages.
+
+Two mismatches found so far. Let me systematically compare encode/decode type sequences across all message classes.
+
+Now let me verify the client-side playback path and `getGunSound`.
+
+Let me confirm the client-side sound lookup works for the `shoot_3p` tag.
+
+Root cause confirmed. The sender writes `distance` as a VarInt but the receiver reads a fixed-width int — the decode throws, Forge's event bus swallows the exception into a log line, and the sound never plays. TaCZ's original uses `writeInt`/`readInt` on both sides.
+
+Now let me audit the rest of the receive path for correctness (arg order, tag constants).
+
+Let me verify the change compiles.
+
+找到了根因，已修复。
+
+## 根因：`S2CMessageResourceSound` 编解码不对称（发包 bug）
+
+[S2CMessageResourceSound.java:33](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/core/network/message/resource/S2CMessageResourceSound.java:33) 写包用 `writeVarInt(distance)`，而 [第 43 行](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/core/network/message/resource/S2CMessageResourceSound.java:43) 读包用 `readInt()`。
+
+TaCZ 原版 [`ServerMessageSound`](app://localhost/epitaxy/local_7e61cce8-9c87-4b99-9620-be00b211ec82) 两端都是 `writeInt`/`readInt`——这是移植时只改了写侧。
+
+后果是确定性的：`distance` 通常约 48，`writeVarInt` 只写 **1 字节**，`readInt()` 却要读 **4 字节** → netty 抛 `IndexOutOfBoundsException`。我确认过 `FriendlyByteBuf.readInt()` 直接委托给底层 `ByteBuf.readInt()`（[FriendlyByteBuf.java:1236](app://localhost/epitaxy/core/build/tmp/.cache/expanded/zip_360104c6fc04675d4421fcf7cf7ba91a/net/minecraft/network/FriendlyByteBuf.java:1236)）。
+
+## 为什么表现为"没声音"而不是报错
+
+Forge 的 [`NetworkInstance.handleError`](app://localhost/epitaxy/local_7e61cce8-9c87-4b99-9620-be00b211ec82) 是**空方法**——event bus 把解码时抛出的异常静默吞掉了，既不打印日志也不断连。所以接收方客户端只是安静地什么都没发生。
+
+## 为什么单人游戏正常
+
+发送端在 `ServerLevel` 里，且过滤掉 `sourceEntity` 自己：
+
+- 单人游戏里没有任何"别的玩家"可发，这条发包路径根本没被走过；
+- 自己能听见的是本地 `SHOOT_SOUND`（`playShootSound`），走本地资源路径，不经过这个包。
+
+所以这个 bug 只在多人下暴露，且**只要有人开枪，其他人就永远听不到**.
+
+## 修复
+
+一行：`writeVarInt` → `writeInt`，与 TaCZ 对齐。
+
+## 排查时确认没问题的地方
+
+- `PlannedRefactor.ON_SEND_SOUND_MESSAGE = false` 并**没有**禁用发送。`if (PlannedRefactor.ON_SEND_SOUND_MESSAGE) return;` 在 false 时不会返回——#41 文档里"被提前返回、处于禁用状态"那句是误读。这个 flag 的语义是"重构完成后跳过旧逻辑"，翻成 true 才会真的断掉声音，别动它。
+- 消息注册方向、`chunkMap.getPlayers` + 距离过滤（与 TaCZ 一致）、`_S2CMessageResourceSound` 里 `getGunDisplayInstance(display, gun)` 的回退参数顺序、`"shoot_3p"`/`"silence_3p"` 与 `GunSoundType` 的映射、`playClientSound` 的 `trackEntity`/`concurrencyLimit`/`relative` 取值——均与 TaCZ 对齐，无需改动。
+
+## 另外发现一个同类隐患（未改动）
+
+[S2CMessageGunLevelUp.java:29](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/core/network/message/gun/S2CMessageGunLevelUp.java:29) 也是 `writeVarInt(level)` / `readInt()`，TaCZ 两端同样是 `writeInt`/`readInt`。我把所有消息类都扫了一遍，编解码类型序列不匹配的只有它和上面修掉的那个。它目前**没有任何发送方**（等级系统未实现），所以暂无实际影响。要一并修掉吗？
+
+## 验证
+
+- 修改文件经 IDEA 编译通过（只有与本次改动无关的既有 deprecation 警告）。
+- 字节层面的推理是确定的，但我没有真实的双客户端环境实跑。请你在多人（LAN 或专用服）里复测：另一名玩家近距离应能听到开枪声，且关闭消音器/装消音器时要分别听到 `shoot_3p` / `silence_3p`。
+
+改动已就绪，未提交。

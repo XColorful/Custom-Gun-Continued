@@ -7,6 +7,7 @@
 
 package dev.xcolorful.customgun.client.api.entity.projectile;
 
+import dev.xcolorful.customgun.client.renderer.entity.GunProjectileRenderer;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.Nullable;
 

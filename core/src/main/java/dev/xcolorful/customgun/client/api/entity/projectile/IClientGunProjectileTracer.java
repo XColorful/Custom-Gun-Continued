@@ -18,9 +18,9 @@ public interface IClientGunProjectileTracer {
     /**
      * @see GunProjectileRenderer#_renderTracer
      */
-//    @Deprecated(since = "1.21.1")
+    @Deprecated(since = "1.21.1")
     float cgc$getCameraXRot();
-//    @Deprecated(since = "1.21.1")
+    @Deprecated(since = "1.21.1")
     float cgc$getCameraYRot();
     float @Nullable [] cgc$getFirstPersonRenderOffset();
     int cgc$getTracerColorInt(Entity gunProjectile);

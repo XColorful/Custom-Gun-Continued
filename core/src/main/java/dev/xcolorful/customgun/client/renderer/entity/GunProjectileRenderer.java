@@ -229,13 +229,24 @@ public class GunProjectileRenderer extends EntityRenderer<GunProjectile, GunProj
                 // 按照生存时间减少曳光弹的偏移，避免渲染位置距离落点太远
                 double offsetReducer = Math.max(0, (50 - disToEye)) / 50;
 
+                /**
+                 * <ul>
+                 *     1.21.1起不再做摄像机旋转的还原/重放
+                 *     <li>muzzleRenderOffset 是在枪械渲染的 poseStack 上采集的，而那个 poseStack 里已经含有摄像机的 view 变换</li>
+                 *     <li>1.20.1 的摄像机约定是 Qx(+pitch) · Qy(-180-yaw) // GameRenderer 里 XP 后 YP 两次 mulPose</li>
+                 *     <li>而 1.21.1 换成了 Qy(180-yaw) · Qx(-pitch) // Camera.rotation 整体 conjugate 后一次 mulPose</li>
+                 *     <li>俯仰符号与合成顺序都变了，于是「先 YN 再 XN 还原、再 XP/YP 重放」这套写法在 1.20.1 上成立</li>
+                 *     <li>而在 1.21.1 上会变成二次旋转: yaw=0 时两次旋转的偏航部分互相抵消，yaw=±90 时抵消不掉，偏移被转成横向，曳光弹起点就横移出屏幕</li>
+                 *     <li>实测：这段旋转去掉后 1.21.1 正常，加上则偏移复现（1.20.1 恰好相反）</li>
+                 * </ul>
+                 */
                 // 摄像机旋转
                 poseStack.mulPose(Axis.YN.rotationDegrees(iClientGunProjectile.cgc$getCameraYRot() + 180f));
                 poseStack.mulPose(Axis.XN.rotationDegrees(iClientGunProjectile.cgc$getCameraXRot()));
-
-                // 应用偏移
-                poseStack.translate(offset[0] * offsetReducer, offset[1] * offsetReducer, offset[2] * offsetReducer);
-
+                {
+                    // 应用偏移
+                    poseStack.translate(offset[0] * offsetReducer, offset[1] * offsetReducer, offset[2] * offsetReducer);
+                }
                 // 逆转摄像机旋转
                 poseStack.mulPose(Axis.XP.rotationDegrees(iClientGunProjectile.cgc$getCameraXRot()));
                 poseStack.mulPose(Axis.YP.rotationDegrees(iClientGunProjectile.cgc$getCameraYRot() + 180f));

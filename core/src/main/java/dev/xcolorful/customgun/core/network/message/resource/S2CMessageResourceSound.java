@@ -30,7 +30,7 @@ public record S2CMessageResourceSound(int entityId,
         NetworkUtils.writeUtf(buffer, message.soundName);
         buffer.writeFloat(message.volume);
         buffer.writeFloat(message.pitch);
-        buffer.writeVarInt(message.distance);
+        buffer.writeInt(message.distance);
     }
 
     public static S2CMessageResourceSound decode(FriendlyByteBuf buffer) {

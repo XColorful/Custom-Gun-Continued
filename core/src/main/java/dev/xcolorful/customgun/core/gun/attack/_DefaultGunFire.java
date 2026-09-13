@@ -26,6 +26,7 @@ import dev.xcolorful.customgun.core.api.item.gun.modifier.*;
 import dev.xcolorful.customgun.core.api.resource.ResourceApi;
 import dev.xcolorful.customgun.core.api.sound.gun.GunSoundTypeTag;
 import dev.xcolorful.customgun.core.config.AmmoConfig;
+import dev.xcolorful.customgun.core.config.GunConfig;
 import dev.xcolorful.customgun.core.entity.projectile.GunProjectile;
 import dev.xcolorful.customgun.core.init.registry.ModEntities;
 import dev.xcolorful.customgun.core.network.message.gun.S2CMessageGunFire;
@@ -97,7 +98,8 @@ public class _DefaultGunFire {
 
         { // 声音距离
             _FireSoundData fireSoundData = gunData.getFireSoundData();
-            context.soundDistance = fireSoundData.getNormalMultiplier();
+            int defaultDistance = GunConfig.DEFAULT_GUN_FIRE_SOUND_DISTANCE.get();
+            context.soundDistance = defaultDistance * fireSoundData.getNormalMultiplier();
             context.silenceSound = false;
 
             var attachmentLocation = iGun.getAttachmentLocation(gunItem, AttachmentCategory.MUZZLE);
@@ -109,7 +111,7 @@ public class _DefaultGunFire {
                     FireSoundType fireSoundType = muzzleModifier.getFireSoundType();
                     switch (fireSoundType) {
                         case SILENCED -> {
-                            context.soundDistance = fireSoundData.getSilencedMultiplier();
+                            context.soundDistance = defaultDistance * fireSoundData.getSilencedMultiplier();
                         }
                         case MUTED -> context.soundDistance = 0;
                     }

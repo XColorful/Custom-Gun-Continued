@@ -24,7 +24,7 @@ public record S2CMessageGunLevelUp(ItemStack gun,
     @Override
     public void encode(S2CMessageGunLevelUp message, FriendlyByteBuf buffer) {
         NetworkUtils.writeItem(buffer, message.gun);
-        buffer.writeVarInt(message.level);
+        buffer.writeInt(message.level);
     }
 
     public static S2CMessageGunLevelUp decode(FriendlyByteBuf buffer) {

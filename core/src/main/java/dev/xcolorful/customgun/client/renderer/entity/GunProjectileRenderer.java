@@ -240,16 +240,16 @@ public class GunProjectileRenderer extends EntityRenderer<GunProjectile, GunProj
                  *     <li>实测：这段旋转去掉后 1.21.1 正常，加上则偏移复现（1.20.1 恰好相反）</li>
                  * </ul>
                  */
-                // 摄像机旋转
-                poseStack.mulPose(Axis.YN.rotationDegrees(iClientGunProjectile.cgc$getCameraYRot() + 180f));
-                poseStack.mulPose(Axis.XN.rotationDegrees(iClientGunProjectile.cgc$getCameraXRot()));
+//                // 摄像机旋转
+//                poseStack.mulPose(Axis.YN.rotationDegrees(iClientGunProjectile.cgc$getCameraYRot() + 180f));
+//                poseStack.mulPose(Axis.XN.rotationDegrees(iClientGunProjectile.cgc$getCameraXRot()));
                 {
                     // 应用偏移
                     poseStack.translate(offset[0] * offsetReducer, offset[1] * offsetReducer, offset[2] * offsetReducer);
                 }
-                // 逆转摄像机旋转
-                poseStack.mulPose(Axis.XP.rotationDegrees(iClientGunProjectile.cgc$getCameraXRot()));
-                poseStack.mulPose(Axis.YP.rotationDegrees(iClientGunProjectile.cgc$getCameraYRot() + 180f));
+//                // 逆转摄像机旋转
+//                poseStack.mulPose(Axis.XP.rotationDegrees(iClientGunProjectile.cgc$getCameraXRot()));
+//                poseStack.mulPose(Axis.YP.rotationDegrees(iClientGunProjectile.cgc$getCameraYRot() + 180f));
             }
 
             // 说是 override 其实默认值是 1

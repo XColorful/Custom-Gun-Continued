@@ -1,5 +1,12 @@
 ### 0.0.x
 
+#### 0.0.15
+
+- Fix ammo stack size in dedicated server
+
+1.21.1+
+- Fix built-in interact key filter not work
+
 #### 0.0.14
 - Add vanilla damage type tags
 - Fix distance issue with gun sounds from other players

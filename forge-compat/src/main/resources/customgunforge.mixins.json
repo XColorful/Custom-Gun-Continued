@@ -4,7 +4,8 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "customgun.refmap.json",
   "mixins": [
-    "entity.GunProjectileMixin"
+    "entity.GunProjectileMixin",
+    "item.AmmoItemMixin"
   ],
   "injectors": {
     "defaultRequire": 1

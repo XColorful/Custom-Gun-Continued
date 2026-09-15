@@ -5,6 +5,7 @@
   "refmap": "customgun.refmap.json",
   "mixins": [
     "entity.GunProjectileMixin",
+    "item.AmmoItemMixin",
     "item.ItemStackMixin"
   ],
   "injectors": {

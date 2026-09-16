@@ -7,6 +7,7 @@
 
 package dev.xcolorful.customgun.client.util;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.Input;
 import net.minecraft.client.player.LocalPlayer;
@@ -96,6 +97,22 @@ public class ClientInputUtils {
         public static boolean movingForward(@Nullable LocalPlayer localPlayer) {
             if (localPlayer == null) return false;
             return localPlayer.input.hasForwardImpulse();
+        }
+    }
+
+    public static class KeyType {
+
+        public static InputConstants.Type keyboard() {
+            // [1.20.1, 26.3)
+            return InputConstants.Type.KEYSYM;
+
+            // [26.3, )
+//            return InputConstants.Type.KEYBOARD;
+        }
+
+        public static InputConstants.Type mouse() {
+            // [1.20.1, )
+            return InputConstants.Type.MOUSE;
         }
     }
 

@@ -7,7 +7,6 @@
 
 package dev.xcolorful.customgun.client.input.config;
 
-import com.mojang.blaze3d.platform.InputConstants;
 import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.api.event.IInputKeyEvent;
 import dev.xcolorful.customgun.client.api.event.IMouseButtonEvent;
@@ -44,7 +43,7 @@ public final class ConfigKey extends InputKey {
         return creator.create(this.key.getCategoryLang().getString(),
                 IKeyConflictContext.Type.IN_GAME,
                 IKeyModifier.Type.ALT,
-                InputConstants.Type.KEYSYM,
+                ClientInputUtils.KeyType.keyboard(),
                 GLFW.GLFW_KEY_T,
                 ClientInputCategory.CONFIG);
     }

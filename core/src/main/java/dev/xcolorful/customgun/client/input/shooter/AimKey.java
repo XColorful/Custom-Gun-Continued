@@ -7,7 +7,6 @@
 
 package dev.xcolorful.customgun.client.input.shooter;
 
-import com.mojang.blaze3d.platform.InputConstants;
 import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.api.entity.ILocalShooter;
 import dev.xcolorful.customgun.client.api.entity.shooter.ILocalShooterGetter;
@@ -47,7 +46,7 @@ public final class AimKey extends InputKey implements IEventHandler {
         return creator.create(this.key.getCategoryLang().getString(),
                 IKeyConflictContext.Type.IN_GAME,
                 IKeyModifier.Type.NONE,
-                InputConstants.Type.MOUSE,
+                ClientInputUtils.KeyType.mouse(),
                 GLFW.GLFW_MOUSE_BUTTON_RIGHT,
                 ClientInputCategory.SHOOTER);
     }

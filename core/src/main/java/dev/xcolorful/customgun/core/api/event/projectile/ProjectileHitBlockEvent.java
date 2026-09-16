@@ -8,6 +8,7 @@ import dev.xcolorful.customgun.core.api.event.ICustomEvent;
 import dev.xcolorful.customgun.core.api.event.ICustomEventHandler;
 import dev.xcolorful.customgun.core.api.minecraft.CommandLevel;
 import dev.xcolorful.customgun.core.event.EventDispatcher;
+import dev.xcolorful.customgun.core.util.CommandUtils;
 import dev.xcolorful.customgun.core.util.Vec3Utils;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
@@ -56,7 +57,7 @@ public final class ProjectileHitBlockEvent extends GunProjectileEvent implements
     @Override
     public @Nullable CommandSourceStack createCommandSourceStack(@Nullable CommandSource source) {
         if (!(this.gunProjectile.level() instanceof ServerLevel serverLevel)) return null;
-        return new CommandSourceStack(
+        return CommandUtils.sourceStack(
                 source != null ? source : CommandSource.NULL,
                 Vec3Utils.getCenter(blockHitResult.getBlockPos()),
                 Vec2.ZERO,

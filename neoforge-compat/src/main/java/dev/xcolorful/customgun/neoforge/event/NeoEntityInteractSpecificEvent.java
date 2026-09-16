@@ -32,14 +32,14 @@ import org.jetbrains.annotations.Nullable;
 
 public class NeoEntityInteractSpecificEvent extends NeoEvent implements IEntityInteractSpecificEvent {
 
-    protected PlayerInteractEvent.EntityInteractSpecific entityInteractSpecificEvent;
+    protected PlayerInteractEvent.EntityInteract entityInteractSpecificEvent;
 
     public NeoEntityInteractSpecificEvent(Event event) {
         super(event);
-        if (event instanceof PlayerInteractEvent.EntityInteractSpecific eventIn) {
+        if (event instanceof PlayerInteractEvent.EntityInteract eventIn) {
             this.entityInteractSpecificEvent = eventIn;
         } else {
-            throw new RuntimeException("Expected EntityInteractSpecific but received: " + event.getClass().getName());
+            throw new RuntimeException("Expected EntityInteract but received: " + event.getClass().getName());
         }
     }
     @Override public EventType getType() {
@@ -88,7 +88,7 @@ public class NeoEntityInteractSpecificEvent extends NeoEvent implements IEntityI
 
     @Override
     public Vec3 getLocalPos() {
-        return entityInteractSpecificEvent.getLocalPos();
+        return entityInteractSpecificEvent.getLocation();
     }
 
     @Override

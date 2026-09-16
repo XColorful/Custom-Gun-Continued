@@ -13,6 +13,7 @@ import dev.xcolorful.customgun.core.api.event.ILeftClickBlockEvent;
 import dev.xcolorful.customgun.core.api.minecraft.CommandLevel;
 import dev.xcolorful.customgun.core.api.minecraft.HandAction;
 import dev.xcolorful.customgun.core.api.minecraft.TriResult;
+import dev.xcolorful.customgun.core.util.CommandUtils;
 import dev.xcolorful.customgun.core.util.Vec3Utils;
 import dev.xcolorful.customgun.forge.common.McSideHelper;
 import dev.xcolorful.customgun.forge.minecraft.HandActionHelper;
@@ -114,7 +115,7 @@ public class ForgeLeftClickBlockEvent extends ForgeEvent implements ILeftClickBl
         Level level = getLevel();
         if (level != null && level.isClientSide()) return null;
         Player player = this.getEntity();
-        return new CommandSourceStack(
+        return CommandUtils.sourceStack(
                 source != null ? source : CommandSource.NULL,
                 Vec3Utils.getCenter(this.getBlockPos()),
                 player.getRotationVector(),

@@ -4,6 +4,7 @@ import dev.xcolorful.customgun.core.api.common.McLogicalSide;
 import dev.xcolorful.customgun.core.api.event.EventType;
 import dev.xcolorful.customgun.core.api.event.IEntityJoinLevelEvent;
 import dev.xcolorful.customgun.core.api.minecraft.CommandLevel;
+import dev.xcolorful.customgun.core.util.CommandUtils;
 import dev.xcolorful.customgun.forge.CustomGunForge;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
@@ -57,7 +58,7 @@ public class ForgeEntityJoinLevelEvent extends ForgeEvent implements IEntityJoin
         @NotNull Entity entity = this.getEntity();
         Level level = this.getLevel();
         if (level != null && level.isClientSide()) return null;
-        return new CommandSourceStack(
+        return CommandUtils.sourceStack(
                 source != null ? source : CommandSource.NULL,
                 entity.position(),
                 entity.getRotationVector(),

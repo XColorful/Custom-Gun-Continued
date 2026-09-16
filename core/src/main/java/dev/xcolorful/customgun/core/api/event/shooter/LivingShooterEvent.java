@@ -5,6 +5,7 @@ import dev.xcolorful.customgun.core.api.common.McLogicalSide;
 import dev.xcolorful.customgun.core.api.entity.ILivingShooter;
 import dev.xcolorful.customgun.core.api.event.CustomEvent;
 import dev.xcolorful.customgun.core.api.minecraft.CommandLevel;
+import dev.xcolorful.customgun.core.util.CommandUtils;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerLevel;
@@ -45,7 +46,7 @@ public abstract class LivingShooterEvent extends CustomEvent implements ILogical
         if (this.logicalSide.isClient()) return null;
         if (!(this.livingShooter.level() instanceof ServerLevel serverLevel)) return null;
 
-        return new CommandSourceStack(
+        return CommandUtils.sourceStack(
                 source != null ? source : CommandSource.NULL,
                 this.livingShooter.position(),
                 this.livingShooter.getRotationVector(),

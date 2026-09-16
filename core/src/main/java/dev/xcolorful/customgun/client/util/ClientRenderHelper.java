@@ -63,6 +63,7 @@ public class ClientRenderHelper {
 
     public static void enableItemEntityStencilTest() {
         RenderSystem.assertOnRenderThread();
+        GL.stencilEnabled = true;
 
         boolean handled = OptifineCompat.onEnableItemEntityStencilTest();
         if (!handled) {
@@ -78,6 +79,7 @@ public class ClientRenderHelper {
 
     public static void disableItemEntityStencilTest() {
         RenderSystem.assertOnRenderThread();
+        GL.stencilEnabled = false;
         // [1.20.1, 1.21.6)
 //        GL11.glDisable(GL11.GL_STENCIL_TEST);
 
@@ -161,6 +163,31 @@ public class ClientRenderHelper {
         private static final StencilState stencilState = new StencilState();
         private static final IStencilOperator stencilOperator = CustomGunClient.getStencilOperator();
 
+        /**
+         * 模板测试当前是否启用
+         * <ul>
+         *     [1.20.1, 1.21.6)
+         *     <li>即时模式的模板状态由 glEnable/glDisable 门控，没有这个问题</li>
+         *     <li>三个 setter 的 [1.21.6, ) 分支在此区间是死代码，所以本字段在 [1.20.1, 1.21.6) 上不带来任何行为差异</li>
+         * </ul>
+         * <ul>
+         *     [1.21.6, )
+         *     <li>「启用/停用模板测试」被表示为「有没有把模板测试写回管线」</li>
+         *     <li>{@link #_stencilFunc}/{@link #_stencilOp}/{@link #_stencilMask} 会把累积状态无条件写回</li>
+         *     <li>于是停用之后随便一次 setter 都能把测试重新启用，读到的还是上一帧瞄具留下的状态 (表现为卸下瞄具后枪体在残留的圆形区域被裁掉)</li>
+         *     <li>这里按 GL 语义补开关：只在启用期间才写回，未启用时仅记录状态、等 enable 时统一生效</li>
+         * </ul>
+         * <ul>
+         *     [26.2, )
+         *     <li>26.2 的延迟渲染框架不会自动清理模板缓冲区（{@link GameRenderer} 开头只清颜色与深度），目镜写下的模板值会一直残留</li>
+         *     <li>[1.21.6, 26.2) 靠「每次枪械渲染结束时清空整个模板缓冲区」掩盖了同一问题，26.2 移植时漏掉了这一步</li>
+         *     <li>本改动让没有瞄具的帧不再继承上一次瞄具的模板测试，残留值失去读取者</li>
+         *     <li>因此 26.2 不需要那一步清空也能正常工作，该清空在 [1.21.6, 26.2) 上也随之变为冗余</li>
+         * </ul>
+         */
+        @ApiStatus.AvailableSince("1.21.6")
+        private static boolean stencilEnabled = false;
+
         public static void _stencilFunc(int func, int ref, int readMask) {
             // [1.20.1, 1.21.6)
 //            RenderSystem.stencilFunc(func, ref, readMask);
@@ -170,7 +197,9 @@ public class ClientRenderHelper {
             stencilState.sBackFunc = StencilFunction.of(func);
             stencilState.sRef = ref;
             stencilState.sReadMask = readMask;
-            stencilOperator.applyStencil(stencilState);
+            if (stencilEnabled) {
+                stencilOperator.applyStencil(stencilState);
+            }
         }
         public static void _stencilOp(int stencilFail, int depthFail, int pass) {
             // [1.20.1, 1.21.6)
@@ -183,7 +212,9 @@ public class ClientRenderHelper {
             stencilState.sBackFail = StencilOperation.of(stencilFail);
             stencilState.sBackDepthFail = StencilOperation.of(depthFail);
             stencilState.sBackPass = StencilOperation.of(pass);
-            stencilOperator.applyStencil(stencilState);
+            if (stencilEnabled) {
+                stencilOperator.applyStencil(stencilState);
+            }
         }
 
         public static void _colorMask(boolean red, boolean green, boolean blue, boolean alpha) {
@@ -222,7 +253,9 @@ public class ClientRenderHelper {
 
             // [1.21.6, )
             stencilState.sWriteMask = mask;
-            stencilOperator.applyStencil(stencilState);
+            if (stencilEnabled) {
+                stencilOperator.applyStencil(stencilState);
+            }
         }
 
         public static void _clear(int mask) {

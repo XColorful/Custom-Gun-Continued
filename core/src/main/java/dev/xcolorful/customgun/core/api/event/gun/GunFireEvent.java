@@ -18,6 +18,7 @@ import dev.xcolorful.customgun.core.api.event.shooter.ILivingShooterEvent;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.minecraft.CommandLevel;
 import dev.xcolorful.customgun.core.event.EventDispatcher;
+import dev.xcolorful.customgun.core.util.CommandUtils;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
@@ -67,7 +68,7 @@ public final class GunFireEvent extends GunEvent implements ILivingShooterEvent,
     @Override
     public @Nullable CommandSourceStack createCommandSourceStack(@Nullable CommandSource source) {
         if (this.logicalSide.isClient()) return null;
-        return new CommandSourceStack(
+        return CommandUtils.sourceStack(
                 source != null ? source : CommandSource.NULL,
                 Vec3.ZERO,
                 Vec2.ZERO,

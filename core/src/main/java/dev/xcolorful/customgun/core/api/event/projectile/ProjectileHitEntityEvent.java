@@ -18,6 +18,7 @@ import dev.xcolorful.customgun.core.api.event.ICustomEventHandler;
 import dev.xcolorful.customgun.core.api.minecraft.CommandLevel;
 import dev.xcolorful.customgun.core.api.projectile.physics.IProjectilePhysicsRuntime;
 import dev.xcolorful.customgun.core.event.EventDispatcher;
+import dev.xcolorful.customgun.core.util.CommandUtils;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
@@ -93,7 +94,7 @@ public class ProjectileHitEntityEvent extends GunProjectileEvent implements ILog
         Entity victimEntity = this.getHitResult_VictimEntity();
         if (!(victimEntity.level() instanceof ServerLevel serverLevel)) return null;
 
-        return new CommandSourceStack(
+        return CommandUtils.sourceStack(
                 source != null ? source : CommandSource.NULL,
                 victimEntity.position(),
                 victimEntity.getRotationVector(),

@@ -104,10 +104,10 @@ public class ClientInputUtils {
 
         public static InputConstants.Type keyboard() {
             // [1.20.1, 26.3)
-            return InputConstants.Type.KEYSYM;
+//            return InputConstants.Type.KEYSYM;
 
             // [26.3, )
-//            return InputConstants.Type.KEYBOARD;
+            return InputConstants.Type.KEYBOARD;
         }
 
         public static InputConstants.Type mouse() {

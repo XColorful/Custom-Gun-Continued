@@ -29,28 +29,28 @@ public class CommandUtils {
                                                  MinecraftServer server,
                                                  @Nullable Entity entity) {
         if (entity != null) {
-            return new CommandSourceStack( // _SourceStack.entity(
+            return _SourceStack.entity(
                     source,
                     position,
                     rotation,
                     level,
                     commandLevel,
-                    textName, // 26.3移除
-                    displayName, // 26.3移除
+//                    textName, // 26.3移除
+//                    displayName, // 26.3移除
                     server,
                     entity
             );
         } else {
-            return new CommandSourceStack( // _SourceStack.name(
+            return _SourceStack.name(
                     source,
                     position,
                     rotation,
                     level,
                     commandLevel,
-                    textName, // 26.3移除
+//                    textName, // 26.3移除
                     displayName,
                     server
-                    , null // 26.3移除
+//                    , null // 26.3移除
             );
         }
     }
@@ -84,8 +84,8 @@ public class CommandUtils {
                     rotation,
                     level,
                     commandLevel,
-                    "", // 26.3移除
-                    Component.empty(), // 26.3移除
+//                    "", // 26.3移除
+//                    Component.empty(), // 26.3移除
                     server,
                     entity
             );
@@ -104,10 +104,10 @@ public class CommandUtils {
                     rotation,
                     level,
                     commandLevel,
-                    "", // 26.3移除
+//                    "", // 26.3移除
                     name,
                     server
-                    , null // 26.3移除
+//                    , null // 26.3移除
             );
         }
     }

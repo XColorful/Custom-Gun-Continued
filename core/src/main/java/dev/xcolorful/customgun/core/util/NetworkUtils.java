@@ -42,24 +42,24 @@ public class NetworkUtils {
     }
 
     public static void writeResourceLocationMap(FriendlyByteBuf buffer, Map<Identifier, String> map) {
-        buffer.writeMap(map, FriendlyByteBuf::writeIdentifier, (buf, s) -> buf.writeUtf(s));
+        buffer.writeMap(map, FriendlyByteBuf::writeIdentifier, (buf, key, value) -> buf.writeUtf(value));
     }
     public static Map<Identifier, String> readResourceLocationMap(FriendlyByteBuf buffer) {
-        return buffer.readMap(NetworkUtils::readResourceLocation, NetworkUtils::readUtf);
+        return buffer.readMap(NetworkUtils::readResourceLocation, (buf, key) -> buf.readUtf());
     }
 
     public static <K extends Enum<K>, V> void writeEnumMap(FriendlyByteBuf buffer, Map<K, V> map, StreamEncoder<? super FriendlyByteBuf, V> valueWriter) {
-        buffer.writeMap(map, FriendlyByteBuf::writeEnum, valueWriter);
+        buffer.writeMap(map, FriendlyByteBuf::writeEnum, (buf, key, value) -> valueWriter.encode(buf, value));
     }
     public static <K extends Enum<K>, V> Map<K, V> readEnumMap(FriendlyByteBuf buffer, Class<K> enumClass, StreamDecoder<? super FriendlyByteBuf, V> valueReader) {
-        return buffer.readMap(buf -> buf.readEnum(enumClass), valueReader);
+        return buffer.readMap(buf -> buf.readEnum(enumClass), (buf, key) -> valueReader.decode(buf));
     }
 
     public static <K extends Enum<K>> void writeEnumIntMap(FriendlyByteBuf buffer, Map<K, Integer> map) {
-        buffer.writeMap(map, FriendlyByteBuf::writeEnum, FriendlyByteBuf::writeInt);
+        buffer.writeMap(map, FriendlyByteBuf::writeEnum, (buf, key, value) -> buf.writeInt(value));
     }
     public static <K extends Enum<K>> Map<K, Integer> readEnumIntMap(FriendlyByteBuf buffer, Class<K> enumClass) {
-        return buffer.readMap(buf -> buf.readEnum(enumClass), FriendlyByteBuf::readInt);
+        return buffer.readMap(buf -> buf.readEnum(enumClass), (buf, key) -> buf.readInt());
     }
 
     private static RegistryFriendlyByteBuf _wrap(FriendlyByteBuf buffer) {

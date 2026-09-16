@@ -29,17 +29,17 @@ public class EntityUtils {
 
     public static int getInvulnerableTime(Entity entity) {
         // [1.20.1, 26.3)
-        return entity.invulnerableTime;
+//        return entity.invulnerableTime;
 
         // [26.3, )
-//        return entity.getInvulnerableTime();
+        return entity.getInvulnerableTime();
     }
     public static void setInvulnerableTime(Entity entity, int ticks) {
         // [1.20.1, 26.3)
-        entity.invulnerableTime = ticks;
+//        entity.invulnerableTime = ticks;
 
         // [26.3, )
-//        entity.setInvulnerableTime(ticks);
+        entity.setInvulnerableTime(ticks);
     }
 
     public static class Hitbox {

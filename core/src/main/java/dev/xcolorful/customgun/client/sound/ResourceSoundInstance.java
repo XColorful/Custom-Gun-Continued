@@ -77,8 +77,8 @@ public class ResourceSoundInstance extends AbstractSoundInstance {
     }
 
     @Override
-    public WeighedSoundEvents resolve(SoundManager soundManager) {
-        WeighedSoundEvents events = super.resolve(soundManager);
+    public WeighedSoundEvents getOrResolve(SoundManager soundManager) {
+        WeighedSoundEvents events = super.getOrResolve(soundManager);
         var path = this.getSoundPath();
         if (path != null) {
             this.sound = this.redirectedSound = new ResourceSound(this.soundPath, path, super.getSound());

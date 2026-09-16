@@ -3,6 +3,7 @@ package dev.xcolorful.customgun.forge.event;
 import dev.xcolorful.customgun.core.api.event.EventType;
 import dev.xcolorful.customgun.core.api.event.IServerTickEvent;
 import dev.xcolorful.customgun.core.api.minecraft.CommandLevel;
+import dev.xcolorful.customgun.core.util.CommandUtils;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
@@ -38,7 +39,7 @@ public class ForgePrepareServerTickEvent extends ForgeEvent implements IServerTi
     @Override
     public @NotNull CommandSourceStack createCommandSourceStack(@Nullable CommandSource source) {
         MinecraftServer server = this.getServer();
-        return new CommandSourceStack(
+        return CommandUtils.sourceStack(
                 source != null ? source : CommandSource.NULL,
                 Vec3.ZERO,
                 Vec2.ZERO,

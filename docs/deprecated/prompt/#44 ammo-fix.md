@@ -185,3 +185,165 @@ I've been relying on a stale read of `AmmoItemMixin`. The `[dep-ann]` warning (n
 - 这是死代码，还留着 `ItemStack`/`IAmmo`/`IAmmoGetter`/`Nullable` 四个 import 只为它服务，将来有人误把 `@Override` 取消注释会直接编译报错（`Item` 上已无此方法）。
 
 如果你只是拿它当「指向新位置的注释」，建议要么加个 `@Deprecated` 注解消掉警告，要么直接整段删掉更干净。要我把这段死方法删掉吗？还是保持现状？
+
+# 
+---
+
+```
+现在需要修复dev.xcolorful.customgun.core.gun.inventory._DefaultGunInventory，当枪械（IGun）换弹匣退弹的时候，退出来的子弹都是单个的而没有堆叠，并且多的子弹（背包塞不下）没有生成实体
+
+经测试：
+
+- 在1.20.1，单人游戏和专用服务端都没这个问题，创造模式tab里能直接选取到最大堆叠数的子弹（堆叠功能正常）
+- 1.20.2和1.20.4均有，专用服务端可以从创造模式tab拿到最大堆叠数的子弹，但是装Beryl M762然后装弹夹之后，退下的子弹都是单个槽（每个槽1堆叠）的
+
+当前打开多个IDEA窗口，供浏览不同版本源码
+```
+
+# 
+
+I'll start by reading the relevant documentation and source code to understand the design.
+
+Let me compare with the 1.20.1 version which works correctly.
+
+The core file is identical, so the difference is in the platform `IInventoryCapability` implementation. Let me investigate.
+
+Key finding: `getAmmoCount` maps directly to `ItemStack.getCount()`, and items default to `stacksTo(1)`. Let me check how other versions register this mixin.
+
+Now let me examine the mixin implementations and how each loader registers them.
+
+Let me verify the platform API behavior in the IDE (NeoForge 20.2).
+
+Found a prior analysis doc for issue #44. Let me read it.
+
+Let me verify how `ItemStack.setCount`/`split` behave in 1.20.2.
+
+Root cause identified. Let me verify the exact mechanism before changing anything, then apply the fix.
+
+**Root cause chain** (NeoForge dedicated server only):
+
+1. `AmmoItemMixin` overrides `IItemExtension#getMaxStackSize(ItemStack)` — but it's registered in the **`client`** array of [customgunneoforge.mixins.json](app://localhost/epitaxy/neoforge-compat/src/main/resources/customgunneoforge.mixins.json), so it never loads server-side.
+2. `ItemStack.getMaxStackSize()` (NeoForge 20.2, [ItemStack.java:323](app://localhost/epitaxy/neoforge-compat/.gradle/repositories/ng_dummy_ng/net/neoforged/neoforge/20.2.93/neoforge-20.2.93-sources.jar!/net/minecraft/world/item/ItemStack.java)) is `this.getItem().getMaxStackSize(this)` → falls back to `Properties().stacksTo(1)` → **1**.
+3. NeoForge `InvWrapper.insertItem` clamps with `m = Math.min(stack.getMaxStackSize(), getSlotLimit(slot))` → **1 bullet per slot**, remainder returned.
+4. `retrieveAmmoToInventory` books `dropAmmoRemain -= stackSize - remain.getCount()` = exactly 1 per slot, so the mag drains one-bullet-per-slot and _never overflows_ — hence no item entities.
+
+The Forge config registers the same mixin under the common `mixins` array, which is why 1.20.1 (Forge-only branch) works.
+
+根因不在 `_DefaultGunInventory`。我把 1.20.1 与该类的文件做了逐字节比对，**完全一致**，所以问题在平台层。
+
+## 根因链（仅 NeoForge 专用服务端）
+
+1. `AmmoItemMixin` 重写的是 `IItemExtension#getMaxStackSize(ItemStack)`，但它被注册在 [customgunneoforge.mixins.json](app://localhost/epitaxy/neoforge-compat/src/main/resources/customgunneoforge.mixins.json) 的 **`client`** 数组里 → 专用服务端根本不加载这个 mixin。
+2. NeoForge 20.2 的 `ItemStack.getMaxStackSize()` 是 `this.getItem().getMaxStackSize(this)`，mixin 缺席时回落到 `ModItems.CUSTOM_ITEM_PROPERTY` 里的 `.stacksTo(1)` → **返回 1**。
+3. NeoForge `InvWrapper.insertItem()`（`InvWrapper.java:98`）用 `m = Math.min(stack.getMaxStackSize(), getSlotLimit(slot))` 限流 → 每个槽只塞进 **1 发**，剩余作为 remainder 返回。
+4. `retrieveAmmoToInventory` 的记账是 `dropAmmoRemain -= stackSize - remain.getCount()`，于是每槽正好消耗 1 发。
+
+这同时解释了你观察到的两个现象：30 发弹匣被摊成 30 个槽各 1 发，而且 `dropAmmoRemain` 恰好归零，**永远不会溢出**，所以 `dropAmmoToWorld` 不被调用 —— 自然没有实体生成。
+
+创造模式 tab 能拿到满堆叠，是因为它的数据（`AMMO_COUNT` = `setCount`，1.20.2 的 `setCount` 不做 clamp）本身是对的，且拿取走的是整栈直写，不经过 `getMaxStackSize()`。
+
+1.20.1 分支只有 Forge（`settings.gradle` 只 `include("core", "forge-compat")`），Forge 的 `customgunforge.mixins.json` 把同一个 mixin 注册在**公共 `mixins`** 数组 → 两端都生效，所以没这个问题。1.20.2 的 Forge 侧同样是公共注册，也应该是好的——**你复现用的应该是 NeoForge 端**。
+
+## 改动（未提交）
+
+`AmmoItemMixin` 里没有任何客户端 API，可以安全移到公共注入；`GunProjectileMixin` 保持原样不动：
+
+```json
+"mixins": [ "item.AmmoItemMixin" ],
+"client": [ "entity.GunProjectileMixin" ],
+```
+
+JSON 校验通过，`AmmoItemMixin.class` 确认已在 jar 中的 `neoforge/mixin/item/` 路径下。
+
+## 需要你决定的两件事
+
+1. **另外三个分支有同样的隐患**：`1.20.4`、`1.21.1neoforge`、`26.2neoforge` 的 neoforge 配置都把 `item.AmmoItemMixin` 放在 `client` 里（它们的 forge 配置是公共的）。要不要我顺手一起改？
+2. **顺带发现一个疑似同类错误**：`neoforge.mixin.entity.GunProjectileMixin` 也被注册在 `client`，但它的职责是 `NetworkHooks.getEntitySpawningPacket` —— 用来绕过 `ClientboundAddEntityPacket` 对初速度 ±3.9 的 clamp，而枪射物是**服务端**创建并发送的。core 的 `GunProjectile` 没有自己重写 `getAddEntityPacket`，所以专用服务端目前走的是会被 clamp 的原版路径。这不属于本次任务，我没动。要单独处理吗？
+
+需要我验证的话，最快是在专用服务端上装 Beryl M762 退弹看一眼；要我跑构建或部署测试也可以说一声。
+
+# 
+
+```
+是否只需要把1.20.2customgunneoforge.mixins.json里client都改成mixins就行?
+```
+
+# 
+
+好问题 — 但答案是「不建议」。让我先把两个 mixin 的差异核实清楚。
+
+技术上「把整个 `client` 改成 `mixins`」在 1.20.2 上**不会报错**，但我不建议这么做 —— 这两个 mixin 不是同一类改动。
+
+## `item.AmmoItemMixin` —— 应该改，已改
+
+已核实是本次 bug 的根因，服务端生效后行为变化就是「修好」，风险低。
+
+## `entity.GunProjectileMixin` —— 改了大概率也对，但属于另一个 bug
+
+我核实了它本身**没有客户端 API**：
+
+- `IEntityAdditionalSpawnData` 是 NeoForge 20.2 的 common 接口（无 `@OnlyIn`），[IEntityAdditionalSpawnData.java:10](app://localhost/epitaxy/neoforge-compat/.gradle/repositories/ng_dummy_ng/net/neoforged/neoforge/20.2.93/neoforge-20.2.93-sources.jar!/net/neoforged/neoforge/entity/IEntityAdditionalSpawnData.java)
+- `NetworkHooks.getEntitySpawningPacket` 也是 common
+- `neoforgeclient.mixin.entity.GunProjectileMixin` 干的是完全不同的活（缓存 / 粒子 / 曳光），不重写 `getAddEntityPacket`，所以移到 common 不会撞车
+- Forge 侧 [forge/mixin/entity/GunProjectileMixin.java](app://localhost/epitaxy/forge-compat/src/main/java/dev/xcolorful/customgun/forge/mixin/entity/GunProjectileMixin.java) 就是注册在 common `mixins` 里，且已在同版本 jar 中验证
+
+但它的职责是：`getAddEntityPacket` 走 `NetworkHooks`（绕开 `ClientboundAddEntityPacket` 对初速度 ±3.9 的 clamp）+ `writeSpawnData` 同步枪射物初态。这三处**全部由服务端驱动**，所以现在放在 `client` 里等于在专用服务端完全失效 —— 弹道速度被 clamp、spawn 数据不发。这是独立的联机行为 bug，需要单独验证（进服务端看弹道速度与曳光），不该和退弹修复捆在一个改动里。
+
+## 建议
+
+本次只保留 `AmmoItemMixin` 的改动。如果你确认要一并处理 `GunProjectileMixin`，1.20.2 的最小改法是把 `client` 数组整个去掉：
+
+```json
+"mixins": [
+  "entity.GunProjectileMixin",
+  "item.AmmoItemMixin"
+],
+```
+
+另外提醒：我只核实了 1.20.2。`1.20.4` / `1.21.1neoforge` / `26.2neoforge` 的 `customgunneoforge.mixins.json` 形状相同，但那几个分支的 `neoforge.mixin.entity.GunProjectileMixin` 内容我还没看，要不要我逐个核实后再动手？
+
+# 
+
+```
+我是先在1.20.1forge写的，1.20.2才有neoforge，你对照检查forge侧，这应该是移植neoforge的时候出的问题？
+```
+
+# 
+
+明白，让我把 Forge 侧当作基准做一次系统对照,并用 git 历史验证「移植时出的问题」这个判断。
+
+确认了：**这是移植 NeoForge 时的手误**，git 历史能直接指认，而且只是注册表写错——mixin 类本身是忠实移植的。
+
+## 对照结果
+
+|配置文件|1.20.1 Forge（基准）|1.20.2 Forge|1.20.2 NeoForge（改前）|
+|---|---|---|---|
+|公共 `*.mixins.json`|`mixins: [GunProjectile, AmmoItem]`|同基准 ✓|**`client: [GunProjectile, AmmoItem]`** ✗|
+|`*client.mixins.json`|`client: [GunProjectile, AmmoItem, AttachmentItem, GunItem]`|同基准 ✓|同基准 ✓|
+
+唯一的偏差就是公共配置：NeoForge 侧**根本没有 `mixins` 数组**，两个条目被放进了 `client`。`*client.mixins.json` 反而是对的。
+
+## git 历史指认
+
+- `d6a6c87b Send gun projectile initial sync data to client` —— 新增 `forge/mixin/entity/GunProjectileMixin.java` 并注册进 `customgunforge.mixins.json` 的 **`mixins`**（公共）。此时 NeoForge 配置还不存在。
+- `91104f8b Port #43 to 1.20.2neoforge` —— 首次创建 `customgunneoforge.mixins.json`，内容写成 `"client": ["entity.GunProjectileMixin"]`。**同一个提交里** forge 侧是 `"mixins": ["entity.GunProjectileMixin"]`。← 移植点出错。
+- `dd8c79f0 Fix #44 ... (neoforge)` —— 把 `item.AmmoItemMixin` 追加进了那个**本来就是错的** `client` 数组。修的目标没错（专用服务端堆叠），数组写错所以服务端从未生效。和你这次报的现象完全对得上。
+
+## mixin 类本身没问题
+
+`diff` 结果只有 package、loader API 名（`ForgeHooks#getEntitySpawnPacket` ↔ `NetworkHooks#getEntitySpawningPacket`）、`IForgeItem` ↔ `IItemExtension` 和 javadoc 的差异。逻辑是逐行忠实移植的，**所以问题 100% 只在注册配置**。
+
+## 你现在的改动是对的
+
+```json
+"mixins": [ "item.AmmoItemMixin", "entity.GunProjectileMixin" ]
+```
+
+去掉 `client` 数组、两个条目都进公共 —— 这正是 forge 侧公共配置的等价物（顺序对 Mixin 无影响）。JSON 已校验通过。
+
+## 两点提醒
+
+1. **`GunProjectileMixin` 是搭了顺风车**。它在 NeoForge 专用服务端上从未生效过，这次一起放开后，服务端的枪射物生成同步 / 初速度 clamp 绕过会**第一次真正启用**（就是 `d6a6c87b` 那个 feature）。行为会变，建议单独做一次联机验证（专用服务端打枪，看弹道速度和曳光）。想保守一点就把这条留在 `client`，只放 `item.AmmoItemMixin` 进 `mixins`。
+2. 我只核实了 1.20.2。`1.20.4` / `1.21.1neoforge` / `26.2neoforge` 的 `customgunneoforge.mixins.json` 形状一样（都是 `client: [GunProjectileMixin, AmmoItemMixin]`），大概率是同一个移植手误传播过去的。要我逐个对照 forge 侧核实吗？
+
+我没有提交，改动留在工作区等你 review。

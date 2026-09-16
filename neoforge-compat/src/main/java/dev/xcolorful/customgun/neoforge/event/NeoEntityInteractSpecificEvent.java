@@ -11,6 +11,7 @@ import dev.xcolorful.customgun.core.api.common.McLogicalSide;
 import dev.xcolorful.customgun.core.api.event.EventType;
 import dev.xcolorful.customgun.core.api.event.IEntityInteractSpecificEvent;
 import dev.xcolorful.customgun.core.api.minecraft.CommandLevel;
+import dev.xcolorful.customgun.core.util.CommandUtils;
 import dev.xcolorful.customgun.core.util.Vec3Utils;
 import dev.xcolorful.customgun.neoforge.common.McSideHelper;
 import net.minecraft.commands.CommandSource;
@@ -108,7 +109,7 @@ public class NeoEntityInteractSpecificEvent extends NeoEvent implements IEntityI
         Level level = getLevel();
         if (level != null && level.isClientSide()) return null;
         Player player = this.getEntity();
-        return new CommandSourceStack(
+        return CommandUtils.sourceStack(
                 source != null ? source : CommandSource.NULL,
                 Vec3Utils.getCenter(this.getBlockPos()),
                 player.getRotationVector(),

@@ -213,6 +213,7 @@
 - ClassUtils：基本数据结构，用于简化算法
 	- 已封装组合数据结构：`ArraySet`、`QueueSet`、`ArrayMap`
 - ColorUtils：处理颜色字符串、游戏内颜色等
+- CommandUtils：指令相关兼容封装
 - ComponentUtils：文本组件工具
 - EntityUtils：实体工具及相关兼容封装
 - FileUtils：文件工具
@@ -444,6 +445,7 @@ Module division based on the `dev.xcolorful.customgun.core` top-level package
 - ClassUtils: Basic data structures, used to simplify algorithms
 	- Encapsulates combined data structures: `ArraySet`, `QueueSet`, `ArrayMap`
 - ColorUtils: Utilities for color strings and in-game colors
+- CommandUtils: Command compatibility wrappers
 - ComponentUtils: Text component utilities
 - FileUtils: File utilities
 - EntityUtils: Entity utilities and compatibility wrappers

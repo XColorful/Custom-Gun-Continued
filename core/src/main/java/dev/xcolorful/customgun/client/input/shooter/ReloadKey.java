@@ -7,7 +7,6 @@
 
 package dev.xcolorful.customgun.client.input.shooter;
 
-import com.mojang.blaze3d.platform.InputConstants;
 import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.api.entity.shooter.ILocalShooterGetter;
 import dev.xcolorful.customgun.client.api.event.IClientPlayerTickEvent;
@@ -51,7 +50,7 @@ public final class ReloadKey extends InputKey implements IEventHandler {
         return creator.create(this.key.getCategoryLang().getString(),
                 IKeyConflictContext.Type.IN_GAME,
                 IKeyModifier.Type.NONE,
-                InputConstants.Type.KEYSYM,
+                ClientInputUtils.KeyType.keyboard(),
                 GLFW.GLFW_KEY_R,
                 ClientInputCategory.SHOOTER);
     }

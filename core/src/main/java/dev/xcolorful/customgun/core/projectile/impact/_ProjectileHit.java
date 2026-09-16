@@ -21,6 +21,7 @@ import dev.xcolorful.customgun.core.init.registry.ModDamageTypes;
 import dev.xcolorful.customgun.core.network.message.projectile.S2CMessageProjectileHit;
 import dev.xcolorful.customgun.core.network.message.projectile.S2CMessageProjectileKill;
 import dev.xcolorful.customgun.core.resource.data.data.gun.bullet.damage._DistanceDamageData;
+import dev.xcolorful.customgun.core.util.EntityUtils;
 import dev.xcolorful.customgun.core.util.SendUtils;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.util.Mth;
@@ -123,7 +124,7 @@ public class _ProjectileHit {
                     // 有普通伤害
                     && (bulletDamage = hitEvent.context.getBulletDamage()) != null && armorIgnorePercent < 1
             ) {
-                victimEntity.invulnerableTime = 0; // 取消无敌时间
+                EntityUtils.setInvulnerableTime(victimEntity, 0); // 取消无敌时间
                 victimEntity.hurt(bulletDamage, damage * (1 - armorIgnorePercent));
             }
 
@@ -135,7 +136,7 @@ public class _ProjectileHit {
                     // 有穿甲伤害
                     && (pierceDamage = hitEvent.context.getPiercerDamage()) != null && armorIgnorePercent > 0
             ) {
-                victimEntity.invulnerableTime = 0; // 取消无敌时间
+                EntityUtils.setInvulnerableTime(victimEntity, 0); // 取消无敌时间
                 victimEntity.hurt(pierceDamage, damage * armorIgnorePercent);
             }
         }

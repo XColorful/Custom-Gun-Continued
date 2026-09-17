@@ -11,7 +11,7 @@
     "model.PlayerModelMixin",
     "renderer.CameraMixin",
     "renderer.CustomFeatureRendererSubmitMixin",
-    "renderer.EntityRendererMixin",
+    "renderer.EntityHitboxDebugRendererMixin",
     "renderer.GameRendererMixin",
     "renderer.ItemInHandLayerMixin",
     "renderer.ItemInHandRendererMixin",

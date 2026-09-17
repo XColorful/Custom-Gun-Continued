@@ -118,8 +118,23 @@ public class HumanoidOffhandRender {
             MathUtil.Quaternion.set(rotation, (float) Math.toRadians(rotate[0]), (float) Math.toRadians(rotate[1]), (float) Math.toRadians(rotate[2]));
             ClientRenderHelper.rotate(matrixStack, rotation);
 
+            // [1.20.1, 1.21.10)
             ItemRenderer renderer = Minecraft.getInstance().getItemRenderer();
             renderer.renderStatic(gunItem, ItemDisplayContext.FIXED, lightCoords, OverlayTexture.NO_OVERLAY, matrixStack, buffer, entity.level(), entity.getId());
+
+            // [1.21.10, )
+            // 原版删除了 ItemRenderer#renderStatic，改为 ItemModelResolver + ItemStackRenderState#submit
+            // xiao.battleroyale.client.renderer.block.LootContainerRenderer#renderItems的ItemDisplayContext.GROUND是用来模拟掉在地上的物品的
+            // 上下文仍继续用 FIXED：包围显示的 pos/rotate/scale 是按展示框定位组的姿态编排的
+//            ItemModelResolver itemModelResolver = Minecraft.getInstance().getItemModelResolver();
+//            ItemStackRenderState itemStackRenderState = new ItemStackRenderState();
+//            itemModelResolver.updateForTopItem(itemStackRenderState,
+//                    gunItem,
+//                    ItemDisplayContext.FIXED,
+//                    entity.level(),
+//                    null,
+//                    0); // 这应该不需要随机种子
+//            itemStackRenderState.submit(matrixStack, submitNodeCollector, renderState.lightCoords, OverlayTexture.NO_OVERLAY, 0);
         }
         matrixStack.popPose();
     }

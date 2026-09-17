@@ -70,9 +70,9 @@ public class AmmoItemRenderer extends BlockEntityWithoutLevelRenderer {
         poseStack.translate(0, 1.5, 0);
         for (int i = nodePath.size() - 1; i >= 0; i--) {
             BedrockPart t = nodePath.get(i);
-            poseStack.mulPose(Axis.XN.rotation(t.xRot));
-            poseStack.mulPose(Axis.YN.rotation(t.yRot));
-            poseStack.mulPose(Axis.ZN.rotation(t.zRot));
+            ClientRenderHelper.rotate(poseStack, Axis.XN.rotation(t.xRot));
+            ClientRenderHelper.rotate(poseStack, Axis.YN.rotation(t.yRot));
+            ClientRenderHelper.rotate(poseStack, Axis.ZN.rotation(t.zRot));
             if (t.getParent() != null) {
                 poseStack.translate(-t.x * scale[0] / 16.0F, -t.y * scale[1] / 16.0F, -t.z * scale[2] / 16.0F);
             } else {
@@ -125,7 +125,7 @@ public class AmmoItemRenderer extends BlockEntityWithoutLevelRenderer {
                 if (transformType == ItemDisplayContext.GUI || ammoModel == null || modelTextureLocation == null) {
                     // GUI 特殊渲染
                     poseStack.translate(0.5, 1.5, 0.5);
-                    poseStack.mulPose(Axis.ZN.rotationDegrees(180));
+                    ClientRenderHelper.rotate(poseStack, Axis.ZN.rotationDegrees(180));
 
                     @Nullable var slotTextureLocation = ammoDisplay.getSlotTextureLocation();
                     if (slotTextureLocation == null) slotTextureLocation = ClientRenderUtils.getMissingTextureLocation();
@@ -159,7 +159,7 @@ public class AmmoItemRenderer extends BlockEntityWithoutLevelRenderer {
             poseStack.pushPose(); {
                 // 没有这个 ammoID，渲染个错误材质提醒别人
                 poseStack.translate(0.5, 1.5, 0.5);
-                poseStack.mulPose(Axis.ZN.rotationDegrees(180));
+                ClientRenderHelper.rotate(poseStack, Axis.ZN.rotationDegrees(180));
 
                 {
                     VertexConsumer buffer = pBuffer.getBuffer(ClientRenderUtils.RenderType_.entityTranslucent(ClientRenderUtils.getMissingTextureLocation()));

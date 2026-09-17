@@ -60,4 +60,11 @@ public class NeoClientAccessTransformer implements IClientAccessTransformer {
                 renderSetup.affectsCrumbling,
                 renderSetup.sortOnUpload);
     }
+
+    @Override public RenderPipeline
+    RenderSystem_getPIPELINE_MODIFIERS_apply(
+            RenderPipeline renderPipeline
+    ) {
+        return null;
+    }
 }

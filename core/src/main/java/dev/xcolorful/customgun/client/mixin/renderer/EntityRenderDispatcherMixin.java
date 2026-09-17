@@ -3,13 +3,11 @@ package dev.xcolorful.customgun.client.mixin.renderer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import dev.xcolorful.customgun.client.renderer.entity.EntityHitboxRenderer;
-import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.world.entity.Entity;
-import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Deprecated(since = "1.21.6")
-@Mixin(EntityRenderDispatcher.class)
+//@Mixin(EntityRenderDispatcher.class)
 public class EntityRenderDispatcherMixin {
 
     /**

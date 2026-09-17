@@ -286,3 +286,91 @@ public class EntityRendererMixin {
 ## 5. 一个可以不用 mixin 的选项
 
 NeoForge 有原生 `RegisterRenderStateModifiersEvent`（client、mod event bus）：`event.registerEntityModifier(TypeToken<EntityRenderer<...>>, (entity, renderState) -> ...)`，时机正好是"所有 vanilla 数据抽完之后"，带 entity + state，能直接做同样的事且完全不用 mixin —— 正好对症你担心的 26.3 mixin 类变更。代价是平台 API 只能放 `neoforge-compat`（core 不许 import 平台 API），会和 forge 那边的 mixin 机制分叉。要做的话我再改。
+
+# 
+
+```
+现在继续1.21.10和1.21.11，1.21.10似乎需要单独处理
+JDK21在E:\Software\Minecraft\JDK\jdk-21.0.8\bin
+```
+
+# 
+
+Let me check the state of both worktrees and my memory on the 1.21.11 port.
+
+Both worktrees are clean, so the port hasn't started there. Let me check what the shared code looks like and what the vanilla render path is in each version.
+
+Both branches already have drafts of both mixins. Let me read them.
+
+The deprecated skeleton hints `renderHitbox` takes an `Entity` again on these versions. Let me verify against the actual 1.21.10 / 1.21.11 classes.
+
+1.21.11 no longer has hitbox fields on `EntityRenderState`, and neither dispatcher has a render method. Let me find the actual hitbox render path in both versions.
+
+Clear deltas now. Let me get the exact method signatures for both hitbox paths.
+
+Now the key question: does 1.21.10's `extractEntity` still route through `createRenderState`? Let me check bytecode and find the 1.21.11 debug renderer.
+
+1.21.10 does route through `createRenderState`, so the existing mixin should work there. Let me examine 1.21.11's new debug renderer in detail.
+
+1.21.11 is confirmed: hitboxes moved to a gizmo debug renderer that takes the `Entity` again, and `EntityRenderState` no longer has hitbox fields (so the 1.21.11 copy of `EntityRendererMixin` can't even compile). Let me confirm the project's annotation conventions, then write the 1.21.11 mixin.
+
+Now the 1.21.11 change: its `EntityRenderState` has no hitbox field at all, so that copy can't compile — the hook moves to the new debug renderer.
+
+Now let me verify with the JDK 21 you pointed me at.
+
+1.21.11 compiles. Now 1.21.10.
+
+Both compile. Let me confirm 1.21.10's extraction still writes those fields (the basis for why no separate handling is needed).
+
+Both compile. Let me record the per-version API facts, since they're non-obvious and will matter for the next port.
+
+两个版本都核对完了。结论：**1.21.10 不需要单独处理，1.21.11 必须换拦截点**。
+
+## 版本矩阵
+
+|版本|拦截点|为什么|
+|---|---|---|
+|1.20.1|`EntityRenderDispatcher.renderHitbox`（private static，带 Entity）HEAD cancel|已在主分支|
+|1.21.6 / **1.21.10**|`EntityRenderer.createRenderState(Entity,float)` RETURN，清 state 上的碰撞箱字段|抽取阶段还拿得到 Entity，抽完只剩纯几何 record|
+|**1.21.11**|`EntityHitboxDebugRenderer.showHitboxes(Entity,float,boolean)` HEAD cancel|碰撞箱彻底搬出 render state，改由 gizmo debug renderer 画，Entity 又回来了|
+
+## 1.21.10：现有 `EntityRendererMixin` 原样可用
+
+我逐条核了字节码（对 `neoFormJoined1.21.10-20251010.172816/raw.jar`），四个环节全部成立：
+
+- `EntityRenderDispatcher.extractEntity(E,float)` 内部就是 `getRenderer(entity).createRenderState(Entity,F)` —— 抽取入口没变；
+- `EntityRenderer.extractRenderState` 里 `putfield ...hitboxesRenderState` / `...serverHitboxesRenderState`，我们的 RETURN 注入在写入之后；
+- `EntityRenderDispatcher.submit(...)` 才读 `renderState.hitboxesRenderState`，非 null 就 `SubmitNodeCollector.submitHitbox(...)` —— 抽取时清空，后面自然不提交；
+- 两个字段都还在 `EntityRenderState` 上。
+
+所以 1.21.10 改成 `extractEntity` + `submitHitbox` + `HitboxFeatureRenderer` 的延迟提交体系只是外表吓人，实际不用动。**1.21.10 分支我一行没改**，只跑了个编译确认。
+
+## 1.21.11：换点，已改
+
+1.21.11 的 `EntityRenderState` **没有任何碰撞箱字段**，`HitboxesRenderState` / `ServerHitboxesRenderState` 这两个类都不存在了，`SubmitNodeCollector` 也没有 hitbox 方法 —— 所以你复制过来的那份 `EntityRendererMixin` 在 1.21.11 编译不过（字段访问不到），我把它删了，改成：
+
+```java
+@ApiStatus.AvailableSince("1.21.11")
+@Mixin(EntityHitboxDebugRenderer.class)
+public class EntityHitboxDebugRendererMixin {
+    @Inject(method = "showHitboxes", at = @At("HEAD"), cancellable = true)
+    private void cgc$hideEntityHitbox(Entity entity, float partialTick, boolean isServerEntity, CallbackInfo ci) {
+        if (!EntityHitboxRenderer.shouldRenderHitbox(entity)) ci.cancel();
+    }
+}
+```
+
+新文件：`1.21.11neoforge/core/.../client/mixin/renderer/EntityHitboxDebugRendererMixin.java`；`customgunclient.mixins.json` 里的注册同步换掉了。依据是 `emitGizmos` 的字节码：遍历 `ClientLevel.entitiesForRendering()` 后逐个调 `showHitboxes(entity, partialTick, false)`，开了 `DEBUG_SHOW_LOCAL_SERVER_ENTITY_HIT_BOXES` 时再用 `true` 画服务端那一份 —— 两条都经过 `showHitboxes`，所以一个 cancel 全覆盖（盒体、乘车盒体、位置点都在这个方法里落笔）。
+
+## 验证到哪一步
+
+- `:core:compileJava` 两边 **BUILD SUCCESSFUL**（用你给的 `E:\Software\Minecraft\JDK\jdk-21.0.8` 作 JAVA_HOME —— 这台机器默认只有 8/17/25，之前 1.21.6 那边我编译不了就是这个原因，现在能编了）。
+- 目标方法与字段全部用 `javap` 对着编译产物核过签名/描述符。
+- **没有进游戏跑过**，实际生效要你 F3+B 验一下。
+
+## 两个遗留点（没动，等你决定）
+
+1. 1.21.10 和 1.21.11 上的 `EntityRenderDispatcherMixin`（标着 `@Deprecated(since = "1.21.6")`、`@Inject` 注释掉的那个）现在是死代码：这两个版本的 `EntityRenderDispatcher` 已经没有 `renderHitbox` 了，里面猜的 `(…Entity, float r,g,b,a)` 签名也不成立。看起来是你留的历史标记，我没动；要清理说一声。
+2. 1.21.11 的 `emitGizmos` 里，`DEBUG_SHOW_LOCAL_SERVER_ENTITY_HIT_BOXES` 打开且取不到服务端实体时会额外画一个红色 "Missing Server Entity" 文字 —— 这行在 `showHitboxes` 之外，被隐藏的玩家仍可能带上这行字。那是开发用常量（默认关），我没处理。
+
+改动都留在工作区，没有提交。

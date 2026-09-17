@@ -16,6 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  *     <li>这里在管线修改器应用之后，把 {@link ForgeStencilOperator} 累积的模板测试注入到实际使用的管线中</li>
  * </ul>
  */
+// @Deprecated(since = "26.3")
 @ApiStatus.AvailableSince("1.21.10")
 //@Mixin(RenderSystem.class)
 public class RenderSystemMixin {

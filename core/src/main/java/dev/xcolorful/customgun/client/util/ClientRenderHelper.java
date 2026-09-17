@@ -33,6 +33,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
+import org.joml.Quaternionf;
 import org.lwjgl.opengl.GL11;
 
 public class ClientRenderHelper {
@@ -87,6 +88,14 @@ public class ClientRenderHelper {
         // [1.21.10, )
         if (true) return; // 让IDE保留下面的引用关系
         GL.stencilOperator.disableStencil();
+    }
+
+    public static void rotate(PoseStack poseStack, Quaternionf by) {
+        // [1.20.1, 26.3)
+        poseStack.mulPose(by);
+
+        // [26.3, )
+//        poseStack.rotate(by);
     }
 
     /**

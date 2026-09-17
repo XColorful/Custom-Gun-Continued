@@ -76,7 +76,7 @@ public interface KeepingItemRenderer {
 
         @Override
         public ItemStack cgc$getCurrentItem() {
-            return null;
+            return ItemStack.EMPTY;
         }
     };
 }

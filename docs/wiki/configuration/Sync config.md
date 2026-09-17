@@ -1,7 +1,7 @@
 [English](#English)
 
 # 同步配置
-> wiki 版本：`0.0.15`.2
+> wiki 版本：`0.0.15`.4
 
 ## 交互键
 
@@ -39,7 +39,6 @@
 - `HeadShotAABB`（字符串列表）：实体爆头判定碰撞箱
 - `AmmoBoxStackSize`（整数，≥1）：子弹盒可容纳的子弹最大堆叠数
 - `EnableProne`（bool）：是否允许玩家使用趴下功能
-- `EnableDefaultGunSmithTableFilter`（bool）：是否启用默认枪械改装台的配方限制
 - `ServerShootNetworkCheck`（bool）：[调试] 是否在服务端执行射击时的网络校验
 - `ServerShootCooldownCheck`（bool）：[调试] 是否在服务端执行射击冷却校验
 ```toml
@@ -47,13 +46,12 @@
 	HeadShotAABB = []
 	AmmoBoxStackSize = 3
 	EnableProne = true
-	EnableDefaultGunSmithTableFilter = true
 	ServerShootNetworkCheck = true
 	ServerShootCooldownCheck = true
 ```
 
 # English
-> wiki version: `0.0.15`.3
+> wiki version: `0.0.15`.4
 
 ## Sync Config
 
@@ -93,7 +91,6 @@ Path: `misc`
 - `HeadShotAABB` (string list): The entity's head hitbox during the headshot
 - `AmmoBoxStackSize` (integer, ≥1): The maximum stack size of ammo that the ammo box can hold
 - `EnableProne` (bool): Whether players are allowed to use the prone feature
-- `EnableDefaultGunSmithTableFilter` (bool): Enable the recipe limit of the default gunsmith table
 - `ServerShootNetworkCheck` (bool): [Debug] Do server-side network check while shooting
 - `ServerShootCooldownCheck` (bool): [Debug] Do server-side shoot cooldown check
 ```toml
@@ -101,7 +98,6 @@ Path: `misc`
 	HeadShotAABB = []
 	AmmoBoxStackSize = 3
 	EnableProne = true
-	EnableDefaultGunSmithTableFilter = true
 	ServerShootNetworkCheck = true
 	ServerShootCooldownCheck = true
 ```

@@ -442,9 +442,18 @@ public class _AttachmentModelRender {
         这里改用立即执行的 clearStencilTexture
         清空整个模板缓冲区：它在 submit 阶段清空，scope 几何在 flush 阶段写入，顺序为 清空→写入
          */
-        // [26.2, )
+        // [26.2, 26.3)
 //        RenderTarget target = ClientRenderUtils.getMainRenderTarget(Minecraft.getInstance());
 //        if (target.useStencil && target.getDepthTexture() != null) {
+//            RenderSystem.getDevice().createCommandEncoder().clearStencilTexture(target.getDepthTexture(), 0);
+//        }
+
+        /*
+        26.3 移除了 RenderTarget#useStencil
+        模板是否生效改由管线自身的 DepthStencilState 决定
+         */
+        // [26.3, )
+//        if (target.getDepthTexture() != null) {
 //            RenderSystem.getDevice().createCommandEncoder().clearStencilTexture(target.getDepthTexture(), 0);
 //        }
     }

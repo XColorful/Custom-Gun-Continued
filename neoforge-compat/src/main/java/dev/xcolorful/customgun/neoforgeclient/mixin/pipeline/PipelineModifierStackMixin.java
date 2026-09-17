@@ -17,8 +17,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  * </ul>
  */
 @ApiStatus.AvailableSince("26.3")
+//@Mixin(PipelineModifierStack.class)
 public class PipelineModifierStackMixin {
 
+//    @Inject(method = "apply",
+//            at = @At("RETURN"),
+//            cancellable = true)
     private void cgc$applyDynamicStencil(RenderPipeline pipeline,
                                          CallbackInfoReturnable<RenderPipeline> cir) {
         cir.setReturnValue(NeoStencilOperator.applyStencilToPipeline(cir.getReturnValue()));

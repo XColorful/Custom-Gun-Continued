@@ -13,58 +13,40 @@ import dev.xcolorful.customgun.core.api.config.IModConfigSpec;
 import dev.xcolorful.customgun.core.api.config.IModConfigSpecBuilder;
 
 public class RenderConfig {
-    public static IModConfigSpec<Boolean> ENABLE_LASER_FADE_OUT;
     public static IModConfigSpec<Integer> GUN_LOD_RENDER_DISTANCE;
     public static IModConfigSpec<Boolean> DISABLE_GUN_TILTING;
-    public static IModConfigSpec<Integer> BULLET_HOLE_PARTICLE_LIFE;
-    public static IModConfigSpec<Double> BULLET_HOLE_PARTICLE_FADE_THRESHOLD;
+    public static IModConfigSpec<Boolean> ENABLE_FIRST_PERSON_BULLET_TRACER;
     public static IModConfigSpec<Boolean> REPLACE_VANILLA_CROSSHAIR;
     public static IModConfigSpec<CrosshairType> CROSSHAIR_TYPE;
-    public static IModConfigSpec<Double> HIT_MARKET_START_POSITION;
-    public static IModConfigSpec<Boolean> HEAD_SHOT_DEBUG_HITBOX;
     public static IModConfigSpec<Boolean> ENABLE_GUN_HUD;
     public static IModConfigSpec<Boolean> KEEP_DISPLAY_GUN_HUD;
     public static IModConfigSpec<Boolean> FORCE_DISPLAY_GUN_HUD;
-    public static IModConfigSpec<Boolean> KILL_AMOUNT_ENABLE;
-    public static IModConfigSpec<Double> KILL_AMOUNT_DURATION_SECOND;
-    public static IModConfigSpec<Integer> TARGET_RENDER_DISTANCE;
-    public static IModConfigSpec<Boolean> ENABLE_FIRST_PERSON_BULLET_TRACER;
     public static IModConfigSpec<Boolean> ENABLE_SHOOTER_OPERATION_HUD;
-    public static IModConfigSpec<Boolean> AUTO_SELECT_GUN_SMITH_TABLE_FILTER;
-    public static IModConfigSpec<Integer> DAMAGE_COUNTER_RESET_TIME;
-    public static IModConfigSpec<Boolean> DISABLE_MOVEMENT_ATTRIBUTE_FOV;
     public static IModConfigSpec<Boolean> APPEND_RESOURCE_LOCATION_IN_TOOLTIP;
-    public static IModConfigSpec<Boolean> BLOCK_ENTITY_TRANSLUCENT;
+
+    public static IModConfigSpec<Boolean> ENABLE_LASER_FADE_OUT;
+    public static IModConfigSpec<Integer> BULLET_HOLE_PARTICLE_LIFE;
+    public static IModConfigSpec<Double> BULLET_HOLE_PARTICLE_FADE_THRESHOLD;
+    public static IModConfigSpec<Boolean> DISABLE_MOVEMENT_ATTRIBUTE_FOV;
 
     public static void init(IModConfigSpecBuilder builder) {
         builder.startBuild(ClientModConfigTag.render_path);
-
-        builder.addComment(ClientModConfigTag.enableLaserFadeOut_comment);
-        ENABLE_LASER_FADE_OUT = builder.addConfig(ClientModConfigTag.enableLaserFadeOut_path, true);
 
         builder.addComment(ClientModConfigTag.gunLodRenderDistance_comment);
         GUN_LOD_RENDER_DISTANCE = builder.addConfig(ClientModConfigTag.gunLodRenderDistance_path, 0, 0, Integer.MAX_VALUE);
 
         builder.addComment(ClientModConfigTag.disableGunTilting_comment);
-        DISABLE_GUN_TILTING = builder.addConfig(ClientModConfigTag.disableGunTilting_path, false);
+        DISABLE_GUN_TILTING = builder.addConfig(ClientModConfigTag.disableGunTilting_path, true);
 
-        builder.addComment(ClientModConfigTag.bulletHoleParticleLife_comment);
-        BULLET_HOLE_PARTICLE_LIFE = builder.addConfig(ClientModConfigTag.bulletHoleParticleLife_path, 400, 0, Integer.MAX_VALUE);
-
-        builder.addComment(ClientModConfigTag.bulletHoleParticleFadeThreshold_comment);
-        BULLET_HOLE_PARTICLE_FADE_THRESHOLD = builder.addConfig(ClientModConfigTag.bulletHoleParticleFadeThreshold_path, 0.98, 0.0, 1.0);
+        builder.addComment(ClientModConfigTag.enableFirstPersonBulletTracer_comment);
+        ENABLE_FIRST_PERSON_BULLET_TRACER = builder.addConfig(ClientModConfigTag.enableFirstPersonBulletTracer_path, true);
+        FIRST_PERSON_BULLET_TRACER_ENABLE = ENABLE_FIRST_PERSON_BULLET_TRACER;
 
         builder.addComment(ClientModConfigTag.replaceVanillaCrosshair_comment);
         REPLACE_VANILLA_CROSSHAIR = builder.addConfig(ClientModConfigTag.replaceVanillaCrosshair_path, true);
 
         builder.addComment(ClientModConfigTag.crosshairType_comment);
         CROSSHAIR_TYPE = builder.addConfig(ClientModConfigTag.crosshairType_path, CrosshairType.DEFAULT);
-
-        builder.addComment(ClientModConfigTag.hitMarkerStartPosition_comment);
-        HIT_MARKET_START_POSITION = builder.addConfig(ClientModConfigTag.hitMarkerStartPosition_path, 4.0, -1024.0, 1024.0);
-
-        builder.addComment(ClientModConfigTag.headShotDebugHitbox_comment);
-        HEAD_SHOT_DEBUG_HITBOX = builder.addConfig(ClientModConfigTag.headShotDebugHitbox_path, false);
 
         builder.addComment(ClientModConfigTag.enableGunHUD_comment);
         ENABLE_GUN_HUD = builder.addConfig(ClientModConfigTag.enableGunHUD_path, true);
@@ -76,6 +58,29 @@ public class RenderConfig {
         builder.addComment(ClientModConfigTag.forceDisplayGunHUD_comment);
         FORCE_DISPLAY_GUN_HUD = builder.addConfig(ClientModConfigTag.forceDisplayGunHUD_path, true);
 
+        builder.addComment(ClientModConfigTag.enableShooterOperationHUD_comment);
+        ENABLE_SHOOTER_OPERATION_HUD = builder.addConfig(ClientModConfigTag.enableShooterOperationHUD_path, true);
+        DISABLE_INTERACT_HUD_TEXT = ENABLE_SHOOTER_OPERATION_HUD;
+
+        builder.addComment(ClientModConfigTag.appendResourceLocationInTooltip_comment);
+        APPEND_RESOURCE_LOCATION_IN_TOOLTIP = builder.addConfig(ClientModConfigTag.appendResourceLocationInTooltip_path, true);
+        ENABLE_RESOURCE_LOCATION_IN_TOOLTIP = APPEND_RESOURCE_LOCATION_IN_TOOLTIP;
+
+        builder.addComment(ClientModConfigTag.enableLaserFadeOut_comment);
+        ENABLE_LASER_FADE_OUT = builder.addConfig(ClientModConfigTag.enableLaserFadeOut_path, true);
+
+        builder.addComment(ClientModConfigTag.bulletHoleParticleLife_comment);
+        BULLET_HOLE_PARTICLE_LIFE = builder.addConfig(ClientModConfigTag.bulletHoleParticleLife_path, 400, 0, Integer.MAX_VALUE);
+
+        builder.addComment(ClientModConfigTag.bulletHoleParticleFadeThreshold_comment);
+        BULLET_HOLE_PARTICLE_FADE_THRESHOLD = builder.addConfig(ClientModConfigTag.bulletHoleParticleFadeThreshold_path, 0.98, 0.0, 1.0);
+
+        builder.addComment(ClientModConfigTag.hitMarkerStartPosition_comment);
+        HIT_MARKET_START_POSITION = builder.addConfig(ClientModConfigTag.hitMarkerStartPosition_path, 4.0, -1024.0, 1024.0);
+
+        builder.addComment(ClientModConfigTag.headShotDebugHitbox_comment);
+        HEAD_SHOT_DEBUG_HITBOX = builder.addConfig(ClientModConfigTag.headShotDebugHitbox_path, false);
+
         builder.addComment(ClientModConfigTag.killAmountEnable_comment);
         KILL_AMOUNT_ENABLE = builder.addConfig(ClientModConfigTag.killAmountEnable_path, true);
 
@@ -85,14 +90,6 @@ public class RenderConfig {
         builder.addComment(ClientModConfigTag.targetRenderDistance_comment);
         TARGET_RENDER_DISTANCE = builder.addConfig(ClientModConfigTag.targetRenderDistance_path, 128, 0, Integer.MAX_VALUE);
 
-        builder.addComment(ClientModConfigTag.enableFirstPersonBulletTracer_comment);
-        ENABLE_FIRST_PERSON_BULLET_TRACER = builder.addConfig(ClientModConfigTag.enableFirstPersonBulletTracer_path, true);
-        FIRST_PERSON_BULLET_TRACER_ENABLE = ENABLE_FIRST_PERSON_BULLET_TRACER;
-
-        builder.addComment(ClientModConfigTag.enableShooterOperationHUD_comment);
-        ENABLE_SHOOTER_OPERATION_HUD = builder.addConfig(ClientModConfigTag.enableShooterOperationHUD_path, true);
-        DISABLE_INTERACT_HUD_TEXT = ENABLE_SHOOTER_OPERATION_HUD;
-
         builder.addComment(ClientModConfigTag.autoSelectGunSmithTableFilter_comment);
         AUTO_SELECT_GUN_SMITH_TABLE_FILTER = builder.addConfig(ClientModConfigTag.autoSelectGunSmithTableFilter_path, true);
 
@@ -101,10 +98,6 @@ public class RenderConfig {
 
         builder.addComment(ClientModConfigTag.disableMovementAttributeFov_comment);
         DISABLE_MOVEMENT_ATTRIBUTE_FOV = builder.addConfig(ClientModConfigTag.disableMovementAttributeFov_path, true);
-
-        builder.addComment(ClientModConfigTag.appendResourceLocationInTooltip_comment);
-        APPEND_RESOURCE_LOCATION_IN_TOOLTIP = builder.addConfig(ClientModConfigTag.appendResourceLocationInTooltip_path, true);
-        ENABLE_RESOURCE_LOCATION_IN_TOOLTIP = APPEND_RESOURCE_LOCATION_IN_TOOLTIP;
 
         builder.addComment(ClientModConfigTag.blockEntityTranslucent_comment);
         BLOCK_ENTITY_TRANSLUCENT = builder.addConfig(ClientModConfigTag.blockEntityTranslucent_path, false);
@@ -118,4 +111,12 @@ public class RenderConfig {
     @Deprecated(forRemoval = true) public static IModConfigSpec<Boolean> ENABLE_RESOURCE_LOCATION_IN_TOOLTIP;
     @Deprecated(forRemoval = true) public static IModConfigSpec<Boolean> GUN_HUD_ENABLE;
     @Deprecated(forRemoval = true) public static IModConfigSpec<Boolean> DISABLE_INTERACT_HUD_TEXT;
+    @Deprecated(forRemoval = true) public static IModConfigSpec<Double> HIT_MARKET_START_POSITION;
+    @Deprecated(forRemoval = true) public static IModConfigSpec<Boolean> HEAD_SHOT_DEBUG_HITBOX;
+    @Deprecated(forRemoval = true) public static IModConfigSpec<Boolean> KILL_AMOUNT_ENABLE;
+    @Deprecated(forRemoval = true) public static IModConfigSpec<Double> KILL_AMOUNT_DURATION_SECOND;
+    @Deprecated(forRemoval = true) public static IModConfigSpec<Integer> TARGET_RENDER_DISTANCE;
+    @Deprecated(forRemoval = true) public static IModConfigSpec<Boolean> AUTO_SELECT_GUN_SMITH_TABLE_FILTER;
+    @Deprecated(forRemoval = true) public static IModConfigSpec<Integer> DAMAGE_COUNTER_RESET_TIME;
+    @Deprecated(forRemoval = true) public static IModConfigSpec<Boolean> BLOCK_ENTITY_TRANSLUCENT;
 }

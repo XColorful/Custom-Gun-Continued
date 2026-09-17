@@ -1,14 +1,12 @@
 [English](#English)
 
 # 渲染配置
-> wiki 版本：`0.0.15`.9
+> wiki 版本：`0.0.15`.13
 
 路径：`render`
-- `EnableLaserFadeOut`（bool）：是否对激光应用淡出效果
 - `GunLodRenderDistance`（整数）：远距离模型显示距离，设为0则始终显示
 - `DisableGunTilting`（bool）：是否禁止蹲下时倾斜枪械
-- `BulletHoleParticleLife`（整数）：弹孔粒子存在时间（tick）
-- `BulletHoleParticleFadeThreshold`（浮点，0.0~1.0）：弹孔粒子渲染淡出阈值
+- `EnableFirstPersonBulletTracer`（bool）：是否渲染第一人称曳光弹轨迹
 - `ReplaceVanillaCrosshair`（bool）：持枪时是否替换原版准心
 - `CrosshairType`（枚举）：持枪时的准星样式
 	- `DEFAULT`
@@ -20,58 +18,42 @@
 	- `LINE_1`、`LINE_2`、`LINE_3`
 	- `SQUARE_1`、`SQUARE_2`、`SQUARE_3`、`SQUARE_4`、`SQUARE_5`、`SQUARE_6`
 	- `TRIDENT_1`、`TRIDENT_2`
-- `HitMarketStartPosition`（浮点，-1024.0~1024.0）：命中标记的起始位置
-- `HeadShotDebugHitbox`（bool）：是否显示爆头判定碰撞箱
 - `EnableGunHUD`（bool）：是否显示枪械HUD
 - `KeepDisplayGunHUD`（bool）：是否持续显示枪械HUD
 - `ForceDisplayGunHUD`（bool）：是否强制显示枪械HUD
-- `KillAmountEnable`（bool）：是否显示击杀数
-- `KillAmountDurationSecond`（浮点）：击杀数显示持续时间（秒）
-- `TargetRenderDistance`（整数）：目标最远渲染距离
-- `EnableFirstPersonBulletTracer`（bool）：是否渲染第一人称曳光弹轨迹
 - `EnableShooterOperationHUD`（bool）：是否显示射手操作HUD
-- `AutoSelectGunSmithTableFilter`（bool）：手持枪械/配件/子弹打开改装台时是否自动选择过滤
-- `DamageCounterResetTime`（整数，≥10）：伤害计数器重置时间（毫秒）
-- `DisableMovementAttributeFov`（bool）：持枪时禁用移动速度属性对FOV的影响
 - `AppendResourceLocationInTooltip`（bool）：是否在提示框枪包信息后附加显示资源位置
-- `EnableBlockEntityTranslucent`（bool）：渲染方块实体时启用半透明
+- `EnableLaserFadeOut`（bool）：是否对激光应用淡出效果
+- `BulletHoleParticleLife`（整数）：弹孔粒子存在时间（tick）
+- `BulletHoleParticleFadeThreshold`（浮点，0.0~1.0）：弹孔粒子渲染淡出阈值
+- `DisableMovementAttributeFov`（bool）：持枪时禁用移动速度属性对FOV的影响
 ```toml
 [render]
-	EnableLaserFadeOut = true
 	GunLodRenderDistance = 0
-	DisableGunTilting = false
-	BulletHoleParticleLife = 400
-	BulletHoleParticleFadeThreshold = 0.98
+	DisableGunTilting = true
+	EnableFirstPersonBulletTracer = true
 	ReplaceVanillaCrosshair = true
 	CrosshairType = "DEFAULT"
-	HitMarketStartPosition = 4.0
-	HeadShotDebugHitbox = false
 	EnableGunHUD = true
 	KeepDisplayGunHUD = false
 	ForceDisplayGunHUD = true
-	KillAmountEnable = true
-	KillAmountDurationSecond = 3.0
-	TargetRenderDistance = 128
-	EnableFirstPersonBulletTracer = true
 	EnableShooterOperationHUD = true
-	AutoSelectGunSmithTableFilter = true
-	DamageCounterResetTime = 2000
-	DisableMovementAttributeFov = true
 	AppendResourceLocationInTooltip = true
-	EnableBlockEntityTranslucent = false
+	EnableLaserFadeOut = true
+	BulletHoleParticleLife = 400
+	BulletHoleParticleFadeThreshold = 0.98
+	DisableMovementAttributeFov = true
 ```
 
 # English
-> wiki verison: `0.0.15`.9
+> wiki version: `0.0.15`.13
 
 ## Render Config
 
 Path: `render`
-- `EnableLaserFadeOut` (bool): Whether to apply fadeout effect on the laser beam
 - `GunLodRenderDistance` (integer): How far to display the LOD model, 0 means always display
 - `DisableGunTilting` (bool): Whether to disable gun tilting while crouching
-- `BulletHoleParticleLife` (integer): The existence time of bullet hole particles, in ticks
-- `BulletHoleParticleFadeThreshold` (float, 0.0~1.0): The threshold for fading out when rendering bullet hole particles
+- `EnableFirstPersonBulletTracer` (bool): Whether to render first person bullet trail
 - `ReplaceVanillaCrosshair`(bool): Whether to replace the vanilla crosshair when holding a gun
 - `CrosshairType` (enum): The crosshair when holding a gun
 	- `DEFAULT`
@@ -83,43 +65,29 @@ Path: `render`
 	- `LINE_1`, `LINE_2`, `LINE_3`
 	- `SQUARE_1`, `SQUARE_2`, `SQUARE_3`, `SQUARE_4`, `SQUARE_5`, `SQUARE_6`
 	- `TRIDENT_1`, `TRIDENT_2`
-- `HitMarketStartPosition` (float, -1024.0~1024.0): The starting position of the hit marker
-- `HeadShotDebugHitbox` (bool): Whether to display the head shot's hitbox
 - `EnableGunHUD` (bool): Whether to display the gun's HUD
 - `KeepDisplayGunHUD` (bool): Whether to keep the gun's HUD displayed
 - `ForceDisplayGunHUD` (bool): Whether to force the gun's HUD to be displayed
-- `KillAmountEnable` (bool): Whether to display the kill amount
-- `KillAmountDurationSecond` (float): The duration of the kill amount, in seconds
-- `TargetRenderDistance` (integer): The farthest render distance of the target, including minecarts type
-- `EnableFirstPersonBulletTracer` (bool): Whether to render first person bullet trail
 - `EnableShooterOperationHUD` (bool): Whether to display the shooter operation's HUD
-- `AutoSelectGunSmithTableFilter` (bool): Whether to automatically select the gun smith table's held item filter
-- `DamageCounterResetTime` (integer, ≥10): Max time the damage counter will reset
-- `DisableMovementAttributeFov` (bool): Disable the FOV effect from the movement speed attribute while holding a gun
 - `AppendResourceLocationInTooltip` (bool): Whether to append resource location after gunpack information in tooltips
-- `EnableBlockEntityTranslucent` (bool): Enable translucent while rendering block entities
+- `EnableLaserFadeOut` (bool): Whether to apply fadeout effect on the laser beam
+- `BulletHoleParticleLife` (integer): The existence time of bullet hole particles, in ticks
+- `BulletHoleParticleFadeThreshold` (float, 0.0~1.0): The threshold for fading out when rendering bullet hole particles
+- `DisableMovementAttributeFov` (bool): Disable the FOV effect from the movement speed attribute while holding a gun
 ```toml
 [render]
-	EnableLaserFadeOut = true
 	GunLodRenderDistance = 0
-	DisableGunTilting = false
-	BulletHoleParticleLife = 400
-	BulletHoleParticleFadeThreshold = 0.98
+	DisableGunTilting = true
+	EnableFirstPersonBulletTracer = true
 	ReplaceVanillaCrosshair = true
 	CrosshairType = "DEFAULT"
-	HitMarketStartPosition = 4.0
-	HeadShotDebugHitbox = false
 	EnableGunHUD = true
 	KeepDisplayGunHUD = false
 	ForceDisplayGunHUD = true
-	KillAmountEnable = true
-	KillAmountDurationSecond = 3.0
-	TargetRenderDistance = 128
-	EnableFirstPersonBulletTracer = true
 	EnableShooterOperationHUD = true
-	AutoSelectGunSmithTableFilter = true
-	DamageCounterResetTime = 2000
-	DisableMovementAttributeFov = true
 	AppendResourceLocationInTooltip = true
-	EnableBlockEntityTranslucent = false
+	EnableLaserFadeOut = true
+	BulletHoleParticleLife = 400
+	BulletHoleParticleFadeThreshold = 0.98
+	DisableMovementAttributeFov = true
 ```

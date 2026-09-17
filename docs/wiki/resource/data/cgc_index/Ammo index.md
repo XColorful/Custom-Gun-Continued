@@ -24,7 +24,7 @@
 ```
 
 # English
-> wiki verison: `0.0.5`.2
+> wiki version: `0.0.15`.3
 
 - `name_lang`/`name`(String):
 - `tooltip_lang`/`tooltip`(String):

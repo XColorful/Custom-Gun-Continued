@@ -22,10 +22,10 @@ public class GunConfig {
         builder.startBuild(ModConfigTag.gun_path);
 
         builder.addComment(ModConfigTag.defaultGunFireSoundDistance_comment);
-        DEFAULT_GUN_FIRE_SOUND_DISTANCE = builder.addConfig(ModConfigTag.defaultGunFireSoundDistance_path, 64, 0, Integer.MAX_VALUE);
+        DEFAULT_GUN_FIRE_SOUND_DISTANCE = builder.addConfig(ModConfigTag.defaultGunFireSoundDistance_path, 320, 0, Integer.MAX_VALUE);
 
         builder.addComment(ModConfigTag.defaultGunSilenceSoundDistance_comment);
-        DEFAULT_GUN_SILENCE_SOUND_DISTANCE = builder.addConfig(ModConfigTag.defaultGunSilenceSoundDistance_path, 16, 0, Integer.MAX_VALUE);
+        DEFAULT_GUN_SILENCE_SOUND_DISTANCE = builder.addConfig(ModConfigTag.defaultGunSilenceSoundDistance_path, 256, 0, Integer.MAX_VALUE);
 
         builder.addComment(ModConfigTag.defaultGunOtherSoundDistance_comment);
         DEFAULT_GUN_OTHER_SOUND_DISTANCE = builder.addConfig(ModConfigTag.defaultGunOtherSoundDistance_path, 16, 0, Integer.MAX_VALUE);

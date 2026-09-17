@@ -180,7 +180,7 @@
 ```
 
 # English
-> wiki verison: `0.0.5`.3
+> wiki version: `0.0.15`.4
 
 - `model_location`/`model`(ResourceLocation):
 - `model_transform`/`transform`(\_ModelTransform):

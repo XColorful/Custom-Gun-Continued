@@ -1,7 +1,7 @@
 [English](#English)
 
 # 同步配置
-> wiki 版本：`0.0.1`.1
+> wiki 版本：`0.0.15`.2
 
 ## 交互键
 
@@ -38,7 +38,6 @@
 路径：`misc`
 - `HeadShotAABB`（字符串列表）：实体爆头判定碰撞箱
 - `AmmoBoxStackSize`（整数，≥1）：子弹盒可容纳的子弹最大堆叠数
-- `ClientGunPackDownloadUrls`（字符串列表）：已弃用，使用原版服务端资源包
 - `EnableProne`（bool）：是否允许玩家使用趴下功能
 - `EnableDefaultGunSmithTableFilter`（bool）：是否启用默认枪械改装台的配方限制
 - `ServerShootNetworkCheck`（bool）：[调试] 是否在服务端执行射击时的网络校验
@@ -47,7 +46,6 @@
 [misc]
 	HeadShotAABB = []
 	AmmoBoxStackSize = 3
-	ClientGunPackDownloadUrls = []
 	EnableProne = true
 	EnableDefaultGunSmithTableFilter = true
 	ServerShootNetworkCheck = true
@@ -55,7 +53,7 @@
 ```
 
 # English
-> wiki verison: `0.0.1`.1
+> wiki verison: `0.0.15`.2
 
 ## Sync Config
 
@@ -94,7 +92,6 @@ Path: `base_multiplier`
 Path: `misc`
 - `HeadShotAABB` (string list): The entity's head hitbox during the headshot
 - `AmmoBoxStackSize` (integer, ≥1): The maximum stack size of ammo that the ammo box can hold
-- `ClientGunPackDownloadUrls` (string list): Deprecated. Use vanilla server resource pack
 - `EnableProne` (bool): Whether players are allowed to use the prone feature
 - `EnableDefaultGunSmithTableFilter` (bool): Enable the recipe limit of the default gunsmith table
 - `ServerShootNetworkCheck` (bool): [Debug] Do server-side network check while shooting
@@ -103,7 +100,6 @@ Path: `misc`
 [misc]
 	HeadShotAABB = []
 	AmmoBoxStackSize = 3
-	ClientGunPackDownloadUrls = []
 	EnableProne = true
 	EnableDefaultGunSmithTableFilter = true
 	ServerShootNetworkCheck = true

@@ -12,7 +12,6 @@ import dev.xcolorful.customgun.core.api.config.IModConfigSpec;
 import dev.xcolorful.customgun.core.api.config.IModConfigSpecBuilder;
 
 public class ResourceConfig {
-    public static IModConfigSpec<Boolean> ENABLE_LAZY_CLIENT_ASSET_LOAD;
 
     public static void init(IModConfigSpecBuilder builder) {
         builder.startBuild(ClientModConfigTag.resource_path);
@@ -22,4 +21,8 @@ public class ResourceConfig {
 
         builder.finishBuild();
     }
+
+    // --------Deprecated--------
+
+    @Deprecated(forRemoval = true) public static IModConfigSpec<Boolean> ENABLE_LAZY_CLIENT_ASSET_LOAD;
 }

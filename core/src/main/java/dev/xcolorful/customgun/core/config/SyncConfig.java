@@ -72,7 +72,6 @@ public class SyncConfig {
 
     public static IModConfigSpec<List<String>> HEAD_SHOT_AABB; // 需要同步到客户端，方便客户端 debug 显示碰撞箱
     public static IModConfigSpec<Integer> AMMO_BOX_STACK_SIZE; // 子弹盒存储上限需要客户端显示支持
-    public static IModConfigSpec<List<List<String>>> CLIENT_GUN_PACK_DOWNLOAD_URLS; // 客户端需要下载的枪械包
     public static IModConfigSpec<Boolean> ENABLE_PRONE; // 禁用趴下战术动作
     public static IModConfigSpec<Boolean> ENABLE_TABLE_FILTER;
     public static IModConfigSpec<Boolean> SERVER_SHOOT_NETWORK_V;
@@ -104,4 +103,8 @@ public class SyncConfig {
 
         builder.finishBuild();
     }
+
+    // --------Deprecated--------
+
+    @Deprecated(forRemoval = true) public static IModConfigSpec<List<List<String>> CLIENT_GUN_PACK_DOWNLOAD_URLS; // 客户端需要下载的枪械包
 }

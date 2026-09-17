@@ -20,21 +20,13 @@ public class RenderConfig {
     public static IModConfigSpec<Double> BULLET_HOLE_PARTICLE_FADE_THRESHOLD;
     public static IModConfigSpec<Boolean> REPLACE_VANILLA_CROSSHAIR;
     public static IModConfigSpec<CrosshairType> CROSSHAIR_TYPE;
-    public static IModConfigSpec<Double> HIT_MARKET_START_POSITION;
-    public static IModConfigSpec<Boolean> HEAD_SHOT_DEBUG_HITBOX;
     public static IModConfigSpec<Boolean> ENABLE_GUN_HUD;
     public static IModConfigSpec<Boolean> KEEP_DISPLAY_GUN_HUD;
     public static IModConfigSpec<Boolean> FORCE_DISPLAY_GUN_HUD;
-    public static IModConfigSpec<Boolean> KILL_AMOUNT_ENABLE;
-    public static IModConfigSpec<Double> KILL_AMOUNT_DURATION_SECOND;
-    public static IModConfigSpec<Integer> TARGET_RENDER_DISTANCE;
     public static IModConfigSpec<Boolean> ENABLE_FIRST_PERSON_BULLET_TRACER;
     public static IModConfigSpec<Boolean> ENABLE_SHOOTER_OPERATION_HUD;
-    public static IModConfigSpec<Boolean> AUTO_SELECT_GUN_SMITH_TABLE_FILTER;
-    public static IModConfigSpec<Integer> DAMAGE_COUNTER_RESET_TIME;
     public static IModConfigSpec<Boolean> DISABLE_MOVEMENT_ATTRIBUTE_FOV;
     public static IModConfigSpec<Boolean> APPEND_RESOURCE_LOCATION_IN_TOOLTIP;
-    public static IModConfigSpec<Boolean> BLOCK_ENTITY_TRANSLUCENT;
 
     public static void init(IModConfigSpecBuilder builder) {
         builder.startBuild(ClientModConfigTag.render_path);
@@ -118,4 +110,12 @@ public class RenderConfig {
     @Deprecated(forRemoval = true) public static IModConfigSpec<Boolean> ENABLE_RESOURCE_LOCATION_IN_TOOLTIP;
     @Deprecated(forRemoval = true) public static IModConfigSpec<Boolean> GUN_HUD_ENABLE;
     @Deprecated(forRemoval = true) public static IModConfigSpec<Boolean> DISABLE_INTERACT_HUD_TEXT;
+    @Deprecated(forRemoval = true) public static IModConfigSpec<Integer> HIT_MARKET_START_POSITION;
+    @Deprecated(forRemoval = true) public static IModConfigSpec<Boolean> HEAD_SHOT_DEBUG_HITBOX;
+    @Deprecated(forRemoval = true) public static IModConfigSpec<Boolean> KILL_AMOUNT_ENABLE;
+    @Deprecated(forRemoval = true) public static IModConfigSpec<Double> KILL_AMOUNT_DURATION_SECOND;
+    @Deprecated(forRemoval = true) public static IModConfigSpec<Integer> TARGET_RENDER_DISTANCE;
+    @Deprecated(forRemoval = true) public static IModConfigSpec<Boolean> AUTO_SELECT_GUN_SMITH_TABLE_FILTER;
+    @Deprecated(forRemoval = true) public static IModConfigSpec<Integer> DAMAGE_COUNTER_RESET_TIME;
+    @Deprecated(forRemoval = true) public static IModConfigSpec<Boolean> BLOCK_ENTITY_TRANSLUCENT;
 }

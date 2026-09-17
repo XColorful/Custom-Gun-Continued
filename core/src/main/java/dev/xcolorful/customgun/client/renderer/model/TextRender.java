@@ -54,7 +54,7 @@ public class TextRender implements IModelComponentRenderer {
         String parsed = placeholderManager.parse(text, this.gunItem);
         if (parsed.isEmpty()) return;
 
-        poseStack.mulPose(Axis.ZP.rotationDegrees(180f));
+        ClientRenderHelper.rotate(poseStack, Axis.ZP.rotationDegrees(180f));
         Matrix3f normal = new Matrix3f(poseStack.last().normal());
         Matrix4f pose = new Matrix4f(poseStack.last().pose());
 

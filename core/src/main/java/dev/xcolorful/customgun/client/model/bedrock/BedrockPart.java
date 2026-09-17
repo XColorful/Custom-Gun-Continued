@@ -13,6 +13,7 @@ import com.mojang.math.Axis;
 import dev.xcolorful.customgun.client.api.model.bedrock.IBedrockCube;
 import dev.xcolorful.customgun.client.api.model.bedrock.IBedrockCubeCompile;
 import dev.xcolorful.customgun.client.api.model.bedrock.IBedrockRenderer;
+import dev.xcolorful.customgun.client.util.ClientRenderHelper;
 import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
@@ -63,15 +64,15 @@ public class BedrockPart implements IBedrockCubeCompile, IBedrockRenderer {
         poseStack.translate(this.offsetX, this.offsetY, this.offsetZ);
         poseStack.translate((this.x / 16.0F), (this.y / 16.0F), (this.z / 16.0F));
         if (this.zRot != 0.0F) {
-            poseStack.mulPose(Axis.ZP.rotation(this.zRot));
+            ClientRenderHelper.rotate(poseStack, Axis.ZP.rotation(this.zRot));
         }
         if (this.yRot != 0.0F) {
-            poseStack.mulPose(Axis.YP.rotation(this.yRot));
+            ClientRenderHelper.rotate(poseStack, Axis.YP.rotation(this.yRot));
         }
         if (this.xRot != 0.0F) {
-            poseStack.mulPose(Axis.XP.rotation(this.xRot));
+            ClientRenderHelper.rotate(poseStack, Axis.XP.rotation(this.xRot));
         }
-        poseStack.mulPose(additionalQuaternion);
+        ClientRenderHelper.rotate(poseStack, additionalQuaternion);
         poseStack.scale(xScale, yScale, zScale);
     }
 

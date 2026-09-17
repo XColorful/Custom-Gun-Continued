@@ -21,6 +21,7 @@ import dev.xcolorful.customgun.client.resource.assets.display.ammo._ShellDisplay
 import dev.xcolorful.customgun.client.resource.assets.display.gun._ShellEjectionParam;
 import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
 import dev.xcolorful.customgun.client.resource.instance.data.ClientAmmoIndexInstance;
+import dev.xcolorful.customgun.client.util.ClientRenderHelper;
 import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
@@ -195,9 +196,9 @@ public class ShellRender implements IModelComponentRenderer {
         double xw = time * angularVelocity[0];
         double yw = time * angularVelocity[1];
         double zw = time * angularVelocity[2];
-        poseStack.mulPose(Axis.XN.rotationDegrees((float) xw));
-        poseStack.mulPose(Axis.YN.rotationDegrees((float) yw));
-        poseStack.mulPose(Axis.ZP.rotationDegrees((float) zw));
+        ClientRenderHelper.rotate(poseStack, Axis.XN.rotationDegrees((float) xw));
+        ClientRenderHelper.rotate(poseStack, Axis.YN.rotationDegrees((float) yw));
+        ClientRenderHelper.rotate(poseStack, Axis.ZP.rotationDegrees((float) zw));
         poseStack.translate(0, -1.5, 0);
 
         ammoModelObject.render(poseStack, transformType, ClientRenderUtils.RenderType_.entityCutout(shellTextureLocation), light, overlay);

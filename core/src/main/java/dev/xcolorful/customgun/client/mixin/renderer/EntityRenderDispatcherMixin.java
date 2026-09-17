@@ -20,7 +20,7 @@ public class EntityRenderDispatcherMixin {
     private static void cgc$hideEntityHitbox(PoseStack poseStack,
                                              VertexConsumer vertexConsumer,
                                              Entity entity,
-                                             float partialTicks,
+                                             float red, float green, float blue, float alpha,
                                              CallbackInfo ci) {
         if (!EntityHitboxRenderer.shouldRenderHitbox(entity)) {
             ci.cancel();

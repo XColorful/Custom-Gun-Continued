@@ -1,5 +1,23 @@
 ### 0.0.x
 
+#### 0.0.16
+- Remove several configurations
+- Adjust default configuration values
+- Add sync config `hideEntityHitbox`
+- Fix render config `GunLodRenderDistance` issue
+
+1.20.2+neoforge:
+- Fix ammo stacking and projectile issues caused by Mixin configuration
+
+1.21.1+:
+- Fix gun model and gun projectile rendering offset when firing while aiming down sights
+
+1.21.10+:
+- Correct rendering position of guns on back
+
+26.2neoforge:
+- Update to NeoForge 26.2.0.88
+
 #### 0.0.15
 
 - Fix ammo stack size in dedicated server

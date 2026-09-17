@@ -323,10 +323,10 @@ public class GunItemRenderer extends AnimateGeoItemRenderer<GunModelObject, GunA
             // [1.20.1, 1.21.1)
             // 手部 poseStack 的基坐标系就是摄像机（view）坐标系，m32 本身就是「沿视线」分量，直接缩放即可
             // 缓存转换后的偏移坐标
-            State.muzzleRenderOffset.set(
-                    pose.m30(),
-                    pose.m31(),
-                    pose.m32() * Math.tan(itemRenderFov / 2 * Math.PI / 180) / Math.tan(levelRenderFov / 2 * Math.PI / 180));
+//            State.muzzleRenderOffset.set(
+//                    pose.m30(),
+//                    pose.m31(),
+//                    pose.m32() * Math.tan(itemRenderFov / 2 * Math.PI / 180) / Math.tan(levelRenderFov / 2 * Math.PI / 180));
 
             /*
             1.21.1起
@@ -338,20 +338,20 @@ public class GunItemRenderer extends AnimateGeoItemRenderer<GunModelObject, GunA
             // [1.21.1, )
             // 手部模型以 itemRenderFov 渲染、曳光弹以 levelRenderFov 渲染
             // 想让曳光弹起点落在枪口「看起来」所在的位置，就得把偏移中「沿视线方向」的分量按 FOV 比例缩放，横向分量保持不动
-//            double fovRatio = Math.tan(itemRenderFov / 2 * Math.PI / 180) / Math.tan(levelRenderFov / 2 * Math.PI / 180);
-//            Vector3f offset = new Vector3f(pose.m30(), pose.m31(), pose.m32());
-//            Vector3f lookDirection = _getCameraLookDirection();
-//            float depth = offset.dot(lookDirection);
-//            float fovScale = (float) (fovRatio - 1);
-//            offset.set(
-//                    offset.x + fovScale * depth * lookDirection.x,
-//                    offset.y + fovScale * depth * lookDirection.y,
-//                    offset.z + fovScale * depth * lookDirection.z);
+            double fovRatio = Math.tan(itemRenderFov / 2 * Math.PI / 180) / Math.tan(levelRenderFov / 2 * Math.PI / 180);
+            Vector3f offset = new Vector3f(pose.m30(), pose.m31(), pose.m32());
+            Vector3f lookDirection = _getCameraLookDirection();
+            float depth = offset.dot(lookDirection);
+            float fovScale = (float) (fovRatio - 1);
+            offset.set(
+                    offset.x + fovScale * depth * lookDirection.x,
+                    offset.y + fovScale * depth * lookDirection.y,
+                    offset.z + fovScale * depth * lookDirection.z);
             // 缓存转换后的偏移坐标
-//            State.muzzleRenderOffset.set(
-//                    offset.x(),
-//                    offset.y(),
-//                    offset.z());
+            State.muzzleRenderOffset.set(
+                    offset.x(),
+                    offset.y(),
+                    offset.z());
             }
         }
         poseStack.popPose();

@@ -10,7 +10,7 @@
     "model.HumanoidModelMixin",
     "model.PlayerModelMixin",
     "renderer.CameraMixin",
-    "renderer.EntityRenderDispatcherMixin",
+    "renderer.EntityRendererMixin",
     "renderer.GameRendererMixin",
     "renderer.ItemInHandLayerMixin",
     "renderer.ItemInHandRendererMixin",

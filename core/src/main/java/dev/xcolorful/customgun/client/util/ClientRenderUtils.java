@@ -117,7 +117,12 @@ public class ClientRenderUtils {
 
     public static class RenderType_ {
 
-        public static RenderType energySwirl(Identifier textureLocation, float offsetX, float offsetY) {
+        public static RenderType energySwirl(Identifier textureLocation,
+                                             float offsetX, float offsetY) {
+            // [1.20.1, 1.21.11)
+//            return RenderType.energySwirl(textureLocation, offsetX, offsetY);
+
+            // [1.21.11, )
             return RenderTypes.energySwirl(textureLocation, offsetX, offsetY);
         }
         public static RenderType entityCutout(Identifier textureLocation) {
@@ -146,13 +151,40 @@ public class ClientRenderUtils {
             return RenderTypes.entityCutoutCull(textureLocation);
         }
         public static RenderType entityTranslucent(Identifier textureLocation) {
+            // [1.20.1, 1.21.11)
+//            return RenderType.entityTranslucent(textureLocation);
+
+            // [1.21.11, )
             return RenderTypes.entityTranslucent(textureLocation);
         }
         public static RenderType entityTranslucentCull(Identifier textureLocation) {
-            return RenderTypes.entityTranslucentCullItemTarget(textureLocation);
+            // [1.20.1, 1.21.4)
+//            return RenderType.entityTranslucentCull(textureLocation);
+
+            // [1.21.4, 1.21.11)
+//            return RenderType.itemEntityTranslucentCull(textureLocation);
+
+            // [1.21.11, 26.1.x)
+//            return RenderTypes.itemEntityTranslucentCull(textureLocation);
+
+            // [26.1.x, 26.3)
+//            return RenderTypes.entityTranslucentCullItemTarget(textureLocation);
+
+            // [26.3, )
+            return RenderTypes.entityTranslucentCull(textureLocation);
         }
         public static RenderType itemEntityTranslucentCull(Identifier textureLocation) {
-            return RenderTypes.entityTranslucentCullItemTarget(textureLocation);
+            // [1.20.1, 1.21.11)
+//            return RenderType.itemEntityTranslucentCull(textureLocation);
+
+            // [1.21.11, 26.1.x)
+//            return RenderTypes.itemEntityTranslucentCull(textureLocation);
+
+            // [26.1.x, 26.3)
+//            return RenderTypes.entityTranslucentCullItemTarget(textureLocation);
+
+            // [26.3, )
+            return RenderTypes.entityTranslucentCull(textureLocation);
         }
     }
 

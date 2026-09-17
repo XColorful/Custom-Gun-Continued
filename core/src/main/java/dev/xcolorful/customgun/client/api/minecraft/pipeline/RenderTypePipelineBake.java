@@ -27,8 +27,12 @@ public class RenderTypePipelineBake {
         // [1.20.1, 26.2)
 //        return base;
 
-        // [26.2, )
+        // [26.2, 26.3)
         RenderPipeline modified = RenderSystem.applyPipelineModifiers(base.pipeline());
+        // [26.3, )
+        // 26.3去掉了 RenderSystem#applyPipelineModifiers，改从私有修饰器栈取被修饰后的管线
+//        RenderPipeline modified = accessTransformer.RenderSystem_getPIPELINE_MODIFIERS_apply(base.pipeline())
+
         if (modified == base.pipeline()) {
             return base;
         }

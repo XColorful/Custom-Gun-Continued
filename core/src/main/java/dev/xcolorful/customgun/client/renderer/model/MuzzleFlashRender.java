@@ -148,7 +148,7 @@ public class MuzzleFlashRender implements IModelComponentRenderer {
         // 先渲染一遍半透明背景
         poseStack2.pushPose(); {
             poseStack2.scale(scale, scale, scale);
-            poseStack2.mulPose(Axis.ZP.rotationDegrees(State.muzzleFlashRandomRotate));
+            ClientRenderHelper.rotate(poseStack2, Axis.ZP.rotationDegrees(State.muzzleFlashRandomRotate));
             poseStack2.translate(0, -1, 0);
             RenderType renderTypeBg = ClientRenderUtils.RenderType_.entityTranslucent(muzzleFlashDisplay.getTextureLocation());
             collector.submitCustomGeometry(poseStack2, renderTypeBg, (pose, vertexConsumer) -> {
@@ -162,7 +162,7 @@ public class MuzzleFlashRender implements IModelComponentRenderer {
         // 然后渲染发光效果
         poseStack2.pushPose(); {
             poseStack2.scale(scale / 2, scale / 2, scale / 2);
-            poseStack2.mulPose(Axis.ZP.rotationDegrees(State.muzzleFlashRandomRotate));
+            ClientRenderHelper.rotate(poseStack2, Axis.ZP.rotationDegrees(State.muzzleFlashRandomRotate));
             poseStack2.translate(0, -0.9, 0);
             RenderType renderTypeLight = ClientRenderUtils.RenderType_.energySwirl(muzzleFlashDisplay.getTextureLocation(), 1, 1);
             collector.submitCustomGeometry(poseStack2, renderTypeLight, (pose, vertexConsumer) -> {

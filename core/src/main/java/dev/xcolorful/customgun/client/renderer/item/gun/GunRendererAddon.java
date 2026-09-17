@@ -23,6 +23,7 @@ import dev.xcolorful.customgun.client.renderer.item.GunItemRenderer;
 import dev.xcolorful.customgun.client.renderer.model.MuzzleFlashRender;
 import dev.xcolorful.customgun.client.resource.assets.display.AttachmentDisplay;
 import dev.xcolorful.customgun.client.resource.instance.data.ClientAttachmentIndexInstance;
+import dev.xcolorful.customgun.client.util.ClientRenderHelper;
 import dev.xcolorful.customgun.core.api.event.CustomEventType;
 import dev.xcolorful.customgun.core.api.event.ICustomEvent;
 import dev.xcolorful.customgun.core.api.event.ICustomEventHandler;
@@ -396,9 +397,9 @@ public class GunRendererAddon implements ICustomEventHandler {
 
         // 约束旋转
         poseStack.translate(animatedTranslation.x(), animatedTranslation.y() + 1.5f, animatedTranslation.z());
-        poseStack.mulPose(Axis.XP.rotation(inverseRotation.x() * weight));
-        poseStack.mulPose(Axis.YP.rotation(inverseRotation.y() * weight));
-        poseStack.mulPose(Axis.ZP.rotation(inverseRotation.z() * weight));
+        ClientRenderHelper.rotate(poseStack, Axis.XP.rotation(inverseRotation.x() * weight));
+        ClientRenderHelper.rotate(poseStack, Axis.YP.rotation(inverseRotation.y() * weight));
+        ClientRenderHelper.rotate(poseStack, Axis.ZP.rotation(inverseRotation.z() * weight));
         poseStack.translate(-animatedTranslation.x(), -animatedTranslation.y() - 1.5f, -animatedTranslation.z());
 
         // 约束位移

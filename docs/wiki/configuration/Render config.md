@@ -1,7 +1,7 @@
 [English](#English)
 
 # 渲染配置
-> wiki 版本：`0.0.15`.12
+> wiki 版本：`0.0.15`.13
 
 路径：`render`
 - `GunLodRenderDistance`（整数）：远距离模型显示距离，设为0则始终显示
@@ -46,7 +46,7 @@
 ```
 
 # English
-> wiki version: `0.0.15`.12
+> wiki version: `0.0.15`.13
 
 ## Render Config
 

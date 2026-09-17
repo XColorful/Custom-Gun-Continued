@@ -6,6 +6,7 @@ import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.ApiStatus;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+// @Deprecated(since = "1.21.11")
 @ApiStatus.AvailableSince("1.21.6")
 //@Mixin(EntityRenderer.class)
 public class EntityRendererMixin {

@@ -43,6 +43,8 @@ import dev.xcolorful.customgun.core.api.resource.ResourceApi;
 import dev.xcolorful.customgun.core.resource.data.data.GunData;
 import dev.xcolorful.customgun.core.resource.instance.data.GunIndexInstance;
 import dev.xcolorful.customgun.core.util.MathUtil;
+import net.minecraft.client.Camera;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.rendertype.RenderType;
@@ -52,6 +54,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
@@ -316,13 +319,55 @@ public class GunItemRenderer extends AnimateGeoItemRenderer<GunModelObject, GunA
             double levelRenderFov = GunCameraHelper.State.WORLD_FOV_DYNAMICS.get();
             double itemRenderFov = GunCameraHelper.State.ITEM_MODEL_FOV_DYNAMICS.get();
 
+            {
+            // [1.20.1, 1.21.1)
+            // 手部 poseStack 的基坐标系就是摄像机（view）坐标系，m32 本身就是「沿视线」分量，直接缩放即可
             // 缓存转换后的偏移坐标
             State.muzzleRenderOffset.set(
                     pose.m30(),
                     pose.m31(),
                     pose.m32() * Math.tan(itemRenderFov / 2 * Math.PI / 180) / Math.tan(levelRenderFov / 2 * Math.PI / 180));
+
+            /*
+            1.21.1起
+            GameRenderer.renderItemInHand 给手部 poseStack 的基底换成了摄像机旋转的逆（camera.rotation().conjugate()）
+            这里采到的偏移因此变成「世界轴」向量：m30/m31/m32 是世界 x/y/z，而世界 z 只在 yaw=0/180 时与视线方向共线，yaw=±90 时完全垂直
+            此时若仍缩放 m32，等于把偏移沿世界 z 拽长 —— 由于 m30/m31 不缩放，方向一变，横向上就多出一个随 yaw 变化的位移：yaw=0/±90/180 为零、±45/±135 时正负最大（表现为枪口/曳光弹起点往左右偏），幅度正比于 (fovRatio - 1)，所以只在开镜（手部/世界 FOV 不一致）时明显
+            因此改为先沿「摄像机视线方向」投影、缩放该分量，再合成回去
+             */
+            // [1.21.1, )
+            // 手部模型以 itemRenderFov 渲染、曳光弹以 levelRenderFov 渲染
+            // 想让曳光弹起点落在枪口「看起来」所在的位置，就得把偏移中「沿视线方向」的分量按 FOV 比例缩放，横向分量保持不动
+//            double fovRatio = Math.tan(itemRenderFov / 2 * Math.PI / 180) / Math.tan(levelRenderFov / 2 * Math.PI / 180);
+//            Vector3f offset = new Vector3f(pose.m30(), pose.m31(), pose.m32());
+//            Vector3f lookDirection = _getCameraLookDirection();
+//            float depth = offset.dot(lookDirection);
+//            float fovScale = (float) (fovRatio - 1);
+//            offset.set(
+//                    offset.x + fovScale * depth * lookDirection.x,
+//                    offset.y + fovScale * depth * lookDirection.y,
+//                    offset.z + fovScale * depth * lookDirection.z);
+            // 缓存转换后的偏移坐标
+//            State.muzzleRenderOffset.set(
+//                    offset.x(),
+//                    offset.y(),
+//                    offset.z());
+            }
         }
         poseStack.popPose();
+    }
+    /**
+     * 取摄像机视线方向（世界坐标系下的单位向量）
+     */
+    @ApiStatus.AvailableSince("1.21.1")
+    private static Vector3f _getCameraLookDirection() {
+        Camera camera = ClientRenderUtils.getMainCamera(Minecraft.getInstance());
+        float pitchRad = ClientRenderUtils.getCameraXRot(camera) * Mth.DEG_TO_RAD;
+        float yawRad = ClientRenderUtils.getCameraYRot(camera) * Mth.DEG_TO_RAD;
+        return new Vector3f(
+                -Mth.sin(yawRad) * Mth.cos(pitchRad),
+                -Mth.sin(pitchRad),
+                Mth.cos(yawRad) * Mth.cos(pitchRad));
     }
 
     // --------IBlockEntityWithoutLevelRenderer--------

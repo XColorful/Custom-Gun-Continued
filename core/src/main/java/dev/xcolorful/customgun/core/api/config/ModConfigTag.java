@@ -118,6 +118,9 @@ public class ModConfigTag {
             "Format: minecraft:" + Herobrine.herobrine + " [-0.225, 1.35, -0.225, 0.225, 1.8, 0.225]"
     };
 
+    public static final String hideEntityHitbox_path = "hideEntityHitbox";
+    public static final String hideEntityHitbox_comment = "Whether to hide the collision box of entities with hitbox history";
+
     public static final String ammoBoxStackSize_path = "AmmoBoxStackSize";
     public static final String ammoBoxStackSize_comment = "The maximum stack size of ammo that the ammo box can hold";
 

@@ -71,10 +71,9 @@ public class SyncConfig {
     }
 
     public static IModConfigSpec<List<String>> HEAD_SHOT_AABB; // 需要同步到客户端，方便客户端 debug 显示碰撞箱
+    public static IModConfigSpec<Boolean> HIDE_ENTITY_HITBOX;
     public static IModConfigSpec<Integer> AMMO_BOX_STACK_SIZE; // 子弹盒存储上限需要客户端显示支持
-    public static IModConfigSpec<List<List<String>>> CLIENT_GUN_PACK_DOWNLOAD_URLS; // 客户端需要下载的枪械包
     public static IModConfigSpec<Boolean> ENABLE_PRONE; // 禁用趴下战术动作
-    public static IModConfigSpec<Boolean> ENABLE_TABLE_FILTER;
     public static IModConfigSpec<Boolean> SERVER_SHOOT_NETWORK_V;
     public static IModConfigSpec<Boolean> SERVER_SHOOT_COOLDOWN_V;
 
@@ -83,6 +82,9 @@ public class SyncConfig {
 
         builder.addComments(ModConfigTag.headShotAABB_comment);
         HEAD_SHOT_AABB = builder.addConfig(ModConfigTag.headShotAABB_path, Collections.emptyList());
+
+        builder.addComment(ModConfigTag.hideEntityHitbox_comment);
+        HIDE_ENTITY_HITBOX = builder.addConfig(ModConfigTag.hideEntityHitbox_path, false);
 
         builder.addComment(ModConfigTag.ammoBoxStackSize_comment);
         AMMO_BOX_STACK_SIZE = builder.addConfig(ModConfigTag.ammoBoxStackSize_path, 3, 1, Integer.MAX_VALUE);
@@ -104,4 +106,9 @@ public class SyncConfig {
 
         builder.finishBuild();
     }
+
+    // --------Deprecated--------
+
+    @Deprecated(forRemoval = true) public static IModConfigSpec<List<List<String>>> CLIENT_GUN_PACK_DOWNLOAD_URLS; // 客户端需要下载的枪械包
+    @Deprecated(forRemoval = true) public static IModConfigSpec<Boolean> ENABLE_TABLE_FILTER;
 }

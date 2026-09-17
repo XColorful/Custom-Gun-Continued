@@ -1,7 +1,7 @@
 [English](#English)
 
 # 枪械配置
-> wiki 版本：`0.0.1`.0
+> wiki 版本：`0.0.15`.1
 
 路径：`gun`
 - `DefaultGunFireSoundDistance`（整数）：默认枪械开火声音传播距离（格）
@@ -11,15 +11,15 @@
 - `AutoReloadWhenRespawn`（bool）：玩家复活时自动重新装填所有枪械
 ```toml
 [gun]
-	DefaultGunFireSoundDistance = 64
-	DefaultGunSilenceSoundDistance = 16
+	DefaultGunFireSoundDistance = 320
+	DefaultGunSilenceSoundDistance = 256
 	DefaultGunOtherSoundDistance = 16
 	CreativePlayerConsumeAmmo = true
 	AutoReloadWhenRespawn = false
 ```
 
 # English
-> wiki verison: `0.0.1`.0
+> wiki version: `0.0.15`.2
 
 ## Gun Config
 
@@ -31,8 +31,8 @@ Path: `gun`
 - `AutoReloadWhenRespawn` (bool): Auto reload all the guns in player inventory
 ```toml
 [gun]
-	DefaultGunFireSoundDistance = 64
-	DefaultGunSilenceSoundDistance = 16
+	DefaultGunFireSoundDistance = 320
+	DefaultGunSilenceSoundDistance = 256
 	DefaultGunOtherSoundDistance = 16
 	CreativePlayerConsumeAmmo = true
 	AutoReloadWhenRespawn = false

@@ -199,7 +199,7 @@ public class GunItemRenderer extends AnimateGeoItemRenderer<GunModelObject, GunA
         Quaternionf quaternion = MathUtil.Quaternion.multiply(cameraAnimationObject.rotationQuaternion, multiplier);
 
         PoseStack poseStack = event.getPoseStack();
-        poseStack.mulPose(quaternion);
+        ClientRenderHelper.rotate(poseStack, quaternion);
 
         // TODO 截至目前，摄像机动画数据已消费完毕。是否有更好的清理动画数据的方法？
         // ↑那这是谁设计的东西呢？连个文档都没有
@@ -243,8 +243,8 @@ public class GunItemRenderer extends AnimateGeoItemRenderer<GunModelObject, GunA
             float yRotOffset = Mth.lerp(partialTick, player.yBobO, player.yBob);
             float xRot = player.getViewXRot(partialTick) - xRotOffset;
             float yRot = player.getViewYRot(partialTick) - yRotOffset;
-            poseStack.mulPose(Axis.XP.rotationDegrees(xRot * -0.1F));
-            poseStack.mulPose(Axis.YP.rotationDegrees(yRot * -0.1F));
+            ClientRenderHelper.rotate(poseStack, Axis.XP.rotationDegrees(xRot * -0.1F));
+            ClientRenderHelper.rotate(poseStack, Axis.YP.rotationDegrees(yRot * -0.1F));
 
             BedrockPart rootNode = gunModelObject.getRootNode();
             if (rootNode != null) {
@@ -260,7 +260,7 @@ public class GunItemRenderer extends AnimateGeoItemRenderer<GunModelObject, GunA
             poseStack.translate(0, 1.5f, 0);
 
             // 基岩版模型是上下颠倒的，需要翻转过来
-            poseStack.mulPose(Axis.ZP.rotationDegrees(180f));
+            ClientRenderHelper.rotate(poseStack, Axis.ZP.rotationDegrees(180f));
 
             // 应用持枪姿态变换，如第一人称摄像机定位
             GunRendererAddon.get().applyFirstPersonGunTransform(poseStack, partialTick, gunModelObject, player, gunItem);
@@ -428,9 +428,9 @@ public class GunItemRenderer extends AnimateGeoItemRenderer<GunModelObject, GunA
         poseStack.translate(0, 1.5, 0);
         for (int i = nodePath.size() - 1; i >= 0; i--) {
             BedrockPart t = nodePath.get(i);
-            poseStack.mulPose(Axis.XN.rotation(t.xRot));
-            poseStack.mulPose(Axis.YN.rotation(t.yRot));
-            poseStack.mulPose(Axis.ZN.rotation(t.zRot));
+            ClientRenderHelper.rotate(poseStack, Axis.XN.rotation(t.xRot));
+            ClientRenderHelper.rotate(poseStack, Axis.YN.rotation(t.yRot));
+            ClientRenderHelper.rotate(poseStack, Axis.ZN.rotation(t.zRot));
             if (t.getParent() != null) {
                 poseStack.translate(-t.x * scale[0] / 16.0F, -t.y * scale[1] / 16.0F, -t.z * scale[2] / 16.0F);
             } else {
@@ -463,7 +463,7 @@ public class GunItemRenderer extends AnimateGeoItemRenderer<GunModelObject, GunA
                                            int packedLight, int packedOverlay,
                                            Identifier texture) {
         poseStack.translate(0.5, 1.5, 0.5);
-        poseStack.mulPose(Axis.ZN.rotationDegrees(180));
+        ClientRenderHelper.rotate(poseStack, Axis.ZN.rotationDegrees(180));
 
         {
             VertexConsumer buffer = bufferSource.getBuffer(ClientRenderUtils.RenderType_.entityTranslucent(texture));

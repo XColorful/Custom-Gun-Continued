@@ -51,9 +51,9 @@ public class NeoClientAccessTransformer implements IClientAccessTransformer {
         return null;
     }
 
-    @Override public RenderPipeline
+    @Override public Object
     RenderSystem_getPIPELINE_MODIFIERS_apply(
-            RenderPipeline renderPipeline
+            Object renderPipeline
     ) {
         return null;
     }

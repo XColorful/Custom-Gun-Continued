@@ -1,6 +1,6 @@
 package dev.xcolorful.customgun.neoforgeclient.mixin.pipeline;
 
-import com.mojang.blaze3d.pipeline.RenderPipeline;
+//import com.mojang.blaze3d.pipeline.RenderPipeline; // 1.21.4没有RenderPipeline
 import dev.xcolorful.customgun.neoforgeclient.minecraft.stencil.NeoStencilOperator;
 import org.jetbrains.annotations.ApiStatus;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -19,8 +19,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @ApiStatus.AvailableSince("26.3")
 public class PipelineModifierStackMixin {
 
-    private void cgc$applyDynamicStencil(RenderPipeline pipeline,
-                                         CallbackInfoReturnable<RenderPipeline> cir) {
+    private void cgc$applyDynamicStencil(Object pipeline,
+                                         CallbackInfoReturnable<Object> cir) {
         cir.setReturnValue(NeoStencilOperator.applyStencilToPipeline(cir.getReturnValue()));
     }
 }

@@ -40,8 +40,8 @@ public interface IClientAccessTransformer {
     );
 
     @ApiStatus.AvailableSince("26.3")
-    RenderPipeline
+    Object
     RenderSystem_getPIPELINE_MODIFIERS_apply(
-            RenderPipeline renderPipeline
+            Object renderPipeline
     );
 }

@@ -66,7 +66,7 @@
 - `target`（字面量）：测试目标，可选值为`IAnimateGeoItem`
 
 # English
-> wiki verison: `0.0.9`.4
+> wiki version: `0.0.15`.5
 
 ## Server command
 

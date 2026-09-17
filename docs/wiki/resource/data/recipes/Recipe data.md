@@ -48,7 +48,7 @@
 ```
 
 # English
-> wiki verison: `0.0.1`.2
+> wiki version: `0.0.15`.3
 
 - `type`(String):
 - `table_ingredients`/`materials`(List<\_TableIngredientData>):

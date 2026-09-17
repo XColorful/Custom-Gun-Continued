@@ -325,7 +325,7 @@
 ```
 
 # English
-> wiki verison: `0.0.6`.9
+> wiki version: `0.0.15`.10
 
 - `bullet_data`/`bullet`( \_BulletData):
 	- `display_damage`/`damage`(float):

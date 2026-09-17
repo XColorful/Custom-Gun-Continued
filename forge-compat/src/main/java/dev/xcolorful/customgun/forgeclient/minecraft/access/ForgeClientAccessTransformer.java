@@ -50,4 +50,11 @@ public class ForgeClientAccessTransformer implements IClientAccessTransformer {
     ) {
         return null;
     }
+
+    @Override public RenderPipeline
+    RenderSystem_getPIPELINE_MODIFIERS_apply(
+            RenderPipeline renderPipeline
+    ) {
+        return null;
+    }
 }

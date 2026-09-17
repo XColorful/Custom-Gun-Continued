@@ -53,7 +53,7 @@
 ```
 
 # English
-> wiki verison: `0.0.15`.2
+> wiki version: `0.0.15`.3
 
 ## Sync Config
 

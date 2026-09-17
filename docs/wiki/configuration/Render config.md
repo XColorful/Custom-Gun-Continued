@@ -46,7 +46,7 @@
 ```
 
 # English
-> wiki verison: `0.0.15`.10
+> wiki version: `0.0.15`.11
 
 ## Render Config
 

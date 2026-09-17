@@ -454,6 +454,7 @@ public class _AttachmentModelRender {
         模板是否生效改由管线自身的 DepthStencilState 决定
          */
         // [26.3, )
+//        RenderTarget target = ClientRenderUtils.getMainRenderTarget(Minecraft.getInstance());
 //        if (target.getDepthTexture() != null) {
 //            RenderSystem.getDevice().createCommandEncoder().clearStencilTexture(target.getDepthTexture(), 0);
 //        }

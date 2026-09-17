@@ -1,7 +1,7 @@
 [English](#English)
 
 # 渲染配置
-> wiki 版本：`0.0.15`.10
+> wiki 版本：`0.0.15`.12
 
 路径：`render`
 - `EnableLaserFadeOut`（bool）：是否对激光应用淡出效果
@@ -31,7 +31,7 @@
 [render]
 	EnableLaserFadeOut = true
 	GunLodRenderDistance = 0
-	DisableGunTilting = false
+	DisableGunTilting = true
 	BulletHoleParticleLife = 400
 	BulletHoleParticleFadeThreshold = 0.98
 	ReplaceVanillaCrosshair = true
@@ -46,7 +46,7 @@
 ```
 
 # English
-> wiki version: `0.0.15`.11
+> wiki version: `0.0.15`.12
 
 ## Render Config
 
@@ -78,7 +78,7 @@ Path: `render`
 [render]
 	EnableLaserFadeOut = true
 	GunLodRenderDistance = 0
-	DisableGunTilting = false
+	DisableGunTilting = true
 	BulletHoleParticleLife = 400
 	BulletHoleParticleFadeThreshold = 0.98
 	ReplaceVanillaCrosshair = true

@@ -38,7 +38,7 @@ public class RenderConfig {
         GUN_LOD_RENDER_DISTANCE = builder.addConfig(ClientModConfigTag.gunLodRenderDistance_path, 0, 0, Integer.MAX_VALUE);
 
         builder.addComment(ClientModConfigTag.disableGunTilting_comment);
-        DISABLE_GUN_TILTING = builder.addConfig(ClientModConfigTag.disableGunTilting_path, false);
+        DISABLE_GUN_TILTING = builder.addConfig(ClientModConfigTag.disableGunTilting_path, true);
 
         builder.addComment(ClientModConfigTag.bulletHoleParticleLife_comment);
         BULLET_HOLE_PARTICLE_LIFE = builder.addConfig(ClientModConfigTag.bulletHoleParticleLife_path, 400, 0, Integer.MAX_VALUE);

@@ -50,6 +50,7 @@ public interface KeepingItemRenderer {
      * ItemInHandRenderer 通过 Mixin 的方式实现了此接口 {@link ItemInHandRendererMixin}
      * @return 返回 ItemInHandRenderer 实例
      */
+//    @Deprecated(since = "26.3")
     static KeepingItemRenderer cgc$fromItemInHandRenderer(ItemInHandRenderer itemInHandRenderer) {
         return (KeepingItemRenderer) itemInHandRenderer;
     }
@@ -65,7 +66,7 @@ public interface KeepingItemRenderer {
     @ApiStatus.AvailableSince("26.3")
     static KeepingItemRenderer cgc$fromLocalPlayer(@Nullable LocalPlayer localPlayer) {
         if (localPlayer == null) return EMPTY;
-        return (KeepingItemRenderer) null; // player.firstPersonHandsAndItems();
+        return (KeepingItemRenderer) null; // localPlayer.firstPersonHandsAndItems();
     }
     @ApiStatus.AvailableSince("26.3")
     KeepingItemRenderer EMPTY = new KeepingItemRenderer() {

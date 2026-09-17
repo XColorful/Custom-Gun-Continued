@@ -12,6 +12,7 @@ import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
 import dev.xcolorful.customgun.client.resource.assets.display.GunDisplay;
 import dev.xcolorful.customgun.client.resource.assets.display.gun._SurroundDisplay;
 import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
+import dev.xcolorful.customgun.client.util.ClientRenderHelper;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
 import dev.xcolorful.customgun.core.util.InventoryUtils;
@@ -110,7 +111,7 @@ public class HumanoidOffhandRender {
             matrixStack.scale(-scale[0], -scale[1], scale[2]);
             Quaternionf rotation = new Quaternionf();
             MathUtil.Quaternion.set(rotation, (float) Math.toRadians(rotate[0]), (float) Math.toRadians(rotate[1]), (float) Math.toRadians(rotate[2]));
-            matrixStack.mulPose(rotation);
+            ClientRenderHelper.rotate(matrixStack, rotation);
 
             ItemRenderer renderer = Minecraft.getInstance().getItemRenderer();
             renderer.renderStatic(gunItem, ItemDisplayContext.FIXED, lightCoords, OverlayTexture.NO_OVERLAY, matrixStack, buffer, entity.level(), entity.getId());

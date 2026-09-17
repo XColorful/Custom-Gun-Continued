@@ -106,5 +106,5 @@ public class SyncConfig {
 
     // --------Deprecated--------
 
-    @Deprecated(forRemoval = true) public static IModConfigSpec<List<List<String>> CLIENT_GUN_PACK_DOWNLOAD_URLS; // 客户端需要下载的枪械包
+    @Deprecated(forRemoval = true) public static IModConfigSpec<List<List<String>>> CLIENT_GUN_PACK_DOWNLOAD_URLS; // 客户端需要下载的枪械包
 }

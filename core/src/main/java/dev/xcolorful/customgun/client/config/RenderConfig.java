@@ -110,7 +110,7 @@ public class RenderConfig {
     @Deprecated(forRemoval = true) public static IModConfigSpec<Boolean> ENABLE_RESOURCE_LOCATION_IN_TOOLTIP;
     @Deprecated(forRemoval = true) public static IModConfigSpec<Boolean> GUN_HUD_ENABLE;
     @Deprecated(forRemoval = true) public static IModConfigSpec<Boolean> DISABLE_INTERACT_HUD_TEXT;
-    @Deprecated(forRemoval = true) public static IModConfigSpec<Integer> HIT_MARKET_START_POSITION;
+    @Deprecated(forRemoval = true) public static IModConfigSpec<Double> HIT_MARKET_START_POSITION;
     @Deprecated(forRemoval = true) public static IModConfigSpec<Boolean> HEAD_SHOT_DEBUG_HITBOX;
     @Deprecated(forRemoval = true) public static IModConfigSpec<Boolean> KILL_AMOUNT_ENABLE;
     @Deprecated(forRemoval = true) public static IModConfigSpec<Double> KILL_AMOUNT_DURATION_SECOND;

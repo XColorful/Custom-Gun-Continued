@@ -20,10 +20,10 @@ public class KeyConfig {
         builder.startBuild(ClientModConfigTag.key_path);
 
         builder.addComment(ClientModConfigTag.holdToAim_comment);
-        HOLD_TO_AIM = builder.addConfig(ClientModConfigTag.holdToAim_path, true);
+        HOLD_TO_AIM = builder.addConfig(ClientModConfigTag.holdToAim_path, false);
 
         builder.addComment(ClientModConfigTag.holdToProne_comment);
-        HOLD_TO_PRONE = builder.addConfig(ClientModConfigTag.holdToProne_path, true);
+        HOLD_TO_PRONE = builder.addConfig(ClientModConfigTag.holdToProne_path, false);
 
         builder.addComment(ClientModConfigTag.autoReload_comment);
         AUTO_RELOAD = builder.addConfig(ClientModConfigTag.autoReload_path, false);

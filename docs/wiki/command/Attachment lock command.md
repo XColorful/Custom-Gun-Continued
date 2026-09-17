@@ -13,7 +13,7 @@
 - `AttachmentLock`（bool）：配件锁状态
 
 # English
-> wiki verison: `0.0.1`.0
+> wiki version: `0.0.15`.1
 
 ## Server command
 

@@ -21,7 +21,7 @@
 - 本质上和原版 `F3`+`T` 行为一致，但更方便
 
 # English
-> wiki verison: `0.0.1`.1
+> wiki version: `0.0.15`.2
 
 ## Server command
 

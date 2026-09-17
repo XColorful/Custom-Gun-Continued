@@ -85,7 +85,7 @@
 ```
 
 # English
-> wiki verison: `0.0.7`.1
+> wiki version: `0.0.8`.2
 
 - `model_location`/`model`(ResourceLocation):
 - `texture_location`/`texture`(ResourceLocation):

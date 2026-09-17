@@ -13,7 +13,7 @@
 ```
 
 # English
-> wiki verison: `0.0.1`.0
+> wiki version: `0.0.15`.1
 
 ## Zoom Config
 

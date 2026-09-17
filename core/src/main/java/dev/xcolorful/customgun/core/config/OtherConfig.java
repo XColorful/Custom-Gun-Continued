@@ -12,7 +12,6 @@ import dev.xcolorful.customgun.core.api.config.IModConfigSpecBuilder;
 import dev.xcolorful.customgun.core.api.config.ModConfigTag;
 
 public class OtherConfig {
-    public static IModConfigSpec<Integer> TARGET_SOUND_DISTANCE;
     public static IModConfigSpec<Double> SERVER_HITBOX_OFFSET;
     public static IModConfigSpec<Boolean> SERVER_HITBOX_LATENCY_FIX;
     public static IModConfigSpec<Double> SERVER_HITBOX_LATENCY_MAX_SAVE_MS;
@@ -34,4 +33,8 @@ public class OtherConfig {
 
         builder.finishBuild();
     }
+
+    // --------Deprecated--------
+
+    @Deprecated(forRemoval = true) public static IModConfigSpec<Integer> TARGET_SOUND_DISTANCE;
 }

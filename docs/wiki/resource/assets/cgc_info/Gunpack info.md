@@ -26,7 +26,7 @@
 ```
 
 # English
-> wiki verison: `0.0.5`.1
+> wiki version: `0.0.15`.2
 
 - `gunpack_version`/`version`(String):
 - `name_lang`/`name`(String):

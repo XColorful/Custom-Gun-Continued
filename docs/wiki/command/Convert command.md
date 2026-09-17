@@ -11,7 +11,7 @@
 将旧版本枪包转换为新版本的枪包格式
 
 # English
-> wiki verison: `0.0.1`.0
+> wiki version: `0.0.15`.1
 
 ## Server command
 

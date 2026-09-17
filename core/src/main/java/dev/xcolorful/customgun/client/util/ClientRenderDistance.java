@@ -27,7 +27,7 @@ public class ClientRenderDistance {
 
         Matrix4f matrix4f = poseStack.last().pose();
         float viewDistance = matrix4f.m30() * matrix4f.m30() + matrix4f.m31() * matrix4f.m31() + matrix4f.m32() * matrix4f.m32();
-        return viewDistance < distance * distance;
+        return viewDistance >= distance * distance;
     }
 
     // --------Deprecated--------

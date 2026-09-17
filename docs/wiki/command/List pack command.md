@@ -6,6 +6,6 @@
 ## 服务端指令
 
 # English
-> wiki verison: `0.0.1`.0
+> wiki version: `0.0.15`.1
 
 ## Server command

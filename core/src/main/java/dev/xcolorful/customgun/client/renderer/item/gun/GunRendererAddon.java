@@ -392,8 +392,8 @@ public class GunRendererAddon implements ICustomEventHandler {
         {
         // [1.20.1, 1.21.1)
         // 手部 poseStack 的父坐标系就是摄像机（view）坐标系，把它当枪械自身姿态用是对的
-        inverseTranslation.mulDirection(poseStack.last().pose());
-        inverseTranslation.mul(translationICA.x() - 1, translationICA.y() - 1, 1 - translationICA.z()); // 基岩版模型的旋转导致 xy 轴要反过来
+//        inverseTranslation.mulDirection(poseStack.last().pose());
+//        inverseTranslation.mul(translationICA.x() - 1, translationICA.y() - 1, 1 - translationICA.z()); // 基岩版模型的旋转导致 xy 轴要反过来
 
         /*
          * 1.21.1起
@@ -404,9 +404,9 @@ public class GunRendererAddon implements ICustomEventHandler {
          * 改为在模型空间施加约束系数、再用 translate 叠加（与坐标系无关）
          */
         // [1.21.1, )
-//        inverseTranslation.mul(1 - translationICA.x(), 1 - translationICA.y(), 1 - translationICA.z());
+        inverseTranslation.mul(1 - translationICA.x(), 1 - translationICA.y(), 1 - translationICA.z());
         // 约束位移
-//        poseStack.translate(inverseTranslation.x() * weight, inverseTranslation.y() * weight, inverseTranslation.z() * weight);
+        poseStack.translate(inverseTranslation.x() * weight, inverseTranslation.y() * weight, inverseTranslation.z() * weight);
         }
 
         // 计算约束旋转需要的反向旋转。因需要插值，获取的是欧拉角
@@ -423,10 +423,10 @@ public class GunRendererAddon implements ICustomEventHandler {
         {
         // [1.20.1, 1.21.1)
         // 约束位移
-        Matrix4f poseMatrix = poseStack.last().pose();
-        poseMatrix.m30(poseMatrix.m30() - inverseTranslation.x() * weight);
-        poseMatrix.m31(poseMatrix.m31() - inverseTranslation.y() * weight);
-        poseMatrix.m32(poseMatrix.m32() + inverseTranslation.z() * weight);
+//        Matrix4f poseMatrix = poseStack.last().pose();
+//        poseMatrix.m30(poseMatrix.m30() - inverseTranslation.x() * weight);
+//        poseMatrix.m31(poseMatrix.m31() - inverseTranslation.y() * weight);
+//        poseMatrix.m32(poseMatrix.m32() + inverseTranslation.z() * weight);
 
         // [1.21.1, )
         }

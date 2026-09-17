@@ -5,14 +5,11 @@ import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.ApiStatus;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-// @Deprecated(since = "1.21.11")
+@Deprecated(since = "1.21.11")
 @ApiStatus.AvailableSince("1.21.6")
-@Mixin(EntityRenderer.class)
+//@Mixin(EntityRenderer.class)
 public class EntityRendererMixin {
 
     /**
@@ -23,18 +20,18 @@ public class EntityRendererMixin {
      *     <li>所以拦截点必须放在抽取之后</li>
      * </ul>
      */
-    @Inject(
-            method = "createRenderState(Lnet/minecraft/world/entity/Entity;F)Lnet/minecraft/client/renderer/entity/state/EntityRenderState;",
-            at = @At("RETURN")
-    )
+//    @Inject(
+//            method = "createRenderState(Lnet/minecraft/world/entity/Entity;F)Lnet/minecraft/client/renderer/entity/state/EntityRenderState;",
+//            at = @At("RETURN")
+//    )
     private void cgc$hideEntityHitbox(Entity entity,
                                       float partialTick,
                                       CallbackInfoReturnable<EntityRenderState> cir) {
         if (!EntityHitboxRenderer.shouldRenderHitbox(entity)) {
             // 清空抽取结果，渲染阶段（EntityRenderDispatcher 里 hitboxesRenderState != null 的分支）自然跳过
             EntityRenderState renderState = cir.getReturnValue();
-            renderState.hitboxesRenderState = null;
-            renderState.serverHitboxesRenderState = null;
+//            renderState.hitboxesRenderState = null;
+//            renderState.serverHitboxesRenderState = null;
         }
     }
 }

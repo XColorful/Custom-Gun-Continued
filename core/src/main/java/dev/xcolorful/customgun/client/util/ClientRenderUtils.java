@@ -110,7 +110,8 @@ public class ClientRenderUtils {
 
     public static class RenderType_ {
 
-        public static RenderType energySwirl(ResourceLocation textureLocation, float offsetX, float offsetY) {
+        public static RenderType energySwirl(ResourceLocation textureLocation,
+                                             float offsetX, float offsetY) {
             // [1.20.1, 1.21.11)
             return RenderType.energySwirl(textureLocation, offsetX, offsetY);
 

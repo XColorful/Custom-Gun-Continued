@@ -74,7 +74,7 @@ public class RenderConfig {
         KEEP_DISPLAY_GUN_HUD = builder.addConfig(ClientModConfigTag.keepDisplayGunHUD_path, false);
 
         builder.addComment(ClientModConfigTag.forceDisplayGunHUD_comment);
-        FORCE_DISPLAY_GUN_HUD = builder.addConfig(ClientModConfigTag.forceDisplayGunHUD_path, false);
+        FORCE_DISPLAY_GUN_HUD = builder.addConfig(ClientModConfigTag.forceDisplayGunHUD_path, true);
 
         builder.addComment(ClientModConfigTag.killAmountEnable_comment);
         KILL_AMOUNT_ENABLE = builder.addConfig(ClientModConfigTag.killAmountEnable_path, true);

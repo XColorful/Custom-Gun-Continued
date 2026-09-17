@@ -1,7 +1,7 @@
 [English](#English)
 
 # 子弹配置
-> wiki 版本：`0.0.1`.0
+> wiki 版本：`0.0.15`.1
 
 路径：`ammo`
 - `ExplosiveAmmoDestroysBlock`（bool）：具有爆炸属性的子弹是否能破坏方块
@@ -23,11 +23,11 @@
 	DestroyGlass = true
 	IgniteBlock = true
 	IgniteEntity = true
-	GlobalBulletSpeedModifier = 2.0
+	GlobalBulletSpeedModifier = 1.0
 ```
 
 # English
-> wiki verison: `0.0.1`.0
+> wiki verison: `0.0.15`.1
 
 ## Ammo Config
 
@@ -51,5 +51,5 @@ Path: `ammo`
 	DestroyGlass = true
 	IgniteBlock = true
 	IgniteEntity = true
-	GlobalBulletSpeedModifier = 2.0
+	GlobalBulletSpeedModifier = 1.0
 ```

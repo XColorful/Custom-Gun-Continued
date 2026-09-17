@@ -54,7 +54,7 @@ public class AmmoConfig {
         IGNITE_ENTITY = builder.addConfig(ModConfigTag.igniteEntity_path, true);
 
         builder.addComments(ModConfigTag.globalBulletSpeedModifier_comment);
-        GLOBAL_BULLET_SPEED_MODIFIER = builder.addConfig(ModConfigTag.globalBulletSpeedModifier_path, 2.0, 0.01, 20.0);
+        GLOBAL_BULLET_SPEED_MODIFIER = builder.addConfig(ModConfigTag.globalBulletSpeedModifier_path, 1.0, 0.01, 20.0);
 
         builder.finishBuild();
     }

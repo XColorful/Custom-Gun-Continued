@@ -1,7 +1,7 @@
 [English](#English)
 
 # 渲染配置
-> wiki 版本：`0.0.11`.8
+> wiki 版本：`0.0.15`.9
 
 路径：`render`
 - `EnableLaserFadeOut`（bool）：是否对激光应用淡出效果
@@ -48,7 +48,7 @@
 	HeadShotDebugHitbox = false
 	EnableGunHUD = true
 	KeepDisplayGunHUD = false
-	ForceDisplayGunHUD = false
+	ForceDisplayGunHUD = true
 	KillAmountEnable = true
 	KillAmountDurationSecond = 3.0
 	TargetRenderDistance = 128
@@ -62,7 +62,7 @@
 ```
 
 # English
-> wiki verison: `0.0.11`.8
+> wiki verison: `0.0.15`.9
 
 ## Render Config
 
@@ -111,7 +111,7 @@ Path: `render`
 	HeadShotDebugHitbox = false
 	EnableGunHUD = true
 	KeepDisplayGunHUD = false
-	ForceDisplayGunHUD = false
+	ForceDisplayGunHUD = true
 	KillAmountEnable = true
 	KillAmountDurationSecond = 3.0
 	TargetRenderDistance = 128

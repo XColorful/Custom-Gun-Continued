@@ -233,7 +233,7 @@ public class _GunModelRender {
             for (int i = 0; i < handPath.size(); i++) {
                 handPath.get(i).translate_rotate_scale(matrixStack);
             }
-            matrixStack.mulPose(Axis.ZP.rotationDegrees(180f));
+            ClientRenderHelper.rotate(matrixStack, Axis.ZP.rotationDegrees(180f));
             ClientRenderHelper.renderFirstPersonArm(minecraft.player, hand, matrixStack, light);
         }
         matrixStack.popPose();

@@ -21,7 +21,7 @@
 ```
 
 # English
-> wiki verison: `0.0.5`.1
+> wiki version: `0.0.15`.2
 
 - `filter`(ResourceLocation):
 - `tabs`(List<\_RecipeGroupData>):

@@ -23,6 +23,28 @@ public enum PipelineModifier implements ResourceTag.RegistryTag {
 //                                    )
 //                            )
 //                            .build()
+                    // [26.3, )
+//            {
+//                RenderPipeline.Builder builder = pipeline.toBuilder().withLocation(name);
+//                List<ColorTargetState> colorTargets = pipeline.getColorTargetStates();
+//                for (int i = 0; i < colorTargets.size(); i++) {
+//                    ColorTargetState colorTarget = colorTargets.get(i);
+//                    if (colorTarget != null) {
+//                        /*
+//                        26.3：既然一个颜色都不写出，混合也就没有意义，顺手把混合函数一起去掉
+//                        SubmitNodeCollection#submitCustomGeometry 按 RenderType#hasBlending() 把自定义几何分派到 solid / translucentCustomGeometry 两个阶段
+//                        而这两个阶段执行时机不同（executeSolid 先于 executeTranslucent）
+//                        目镜模板的 INVERT 圆本身不写颜色却带着 TRANSLUCENT 混合，于是被排进 translucent 阶段，晚于 solid 阶段的黑色遮罩执行，孔根本挖不出来 —— 表现为 4 倍镜目镜全黑
+//                        去掉混合后它会回到 solid 阶段，模板写入与模板测试重新处于同一阶段、顺序恢复
+//                        */
+//                        builder.withColorTargetState(i, new ColorTargetState(
+//                                Optional.empty(),
+//                                colorTarget.format(), // [26.2, )
+//                                ColorTargetState.WRITE_NONE));
+//                    }
+//                }
+//                return builder.build();
+//            }
     ),
     NO_DEPTH_WRITE(PipelineModifierTag.NO_DEPTH_WRITE,
             (pipeline, name) ->
@@ -37,6 +59,7 @@ public enum PipelineModifier implements ResourceTag.RegistryTag {
 //                                                    false,
 //                                                    state.depthBiasScaleFactor(),
 //                                                    state.depthBiasConstant()
+//                                                    , state.stencilTest() // [26.3, ) 模板测试从 RenderPipeline 挪进了 DepthStencilState
 //                                            )
 //                                    )
 //                            )

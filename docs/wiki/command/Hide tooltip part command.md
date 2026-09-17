@@ -13,7 +13,7 @@
 - `mask`（整数）：提示框部件位掩码
 
 # English
-> wiki verison: `0.0.1`.0
+> wiki version: `0.0.15`.1
 
 ## Server command
 

@@ -274,7 +274,7 @@
 ```
 
 # English
-> wiki verison: `0.0.1`.3
+> wiki version: `0.0.15`.4
 
 - `ads`(\_SimpleModifierData):
 	- `shared_base_add`/`addend`(float):

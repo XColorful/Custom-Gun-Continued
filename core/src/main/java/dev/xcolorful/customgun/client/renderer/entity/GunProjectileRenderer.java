@@ -176,8 +176,8 @@ public class GunProjectileRenderer extends EntityRenderer<GunProjectile, GunProj
         if (textureLocation == null) textureLocation = ClientRenderUtils.getMissingTextureLocation();
 
         poseStack.pushPose(); {
-            poseStack.mulPose(Axis.YP.rotationDegrees(entityYaw - 180.0F));
-            poseStack.mulPose(Axis.XP.rotationDegrees(entityPitch));
+            ClientRenderHelper.rotate(poseStack, Axis.YP.rotationDegrees(entityYaw - 180.0F));
+            ClientRenderHelper.rotate(poseStack, Axis.XP.rotationDegrees(entityPitch));
             poseStack.translate(0, 1.5, 0);
             poseStack.scale(-1, -1, 1);
             ammoEntityModelObject.render(poseStack,
@@ -242,23 +242,23 @@ public class GunProjectileRenderer extends EntityRenderer<GunProjectile, GunProj
                  * </ul>
                  */
 //                // 摄像机旋转
-//                poseStack.mulPose(Axis.YN.rotationDegrees(iClientGunProjectile.cgc$getCameraYRot() + 180f));
-//                poseStack.mulPose(Axis.XN.rotationDegrees(iClientGunProjectile.cgc$getCameraXRot()));
+//                ClientRenderHelper.rotate(poseStack, Axis.YN.rotationDegrees(iClientGunProjectile.cgc$getCameraYRot() + 180f));
+//                ClientRenderHelper.rotate(poseStack, Axis.XN.rotationDegrees(iClientGunProjectile.cgc$getCameraXRot()));
                 {
                     // 应用偏移
                     poseStack.translate(offset[0] * offsetReducer, offset[1] * offsetReducer, offset[2] * offsetReducer);
                 }
 //                // 逆转摄像机旋转
-//                poseStack.mulPose(Axis.XP.rotationDegrees(iClientGunProjectile.cgc$getCameraXRot()));
-//                poseStack.mulPose(Axis.YP.rotationDegrees(iClientGunProjectile.cgc$getCameraYRot() + 180f));
+//                ClientRenderHelper.rotate(poseStack, Axis.XP.rotationDegrees(iClientGunProjectile.cgc$getCameraXRot()));
+//                ClientRenderHelper.rotate(poseStack, Axis.YP.rotationDegrees(iClientGunProjectile.cgc$getCameraYRot() + 180f));
             }
 
             // 说是 override 其实默认值是 1
             // 所以这里直接乘也没关系
             scale *= iClientGunProjectile.cgc$getTracerScaleModifier(gunProjectile);
             scale *= (float) Math.max(1.0, disToEye / 3.5);
-            poseStack.mulPose(Axis.YP.rotationDegrees(entityYaw - 180.0F));
-            poseStack.mulPose(Axis.XP.rotationDegrees(entityPitch));
+            ClientRenderHelper.rotate(poseStack, Axis.YP.rotationDegrees(entityYaw - 180.0F));
+            ClientRenderHelper.rotate(poseStack, Axis.XP.rotationDegrees(entityPitch));
             poseStack.translate(0, isFirstPerson ? 0 : -0.2, trailLength / 2.0);
             poseStack.scale(scale, scale, (float) trailLength);
 

@@ -85,7 +85,7 @@ public class AttachmentItemRenderer extends BlockEntityWithoutLevelRenderer {
 
             // 展示框里显示正常
             if (transformType == ItemDisplayContext.FIXED) {
-                poseStack.mulPose(Axis.YP.rotationDegrees(90));
+                ClientRenderHelper.rotate(poseStack, Axis.YP.rotationDegrees(90));
             }
 
             @Nullable var slotTexture = attachmentDisplay.getSlotTextureLocation();
@@ -117,7 +117,7 @@ public class AttachmentItemRenderer extends BlockEntityWithoutLevelRenderer {
                 // GUI 特殊渲染
                 if (transformType == ItemDisplayContext.GUI) {
                     poseStack.translate(0.5, 1.5, 0.5);
-                    poseStack.mulPose(Axis.ZN.rotationDegrees(180));
+                    ClientRenderHelper.rotate(poseStack, Axis.ZN.rotationDegrees(180));
 
                     AttachmentDisplay attachmentDisplay = clientAttachmentIndexInstance.getAttachmentDisplay();
                     @Nullable var slotTexture = attachmentDisplay.getSlotTextureLocation();
@@ -134,7 +134,7 @@ public class AttachmentItemRenderer extends BlockEntityWithoutLevelRenderer {
                     // 反转模型
                     poseStack.scale(-1, -1, 1);
                     if (transformType == ItemDisplayContext.FIXED) {
-                        poseStack.mulPose(Axis.YN.rotationDegrees(90f));
+                        ClientRenderHelper.rotate(poseStack, Axis.YN.rotationDegrees(90f));
                     }
 
                     this._renderDefaultAttachment(poseStack, pBuffer, transformType, pPackedLight, pPackedOverlay, clientAttachmentIndexInstance);
@@ -145,7 +145,7 @@ public class AttachmentItemRenderer extends BlockEntityWithoutLevelRenderer {
             poseStack.pushPose(); {
                 // 没有这个 attachmentLocation，渲染黑紫材质以提醒
                 poseStack.translate(0.5, 1.5, 0.5);
-                poseStack.mulPose(Axis.ZN.rotationDegrees(180));
+                ClientRenderHelper.rotate(poseStack, Axis.ZN.rotationDegrees(180));
 
                 pBuffer.submitCustomGeometry(poseStack, ClientRenderUtils.RenderType_.entityTranslucent(ClientRenderUtils.getMissingTextureLocation()), (pose, buffer) -> {
                     PoseStack _poseStack = new PoseStack();

@@ -237,7 +237,7 @@ public abstract class AnimateGeoItemRenderer<M extends AnimatedModelObject, CTX 
 
         Quaternionf quaternion = MathUtil.Quaternion.multiply(modelObject.getCameraAnimationObject().rotationQuaternion, multiplier);
         PoseStack poseStack = event.getPoseStack();
-        poseStack.mulPose(quaternion);
+        ClientRenderHelper.rotate(poseStack, quaternion);
     }
 
     /**
@@ -257,8 +257,8 @@ public abstract class AnimateGeoItemRenderer<M extends AnimatedModelObject, CTX 
             float yRotOffset = Mth.lerp(partialTick, player.yBobO, player.yBob);
             float xRot = player.getViewXRot(partialTick) - xRotOffset;
             float yRot = player.getViewYRot(partialTick) - yRotOffset;
-            poseStack.mulPose(Axis.XP.rotationDegrees(xRot * -0.1F));
-            poseStack.mulPose(Axis.YP.rotationDegrees(yRot * -0.1F));
+            ClientRenderHelper.rotate(poseStack, Axis.XP.rotationDegrees(xRot * -0.1F));
+            ClientRenderHelper.rotate(poseStack, Axis.YP.rotationDegrees(yRot * -0.1F));
 
             BedrockPart rootNode = modelObject.getRootNode();
             if (rootNode != null) {
@@ -274,7 +274,7 @@ public abstract class AnimateGeoItemRenderer<M extends AnimatedModelObject, CTX 
             poseStack.translate(0, 1.5f, 0);
 
             // 基岩版模型是上下颠倒的，需要翻转过来
-            poseStack.mulPose(Axis.ZP.rotationDegrees(180f));
+            ClientRenderHelper.rotate(poseStack, Axis.ZP.rotationDegrees(180f));
             doExtraTransforms(poseStack, modelObject, pojoItem);
 
             var stateMachine = this.getStateMachine(pojoItem);
@@ -315,7 +315,7 @@ public abstract class AnimateGeoItemRenderer<M extends AnimatedModelObject, CTX 
             // 从渲染原点 (0, 24, 0) 移动到模型原点 (0, 0, 0)
             poseStack.translate(0.5, 1.5f, 0.5);
             // 基岩版模型是上下颠倒的，需要翻转过来。
-            poseStack.mulPose(Axis.ZP.rotationDegrees(180f));
+            ClientRenderHelper.rotate(poseStack, Axis.ZP.rotationDegrees(180f));
             ClientRenderHelper.FirstPersonArmHelper.setFirstPersonArmCollector(bufferSource);
             try {
                 modelObject.render(poseStack, ctx, ClientRenderUtils.RenderType_.entityCutout(

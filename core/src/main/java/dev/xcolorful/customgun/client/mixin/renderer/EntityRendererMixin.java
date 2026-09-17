@@ -10,6 +10,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+// @Deprecated(since = "1.21.11")
 @ApiStatus.AvailableSince("1.21.6")
 @Mixin(EntityRenderer.class)
 public class EntityRendererMixin {

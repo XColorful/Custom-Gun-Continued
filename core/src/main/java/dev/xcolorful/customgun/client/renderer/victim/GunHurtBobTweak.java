@@ -9,6 +9,7 @@ package dev.xcolorful.customgun.client.renderer.victim;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import dev.xcolorful.customgun.client.util.ClientRenderHelper;
 import dev.xcolorful.customgun.core.api.event.CustomEventType;
 import dev.xcolorful.customgun.core.api.event.ICustomEvent;
 import dev.xcolorful.customgun.core.api.event.ICustomEventHandler;
@@ -82,9 +83,9 @@ public class GunHurtBobTweak implements ICustomEventHandler {
         yRot = yRot * lastTweakMultiplier;
         zRot = zRot * lastTweakMultiplier;
 
-        matrixStack.mulPose(Axis.YP.rotationDegrees(-yRot));
-        matrixStack.mulPose(Axis.XP.rotationDegrees(-zRot * 14.0F));
-        matrixStack.mulPose(Axis.YP.rotationDegrees(yRot));
+        ClientRenderHelper.rotate(matrixStack, Axis.YP.rotationDegrees(-yRot));
+        ClientRenderHelper.rotate(matrixStack, Axis.XP.rotationDegrees(-zRot * 14.0F));
+        ClientRenderHelper.rotate(matrixStack, Axis.YP.rotationDegrees(yRot));
         return true;
     }
 

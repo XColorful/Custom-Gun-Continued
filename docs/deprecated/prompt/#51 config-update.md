@@ -204,3 +204,85 @@ SyncConfig.HIDE_ENTITY_HITBOX.get()
 ```
 
 没有任何提交，改动都还在工作区。
+
+# 
+
+```
+现在移植到1.21.6，怎么修改mixin？
+```
+
+# 
+
+I'll explore the 1.21.6 worktree to see how its mixin setup and vanilla hitbox path differ.
+
+The port is already drafted here, and it has the exact problem you hinted at — `HitboxRenderState` replaces the `Entity` parameter. Let me read the 1.21.6 sources.
+
+Now I understand the 1.21.6 shape: hitboxes are extracted into `EntityRenderState.hitboxesRenderState` while the `Entity` is still available, then drawn later. Let me check whether NeoForge exposes a hook there.
+
+Let me read the 1.21.6 build wiring so I can verify the port properly.
+
+Now I have the full picture. Let me apply the port.
+
+The condition is inverted — let me fix that and read the mixin config.
+
+Now let me verify it compiles.
+
+The build can't run here — no JDK 21 on this machine. Let me at least verify the target descriptor against the compiled vanilla class.
+
+## 1.21.6 为什么原 draft 编译不过
+
+1.21.2 起实体渲染拆成了两段，`renderHitbox` 只剩纯几何数据：
+
+```java
+// EntityRenderDispatcher（1.21.6）
+public <E extends Entity> void render(E entity, ...) {
+    s = renderer.createRenderState(entity, partialTick);   // ← 这里还有 Entity
+    this.render(s, ...);                                   // ← 只剩 state
+}
+// 画碰撞箱时：
+if (renderState.hitboxesRenderState != null) this.renderHitboxes(...);
+private static void renderHitbox(PoseStack, VertexConsumer, HitboxRenderState hitbox) // HitboxRenderState 是 record，只有 x0..z1 + offset + RGB
+```
+
+`HitboxRenderState` 里**没有 Entity**，所以 `renderHitbox` 这个位置拿不到实体（就是你说的"不能直接读到 entity"），`EntityHitboxRenderer.shouldRenderHitbox(entity)` 也就无从写起。
+
+## 2. 拦截点该放在哪
+
+放在**抽取之后、渲染之前**：`EntityRenderer.createRenderState(Entity, float)` 的 RETURN。那里 Entity 还在手上，抽好的 state 也正好可以清：
+
+- 选 `createRenderState` 而不是 `extractRenderState`：`LivingEntityRenderer` 覆写了 `extractRenderState`（javap 实测有两项，一项是协变桥接方法），而 `createRenderState` 是 `public final`，dispatcher 的实体路径必走一次，不会被任何子类绕过。
+- 清 `hitboxesRenderState` 就等于"整段 `renderHitbox` 不画"（白盒 + 红眼线 + 蓝视线都在那个分支里），同时把 `serverHitboxesRenderState` 一起清掉，和 vanilla 自己的 "不画碰撞箱" 分支写法一致。
+
+## 3. 落的改动
+
+删掉 `EntityRenderDispatcherMixin`（目标类换了，名字留着会误导），新增 [EntityRendererMixin.java](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/client/mixin/renderer/EntityRendererMixin.java)：
+
+```java
+@Mixin(EntityRenderer.class)
+public class EntityRendererMixin {
+    @Inject(
+            method = "createRenderState(Lnet/minecraft/world/entity/Entity;F)Lnet/minecraft/client/renderer/entity/state/EntityRenderState;",
+            at = @At("RETURN"))
+    private void cgc$hideEntityHitbox(Entity entity, float partialTick, CallbackInfoReturnable<EntityRenderState> cir) {
+        if (!EntityHitboxRenderer.shouldRenderHitbox(entity)) {
+            EntityRenderState renderState = cir.getReturnValue();
+            renderState.hitboxesRenderState = null;
+            renderState.serverHitboxesRenderState = null;
+        }
+    }
+}
+```
+
+`customgunclient.mixins.json` 里的注册同步改成 `renderer.EntityRendererMixin`。方法名重载（还有一个无参 `createRenderState()`）所以descriptor 必须写全。`EntityHitboxRenderer` 在本分支一个字都不用改。
+
+## 4. 验证到哪一步
+
+- **descriptor 已对着编译后的类核过**（`javap -s` 跑 1.21.6 joined jar）：`(Lnet/minecraft/world/entity/Entity;F)Lnet/minecraft/client/renderer/entity/state/EntityRenderState;` 完全一致；两个 `hitboxes*RenderState` 字段确认是 `public`，直接写合法。
+- IDEA 对该文件无报错（类型解析走的是 NeoForge 1.21.6 classpath）。
+- **没有编译过**：这台机器只有 JDK 8/17/25，没有 21，foojay 自动下载也失败了（`~/.gradle/jdks` 里只剩半个 `.part`），所以 javac 没跑起来；更没进游戏验证。你那边跑一次构建就能确认。
+
+两个提醒：本分支 `core` 没有 mixin 注解处理器，不生成 refmap，json 里的 `"refmap"` 字段是摆设；NeoForge 运行时用 official mojmap 名，所以 descriptor 必须写 mojmap 名（写 `m_xxx` 反而找不到）。`defaultRequire: 1` 意味着目标对不上会在启动时直接抛 `InvalidInjectionException` 崩掉，不会静默失效。
+
+## 5. 一个可以不用 mixin 的选项
+
+NeoForge 有原生 `RegisterRenderStateModifiersEvent`（client、mod event bus）：`event.registerEntityModifier(TypeToken<EntityRenderer<...>>, (entity, renderState) -> ...)`，时机正好是"所有 vanilla 数据抽完之后"，带 entity + state，能直接做同样的事且完全不用 mixin —— 正好对症你担心的 26.3 mixin 类变更。代价是平台 API 只能放 `neoforge-compat`（core 不许 import 平台 API），会和 forge 那边的 mixin 机制分叉。要做的话我再改。

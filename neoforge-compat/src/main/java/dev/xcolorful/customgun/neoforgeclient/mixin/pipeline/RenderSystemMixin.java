@@ -1,12 +1,8 @@
 package dev.xcolorful.customgun.neoforgeclient.mixin.pipeline;
 
-import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import dev.xcolorful.customgun.neoforgeclient.minecraft.stencil.NeoStencilOperator;
 import org.jetbrains.annotations.ApiStatus;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /*
@@ -20,14 +16,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  *     <li>这里在管线修改器应用之后，把 {@link NeoStencilOperator} 累积的模板测试注入到实际使用的管线中</li>
  * </ul>
  */
-// @Deprecated(since = "26.3")
+@Deprecated(since = "26.3")
 @ApiStatus.AvailableSince("1.21.10")
-@Mixin(RenderSystem.class)
+//@Mixin(RenderSystem.class)
 public class RenderSystemMixin {
 
-    @Inject(method = "applyPipelineModifiers",
-            at = @At("RETURN"),
-            cancellable = true)
+//    @Inject(method = "applyPipelineModifiers",
+//            at = @At("RETURN"),
+//            cancellable = true)
     private static void cgc$applyDynamicStencil(RenderPipeline pipeline,
                                                 CallbackInfoReturnable<RenderPipeline> cir) {
         cir.setReturnValue(NeoStencilOperator.applyStencilToPipeline(cir.getReturnValue()));

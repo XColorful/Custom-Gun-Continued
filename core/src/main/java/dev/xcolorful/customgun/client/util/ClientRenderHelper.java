@@ -7,8 +7,8 @@
 
 package dev.xcolorful.customgun.client.util;
 
-import com.mojang.blaze3d.PrimitiveTopology;
-import com.mojang.blaze3d.opengl.GlStateManager;
+import com.mojang.renderpearl.api.pipeline.PrimitiveTopology;
+import com.mojang.renderpearl.backend.opengl.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import dev.xcolorful.customgun.client.CustomGunClient;
@@ -94,10 +94,10 @@ public class ClientRenderHelper {
 
     public static void rotate(PoseStack poseStack, Quaternionf by) {
         // [1.20.1, 26.3)
-        poseStack.mulPose(by);
+//        poseStack.mulPose(by);
 
         // [26.3, )
-//        poseStack.rotate(by);
+        poseStack.rotate(by);
     }
 
     /**
@@ -116,7 +116,11 @@ public class ClientRenderHelper {
 
         Minecraft mc = Minecraft.getInstance();
         EntityRenderDispatcher renderManager = mc.getEntityRenderDispatcher();
-        AvatarRenderer<?> renderer = renderManager.getPlayerRenderer(player);
+        /*
+        26.3 移除了 EntityRenderDispatcher#getPlayerRenderer(AbstractClientPlayer)
+        玩家渲染器统一从 getRenderer(entity) 取
+         */
+        AvatarRenderer<?> renderer = (AvatarRenderer<?>) renderManager.getRenderer(player);
         // int oldId = RenderSystem.getShaderTexture(0);
         // RenderSystem.setShaderTexture(0, ClientRenderUtils.getSkinTextureLocation(player));
 

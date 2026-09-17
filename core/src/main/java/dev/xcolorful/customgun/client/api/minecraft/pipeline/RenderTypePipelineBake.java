@@ -1,7 +1,6 @@
 package dev.xcolorful.customgun.client.api.minecraft.pipeline;
 
-import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import dev.xcolorful.customgun.client.CustomGunClient;
 import dev.xcolorful.customgun.client.api.minecraft.access.IClientAccessTransformer;
 import net.minecraft.client.renderer.rendertype.RenderSetup;
@@ -33,7 +32,6 @@ public class RenderTypePipelineBake {
         // 26.3去掉了 RenderSystem#applyPipelineModifiers，改从私有修饰器栈取被修饰后的管线
         RenderPipeline modified = accessTransformer.RenderSystem_getPIPELINE_MODIFIERS_apply(base.pipeline());
 
-       RenderPipeline modified = RenderSystem.applyPipelineModifiers(base.pipeline());
        if (modified == base.pipeline()) {
            return base;
        }

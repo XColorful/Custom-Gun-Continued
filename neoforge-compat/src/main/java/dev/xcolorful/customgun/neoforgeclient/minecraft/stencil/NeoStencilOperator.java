@@ -1,7 +1,9 @@
 package dev.xcolorful.customgun.neoforgeclient.minecraft.stencil;
 
-import com.mojang.blaze3d.pipeline.ColorTargetState;
-import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.renderpearl.api.pipeline.ColorTargetState;
+import com.mojang.renderpearl.api.pipeline.CompareOp;
+import com.mojang.renderpearl.api.pipeline.DepthStencilState;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.xcolorful.customgun.client.api.minecraft.pipeline.PipelineModifier;
 import dev.xcolorful.customgun.client.api.minecraft.stencil.IStencilOperator;
@@ -13,6 +15,7 @@ import org.jetbrains.annotations.ApiStatus;
 
 import java.util.HashMap;
 import java.util.IdentityHashMap;
+import java.util.List;
 import java.util.Map;
 
 /*
@@ -84,27 +87,59 @@ public class NeoStencilOperator implements IStencilOperator {
     public static RenderPipeline applyStencilToPipeline(RenderPipeline pipeline) {
         StencilTest stencil = CURRENT_STENCIL.get();
         if (stencil == null) return pipeline;
-        if (pipeline.getStencilTest().filter(stencil::equals).isPresent()) return pipeline;
+//        if (pipeline.getStencilTest().filter(stencil::equals).isPresent()) return pipeline; // 26.3移除
+
+        // 26.3 起模板测试不再是 RenderPipeline 上的独立字段，而是 DepthStencilState 的一个分量
+        DepthStencilState existing = pipeline.getDepthStencilState();
+        if (existing == null) {
+            /*
+            管线没有深度状态时模板无处安放
+            26.2 之前模板是 RenderPipeline 的独立字段，所以“整块移除深度状态”的修饰器（{@link PipelineModifier#NO_DEPTH_TEST}）不会连带抹掉模板；
+            26.3 会
+
+            renderSight 的准心正好走这条路：_disableDepthTest() -> NO_DEPTH_TEST（移除深度状态）-> 再画准心
+            结果准心不再被模板遮罩，红点在 ocular 之外整片可见
+            这里补一个等价的「深度测试恒过、不写深度」（即原来的“关闭深度测试”）只为把模板挂上去
+            注意不能改 NO_DEPTH_TEST 本身：GUI（AttachmentCategorySlot 等）也用它，而 GUI 渲染通道
+            没有深度附件，带深度状态的管线会被 FrontendRenderPass 直接抛 IllegalStateException
+             */
+            existing = new DepthStencilState(CompareOp.ALWAYS_PASS, false, 0.0F, 0.0F, null);
+        }
+        final DepthStencilState depthStencil = existing;
+        if (stencil.equals(depthStencil.stencilTest())) {
+            return pipeline;
+        }
+
 
         return STENCIL_PIPELINE_CACHE
                 .computeIfAbsent(pipeline, $ -> new HashMap<>())
                 .computeIfAbsent(stencil, s -> {
                     /*
+                    26.2
                     RenderPipeline#toBuilder 不会把 activeColorTargetStateCount 复制进 builder
                     直接 build() 会回退到 ColorTargetState.DEFAULT（WRITE_ALL 且无混合），从而丢掉 NO_COLOR_WRITE（颜色掩码）与混合状态
                     这里显式把各颜色目标写回 builder
+
+                    26.3
+                    RenderPipeline#toBuilder 已正确复制颜色目标与 activeColorTargetStateCount
+                    这里仍显式把各颜色目标写回 builder，是为了避免重蹈 1.21.10 的覆辙
+                    （toBuilder 丢颜色目标 -> 回退到 ColorTargetState.DEFAULT -> 丢掉 NO_COLOR_WRITE 颜色掩码与混合状态）
                      */
                     RenderPipeline.Builder builder = pipeline.toBuilder();
-                    ColorTargetState[] colorTargets = pipeline.getColorTargetStates();
-                    if (colorTargets != null) {
-                        for (int i = 0; i < colorTargets.length; i++) {
-                            if (colorTargets[i] != null) {
-                                builder.withColorTargetState(i, colorTargets[i]);
-                            }
+                    List<ColorTargetState> colorTargets = pipeline.getColorTargetStates();
+                    for (int i = 0; i < colorTargets.size(); i++) {
+                        if (colorTargets.get(i) != null) {
+                            builder.withColorTargetState(i, colorTargets.get(i));
                         }
                     }
                     return builder
-                            .withStencilTest(s)
+                            .withDepthStencilState(new DepthStencilState(
+                                    depthStencil.depthTest(),
+                                    depthStencil.writeDepth(),
+                                    depthStencil.depthBiasScaleFactor(),
+                                    depthStencil.depthBiasConstant(),
+                                    s
+                            ))
                             .withLocation(pipeline.getLocation().withSuffix("/cgc_stencil"))
                             .build();
                 });

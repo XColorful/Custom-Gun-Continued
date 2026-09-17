@@ -1,10 +1,12 @@
 package dev.xcolorful.customgun.client.api.minecraft.pipeline;
 
-import com.mojang.blaze3d.pipeline.ColorTargetState;
-import com.mojang.blaze3d.pipeline.DepthStencilState;
+import com.mojang.renderpearl.api.pipeline.ColorTargetState;
+import com.mojang.renderpearl.api.pipeline.DepthStencilState;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.core.api.minecraft.pipeline.PipelineModifierTag;
 import dev.xcolorful.customgun.core.api.resource.ResourceTag;
+import java.util.List;
 import java.util.Optional;
 import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.ApiStatus;

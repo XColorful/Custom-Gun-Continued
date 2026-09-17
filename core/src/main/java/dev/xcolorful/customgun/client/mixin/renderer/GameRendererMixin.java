@@ -14,7 +14,6 @@ import dev.xcolorful.customgun.client.api.event.render.LevelBobEvent;
 import dev.xcolorful.customgun.client.renderer.item.gun.GunCameraHelper;
 import dev.xcolorful.customgun.client.renderer.victim.GunHurtBobTweak;
 import net.minecraft.client.Camera;
-import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.state.level.CameraRenderState;

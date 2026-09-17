@@ -76,7 +76,7 @@ public class GunProjectileRenderer extends EntityRenderer<GunProjectile, GunProj
     public boolean shouldRender(@NotNull GunProjectile gunProjectile,
                                 @NotNull Frustum frustum,
                                 double camX, double camY, double camZ
-//                                , float partialTicks // 26.3
+                                , float partialTicks // 26.3
     ) {
         AABB aabb = ClientEntityUtils.getBoundingBoxForCulling(gunProjectile).inflate(0.5);
         if (aabb.hasNaN() || aabb.getSize() == 0.0) {

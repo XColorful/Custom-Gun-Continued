@@ -37,7 +37,7 @@ public class NeoInputKeyEvent extends NeoEvent implements IInputKeyEvent {
     }
 
     @Override public int getScanCode() {
-        return inputKeyEvent.getScanCode();
+        return inputKeyEvent.getKeycode();
     }
 
     @Override public int getAction() {

@@ -1,6 +1,6 @@
 package dev.xcolorful.customgun.client.api.minecraft.pipeline;
 
-import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.ApiStatus;
 

@@ -8,7 +8,7 @@
     "item.AmmoItemMixin",
     "item.AttachmentItemMixin",
     "item.GunItemMixin",
-    "pipeline.RenderSystemMixin"
+    "pipeline.PipelineModifierStackMixin"
   ],
   "injectors": {
     "defaultRequire": 1

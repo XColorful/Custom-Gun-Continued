@@ -1,6 +1,7 @@
 package dev.xcolorful.customgun.neoforgeclient.minecraft.access;
 
-import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import dev.xcolorful.customgun.client.api.minecraft.access.IClientAccessTransformer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -49,22 +50,28 @@ public class NeoClientAccessTransformer implements IClientAccessTransformer {
             RenderPipeline renderPipeline,
             RenderSetup renderSetup
     ) {
+        /*
+        26.3 的 RenderSetup 是不可变类：OutputTarget 被 OitPipelineSet 取代
+        多出 outlineTextureName / forceSolidModelPhase，构造参数顺序也随之调整
+         */
         return new RenderSetup(renderPipeline,
+                renderSetup.oitPipelineSet,
                 renderSetup.textures,
                 renderSetup.useLightmap,
                 renderSetup.useOverlay,
                 renderSetup.layeringTransform,
-                renderSetup.outputTarget,
                 renderSetup.textureTransform,
                 renderSetup.outlineProperty,
+                renderSetup.outlineTextureName,
                 renderSetup.affectsCrumbling,
-                renderSetup.sortOnUpload);
+                renderSetup.sortOnUpload,
+                renderSetup.forceSolidModelPhase);
     }
 
     @Override public RenderPipeline
     RenderSystem_getPIPELINE_MODIFIERS_apply(
             RenderPipeline renderPipeline
     ) {
-        return null;
+        return RenderSystem.PIPELINE_MODIFIERS.apply(renderPipeline);
     }
 }

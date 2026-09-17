@@ -4,7 +4,7 @@ import dev.xcolorful.customgun.client.api.minecraft.stencil.StencilFunction;
 
 public class StencilFunctionHelper {
 
-    public static StencilFunction convert(com.mojang.blaze3d.platform.CompareOp compareOp) {
+    public static StencilFunction convert(com.mojang.renderpearl.api.pipeline.CompareOp compareOp) {
         return switch (compareOp) {
             case NEVER_PASS -> StencilFunction.NEVER;
             case ALWAYS_PASS -> StencilFunction.ALWAYS;
@@ -16,16 +16,16 @@ public class StencilFunctionHelper {
             case NOT_EQUAL -> StencilFunction.NOTEQUAL;
         };
     }
-    public static com.mojang.blaze3d.platform.CompareOp convert(StencilFunction stencilFunction) {
+    public static com.mojang.renderpearl.api.pipeline.CompareOp convert(StencilFunction stencilFunction) {
         return switch (stencilFunction) {
-            case NEVER -> com.mojang.blaze3d.platform.CompareOp.NEVER_PASS;
-            case LESS -> com.mojang.blaze3d.platform.CompareOp.LESS_THAN;
-            case EQUAL -> com.mojang.blaze3d.platform.CompareOp.EQUAL;
-            case LEQUAL -> com.mojang.blaze3d.platform.CompareOp.LESS_THAN_OR_EQUAL;
-            case GREATER -> com.mojang.blaze3d.platform.CompareOp.GREATER_THAN;
-            case NOTEQUAL -> com.mojang.blaze3d.platform.CompareOp.NOT_EQUAL;
-            case GEQUAL -> com.mojang.blaze3d.platform.CompareOp.GREATER_THAN_OR_EQUAL;
-            case ALWAYS -> com.mojang.blaze3d.platform.CompareOp.ALWAYS_PASS;
+            case NEVER -> com.mojang.renderpearl.api.pipeline.CompareOp.NEVER_PASS;
+            case LESS -> com.mojang.renderpearl.api.pipeline.CompareOp.LESS_THAN;
+            case EQUAL -> com.mojang.renderpearl.api.pipeline.CompareOp.EQUAL;
+            case LEQUAL -> com.mojang.renderpearl.api.pipeline.CompareOp.LESS_THAN_OR_EQUAL;
+            case GREATER -> com.mojang.renderpearl.api.pipeline.CompareOp.GREATER_THAN;
+            case NOTEQUAL -> com.mojang.renderpearl.api.pipeline.CompareOp.NOT_EQUAL;
+            case GEQUAL -> com.mojang.renderpearl.api.pipeline.CompareOp.GREATER_THAN_OR_EQUAL;
+            case ALWAYS -> com.mojang.renderpearl.api.pipeline.CompareOp.ALWAYS_PASS;
         };
     }
 }

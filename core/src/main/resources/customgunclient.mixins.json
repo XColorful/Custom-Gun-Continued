@@ -13,7 +13,8 @@
     "renderer.CustomFeatureRendererSubmitMixin",
     "renderer.GameRendererMixin",
     "renderer.ItemInHandLayerMixin",
-    "renderer.ItemInHandRendererMixin",
+    "renderer.FirstPersonHandsAndItemsMixin",
+    "renderer.FirstPersonHandsAndItemsRendererMixin",
     "renderer.ItemStackRenderStateMixin",
     "sound.SoundManagerMixin"
   ],

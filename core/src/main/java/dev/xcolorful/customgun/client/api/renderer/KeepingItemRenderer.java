@@ -11,7 +11,6 @@ import dev.xcolorful.customgun.client.mixin.renderer.FirstPersonHandsAndItemsMix
 import dev.xcolorful.customgun.client.mixin.renderer.ItemInHandRendererMixin;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
@@ -36,12 +35,12 @@ public interface KeepingItemRenderer {
 
     static KeepingItemRenderer cgc$getRenderer() {
         // [1.20.1, 26.3)
-        Minecraft mc = Minecraft.getInstance();
-        ItemInHandRenderer itemInHandRenderer = mc.getEntityRenderDispatcher().getItemInHandRenderer();
-        return cgc$fromItemInHandRenderer(itemInHandRenderer);
+//        Minecraft mc = Minecraft.getInstance();
+//        ItemInHandRenderer itemInHandRenderer = mc.getEntityRenderDispatcher().getItemInHandRenderer();
+//        return cgc$fromItemInHandRenderer(itemInHandRenderer);
 
         // [26.3, )
-//        return cgc$fromLocalPlayer(Minecraft.getInstance().player);
+        return cgc$fromLocalPlayer(Minecraft.getInstance().player);
     }
 
     // --------Internal--------
@@ -50,8 +49,8 @@ public interface KeepingItemRenderer {
      * ItemInHandRenderer 通过 Mixin 的方式实现了此接口 {@link ItemInHandRendererMixin}
      * @return 返回 ItemInHandRenderer 实例
      */
-//    @Deprecated(since = "26.3")
-    static KeepingItemRenderer cgc$fromItemInHandRenderer(ItemInHandRenderer itemInHandRenderer) {
+    @Deprecated(since = "26.3")
+    static KeepingItemRenderer cgc$fromItemInHandRenderer(Object itemInHandRenderer) {
         return (KeepingItemRenderer) itemInHandRenderer;
     }
 
@@ -66,7 +65,7 @@ public interface KeepingItemRenderer {
     @ApiStatus.AvailableSince("26.3")
     static KeepingItemRenderer cgc$fromLocalPlayer(@Nullable LocalPlayer localPlayer) {
         if (localPlayer == null) return EMPTY;
-        return (KeepingItemRenderer) null; // localPlayer.firstPersonHandsAndItems();
+        return (KeepingItemRenderer) localPlayer.firstPersonHandsAndItems();
     }
     @ApiStatus.AvailableSince("26.3")
     KeepingItemRenderer EMPTY = new KeepingItemRenderer() {

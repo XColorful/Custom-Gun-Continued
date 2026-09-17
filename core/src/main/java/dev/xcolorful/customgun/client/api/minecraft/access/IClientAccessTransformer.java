@@ -1,6 +1,6 @@
 package dev.xcolorful.customgun.client.api.minecraft.access;
 
-import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;

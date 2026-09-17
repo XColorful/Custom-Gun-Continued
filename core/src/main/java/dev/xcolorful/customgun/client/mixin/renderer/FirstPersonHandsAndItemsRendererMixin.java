@@ -3,7 +3,14 @@ package dev.xcolorful.customgun.client.mixin.renderer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.api.event.render.BeforeRenderHandEvent;
+import net.minecraft.client.renderer.FirstPersonHandsAndItemsRenderer;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.state.level.FirstPersonHandsAndItemsRenderState;
+import net.minecraft.client.renderer.state.level.PlayerRenderState;
 import org.jetbrains.annotations.ApiStatus;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /*
@@ -17,14 +24,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * </ul>
  */
 @ApiStatus.AvailableSince("26.3")
-//@Mixin(FirstPersonHandsAndItemsRenderer.class)
+@Mixin(FirstPersonHandsAndItemsRenderer.class)
 public class FirstPersonHandsAndItemsRendererMixin {
 
-//    @Inject(method = "submitHandsWithItems", at = @At("HEAD"))
+    @Inject(method = "submitHandsWithItems", at = @At("HEAD"))
     public void cgc$onBeforeRenderHand(float partialTicks, PoseStack poseStack,
-                                       Object nodeCollector,
-                                       Object playerState,
-                                       Object state,
+                                       SubmitNodeCollector nodeCollector,
+                                       PlayerRenderState playerState,
+                                       FirstPersonHandsAndItemsRenderState state,
                                        CallbackInfo ci) {
         CustomGun.getEventPoster().postCustomEvent(new BeforeRenderHandEvent(poseStack));
     }

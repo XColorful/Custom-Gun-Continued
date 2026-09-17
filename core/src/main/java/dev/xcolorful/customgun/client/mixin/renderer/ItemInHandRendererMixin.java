@@ -15,25 +15,20 @@ import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.world.item.ItemStack;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import javax.annotation.Nullable;
 
-// @Deprecated(since = "26.3")
-@Mixin(ItemInHandRenderer.class)
+@Deprecated(since = "26.3")
+//@Mixin(ItemInHandRenderer.class)
 public class ItemInHandRendererMixin implements KeepingItemRenderer {
-    @Shadow
+//    @Shadow
     private float mainHandHeight;
-    @Shadow
+//    @Shadow
     private float oMainHandHeight;
-    @Shadow
+//    @Shadow
     private ItemStack mainHandItem;
 
     private ItemStack cgc$keepItem;
@@ -43,7 +38,7 @@ public class ItemInHandRendererMixin implements KeepingItemRenderer {
     /**
      * @deprecated 26.3 Go to {@link FirstPersonHandsAndItemsRendererMixin#cgc$onBeforeRenderHand}
      */
-    @Inject(method = "submitHandsWithItems", at = @At("HEAD"))
+//    @Inject(method = "submitHandsWithItems", at = @At("HEAD"))
     public void cgc$onBeforeRenderHand(float frameInterp, PoseStack poseStack,
                                    SubmitNodeCollector nodeCollector,
                                    LocalPlayer player, int lightCoords,
@@ -54,7 +49,7 @@ public class ItemInHandRendererMixin implements KeepingItemRenderer {
     /**
      * @deprecated 26.3 Go to {@link FirstPersonHandsAndItemsMixin#cgc$cancelEquippedProgress}
      */
-    @Inject(method = "tick", at = @At("HEAD"))
+//    @Inject(method = "tick", at = @At("HEAD"))
     public void cgc$cancelEquippedProgress(CallbackInfo ci) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null) return;

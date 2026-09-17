@@ -10,9 +10,14 @@ package dev.xcolorful.customgun.client.mixin.renderer;
 import dev.xcolorful.customgun.client.api.renderer.KeepingItemRenderer;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
+import net.minecraft.client.player.FirstPersonHandsAndItems;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import javax.annotation.Nullable;
@@ -27,20 +32,20 @@ import javax.annotation.Nullable;
  * </ul>
  */
 @ApiStatus.AvailableSince("26.3")
-//@Mixin(FirstPersonHandsAndItems.class)
+@Mixin(FirstPersonHandsAndItems.class)
 public class FirstPersonHandsAndItemsMixin implements KeepingItemRenderer {
-//    @Shadow
+    @Shadow
     private float mainHandHeight;
-//    @Shadow
+    @Shadow
     private float oMainHandHeight;
-//    @Shadow
+    @Shadow
     private ItemStack mainHandItem;
 
     private ItemStack cgc$keepItem;
     private long cgc$keepTimeMs;
     private long cgc$keepTimestamp;
 
-//    @Inject(method = "tick", at = @At("HEAD"))
+    @Inject(method = "tick", at = @At("HEAD"))
     public void cgc$cancelEquippedProgress(LocalPlayer player,
                                            CallbackInfo ci) {
         if (cgc$keepItem != null) {

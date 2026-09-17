@@ -19,7 +19,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -36,9 +35,9 @@ public abstract class GameRendererMixin {
 //    @Shadow
 //    public abstract Minecraft getMinecraft();
 
-    @Shadow
-    public abstract void render(DeltaTracker deltaTracker,
-                                boolean pRenderLevel);
+//    @Shadow
+//    public abstract void render(DeltaTracker deltaTracker,
+//                                boolean pRenderLevel);
 
     @Inject(method = "bobHurt", at = @At("HEAD"), cancellable = true)
     public void cgc$onBobHurt(CameraRenderState cameraState,

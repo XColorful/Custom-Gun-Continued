@@ -388,8 +388,26 @@ public class GunRendererAddon implements ICustomEventHandler {
         // 配合约束系数，计算约束位移需要的反向位移
         Vector3f inverseTranslation = new Vector3f(originTranslation);
         inverseTranslation.sub(animatedTranslation);
+
+        {
+        // [1.20.1, 1.21.1)
+        // 手部 poseStack 的父坐标系就是摄像机（view）坐标系，把它当枪械自身姿态用是对的
         inverseTranslation.mulDirection(poseStack.last().pose());
         inverseTranslation.mul(translationICA.x() - 1, translationICA.y() - 1, 1 - translationICA.z()); // 基岩版模型的旋转导致 xy 轴要反过来
+
+        /*
+         * 1.21.1起
+         * 手部 poseStack 的基底换成了摄像机旋转的逆（GameRenderer.renderItemInHand），父坐标系变成世界坐标系
+         * 此时再拿它做 mulDirection、或直接把补偿量写进 m30/m31/m32，约束系数就被作用在「世界轴」上：
+         * 补偿量随 yaw 变化（yaw=0/±90/180 时为零、±45/±135 时最大，pitch 只以 cos(pitch) 进入）
+         * 表现为开镜（weight = 瞄准进度，与瞄具无关）时整把枪左右偏，枪口偏移被一起带走
+         * 改为在模型空间施加约束系数、再用 translate 叠加（与坐标系无关）
+         */
+        // [1.21.1, )
+//        inverseTranslation.mul(1 - translationICA.x(), 1 - translationICA.y(), 1 - translationICA.z());
+        // 约束位移
+//        poseStack.translate(inverseTranslation.x() * weight, inverseTranslation.y() * weight, inverseTranslation.z() * weight);
+        }
 
         // 计算约束旋转需要的反向旋转。因需要插值，获取的是欧拉角
         Vector3f inverseRotation = new Vector3f(rotation);
@@ -402,11 +420,16 @@ public class GunRendererAddon implements ICustomEventHandler {
         ClientRenderHelper.rotate(poseStack, Axis.ZP.rotation(inverseRotation.z() * weight));
         poseStack.translate(-animatedTranslation.x(), -animatedTranslation.y() - 1.5f, -animatedTranslation.z());
 
+        {
+        // [1.20.1, 1.21.1)
         // 约束位移
         Matrix4f poseMatrix = poseStack.last().pose();
         poseMatrix.m30(poseMatrix.m30() - inverseTranslation.x() * weight);
         poseMatrix.m31(poseMatrix.m31() - inverseTranslation.y() * weight);
         poseMatrix.m32(poseMatrix.m32() + inverseTranslation.z() * weight);
+
+        // [1.21.1, )
+        }
     }
 
     /**

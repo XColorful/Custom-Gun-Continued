@@ -1,0 +1,9 @@
+{
+  "model": {
+    "type": "minecraft:special",
+    "base": "customgun:item/geo_base",
+    "model": {
+      "type": "customgun:item_bewlr"
+    }
+  }
+}

@@ -110,11 +110,6 @@ public class ShooterAnimationManager implements IShooterAnimationManager {
         @Nullable IShooterAnimator animator = this.getAnimator(shooterAnimationCategory);
         if (animator == null) return;
 
-        float aimingProgress = iLivingShooter.cgc$getSynAimingProgress();
-        if (aimingProgress <= 0) {
-            animator.animateShooter(head, body, leftArm, rightArm, iLivingShooter, livingShooter, gunDisplayInstance);
-        } else {
-            animator.animateShooterAiming(head, body, leftArm, rightArm, iLivingShooter, livingShooter, gunDisplayInstance);
-        }
+        animator.animateShooter(head, body, leftArm, rightArm, iLivingShooter, livingShooter, gunDisplayInstance);
     }
 }

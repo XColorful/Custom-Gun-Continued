@@ -27,14 +27,14 @@
 ```
 
 # English
-> wiki version: `0.0.15`.3
+> wiki version: `0.0.15`.4
 
 ## Ammo Config
 
-Path: `ammo`modifier, the initial speed of the bullet will be multiplied by this value
+Path: `ammo`
 - `PassThroughBlocks` (string list): Blocks that the ammo can pass through
 - `DestroyGlass` (bool): Whether ammo can break glass
-- `GlobalBulletSpeedModifier` (float, 0.01~20.0): Global bullet speed 
+- `GlobalBulletSpeedModifier` (float, 0.01~20.0): Global bullet speed modifier, the initial speed of the bullet will be multiplied by this value
 - `IgniteBlock` (bool): Whether ammo can ignite blocks
 - `IgniteEntity` (bool): Whether ammo can ignite entities
 - `ExplosiveAmmoDestroysBlock` (bool): Whether ammo with explosive properties can break blocks

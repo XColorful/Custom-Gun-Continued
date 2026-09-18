@@ -1,7 +1,3 @@
-/*
- * 跟 BattleRoyale 同构
- */
-
 package dev.xcolorful.customgun.client.init;
 
 import com.mojang.brigadier.CommandDispatcher;

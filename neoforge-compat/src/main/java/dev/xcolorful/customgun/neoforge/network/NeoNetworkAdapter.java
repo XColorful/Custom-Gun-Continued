@@ -1,7 +1,3 @@
-/*
- * 改成跟 BattleRoyale 同构的写法
- */
-
 package dev.xcolorful.customgun.neoforge.network;
 
 import dev.xcolorful.customgun.CustomGun;

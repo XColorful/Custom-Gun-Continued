@@ -1,7 +1,3 @@
-/*
- * 跟 BattleRoyale 同构
- */
-
 package dev.xcolorful.customgun.neoforge.init;
 
 import dev.xcolorful.customgun.CustomGun;

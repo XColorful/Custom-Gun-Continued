@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2024-2026 MCModderAnchor (https://github.com/MCModderAnchor)
- * SPDX-License-Identifier: GPL-3.0-only
- *
- * Source: https://github.com/MCModderAnchor/TACZ
- */
-
 package dev.xcolorful.customgun.core.api.item.gun;
 
 import dev.xcolorful.customgun.core.api.resource.ResourceTag;
@@ -54,6 +47,7 @@ public enum FireModeType implements ResourceTag.CategoryTag, ResourceTag.IndexTa
         for (FireModeType type : values()) {
             FIRE_MODES.put(String.valueOf(type.index), type);
             FIRE_MODES.put(type.typeName, type);
+            FIRE_MODES.put(type.name(), type);
         }
     }
 

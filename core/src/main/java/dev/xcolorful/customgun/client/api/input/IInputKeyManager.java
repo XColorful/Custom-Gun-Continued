@@ -1,7 +1,3 @@
-/*
- * Go to BattleRoyale GameManager 的设计
- */
-
 package dev.xcolorful.customgun.client.api.input;
 
 import dev.xcolorful.customgun.client.input.InputKey;

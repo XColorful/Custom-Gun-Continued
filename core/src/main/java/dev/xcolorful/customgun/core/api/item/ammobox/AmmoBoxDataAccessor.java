@@ -8,7 +8,6 @@
 package dev.xcolorful.customgun.core.api.item.ammobox;
 
 import dev.xcolorful.customgun.core.api.item.AmmoBoxProperty;
-import dev.xcolorful.customgun.core.api.item.AmmoBoxPropertyTag;
 import dev.xcolorful.customgun.core.api.item.ammo.AmmoDataAccessor;
 import dev.xcolorful.customgun.core.util.NBTUtils;
 import net.minecraft.world.item.ItemStack;
@@ -30,11 +29,11 @@ public interface AmmoBoxDataAccessor extends AmmoDataAccessor, IAmmoBoxDataAcces
 
     @Override
     default int getBoxLevel(ItemStack ammoItem) {
-        return Math.max(0, NBTUtils.getInt(ammoItem, AmmoBoxPropertyTag.BOX_LEVEL));
+        return Math.max(0, NBTUtils.getInt(ammoItem, AmmoBoxProperty.BOX_LEVEL.getTagName()));
     }
     @Override
     default void setBoxLevel(ItemStack ammoItem, int boxLevel) {
-        NBTUtils.setInt(ammoItem, AmmoBoxPropertyTag.BOX_LEVEL, boxLevel);
+        NBTUtils.setInt(ammoItem, AmmoBoxProperty.BOX_LEVEL.getTagName(), boxLevel);
     }
 
     @Override

@@ -54,6 +54,7 @@ public enum FireModeType implements ResourceTag.CategoryTag, ResourceTag.IndexTa
         for (FireModeType type : values()) {
             FIRE_MODES.put(String.valueOf(type.index), type);
             FIRE_MODES.put(type.typeName, type);
+            FIRE_MODES.put(type.name(), type);
         }
     }
 

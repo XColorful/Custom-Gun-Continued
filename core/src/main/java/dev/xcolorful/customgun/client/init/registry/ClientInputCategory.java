@@ -1,7 +1,3 @@
-/*
- * 跟 BattleRoyale 同构
- */
-
 package dev.xcolorful.customgun.client.init.registry;
 
 import dev.xcolorful.customgun.client.api.minecraft.input.CustomInputCategory;

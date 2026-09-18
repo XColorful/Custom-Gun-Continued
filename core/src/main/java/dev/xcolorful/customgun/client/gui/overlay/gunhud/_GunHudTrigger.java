@@ -1,6 +1,5 @@
 package dev.xcolorful.customgun.client.gui.overlay.gunhud;
 
-import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.core.api.event.*;
 import dev.xcolorful.customgun.core.api.event.gun.GunFireEvent;
 import dev.xcolorful.customgun.core.api.event.shooter.*;

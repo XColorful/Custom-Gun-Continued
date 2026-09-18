@@ -1,17 +1,3 @@
-/*
- * Copyright (c) 2024-2026 MCModderAnchor (https://github.com/MCModderAnchor)
- * SPDX-License-Identifier: GPL-3.0-only
- *
- * Source: https://github.com/MCModderAnchor/TACZ
- */
-
-/*
- * Copyright (c) 2025-2026 XiaoColorful (https://github.com/XColorful)
- * SPDX-License-Identifier: GPL-3.0-or-later
- *
- * Source: https://github.com/XColorful/BattleRoyale
- */
-
 package dev.xcolorful.customgun.forge;
 
 import dev.xcolorful.customgun.CustomGun;

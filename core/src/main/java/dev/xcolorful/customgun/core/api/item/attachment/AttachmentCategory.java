@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2024-2026 MCModderAnchor (https://github.com/MCModderAnchor)
- * SPDX-License-Identifier: GPL-3.0-only
- *
- * Source: https://github.com/MCModderAnchor/TACZ
- */
-
 package dev.xcolorful.customgun.core.api.item.attachment;
 
 import dev.xcolorful.customgun.core.api.item.GunProperty;
@@ -92,6 +85,7 @@ public enum AttachmentCategory implements ResourceTag.CategoryTag, ResourceTag.C
         for (AttachmentCategory type : values()) {
             CATEGORIES.put(type.tagName, type);
             CATEGORIES.put(type.categoryName, type);
+            CATEGORIES.put(type.name(), type);
             if (type.categoryNameOld != null) CATEGORIES.put(type.categoryNameOld, type);
         }
     }

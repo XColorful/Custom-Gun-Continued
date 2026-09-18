@@ -1,7 +1,3 @@
-/*
- * 跟 BattleRoyale 同构
- */
-
 package dev.xcolorful.customgun.neoforgeclient.init;
 
 import com.mojang.blaze3d.systems.RenderSystem;

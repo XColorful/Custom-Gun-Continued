@@ -1,7 +1,6 @@
 package dev.xcolorful.customgun.client.animation.shooter;
 
 import dev.xcolorful.customgun.CustomGun;
-import dev.xcolorful.customgun.client.animation.shooter.animator.DefaultShooterAnimator;
 import dev.xcolorful.customgun.client.api.animation.shooter.IShooterAnimationManager;
 import dev.xcolorful.customgun.client.api.animation.shooter.IShooterAnimator;
 import dev.xcolorful.customgun.client.api.item.gun.IShooterAnimationCategory;
@@ -34,7 +33,6 @@ public class ShooterAnimationManager implements IShooterAnimationManager {
     }
 
     public static void init(McSide mcSide) {
-        INSTANCE.registerAnimator(DefaultShooterAnimator.INSTANCE);
     }
 
     // --------IShooterAnimationManager--------

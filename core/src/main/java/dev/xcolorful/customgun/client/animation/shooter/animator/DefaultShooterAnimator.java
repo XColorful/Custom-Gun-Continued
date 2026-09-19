@@ -1,5 +1,6 @@
 package dev.xcolorful.customgun.client.animation.shooter.animator;
 
+import dev.xcolorful.customgun.client.CustomGunClient;
 import dev.xcolorful.customgun.client.api.animation.shooter.IShooterAnimator;
 import dev.xcolorful.customgun.client.api.item.gun.IShooterAnimationCategory;
 import dev.xcolorful.customgun.client.api.item.gun.ShooterAnimationCategory;
@@ -19,6 +20,10 @@ public class DefaultShooterAnimator implements IShooterAnimator {
     public static final DefaultShooterAnimator INSTANCE = new DefaultShooterAnimator();
 
     protected DefaultShooterAnimator() {
+    }
+
+    public static void init () {
+        CustomGunClient.getShooterAnimationManager().registerAnimator(INSTANCE);
     }
 
     @Override

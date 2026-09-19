@@ -15,6 +15,7 @@ import dev.xcolorful.customgun.client.api.sound.gun.GunSoundType;
 import dev.xcolorful.customgun.client.init.ClientModEvent;
 import dev.xcolorful.customgun.client.model.GunModelObject;
 import dev.xcolorful.customgun.client.resource.assets.animation.BedrockAnimation;
+import dev.xcolorful.customgun.client.resource.assets.animation.GltfAnimation;
 import dev.xcolorful.customgun.client.resource.assets.display.GunDisplay;
 import dev.xcolorful.customgun.client.resource.assets.display._LaserDisplay;
 import dev.xcolorful.customgun.client.resource.assets.display._LodDisplay;
@@ -188,7 +189,12 @@ public final class GunDisplayInstance extends PojoInstance<GunDisplay> {
                 // 用 bedrock 动画资源创建动画控制器
                 return AnimationHelper.createControllerFromBedrock(bedrockAnimation, gunModel);
             }
-            // TODO glTF
+            @Nullable GltfAnimation gltfAnimation = ClientResourceApi.getGltfAnimation(animationLocation);
+            if (gltfAnimation != null) {
+                // TODO 暂不支持 gltf 动画，先给空控制器让模型能渲染出来
+                CustomGun.LOGGER.warn("GunDisplayInstance: gltf animation {} is not supported yet, using an empty controller", animationLocation);
+                return new AnimController(new ArrayList<>(), gunModel);
+            }
             CustomGun.LOGGER.debug("GunDisplayInstance: Animation {} not found", animationLocation);
             return null;
 

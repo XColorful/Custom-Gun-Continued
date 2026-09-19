@@ -1538,3 +1538,185 @@ net.minecraft.client.renderer.entity.player.PlayerRenderer
 另外 1.21.11 worktree 里同一份文件也还是 `PlayerRenderer`（尚未合过这个 PR），要处理的话另开任务。文档 `docs/deprecated/prompt/#54 Simple-animation.md` 里也有几处提到 `PlayerRenderer`，但那是归档的 prompt，我没动 —— 需要的话说一声。
 
 改动未提交，等你 review。
+
+# 
+---
+
+```
+我临时加了ShoulderSurfing依赖，你看下怎么实现在越肩视角时，玩家朝向始终对准，无论左右移动还是转镜头都会跟上。需要反射实现，不能import shoulder surfing类，给一个方案，允许挂载client tick检查并设置状态，最好有shoulder surfing内置的接口来实现
+```
+
+# 
+
+我先看下项目文档和现有的 ShoulderSurfing 相关代码。
+
+现有实现已经有了反射骨架。我去看下实际的 ShoulderSurfing jar 里的 API，以及当下是怎么用这些方法的。
+
+SSR 的 `IPlayerConfig` 里有 `isPlayerYRotTurningWithCamera()` / `getPlayerYRotTurnAngleLimit()` 这类开关，很可能就是官方接口。我用 IDEA 反编译确认实现。
+
+IDEA 可以反编译这个 jar。`turnPlayerWithCamera` 正是关键——它只在 `!isMoving` 时才把相机朝向写回玩家。我再确认一下移动时玩家朝向是谁在改。
+
+SSR 内置了 cgm 的 `RecoilHandlerMixin`，这直接说明官方期望的对接方式。我看下它和 `PlayerMixin`。
+
+我看下 SSR 客户端主类，确认移动时是谁把玩家朝向转向移动方向。
+
+SSR 的 tick 里只有 `!isCameraDecoupled` 才把相机朝向写回玩家。我确认下"转向移动方向"是渲染层还是玩家实体。
+
+关键找到了：`InputHandler.updateMovementInput` 在移动时会把玩家实体朝向转向"移动方向"（xRot 甚至只取相机俯仰的一半）。这正是朝向跑偏的根源。现在看 SSR 的插件/回调注册机制。
+
+现在看下开火方向是从哪取的——决定这个修复应该落在哪一层。
+
+关键约束已明确：SSR 的事件总线在插件加载后即冻结（`EventBus.freeze()`），只能通过 `shouldersurfing_plugin.json` 声明的插件入口注册。我再确认下插件文件的加载位置和准心/瞄准相关类型。
+
+项目有专门的模组兼容框架文档，方案要按它来，我读一下。
+
+验证一个关键点：SSR 里 `Mth.m_14118_` 到底是不是角度差函数（这决定"只挂 tick 强制朝向"是否会带歪平移）。
+
+方案需要确认"注册相机耦合回调"的确切入口，我查一下 registrar 的实现类。
+
+我把 SSR 的实现反编译看完了，根因和可选路线都清楚了。
+
+## 根因
+
+SSR 默认是 **decoupled camera**（`camera.decoupled_camera = true`），此时玩家实体朝向**本来就不跟相机走**，有三处决定：
+
+1. **`ShoulderSurfing.tick()`**：只有当 `!isCameraDecoupled()` 时才写 `player.setXRot(camera.getXRot())` / `setYRot(camera.getYRot())`。decoupled 时这个分支不执行。
+2. **`InputHandler.updateMovementInput()`**（移动时触发，就是"左右移动"掉队的原因）：decoupled 且按下方向键时，直接把玩家实体朝向转向**移动方向**，且俯仰只取 `cameraXRot * 0.5`；同时它靠"玩家 yaw ≠ 相机 yaw"做移动方向补偿。
+3. **`ShoulderSurfingCamera.turnPlayerWithCamera()`**（转镜头时）：只在 `!isMoving` 时逼近相机朝向，且受 `playerYRotTurnAngleLimit`（默认 90）限制。
+
+而弹道来自服务端实体的朝向（[_DefaultGunFire.java:213](core/src/main/java/dev/xcolorful/customgun/core/gun/attack/_DefaultGunFire.java:213)、[_DefaultGunAttack.java:275](core/src/main/java/dev/xcolorful/customgun/core/gun/attack/_DefaultGunAttack.java:275)），`C2SMessageShooterShoot` 只传 timestamp + chargeProgress、**不带朝向**。所以朝向一歪，弹道就跟准心分家。
+
+## 关键判断：不能"只挂 client tick 强制朝向"
+
+直觉做法是每 tick `player.setYRot(camera.getYRot())`，但**会带歪平移**：`updateMovementInput` 的补偿是 `input.rotateDegrees(degreesDifference(playerYRot, cameraYRot))`，随后 vanilla 再用 `getYRot()` 旋转输入。两者相加后净结果 = 相机朝向 + θ×`turningSpeedMultiplier`（θ 为移动方向与相机的夹角）。玩家 yaw 被钉死在相机朝向后补偿项恒为 0，纯平移（θ=90°）会歪 0.25×90° ≈ **22.5°**。所以要生效，必须**同时让 SSR 的转向块不执行**。
+
+## 能同时解决三处的唯一开关：让 SSR 认为相机是 coupled
+
+`isCameraDecoupled == false` 时，SSR 自己会每 tick 把相机朝向写回玩家，并跳过上面第 2 条的转向块——这就是"朝向始终对准，左右移动和转镜头都跟上"，且写入时机在 `sendPosition` 之前，同步给服务端的朝向是对的。
+
+SSR 暴露了强制 coupled 的内置接口：`ComputeCameraCouplingEventHandler`（每 tick 从 `computeIsCameraDecoupled` 求值，可条件生效）。**但它只能通过插件入口注册**——`EventBus` 在插件加载后即 `freeze()`，`registerHandler` 里的 `checkState()` 没有 active plugin container 就直接抛异常，运行时反射注册走不通；入口必须由 `shouldersurfing_plugin.json` 声明，类要 `implements IShoulderSurfingPlugin`。
+
+## 三个方案
+
+**A. 官方插件入口（内置接口，推荐）**
+`core/src/main/resources/shouldersurfing_plugin.json` 写 `{"entrypoints":["...ShoulderSurfingPlugin"]}`；入口类实现 `IShoulderSurfingPlugin`，`register(IEventBus)` 里注册一个耦合 handler，委托给 `ShoulderSurfingCompat` 的判断。注意要 `event.setResult(true); event.cancel();`——SSR 自带的 handler 会按"是否坐矿车"覆写 result。
+- 优点：SSR 全权负责时机、`xRotO/yRotO` 插值、同步顺序；不碰用户配置、不碰 SSR 内部结构。
+- 代价：这一个类必须在编译期见到 `IShoulderSurfingPlugin` / `IEventBus` / `ComputeCameraCouplingEventHandler`（`compileOnly` 得留着，和 wiki "主模组不引入额外 Gradle 依赖"冲突）；**骑载具时无效**（`computeIsCameraDecoupled` 里 `isPassenger()` 先返回 true，硬性 decoupled）。
+
+**B. 纯反射改 SSR 的耦合配置**
+`IPrepareClientTickEvent`（= ClientTickEvent Phase.START，早于 `player.tick()`）里检查条件，反射写 `CameraConfig.isCameraDecoupled`（`ForgeConfigSpec.BooleanValue`）为 false，条件结束后还原。SSR 自己完成对齐，同样不碰内部结构。
+- 代价：改的是用户的 SSR 配置值（走 `Config.set` 会标脏落盘、和用户自己的耦合快捷键打架；直接写 spec 值可避开脏标记但仍是篡改），玩家可见。
+
+**C. 自家 `@Pseudo` mixin 注入 SSR 内部**
+`@Pseudo @Mixin(targets = "com.github.exopandora.shouldersurfing.client.InputHandler")` 取消 `updateMovementInput`，再在 `IPrepareClientTickEvent` 里用现有的 `ShoulderSurfingCompat` 相机接口把朝向写回玩家。
+- 优点：零编译期依赖、不碰配置、生效范围精确。
+- 代价：依赖 SSR 内部方法名（版本漂移会静默失效，需 `require = 0` 兜底）；这正是 SSR 自己对 CGM 用的手段（`RecoilHandlerMixin`），但主模组里引入"mixin 别人内部"是新的耦合形式。
+
+另外提一句最省事的基线：如果"始终对准"就是你要的全部，SSR 配置里关掉 `decoupled_camera` 即可，零代码；写代码的价值只在**按状态生效**（比如仅手持枪械时）。
+
+两个问题需要你定，我再动手：
+
+明白，不动代码，只出报告。
+
+已确认：改 SSR 的 `decoupled_camera` 生效，说明要的就是 **coupled 语义**。下面是报告，只写结论不写代码改动。
+
+## 一、怎么再看这些代码
+
+SSR 的实现不在仓库里，在 Gradle 缓存：
+
+```
+C:/Users/XColo/.gradle/caches/modules-2/files-2.1/curse.maven/shoulder-surfing-reloaded-243190/8725611/*/shoulder-surfing-reloaded-243190-8725611.jar
+```
+
+用 IDEA MCP 直接反编译类，不需要额外的反编译器：
+
+```
+mcp__idea__read_file(file_path="<jar 绝对路径>!/com/github/exopandora/shouldersurfing/client/ShoulderSurfingCamera.class",
+                     projectPath="D:/Github/Custom-Gun-Continued")
+```
+
+另外 `mcp__idea__search_symbol(include_external=true)` 可以定位它引用的 MC/Forge 源码（顺带确认了 `Mth.m_14118_` = `degreesDifference`、`Mth.m_14148_` = `approachDegrees`）。
+
+## 二、根因：SSR 的朝向链路
+
+包 `com.github.exopandora.shouldersurfing`：
+
+| 位置 | 行为 |
+|---|---|
+| `client.ShoulderSurfing#tick()` | 只有 `!isCameraDecoupled()` 时才 `player.setXRot/setYRot(camera)`；`isCameraDecoupled` 每 tick 由 `computeIsCameraDecoupled(...)` 算出，内部走 `EventHooks.isForcingCoupledCamera()` |
+| `client.InputHandler#updateMovementInput(Input)` | decoupled 且按下方向键时，把玩家实体朝向转向**移动方向**（俯仰只给 `cameraXRot * 0.5`），并用 `moveVector.rotateDegrees(degreesDifference(playerYRot, cameraYRot))` 补偿移动方向 |
+| `client.ShoulderSurfingCamera#turnPlayerWithCamera(...)` | 只在 `!isMoving` 时逼近相机朝向，受 `playerYRotTurnAngleLimit`（默认 90）限制 |
+| `client.ShoulderSurfingCamera#turn(...)` | 返回 `isCameraDecoupled()`；为 false 时 vanilla `LocalPlayer.turn` 才接手 |
+| `ShoulderSurfing#computeIsCameraDecoupled(...)` | `isFallFlying()` / `isPassenger()` **先于**耦合回调返回 → 骑载具时强制耦合无效 |
+
+即：decoupled（SSR 默认）下，玩家朝向只在"站着不动转镜头"时粗略跟一下，一按 WASD 就被拉去移动方向。
+
+## 三、本项目侧：朝向 → 弹道
+
+- 弹道取服务端**实体**朝向：[_DefaultGunFire.java:213](core/src/main/java/dev/xcolorful/customgun/core/gun/attack/_DefaultGunFire.java:213)、[_DefaultGunAttack.java:275](core/src/main/java/dev/xcolorful/customgun/core/gun/attack/_DefaultGunAttack.java:275)
+- `C2SMessageShooterShoot` 只传 `fireTimestamp` + `chargeProgress`，**不带朝向** → 客户端实体朝向的同步值是弹道的唯一来源
+- 现有注入点 [ShoulderSurfingCompat.java](core/src/main/java/dev/xcolorful/customgun/client/compat/shouldersurfing/ShoulderSurfingCompat.java)（反射 + `enableBuiltinCompat`，`ClientSetup.init()` 调用），后坐力已改走相机的 `setXRot/setYRot`
+
+## 四、关键结论：tick 里单独强制朝向不行
+
+`input.rotateDegrees(degreesDifference(playerYRot, cameraYRot))` + vanilla 随后按 `getYRot()` 旋转输入，两者叠加后净移动方向 = 相机朝向 + θ×`turningSpeedMultiplier`（θ = 移动方向与相机的夹角）。把玩家 yaw 钉死成相机 yaw 会让补偿项恒为 0，纯平移（θ=90°）歪 0.25×90° ≈ **22.5°**。所以任何方案都必须**同时**让 `updateMovementInput` 的转向块不执行。
+
+## 五、三条方案
+
+### A. 内置接口（插件入口）
+
+mod jar 根目录放 `shouldersurfing_plugin.json`：
+
+```json
+{ "entrypoints": ["dev.xcolorful.customgun.client.compat.shouldersurfing.ShoulderSurfingPlugin"] }
+```
+
+入口类实现 `IShoulderSurfingPlugin`，注册耦合 handler：
+
+```java
+public class ShoulderSurfingPlugin implements IShoulderSurfingPlugin {
+    @Override public void register(IEventBus bus) {
+        bus.register(event -> {                        // ComputeCameraCouplingEventHandler
+            if (ShoulderSurfingCompat.shouldForceCameraCoupling()) {
+                event.setResult(true);
+                event.cancel();                        // 必须：否则 SSR 自带 handler 按"是否坐矿车"覆写
+            }
+        });
+    }
+}
+```
+
+- 优点：SSR 负责时机、`xRotO/yRotO` 插值、同步顺序；不碰用户配置、不碰 SSR 内部结构。
+- 限制：`EventBus` 加载后立即 `freeze()`，`registerHandler` 的 `checkState()` 没有 active plugin container 直接抛异常 → **运行时反射注册走不通**，入口类必须编译期见到 `IShoulderSurfingPlugin` / `IEventBus` / `ComputeCameraCouplingEventHandler`（`compileOnly` 得留着，与 wiki "主模组不引入额外 Gradle 依赖"冲突；按 wiki 思路可把入口类当作"扩展模组那一侧"，主模组只留 `shouldForceCameraCoupling()` 注入点）。
+- 骑载具无效（见上表）。
+
+### B. 纯反射改 SSR 配置（本次已用配置生效，这是它的自动化版本）
+
+反射路径：`config.Config.CLIENT.getCameraConfig()` → `CameraConfig` 私有字段 `isCameraDecoupled`（`ForgeConfigSpec.BooleanValue`）写 false，条件结束后还原原始值。时机用项目自有事件 `IPrepareClientTickEvent`（= `TickEvent.ClientTickEvent` Phase.START，早于 `player.tick()`）。
+
+- 陷阱：走 `CameraConfig#toggleCameraCoupling()` 会经 `Config.CLIENT.set` **标脏并被 SSR 落盘**，且与用户自己的耦合快捷键打架；直接写 spec 值可避开脏标记，但仍属篡改用户配置。
+
+### C. 自家 `@Pseudo` mixin
+
+```java
+@Pseudo
+@Mixin(targets = "com.github.exopandora.shouldersurfing.client.InputHandler")
+public class SsrInputHandlerMixin {
+    @Inject(method = "updateMovementInput", at = @At("HEAD"), cancellable = true, require = 0)
+    private void cgc$skipTurning(Input input, CallbackInfo ci) { /* 条件成立时 ci.cancel() */ }
+}
+```
+
+配合 `IPrepareClientTickEvent` 里把 `IShoulderSurfingCamera.getXRot/getYRot` 写回 `LocalPlayer`（含 `xRotO/yRotO`）。
+
+- 优点：零编译期依赖、不碰配置、生效范围精确。
+- 代价：依赖 SSR 内部方法名，版本漂移会静默失效（`require = 0` 兜底）；`@Pseudo` + 字符串 target 是 SSR 自己对 CGM 用的手法（其 `compat/mixin/cgm/RecoilHandlerMixin` 就是这么重定向 `RecoilHandler` 的 `getXRot/setXRot`）。
+
+## 六、将来落地时的验证清单
+
+1. **准心与弹着点**：coupled 下相机仍有侧向偏移，准心射线源（SSR 的 `PickOrigin` / 动态准心）决定近距离是否对得上，需实测。
+2. **骑载具**：A 路线在载具上不生效，需要时得另想办法。
+3. **退出时机**：B 路线要确认关闭游戏时有没有把改过的配置落盘。
+4. **不装 SSR**：`shouldersurfing_plugin.json` 无人读取、入口类不被加载，行为应与现状一致（wiki 要求两种情形都测）。
+
+报告已同时存进项目记忆（`ssr-player-facing-alignment.md`），以后新会话可以直接检索到 jar 路径、类名和三条写法。

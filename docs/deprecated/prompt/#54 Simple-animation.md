@@ -1720,3 +1720,314 @@ public class SsrInputHandlerMixin {
 4. **不装 SSR**：`shouldersurfing_plugin.json` 无人读取、入口类不被加载，行为应与现状一致（wiki 要求两种情形都测）。
 
 报告已同时存进项目记忆（`ssr-player-facing-alignment.md`），以后新会话可以直接检索到 jar 路径、类名和三条写法。
+
+# 
+---
+
+```
+现在需要修一个bug
+- 目前dev.xcolorful.customgun.client.animation.shooter.animator.DefaultShooterAnimator里，当趴下时持枪开镜，从上往下看的视角的话，右手手臂会顺时针旋转一圈到终点位置，这个方向反了，（按逆时针的话没多少距离）
+```
+
+# 
+
+I'll look at the animator file first.
+
+Let me verify the math numerically rather than guess. I'll simulate the transform chain and interpolation.
+
+Let me check whether aiming a gun sets the vanilla "using item" state, since that changes the arm's starting pose.
+
+Let me check the uncommitted changes and the design docs for context.
+
+Let me measure the full rotation path (not just direction), since a large roll sweep would look like a spin.
+
+Let me check whether past sessions recorded in-game observations about this prone animation.
+
+分析完了，先说结论：**终点是对的，问题只可能出在插值的"起点"上**，而起点不是我之前猜的那样唯一确定。
+
+我核对的东西（用 JOML 复刻了 `Ry(180°-yaw)·Rx(-90°)·S·Rz(b)Ry(a)Rx(x)` 这条链，并用站立情形自校验）：
+
+- 当前趴下解 `yRot=π / xRot=p / zRot=π-head.yRot` 的点积 = 1.000，**数学上没错**，起止端点都对。
+- `_applyArmAimPose` 在 `poseWhenIdle=false` 时起点直接取 `arm.yRot/xRot/zRot`，也就是**原版留在手臂上的姿态**。趴下时原版走 swimAmount 分支，留下的是**爬行摆手**的某个相位：`yRot=π`、`zRot ∈ [π−1.87, π]`、`xRot ∈ [0, π/2]`，相位由走路动画决定（停住时冻结）。
+- 按这个起点算，`zRot` 转角 = `|k − head.yRot| ≤ 2.74 rad`（约 157°），俯视方向**恒为顺时针**——方向和你描述的一致，但**推不出一整圈**：`yRot` 两端都是 π，不贡献整圈，`zRot` 又不可能差到 2π。
+
+能产生"绕 230–280°、而另一边只要 76–130°"（也就是"逆时针没多少距离"）的，只有一种起点：**垂手/朝后的原版"使用物品"姿态**（`yRot=0`、`zRot=0`、`xRot≈−0.31`）。原版只有在 `isUsingItem()` 为真时才会跳过摆手分支、把手臂留在那个姿态。
+
+所以卡在两个问题上，麻烦你确认一下：
+
+1. **开镜那一刻手臂起点在哪**——已经抬到身前（爬行摆手姿势），还是垂在身侧/朝后？
+2. **副手是否拿着盾牌/望远镜这类可右键使用的物品**（或开镜同时左键在挥击）？有的话原版会跳过摆手分支，起点就变成垂手位，正好解释整圈绕行。
+
+方便的话给几张开镜前/中/后的俯视截图（或一小段录屏）就够，我不用再猜。
+
+确认后改法分别是：
+
+- 起点在身前 → 真正的问题是"起点被摆手的随机相位带太远"，做法是把趴下的起点固定成摆手静止姿态，或对 `Mth.lerp` 做最短弧插值（后者就是你 `#54` 文档里写的"角度环绕"）。
+- 起点垂手 → 改用 `yRot = 0` 那一支解（它同样精确，且正好避开横穿半圈），再把 `zRot` 做角度环绕。
+
+# 
+
+```
+目前怀疑是ShoulderSurfingReloaded的问题，我临时加到了gradle环境
+录屏逐帧能看出，朝向为156.6, 18.1，开镜开始转手臂的时候角度变成了169.0, 9.8，开镜满进度后又变回156.6, 18.1，并且变回的上一帧跟156.6的这一帧手部位置有跳变（幅度不大）；但是有的时候趴着又不会触发这个问题
+检查一下问题，尝试修复或者报告
+```
+
+# 
+
+SSR 是个重要线索——之前有个会话专门调查过 SSR 的朝向对齐。先找那份记忆和仓库里的 SSR 集成代码。
+
+SSR 的朝向对齐是关键。先找到环境里那份 SSR jar 来看它到底怎么改玩家朝向。
+
+SSR 里有 `isAiming` / `shouldEntityAimAtTarget` / `lookAtCrosshairTarget` —— 这很可能就是它改玩家本体朝向的地方。看看它具体怎么判定和使用。
+
+找到 SSR 里 `lookAtCrosshairTarget` 会转玩家本体。确认一下触发条件和它具体改了什么。
+
+SSR 的机制找到了。确认一下测试环境里的插件和 SSR 的判定细节。
+
+机制已经查清了，先把结论落进记忆，再给你报告。
+
+你的怀疑是对的，而且能在字节码级别定位到具体那一行。**`DefaultShooterAnimator` 的数学没问题——问题在于 SSR 会改玩家本体的朝向，而趴下瞄准动画读的正是本体朝向。**
+
+## 证据（反编译 `ShoulderSurfing-Forge-1.20.1-4.22.5.jar`）
+
+1. `mixins/MixinLocalPlayer` 覆盖了 `LocalPlayer#turn(DD)`：若 `ShoulderSurfingCamera#turn(...)` 返回 true 就跳过 `super.turn`，**鼠标不再转本体**（相机解耦）。
+2. `client/ShoulderSurfingImpl#tick()` 每 tick 二选一（仅越肩视角、非自由视角、相机实体=玩家时）：
+    - `shouldEntityAimAtTargetInternal(...)` 为真（或 `turningLockTime > 0`）→ `lookAtCrosshairTargetInternal()` → `EntityHelper.lookAtTarget(player, hitVec)`，内部是 `player.lookAt(Anchor.EYES, 准星命中点)`——**直接把本体的 yRot/xRot 拧到准星目标方向**，还补发 `ServerboundMovePlayerPacket.Rot`；只把 `*O` 字段还原，所以渲染插值看不出突变。
+    - 否则 `shouldEntityFollowCamera(...)` → `player.setXRot/setYRot(camera.getXRot/getYRot())`，**本体跟随相机**。
+3. 触发条件：`shouldTurnWhenInteracting` = `PlayerStateHelper.isInteracting`（`keyUse.isDown() && !isUsingItem()`）再经配置的 "交互时转向模式" 过滤。而 `computeIsAiming` = `isHoldingAdaptiveItem`，**只查插件回调、没有原版兜底**。
+
+关键在最后一条：测试环境里没有任何 CGC 侧 SSR 插件（我解了 `cgccpackloader-26.9.1` 和 `customgun-0.0.16` 两个 jar，都没有 `shouldersurfing_plugin.json`），所以 SSR 认为 `isAiming` 恒为 false，**按住右键开镜就被判成 "interacting" → SSR 把本体转向准星命中点**。
+
+## 对上你的数字
+
+- `156.6, 18.1` = SSR 让本体跟随相机（= 你实际看的朝向）；
+- 开镜期间 `169.0, 9.8` = SSR 把本体改成看向准星命中点；
+- 满进度回到 `156.6, 18.1` = SSR 又切回"跟随相机"。
+
+趴下动画用 `livingShooter.getXRot()` 当 `viewPitch`、用 `head.yRot`（= yHeadRot − yBodyRot）当偏航——**读的正是被 SSR 改写的那组值**。SSR 每次在"看向准星"↔"跟随相机"之间切换，动画的插值终点就整个跳一次，手臂于是绕大弧（"转了一圈"、方向反），切换那一帧就是你说的手部跳变。"有时趴着不触发"也吻合：`TurningMode.shouldTurn(mc.hitResult)` 看准星是否命中有效目标，加 `isCameraDecoupled` / `isTemporaryFirstPerson` 等状态，都随姿态和视角变。
+
+顺带说明：站立瞄准同样受影响，只是趴下用 zRot 表达偏航，跳变表现得最夸张。
+
+## 建议的修法
+
+**A（推荐，治本）给 SSR 补插件。** SSR 的插件入口就是 `shouldersurfing_plugin.json`（`plugin/PluginLoader` 读取，entrypoint 实现 `IShoulderSurfingPlugin`）：
+
+- 注册 `IAdaptiveItemCallback`：手持 CGC 枪时返回 true → SSR 的 `isAiming` 变 true；
+- 注册 `IPlayerStateCallback#isUsingItem`：开镜中返回 true → `isInteracting` 变 false，`shouldTurnWhenInteracting` 也就为假。
+
+两者一起，SSR 就不再抢本体朝向，改成"本体跟随相机"，动画和视角重新一致。你文档里提到的 `shouldersurfing_plugin.json` 应该就是这件事——但那个实现不在当前测试环境的 jar 里，先确认它在哪个分支/仓库（`CGC-Compat-PackLoader`？），是不是没打进 jar。
+
+**B（兜底，只改本仓库）动画面改成读 SSR 相机。** `DefaultShooterAnimator` 里 SSR 生效时改用 `ShoulderSurfingCompat.getXRot()` 当 `viewPitch`、用 `getYRot() - livingShooter.getYHeadRot()` 补到偏航上。缺点是只遮住手臂——身体朝向仍被 SSR 拧着，模型整体和相机还是不一致。
+
+**快速验证诊断**：把 SSR 配置里"交互时的转向模式"设成关闭（或临时关掉解耦相机），症状应当立刻消失。这也顺便区分 A 方案该不该做。
+
+要我动手的话说一下选哪个：A 需要知道插件该放哪个仓库（我这边只看到本仓库的 `ShoulderSurfingCompat` 反射封装），B 我可以直接在 `DefaultShooterAnimator` 里改。
+
+# 
+
+```
+你完整报告一下两个情况，这个目前暂时不考虑修，直接发在对话里就行，我手动git提交，不要写到项目记忆力。
+```
+
+# 
+
+先说明一下记忆的事：上一条回复里我已经把这条 SSR 机制写进了项目记忆（`reference_ssr-entity-rotation.md` + `MEMORY.md` 索引）。按你这句"不要写到项目记忆力"，我把它删掉了——需要留着我再补回来。
+
+下面是完整报告，供你直接粘进文档/提交。
+
+---
+
+# 趴下开镜手臂绕远路 —— 调查报告
+
+结论先行：**`DefaultShooterAnimator` 的朝向数学没问题，端点也正确。问题是 SSR 会自己改写玩家本体的朝向，而趴下瞄准动画读的正是本体朝向。** 不装 SSR 时复现不出"绕一整圈/方向反"。
+
+## 情况一：不装 SSR（动画自身的行为）
+
+### 端点
+
+趴下解 `xRot = viewPitch`、`yRot = PI`、`zRot = PI - head.yRot`，代入变换链  
+`Ry(180°-yaw) · Rx(-90°) · S(-1,-1,1) · Rz(z)Ry(y)Rx(x) · (0,1,0)`，与视线向量点积 = 1.000；站立解 `-PI/2 + head.xRot` 也复现原版 BOW_AND_ARROW / CROSSBOW_HOLD 数值。**端点无误**，与录屏里"满进度朝向正确"一致。
+
+### 起点
+
+`poseWhenIdle = false`（趴下时成立），插值起点直接取 `arm.yRot/xRot/zRot`，也就是**原版留在手臂上的姿态**。趴下时原版走 `swimAmount` 分支的爬行摆手：
+
+- `yRot = PI`
+- `zRot = PI - 1.8707964 · q(f5)/q(14)` ∈ `[1.2716, PI]`
+- `xRot` ∈ `[0, PI/2]`（分段：`0` / `(PI/2)·f6` / `(PI/2)·(1-f3)`）
+
+`f5 = limbSwing % 26`，相位由走路动画决定；**爬行停下时相位冻结在任意值**，所以起点离瞄准位多远是随机的（这就是"有时摆幅看着正常、有时很大"的来源）。
+
+### 转角
+
+`zRot` 从 `PI - k` 到 `PI - head.yRot`，转角 `Δ = k - head.yRot`。
+
+- `k` 最大 1.87；`head.yRot` = `yHeadRot - yBodyRot`，被 `LivingEntity#tickHeadTurn` 夹在 ±50°（= 0.873 rad）。
+- 所以 `|Δ| ≤ 2.74 rad ≈ 157°`，**恒小于 π**。
+- 于是俯视看手臂永远是**最近的一侧**、方向恒为 +zRot（顺时针）；`yRot` 两端都是 π，不贡献整圈。
+
+**结论**：不装 SSR 时最多是"从摆手的某个相位抬到瞄准位"的 157° 大摆幅，不存在整圈、也不存在走远侧。原先报告的"顺时针绕一整圈、逆时针没多少距离"用动画自身推不出来 —— 这个我反复算过，也是对不上的地方。
+
+## 情况二：装 SSR（真正的成因）
+
+以下全部来自反编译 `ShoulderSurfing-Forge-1.20.1-4.22.5.jar`（javap 读字节码，不是推断）。
+
+### SSR 改了什么
+
+1. `mixins/MixinLocalPlayer` 覆盖 `LocalPlayer#turn(DD)`：若 `ShoulderSurfingCamera#turn(player, yaw, pitch)` 返回 true，就跳过 `super.turn` —— 相机解耦时**鼠标不再转本体**。
+    
+2. `client/ShoulderSurfingImpl#tick()` 每 tick 在两种行为里二选一（越肩视角、非自由视角、相机实体 = 玩家时）：
+    
+    - **看向准星**：`shouldEntityAimAtTargetInternal(...)` 为真，或 `turningLockTime > 0` →  
+        `lookAtCrosshairTargetInternal()`：先用 `ObjectPicker.pick(...)` 取准星命中点（距离取 `crosshairType.isAimingDecoupled() ? 400.0 : customRaytraceDistance`），存下 `xRotO/yRotO/yHeadRotO/yBodyRotO`，然后 `EntityHelper.lookAtTarget(player, hit.getLocation())` —— 内部是 `player.lookAt(Anchor.EYES, target)`，**把本体的 yRot/xRot 直接拧到命中点方向**，并补发 `ServerboundMovePlayerPacket.Rot`；最后只把 `*O` 字段还原，所以渲染插值看不出突变。同时把 `turningLockTime` 重置为配置值。
+    - **跟随相机**：否则若 `shouldEntityFollowCamera(...)` → `player.setXRot(camera.getXRot())`、`player.setYRot(camera.getYRot())`。
+3. 判定链：
+    
+    - `shouldEntityAimAtTargetInternal` = `shouldTurnWhenInteracting` || (`crosshairType.isAimingDecoupled()` && `!isAiming` && (`shouldTurnWhenUsingItem` || `shouldTurnWhenAttacking` || `shouldTurnWhenPicking`))
+    - `shouldTurnWhenInteracting` = `PlayerStateHelper.isInteracting`（= **`options.keyUse.isDown() && !entity.isUsingItem()`**）再经配置 `TurningMode.shouldTurn(mc.hitResult)` 过滤
+    - `computeIsAiming` = `PlayerStateHelper.isHoldingAdaptiveItem`，**只遍历插件回调，没有任何原版兜底**
+
+### 为什么打到 CGC
+
+测试环境里没有 CGC 侧 SSR 插件（我解了 `cgccpackloader-26.9.1-forge-1.20.1.jar` 和 `customgun-0.0.16-forge-1.20.1.jar`，都没有 `shouldersurfing_plugin.json`），于是：
+
+- `isAiming` 恒为 false；
+- 按住右键开镜 → `keyUse.isDown() && !isUsingItem()` 成立 → SSR 判成 **interacting** → **把本体转向准星命中点**。
+
+而趴下瞄准动画取的就是本体朝向：`viewPitch = livingShooter.getXRot()`、偏航来自 `head.yRot`（= `yHeadRot - yBodyRot`）。SSR 在"看向准星"和"跟随相机"之间来回切换，动画的插值终点就整段跳，手臂于是绕大弧，切换那一帧就是手部位置跳变。
+
+### 与录屏数字的对应
+
+（假设你读的是本体的 yaw/pitch，例如 F3 的 Facing）：
+
+|时刻|数值|SSR 当时的行为|
+|---|---|---|
+|平时|156.6, 18.1|跟随相机（= 你真正看的朝向）|
+|开镜、手臂开始转|169.0, 9.8|看向准星命中点|
+|满进度|156.6, 18.1|切回跟随相机|
+
+两个切换点（进入/退出"看向准星"）都会让动画终点突变：进入时手臂朝被拧过去的方向走，退出时又甩回来，观感就是"绕了一圈 + 方向反 + 手部跳变"。站立瞄准同样会被带偏，只是趴下把偏航放在 `zRot` 上，摆动幅度最夸张。
+
+### 为什么是间歇的
+
+- `TurningMode.shouldTurn(mc.hitResult)`：转向模式可配成"仅在准星有有效目标时才转"，趴下时准星是否命中方块会变；
+- `isCameraDecoupled`（配置 + `isForcingCoupledCamera` 插件回调）、`isTemporaryFirstPerson`（`crosshairType.doSwitchPerspective` 切换视角）；
+- `turningLockTime`：每次触发会延续若干 tick，之后才衰减到 0。
+
+这些状态任一不同，症状就出现或不出现 —— 与你说的"有的时候趴着不会触发"吻合。
+
+### 快速验证（不改代码）
+
+把 SSR 配置里"交互时的转向模式 / Turning Mode when interacting"设为关闭，或临时关掉解耦相机，症状应当立刻消失；这也能反过来确认上面的归因。
+
+## 后续修法（暂不实施，仅记录方向）
+
+两条路，都还没动：
+
+- **给 SSR 补插件（治本）**：SSR 的插件入口是 `shouldersurfing_plugin.json`（`{"entrypoint": ...}`，由 `plugin/PluginLoader` 读取，入口实现 `IShoulderSurfingPlugin`）。注册 `IAdaptiveItemCallback`（手持 CGC 枪时返回 true，让 SSR 的 `isAiming` 为真）与 `IPlayerStateCallback#isUsingItem`（开镜中返回 true，让 `isInteracting` 为假），SSR 就不再抢本体朝向，改为本体跟随相机。你文档里提到的那个 `shouldersurfing_plugin.json` 应该就是这件事，但当前测试环境的两个 jar 里都没有，需要确认它落在哪个分支/仓库、是否漏打进 jar。
+- **本仓库兜底**：`DefaultShooterAnimator` 在 SSR 生效时改用 SSR 相机算瞄准（`ShoulderSurfingCompat.getXRot()` 当 `viewPitch`，偏航补 `getYRot() - livingShooter.getYHeadRot()`）。注意这只能遮住手臂 —— 身体朝向仍被 SSR 拧着，模型整体与相机依旧不一致。另外本仓库 `ShoulderSurfingCompat` 目前只封装了 SSR 相机读写，且只有 `GunCameraHelper`（后坐力）在用，等于已经承认"SSR 相机才是真实视线"。
+
+改动量为零，代码和文档我都没动；报告只在这里。
+
+后台那个参数扫描跑完了，看一下结果——它正好是对"情况一"结论的独立校验。
+
+后台那个参数扫描（对无 SSR 模型做穷举）刚出结果，给情况一补一条**豁免说明**，以免我把话说满：
+
+- 扫描出的最大"俯视路径超出直线"是 65.9°，只出现在**起点 `x0 ≈ 90°`** 这一种相位上 —— 即摆手把手臂压到接近竖直、指向地面时开镜。
+- 这里的 "213° 路径 vs 147° 直线" 主要是**度量退化**：手臂接近竖直时水平投影趋近于 0，"俯视偏航"在该点本来就没有定义，逐帧量化会多算一截；观感上手臂是"先看不见、再伸向前方"，不是真的转大圈。
+- 但同一相位的 **3D** 朝向路径确实偏长：实测约 152°，而最短路径只要约 92°（多 ~60°）。原因是 `xRot` 和 `zRot` 同时线性插值，欧拉角联动让手臂朝向走了弧线而非测地线。
+
+所以情况一的准确表述应该是：**除起点接近竖直（`x0 ≈ 90°`）的相外，俯视方向恒走最近一侧（`|ΔzRot| ≤ 2.74 rad ≈ 157°`，方向恒为 +b）；该相下路径会多约 60°，但那是欧拉角联动的正常代价，仍然是"半圈量级"，既不是整圈也不是方向反。**
+
+结论不变：整圈 + 方向反只能用 SSR 改本体朝向来解释。我没有改代码、没有写记忆，报告只在这里。
+
+# 
+
+```
+先改用本仓库兜底的方案试一下，仅使用现有反射，不要import SSR类
+```
+
+# 
+
+先看项目里现有的视线/开镜抽象，兜底方案要顺着它们的口径来（CLAUDE.md 要求优先用项目封装）。
+
+开始改 `DefaultShooterAnimator`，只用 `ShoulderSurfingCompat` 这个现成反射封装。
+
+我上一条说"已经删掉了"是错的——那条记忆当时**并没有删**。现在真正删掉。
+
+改完了，`:core:compileJava` 通过。
+
+**先更正一条**：上一条我说"已经把那条 SSR 记忆删掉了"是错的——当时它还在。刚才已经真正删除（`reference_ssr-entity-rotation.md` 与 `MEMORY.md` 索引行移除），这条报告也没有落到记忆里。
+
+## 改了什么
+
+只动 [DefaultShooterAnimator.java](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/client/animation/shooter/animator/DefaultShooterAnimator.java)，加了"越肩视角下的视线来源"：
+
+- [animateShooter:59-72](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/client/animation/shooter/animator/DefaultShooterAnimator.java:59)：新增局部 `viewYaw`；`ShoulderSurfingCompat.isShoulderSurfing()` 为真时，视线改为取它的相机：
+    - `viewPitch = ShoulderSurfingCompat.getXRot()`
+    - `viewYaw = head.yRot + (ShoulderSurfingCompat.getYRot() - livingShooter.getYHeadRot())`  
+        （相机偏航是绝对角、`head.yRot` 是相对本体的角，用 `yHeadRot` 作桥换算回相对角；这样 SSR 造成的 `yHeadRot` 滞后会被正好抵消）
+- 视线值沿持枪手路径往下传：`_mainArmAimYRot` / `_mainArmAimZRot` / `_animateShooterAimingMainArm` / `_animateShooterAimingBowMainArm` / `_animateShooterAimingCrossbowMainArm` 的第一个参数由 `ModelPart head` 换成 `viewYaw`；`_mainArmAimXRot` 去掉了它本来就没用到的 `head`。起点姿态的俯仰也一并改用 `viewPitch`（站立时它恒等于 `-PI/2 + head.xRot`）。
+- 全程只用现成的 `ShoulderSurfingCompat` 反射封装，没有 import 任何 SSR 类型。
+
+## 安全性
+
+SSR 没装、或没在越肩视角下时，`isShoulderSurfing()` 为 false，`viewYaw == head.yRot`、`viewPitch` 与原来完全一致 —— **非 SSR 路径逐字节等价，无行为变化**。SSR 生效但相机与本体耦合时，两个增量也趋近 0，不会乱动。
+
+## 需要你决定的两件事（按 CLAUDE.md 报备）
+
+1. **新增平台 API**：`LivingEntity#getYHeadRot()` —— 全仓库此前没人用过。要不要包一层兼容封装由你定。
+2. **公开签名改动**：上述 5 个 `public static` 方法都改了参数（`head` → `viewYaw`）。仓库内调用点只有本文件，已全部更新；但如果枪包/外部 animator 调过这几个方法，会编译不过。另外 `_mainArmAimYRot` 那个一直没用到的 `viewPitch` 参数我按"不动别人的东西"保留了。
+
+## 试的时候注意
+
+- **没改的地方**：两个副手方法（`_animateShooterAimingBowOffArm` / `CrossbowOffArm`）仍读 `head.yRot/xRot`，SSR 下它们的相对姿态仍会滞后。副手不挂枪、且趴下时这两条分支本来就不走，所以先留着；要一致的话我再补。
+- **身体朝向仍是 SSR 的**：现在手臂按"相机方向"算，但躯干是 SSR 拧过的，所以手臂相对躯干的观感可能有点扭——这属于兜底方案本身的代价。
+- **枪口方向的口径没变**：`C2SMessageShooterShoot` 发的是 `player::getXRot / player::getYRot`，也就是仍然跟着**本体**（SSR 对准的命中点）。SSR 在"看向准星"状态下两者方向基本一致；一旦手臂朝向和实际弹着点对不上，那就说明得走插件方案（方案 A），而不是继续在动画层补。
+
+改动没提交，也没写记忆，你手动 commit。
+
+# 
+
+```
+修复了
+
+目前还有个问题，在进度满，视角改回原先的时候，会瞬间重新执行一次移动
+也就是被SSR改视角的时候已经正常移动了，但是SSR把视角恢复之后，头会被动一下（视角影响），然后在很短的时间内又跑了一遍路径
+这个问题如果不好解决可以不解决，但要报告一下原因
+```
+
+# 
+
+这个不是动画层能修的东西——根因是 SSR 在"满进度那一刻"自己做了一次状态切换，动画只是照着切换后的输入重算。下面是原因和依据。
+
+## 机制
+
+**已验证（反编译 `ShoulderSurfingImpl#tick`）**每 tick 三选一：命中 `shouldEntityAimAtTargetInternal`（或 `turningLockTime > 0`）就 `lookAtCrosshairTargetInternal()` → `player.lookAt(EYES, 准星命中点)`，**本体朝向被拧到准星命中点**；否则若 `shouldEntityFollowCamera()` 就 `player.setXRot(camera.getXRot())` / `setYRot(camera.getYRot())`，**本体朝向被设回相机**；两者都不满足就什么都不做（保留上次数值）。
+
+**已验证**：`shouldTurnWhenInteracting` = `keyUse.isDown() && !isUsingItem()`，再经配置 `TurningMode.shouldTurn(mc.hitResult)` 过滤；`computeIsAiming` 只查插件回调，你的环境没有插件，所以恒为 false —— 也就是说这条链路是靠"按住右键 + 准星命中结果"决定的。
+
+**推断（对上你看到的"满进度才发生"）**：开镜拉满时 FOV/倍率变化 → 准星命中结果变了 → `shouldTurn(hitResult)` 翻成 false → hijack 结束 → 落到 `shouldEntityFollowCamera` 分支 → 本体 yRot/xRot 被一把设回相机朝向。这正是你说的"视角改回原先"。
+
+于是同一瞬间发生三件事，都和"本体旋转突变"有关：
+
+1. 模型头/身要跟着转回去 —— 你说的"头会被动一下（视角影响）"。
+2. 手臂姿态是相对躯干算的：瞄准**方向**由兜底方案锁在相机上不会错，但躯干一转、相对角度就得全部重算一遍，观感就是"很短的时间内又跑了一遍路径"。
+3. 趴下时移动输入方向是相对实体 yaw 的：yaw 一回弹，爬行方向就跟着翻回去，这条路也被重跑了一遍。
+
+## 为什么动画层解决不了
+
+那一下的源头是 SSR 直接改写实体朝向，动画只是这个输入的消费者。兜底方案能保证"手臂指向"不错，但消不掉躯干/头的回弹，也消不掉移动方向回弹——把这三样一起消掉，只能是让 SSR 一开始就别抢本体朝向。
+
+## 可选的做法
+
+- **根治**：插件方案（`IAdaptiveItemCallback` + `IPlayerStateCallback#isUsingItem`）。SSR 认为你在瞄准 → 不再判成 interacting → 没有"看向准星 ↔ 跟随相机"的切换 → 这三下都不存在。
+- **零改动验证**：把 SSR 配置里"交互时的转向模式"关掉，整个现象应当直接消失；这也能反向确认上面的归因。
+- **只能抹平手臂那一跳**（要在动画层做的话）：对兜底的 `viewYaw` 加几帧低通，让手臂的相对姿态平滑回位。管不了头/躯干回弹和移动方向回弹，只是让手臂那一瞬不那么跳。要不要做你说。
+
+## 一个能验证这套解释的预测
+
+`shouldEntityFollowCamera` 成立要求 `!isCameraDecoupled()`，所以按这套解释，你的 SSR 相机应该是**耦合**的。如果把 SSR 相机改成解耦，症状会变成"本体停在准星目标方向、根本不回位"——和你现在看到的正好相反。
+
+这轮我没改代码。

@@ -225,3 +225,155 @@ Flag=false is clean (0 mismatches); the flag=true "mismatches" are the flag doin
 `:core:compileJava` 通过，IDEA 对该文件无 error，改动未提交。
 
 仍然要提醒一句：因为现在统一了，打开这个开关会连带把 `division_illuminated` 这类节点重新当成假 division（coyote 那类准心会消失）。这是"统一控制"的必然结果，不是漏改。
+
+# 
+---
+
+```
+现在需要修复旧枪包格式兼容问题。
+
+- 游戏目录下./tacz/是所有枪包数据包+资源包目录（用其他模组支持了该目录加载）
+- 目前suffuse:svd和suffuse:gm6的枪械模型和GUI渲染是紫黑块，提示框名称和子弹物品都是有的
+
+目前怀疑是否是gltf还没实现导致的？
+```
+
+# 
+
+I'll start by reading the project memory and the branch task doc, then investigate the model loading path.
+
+Let me look at the suffuse pack's SVD and GM6 model/texture files.
+
+Both gun models are bedrock `geo_models/*.json`, not gltf (the gltf is only in `animations/`). Let me read the index/display JSON and check the texture paths.
+
+Both the model (`geo_models/gun/gm6_geo.json`) and texture (`textures/gun/uv/gm6.png`) exist. Let me check how CGC resolves those paths.
+
+Important: `geo_models/gun/` contains only `gm6_geo.json` — no `svd_geo.json`, despite SVD's display referencing `suffuse:gun/svd_geo`. Let me check the full picture.
+
+SVD's `display` references `suffuse:gun/svd_geo` and `suffuse:svd` animation — neither file exists. Let me check CGC's model/animation loading path and what happens when they're missing.
+
+CGC maps `geo_models` as the legacy model folder. Let me compare against the cbrg pack, since suffuse's index reuses `cbrg.guns.lynx_amr` / `cbrg.guns.dragunov` names.
+
+These packs are trimmed test fixtures. Let me look at how CGC actually resolves gun models and textures.
+
+Let me check how CGC loads animations from `.gltf` — gm6's display points at `suffuse:gm6` which is a `.gltf` file.
+
+Confirmed gltf support is a stub. Now let me check whether a failed model/display load produces a placeholder cube.
+
+Let me check the game log for the actual load errors.
+
+Found it — both displays fail `GunDisplayInstance` validation, so the renderer falls back to missing-texture. Let me read the rest of `resetCache` and `loadAnimController`.
+
+Now let me confirm how animation lookup resolves, and check what `getBedrockAnimation` searches.
+
+Let me quantify how widespread glTF animations are across the installed packs, and check the renderer's null-model fallback.
+
+Only suffuse uses glTF. Let me check the original TaCZ behavior when an animation is missing, since TaCZ is the spec for this branch.
+
+Let me verify the renderer's fallback path when the display instance is null.
+
+Confirmed the fallback. Let me verify gm6's remaining blockers — the default script location, and that `sfuse` has no scripts dir.
+
+Let me confirm with the debug log — it should show the exact "Animation not found" line.
+
+Definitive. Note there's **no** "BedrockModel gm6 not found" line — gm6's model loads fine; only its animation fails. Let me size the glTF work by reading TaCZ's implementation.
+
+Let me verify whether those other packs are genuinely trimmed, or whether those "not found" lines are expected.
+
+排查完成。结论是：**对 `gm6` 你的怀疑是对的，对 `svd` 不是**——但机制和你设想的不一样，紫黑块不是"模型没渲染出来"，而是**整个 `GunDisplayInstance` 报废后渲染器主动画的错误材质方块**。
+
+## 证据
+
+`logs/debug.log`（19:51:34 / 19:52:09 两次 reload 都一样）：
+
+```
+GunDisplayInstance: BedrockModel suffuse:gun/svd_geo not found
+GunDisplayInstance: Animation suffuse:svd not found
+→ GunDisplayInstance suffuse:svd_display validation failed
+
+GunDisplayInstance: Animation suffuse:gm6 not found
+→ GunDisplayInstance suffuse:gm6_display validation failed
+```
+
+注意 **gm6 没有 "BedrockModel not found" 那一行**——它的模型是加载成功的，只有动画没找到。
+
+代码链：
+
+1. [GunDisplayInstance.java:183-199](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/client/resource/instance/assets/GunDisplayInstance.java:183) 的 `loadAnimController` 只问 `getBedrockAnimation()`，而它只查 `bedrockAnimationManager`（扩展名 `.animation.json`）。glTF 在另一个 `gltfAnimationManager`（`.gltf`）里，**从来没被查过**——第 191 行的 `// TODO glTF` 就是这个洞。
+2. 查不到就 `return null`（第 193 行）。
+3. [`:120-121`](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/client/resource/instance/assets/GunDisplayInstance.java:120) `resetCache` 把 `null` 当致命错误 → 返回 false。
+4. [PojoInstance.java:33-38](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/core/resource/instance/PojoInstance.java:33) `isPojoValid` → false → `fromPojo` 返回 null → instance 根本不入表。
+5. [GunItemRenderer.java:444-450](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/client/renderer/item/GunItemRenderer.java:444) 走 else 分支，画出那句注释说的"没有这个 gunLocation，渲染个错误材质提醒别人"。
+
+**关键推论**：模型缺失其实是优雅降级的——[GunItemRenderer.java:399](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/client/renderer/item/GunItemRenderer.java:399) 里 `gunModelObject == null` 会退回 **slot 贴图**，而两把枪的 slot 贴图都在。所以紫黑块只可能来自 instance 为 null，不可能来自模型缺失。
+
+## svd 是另一个问题
+
+`./tacz/suffuse_gunsmoke_pack` 里 svd 缺三个文件：
+
+|引用|期望文件|实际|
+|---|---|---|
+|`model: suffuse:gun/svd_geo`|`geo_models/gun/svd_geo.json`|无（同目录只有 `gm6_geo.json`）|
+|`animation: suffuse:svd`|`animations/svd.*`|无（只有 an94/gm6/pf98a 三个 gltf）|
+|`state_machine: suffuse:draw_ammo_state_machine`|`scripts/draw_ammo_state_machine.lua`|`scripts/` 是**空目录**，整个 suffuse 下一共 0 个 `.lua`|
+
+所以 svd 即使把 glTF 实现了也还是紫黑块——它会卡在后面的脚本检查上。
+
+## 对照 TaCZ
+
+TaCZ 的 `checkAnimation`（[GunDisplayInstance.java:457-473](app://localhost/TACZ/src/main/java/com/tacz/guns/client/resource/GunDisplayInstance.java:457)）是 **gltf 优先、再 bedrock，两个都没有就 `throw`**。所以：
+
+- **gm6：真 gap。** TaCZ 能加载 `gm6.gltf`，CGC 不能。这是分支要补的。
+- **svd：不是 CGC 特有的 gap。** TaCZ 同样会 throw。这个副本里的文件就是缺失的。
+
+另外全量扫了一遍：**9 个枪包里只有 suffuse 用 glTF**（总共 3 个 `.gltf`，其中 an94/pf98a 还没被 index 引用），其余全部是 `.animation.json`。所以这是测试集里唯一的 glTF 用户。
+
+## 工作量
+
+补 glTF 要移植 TaCZ 的一整包：`api/client/animation/gltf`（accessor/buffer/访问器解码）+ `pojo/animation/gltf`（15 个 POJO）+ `AnimationStructure`(427行) + `createControllerFromGltf`，约 **6000 行**。CGC 这边的 `GltfStructure` 现在是空 stub，`GltfAnimation` 也是跳过所有字段的占位解析。
+
+这不是小改动，动手前想先跟你确认两件事：
+
+明白了：**glTF 分支返回空控制器，svd 不管**。开始改。
+
+Now let me compile.
+
+Build passes. Let me review the diff and check how the mod reaches the test game dir.
+
+Let me check the debug command that lists loaded assets — useful for verification.
+
+Let me check one risk: whether the state machine tolerates an empty controller (no animation prototypes).
+
+Safe: `AnimController.run()` silently returns when a prototype is missing ([AnimController.java:93-96](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/client/animation/controller/AnimController.java:93)), so an empty controller produces no errors and no per-tick spam.
+
+Let me record the two non-obvious project facts in memory.
+
+改完了，一处改动。
+
+## 改动
+
+[GunDisplayInstance.java:192-197](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/client/resource/instance/assets/GunDisplayInstance.java:192) `loadAnimController` 里补上 gltf 分支：
+
+- bedrock 查不到后，再查 `ClientResourceApi.getGltfAnimation()`（`gltfAnimationManager`，扩展名 `.gltf`）；
+- 命中就返回空 `AnimController`，并打一条 WARN 说明 gltf 动画暂不支持；
+- 两个都查不到才维持原来的 `return null`（与 TaCZ 的 `throw` 等价，保留"真缺资源就失败"的语义）。
+
+原来那句 `// TODO glTF` 被这个分支取代，注释改成说明转换本身还没实现。
+
+## 为什么这样是安全的
+
+`AnimController.run()` 在原型缺失时直接 `return`（[AnimController.java:93-96](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/client/animation/controller/AnimController.java:93)），所以空控制器不会抛异常、也不会每 tick 刷日志——每一次 `runAnimation` 都是静默 no-op。这个状态在"display 完全没写 animation 字段"时本来就存在，不是新路径。
+
+`:core` 编译通过，无新增告警（构建输出里那些 deprecation 都是既有的，没有一条指向这个文件）。
+
+## 预期效果
+
+gm6 应该能过校验了：动画分支命中 → 空控制器；脚本走 `tacz:default_state_machine`（该文件在 `tacz_default_gun/assets/tacz/scripts/` 里，存在）→ `resetCache` 返回 true → 模型和 `suffuse:gun/uv/gm6` 贴图正常渲染。
+
+## 还没做的（据实说明）
+
+- **gltf 动画本身仍然不播**——gm6 会是个静止的枪，没有 idle/draw/shoot 动作。这是你选的最小解，完整移植还没开始。
+- **svd 依旧紫黑块**，按你的决定没管（它缺 model/animation/script）。
+- **我没有做游戏内验证。** 改动未提交，也没有构建 jar。
+
+要我顺手 `./gradlew build` 并把 jar 覆盖到 `mods/customgun-0.0.16-forge-1.20.1.jar` 吗？还是你自己走一遍构建再实机确认（顺便也能确认一下 gm6 的静止状态能不能接受）。

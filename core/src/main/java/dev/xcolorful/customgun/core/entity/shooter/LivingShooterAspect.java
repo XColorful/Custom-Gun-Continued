@@ -33,6 +33,22 @@ public abstract class LivingShooterAspect {
      * </ul>
      */
     @ApiStatus.Internal public static final int PRONE_ANIMATION_TICKS = 18;
+    /**
+     * 持枪时的最大俯仰角，非持枪时不使用
+     */
+    @ApiStatus.Internal public static final float PRONE_PITCH_MAX = 25.0F;
+    /**
+     * 持枪时的最小俯仰角，非持枪时不使用
+     */
+    @ApiStatus.Internal public static final float PRONE_PITCH_MIN = -20.0F;
+    /**
+     * 上界给大后坐全自动留5°的容差
+     */
+    @ApiStatus.Internal public static final float PRONE_PITCH_UPPER_TOLERANCE = 5f;
+    /**
+     * 下界不给容差
+     */
+    @ApiStatus.Internal public static final float PRONE_PITCH_LOWER_TOLERANCE = 0.5f;
 
     protected final LivingEntity livingShooter;
     protected final ShooterProperty shooterProperty;

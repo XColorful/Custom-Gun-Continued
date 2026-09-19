@@ -58,7 +58,7 @@ public class DefaultCrosshair implements IOverlaySubManager, IEventHandler {
                 // 按F1 (不显示GUI)
                 ClientGuiUtils.isGuiHidden(mc)
                 // 当前不是第一人称
-                || !mc.options.getCameraType().isFirstPerson()
+                || !mc.options.getCameraType().isFirstPerson() && !ShoulderSurfingCompat.showCrosshair()
                 // 不在游戏内
                 || !ClientInputUtils.isInGameWorld()
                 // 旁观模式
@@ -82,17 +82,12 @@ public class DefaultCrosshair implements IOverlaySubManager, IEventHandler {
         if (!this.isEnabled()) return;
 
         if ( // 状态检查
-                // 不需要渲染的状态
-                _shouldForceDisableOverlay(mc)
-                // 不是需要接管的overlay
-                || !this.getOverlayName().equals(event.getRegistryLocation().getPath())
-        ) return;
-
-        if ( // 特殊检查
                 // 手持枪械检查
                 IGunGetter.fromMainHand(localPlayer) == null
-                // 让给越肩视角渲染
-                || ShoulderSurfingCompat.showCrosshair()
+                // 不需要渲染的状态
+                || _shouldForceDisableOverlay(mc)
+                // 不是需要接管的overlay
+                || !this.getOverlayName().equals(event.getRegistryLocation().getPath())
         ) return;
 
         // screen检查
@@ -118,6 +113,8 @@ public class DefaultCrosshair implements IOverlaySubManager, IEventHandler {
         if ( // 隐藏渲染检查
                 // 瞄准状态下隐藏
                 ILocalShooterGetter.fromLocalPlayer(localPlayer).cgc$getRenderAimingProgress(event.getPartialTick()) > 0.001
+                // 越肩视角需要显示
+                && !ShoulderSurfingCompat.showCrosshair()
         ) return;
 
         this._renderCrosshair(event);

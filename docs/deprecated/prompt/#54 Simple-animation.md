@@ -1494,3 +1494,47 @@ private void onComputeCameraAngles(IComputeCameraAnglesEvent event) {
 ## 需要你定的一件事
 
 如果"服务端上界是为连发累积留的"是你的**设计意图**，那当前代码没实现这个累积——按累积设计的话，界要按「窗口内发数 × 单发」算，而不是现在这样。要不要把它改成真正累积（即不复位 `xRotO` / 不每发重建曲线），还是保持现状只按单帧增量留容差？
+
+# 
+---
+
+```
+现在PR #54移植到1.21.10，net.minecraft.client.renderer.entity.player.PlayerRenderer没了，看下dev.xcolorful.customgun.client.animation.shooter.animator.DefaultShooterAnimator怎么移植
+
+- 当前IDEA打开了多个版本供浏览源码，1.20.1-1.21.6均编译通过
+```
+
+# 
+
+The 1.21.11 worktree resolves Minecraft sources, so I'll use it as the reference for the 1.21.9+ player-render refactor.
+
+Confirmed the facts. Now applying the port.
+
+Port 完成 —— 这个文件对 `PlayerRenderer` 的引用**全部只在 javadoc 里**（import + 3 处 `{@link}`），没有可执行代码用到它，所以移植就是纯改名。
+
+**1.21.9+ 的变化**：玩家的 renderer 被泛化改名了
+
+```
+net.minecraft.client.renderer.entity.player.PlayerRenderer
+→ net.minecraft.client.renderer.entity.player.AvatarRenderer<AvatarlikeEntity extends Avatar & ClientAvatarEntity>
+```
+
+（同时引入了 `AvatarRenderState` 和 `ClientMannequin`，玩家和假人共用一套 renderer。）
+
+我对着本 worktree 里的 1.21.10 源码 jar（`core/.gradle/repositories/ng_dummy_ng/.../neoforge-21.10.64-sources.jar`）核了两个 javadoc 目标还在不在：
+
+- `AvatarRenderer#setupRotations` — `protected`，第 315 行，swimAmount 分支仍然是 `Mth.lerp(f, 0, -90°)` → `mulPose(Axis.XP.rotationDegrees(...))`，也就是那条 `Rx(-90°)`
+- `AvatarRenderer#getArmPose` — `private static`，第 82/94 行，判定条件没变：`ItemUseAnimation.BOW` → `BOW_AND_ARROW`；`!avatar.swinging && CrossbowItem.isCharged` → `CROSSBOW_HOLD`
+
+顺手也确认了这份文件赖以成立的**原版行为在 1.21.10 没变**，所以姿态推导（尤其趴下那组欧拉角）不用重推：`HumanoidModel.setupAnim` 里 `swimAmount > 0` 时仍然把 `head.xRot` 往 `-PI/4` 插值，`isCrouching` 分支仍然给双臂 `xRot += 0.4F`。
+
+改动见 [DefaultShooterAnimator.java](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/client/animation/shooter/animator/DefaultShooterAnimator.java)（4 行，import + 3 处 `{@link}`）。
+
+两点需要你知道：
+
+1. **这个 PR 的其他文件不用跟着改**。`ClientRenderHelper.java:112` 已经是 `AvatarRenderer<?> renderer = renderManager.getPlayerRenderer(player)`，mixin 也已经挂在 `HumanoidModel.setupAnim(HumanoidRenderState)` 上了，链条是通的。
+2. **IDEA 里我没法验证**。1.21.10 这个 worktree 的 IDEA 工程**完全没有解析到 Minecraft**（`ModelPart`、`Mth`、`LivingEntity` 全是 "Cannot resolve"），moddev 的源码没进 module 依赖。所以我是直接读 jar 源码核对的。改完之后 IDEA 期待的错误集合应该和 1.21.6 分支一致 —— 那 5 条 `Symbol '...' is inaccessible from here`（`setupRotations` / `poseRightArm` / `poseLeftArm` / `getArmPose` 都是 private/protected 原版成员被 `@link`），只影响 javadoc，不影响编译。
+
+另外 1.21.11 worktree 里同一份文件也还是 `PlayerRenderer`（尚未合过这个 PR），要处理的话另开任务。文档 `docs/deprecated/prompt/#54 Simple-animation.md` 里也有几处提到 `PlayerRenderer`，但那是归档的 prompt，我没动 —— 需要的话说一声。
+
+改动未提交，等你 review。

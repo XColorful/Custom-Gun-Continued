@@ -20,17 +20,22 @@ public class _AttachmentSort {
     public static boolean IGNORE_NAME_MISMATCH = true;
 
     /**
-     * 是否允许ocular节点使用非数字后缀
+     * 是否允许节点使用非数字后缀
      * <ul>
      *     <li>默认关闭，兼容原模组限制</li>
-     *     <li>开启后则允许旧资源包使用非数字后缀的 ocular 节点名</li>
+     *     <li>开启后则允许旧资源包使用非数字后缀的 ocular / division 节点名</li>
      * </ul>
      */
     @ApiStatus.Internal
     public static boolean ALLOW_NON_NUMERIC_SUFFIX = false;
 
     /**
-     * 判断去掉 "ocular_" 前缀后剩下的后缀是否是「非数字后缀」，结果受{@link #ALLOW_NON_NUMERIC_SUFFIX}影响
+     * 判断节点名去掉类型名（{@code ocular} / {@code division}）后剩下的后缀是否是「非数字后缀」
+     * <ul>
+     *     <li>空后缀（{@code ocular}、{@code division}）和纯数字后缀（{@code ocular_1}、{@code division_2}）都合法</li>
+     *     <li>结果受{@link #ALLOW_NON_NUMERIC_SUFFIX}影响</li>
+     *     <li>{@code division_illuminated}、{@code division_bg} 这类名字是 division 组内的普通节点，不能当作准心</li>
+     * </ul>
      */
     public static boolean isStrippedSuffixInvalid(@Nullable String stripped) {
         if (ALLOW_NON_NUMERIC_SUFFIX) return false;
@@ -45,9 +50,12 @@ public class _AttachmentSort {
     /**
      * 根据ocular和division的name，合并成一个list
      * <ul>
-     *     <li>若为数字，则按数字自然顺序排序</li>
-     *     <li>默认数字小于10，从而省去自然排序</li>
-     *     <li>scope会排在sight前面，这是渲染顺序的差异，但一般来说没有影响 (切换视角只需要{@link AttachmentModelObject#getScopeViewPath}即可)</li>
+     *     <li>按节点名末尾的编号自然排序</li>
+     *     <li>没有编号的（{@code ocular}、{@code ocular_sight}、{@code ocular_scope}、{@code division}）编号视作1，与原模组一致</li>
+     *     <li>
+     *         编号决定的是stencil索引，不能按字符串比较：{@code ocular_sight}编号为1、{@code ocular_scope_2}编号为2
+     *         但{@code "_scope_2"}在字符串上小于{@code "_sight"}，直接比较会让这两者与division的配对反过来
+     *     </li>
      *     <li>排序结果只是用来保证相同name节点使用相同的stencil，但是一般来说美术自己会让模型节点命名对上</li>
      *     <li>默认美术和BlockBench导出的json不会用同名节点，因此省略Set去重</li>
      * </ul>
@@ -77,9 +85,9 @@ public class _AttachmentSort {
         ArrayList<AttachmentModelObject._Division_Ocular_Entry> result = new ArrayList<>();
 
         // ocular自身排序
-        ocularNodePaths.sort(Comparator.comparing(AttachmentModelObject._OcularNodeEntry::name, _AttachmentSort::compareNodeSuffix));
+        ocularNodePaths.sort(Comparator.comparing(AttachmentModelObject._OcularNodeEntry::name, _AttachmentSort::compareNodeIndex));
         // division自身排序
-        divisionNodePaths.sort(Comparator.comparing(AttachmentModelObject._DivisionNodeEntry::name, _AttachmentSort::compareNodeSuffix));
+        divisionNodePaths.sort(Comparator.comparing(AttachmentModelObject._DivisionNodeEntry::name, _AttachmentSort::compareNodeIndex));
 
         // 两个列表双指针遍历
         int ocularIndex = 0;
@@ -125,6 +133,36 @@ public class _AttachmentSort {
         return result;
     }
 
+    /**
+     * 排序用比较器：按节点名末尾的编号比较
+     * <ul>
+     *     <li>末尾是数字（{@code "2"}、{@code "_sight_2"}）则取该数字</li>
+     *     <li>末尾没有数字（{@code ""}、{@code "_sight"}、{@code "_scope"}）则视作1，与原模组给{@code ocular}/{@code ocular_sight}/{@code ocular_scope}的默认编号一致</li>
+     * </ul>
+     */
+    private static int compareNodeIndex(String a, String b) {
+        int compare = Integer.compare(getIndex(a), getIndex(b));
+        if (compare != 0) return compare;
+        return a.compareTo(b); // 编号相同时保持排序稳定
+    }
+
+    private static int getIndex(String name) {
+        int begin = name.lastIndexOf('_') + 1;
+        if (begin >= name.length()) return 1; // 空名或末尾是下划线
+
+        int number = 0;
+        for (int i = begin; i < name.length(); i++) {
+            char c = name.charAt(i);
+            if (c < '0' || c > '9') return 1; // 非数字后缀
+            number = number * 10 + c - '0';
+        }
+
+        return number;
+    }
+
+    /**
+     * 仅用于{@link #IGNORE_NAME_MISMATCH}关闭时按同名合并两个列表，不参与排序
+     */
     private static int compareNodeSuffix(String a, String b) {
         int aNumber = getNumber(a);
         int bNumber = getNumber(b);

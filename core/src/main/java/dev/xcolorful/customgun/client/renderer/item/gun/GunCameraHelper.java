@@ -113,16 +113,17 @@ public class GunCameraHelper implements IEventHandler {
     private void onComputeCameraAngles(IComputeCameraAnglesEvent event) {
         Minecraft mc = Minecraft.getInstance();
         if (
-                // 设置没开视角摇晃 (玩家移动时的镜头晃动)
-                !mc.options.bobView().get()
                 // 没有玩家？
-                || mc.player == null
+                mc.player == null
         ) return;
 
         this._applyLevelCameraAnimation(event, mc.player);
         this._applyCameraRecoil(event);
     }
     private void _applyLevelCameraAnimation(IComputeCameraAnglesEvent event, LocalPlayer player) {
+        // 设置没开视角摇晃 (玩家移动时的镜头晃动)
+        if (!Minecraft.getInstance().options.bobView().get()) return;
+
         ItemStack currentItem = KeepingItemRenderer.cgc$getRenderer().cgc$getCurrentItem();
 
         // 尝试调用物品的自定义相机动画

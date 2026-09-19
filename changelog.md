@@ -1,5 +1,18 @@
 ### 0.0.x
 
+#### 0.0.17
+- Add built-in third-person living shooter animation
+- Fix pitch clamp when prone
+- Fix view bobbing affecting recoil
+- Add backward compatibility for misconfigured attachment display `scopeViewIndex`
+
+Mod compatibility:
+- Apply recoil to Shoulder Surfing
+- Apply built-in crosshair to Shoulder Surfing
+
+Network:
+- Update network protocol version to `17`, which prevents connections between new and older versions
+
 #### 0.0.16
 - Remove several configurations
 - Adjust default configuration values

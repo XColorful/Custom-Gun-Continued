@@ -8,6 +8,7 @@ import dev.xcolorful.customgun.client.model.bedrock.BedrockPart;
 import dev.xcolorful.customgun.client.renderer.model.TextRender;
 import dev.xcolorful.customgun.client.resource.assets.display._ModelNodeTextDisplay;
 import dev.xcolorful.customgun.client.resource.assets.model.BedrockModel;
+import dev.xcolorful.customgun.core.api.resource.assets.model.bedrock.geometry.INodeNameMatcher;
 import dev.xcolorful.customgun.core.api.resource.assets.model.bedrock.geometry.NodeName;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -126,12 +127,14 @@ public final class AttachmentModelObject extends AnimatedModelObject implements 
             if (NodeName.OCULAR_SCOPE.matches(nodeName)
                     || NodeName.Prefix.OCULAR_SCOPE.matches(nodeName)
             ) {
+                if (_AttachmentSort.isStrippedSuffixInvalid(_getKeywordSuffix(nodeName, NodeName.OCULAR_SCOPE, NodeName.Prefix.OCULAR_SCOPE))) continue;
                 stripped = nodeName.substring(NodeName.OCULAR.getName().length()); // 只去掉"ocular"，保留"_scope"或"_scope_{n}"
                 _ocularNodePaths.add(new _OcularNodeEntry(stripped, this.getPath(renderer), true));
                 continue;
             } else if (NodeName.OCULAR_SIGHT.matches(nodeName)
                     || NodeName.Prefix.OCULAR_SIGHT.matches(nodeName)
             ) {
+                if (_AttachmentSort.isStrippedSuffixInvalid(_getKeywordSuffix(nodeName, NodeName.OCULAR_SIGHT, NodeName.Prefix.OCULAR_SIGHT))) continue;
                 stripped = nodeName.substring(NodeName.OCULAR.getName().length()); // 只去掉"ocular"，保留"_sight"或"_sight_{n}"
                 _ocularNodePaths.add(new _OcularNodeEntry(stripped, this.getPath(renderer), false));
                 continue;
@@ -147,6 +150,7 @@ public final class AttachmentModelObject extends AnimatedModelObject implements 
             if ((stripped = NodeName.DIVISION.getStrippedIfMatches(nodeName)) != null
                     || (stripped = NodeName.Prefix.DIVISION.getStrippedIfMatches(nodeName)) != null
             ) {
+                if (_AttachmentSort.isStrippedSuffixInvalid(stripped)) continue;
                 renderer.setVisible(false);
                 _divisionNodePaths.add(new _DivisionNodeEntry(stripped, this.getPath(renderer)));
                 continue;
@@ -166,12 +170,27 @@ public final class AttachmentModelObject extends AnimatedModelObject implements 
         return true;
     }
 
+    /**
+     * 取节点名里类型名之后的部分，用于校验后缀是否合法
+     * <br>
+     * {@code ocular_sight} -> {@code ""}，{@code ocular_sight_2} -> {@code "2"}
+     */
+    private static @Nullable String _getKeywordSuffix(@NotNull String nodeName,
+                                                      @NotNull INodeNameMatcher exact,
+                                                      @NotNull INodeNameMatcher prefix) {
+        @Nullable String suffix = exact.getStrippedIfMatches(nodeName);
+        return suffix != null ? suffix : prefix.getStrippedIfMatches(nodeName);
+    }
+
     // --------Getter--------
 
     public @Nullable List<BedrockPart> getScopeViewPath(int scopeViewIndex) {
         if (this.scopeViewPaths.isEmpty()) return null;
         else if (this.scopeViewPaths.size() <= scopeViewIndex) return null;
         else return this.scopeViewPaths.get(scopeViewIndex);
+    }
+    public int getScopeViewCount() {
+        return this.scopeViewPaths.size();
     }
     public boolean getEnableScope() {
         return this.enableScope;

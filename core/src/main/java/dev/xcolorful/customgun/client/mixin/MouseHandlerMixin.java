@@ -3,10 +3,10 @@ package dev.xcolorful.customgun.client.mixin;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import dev.xcolorful.customgun.client.config.ZoomConfig;
-import dev.xcolorful.customgun.client.entity.shooter.LocalShooterAspect;
 import dev.xcolorful.customgun.core.api.entity.shooter.ILivingShooterGetter;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
+import dev.xcolorful.customgun.core.entity.shooter.LivingShooterAspect;
 import dev.xcolorful.customgun.core.entity.shooter.LivingShooterProne;
 import dev.xcolorful.customgun.core.util.MathUtil;
 import net.minecraft.client.Minecraft;
@@ -65,7 +65,7 @@ public class MouseHandlerMixin {
     private static double cgc$calculatePronePitch(LocalPlayer player, double pitch, double denominator) {
         double finalPitch = pitch * denominator;
         // 对趴姿限制 pitch 范围
-        if (!player.isSwimming() && player.getPose() == LivingShooterProne.PRONE_POSE) {
+        if (LivingShooterProne.isPronePitchLimited(player)) {
 //            // 如果玩家上仰超过 25 度，不允许上
 //            if (playerPitch > 45) {
 //                finalPitch = Math.max(finalPitch, 0);
@@ -86,7 +86,7 @@ public class MouseHandlerMixin {
             // 仰角正负是反的
             float upPitch = -player.getXRot();
             float upDelta = (float) -finalPitch * TURN_DEGREES_PER_UNIT;
-            float upClamped = Mth.clamp(upPitch + upDelta, LocalShooterAspect.PRONE_PITCH_MIN, LocalShooterAspect.PRONE_PITCH_MAX);
+            float upClamped = Mth.clamp(upPitch + upDelta, LivingShooterAspect.PRONE_PITCH_MIN, LivingShooterAspect.PRONE_PITCH_MAX);
             // 夹取在角度空间做，结果再换算回 turn() 的入参单位
             // 走 turn() 而不是 setXRot()，是为了让 xRotO 与 xRot 一起被更新，否则相机插值会一直偏
             finalPitch = -(upClamped - upPitch) / TURN_DEGREES_PER_UNIT;

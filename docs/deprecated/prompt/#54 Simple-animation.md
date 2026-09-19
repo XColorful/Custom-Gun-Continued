@@ -1115,3 +1115,102 @@ finalPitch = -(upClamped - upPitch) / TURN_DEGREES_PER_UNIT;
 同一个方法里还留着 `↑(源码)` 那段注释掉的旧代码（硬编码 45 / -30）和配套提醒"请修改数字的时候顺带改注释"。它现在相对提取出来的常量是**过期的**，但看着像你有意保留的改动前源码记录，所以我没删。要删还是改，你说。
 
 编译通过（`:core:compileJava`）。未新增平台 API（`Mth.clamp` / `LocalPlayer#getXRot` 项目里已在用，不需要 compat 包装）。**未实机验证**。
+
+# 
+
+```
+现在要继续增加服务端/客户端射击角度检查，在LivingShooterShoot#isIllegalShootState里增加检查，且上下界额外增加PRONE_PITCH_TOLERANCE
+```
+
+# 
+
+Let me read the shoot aspect and the server-side constants.
+
+The user moved the pitch constants to `LivingShooterAspect` and left a scaffold. Let me see all call sites before implementing.
+
+Now I have the full picture: the client already calls the same `isIllegalShootState`, and you moved the constants to `LivingShooterAspect`. Let me implement the check.
+
+Let me verify `Player#getPose` honors the forced pose — the server check depends on it.
+
+实现完成，编译通过（`:core:compileJava`）。
+
+## 改动
+
+[LivingShooterShoot.java:186](core/src/main/java/dev/xcolorful/customgun/core/entity/shooter/LivingShooterShoot.java:186) —— 把 scaffold 补成实际的夹角检查：
+
+```java
+float upPitch = -livingShooter.getXRot();
+return upPitch > PRONE_PITCH_MAX + PRONE_PITCH_TOLERANCE
+        || upPitch < PRONE_PITCH_MIN - PRONE_PITCH_TOLERANCE;
+```
+
+仰角沿用客户端那套 `-getXRot()`（抬头为正）的约定，上下界各放宽 `PRONE_PITCH_TOLERANCE`，即允许 `[-25°, 30°]`。这样服务端接受的区间**包住**客户端夹取到的 `[-20°, 25°]`，容差吸收"客户端每帧才夹一次、开火那一刻可能还停在越界值上"（后坐力、丢包）。
+
+服务端和客户端共用这一份：`LivingShooterShoot._shouldForceDisableShoot` 和 [LocalShooterShoot.java:229](core/src/main/java/dev/xcolorful/customgun/client/entity/shooter/LocalShooterShoot.java:229) 都调它，所以你要的"服务端/客户端检查"是一处实现。
+
+`MouseHandlerMixin` 的常量引用你已经改成 `LivingShooterAspect.PRONE_PITCH_*` 了，我没动。
+
+## 两点我做了判断，需要你确认
+
+**1. 判据从 `isVisuallySwimming()` 改成了 `getPose() == PRONE_POSE && !isSwimming()`**
+
+你 scaffold 里写的是 `isVisuallySwimming()`，但它和客户端的夹取条件不一致，会引入一个 bug：客户端 `MouseHandlerMixin` 的守卫是 `!isSwimming() && getPose() == PRONE_POSE`——**水中游泳时不夹取角度**。而游泳时姿态本来就是 `SWIMMING`，所以 `isVisuallySwimming()` 为真 → 服务端会拒绝射击，客户端却照常开火，表现为水里开枪没反应。所以我把服务端条件对齐到客户端。
+
+顺带这个改法还避开一个坑：`LivingEntity.isVisuallySwimming()` 是 `hasPose(SWIMMING) || (!isFallFlying() && hasPose(FALL_FLYING))`——**鞘翅飞行时它也是 true**。用 `isVisuallySwimming()` 的话，滑翔中还会被套上这套俯仰限制。
+
+如果你的本意确实要管游泳/滑翔，那要改的是客户端夹取那侧，不是这里。
+
+**2. 容差是"放宽"边界**，即 `[MIN - TOL, MAX + TOL]`。按"上下界额外增加"理解的；代价是作弊客户端可以报到 30° 才被拒。
+
+编译只有一条既有的 deprecation 提示（同文件里 `@Deprecated(forRemoval = true)` 的重载）。未新增平台 API（`getPose` / `isSwimming` / `getXRot` 项目里已在用）。**未实机验证**——需要双端一起测：趴下瞄准时开枪能打出去，趴下把视角抬过 30° 后服务端应拒绝、客户端不进入开火流程。
+
+# 
+
+```
+那么修改一下，客户端只限制趴下时的角度，服务端也只检查趴下时的角度，容差还是保留，鞘翅和游泳时两端都不应该受影响（都能射击）
+```
+
+# 
+
+Understood — both ends: prone only, with swimming and elytra exempt. That predicate now needs to be identical in two places, so let me put it in `LivingShooterProne` and share it.
+
+Now the two call sites use the shared predicate.
+
+The user reverted my javadoc there — I'll keep this edit minimal and leave the rationale on the shared predicate.
+
+两端现在共用一份判据了，编译通过。
+
+## 改动
+
+新增 [LivingShooterProne.isPronePitchLimited](core/src/main/java/dev/xcolorful/customgun/core/entity/shooter/LivingShooterProne.java:133)：
+
+```java
+public static boolean isPronePitchLimited(LivingEntity livingShooter) {
+    return livingShooter.getPose() == PRONE_POSE
+            && !livingShooter.isSwimming()
+            && !livingShooter.isFallFlying();
+}
+```
+
+两个调用点都换成它：
+
+- 客户端 [MouseHandlerMixin.java:68](core/src/main/java/dev/xcolorful/customgun/client/mixin/MouseHandlerMixin.java:68)（原来是 `!isSwimming() && getPose() == PRONE_POSE`，现在补上了鞘翅的显式排除）
+- 服务端 [LivingShooterShoot.java:175](core/src/main/java/dev/xcolorful/customgun/core/entity/shooter/LivingShooterShoot.java:175)，容差保留，允许区间仍是 `[-25°, 30°]`
+
+这样游泳和鞘翅时两端都不夹取、也不拒绝射击；趴下时两端同时生效。
+
+放一份判据的原因就是你之前提的那个：判据漂移会变成"客户端能开火、服务端拒绝"的静默失败，而这两处必须永远一致。
+
+## 三个事实核对
+
+**1. 鞘翅那一项不是多余的。** `LivingEntity.isVisuallySwimming()` 是 `hasPose(SWIMMING) || (!isFallFlying() && hasPose(FALL_FLYING))`——**滑翔时它也为 true**。我上一版如果照 scope 里的 `isVisuallySwimming()` 写，滑翔中会被套上俯仰限制。现在用 `getPose() == PRONE_POSE`（`Entity` 版，没有 FALL_FLYING 那半）+ 显式 `!isFallFlying()`，两层都挡住。
+
+**2. `getPose()` 能反映趴姿，双端都行。** [Player.java:361](file:///C:/Users/XColo/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.20.1-47.4.16_mapped_official_1.20.1/forge-1.20.1-47.4.16_mapped_official_1.20.1-sources.jar!/net/minecraft/world/entity/player/Player.java) 的 `updatePlayerPose` 里 `forcedPose` 优先级最高，走 `setPose()` 写入同步的 `DATA_POSE`，所以服务端看到的 `ServerPlayer.getPose()` 就是趴姿。`isSwimming()` / `isFallFlying()` 也都是同步的标志位。
+
+**3. 一个副作用，你可能要知道**：原版**蹲着钻一格高**（爬行）时 `updatePlayerPose` 也会落到 `Pose.SWIMMING`（`canEnterPose(CROUCHING)` 过不去就退到 SWIMMING）。所以钻活板门时同样会被这套限制管住。客户端**本来就是这样**（旧守卫也是 `getPose() == PRONE_POSE`），我没有扩大它，现在只是服务端跟客户端对齐了、不会出现两端不一致。如果你要的是"只管模组自己按键触发的趴姿"，那得换成 `ILivingShooter#cgc$isProne` 那一路，判据要重写——说一声。
+
+## 顺带一提
+
+`ShootState.PRONE` 用的是 `isVisuallySwimming()`（[ShootState.java:129](core/src/main/java/dev/xcolorful/customgun/core/api/entity/ShootState.java:129)，注释写着"任意模组的swim姿势均可"），它比这套判据**宽**：游泳和滑翔都算。那个是给动画/状态分类用的，语义不同，我没动。现在项目里"趴"有几种口径（模组趴姿 flag、`getPose() == PRONE_POSE`、`ShootState.PRONE`、这套限制判据），规则 7 说的"口径冲突要报出来"，所以记一笔。
+
+未新增平台 API 之外的用法：`LivingEntity#isFallFlying()` 是本轮首次使用（`ShootState`/`ShooterAnimationManager` 用的是 `getPose() == Pose.FALL_FLYING`），标准实体 API，看着不需要 compat 包装。**未实机验证**。

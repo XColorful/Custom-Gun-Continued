@@ -42,9 +42,13 @@ public abstract class LivingShooterAspect {
      */
     @ApiStatus.Internal public static final float PRONE_PITCH_MIN = -20.0F;
     /**
-     * 给5°的容差
+     * 上界给大后坐全自动留5°的容差
      */
-    @ApiStatus.Internal public static final float PRONE_PITCH_TOLERANCE = 5f;
+    @ApiStatus.Internal public static final float PRONE_PITCH_UPPER_TOLERANCE = 5f;
+    /**
+     * 下界不给容差
+     */
+    @ApiStatus.Internal public static final float PRONE_PITCH_LOWER_TOLERANCE = 0.5f;
 
     protected final LivingEntity livingShooter;
     protected final ShooterProperty shooterProperty;

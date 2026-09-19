@@ -1214,3 +1214,283 @@ public static boolean isPronePitchLimited(LivingEntity livingShooter) {
 `ShootState.PRONE` 用的是 `isVisuallySwimming()`（[ShootState.java:129](core/src/main/java/dev/xcolorful/customgun/core/api/entity/ShootState.java:129)，注释写着"任意模组的swim姿势均可"），它比这套判据**宽**：游泳和滑翔都算。那个是给动画/状态分类用的，语义不同，我没动。现在项目里"趴"有几种口径（模组趴姿 flag、`getPose() == PRONE_POSE`、`ShootState.PRONE`、这套限制判据），规则 7 说的"口径冲突要报出来"，所以记一笔。
 
 未新增平台 API 之外的用法：`LivingEntity#isFallFlying()` 是本轮首次使用（`ShootState`/`ShooterAnimationManager` 用的是 `getPose() == Pose.FALL_FLYING`），标准实体 API，看着不需要 compat 包装。**未实机验证**。
+
+# 
+
+```
+任意swim姿态，ShootState都判定，是用于趴下的后坐力
+模组趴姿flag用来区分原版活版门趴下和手动触发趴下
+服务端射击判定的趴姿跟客户端使用一致，且客户端会在该趴姿判定条件下clamp修正
+检查代码是否对应以上三点声明
+```
+
+# 
+
+This is an audit task. Let me trace each claim in the code.
+
+Audit done. Claim 1 holds with one real caveat; claim 2 does **not** hold in code; claim 3 is structurally true but shares a predicate that claim 2 says is the wrong one.
+
+## 1. 任意 swim 姿态 → ShootState，用于趴下后坐力 — 基本对应，有一处出入
+
+判据本身对上了。[ShootState.java:129](core/src/main/java/dev/xcolorful/customgun/core/api/entity/ShootState.java:129) 用 `isVisuallySwimming()` 落到 `PRONE`，注释也写着"任意模组的swim姿势均可，用活版门也算"。消费点确实是后坐力：[GunCameraHelper.java:344](core/src/main/java/dev/xcolorful/customgun/client/renderer/item/gun/GunCameraHelper.java:344) `case PRONE -> aimingRecoilModifier *= gunData.getProneRecoilMultiplier();`（另外还用于不准确度、脚本 API）。
+
+**出入**：后坐力用的是**单值**版 `fromLivingShooter`，它是优先级链，`LEVITATE` 排在 `PRONE` 前面，条件 `!onGround() || isSwimming()`（[ShootState.java:107](core/src/main/java/dev/xcolorful/customgun/core/api/entity/ShootState.java:107)）。所以：
+
+- **真的在水里游泳**（`isSwimming()` 为真）→ 判成 `LEVITATE`，**吃不到** prone 后坐力倍率
+- **鞘翅飞行** → `!onGround()` → 也是 `LEVITATE`
+
+即"任意 swim 姿态都是 PRONE"只在"站在地上 + swim 姿态"时成立（模组趴姿、活版门爬行）。EnumSet 版 `of()` 两个都塞，但后坐力不走那条。要水里游泳也吃 prone 后坐力的话，这里对不上。
+
+## 2. 模组趴姿 flag 区分活版门趴下 / 手动趴下 — ✗ 代码里没有这个区分
+
+flag 两端都存着：
+- 客户端 `LocalShooterProne.isProne`，经 [ILocalShooterState.java:13](core/src/main/java/dev/xcolorful/customgun/client/api/entity/shooter/ILocalShooterState.java:13) `cgc$isProne()` 暴露
+- 服务端 `LivingShooterProne.isProne`，**private 且无 getter**，只有 `cgc$prone(boolean)` setter 经 `IGunOperator` 暴露
+
+但消费者只有两处，都不是这件事：
+
+1. [ProneKey.java:96](core/src/main/java/dev/xcolorful/customgun/client/input/shooter/ProneKey.java:96) / [:120](core/src/main/java/dev/xcolorful/customgun/client/input/shooter/ProneKey.java:120) —— 切换键 / 按住模式的开关判断
+2. [LocalShooterProne.java:90](core/src/main/java/dev/xcolorful/customgun/client/entity/shooter/LocalShooterProne.java:90) / [LivingShooterProne.java:71](core/src/main/java/dev/xcolorful/customgun/core/entity/shooter/LivingShooterProne.java:71) —— flag 为真但 forced pose 不对时重压姿势，双端同步用
+
+**没有任何地方**用它区分活版门趴下和手动趴下。而我上轮加的 [isPronePitchLimited](core/src/main/java/dev/xcolorful/customgun/core/entity/shooter/LivingShooterProne.java:133) 用的是 pose（`getPose() == PRONE_POSE`），**恰恰不区分**——所以现在钻活版门爬行照样被俯仰角限制和射击判定管住。这条正是我上轮标出来的副作用；按你这句声明，它现在是不对的。
+
+## 3. 服务端检查与客户端 clamp 判据一致 — ✓ 形式一致，但共用的是错的判据
+
+- 客户端 clamp：[MouseHandlerMixin.java:68](core/src/main/java/dev/xcolorful/customgun/client/mixin/MouseHandlerMixin.java:68)
+- 服务端检查：[LivingShooterShoot.java:175](core/src/main/java/dev/xcolorful/customgun/core/entity/shooter/LivingShooterShoot.java:175)
+
+两侧调的是同一个 `isPronePitchLimited`，所以"一致"成立。但它共用的是 pose 版，按 Claim 2 应该是 flag 版——形式对应、语义不对应。
+
+## 要改的话，缺口在服务端
+
+按 Claim 2 把判据换成模组 flag：
+
+- 客户端现成：`ILocalShooterGetter.fromLocalPlayer(player).cgc$isProne()` ✓
+- **服务端缺 getter**：`LivingShooterProne.isProne` 是 private，`IShooterState` 里也没有 prone 读取（只有 `cgc$getShootState()`）。得补一个（`LivingShooterProne#isProne()` + 经 `IShooterState`/`LivingEntityMixin` 转发）
+
+换成 flag 后 `!isSwimming()` 那半可以去掉（`isIllegalProneState` 已含 `isSwimming()`，游泳时 `tickProne` 会把 flag 清掉）；`!isFallFlying()` 可以留着，因为趴姿状态机不拦滑翔，只靠 `NOT_ON_GROUND_DISABLE_PRONE_TICKS` 在 5 tick 后清——留一个守卫能盖住那个窗口。
+
+**要我按 Claim 2 换成 flag 判据、并补服务端 getter 吗？** 这动到了接口（新增一个状态读取），所以先问你一句。另外 Claim 1 那个 `LEVITATE` 抢先的情况，要不要一起处理（让水里游泳也拿 prone 后坐力），也请一并说。
+
+# 
+
+```
+第一点后坐力取单enum的问题以后再重构
+第二点不能区分不要紧，不影响对趴姿的实际使用的话也可以不管
+第三点不需要模组专门的prone flag，改成服务端与客户端一致，客户端clamp修正也用一样的判定，如果是因为第一点的单enum问题，那么保证客户端限制得不比服务端宽松就行
+```
+
+# 
+
+Understood — no flag, keep both ends on the shared pose predicate, and just guarantee the client isn't looser than the server. Let me verify your edit's API and check that invariant.
+
+Verification pass — no code changes needed. Your edit compiles, and point 3 already holds.
+
+**结论：三点都不用再改代码了，第三点当前已经满足。**
+
+## 判据收敛到了同一个函数
+
+调用链全部走 `LivingShooterProne.isPronePitchLimited`：
+
+| 位置 | 角色 |
+|---|---|
+| [MouseHandlerMixin.java:68](core/src/main/java/dev/xcolorful/customgun/client/mixin/MouseHandlerMixin.java:68) | 客户端 clamp 修正 |
+| [LivingShooterShoot.java:175](core/src/main/java/dev/xcolorful/customgun/core/entity/shooter/LivingShooterShoot.java:175) | 服务端射击判定 |
+| [LocalShooterShoot.java:229](core/src/main/java/dev/xcolorful/customgun/client/entity/shooter/LocalShooterShoot.java:229) | 客户端射击判定（转发服务端那份） |
+
+所以"服务端与客户端一致"是按构造成立的，不存在两份判据漂移的可能。
+
+## "客户端不比服务端宽松"成立，且与容差取值无关
+
+容差只加在**服务端那一侧**：
+
+| | 仰角（抬头为正） |
+|---|---|
+| 客户端 clamp 边界 | `[PRONE_PITCH_MIN, PRONE_PITCH_MAX]` = `[-20°, 25°]` |
+| 服务端接受区间 | `[PRONE_PITCH_MIN - TOL, PRONE_PITCH_MAX + TOL]` = `[-25°, 30°]` |
+
+客户端可达集合 `[-20, 25]` **严格包含于**服务端接受区间 `[-25, 30]`，每侧各窄 `PRONE_PITCH_TOLERANCE`。因为容差是往服务端边界**外扩**的，这个包含关系对任意 `TOLERANCE >= 0` 都成立——只要以后别把容差也减到客户端那侧去。
+
+顺带：客户端 clamp 只在 `iGun != null` 时才可能走到（`MouseHandlerMixin` 前面有早退），你在判据里补的 `IGunGetter.fromMainHand(...) == null → false` 与它同义（`fromItemHand` 就是 `getMainHandItem().getItem() instanceof IGun`，[IGunGetter.java:14](core/src/main/java/dev/xcolorful/customgun/core/api/item/gun/IGunGetter.java:14)），所以不改变行为，只是让判据自洽。
+
+## 两个已知窗口（不需要处理，说明方向安全）
+
+1. **同帧后坐力**：`GunCameraHelper._applyCameraRecoil` 在渲染阶段 `setXRot`，跑在 `turnPlayer` **之后**。所以某帧被后坐力顶出 `[-20, 25]` 后，要到下一帧才被夹回。这期间如果开火，服务端看到的是超出客户端的值——正是容差要吸收的，而单帧后坐增量远小于 5°。
+2. **网络延迟**：`getPose()` / `isSwimming()` / `isFallFlying()` / 主手物品都是同步量。任一侧滞后时的方向都是**服务端更宽松**（客户端先 clamp、服务端后生效），失败方向不会变成"客户端能开火但服务端拒绝"。
+
+## 已记录
+
+第一点的 `ShootState` 单 enum 优先级问题（`LEVITATE` 压过 `PRONE`，导致水里游泳和鞘翅拿不到 prone 后坐力倍率）按你说的挂起，以后重构，这次没动。
+
+编译通过（`:core:compileJava`，只有既有的 deprecation 提示）。**未实机验证**。
+
+# 
+
+```
+Let me compute the spline's max slope numerically, since the per-frame delta is the spline's rise over one frame.
+
+Let me compute the actual per-frame delta (ΔS over one frame), not just the slope — and check for spline overshoot.
+
+The pitch spline reportedly overshoots to 3.89° — that's surprising enough that I should validate my spline against a reference before reporting.
+
+Validated — both scipy and a Numerical-Recipes implementation agree to 7e-15, so the overshoot is real. Now the per-frame deltas with the correct spline:
+
+Let me scan the whole pack set so the "is 5° enough" question has a real baseline.
+
+Let me verify the scan is complete and get the tolerance-relevant numbers.
+
+The default for `proneRecoilMultiplier` is **0.5**, not 1.0 — that changes my prone numbers. Let me confirm the JSON tag and recompute.
+
+Some JSONs are lenient-format (comments/trailing commas), so my earlier scan silently skipped files. Let me redo with lenient parsing.
+
+数据都拿到了。先纠正一件事：**beryl 并不是这批枪里后坐力最大的**（53 把里排第 13）。
+
+## beryl_m762 的配置
+
+```json
+"recoil": {
+    "pitch": [ {"time":0,"value":[1.75,1.75]}, {"time":0.25,"value":[1.75,1.75]},
+               {"time":0.45,"value":[1.75,1.75]}, {"time":0.6,"value":[1.75,1.75]} ],
+    "yaw":   [ {"time":0,"value":[-0.4,0.4]}, {"time":0.45,"value":[-0.4,0.4]} ]
+},
+"crawl_recoil_multiplier": 0.703
+```
+
+`GunRecoilCalculator.getSplineFunction` 把它变成插值点 `(0,0)` + 每帧 `(time*1000+30, value*modifier)`，即 x=[0, 30, 280, 480, 630]、y=[0, 1.75, 1.75, 1.75, 1.75]，走自然三次样条。单位是**度**（`GunCameraHelper` 直接 `setXRot(getXRot() - (value - xRotO))`，`getXRot()` 是度）。我的样条实现和 scipy 的 `CubicSpline(bc_type='natural')` 交叉验证过，差 7e-15。
+
+## 直接答案：单帧最大
+
+| 帧率（帧间隔） | 站立 | 趴下 ×0.703 |
+|---|---|---|
+| 144 fps (6.9ms) | 0.43° | 0.30° |
+| 60 fps (16.7ms) | **1.01°** | 0.71° |
+| 30 fps (33.3ms) | 1.92° | 1.35° |
+| 20 fps (50ms) | 2.63° | 1.85° |
+| 一帧跨过整段上升（>124ms 卡帧） | **3.89°** | **2.74°** |
+
+**一个意外发现：样条会过冲。** 四个关键帧全写 1.75°，但自然三次样条在 t≈124ms 处峰值 **3.891°**，是配置值的 2.2 倍。原因是第一个区间只有 30ms、下一个 250ms，C² 连续逼出这个鼓包。所以这把枪实际单发抬枪 3.89°，配置里的 1.75 是低估的。yaw 侧小得多：峰值 1.483°，60fps 单帧 0.227°。
+
+## 它排第 13，不是最大
+
+扫了 `tacz/` 下 9 个包全部 55 个 gun 数据（53 个有 `recoil.pitch`，55 个全部可解析）。按样条峰值排前 12：
+
+| 枪 | 峰值(°) | 60fps 单帧 | 20fps 单帧 | proneM |
+|---|---|---|---|---|
+| win1894 | 10.08 | 2.22 | 5.94 | 0.5(默认) |
+| 686 | 7.57 | 2.84 | 6.66 | 0.5 |
+| mosin9130 | 7.46 | 1.64 | 4.39 | 0.5 |
+| rpg7 | 6.54 | 1.44 | 3.84 | 0.703 |
+| ai_awp | 6.26 | 3.04 | 6.18 | 0.703 |
+| m870 | 6.17 | 2.71 | 5.88 | 0.5 |
+| db_short | 5.97 | 1.39 | 3.68 | 0.703 |
+| m700 | 5.69 | 2.77 | 5.63 | 0.703 |
+| tactical_sasg_12k | 5.69 | 2.13 | 5.01 | 0.5 |
+| g36k | 4.18 | 0.90 | 2.41 | 0.703 |
+| svd | 4.07 | 1.01 | 2.65 | 0.703 |
+| sks_tactical | 3.92 | 1.01 | 2.64 | 0.703 |
+| **beryl_m762** | **3.89** | 1.01 | 2.63 | 0.703 |
+
+中位 2.56°，p90 6.13°，最大 10.08°。要用"很大后坐力"当参考，**win1894 / 686 / mosin9130** 比 beryl 更极端。
+
+## 对 5° 容差的意义
+
+（注意 `proneRecoilMultiplier` 的默认值是 **0.5**，不是 1.0，见 [GunData.java:32](core/src/main/java/dev/xcolorful/customgun/core/resource/data/data/GunData.java:32)）
+
+| 场景 | 53 把枪的最大单帧 | 超 5° 把数 |
+|---|---|---|
+| 60fps 趴下 | 2.14° | 0 |
+| 20fps 趴下 | 4.35°（ai_awp） | 0 |
+| 20fps 站立 | 6.66° | 6 |
+| 一帧跨整段上升 | 5.04°（win1894×0.5） | 1 |
+
+**趴下时 5° 够用**：60fps 有 2.3 倍余量；20fps 最坏 4.35° 仍在里面。唯一能越过的是超过 ~100ms 的卡帧、且恰好在边界上开火——win1894 会到 5.04°，边缘情况。beryl 自己趴下最坏 2.74°，余量充足。
+
+注意 20fps **站立**那 6 把超 5° 与本次判定无关：限制只在趴下时生效。
+
+## 三点前提
+
+1. 每个关键帧取 `value` 里绝对值大的那个当最坏情况（pitch 的 range 两端相同，yaw 是每发随机，取 0.4 上限）。
+2. modifier 只算 `aimingRecoilModifier`（1，或趴下时的 proneM）。配件若通过 `IRecoilDataModifier` 整条替换 RecoilData 曲线，数值会变，我没算进去。
+3. 整套后坐力只在 `options.bobView()`（视角摇晃）开启时才应用——`onComputeCameraAngles` 开头就早退。关掉的话这份分析不成立。
+
+需要的话我可以把扫描脚本落成项目里的一个工具，或者换成"按 proneM 折算后的趴下单帧"来给你排一份完整名单。
+
+# 
+
+```
+你考虑一下这个情况：
+- Beryl M762是全自动步枪，开完一枪后还没等到clamp就会开下一发，服务端的上界是给这个情况留的
+- 其他枪如果后坐力大，但是非全自动/射击间隔足够本地clamp的话，是没问题的
+- 你提到的option什么意思？设置可以直接关掉全部后坐力？
+```
+
+# 
+
+Let me read the whole `GunCameraHelper` — both the spline-regeneration trigger and the gating conditions matter for your points.
+
+Let me simulate an actual M762 burst to test the accumulation claim directly.
+
+三点都查了，其中第一点的机制和你的模型不一样——我做了个直接模拟来验证。
+
+## 1. 全自动不会累积：每发都重置
+
+代码层面，**每发都会重新生成样条并把增量基准清零**：
+
+- 触发点：[GunCameraHelper.java:300](core/src/main/java/dev/xcolorful/customgun/client/renderer/item/gun/GunCameraHelper.java:300) `onGunFire(GunFireEvent)` → `_initCameraRecoil`
+- 末尾 [:356-360](core/src/main/java/dev/xcolorful/customgun/client/renderer/item/gun/GunCameraHelper.java:356)：`pitchSplineFunction = 新曲线; lastGunFireTimestamp = now; xRotO = 0`
+- 应用处 [:142-149](core/src/main/java/dev/xcolorful/customgun/client/renderer/item/gun/GunCameraHelper.java:142)：`inc = S(now - lastGunFire) - xRotO`
+
+所以每帧加的量是"**距最后一发**的时间在曲线上的值"，不是多发求和。同一帧里连开两发的话，后一发把前一发重置掉——增量反而是**变少**（`GunRecoilCalculator` 的 javadoc 也写了这个设计意图："避免不消耗弹匣子弹时用尽后坐力曲线"）。
+
+节奏上也不可能"没等到 clamp"：beryl `rpm = 700` → **射击间隔 85.7ms**；burst 是 `bpm 600` → 100ms。60fps 一帧 16.7ms，**每发之间 clamp 要跑约 5 次**。要构成你说的情形，帧率得低于 12fps。
+
+帧内顺序也印证：`Minecraft.runTick` 是 `tick 循环 → mouseHandler.turnPlayer()`（我们的 clamp，[Minecraft.java:1118](file:///C:/Users/XColo/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.20.1-47.4.16_mapped_official_1.20.1/forge-1.20.1-47.4.16_mapped_official_1.20.1-sources.jar!/net/minecraft/client/Minecraft.java)）`→ 渲染 → ComputeCameraAngles`（后坐力）。而移动包在 tick 里发（`LocalPlayer.tick` → `sendPosition`，[LocalPlayer.java:199](file:///C:/Users/XColo/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.20.1-47.4.16_mapped_official_1.20.1/forge-1.20.1-47.4.16_mapped_official_1.20.1-sources.jar!/net/minecraft/client/player/LocalPlayer.java)），即**在 turnPlayer 之前**。所以服务端读到的是「上一帧夹取后的值 + 上一帧那一帧的后坐力」。
+
+模拟了一遍（beryl，趴下 ×0.703，上限 25°）：
+
+| 帧率 | auto 700rpm | burst 600bpm | semi 2s |
+|---|---|---|---|
+|60fps|超限 **0.71°**|0.71°|0|
+|30fps|1.35°|1.35°|0|
+|20fps|1.85°|1.85°|0|
+
+超限值和帧率一一对应，**和射击间隔完全无关**；而且这三个数正好等于我上一条给你的趴下单帧值（0.713 / 1.347 / 1.851），两条独立路径互相验证。
+
+不过你的直觉有一半是对的：**全自动确实让玩家长期贴在上限**（clamp 每帧把 pitch 拉回上限，而不是拉回玩家原来瞄的角度），所以每一发都会越界一次；半自动往往瞄在界限以内，压根不越界。所以容差确实是为连发场景留的——只是量级由**帧时间**决定，不是由发数累积。
+
+（对照：把 clamp 关掉，同样 700rpm 3 秒，服务端能读到 **79°**——这才是累积该有的样子。所以 clamp 是在起作用的。）
+
+## 2. 半自动
+
+结论同意，但机制要修正一下：单帧越界量是**帧时间**决定的，跟半自动/全自动无关。半自动之所以"没问题"，是因为玩家通常瞄在界限以内（单发后坐力只加一次），**不是**因为在两发之间 clamp 有时间追上——60fps 下 auto 每发之间同样有 5 次 clamp。
+
+所以高后坐力的半自动枪如果玩家**也**贴着上限打，单帧越界量还是同一个值（ai_awp 在 20fps 是 4.35°，是全套里最接近 5° 的）。
+
+## 3. `bobView` 是什么
+
+是原版 **视频设置 → 视角摇晃（View Bobbing）**。
+
+[GunCameraHelper.java:113-124](core/src/main/java/dev/xcolorful/customgun/client/renderer/item/gun/GunCameraHelper.java:113)：
+
+```java
+private void onComputeCameraAngles(IComputeCameraAnglesEvent event) {
+    Minecraft mc = Minecraft.getInstance();
+    if (
+            // 设置没开视角摇晃 (玩家移动时的镜头晃动)
+            !mc.options.bobView().get()
+            || mc.player == null
+    ) return;
+    this._applyLevelCameraAnimation(event, mc.player);
+    this._applyCameraRecoil(event);
+}
+```
+
+**是的，关掉视角摇晃 = 整套相机后坐力直接不生效**，而且连带 `_applyLevelCameraAnimation`（物品自定义相机动画）一起没了。[:363-370](core/src/main/java/dev/xcolorful/customgun/client/renderer/item/gun/GunCameraHelper.java:363) 的 `onBeforeRenderHand` 同样判 `bobView`，手部相机动画也一起关。
+
+看注释像是"关了摇晃就别抖"顺手把整块 gate 掉了，但副作用是**一个玩法机制（后坐力）被一个装饰性辅助选项全局关掉**，而且和视角摇晃本身没有因果关系——后坐力不是"摇晃"。这个我按规则 7 报给你，没动。
+
+对你的容差问题：关掉它之后客户端 pitch 不会越界、服务端不会拒绝；但同时后坐力也不存在了。作弊向的话，关掉这个选项就能免费去掉后坐力。
+
+## 需要你定的一件事
+
+如果"服务端上界是为连发累积留的"是你的**设计意图**，那当前代码没实现这个累积——按累积设计的话，界要按「窗口内发数 × 单发」算，而不是现在这样。要不要把它改成真正累积（即不复位 `xRotO` / 不每发重建曲线），还是保持现状只按单帧增量留容差？

@@ -9,7 +9,7 @@ import dev.xcolorful.customgun.core.api.entity.ILivingShooter;
 import net.minecraft.client.model.AnimationUtils;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
-import net.minecraft.client.renderer.entity.player.PlayerRenderer;
+import net.minecraft.client.renderer.entity.player.AvatarRenderer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
@@ -189,7 +189,7 @@ public class DefaultShooterAnimator implements IShooterAnimator {
      *     目标姿态的推导
      *     <li>世界朝向 = {@code Ry(180°-yaw) · [?] · S(-1,-1,1) · Rz(z)Ry(y)Rx(x) · (0,1,0)}，{@code [?]} 站立时为空、趴下时为 {@code Rx(-90°)}</li>
      *     <li>{@code S(-1,-1,1)} 出自 {@code LivingEntityRenderer#render}，它在 {@code setupRotations} 之后才执行，所以在链的内侧</li>
-     *     <li>{@code Rx(-90°)} 出自 {@link PlayerRenderer#setupRotations} 的 swimAmount 分支</li>
+     *     <li>{@code Rx(-90°)} 出自 {@link AvatarRenderer#setupRotations} 的 swimAmount 分支</li>
      *     <li>令其等于视线向量 {@code (-sin(yaw)cos(p), -sin(p), cos(yaw)cos(p))} 即可解出</li>
      *     <li>站立解：{@code xRot = -PI/2 + p}、{@code yRot = head.yRot}、zRot 不动，能还原出原版数值，可作校验</li>
      *     <li>趴下解：{@code xRot = p}、{@code yRot = PI}、{@code zRot = PI - head.yRot}</li>
@@ -229,7 +229,7 @@ public class DefaultShooterAnimator implements IShooterAnimator {
      *     起点（原版弓蓄满姿态）
      *     <li>取原版 {@link HumanoidModel#poseRightArm} / {@link HumanoidModel#poseLeftArm} 的 {@link HumanoidModel.ArmPose#BOW_AND_ARROW} 分支之持械手</li>
      *     <li>值：{@code yRot = ∓0.1 + head.yRot}，{@code xRot = -PI/2 + head.xRot}</li>
-     *     <li>原版由 {@link PlayerRenderer#getArmPose} 在拉弓时选中该分支</li>
+     *     <li>原版由 {@link AvatarRenderer#getArmPose} 在拉弓时选中该分支</li>
      * </ul>
      * <ul>
      *     终点
@@ -254,7 +254,7 @@ public class DefaultShooterAnimator implements IShooterAnimator {
      *     起点（原版弩蓄满姿态）
      *     <li>取原版 {@link AnimationUtils#animateCrossbowHold} 的持械手</li>
      *     <li>值：{@code yRot = ∓0.3 + head.yRot}，{@code xRot = -PI/2 + head.xRot + 0.1}</li>
-     *     <li>{@link HumanoidModel.ArmPose#CROSSBOW_HOLD}，原版由 {@link PlayerRenderer#getArmPose} 在弩已蓄满且玩家未挥手时选中</li>
+     *     <li>{@link HumanoidModel.ArmPose#CROSSBOW_HOLD}，原版由 {@link AvatarRenderer#getArmPose} 在弩已蓄满且玩家未挥手时选中</li>
      * </ul>
      * <ul>
      *     终点

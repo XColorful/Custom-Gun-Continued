@@ -4,6 +4,7 @@ import dev.xcolorful.customgun.client.CustomGunClient;
 import dev.xcolorful.customgun.client.api.animation.shooter.IShooterAnimator;
 import dev.xcolorful.customgun.client.api.item.gun.IShooterAnimationCategory;
 import dev.xcolorful.customgun.client.api.item.gun.ShooterAnimationCategory;
+import dev.xcolorful.customgun.client.compat.shouldersurfing.ShoulderSurfingCompat;
 import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
 import dev.xcolorful.customgun.core.api.entity.ILivingShooter;
 import net.minecraft.client.model.AnimationUtils;
@@ -55,6 +56,18 @@ public class DefaultShooterAnimator implements IShooterAnimator {
         boolean prone = livingShooter.isVisuallySwimming();
         // 趴下时改用实体真实视角俯仰；夹取交给 MouseHandlerMixin
         float viewPitch = prone ? livingShooter.getXRot() * ((float) Math.PI / 180.0F) : head.xRot;
+        // 站立时模型头的偏航就是视线相对本体的偏航
+        float viewYaw = head.yRot;
+        if (ShoulderSurfingCompat.isShoulderSurfing()) {
+            /*
+            越肩视角生效时上面两个值都不能用：它每 tick 会把本体朝向改写去对准准星命中点，而模型头/身的相对偏航要等 tickHeadTurn 与服务器回包才跟上
+            两者在它切换的瞬间能差上百来度，手臂会跟着甩出去，故视线改取它的相机朝向
+            只经本仓库的反射封装，不引入 SSR 类型
+             */
+            // 相机偏航是绝对角，head.yRot 是相对角，用 yHeadRot 作桥换算回相对角
+            viewYaw += (ShoulderSurfingCompat.getYRot() - livingShooter.getYHeadRot()) * ((float) Math.PI / 180.0F);
+            viewPitch = ShoulderSurfingCompat.getXRot() * ((float) Math.PI / 180.0F);
+        }
 
         // 1. 瞄准动画
         {
@@ -72,13 +85,13 @@ public class DefaultShooterAnimator implements IShooterAnimator {
 
             // 1.1 始终持枪手瞄准：直接覆盖成对准视线的姿态，不参与插值
             if (mainArmAlwaysAim) {
-                this._animateShooterAimingMainArm(head, mainArm, prone, viewPitch);
+                this._animateShooterAimingMainArm(viewYaw, mainArm, prone, viewPitch);
                 mainArmAnimated = true;
             }
 
             // 1.2 瞄准动画：双手各自独立插值，互不影响
             if (!mainArmAnimated && (mainArmPoseWhenIdle || mainArmAimingProgress > 0.001f)) {
-                this._animateShooterAimingCrossbowMainArm(head, mainArm, mainArmIsRight,
+                this._animateShooterAimingCrossbowMainArm(viewYaw, mainArm, mainArmIsRight,
                         prone, viewPitch,
                         mainArmPoseWhenIdle, mainArmAimingProgress);
                 mainArmAnimated = true;
@@ -124,7 +137,7 @@ public class DefaultShooterAnimator implements IShooterAnimator {
      * 持枪手对准视线所需的 yRot
      * <ul>
      *     取值
-     *     <li>站立时：就是 {@code head.yRot}</li>
+     *     <li>站立时：就是视线偏航 {@code viewYaw}</li>
      *     <li>趴下时：{@code PI}，趴下解的偏航改由 zRot 表达，yRot 取定值</li>
      * </ul>
      * <ul>
@@ -133,11 +146,12 @@ public class DefaultShooterAnimator implements IShooterAnimator {
      *     <li>取 {@code PI} 可与原版趴下姿态直接衔接，取 {@code 0} 则插值时手臂要横穿半圈</li>
      * </ul>
      *
+     * @param viewYaw   视线偏航，相对模型本体，由 {@link #animateShooter} 给出
      * @param viewPitch 视角俯仰，站立时取 {@code head.xRot}，趴下时取实体真实俯仰
      * @see #_mainArmAimZRot 趴下为什么改用 zRot 表达偏航
      */
-    public static float _mainArmAimYRot(ModelPart head, boolean prone, float viewPitch) {
-        return prone ? (float) Math.PI : head.yRot;
+    public static float _mainArmAimYRot(float viewYaw, boolean prone, float viewPitch) {
+        return prone ? (float) Math.PI : viewYaw;
     }
 
     /**
@@ -148,9 +162,9 @@ public class DefaultShooterAnimator implements IShooterAnimator {
      *     <li>趴下时：{@code viewPitch}，模型坐标架已被 {@code Rx(-90°)} 转过，手臂俯仰直接取视角俯仰</li>
      * </ul>
      *
-     * @param viewPitch 视角俯仰，站立时取 {@code head.xRot}，趴下时取实体真实俯仰
+     * @param viewPitch 视角俯仰，站立时取 {@code head.xRot}，趴下时取实体真实俯仰，越肩视角生效时取它的相机俯仰
      */
-    public static float _mainArmAimXRot(ModelPart head, boolean prone, float viewPitch) {
+    public static float _mainArmAimXRot(boolean prone, float viewPitch) {
         return prone ? viewPitch : -((float) Math.PI / 2.0F) + viewPitch;
     }
 
@@ -159,20 +173,21 @@ public class DefaultShooterAnimator implements IShooterAnimator {
      * <ul>
      *     取值
      *     <li>站立时：不变，仍交给原版走路摆动</li>
-     *     <li>趴下时：{@code PI - head.yRot}，趴下解的偏航靠 zRot 表达</li>
+     *     <li>趴下时：{@code PI - 视线偏航}，趴下解的偏航靠 zRot 表达</li>
      * </ul>
      * <ul>
-     *     为什么是 PI - head.yRot
+     *     为什么是 PI - 视线偏航
      *     <li>{@link #_mainArmAimYRot} 已把 yRot 定在 {@code PI}，剩下的偏航只能由 zRot 承担</li>
-     *     <li>令手臂世界朝向等于视线向量，解出 {@code sin(zRot) = sin(head.yRot)}、{@code cos(zRot) = -cos(head.yRot)}</li>
-     *     <li>同时满足两式的是 {@code zRot = PI - head.yRot}</li>
-     *     <li>{@code head.yRot} 为 0 时退化为 {@code PI}，正好等于原版趴下（游泳）姿态的 zRot</li>
+     *     <li>令手臂世界朝向等于视线向量，解出 {@code sin(zRot) = sin(视线偏航)}、{@code cos(zRot) = -cos(视线偏航)}</li>
+     *     <li>同时满足两式的是 {@code zRot = PI - 视线偏航}</li>
+     *     <li>视线偏航为 0 时退化为 {@code PI}，正好等于原版趴下（游泳）姿态的 zRot</li>
      * </ul>
      *
-     * @param currentZRot 手臂当前的 zRot
+     * @param viewYaw      视线偏航，相对模型本体，由 {@link #animateShooter} 给出
+     * @param currentZRot  手臂当前的 zRot
      */
-    public static float _mainArmAimZRot(ModelPart head, boolean prone, float currentZRot) {
-        return prone ? (float) Math.PI - head.yRot : currentZRot;
+    public static float _mainArmAimZRot(float viewYaw, boolean prone, float currentZRot) {
+        return prone ? (float) Math.PI - viewYaw : currentZRot;
     }
 
     /**
@@ -191,8 +206,8 @@ public class DefaultShooterAnimator implements IShooterAnimator {
      *     <li>{@code S(-1,-1,1)} 出自 {@code LivingEntityRenderer#render}，它在 {@code setupRotations} 之后才执行，所以在链的内侧</li>
      *     <li>{@code Rx(-90°)} 出自 {@link PlayerRenderer#setupRotations} 的 swimAmount 分支</li>
      *     <li>令其等于视线向量 {@code (-sin(yaw)cos(p), -sin(p), cos(yaw)cos(p))} 即可解出</li>
-     *     <li>站立解：{@code xRot = -PI/2 + p}、{@code yRot = head.yRot}、zRot 不动，能还原出原版数值，可作校验</li>
-     *     <li>趴下解：{@code xRot = p}、{@code yRot = PI}、{@code zRot = PI - head.yRot}</li>
+     *     <li>站立解：{@code xRot = -PI/2 + p}、{@code yRot = 视线偏航}、zRot 不动，能还原出原版数值，可作校验</li>
+     *     <li>趴下解：{@code xRot = p}、{@code yRot = PI}、{@code zRot = PI - 视线偏航}</li>
      *     <li>趴下解与站立解其实是同一个旋转（{@code Rx(-90°) · 站立解}），只是在 {@code Rz·Ry·Rx} 下的另一组欧拉角</li>
      *     <li>该旋转的欧拉角不唯一：绕手臂长轴可自由滚转，此处取 {@code yRot = PI} 的那一支</li>
      *     <li>取它是因为原版趴下（游泳）姿态自身双臂就是 {@code yRot = PI}、{@code zRot ≈ PI}，衔接最顺</li>
@@ -217,10 +232,10 @@ public class DefaultShooterAnimator implements IShooterAnimator {
      *     <li>因此不再自动跟随版本，需按各方法 javadoc 的原版位置比对</li>
      * </ul>
      */
-    public static void _animateShooterAimingMainArm(ModelPart head, ModelPart arm, boolean prone, float viewPitch) {
-        arm.yRot = _mainArmAimYRot(head, prone, viewPitch);
-        arm.xRot = _mainArmAimXRot(head, prone, viewPitch);
-        arm.zRot = _mainArmAimZRot(head, prone, arm.zRot);
+    public static void _animateShooterAimingMainArm(float viewYaw, ModelPart arm, boolean prone, float viewPitch) {
+        arm.yRot = _mainArmAimYRot(viewYaw, prone, viewPitch);
+        arm.xRot = _mainArmAimXRot(prone, viewPitch);
+        arm.zRot = _mainArmAimZRot(viewYaw, prone, arm.zRot);
     }
 
     /**
@@ -228,7 +243,7 @@ public class DefaultShooterAnimator implements IShooterAnimator {
      * <ul>
      *     起点（原版弓蓄满姿态）
      *     <li>取原版 {@link HumanoidModel#poseRightArm} / {@link HumanoidModel#poseLeftArm} 的 {@link HumanoidModel.ArmPose#BOW_AND_ARROW} 分支之持械手</li>
-     *     <li>值：{@code yRot = ∓0.1 + head.yRot}，{@code xRot = -PI/2 + head.xRot}</li>
+     *     <li>值：{@code yRot = ∓0.1 + 视线偏航}，{@code xRot = -PI/2 + 视线俯仰}</li>
      *     <li>原版由 {@link PlayerRenderer#getArmPose} 在拉弓时选中该分支</li>
      * </ul>
      * <ul>
@@ -236,16 +251,16 @@ public class DefaultShooterAnimator implements IShooterAnimator {
      *     <li>{@link #_animateShooterAimingMainArm}，趴下时换一组解</li>
      * </ul>
      */
-    public static void _animateShooterAimingBowMainArm(ModelPart head, ModelPart arm, boolean mainArmIsRight,
+    public static void _animateShooterAimingBowMainArm(float viewYaw, ModelPart arm, boolean mainArmIsRight,
                                                        boolean prone, float viewPitch,
                                                        boolean poseWhenIdle, float animationProgress) {
         _applyArmAimPose(arm, poseWhenIdle, animationProgress,
-                (mainArmIsRight ? -0.1F : 0.1F) + head.yRot,
-                -((float) Math.PI / 2.0F) + head.xRot,
+                (mainArmIsRight ? -0.1F : 0.1F) + viewYaw,
+                -((float) Math.PI / 2.0F) + viewPitch,
                 arm.zRot,
-                _mainArmAimYRot(head, prone, viewPitch),
-                _mainArmAimXRot(head, prone, viewPitch),
-                _mainArmAimZRot(head, prone, arm.zRot));
+                _mainArmAimYRot(viewYaw, prone, viewPitch),
+                _mainArmAimXRot(prone, viewPitch),
+                _mainArmAimZRot(viewYaw, prone, arm.zRot));
     }
 
     /**
@@ -253,7 +268,7 @@ public class DefaultShooterAnimator implements IShooterAnimator {
      * <ul>
      *     起点（原版弩蓄满姿态）
      *     <li>取原版 {@link AnimationUtils#animateCrossbowHold} 的持械手</li>
-     *     <li>值：{@code yRot = ∓0.3 + head.yRot}，{@code xRot = -PI/2 + head.xRot + 0.1}</li>
+     *     <li>值：{@code yRot = ∓0.3 + 视线偏航}，{@code xRot = -PI/2 + 视线俯仰 + 0.1}</li>
      *     <li>{@link HumanoidModel.ArmPose#CROSSBOW_HOLD}，原版由 {@link PlayerRenderer#getArmPose} 在弩已蓄满且玩家未挥手时选中</li>
      * </ul>
      * <ul>
@@ -267,16 +282,16 @@ public class DefaultShooterAnimator implements IShooterAnimator {
      *     <li>俯仰偏移与偏航常量都在插值中一同收敛</li>
      * </ul>
      */
-    public static void _animateShooterAimingCrossbowMainArm(ModelPart head, ModelPart arm, boolean mainArmIsRight,
+    public static void _animateShooterAimingCrossbowMainArm(float viewYaw, ModelPart arm, boolean mainArmIsRight,
                                                             boolean prone, float viewPitch,
                                                             boolean poseWhenIdle, float animationProgress) {
         _applyArmAimPose(arm, poseWhenIdle, animationProgress,
-                (mainArmIsRight ? -0.3F : 0.3F) + head.yRot,
-                -((float) Math.PI / 2.0F) + head.xRot + 0.1F,
+                (mainArmIsRight ? -0.3F : 0.3F) + viewYaw,
+                -((float) Math.PI / 2.0F) + viewPitch + 0.1F,
                 arm.zRot,
-                _mainArmAimYRot(head, prone, viewPitch),
-                _mainArmAimXRot(head, prone, viewPitch),
-                _mainArmAimZRot(head, prone, arm.zRot));
+                _mainArmAimYRot(viewYaw, prone, viewPitch),
+                _mainArmAimXRot(prone, viewPitch),
+                _mainArmAimZRot(viewYaw, prone, arm.zRot));
     }
 
     /**

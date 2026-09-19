@@ -736,3 +736,52 @@ private static void applyArmAimPose(ModelPart arm, boolean poseWhenIdle, float a
 - `animateShooterAimingMainArm`：只在 `mainArmAlwaysAim=true` 的分支里被引用，你现在把它设成 false，所以运行时不走。
 
 **未实机验证**，进游戏看下进度 0 是不是弩蓄满姿态、拉满是不是正对视线。
+
+# 
+
+```
+功能没问题。
+把javadoc注释改成我现在git暂存区这种每点一个列表项的形式，大段的叙述不好阅读
+```
+
+# 
+
+改成你暂存区那种逐条 `<li>` 的形式。
+
+改完，编译通过。
+
+四个姿态方法的 javadoc 都改成了逐条 `<li>`、每条一行不折行：
+
+- [DefaultShooterAnimator.java:133](core/src/main/java/dev/xcolorful/customgun/client/animation/shooter/animator/DefaultShooterAnimator.java:133) `_animateShooterAimingBowMainArm`
+- [DefaultShooterAnimator.java:151](core/src/main/java/dev/xcolorful/customgun/client/animation/shooter/animator/DefaultShooterAnimator.java:151) `_animateShooterAimingCrossbowMainArm`
+- [DefaultShooterAnimator.java:171](core/src/main/java/dev/xcolorful/customgun/client/animation/shooter/animator/DefaultShooterAnimator.java:171) `_animateShooterAimingBowOffArm`
+- [DefaultShooterAnimator.java:187](core/src/main/java/dev/xcolorful/customgun/client/animation/shooter/animator/DefaultShooterAnimator.java:187) `_animateShooterAimingCrossbowOffArm`
+
+`_applyArmAimPose` 和 `_animateShooterAimingMainArm` 你暂存区里已经是这个形式了，没动。
+
+# 
+
+```
+_animateShooterAimingMainArm的javadoc后半段也要改，不能一个列表项里大段表述
+```
+
+# 
+
+改完，编译通过。
+
+[DefaultShooterAnimator.java:113](core/src/main/java/dev/xcolorful/customgun/client/animation/shooter/animator/DefaultShooterAnimator.java:113) —— 那段原本 3 个 `<li>`（每个都是多行长句）拆成了 10 个单行条目：
+
+```
+<li><b>不跟随潜行补偿</b></li>
+<li>原因：HumanoidModel#createMesh 里 head / body / right_arm / left_arm 都挂在 root 下互为兄弟节点</li>
+<li>因此原版 body.xRot = 0.5F 的前倾不会传导到手臂，手臂朝向完全由 arm.xRot 决定</li>
+<li>原版在 this.crouching 分支里对双臂 xRot += 0.4F，跟随则蹲下时枪口下压 0.4 rad（约 23°）</li>
+<li>不跟随时 arm.xRot = -PI/2 + head.xRot，手臂始终垂直于视线，与是否蹲下无关</li>
+<li>原版加它是为了让垂手跟随前倾的躯干，与"举枪"目的相悖</li>
+<li><b>未复现走路摆动</b>：原版 setupAnim 末尾对双臂调用 AnimationUtils#bobModelPart</li>
+<li>原因：bobModelPart 需要 ageInTicks，当前接口拿不到，影响约 0.05 rad</li>
+<li><b>常量已内联</b>：这些姿态按手拆分，而原版 animateCrossbowHold 会同时写两只手，无法再整体调用</li>
+<li>因此不再自动跟随版本，需按各方法 javadoc 的原版位置比对</li>
+```
+
+三个主题句保留 `<b>`，其余每条只讲一件事。

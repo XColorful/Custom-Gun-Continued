@@ -785,3 +785,198 @@ _animateShooterAimingMainArm的javadoc后半段也要改，不能一个列表项
 ```
 
 三个主题句保留 `<b>`，其余每条只讲一件事。
+
+# 
+
+```
+现在还需要修一个问题：
+- 趴下的时候瞄准进度为1的时候没有指向视角朝向
+- 原版弩在趴下时的手部动画跟不持弩时一样；现在需要修改成这样，非瞄准时就什么动画都不做（跟原版弩行为一致），但是瞄准进度1或者持枪手始终瞄准时，要把持枪手改到视角朝向（MouseHandlerMixin已限制持枪时的俯仰角，动画这边不负责手臂旋转到人类不可能抵达的位置，让其他地方来约束）
+```
+
+# 
+
+先看当前的 manager 与 MouseHandlerMixin，确认趴下时是不是被提前 return 了。
+
+让我先确认趴下时 `head.xRot` 到底是不是被强制了。
+
+机制找到了。`head.xRot` 在趴下时**被原版强制固定**了，不再等于视角俯仰：
+
+- `LivingShooterProne.PRONE_POSE = Pose.SWIMMING`（[LivingShooterProne.java:19](core/src/main/java/dev/xcolorful/customgun/core/entity/shooter/LivingShooterProne.java:19)）
+- `Entity.isVisuallySwimming()` = `hasPose(Pose.SWIMMING)` → 趴下时为 true
+- 于是 `HumanoidModel#setupAnim` 走进这个分支（L91-96），把 `head.xRot` 强拉向 `-PI/4`：
+
+```java
+} else if (this.swimAmount > 0.0F) {
+   if (flag1) {                                    // flag1 = isVisuallySwimming()
+      this.head.xRot = this.rotlerpRad(this.swimAmount, this.head.xRot, (-(float)Math.PI / 4F));
+   } else {
+      this.head.xRot = this.rotlerpRad(this.swimAmount, this.head.xRot, p_102871_ * (PI/180));
+   }
+}
+```
+
+我们的目标姿态是 `xRot = -PI/2 + head.xRot`，而手臂在模型空间里与头部同向（`arm.xRot = -PI/2 + h` 与 `head.xRot = h` 解出的是同一个方向向量 `(0, sin h, -cos h)`）。所以头被钉住 → 手臂俯仰也跟着被钉在 `-PI/2 - PI/4`，**偏航仍正确，只有俯仰错**。这就是"没指向视角朝向"。
+
+先把第一点（非瞄准不做动画）改掉。
+
+# 
+
+```
+非瞄准不做动画是指趴下的时候非瞄准不做动画，不是让你改config，改回去
+```
+
+# 
+
+改回 config。
+
+现在把趴姿下的变换链读准，才能推出正确的朝向。
+
+推导出来了，先验证一下公式自洽性——用站立情形反推能还原原版数值，说明变换链读对了：
+
+站立：`world = S·Ry(180-yaw)·d`，代入 `xRot = -PI/2+p`、`yRot = head.yRot` 得到的世界朝向正好等于视线向量。趴下时模型多套了一层 `Rx(-90°)`（[PlayerRenderer.java:220](file:///dev/null)），同一个世界朝向在该坐标架下的解变成另一组：
+
+| | xRot | yRot |
+|---|---|---|
+| 站立 | `-PI/2 + 视角俯仰` | `head.yRot` |
+| 趴下 | `acos(cos(head.yRot)·cos(pitch))` | `atan2(-sin(head.yRot)·cos(pitch), sin(pitch))` |
+
+而且趴下时**必须用实体真实视角俯仰**（`getXRot()`），因为 `head.xRot` 已被钉死。开始改。
+
+编译通过。
+
+## 改动
+
+**根因**：`LivingShooterProne.PRONE_POSE = Pose.SWIMMING`，于是 `isVisuallySwimming()` 为真，原版 `HumanoidModel#setupAnim` 把 `head.xRot` 强拉向 `-PI/4`。我们的目标姿态是"手臂与头同向"，头被钉住 → 偏航还对、俯仰错。
+
+**修法**（[DefaultShooterAnimator.java:55](core/src/main/java/dev/xcolorful/customgun/client/animation/shooter/animator/DefaultShooterAnimator.java:55)）：
+
+- `prone` 时改用实体真实视角俯仰 `getXRot()`，因为 `head.xRot` 已经不代表视角
+- `prone` 时手臂目标姿态换一组解：模型在趴下时多套了一层 `Rx(-90°)`（`PlayerRenderer#setupRotations` 的 swimAmount 分支），同一个世界朝向在该坐标架下的解是
+
+  | | xRot | yRot |
+    |---|---|---|
+  | 站立 | `-PI/2 + p` | `head.yRot` |
+  | 趴下 | `acos(cos(head.yRot)·cos(p))` | `atan2(-sin(head.yRot)·cos(p), sin(p))` |
+
+  推导写在 `_animateShooterAimingMainArm` 的 javadoc 里。**自洽性校验**：站立情形下这组解能还原出原版 `BOW_AND_ARROW` / `CROSSBOW_HOLD` 的 `xRot = -PI/2 + head.xRot`，说明变换链读对了。
+
+- `prone` 时强制关闭空闲姿态（两手），所以趴下不瞄准时不套任何姿态，与原版弩一致
+
+## 三点要你确认
+
+**1. 趴下时俯仰只能 20Hz**。`getXRot()` 是每 tick 更新的，没有 partialTick 源（`head.xRot` 本来有，但被钉住了）。趴下时左右转头会看到俯仰以 20Hz 跳。你之前说 20Hz 可接受，但这次是常态（不是进出瞄准的过渡），所以单独提一下。
+
+**2. 副手在趴下+瞄准时仍是躯干坐标系下的弩姿态**。你只说了"持枪手改到视角朝向"，副手我没动——但它在趴下时也是同样的坐标架问题，会看着不对。要不要一并换解？
+
+**3. `_mainArmAimYRot` 用 `atan2` 返回值域是 (-π, π]**，与手臂当前 `yRot` 插值时有走长弧的可能。
+
+**未实机验证**——趴下的符号/数值需要你进游戏看，如果朝向反了大概率是符号。
+
+# 
+
+```
+现在趴下瞄准的朝向不对：
+- 趴下时非持枪手改成始终无动画，无论config怎么配（原版趴下时始终没有副手动画）
+- 瞄准并爬行的时候，持枪手仍然是游泳地摆动手臂而不是始终视角朝向
+- 当瞄准并爬行，玩家的双手动画播到往两侧张开时，当镜头从玩家前上方看向玩家时，枪就像正常人朝右持枪；当镜头从前下方看向玩家时，枪是颠倒的，像现实的人右手手背朝前握枪；当镜头从玩家前上方移到前下方看玩家时，玩家的右手朝向从低于地平线到高于地平线的角度运动
+```
+
+# 
+
+三点里第 3 点是关键线索——那不是朝向错，是**滚转错**。我选的趴下解 `(xRot, yRot, 0)` 在俯仰接近 0 时 `yRot` 会落到 ±90°，等于绕手臂长轴滚半圈，所以枪会翻过来。
+
+换用 `zRot` 解就没有这个问题。重推：手臂静止朝向是模型 +Y，`d = Rz(z)·Ry(y)·Rx(x)·(0,1,0)`，趴下时世界朝向 = `S(-1,-1,1)·Ry(180°-yaw)·Rx(-90°)·d`。令其等于视线向量：
+
+| | xRot | yRot | zRot |
+|---|---|---|---|
+| 站立 | `-PI/2 + p` | `head.yRot` | 不变 |
+| 趴下 | `p` | `0` | `head.yRot` |
+
+站立那行能还原出原版数值，可作为校验。趴下的 `yRot = 0` 是关键——不引入那段滚转。
+
+编译通过。
+
+## 改动
+
+**#3 的根因是滚转，不是朝向**。上一版趴下解 `(xRot, yRot, 0)` 里，俯仰接近 0 时 `yRot` 会落到 ±90°——而 `xRot` 也接近 0 时手臂长轴几乎就在模型 +Y 上，此时 `yRot` 基本是**绕长轴滚半圈**。枪挂在手上，就跟着翻过来了，也就是你说的"手背朝前"。镜头从前上方/前下方看会看到不同结果，正是半圈滚转的典型表现。
+
+新解把偏航挪到 `zRot`，`yRot` 固定为 0，不引入滚转：
+
+| | xRot | yRot | zRot |
+|---|---|---|---|
+| 站立 | `-PI/2 + p` | `head.yRot` | 不变 |
+| 趴下 | `p` | `0` | `head.yRot` |
+
+`_applyArmAimPose` 相应加了一对 zRot 参数（站立姿态传两次同一个值表示不动）。
+
+**#1**：趴下时副手在 gate 上直接短路，不看 config：
+
+```java
+if (!prone && !offArmAnimated && (offArmPoseWhenIdle || offArmAimingProgress > 0.001f)) {
+```
+
+**#2**：我判断和 #3 同源——旧公式下 `yRot` 随偏航符号在 ±90° 之间翻转，爬行时视线一晃手臂就来回摆，看着像在划水。改完后 `yRot` 恒为 0、`zRot` 平滑跟随视线，应该就稳了。
+
+## 如果改完还是"摆动"
+
+那说明**不是公式问题，是根本进不到 animator**。两个上游嫌疑，需要你实机确认后再动：
+
+- [ShooterAnimationManager.java:85](core/src/main/java/dev/xcolorful/customgun/client/animation/shooter/ShooterAnimationManager.java:85) 的 `entityIn.isSwimming()` 短路。理论上趴地爬行时游泳标志位是 false（`isIllegalProneState` 也把 `isSwimming()` 当非法态），但如果实测为 true，动画会被整个跳过。
+- [ShooterAnimationManager.java:98](core/src/main/java/dev/xcolorful/customgun/client/animation/shooter/ShooterAnimationManager.java:98) 的 `PlayerAnimatorCompat.playAnimation(...)` 返回 true 时接管。如果枪包给了趴姿的 player_animator 动画，vanilla 路径就不会执行。
+
+**未实机验证**。趴下那组符号如果还是反的，大概率是 `zRot` 的正负。
+
+# 
+
+```
+现在趴下瞄准时，枪是朝后的，并且视角左右移动的时候，手是反方向移动的
+另外，我之前javadoc改成了列表层级的形式，你不要私自改回扁平化的列表，例如我之前是以下这样的形式：
+<ul>
+    <ul>
+        标题1
+        <li>点1</li>
+    </ul>
+    <ul>
+        标题2
+        <li></li>
+        <li></li>
+    </ul>
+</ul>
+```
+
+# 
+
+两个都处理。先看你现在 javadoc 的实际层级形式。
+
+找到了。是**系数错了**：趴下时 `zRot` 应该是 `2 * head.yRot`，我写成了 1 倍。
+
+重解一遍：把手臂朝向 `d = (Rz·Ry·Rx)·(0,1,0)` 经 `S(-1,-1,1)·Ry(180°-yaw)·Rx(-90°)` 映射到世界，令其等于视线向量，配合 `yRot = 0` 解出的是 `zRot - 2·yaw = 0`。`Rx(-90°)` 把偏航同时带进了两个世界分量，所以系数是 2。写成 1 倍正好是"朝向偏斜 + 左右反向"。
+
+编译通过。
+
+## 数学修正
+
+[DefaultShooterAnimator.java:167](core/src/main/java/dev/xcolorful/customgun/client/animation/shooter/animator/DefaultShooterAnimator.java:167)：
+
+```java
+return prone ? 2.0F * head.yRot : currentZRot;   // 原来是 1.0F * head.yRot
+```
+
+**为什么是 2 倍**：趴下时手臂的世界朝向是 `S(-1,-1,1) · Ry(180°-yaw) · Rx(-90°) · Rz(z)Ry(y)Rx(x) · (0,1,0)`。展开后 `Rx(-90°)` 把偏航同时带进了 x 和 z 两个世界分量，令其等于视线向量 `(-sin(yaw)cos(p), -sin(p), cos(yaw)cos(p))`、配合 `yRot = 0`，解出的是 `zRot = 2 * head.yRot`。
+
+写成 1 倍时偏航只转了一半——正是你看到的"朝向偏斜 + 视角左右移动时手往反方向走"。
+
+## Javadoc
+
+按你给的层级形式改回来了（外层 `<ul>` 包多个内层 `<ul>`，每个内层以标题行开头再跟 `<li>`）：
+
+- `_mainArmAimYRot` / `_mainArmAimXRot` / `_mainArmAimZRot`
+- `_animateShooterAimingMainArm`（三组：去常量原因 / 推导 / 其余共同偏离）
+- 四个 `_animateShooterAiming*Arm`（按"起点 / 终点 / 对比"或"出处 / 插值 / 启用条件"分组）
+
+## 一点提醒
+
+`zRot = 2 * head.yRot` 在偏航 90° 时就是 180°，180° 时是 360°。角度本身对模型无所谓，但插值时从当前 `zRot` 走到目标值可能绕长弧，实机如果看到手臂在某个偏航附近"绕远路"，需要给 `Mth.lerp` 做角度环绕。
+
+**未实机验证**。如果还是反的，剩下的自由参数就是符号了。

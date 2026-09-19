@@ -24,11 +24,4 @@ public interface IShooterAnimator {
     void animateShooter(ModelPart head, ModelPart body, ModelPart leftArm, ModelPart rightArm,
                         ILivingShooter iLivingShooter, LivingEntity livingShooter,
                         GunDisplayInstance gunDisplayInstance);
-
-    /**
-     * 射手生物第三人称瞄准动画
-     */
-    void animateShooterAiming(ModelPart head, ModelPart body, ModelPart leftArm, ModelPart rightArm,
-                              ILivingShooter iLivingShooter, LivingEntity livingShooter,
-                              GunDisplayInstance gunDisplayInstance);
 }

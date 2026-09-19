@@ -980,3 +980,71 @@ return prone ? 2.0F * head.yRot : currentZRot;   // 原来是 1.0F * head.yRot
 `zRot = 2 * head.yRot` 在偏航 90° 时就是 180°，180° 时是 360°。角度本身对模型无所谓，但插值时从当前 `zRot` 走到目标值可能绕长弧，实机如果看到手臂在某个偏航附近"绕远路"，需要给 `Mth.lerp` 做角度环绕。
 
 **未实机验证**。如果还是反的，剩下的自由参数就是符号了。
+
+# 
+
+```
+现在需要继续修复dev.xcolorful.customgun.client.animation.shooter.animator.DefaultShooterAnimator的问题，上次对话历史接着./docs/deprecated/prompt/#54 Simple-animation.md
+- 最新javadoc写法我已经commit，以目前最新提交的为准
+- 目前代码状态下，趴下瞄准时，持枪手还是朝后的，且左右方向还是颠倒的
+
+继续修复问题。
+```
+
+# 
+
+I'll start by reading the referenced prompt doc and the current animator code.
+
+Now let me read the current implementation.
+
+Let me check the current git state and look at the vanilla render chain.
+
+Let me find the vanilla sources to verify the render chain.
+
+Let me use IDEA MCP to inspect the vanilla source directly.
+
+Let me read `HumanoidModel` to confirm the swim branch and arm poses.
+
+Let me verify the exact `ModelPart` transform order.
+
+Let me find the JOML library to verify the quaternion convention definitively.
+
+Let me numerically validate the transform model against the reported bug before changing anything.
+
+My model reproduces the reported symptom exactly (`dot ≈ -0.5`–`-0.7`, i.e. facing backwards) and both candidate solutions land on the look direction (`dot = 1.000`). The root cause is the chain order in the javadoc: `S(-1,-1,1)` is applied *inside* the rotations, not outside. Let me fix the two prone values.
+
+Now correct the derivation notes, which carried the wrong chain order.
+
+修好了。根因是 javadoc 里记的变换链顺序是错的，据此推出的趴下解自然全错。
+
+## 根因
+
+原 javadoc 写的是 `S(-1,-1,1) · Ry(180°-yaw) · [?] · Rz(z)Ry(y)Rx(x)`，把模型翻转放在了最外层。但实读源码 [`LivingEntityRenderer.java:98-101`](file:///C:/Users/XColo/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.20.1-47.4.16_mapped_official_1.20.1/forge-1.20.1-47.4.16_mapped_official_1.20.1-sources.jar!/net/minecraft/client/renderer/entity/LivingEntityRenderer.java) 是：
+
+```java
+this.setupRotations(...);        // mulPose(Ry) → mulPose(Rx(-90°))
+p_115311_.scale(-1.0F, -1.0F, 1.0F);   // ← 在 setupRotations 之后
+```
+
+`mulPose` 是右乘，所以真实链是 `Ry(180°-yaw) · Rx(-90°) · S(-1,-1,1) · Rz(z)Ry(y)Rx(x)` —— `S` 在**内层**。按正确的链重解，趴下解变成 `xRot = p`、`yRot = PI`、`zRot = PI - head.yRot`。
+
+## 验证
+
+写了个临时 JOML 程序跑数值（跑完已删），先确认事实：
+
+- `rotationZYX(z,y,x)` 确实等于 `Rz·Ry·Rx`（用 JOML 1.10.5 实测矩阵比对，不是推断）
+- **链条自校验**：站立时模型头部前向与视线向量点积 = 1.000，说明链读对了
+- **旧解复现你的现象**：`xRot=p, yRot=0, zRot=2*head.yRot` 点积只有 -0.50 ~ -0.71 —— 正是"朝后 + 左右反向"
+- **新解**：`xRot=p, yRot=PI, zRot=PI-head.yRot` 点积 = 1.000
+
+另一支 `yRot=0, zRot=-head.yRot` 也精确，但选 `yRot=PI` 是因为原版趴下（游泳）姿态自身双臂就是 `yRot=PI`、`zRot≈PI`（[`HumanoidModel.java:201-204`](file:///C:/Users/XColo/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.20.1-47.4.16_mapped_official_1.20.1/forge-1.20.1-47.4.16_mapped_official_1.20.1-sources.jar!/net/minecraft/client/model/HumanoidModel.java)），插值时衔接最顺；另一支要横穿半圈。
+
+## 改动
+
+只在 [DefaultShooterAnimator.java](core/src/main/java/dev/xcolorful/customgun/client/animation/shooter/animator/DefaultShooterAnimator.java)：`_mainArmAimYRot` 趴下分支 `0` → `PI`，`_mainArmAimZRot` 趴下分支 `2*head.yRot` → `PI - head.yRot`，加各自的推导 javadoc（保持你要的嵌套 `<ul>` + 标题行形式）。`_mainArmAimXRot` 趴下取 `viewPitch` 本来就是对的，没动。
+
+推导组里那条错误的链顺序也改掉了，并补了一条：趴下解其实等于 `Rx(-90°) · 站立解`，也就是**枪的世界朝向和不趴下时完全一致**，只是同一旋转在 `Rz·Ry·Rx` 下的另一组欧拉角。
+
+编译通过（`:core:compileJava`）。未新增平台 API。
+
+**未实机验证** —— 趴下瞄准的朝向得进游戏看：`./gradlew :forge-compat:runClient`。如果还不对，剩下的自由度就只剩符号了。

@@ -120,14 +120,19 @@ public class DefaultShooterAnimator implements IShooterAnimator {
      * <ul>
      *     取值
      *     <li>站立时：就是 {@code head.yRot}</li>
-     *     <li>趴下时：{@code 0}，趴下解不靠 yRot 表达偏航</li>
+     *     <li>趴下时：{@code PI}，趴下解的偏航改由 zRot 表达，yRot 取定值</li>
+     * </ul>
+     * <ul>
+     *     为什么定值取 PI 而不是 0
+     *     <li>原版趴下（游泳）姿态自身就把双臂 yRot 置为 {@code PI}，见 {@link HumanoidModel#setupAnim} 的 swimAmount 分支</li>
+     *     <li>取 {@code PI} 可与原版趴下姿态直接衔接，取 {@code 0} 则插值时手臂要横穿半圈</li>
      * </ul>
      *
      * @param viewPitch 视角俯仰，站立时取 {@code head.xRot}，趴下时取实体真实俯仰
      * @see #_mainArmAimZRot 趴下为什么改用 zRot 表达偏航
      */
     public static float _mainArmAimYRot(ModelPart head, boolean prone, float viewPitch) {
-        return prone ? 0.0F : head.yRot;
+        return prone ? (float) Math.PI : head.yRot;
     }
 
     /**
@@ -149,19 +154,20 @@ public class DefaultShooterAnimator implements IShooterAnimator {
      * <ul>
      *     取值
      *     <li>站立时：不变，仍交给原版走路摆动</li>
-     *     <li>趴下时：{@code 2 * head.yRot}，趴下解的偏航靠 zRot 表达</li>
+     *     <li>趴下时：{@code PI - head.yRot}，趴下解的偏航靠 zRot 表达</li>
      * </ul>
      * <ul>
-     *     为什么是 2 倍
-     *     <li>令手臂世界朝向等于视线向量，配合 {@code yRot = 0} 解得 {@code zRot - 2 * head.yRot = 0}</li>
-     *     <li>系数 2 来自 {@code Rx(-90°)} 把偏航同时带进了 x 与 z 两个世界分量</li>
-     *     <li>写成 1 倍会让偏航只转一半，表现为朝向偏斜、视角左右移动时手往反方向走</li>
+     *     为什么是 PI - head.yRot
+     *     <li>{@link #_mainArmAimYRot} 已把 yRot 定在 {@code PI}，剩下的偏航只能由 zRot 承担</li>
+     *     <li>令手臂世界朝向等于视线向量，解出 {@code sin(zRot) = sin(head.yRot)}、{@code cos(zRot) = -cos(head.yRot)}</li>
+     *     <li>同时满足两式的是 {@code zRot = PI - head.yRot}</li>
+     *     <li>{@code head.yRot} 为 0 时退化为 {@code PI}，正好等于原版趴下（游泳）姿态的 zRot</li>
      * </ul>
      *
      * @param currentZRot 手臂当前的 zRot
      */
     public static float _mainArmAimZRot(ModelPart head, boolean prone, float currentZRot) {
-        return prone ? 2.0F * head.yRot : currentZRot;
+        return prone ? (float) Math.PI - head.yRot : currentZRot;
     }
 
     /**
@@ -176,12 +182,16 @@ public class DefaultShooterAnimator implements IShooterAnimator {
      * </ul>
      * <ul>
      *     目标姿态的推导
-     *     <li>世界朝向 = {@code S(-1,-1,1) · Ry(180°-yaw) · [?] · Rz(z)Ry(y)Rx(x) · (0,1,0)}，{@code [?]} 站立时为空、趴下时为 {@code Rx(-90°)}</li>
+     *     <li>世界朝向 = {@code Ry(180°-yaw) · [?] · S(-1,-1,1) · Rz(z)Ry(y)Rx(x) · (0,1,0)}，{@code [?]} 站立时为空、趴下时为 {@code Rx(-90°)}</li>
+     *     <li>{@code S(-1,-1,1)} 出自 {@code LivingEntityRenderer#render}，它在 {@code setupRotations} 之后才执行，所以在链的内侧</li>
+     *     <li>{@code Rx(-90°)} 出自 {@link PlayerRenderer#setupRotations} 的 swimAmount 分支</li>
      *     <li>令其等于视线向量 {@code (-sin(yaw)cos(p), -sin(p), cos(yaw)cos(p))} 即可解出</li>
      *     <li>站立解：{@code xRot = -PI/2 + p}、{@code yRot = head.yRot}、zRot 不动，能还原出原版数值，可作校验</li>
-     *     <li>趴下解：{@code xRot = p}、{@code yRot = 0}、{@code zRot = 2 * head.yRot}，见 {@link #_mainArmAimXRot} 等三个方法</li>
-     *     <li>趴下不能沿用站立解：那需要把 {@code yRot} 摆到约 ±90°，等于绕手臂长轴滚半圈</li>
-     *     <li>滚半圈会让挂在手上的枪翻过来，观感上就是手背朝前</li>
+     *     <li>趴下解：{@code xRot = p}、{@code yRot = PI}、{@code zRot = PI - head.yRot}</li>
+     *     <li>趴下解与站立解其实是同一个旋转（{@code Rx(-90°) · 站立解}），只是在 {@code Rz·Ry·Rx} 下的另一组欧拉角</li>
+     *     <li>该旋转的欧拉角不唯一：绕手臂长轴可自由滚转，此处取 {@code yRot = PI} 的那一支</li>
+     *     <li>取它是因为原版趴下（游泳）姿态自身双臂就是 {@code yRot = PI}、{@code zRot ≈ PI}，衔接最顺</li>
+     *     <li>另一支 {@code yRot = 0} 同样精确，但插值时手臂要横穿半圈</li>
      * </ul>
      * <ul>
      *     其余共同偏离，移植时一并比对

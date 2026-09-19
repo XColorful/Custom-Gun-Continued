@@ -59,6 +59,7 @@ public final class ClientAttachmentIndexInstance extends PojoInstance<Attachment
                     // 把 display 里的 scope/sight 标记同步到模型，否则倍镜不会走模板渲染，ocular 会显示成黑色
                     this.attachmentModel.setEnableScope(this.attachmentDisplayCache.getEnableScope());
                     this.attachmentModel.setEnableSight(this.attachmentDisplayCache.getEnableSight());
+                    this._correctScopeViewIndex(this.attachmentModel); // 向后兼容
                 } else {
                     CustomGun.LOGGER.debug("ClientAttachmentIndexInstance: Failed to create AttachmentModelObject {}", modelLocation);
                 }
@@ -80,6 +81,34 @@ public final class ClientAttachmentIndexInstance extends PojoInstance<Attachment
 
         return true;
     }
+
+    /**
+     * 向后兼容：修正 display 里越界的 views 索引
+     * <ul>
+     *     旧资源包（以官包为例）的标准
+     *     <li>{@code tacz:scope_elcan_4x} 存在 {@code views: [2]} 但模型只有一个{@code scope_view} 的情况</li>
+     *     <li>原模组越界时会回退到第一个定位组，这里把越界的索引改成1（views是1-based）</li>
+     *     <li>只修改内存中的 pojo，不主动写入资源包文件</li>
+     * </ul>
+     */
+    private void _correctScopeViewIndex(@NotNull AttachmentModelObject attachmentModel) {
+        int @Nullable [] scopeViewIndex = this.attachmentDisplayCache.getScopeViewIndex();
+        if (scopeViewIndex == null) return;
+
+        // 模型没有 scope_view 时不存在可映射的定位组，保持原值让校验按原样处理
+        int viewCount = attachmentModel.getScopeViewCount();
+        if (viewCount <= 0) return;
+
+        for (int i = 0; i < scopeViewIndex.length; i++) {
+            // 只处理越界偏大的情况，<= 0 是资源包本身非法，留给 checkScopeViewIndex 拒绝
+            if (scopeViewIndex[i] <= viewCount) continue;
+
+            CustomGun.LOGGER.debug("ClientAttachmentIndexInstance: scopeViewIndex[{}] = {} exceeds the {} scope_view node(s) of {}, corrected to 1",
+                    i, scopeViewIndex[i], viewCount, this.attachmentDisplayCache.getModelLocation());
+            scopeViewIndex[i] = 1;
+        }
+    }
+
     private static final int ERR_SCOPE_VIEW_FOV = 1;
     private static final int ERR_SCOPE_ZOOM_SCALE = 1 << 1;
     private static final int ERR_SCOPE_VIEW_INDEX = 1 << 2;

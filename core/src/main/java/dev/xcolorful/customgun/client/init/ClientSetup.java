@@ -1,5 +1,6 @@
 package dev.xcolorful.customgun.client.init;
 
+import dev.xcolorful.customgun.client.animation.shooter.animator.DefaultShooterAnimator;
 import dev.xcolorful.customgun.client.gui.overlay.crosshair.DefaultCrosshair;
 import dev.xcolorful.customgun.client.gui.overlay.gunhud.DefaultGunHud;
 import dev.xcolorful.customgun.client.gui.overlay.shooteroperation.DefaultShooterOperation;
@@ -23,6 +24,7 @@ public class ClientSetup {
         DefaultCrosshair.init();
         DefaultGunHud.init();
         DefaultShooterOperation.init();
+        DefaultShooterAnimator.init();
     }
 
     @FunctionalInterface

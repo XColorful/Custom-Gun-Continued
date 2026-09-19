@@ -1048,3 +1048,70 @@ p_115311_.scale(-1.0F, -1.0F, 1.0F);   // ← 在 setupRotations 之后
 编译通过（`:core:compileJava`）。未新增平台 API。
 
 **未实机验证** —— 趴下瞄准的朝向得进游戏看：`./gradlew :forge-compat:runClient`。如果还不对，剩下的自由度就只剩符号了。
+
+# 
+
+```
+修好了。
+
+现在需要再做一个修复
+- 趴下时手持非枪械物品朝向一个高俯仰角后切到枪械，不会立即clamp，趴下连续射击时超过俯仰角限制也不会自动回正
+- 目前常量已经提取到LocalShooterAspect，要修改别的地方的话就引用这里的常量，方便IDE引用跳转
+```
+
+# 
+
+Let me look at the pitch-clamp code and the constants you extracted.
+
+Let me check whether `turnPlayer` runs every tick — that determines whether a new hook is needed at all.
+
+Now I understand the bug. `turnPlayer()` runs every frame (even with zero mouse delta), but the clamp only zeroes the *delta*, so an already out-of-range pitch is never corrected. Let me fix the clamp to work on the absolute value.
+
+Now add the unit constant and the `Mth` import.
+
+Let me verify the formula round-trips exactly through `turn()`.
+
+修好了，改动只在一个方法里。
+
+## 根因不是缺 hook，是夹取方式不对
+
+先确认了 hook 本身已经在跑：`Minecraft.runTick` 里 `this.mouseHandler.turnPlayer()` 在 tick 循环**之外**、每帧都调（[Minecraft.java:1118](file:///C:/Users/XColo/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.20.1-47.4.16_mapped_official_1.20.1/forge-1.20.1-47.4.16_mapped_official_1.20.1-sources.jar!/net/minecraft/client/Minecraft.java)）。所以切枪后、连射中，`cgc$adjustSensitivity` 每帧都会执行到。
+
+问题在原代码只钳制**增量**：
+
+```java
+if (playerPitch > PRONE_PITCH_MAX) finalPitch = Math.max(finalPitch, 0);
+```
+
+鼠标静止时增量本来就是 0，`Math.max(0, 0)` 还是 0 —— 已经越界的角度永远回不来。所以两个现象同源：都是"角度已经出去了"，而不是"保护没生效"。
+
+## 改法
+
+[MouseHandlerMixin.java:65](core/src/main/java/dev/xcolorful/customgun/client/mixin/MouseHandlerMixin.java:65) 改成按**绝对值**夹取。因为 `turn()` 的入参是原始单位（内部 `*0.15` 才是角度），所以换算到角度做夹取、再换算回去：
+
+```java
+float upPitch = -player.getXRot();
+float upDelta = (float) -finalPitch * TURN_DEGREES_PER_UNIT;
+float upClamped = Mth.clamp(upPitch + upDelta, LocalShooterAspect.PRONE_PITCH_MIN, LocalShooterAspect.PRONE_PITCH_MAX);
+finalPitch = -(upClamped - upPitch) / TURN_DEGREES_PER_UNIT;
+```
+
+常量仍直接引用 `LocalShooterAspect.PRONE_PITCH_MIN/MAX`（IDE 可跳转）。新增一个私有常量 `TURN_DEGREES_PER_UNIT = 0.15F`，对应 `Entity#turn` 里硬编码的那个 0.15。
+
+**走 `turn()` 而不是直接 `setXRot()`**：`Entity#turn` 是同时维护 `xRotO += f` 和 `xRot += f` 的，`baseTick` 并不重同步 `xRotO`。如果只 `setXRot`，`xRotO` 会永久偏一个常数，相机插值 `lerp(partialTicks, xRotO, xRot)` 会一直抖。
+
+## 验证
+
+跑了数值仿真（复刻夹取 + `Entity#turn`，跑完已删）：范围内原样通过；越界且鼠标静止、越界且继续往外、越界且往回 —— 三种都落在边界上，无 FAIL。
+
+## 两点要说清楚
+
+**1. 行为变化（这是你要的）**：以前玩家可以**停在**越界角度（比如趴下俯视 24°，只是不让继续往下），现在会被主动拉回边界。这就是"自动回正"。
+
+**2. 后坐力有一帧延迟**：垂直后坐是 `GunCameraHelper._applyCameraRecoil` 在相机角度事件里 `setXRot` 的，发生在 `turnPlayer` **之后**。所以连射时是"这一帧被顶出去、下一帧拉回边界"，表现为钉在边界上，而不是同帧就夹住。要同帧夹的话得再进 `GunCameraHelper`，那是另一个位置，你定。
+
+## 一处我没动、需要你判断
+
+同一个方法里还留着 `↑(源码)` 那段注释掉的旧代码（硬编码 45 / -30）和配套提醒"请修改数字的时候顺带改注释"。它现在相对提取出来的常量是**过期的**，但看着像你有意保留的改动前源码记录，所以我没删。要删还是改，你说。
+
+编译通过（`:core:compileJava`）。未新增平台 API（`Mth.clamp` / `LocalPlayer#getXRot` 项目里已在用，不需要 compat 包装）。**未实机验证**。

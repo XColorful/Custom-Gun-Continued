@@ -1,7 +1,6 @@
 package dev.xcolorful.customgun.client.animation.shooter;
 
 import dev.xcolorful.customgun.CustomGun;
-import dev.xcolorful.customgun.client.animation.shooter.animator.DefaultShooterAnimator;
 import dev.xcolorful.customgun.client.api.animation.shooter.IShooterAnimationManager;
 import dev.xcolorful.customgun.client.api.animation.shooter.IShooterAnimator;
 import dev.xcolorful.customgun.client.api.item.gun.IShooterAnimationCategory;
@@ -34,7 +33,6 @@ public class ShooterAnimationManager implements IShooterAnimationManager {
     }
 
     public static void init(McSide mcSide) {
-        INSTANCE.registerAnimator(DefaultShooterAnimator.INSTANCE);
     }
 
     // --------IShooterAnimationManager--------
@@ -110,11 +108,6 @@ public class ShooterAnimationManager implements IShooterAnimationManager {
         @Nullable IShooterAnimator animator = this.getAnimator(shooterAnimationCategory);
         if (animator == null) return;
 
-        float aimingProgress = iLivingShooter.cgc$getSynAimingProgress();
-        if (aimingProgress <= 0) {
-            animator.animateShooter(head, body, leftArm, rightArm, iLivingShooter, livingShooter, gunDisplayInstance);
-        } else {
-            animator.animateShooterAiming(head, body, leftArm, rightArm, iLivingShooter, livingShooter, gunDisplayInstance);
-        }
+        animator.animateShooter(head, body, leftArm, rightArm, iLivingShooter, livingShooter, gunDisplayInstance);
     }
 }

@@ -171,6 +171,16 @@ public final class LivingShooterShoot extends LivingShooterAspect {
     }
     @ApiStatus.Internal
     public static boolean isIllegalShootState(LivingEntity livingShooter) {
+        // 趴下时限制射击角度
+        if (LivingShooterProne.isPronePitchLimited(livingShooter)) {
+            // 仰角正负是反的
+            float upPitch = -livingShooter.getXRot();
+            if (upPitch > PRONE_PITCH_MAX + PRONE_PITCH_UPPER_TOLERANCE
+                    || upPitch < PRONE_PITCH_MIN - PRONE_PITCH_LOWER_TOLERANCE) {
+                return true;
+            }
+        }
+
         return false;
     }
 

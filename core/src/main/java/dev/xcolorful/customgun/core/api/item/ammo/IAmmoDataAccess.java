@@ -22,7 +22,7 @@ public interface IAmmoDataAccess extends IAmmoStateAccess,
     int getAmmoMaxStackSize(ItemStack ammoItem);
 
     /**
-     * 获取子弹数量
+     * 获取子弹数量，不涉及{@link #hasInfiniteFeed}扩容
      */
     int getAmmoCount(ItemStack ammoItem);
     void setAmmoCount(ItemStack ammoItem, int ammoCount);

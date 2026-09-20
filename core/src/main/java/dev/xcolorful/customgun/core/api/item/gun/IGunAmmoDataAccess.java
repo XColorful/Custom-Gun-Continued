@@ -1,6 +1,7 @@
 package dev.xcolorful.customgun.core.api.item.gun;
 
 import dev.xcolorful.customgun.core.api.gun.inventory.IGunInventoryRuntime;
+import dev.xcolorful.customgun.core.api.item.IAmmo;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -13,6 +14,7 @@ public interface IGunAmmoDataAccess {
      */
     boolean isMatchedAmmo(ItemStack gunItem, ItemStack ammoItem);
     /**
+     * 获取可用子弹数量，不涉及{@link IAmmo#hasInfiniteFeed}扩容
      * @param gunItem 枪械
      * @param ammoItem 子弹
      * @return 该子弹中可用于枪械的数量
@@ -70,6 +72,9 @@ public interface IGunAmmoDataAccess {
      * 检查背包是否有备弹，无关是否为直读模式
      */
     boolean hasInventoryAmmo(LivingEntity livingEntity, ItemStack gunItem);
+    /**
+     * 获取背包子弹数量，不涉及{@link IAmmo#hasInfiniteFeed}扩容
+     */
     int getInventoryAmmoCount(LivingEntity livingEntity, ItemStack gunItem);
 
     /**

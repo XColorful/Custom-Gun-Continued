@@ -14,6 +14,7 @@ import dev.xcolorful.customgun.core.api.item.IAmmo;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.ammo.IAmmoGetter;
 import dev.xcolorful.customgun.core.api.item.builder.AmmoBuilder;
+import dev.xcolorful.customgun.core.api.item.gun.GunDataAccessor;
 import dev.xcolorful.customgun.core.api.minecraft.capability.IInventoryCapability;
 import dev.xcolorful.customgun.core.api.resource.ResourceApi;
 import dev.xcolorful.customgun.core.init.registry.ModItems;
@@ -188,6 +189,7 @@ public class _DefaultGunInventory {
     }
 
     /**
+     * 标准同{@link IGun#getInventoryAmmoCount} (默认实现为{@link GunDataAccessor#getInventoryAmmoCount})
      * @param requiredAmmoCount 需要的扣除的子弹数
      * @return 已经扣除的子弹数
      */

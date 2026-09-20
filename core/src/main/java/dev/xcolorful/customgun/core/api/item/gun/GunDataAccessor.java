@@ -248,10 +248,13 @@ public interface GunDataAccessor extends IGunDataAccess {
         @Nullable var customData = NBTUtils.getCustomData(ammoItem);
         if (customData == null) return 0;
         @NotNull CompoundTag customDataTag = NBTUtils.getCustomDataTag(customData);
-        if (!iAmmo.getAmmoLocation(customDataTag).equals(gunIndexInstance.getGunData().getAmmoLocation())
-                && !iAmmo.isAlmightyAmmo(customDataTag)) {
+        if (!iAmmo.getAmmoLocation(customDataTag).equals(gunIndexInstance.getGunData().getAmmoLocation()) // 子弹类型不对
+                && !iAmmo.isAlmightyAmmo(customDataTag)) { // 不是全能子弹
             return 0;
         }
+        /**
+         * 不涉及{@link IAmmo#hasInfiniteFeed}扩容
+         */
         return iAmmo.getAmmoCount(ammoItem);
     }
 
@@ -318,7 +321,7 @@ public interface GunDataAccessor extends IGunDataAccess {
         if (inventoryCapability == null) return false;
 
         for (int i = 0; i < inventoryCapability.getContainerSize(); i++) {
-            ItemStack ammoItem = inventoryCapability.getItemReadOnly(i);
+            final ItemStack ammoItem = inventoryCapability.getItemReadOnly(i);
 
             if (iGun.isMatchedAmmo(gunItem, ammoItem)) {
                 return true;
@@ -336,8 +339,7 @@ public interface GunDataAccessor extends IGunDataAccess {
 
         int count = 0;
         for (int i = 0; i < inventoryCapability.getContainerSize(); i++) {
-            ItemStack ammoItem = inventoryCapability.getItemReadOnly(i);
-
+            final ItemStack ammoItem = inventoryCapability.getItemReadOnly(i);
             count += iGun.consumableAmmoCount(gunItem, ammoItem);
         }
         return count;

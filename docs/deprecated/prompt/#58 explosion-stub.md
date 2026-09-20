@@ -197,3 +197,40 @@ Let me re-check the current dispatch and both call sites before answering.
 ## 建议
 
 留 169、删 63。因为 169 在"默认实现"里，任何扩展模组或受弹方块调用 `ProjectileImpactManager.cgc$onProjectileImpact(blockHitResult, ...)` 时都应该拿到完整行为；63 只是同一条路径的重复前置。删掉后非受弹方块路径（65 行委托）的行为完全不变。
+
+# 
+---
+
+```
+PR #58移植到1.20.4，现在处理_TempExplode移植，新增的版本差异不需要新增utils封装，直接在这个类内处理掉
+```
+
+# 
+
+I'll start by finding the PR #58 content and the `_TempExplode` class.
+
+_TempExplode already exists in this worktree (merged from core1.20.1). Let me check whether it actually compiles against 1.20.4's API.
+
+Now I have the version-difference errors. Let me inspect the 1.20.4 vanilla APIs.
+
+Root cause is clear: PR #58's `_TempExplode` was written against 1.20.1's API, and 1.20.4 changed `Explosion`, `ClientboundExplodePacket`, `ClipContext`, and `Entity#ignoreExplosion`. Let me fix them inline.
+
+Now the packet construction, `Explosion` super call, `ignoreExplosion`, damage source, and `ClipContext`.
+
+Both files are clean. Let me verify with a real compile.
+
+Compiles cleanly. Let me confirm there are no other modules affected.
+
+`_TempExplode` 在 1.20.4 编译不过的 5 处，全部按你的要求就地改在本类里，没有新增 utils：
+
+| 报错点 | 1.20.1 写法 | 1.20.4 改法 |
+|---|---|---|
+| [`:147`](core/src/main/java/dev/xcolorful/customgun/core/projectile/impact/_TempExplode.java:147) `ClientboundExplodePacket` | 6 参构造 | 1.20.2+ 多了 `BlockInteraction` + 大小粒子 + 音效，直接用 `explosion` 的 getter 补齐（与 `ServerLevel` 原版发包一致） |
+| [`:177`](core/src/main/java/dev/xcolorful/customgun/core/projectile/impact/_TempExplode.java:177) `Explosion` 父构造 | 10 参 | 1.20.4 变 13 参，补 `ParticleTypes.EXPLOSION` / `EXPLOSION_EMITTER` / `SoundEvents.GENERIC_EXPLODE`（即原版无参构造的默认值，视觉不变） |
+| [`:194`](core/src/main/java/dev/xcolorful/customgun/core/projectile/impact/_TempExplode.java:194) 伤害源 | `this.getDamageSource()` | 1.20.4 删掉了该 getter（字段转 private）。在构造里存一份 `Explosion.getDefaultDamageSource(level, exploder)` —— 与原版 `damageSources().explosion(this)` 求值完全相同（`exploder` 是 `Projectile`，indirect source 取 owner） |
+| [`:259`](core/src/main/java/dev/xcolorful/customgun/core/projectile/impact/_TempExplode.java:259) `ignoreExplosion()` | 无参 | 1.20.4 需要把 `Explosion` 传进去，传 `this` |
+| [`:347`](core/src/main/java/dev/xcolorful/customgun/core/projectile/impact/_TempExplode.java:347) `ClipContext` | 第 5 参传 `null` | 1.20.4 新增了 `(…, CollisionContext)` 重载，`null` 变成歧义。改传 `CollisionContext.empty()`，等价于 1.20.1 的 `CollisionContext.of(null)` |
+
+`:core:compileJava`、`:forge-compat:compileJava`、`:neoforge-compat:compileJava` 均 BUILD SUCCESSFUL（只剩仓库原有 deprecation 警告）。
+
+未提交，等你 review。游戏内仍未验证——RPG7 近距射击应同时出子弹伤害与爆炸伤害、方块被毁、有爆炸音效/粒子；另外这次动了发包内容和伤害源构造，建议顺手确认爆炸击退与玩家被炸的击退反馈正常。

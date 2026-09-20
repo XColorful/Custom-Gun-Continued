@@ -18,10 +18,13 @@ import dev.xcolorful.customgun.core.resource.data.data.gun.bullet._ExplosionData
 import dev.xcolorful.customgun.core.util.EntityUtils;
 import dev.xcolorful.customgun.core.util.RayTraceUtils;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.protocol.game.ClientboundExplodePacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.PrimedTnt;
@@ -39,6 +42,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
@@ -143,7 +147,9 @@ public class _TempExplode {
         for (ServerPlayer player : serverLevel.players()) {
             if (Mth.sqrt((float) player.distanceToSqr(hitPos)) < visibleDistance) {
                 player.connection.send(new ClientboundExplodePacket(hitPos.x(), hitPos.y(), hitPos.z(),
-                        explosionRadius, explosion.getToBlow(), explosion.getHitPlayers().get(player)));
+                        explosionRadius, explosion.getToBlow(), explosion.getHitPlayers().get(player),
+                        explosion.getBlockInteraction(), explosion.getSmallExplosionParticles(),
+                        explosion.getLargeExplosionParticles(), explosion.getExplosionSound()));
             }
         }
         return true;
@@ -167,13 +173,15 @@ public class _TempExplode {
         private final boolean knockback;
         private final @Nullable Entity owner;
         private final Entity exploder;
+        private final DamageSource damageSource;
 
         ProjectileExplosion(Level level, @Nullable Entity owner, Entity exploder, Vec3 hitPos,
                             float explosionDamage, float radius, boolean knockback, Explosion.BlockInteraction mode) {
             // 爆炸的视觉大小取 radius，伤害由 explosionDamage 决定
             super(level, exploder, null, DEFAULT_DAMAGE_CALCULATOR,
                     hitPos.x(), hitPos.y(), hitPos.z(), radius,
-                    AmmoConfig.EXPLOSIVE_AMMO_FIRE.get(), mode);
+                    AmmoConfig.EXPLOSIVE_AMMO_FIRE.get(), mode,
+                    ParticleTypes.EXPLOSION, ParticleTypes.EXPLOSION_EMITTER, SoundEvents.GENERIC_EXPLODE);
             this.level = level;
             this.x = hitPos.x();
             this.y = hitPos.y();
@@ -183,6 +191,8 @@ public class _TempExplode {
             this.knockback = knockback;
             this.owner = owner;
             this.exploder = exploder;
+            // 1.20.4 起 Explosion 不再暴露 getDamageSource()，自行按同样的规则构造
+            this.damageSource = Explosion.getDefaultDamageSource(level, exploder);
         }
 
         @Override
@@ -246,7 +256,7 @@ public class _TempExplode {
             Vec3 explosionPos = new Vec3(this.x, this.y, this.z);
 
             for (Entity entity : entities) {
-                if (entity.ignoreExplosion()) {
+                if (entity.ignoreExplosion(this)) {
                     continue;
                 }
 
@@ -308,7 +318,7 @@ public class _TempExplode {
                 }
 
                 double damage = 1.0D - strength;
-                entity.hurt(this.getDamageSource(), (float) damage * this.explosionDamage);
+                entity.hurt(this.damageSource, (float) damage * this.explosionDamage);
 
                 if (entity instanceof LivingEntity livingEntity) {
                     damage = ProtectionEnchantment.getExplosionKnockbackAfterDampener(livingEntity, damage);
@@ -334,7 +344,7 @@ public class _TempExplode {
      * 复刻原模组 {@code BlockRayTrace#rayTraceBlocks} 的爆炸视线检测
      */
     private static BlockHitResult rayTraceBlocks(Level level, Vec3 startPos, Vec3 endPos) {
-        ClipContext clipContext = new ClipContext(startPos, endPos, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, null);
+        ClipContext clipContext = new ClipContext(startPos, endPos, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, CollisionContext.empty());
         IMcRegistry mcRegistry = CustomGun.getMcRegistry();
         List<String> passThroughBlocks = AmmoConfig.PASS_THROUGH_BLOCKS.get();
         return RayTraceUtils.BlockTrace.rayTraceBlocksWithFilter(

@@ -162,11 +162,13 @@ public class _TempExplode {
         int visibleDistance = AmmoConfig.EXPLOSIVE_AMMO_VISIBLE_DISTANCE.get();
         // 1.21.2 起粒子由服务端选定一个后下发（原版 ServerLevel 同款判定：小爆炸用小粒子）
         ParticleOptions explosionParticle = explosion.isSmall() ? ParticleTypes.EXPLOSION : ParticleTypes.EXPLOSION_EMITTER;
+        // 26.3 起发包多一个 playSound：原版取爆炸源实体是否静音（source == null || !source.isSilent()）
+        boolean playSound = !gunProjectile.isSilent();
         for (ServerPlayer player : serverLevel.players()) {
             if (Mth.sqrt((float) player.distanceToSqr(hitPos)) < visibleDistance) {
                 player.connection.send(new ClientboundExplodePacket(hitPos, explosionRadius, blockCount,
                         Optional.ofNullable(explosion.getHitPlayers().get(player)),
-                        explosionParticle, SoundEvents.GENERIC_EXPLODE, BLOCK_PARTICLES));
+                        explosionParticle, SoundEvents.GENERIC_EXPLODE, BLOCK_PARTICLES, playSound));
             }
         }
         return true;
@@ -338,7 +340,10 @@ public class _TempExplode {
                 }
 
                 double damage = 1.0D - strength;
-                entity.hurtServer(this.level, this.getDamageSource(), (float) damage * this.explosionDamage);
+                // 26.3 起原版新增同队免伤闸门（exploder 恒非空，省去原版的 null 判断）
+                if (this.exploder.doTeamsAllowDamage(entity)) {
+                    entity.hurtServer(this.level, this.getDamageSource(), (float) damage * this.explosionDamage);
+                }
 
                 if (entity instanceof LivingEntity livingEntity) {
                     // 1.21 起 ProtectionEnchantment 被移除，爆炸击退减伤改由 EXPLOSION_KNOCKBACK_RESISTANCE 属性表达
@@ -350,7 +355,8 @@ public class _TempExplode {
                 // 启用击退效果
                 if (AmmoConfig.EXPLOSIVE_AMMO_KNOCK_BACK.get() && this.knockback) {
                     Vec3 knockback = new Vec3(deltaX * damage * multiplier, deltaY * damage * multiplier, deltaZ * damage * multiplier);
-                    entity.push(knockback);
+                    // 26.3 起原版改用 pushFromExplosion（实体可覆写以抵抗爆炸击退）
+                    entity.pushFromExplosion(knockback);
                     if (entity instanceof Player player) {
                         if (!player.isSpectator() && (!player.isCreative() || !player.getAbilities().flying)) {
                             this.getHitPlayers().put(player, knockback);

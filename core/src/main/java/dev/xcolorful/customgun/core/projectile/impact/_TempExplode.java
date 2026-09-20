@@ -27,10 +27,10 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.PrimedTnt;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
-import net.minecraft.world.item.enchantment.ProtectionEnchantment;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.ExplosionDamageCalculator;
@@ -321,7 +321,9 @@ public class _TempExplode {
                 entity.hurt(this.damageSource, (float) damage * this.explosionDamage);
 
                 if (entity instanceof LivingEntity livingEntity) {
-                    damage = ProtectionEnchantment.getExplosionKnockbackAfterDampener(livingEntity, damage);
+                    // 1.21 起 ProtectionEnchantment 被移除，爆炸击退减伤改由 EXPLOSION_KNOCKBACK_RESISTANCE 属性表达
+                    // （其值就是爆炸保护提供的减伤比例，等价于 1.20.x 的 getExplosionKnockbackAfterDampener）
+                    damage *= 1.0D - livingEntity.getAttributeValue(Attributes.EXPLOSION_KNOCKBACK_RESISTANCE);
                 }
 
                 float multiplier = this.explosionDamage * radius / 500;

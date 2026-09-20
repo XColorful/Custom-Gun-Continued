@@ -202,7 +202,7 @@ public class _TempExplode {
                             d0 /= d3;
                             d1 /= d3;
                             d2 /= d3;
-                            float f = this.radius * (0.7F + this.level.random.nextFloat() * 0.6F);
+                            float f = this.radius * (0.7F + this.level.getRandom().nextFloat() * 0.6F);
                             double blockX = this.x;
                             double blockY = this.y;
                             double blockZ = this.z;

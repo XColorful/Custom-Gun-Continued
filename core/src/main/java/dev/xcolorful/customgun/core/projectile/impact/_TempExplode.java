@@ -19,13 +19,16 @@ import dev.xcolorful.customgun.core.util.EntityUtils;
 import dev.xcolorful.customgun.core.util.RayTraceUtils;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ExplosionParticleInfo;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.protocol.game.ClientboundExplodePacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.util.Mth;
+import net.minecraft.util.random.WeightedList;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -69,6 +72,15 @@ public class _TempExplode {
 
     private _TempExplode() {
     }
+
+    /**
+     * 原版 {@code Level.DEFAULT_EXPLOSION_BLOCK_PARTICLES} 是 private，这里照抄一份
+     * （1.21.10 起随发包下发给客户端做方块破坏粒子）
+     */
+    private static final WeightedList<ExplosionParticleInfo> BLOCK_PARTICLES = WeightedList.<ExplosionParticleInfo>builder()
+            .add(new ExplosionParticleInfo(ParticleTypes.POOF, 0.5F, 1.0F))
+            .add(new ExplosionParticleInfo(ParticleTypes.SMOKE, 1.0F, 1.0F))
+            .build();
 
     /**
      * 该枪射物是否带爆炸效果，等价于原模组 {@code EntityKineticBullet#explosion} 字段
@@ -143,7 +155,8 @@ public class _TempExplode {
 
         ProjectileExplosion explosion = new ProjectileExplosion(serverLevel, owner, gunProjectile, hitPos,
                 explosionDamage, explosionRadius, explosionData.getEnableKnockback(), mode);
-        explosion.explode();
+        // 1.21.10 起 explode() 返回被炸方块数，随发包下发给客户端
+        int blockCount = explosion.explode();
 
         // 客户端发包，发送爆炸相关信息
         int visibleDistance = AmmoConfig.EXPLOSIVE_AMMO_VISIBLE_DISTANCE.get();
@@ -151,9 +164,9 @@ public class _TempExplode {
         ParticleOptions explosionParticle = explosion.isSmall() ? ParticleTypes.EXPLOSION : ParticleTypes.EXPLOSION_EMITTER;
         for (ServerPlayer player : serverLevel.players()) {
             if (Mth.sqrt((float) player.distanceToSqr(hitPos)) < visibleDistance) {
-                player.connection.send(new ClientboundExplodePacket(hitPos,
+                player.connection.send(new ClientboundExplodePacket(hitPos, explosionRadius, blockCount,
                         Optional.ofNullable(explosion.getHitPlayers().get(player)),
-                        explosionParticle, SoundEvents.GENERIC_EXPLODE));
+                        explosionParticle, SoundEvents.GENERIC_EXPLODE, BLOCK_PARTICLES));
             }
         }
         return true;
@@ -200,7 +213,7 @@ public class _TempExplode {
         }
 
         @Override
-        public void explode() {
+        public int explode() {
             this.level.gameEvent(this.exploder, GameEvent.EXPLODE, BlockPos.containing(this.x, this.y, this.z));
             Set<BlockPos> set = new HashSet<>();
             int i = 16;
@@ -342,6 +355,10 @@ public class _TempExplode {
                     }
                 }
                 // 原版 1.21 起在爆炸击退后追加此调用（玩家据此把摔落伤害归因到本次冲量）
+                // 1.21.10 起原版新增：被爆炸波及的可转向弹射物改认爆炸源为发射者
+                if (entity.getType().is(EntityTypeTags.REDIRECTABLE_PROJECTILE) && entity instanceof Projectile projectile) {
+                    projectile.setOwner(this.getDamageSource().getEntity());
+                }
                 entity.onExplosionHit(this.exploder);
             }
 
@@ -352,6 +369,8 @@ public class _TempExplode {
             if (AmmoConfig.EXPLOSIVE_AMMO_FIRE.get()) {
                 this.createFire(toBlow);
             }
+
+            return toBlow.size();
         }
 
         /**

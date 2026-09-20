@@ -27,13 +27,14 @@ public interface IAmmoDataAccess extends IAmmoStateAccess,
     int getAmmoCount(ItemStack ammoItem);
     void setAmmoCount(ItemStack ammoItem, int ammoCount);
     /**
-     * 消耗子弹
+     * 消耗已有子弹
+     * 当{@link #hasInfiniteFeed}，不消耗子弹
      * @return 成功消耗的子弹数
      */
     int consumeAmmo(ItemStack ammoItem, int amount);
 
     /**
-     * 消耗子弹是否不减少数量
+     * 消耗子弹时是否不减少数量 (至少需要有一发子弹才能触发无限供弹)
      */
     boolean hasInfiniteFeed(ItemStack ammoItem);
     void setInfiniteFeed(ItemStack ammoItem, boolean infiniteFeed);

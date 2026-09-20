@@ -203,42 +203,44 @@ public class _DefaultGunInventory {
             @Nullable IAmmo iAmmo = IAmmoGetter.fromItemStack(slotItemReadOnly);
             if (iAmmo == null || !iGun.isConsumableAmmo(gunItem, slotItemReadOnly)) continue;
 
-            ItemStack modifiedItem = inventoryCapability.extractItem(i,
-                    slotItemReadOnly.getCount(), // 取整个ItemStack
-                    false);
-            iAmmo = IAmmoGetter.fromItemStack(modifiedItem);
-            if (iAmmo == null) {
-                CustomGun.LOGGER.warn("_DefaultGunInventory: slot {} is IAmmo before but not in extracted item in IInventoryCapability", i);
-                continue;
-            }
+            // @Deprecated
+//            ItemStack modifiedItem = inventoryCapability.extractItem(i,
+//                    slotItemReadOnly.getCount(), // 取整个ItemStack
+//                    false);
+//            iAmmo = IAmmoGetter.fromItemStack(modifiedItem);
+//            if (iAmmo == null) {
+//                CustomGun.LOGGER.warn("_DefaultGunInventory: slot {} is IAmmo before but not in extracted item in IInventoryCapability", i);
+//                continue;
+//            }
+//
+//            // slotItemReadOnly 是槽位的活引用，extractItem 已将其 shrink 清空，须从抽出的 modifiedItem 读取数量
+//            int existAmmoCount = iAmmo.getAmmoCount(modifiedItem);
+//            int currentExtract;
+//            if (existAmmoCount <= requiredAmmoCount) {
+//                // 全部扣除
+//                currentExtract = existAmmoCount;
+//                iAmmo.setAmmoCount(modifiedItem, 0);
+//
+//                if (!modifiedItem.isEmpty()) { // 没抽成ItemStack.EMPTY就放回去，适用于IAmmoBox
+//                    ItemStack remain = inventoryCapability.insertItem(i, modifiedItem, false);
+//                    if (!remain.isEmpty()) {
+//                        CustomGun.LOGGER.warn("_DefaultGunInventory: can't fully insert item after extraction in slot {} in IInventoryCapability", i);
+//                    }
+//                }
+//            } else {
+//                // 部分扣除 (需要塞回)
+//                currentExtract = requiredAmmoCount;
+//
+//                iAmmo.setAmmoCount(modifiedItem, existAmmoCount - currentExtract);
+//                ItemStack remain = inventoryCapability.insertItem(i, modifiedItem, false);
+//                if (!remain.isEmpty()) {
+//                    CustomGun.LOGGER.warn("_DefaultGunInventory: can't fully insert item after extraction in slot {} in IInventoryCapability", i);
+//                }
+//            }
+            int consumedAmmo = iAmmo.consumeAmmo(slotItemReadOnly, requiredAmmoCount);
 
-            // slotItemReadOnly 是槽位的活引用，extractItem 已将其 shrink 清空，须从抽出的 modifiedItem 读取数量
-            int existAmmoCount = iAmmo.getAmmoCount(modifiedItem);
-            int currentExtract;
-            if (existAmmoCount <= requiredAmmoCount) {
-                // 全部扣除
-                currentExtract = existAmmoCount;
-                iAmmo.setAmmoCount(modifiedItem, 0);
-
-                if (!modifiedItem.isEmpty()) { // 没抽成ItemStack.EMPTY就放回去，适用于IAmmoBox
-                    ItemStack remain = inventoryCapability.insertItem(i, modifiedItem, false);
-                    if (!remain.isEmpty()) {
-                        CustomGun.LOGGER.warn("_DefaultGunInventory: can't fully insert item after extraction in slot {} in IInventoryCapability", i);
-                    }
-                }
-            } else {
-                // 部分扣除 (需要塞回)
-                currentExtract = requiredAmmoCount;
-
-                iAmmo.setAmmoCount(modifiedItem, existAmmoCount - currentExtract);
-                ItemStack remain = inventoryCapability.insertItem(i, modifiedItem, false);
-                if (!remain.isEmpty()) {
-                    CustomGun.LOGGER.warn("_DefaultGunInventory: can't fully insert item after extraction in slot {} in IInventoryCapability", i);
-                }
-            }
-
-            extracted += currentExtract;
-            requiredAmmoCount -= currentExtract;
+            extracted += consumedAmmo;
+            requiredAmmoCount -= consumedAmmo;
         }
         return extracted;
     }

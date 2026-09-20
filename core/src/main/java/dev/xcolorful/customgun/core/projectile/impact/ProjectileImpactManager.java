@@ -13,9 +13,11 @@ import dev.xcolorful.customgun.core.api.projectile.process.IProjectileProcessRun
 import dev.xcolorful.customgun.core.developer.PlannedRefactor;
 import dev.xcolorful.customgun.core.particle.BulletHoleOption;
 import dev.xcolorful.customgun.core.util.EntityUtils;
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
@@ -172,17 +174,24 @@ public class ProjectileImpactManager implements IProjectileImpactManager {
         if (true) if (_TempExplode.explode(blockHitResult.getLocation(), iGunProjectile, gunProjectile)) return true;
         // ↑爆炸提前返回则不留弹孔↓
 
-        // 命中方块的弹孔
-        Vec3 hitPos = blockHitResult.getLocation();
         if (gunProjectile.level() instanceof ServerLevel serverLevel) {
-            BulletHoleOption bulletHoleOption = new BulletHoleOption(blockHitResult.getDirection(), blockHitResult.getBlockPos(),
-                    iGunProjectile.getAmmoLocation(gunProjectile).toString(),
-                    iGunProjectile.getGunDisplayLocation(gunProjectile).toString(),
-                    iGunProjectile.getGunLocation(gunProjectile).toString());
-            serverLevel.sendParticles(bulletHoleOption, hitPos.x, hitPos.y, hitPos.z,
-                    1,
-                    0, 0, 0,
-                    0);
+            BlockPos blockPos = blockHitResult.getBlockPos();
+            BlockState blockState = serverLevel.getBlockState(blockPos);
+
+            @Nullable IBulletVictimBlock iBulletVictimBlock = IBulletVictimBlockGetter.fromBlock(blockState.getBlock());
+            if (iBulletVictimBlock == null // 一般方块默认允许特殊效果
+                    || iBulletVictimBlock.cgc$hasProjectileHitVisual()) {
+                // 命中方块的弹孔
+                Vec3 hitPos = blockHitResult.getLocation();
+                BulletHoleOption bulletHoleOption = new BulletHoleOption(blockHitResult.getDirection(), blockPos,
+                        iGunProjectile.getAmmoLocation(gunProjectile).toString(),
+                        iGunProjectile.getGunDisplayLocation(gunProjectile).toString(),
+                        iGunProjectile.getGunLocation(gunProjectile).toString());
+                serverLevel.sendParticles(bulletHoleOption, hitPos.x, hitPos.y, hitPos.z,
+                        1,
+                        0, 0, 0,
+                        0);
+            }
         }
 
         // TODO 点燃

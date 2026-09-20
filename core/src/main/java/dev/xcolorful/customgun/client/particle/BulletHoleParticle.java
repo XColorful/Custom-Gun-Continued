@@ -14,6 +14,8 @@ import dev.xcolorful.customgun.client.config.RenderConfig;
 import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
 import dev.xcolorful.customgun.client.resource.instance.data.ClientAmmoIndexInstance;
 import dev.xcolorful.customgun.client.util.ClientRenderUtils;
+import dev.xcolorful.customgun.core.api.block.IBulletVictimBlock;
+import dev.xcolorful.customgun.core.api.block.victim.IBulletVictimBlockGetter;
 import dev.xcolorful.customgun.core.api.minecraft.IMcRegistry;
 import dev.xcolorful.customgun.core.developer.PlannedRefactor;
 import dev.xcolorful.customgun.core.particle.BulletHoleOption;
@@ -87,6 +89,11 @@ public class BulletHoleParticle extends TextureSheetParticle {
     private boolean shouldRemove() {
         final BlockState blockState = this.level.getBlockState(this.posCache);
         if (blockState.isAir()) return true;
+
+        @Nullable IBulletVictimBlock iBulletVictimBlock = IBulletVictimBlockGetter.fromBlock(blockState.getBlock());
+        if (iBulletVictimBlock != null && !iBulletVictimBlock.cgc$hasProjectileHitVisual()) {
+            return true;
+        }
 
         // 阻止弹孔在与方块不构成有效附着时继续渲染
         VoxelShape shape = blockState.getCollisionShape(this.level, this.posCache);

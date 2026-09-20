@@ -178,3 +178,85 @@ if (gunProjectile.level() instanceof ServerLevel serverLevel) {
 **未在游戏内验证。** 建议实机确认：弹孔带曳光色（用 RPG7 或任何曳光弹看颜色是否对上）、整体比之前暗一点（0.9 vs 1.0）、打到方块边缘时首帧不残留。
 
 未提交，等你 review。
+
+# 
+
+```
+我加了个api，你看下怎么拿到Block
+```
+
+# 
+
+先看你加了什么。
+
+用户已把我之前的两处改动提交了（`699316a64` / `d638ae95a`），然后新增了 `IBulletVictimVision`。我看下这个接口的获取路径。
+
+用户在我改的粒子里加了 `IBulletVictimBlockGetter.fromBlock()`（漏了实参）。看下上下文。
+
+`Block` 就在同一行作用域里——第 90 行的 `blockState` 就是，`.getBlock()` 即可。
+
+已补上并编译通过：`IBulletVictimBlockGetter.fromBlock(blockState.getBlock())`。
+
+**Block 从哪来**：粒子手上只有 `posCache`(BlockPos) 和 `level`，所以走 `this.level.getBlockState(this.posCache).getBlock()`。第 90 行本来就已经取了 `blockState`，直接 `.getBlock()` 就行，不用重复查一次。
+
+不过有两点你可能想确认：
+
+**1. 服务端其实早就有这个 `Block`。** [`impactTick:117`](core/src/main/java/dev/xcolorful/customgun/core/projectile/impact/ProjectileImpactManager.java:117) 就是 `getBlockState(blockHitResult.getBlockPos()).getBlock()`，紧接着 :121 已经解析出了 `IBulletVictimBlock`。所以两条路：
+
+| | 位置 | 后果 |
+|---|---|---|
+| A（现在这样） | 客户端粒子自行否决 | 与 TaCZ 的 `ModBlocks.TARGET` 判定同位置；但包已经发过来了，客户端每 tick 还要再查一次 |
+| B | 服务端 [:174](core/src/main/java/dev/xcolorful/customgun/core/projectile/impact/ProjectileImpactManager.java:174) 生成前 | `block` 实例现成，`hasVictimVisual()==false` 直接不发 `sendParticles`，零浪费 |
+
+TaCZ 选 A 只是历史写法（它的 target 判定要读方块状态，服务端其实也读得到），不是必须。语义上两者也不同：A 是"粒子自我否决"，任何来源的弹孔都会消失；B 是"默认逻辑不生成"，受弹方块自己实现不委托时本来就不走那段——和之前 `setDeltaMovement` 的"委托 vs 接管"是同一套规则。
+
+**2. `cgc$hasVictimVisual()` 目前只有客户端这一处消费者。** 你把它同时挂到了 `IBulletVictimEntity` 上，但实体的分支（[`_ProjectileHit`](core/src/main/java/dev/xcolorful/customgun/core/projectile/impact/_ProjectileHit.java) / `cgc$onProjectileImpact(EntityHitResult, ...)`）还没有读它——是留给后续实体命中特效的吗？如果暂时不用，挂上去是无害的默认 `true`。
+
+另外一句现状说明：它在 `shouldRemove()` 里面，而 `shouldRemove()` 每 tick 都跑（[:87](core/src/main/java/dev/xcolorful/customgun/client/particle/BulletHoleParticle.java:87)），所以这个判定每个弹孔每秒约 20 次。开销可忽略；TaCZ 是把同类判定放在构造器里 `shouldRemove()` 之外的。要不要挪由你定。
+
+未提交（`BulletHoleParticle.java` 仍是 modified，你新加的 3 个 API 文件未动）。
+
+# 
+
+```
+检查下现在改的对不对
+```
+
+# 
+
+用户把方法重命名成了 `cgc$hasProjectileHitVisual()`，还加了几个 import。我读一下完整文件与 API 侧定义。
+
+编译通过。`createResourceLocation` 是 `@Nullable`，用项目包装器比我原来的 `ResourceLocation.tryParse` 更符合规范。再确认一下去掉 null 守卫是否安全。
+
+检查完了，**改动是对的**，编译干净（无新增警告）。
+
+## 逐项确认
+
+**`IBulletVictimVision` 的重命名与混入** — 正确。默认返回 `true`，所以现有方块/实体行为不变；`IBulletVictimBlock`、`IBulletVictimEntity` 都拿到它，语义（"受枪射物命中时是否触发视觉效果"）对两者都成立。
+
+**粒子里的调用** — 正确：
+
+```java
+@Nullable IBulletVictimBlock iBulletVictimBlock = IBulletVictimBlockGetter.fromBlock(blockState.getBlock());
+if (iBulletVictimBlock != null && !iBulletVictimBlock.cgc$hasProjectileHitVisual()) return true;
+```
+
+只有显式返回 `false` 的受弹方块会否决弹孔；非受弹方块走 `null` 分支不受影响。`Block` 从 `blockState.getBlock()` 取，无重复查询。
+
+**改用 `mcRegistry.createResourceLocation`** — 比我的 `ResourceLocation.tryParse` 好。它是 `@Nullable` 的项目包装器，符合 CLAUDE.md"优先项目包装器、不要绕过兼容工具"的要求。
+
+## 我特意验证过的一点：去掉 null 守卫是安全的
+
+你把 `if (gunDisplayLocation != null && gunLocation != null)` 删了，我确认过不会 NPE：
+
+- 服务端写进 `BulletHoleOption` 的字符串必定合法——`getGunLocation` 等缺省返回 `ResourceTag.NULL_LOCATION`，而那是 `"custom_gun:null"`（[ResourceTag.java:30](core/src/main/java/dev/xcolorful/customgun/core/api/resource/ResourceTag.java:30)），不是空串，`createResourceLocation` 不会返回 null
+- 即便真返回 null，[`getGunDisplayInstance(display, fallback)`](core/src/main/java/dev/xcolorful/customgun/client/api/resource/ClientResourceApi.java:176) 最终落到 `GUN_DISPLAY` / `AMMO_INDEX`，两者都是 [`java.util.HashMap`](core/src/main/java/dev/xcolorful/customgun/client/resource/_AssetsInstanceManager.java:35)，`get(null)` 返回 null 而不抛异常
+
+不过这份安全性是**依赖 HashMap 容忍 null 键的**。哪天那两个 map 换成 `Object2ObjectOpenHashMap` 或 `ConcurrentHashMap`，`get(null)` 就会 NPE。加回一个 `if` 就能解掉这个隐性耦合——加不加你定。
+
+## 两处想跟你确认
+
+1. **`IBulletVictimVision` 放在 `core/api/entity/victim/`**，但现在是 `IBulletVictimBlock` 在用，方块侧要反向 import 实体包。如果它是块/实体共用的概念，放在 `entity/victim` 下有点别扭（现有包结构是 `block/victim` + `entity/victim` 两套）。是否有意为之，还是要挪到中立位置？
+2. **实体的 `cgc$hasProjectileHitVisual()` 目前没有消费者**——全仓库只有粒子这一处读它（javadoc 里写的"受伤粒子"应该就是留给后续的）。确认一下是预埋而不是漏接。
+
+另外 `docs/architecture/core/api/api-index.md` 里没登记这个新接口（不过它目前也没登记 `IBulletVictimKnockback`、`IBulletVictimBlockImpact`，索引本身是部分的），要不要补由你定。

@@ -338,6 +338,8 @@ public class _TempExplode {
                         }
                     }
                 }
+                // 原版 1.21 起在爆炸击退后追加此调用（玩家据此把摔落伤害归因到本次冲量）
+                entity.onExplosionHit(this.exploder);
             }
         }
     }

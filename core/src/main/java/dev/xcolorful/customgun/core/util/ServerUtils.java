@@ -10,6 +10,6 @@ public class ServerUtils {
 
         // [1.20.4, )
         // Forge对字段做了AT，NeoForge没有，但是原版就有getter
-//        return server.tickTimesNanos();
+//        return server.getTickTimesNanos();
     }
 }

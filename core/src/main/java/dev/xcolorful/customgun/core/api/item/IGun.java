@@ -32,8 +32,8 @@ public interface IGun extends IGunRuntime, IAnimationItem,
             // 背包直读
             if (livingEntity == null) return 0;
             ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(livingEntity);
-            if (!iLivingShooter.cgc$needCheckAmmo()) {
-                // 不需要检查子弹
+            if (iLivingShooter.cgc$hasInfiniteAmmoFeed()) {
+                // 射手无限供弹
                 consumedAmmo = DEFAULT_CONSUME_AMMO;
             } else if (this.useDummyAmmo(gunItem)) {
                 // 虚拟备弹
@@ -86,8 +86,8 @@ public interface IGun extends IGunRuntime, IAnimationItem,
             // 背包直读
             if (livingEntity == null) return 0;
             ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(livingEntity);
-            if (!iLivingShooter.cgc$needCheckAmmo()) {
-                // 不需要检查子弹
+            if (iLivingShooter.cgc$hasInfiniteAmmoFeed()) {
+                // 射手无限供弹
                 consumedAmmo = maxBarrelAmmo;
             } else if (this.useDummyAmmo(gunItem)) {
                 // 虚拟备弹

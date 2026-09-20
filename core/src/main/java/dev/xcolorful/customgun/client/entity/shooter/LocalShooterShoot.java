@@ -260,20 +260,22 @@ public final class LocalShooterShoot extends LocalShooterAspect {
     private void _doShoot(GunDisplayInstance gunDisplayInstance, IGun iGun, ItemStack gunItem,
                           GunData gunData, long delay, float chargeProgress) {
         FireModeType fireModeType = iGun.getFireModeType(gunItem);
-        BoltType boltType = gunData.getBoltType();
-        // 获取总余弹数
-        boolean consumeAmmo = ILivingShooterGetter.cgc$fromLivingEntity(this.localShooter).cgc$consumesAmmoOrNot();
-        int ammoCount = consumeAmmo ? Integer.MAX_VALUE
-                : iGun.getMagAmmoCountWithBarrel(gunItem, boltType);
         // 连发射击间隔
         long period = fireModeType == FireModeType.BURST ? _DefaultGunFire._getBurstShootIntervalMs(gunData) : 1;
-        // 最大连发数
-        final int maxCount = Math.min(ammoCount, fireModeType == FireModeType.BURST ? gunData.getBurstData().getBurstAmount() : 1);
+        // 枪械最大连发数
+        final int maxFireCount; { // shoot是射手shoot，fire是枪械fire，一次shooter shoot造成多次gun fire
+            BoltType boltType = gunData.getBoltType();
+            // 获取总余弹数
+            boolean hasInfiniteAmmoFeed = ILivingShooterGetter.cgc$fromLivingEntity(this.localShooter).cgc$hasInfiniteAmmoFeed();
+            int ammoCount = !hasInfiniteAmmoFeed ? Integer.MAX_VALUE
+                    : iGun.getMagAmmoCountWithBarrel(gunItem, boltType);
+            maxFireCount = Math.min(ammoCount, fireModeType == FireModeType.BURST ? gunData.getBurstData().getBurstAmount() : 1);
+        }
         // 连发计数器
-        AtomicInteger count = new AtomicInteger(0);
+        AtomicInteger firedCount = new AtomicInteger(0);
 
         LocalShooterProperty.SCHEDULED_EXECUTOR_SERVICE.scheduleAtFixedRate(() -> {
-            if (count.get() == 0) {
+            if (firedCount.get() == 0) {
                 // 转换 isRecord 状态，允许下一个tick的开火检测
                 this.localShooterProperty.isShootRecorded = true;
             }
@@ -287,14 +289,14 @@ public final class LocalShooterShoot extends LocalShooterAspect {
                 }
             }
             // 如果达到最大连发次数，或者玩家已经死亡，取消任务
-            if (count.get() >= maxCount || this.localShooter.isDeadOrDying()) {
+            if (firedCount.get() >= maxFireCount || this.localShooter.isDeadOrDying()) {
                 ScheduledFuture<?> future = (ScheduledFuture<?>) Thread.currentThread();
                 future.cancel(false); // 取消当前任务
                 return;
             }
 
             // 以下逻辑只需要执行一次
-            if (count.get() == 0) {
+            if (firedCount.get() == 0) {
                 // 如果状态锁正在准备锁定，且不是开火的状态锁，则不允许开火(主要用于防止切枪后开火动作覆盖切枪动作)
                 if (
                         this.localShooterProperty.clientStateLock(SHOOT_STATE) // 经常会被shoot自身给拦住，所以复用string
@@ -357,7 +359,7 @@ public final class LocalShooterShoot extends LocalShooterAspect {
                 }
             });
 
-            count.getAndIncrement();
+            firedCount.getAndIncrement();
         }, delay, period, TimeUnit.MILLISECONDS);
     }
     private boolean _useSuppressedSound() {

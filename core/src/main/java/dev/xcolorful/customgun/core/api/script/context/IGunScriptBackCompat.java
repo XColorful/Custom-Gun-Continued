@@ -262,7 +262,7 @@ public interface IGunScriptBackCompat extends IGunScriptContextAccess {
      */
     default boolean isShootingNeedConsumeAmmo() {
         @Nullable ILivingShooter iLivingShooter = this.getILivingShooter();
-        return iLivingShooter == null || iLivingShooter.cgc$consumesAmmoOrNot();
+        return iLivingShooter == null || !iLivingShooter.cgc$hasInfiniteAmmoFeed();
     }
 
     /**
@@ -270,7 +270,7 @@ public interface IGunScriptBackCompat extends IGunScriptContextAccess {
      */
     default boolean isReloadingNeedConsumeAmmo() {
         @Nullable ILivingShooter iLivingShooter = this.getILivingShooter();
-        return iLivingShooter == null || iLivingShooter.cgc$needCheckAmmo();
+        return iLivingShooter == null || !iLivingShooter.cgc$hasInfiniteAmmoFeed();
     }
 
     /**

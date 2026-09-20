@@ -12,9 +12,10 @@ public final class LivingShooterAmmoCheck extends LivingShooterAspect {
         super(livingShooter, shooterProperty);
     }
 
-    public boolean needCheckAmmo() {
+    public boolean hasInfiniteAmmoFeed() {
         if (PlannedRefactor.ON_CREATIVE_NO_AMMO_CHECK) return false;
-        return !(this.livingShooter instanceof Player player) || !player.isCreative();
+        // 创造模式玩家有无限弹药供应
+        return (this.livingShooter instanceof Player player) && player.isCreative();
     }
 
     public boolean consumesAmmoOrNot() {

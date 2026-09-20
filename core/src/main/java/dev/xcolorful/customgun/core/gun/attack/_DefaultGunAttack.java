@@ -84,8 +84,8 @@ public class _DefaultGunAttack {
                 if (iGun.useInventoryAmmo(gunItem)) {
                     // 背包直读
                     if (livingShooter == null) hasAmmo = false;
-                    else if (!iLivingShooter.cgc$needCheckAmmo()) {
-                        // 不需要检查子弹
+                    else if (iLivingShooter.cgc$hasInfiniteAmmoFeed()) {
+                        // 射手无限供弹
                         hasAmmo = true;
                     } else if (iGun.useDummyAmmo(gunItem)) {
                         // 虚拟备弹

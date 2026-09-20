@@ -3,6 +3,7 @@ package dev.xcolorful.customgun.core.api.entity.shooter;
 import dev.xcolorful.customgun.core.api.entity.IEntityHitboxHistory;
 import dev.xcolorful.customgun.core.api.entity.ShootState;
 import dev.xcolorful.customgun.core.api.entity.hitbox.IEntityHitboxHistoryGetter;
+import dev.xcolorful.customgun.core.api.item.IAmmo;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.AABB;
@@ -13,11 +14,9 @@ import org.jetbrains.annotations.Nullable;
 public interface IShooterState extends IShooterLatency {
 
     /**
-     * 服务端，该操作者是否受弹药数影响
-     *
-     * @return 如果为 false，那么开火时不会检查弹药，无论是玩家背包内还是枪械内的
+     * 射手是否拥有无限弹药供应，相当于{@link IAmmo#hasInfiniteFeed}
      */
-    boolean cgc$needCheckAmmo();
+    boolean cgc$hasInfiniteAmmoFeed();
 
     /**
      * 服务端，开火是否消耗弹药

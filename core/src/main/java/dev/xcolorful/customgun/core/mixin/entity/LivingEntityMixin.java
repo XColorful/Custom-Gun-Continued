@@ -155,8 +155,8 @@ public abstract class LivingEntityMixin extends Entity implements ILivingShooter
     // --------IShooterState--------
 
     @Override
-    public boolean cgc$needCheckAmmo() {
-        return this.cgc$ammoCheck.needCheckAmmo();
+    public boolean cgc$hasInfiniteAmmoFeed() {
+        return this.cgc$ammoCheck.hasInfiniteAmmoFeed();
     }
 
     @Override

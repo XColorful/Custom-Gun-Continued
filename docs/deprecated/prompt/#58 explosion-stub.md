@@ -698,3 +698,64 @@ MC 版本是 **26.1.2**（NeoForge 26.1.2.7-beta），文件已被更新过两�
 - 顺手确认了那条新 memory（「core 用 Forge 编译导致 NeoForge 私有访问崩溃」）**不适用这里**：这个类用到的 `getDamageSource()` / `isSmall()` / `getHitPlayers()` / `getBlockInteraction()` 全是 public，没碰任何 private 成员。
 
 26.1.2 的结论（爆炸 API 同 1.21.11 + `Entity.is` 这一处 + Java 25）我已补进 memory，后面 26.2 / 26.3 可以直接查。
+
+# 
+
+```
+继续26.3
+```
+
+# 
+
+继续 26.3。先看状态。
+
+26.3 的文件与 26.1.x 逐字相同（含我那个 `entity.is` 修复），只报一处：**发包变成 8 个参数**。去找 26.3 的反编译源。
+
+26.3 的源码在 `transformSource/transformed`。用同口径（transformed vs transformed）比 26.1.2 → 26.3。
+
+26.3 的差异清楚了：发包多了第 8 个字段 `boolean playSound`，另外原版把击退改成了新方法 `pushFromExplosion`，并加了同队免伤判断。让我看清这几个的语义。
+
+三个改动点都确认了。26.3 的语义：
+
+- **`playSound`** = 原版 `source == null || !source.isSilent()`（即爆炸源是否静音）
+- **`pushFromExplosion(Vec3)`** 是 26.3 新增的钩子（内部就是 `push`，但让实体能覆写以抵抗爆炸击退）→ 按"原版新增即用原版"应当改用它
+- **`doTeamsAllowDamage`** 是新增的同队免伤闸门，原版只挡 `hurtServer` 那一句
+
+让我读一下要改的三处。
+
+三处改起来。先补发包第 8 个字段（`playSound`）。
+
+三处改完。编译验证。
+
+26.3 `:core:compileJava` **BUILD SUCCESSFUL (18s)**，IDEA 也是 0 error。核对改动面，并检查 compat 模块有没有也在用这个发包。
+
+改动面与预期完全一致，并且确认了 `ClientboundExplodePacket` **全仓库只有 `_TempExplode` 在用**（compat 模块零引用），所以这次不跑 compat 是有依据的。更新 memory。
+
+26.3 搞定。
+
+## 情况
+
+26.3 上的文件与 26.1.x **逐字相同**（含我上次加的 `entity.is` 修复），只差 26.3 自己的一处 API：
+
+| 报错 | 原因 | 改法 |
+|---|---|---|
+| `Expected 8 arguments but found 7` | 26.3 的发包加了第 8 个字段 `boolean playSound` | 补上 `!gunProjectile.isSilent()`（原版表达式是 `source == null \|\| !source.isSilent()`） |
+
+按你定的"**MC 对爆炸机制新增的内容就用原版的**"，我另外采纳了 26.3 新加的两处机制：
+
+- **`entity.push(v)` → `entity.pushFromExplosion(v)`**：新钩子，默认实现就是 `push`，但让实体能覆写以抵抗爆炸击退（用 `push` 会绕过它）
+- **同队免伤闸门**：`if (this.exploder.doTeamsAllowDamage(entity))` 包住 `hurtServer`（原版只挡伤害，**击退不受影响**，仍在闸门外）。注意实际上枪射物通常没队伍 → `getTeam()` 为 null → 恒返回 true，所以这条基本不改变现有行为，只有整合包给子弹设了队伍时才生效
+
+其余 26.3 的差异都不涉及我们：`EntityType` 类改名为 `EntityTypes`（我们只用 `EntityTypeTags`）、`Explosion` 接口只有修饰符变化、`Level.DEFAULT_EXPLOSION_BLOCK_PARTICLES` 内容没变（类内照抄那份仍有效）。
+
+改动面：与 26.1.x 差 3 处（发包 + playSound、同队闸门、pushFromExplosion）。
+
+## 验证
+
+- `:core:compileJava` → **BUILD SUCCESSFUL in 18s**；IDEA 也是 0 error
+- **compat 这次不跑是有依据的**：我 grep 过整个仓库（core + 两个 compat 的 src），`ClientboundExplodePacket` **只有 `_TempExplode` 一处引用**，compat 模块零引用 → 加字段不可能影响它们
+- 不需要工具链参数（Java 25 能自动探测）
+
+未提交（工作区就是 ` M`，没 stage），等你 review。游戏内仍未验证——这次动了发包内容和击退 API，建议重点看爆炸音效与击退是否正常。
+
+26.3 的结论已补进 memory（`playSound` / `pushFromExplosion` / 同队闸门 / `EntityTypes` 改名），26.2 那份也在里面，后面直接用。

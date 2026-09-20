@@ -10,11 +10,17 @@ import org.jetbrains.annotations.Nullable;
 public interface IGunAmmoDataAccess {
 
     /**
-     * 子弹类型是否匹配
+     * 子弹类型是否匹配，不检查是否可消耗
      */
     boolean isMatchedAmmo(ItemStack gunItem, ItemStack ammoItem);
     /**
-     * 获取可用子弹数量，不涉及{@link IAmmo#hasInfiniteFeed}扩容
+     * 子弹类型满足{@link #isMatchedAmmo}，并且可消耗
+     */
+    default boolean isConsumableAmmo(ItemStack gunItem, ItemStack ammoItem) {
+        return this.consumableAmmoCount(gunItem, ammoItem) > 0;
+    }
+    /**
+     * 获取满足{@link #isMatchedAmmo}的子弹数量，不涉及{@link IAmmo#hasInfiniteFeed}扩容
      * @param gunItem 枪械
      * @param ammoItem 子弹
      * @return 该子弹中可用于枪械的数量

@@ -235,23 +235,28 @@ public interface GunDataAccessor extends IGunDataAccess {
 
     @Override
     default boolean isMatchedAmmo(ItemStack gunItem, ItemStack ammoItem) {
-        return this.consumableAmmoCount(gunItem, ammoItem) > 0;
+        @Nullable IAmmo iAmmo = IAmmoGetter.fromItemStack(ammoItem);
+        if (iAmmo == null) return false;
+
+        @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(this.getGunLocation(gunItem));
+        if (gunIndexInstance == null) return false;
+
+        @Nullable var customData = NBTUtils.getCustomData(ammoItem);
+        if (customData == null) return false;
+        @NotNull CompoundTag customDataTag = NBTUtils.getCustomDataTag(customData);
+        if (!iAmmo.getAmmoLocation(customDataTag).equals(gunIndexInstance.getGunData().getAmmoLocation()) // 子弹类型不对
+                && !iAmmo.isAlmightyAmmo(customDataTag)) { // 不是全能子弹
+            return false;
+        }
+
+        return true;
     }
     @Override
     default int consumableAmmoCount(ItemStack gunItem, ItemStack ammoItem) {
         @Nullable IAmmo iAmmo = IAmmoGetter.fromItemStack(ammoItem);
         if (iAmmo == null) return 0;
 
-        @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(this.getGunLocation(gunItem));
-        if (gunIndexInstance == null) return 0;
-
-        @Nullable var customData = NBTUtils.getCustomData(ammoItem);
-        if (customData == null) return 0;
-        @NotNull CompoundTag customDataTag = NBTUtils.getCustomDataTag(customData);
-        if (!iAmmo.getAmmoLocation(customDataTag).equals(gunIndexInstance.getGunData().getAmmoLocation()) // 子弹类型不对
-                && !iAmmo.isAlmightyAmmo(customDataTag)) { // 不是全能子弹
-            return 0;
-        }
+        if (!this.isMatchedAmmo(gunItem, ammoItem)) return 0;
         /**
          * 不涉及{@link IAmmo#hasInfiniteFeed}扩容
          */
@@ -323,7 +328,7 @@ public interface GunDataAccessor extends IGunDataAccess {
         for (int i = 0; i < inventoryCapability.getContainerSize(); i++) {
             final ItemStack ammoItem = inventoryCapability.getItemReadOnly(i);
 
-            if (iGun.isMatchedAmmo(gunItem, ammoItem)) {
+            if (iGun.isConsumableAmmo(gunItem, ammoItem)) {
                 return true;
             }
         }

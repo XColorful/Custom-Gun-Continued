@@ -201,7 +201,7 @@ public class _DefaultGunInventory {
         for (int i = 0; i < inventoryCapability.getContainerSize() && requiredAmmoCount > 0; i++) {
             final ItemStack slotItemReadOnly = inventoryCapability.getItemReadOnly(i);
             @Nullable IAmmo iAmmo = IAmmoGetter.fromItemStack(slotItemReadOnly);
-            if (iAmmo == null || !iGun.isMatchedAmmo(gunItem, slotItemReadOnly)) continue;
+            if (iAmmo == null || !iGun.isConsumableAmmo(gunItem, slotItemReadOnly)) continue;
 
             ItemStack modifiedItem = inventoryCapability.extractItem(i,
                     slotItemReadOnly.getCount(), // 取整个ItemStack

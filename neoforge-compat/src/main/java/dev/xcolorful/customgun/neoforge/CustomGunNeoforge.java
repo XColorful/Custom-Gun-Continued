@@ -69,6 +69,7 @@ public class CustomGunNeoforge {
         ModRecipe.RECIPE_TYPES.registerAll(modEventBus);
         ModRecipe.RECIPE_TYPES_OLD1.registerAll(modEventBus);
         ModSounds.SOUNDS.registerAll(modEventBus);
+        ModParticles.PARTICLE_TYPES.registerAll(modEventBus);
 
         if (mcSide == McSide.CLIENT) {
             _GunModNeoforgeClient.init();

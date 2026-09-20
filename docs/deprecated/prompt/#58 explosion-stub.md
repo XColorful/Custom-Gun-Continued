@@ -610,3 +610,91 @@ cd D:/Github/Custom-Gun-Continued-1.21.10neoforge && ./gradlew :core:compileJava
 既然 cherry-pick 已经做完、冲突也解了，我就按"保持 import 排序"来解（这也是你 stash 里的写法）。如果你更想要全限定名那种写法——它的价值是让**下一个版本对**的 cherry-pick 不再撞同一处——说一声我改。
 
 我把这条规矩记进 memory 了：**共用改动必须逐字一致，版本独有的改动（尤其搬 import）不要落在共用改动的同一 hunk 区**，并附了 `git merge-file` 预演冲突的方法（顺带记下那个行尾坑：`git show` 出 LF、工作区是 CRLF，混用会假报成片冲突——我上次误报"3 处冲突"就是踩了这个）。
+
+# 
+
+```
+继续26.1.x
+```
+
+# 
+
+继续 26.1.x。先看它的状态和版本号。
+
+MC 版本是 **26.1.2**（NeoForge 26.1.2.7-beta），文件已被更新过两次并提交。先看它现在报什么错、以及跟 1.21.11 的差异。
+
+`diff` 说明 26.1.x 的文件与 1.21.11 **逐字相同**——1.21.11 的移植被原样搬了过来。IDEA 只报 1 个错（`EntityType.is` 没了），工具链是 **Java 25**（本机 `C:\Program Files\Java\jdk-25.0.2` 可被自动探测）。让我用 26.1.2 的反编译源把这个类的依赖项全量比一遍，别只信那 1 个错。
+
+路径都一致。现在逐个数 26.1.2 与原 1.21.11 的差异。
+
+只差一处：26.1.2 把 `EntityType.is(TagKey)` 移到了 `Entity` 上（原版现在写 `entity.is(EntityTypeTags.REDIRECTABLE_PROJECTILE)`）。爆炸其余部分（`explode()` 返回 int、7 字段发包、半径守卫、`Util` 路径）都与 1.21.11 一致。
+
+26.1.x `:core:compileJava` **BUILD SUCCESSFUL (2m39s)**，而且不需要任何工具链参数（工具链是 Java 25，本机 `C:\Program Files\Java\jdk-25.0.2` 能被自动探测到）。核对一下改动面。
+
+改动面确认：与 1.21.11 只差一处（`entity.is(...)` + 一行注释）。把 26.1.2 的事实补进 memory。
+
+26.1.x 搞定了。
+
+## 情况
+
+26.1.x 上的 `_TempExplode.java` 与 1.21.11 那份**逐字相同**（1.21.11 的移植被整份搬了过来），而 26.1.2 的爆炸相关 API 我逐个数过——`ServerExplosion`、`Explosion` 接口、`ClientboundExplodePacket`、`ExplosionParticleInfo`、`WeightedList`、`Util` 的**路径与签名全部没变**（反编译源里只有局部变量被重命名）——所以整份移植成立，只差一处：
+
+| 报错 | 原因 | 改法 |
+|---|---|---|
+| `Cannot resolve method 'is' in 'EntityType'` | 26.1.2 把 `EntityType#is` 挪到了 `Entity` 上 | `entity.getType().is(EntityTypeTags.REDIRECTABLE_PROJECTILE)` → **`entity.is(EntityTypeTags.REDIRECTABLE_PROJECTILE)`**（26.1.2 原版 `ServerExplosion` 里也是这么写的） |
+
+改动面：与 1.21.11 只差这一行 + 一行说明注释（`2 insertions, 1 deletion`）。
+
+## 验证
+
+- `:core:compileJava` → **BUILD SUCCESSFUL in 2m 39s**
+- **不需要工具链参数**：26.x 分支要 Java 25（1.21.x 是 21），本机 `C:\Program Files\Java\jdk-25.0.2` 能被 Gradle 自动探测到，直接 `./gradlew :core:compileJava` 就行
+
+## 两点说明
+
+- **未提交**，也没 stage（工作区就是 ` M`），等你 review。
+- **compat 模块我没跑**：`_TempExplode` 在 core 里，我只改了一个私有内部类方法体里的一行调用，对外零 API 变化，compat 不可能受影响。要跑的话我可以后台跑一次（其他分支的 compat 要 7~8 分钟），你说一声。
+- 顺手确认了那条新 memory（「core 用 Forge 编译导致 NeoForge 私有访问崩溃」）**不适用这里**：这个类用到的 `getDamageSource()` / `isSmall()` / `getHitPlayers()` / `getBlockInteraction()` 全是 public，没碰任何 private 成员。
+
+26.1.2 的结论（爆炸 API 同 1.21.11 + `Entity.is` 这一处 + Java 25）我已补进 memory，后面 26.2 / 26.3 可以直接查。
+
+# 
+
+继续 26.1.x。先看它的状态和版本号。
+
+MC 版本是 **26.1.2**（NeoForge 26.1.2.7-beta），文件已被更新过两次并提交。先看它现在报什么错、以及跟 1.21.11 的差异。
+
+`diff` 说明 26.1.x 的文件与 1.21.11 **逐字相同**——1.21.11 的移植被原样搬了过来。IDEA 只报 1 个错（`EntityType.is` 没了），工具链是 **Java 25**（本机 `C:\Program Files\Java\jdk-25.0.2` 可被自动探测）。让我用 26.1.2 的反编译源把这个类的依赖项全量比一遍，别只信那 1 个错。
+
+路径都一致。现在逐个数 26.1.2 与原 1.21.11 的差异。
+
+只差一处：26.1.2 把 `EntityType.is(TagKey)` 移到了 `Entity` 上（原版现在写 `entity.is(EntityTypeTags.REDIRECTABLE_PROJECTILE)`）。爆炸其余部分（`explode()` 返回 int、7 字段发包、半径守卫、`Util` 路径）都与 1.21.11 一致。
+
+26.1.x `:core:compileJava` **BUILD SUCCESSFUL (2m39s)**，而且不需要任何工具链参数（工具链是 Java 25，本机 `C:\Program Files\Java\jdk-25.0.2` 能被自动探测到）。核对一下改动面。
+
+改动面确认：与 1.21.11 只差一处（`entity.is(...)` + 一行注释）。把 26.1.2 的事实补进 memory。
+
+26.1.x 搞定了。
+
+## 情况
+
+26.1.x 上的 `_TempExplode.java` 与 1.21.11 那份**逐字相同**（1.21.11 的移植被整份搬了过来），而 26.1.2 的爆炸相关 API 我逐个数过——`ServerExplosion`、`Explosion` 接口、`ClientboundExplodePacket`、`ExplosionParticleInfo`、`WeightedList`、`Util` 的**路径与签名全部没变**（反编译源里只有局部变量被重命名）——所以整份移植成立，只差一处：
+
+| 报错 | 原因 | 改法 |
+|---|---|---|
+| `Cannot resolve method 'is' in 'EntityType'` | 26.1.2 把 `EntityType#is` 挪到了 `Entity` 上 | `entity.getType().is(EntityTypeTags.REDIRECTABLE_PROJECTILE)` → **`entity.is(EntityTypeTags.REDIRECTABLE_PROJECTILE)`**（26.1.2 原版 `ServerExplosion` 里也是这么写的） |
+
+改动面：与 1.21.11 只差这一行 + 一行说明注释（`2 insertions, 1 deletion`）。
+
+## 验证
+
+- `:core:compileJava` → **BUILD SUCCESSFUL in 2m 39s**
+- **不需要工具链参数**：26.x 分支要 Java 25（1.21.x 是 21），本机 `C:\Program Files\Java\jdk-25.0.2` 能被 Gradle 自动探测到，直接 `./gradlew :core:compileJava` 就行
+
+## 两点说明
+
+- **未提交**，也没 stage（工作区就是 ` M`），等你 review。
+- **compat 模块我没跑**：`_TempExplode` 在 core 里，我只改了一个私有内部类方法体里的一行调用，对外零 API 变化，compat 不可能受影响。要跑的话我可以后台跑一次（其他分支的 compat 要 7~8 分钟），你说一声。
+- 顺手确认了那条新 memory（「core 用 Forge 编译导致 NeoForge 私有访问崩溃」）**不适用这里**：这个类用到的 `getDamageSource()` / `isSmall()` / `getHitPlayers()` / `getBlockInteraction()` 全是 public，没碰任何 private 成员。
+
+26.1.2 的结论（爆炸 API 同 1.21.11 + `Entity.is` 这一处 + Java 25）我已补进 memory，后面 26.2 / 26.3 可以直接查。

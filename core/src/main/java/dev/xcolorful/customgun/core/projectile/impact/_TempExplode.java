@@ -17,24 +17,30 @@ import dev.xcolorful.customgun.core.init.registry.ModBlocks;
 import dev.xcolorful.customgun.core.resource.data.data.gun.bullet._ExplosionData;
 import dev.xcolorful.customgun.core.util.EntityUtils;
 import dev.xcolorful.customgun.core.util.RayTraceUtils;
+import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.protocol.game.ClientboundExplodePacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.item.PrimedTnt;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.ExplosionDamageCalculator;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.ServerExplosion;
+import net.minecraft.world.level.block.BaseFireBlock;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.FluidState;
@@ -45,6 +51,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -137,19 +144,16 @@ public class _TempExplode {
         ProjectileExplosion explosion = new ProjectileExplosion(serverLevel, owner, gunProjectile, hitPos,
                 explosionDamage, explosionRadius, explosionData.getEnableKnockback(), mode);
         explosion.explode();
-        explosion.finalizeExplosion(true);
-        if (mode == Explosion.BlockInteraction.KEEP) {
-            explosion.clearToBlow();
-        }
 
         // 客户端发包，发送爆炸相关信息
         int visibleDistance = AmmoConfig.EXPLOSIVE_AMMO_VISIBLE_DISTANCE.get();
+        // 1.21.2 起粒子由服务端选定一个后下发（原版 ServerLevel 同款判定：小爆炸用小粒子）
+        ParticleOptions explosionParticle = explosion.isSmall() ? ParticleTypes.EXPLOSION : ParticleTypes.EXPLOSION_EMITTER;
         for (ServerPlayer player : serverLevel.players()) {
             if (Mth.sqrt((float) player.distanceToSqr(hitPos)) < visibleDistance) {
-                player.connection.send(new ClientboundExplodePacket(hitPos.x(), hitPos.y(), hitPos.z(),
-                        explosionRadius, explosion.getToBlow(), explosion.getHitPlayers().get(player),
-                        explosion.getBlockInteraction(), explosion.getSmallExplosionParticles(),
-                        explosion.getLargeExplosionParticles(), explosion.getExplosionSound()));
+                player.connection.send(new ClientboundExplodePacket(hitPos,
+                        Optional.ofNullable(explosion.getHitPlayers().get(player)),
+                        explosionParticle, SoundEvents.GENERIC_EXPLODE));
             }
         }
         return true;
@@ -160,11 +164,16 @@ public class _TempExplode {
      * <p>
      * 与原版爆炸的区别：伤害与半径分开（原版用同一个 radius 派生伤害），
      * 且对生物使用延迟补偿后的碰撞箱计算视线，而不是原版的取样点法
+     * <p>
+     * 1.21.2 起 {@code Explosion} 变成接口，实体逻辑只有 {@code ServerExplosion} 一份且内部方法都是
+     * private，无法再像 1.20.x 那样只覆写 {@code explode()} 复用方块流程。因此这里改为继承
+     * {@code ServerExplosion}（构造、{@code getHitPlayers}、{@code isSmall} 等接口实现在父类已有），
+     * 并整体覆写 {@code explode()}，方块破坏/掉落/火焰仍按原版算法
      */
-    private static class ProjectileExplosion extends Explosion {
+    private static class ProjectileExplosion extends ServerExplosion {
         private static final ExplosionDamageCalculator DEFAULT_DAMAGE_CALCULATOR = new ExplosionDamageCalculator();
 
-        private final Level level;
+        private final ServerLevel level;
         private final double x;
         private final double y;
         private final double z;
@@ -173,15 +182,12 @@ public class _TempExplode {
         private final boolean knockback;
         private final @Nullable Entity owner;
         private final Entity exploder;
-        private final DamageSource damageSource;
 
-        ProjectileExplosion(Level level, @Nullable Entity owner, Entity exploder, Vec3 hitPos,
+        ProjectileExplosion(ServerLevel level, @Nullable Entity owner, Entity exploder, Vec3 hitPos,
                             float explosionDamage, float radius, boolean knockback, Explosion.BlockInteraction mode) {
             // 爆炸的视觉大小取 radius，伤害由 explosionDamage 决定
-            super(level, exploder, null, DEFAULT_DAMAGE_CALCULATOR,
-                    hitPos.x(), hitPos.y(), hitPos.z(), radius,
-                    AmmoConfig.EXPLOSIVE_AMMO_FIRE.get(), mode,
-                    ParticleTypes.EXPLOSION, ParticleTypes.EXPLOSION_EMITTER, SoundEvents.GENERIC_EXPLODE);
+            super(level, exploder, null, DEFAULT_DAMAGE_CALCULATOR, hitPos, radius,
+                    AmmoConfig.EXPLOSIVE_AMMO_FIRE.get(), mode);
             this.level = level;
             this.x = hitPos.x();
             this.y = hitPos.y();
@@ -191,8 +197,6 @@ public class _TempExplode {
             this.knockback = knockback;
             this.owner = owner;
             this.exploder = exploder;
-            // 1.20.4 起 Explosion 不再暴露 getDamageSource()，自行按同样的规则构造
-            this.damageSource = Explosion.getDefaultDamageSource(level, exploder);
         }
 
         @Override
@@ -243,7 +247,7 @@ public class _TempExplode {
                 }
             }
 
-            this.getToBlow().addAll(set);
+            List<BlockPos> toBlow = new ArrayList<>(set);
             float radius = this.radius;
             int minX = Mth.floor(this.x - (double) radius - 1.0D);
             int maxX = Mth.floor(this.x + (double) radius + 1.0D);
@@ -318,7 +322,7 @@ public class _TempExplode {
                 }
 
                 double damage = 1.0D - strength;
-                entity.hurt(this.damageSource, (float) damage * this.explosionDamage);
+                entity.hurtServer(this.level, this.getDamageSource(), (float) damage * this.explosionDamage);
 
                 if (entity instanceof LivingEntity livingEntity) {
                     // 1.21 起 ProtectionEnchantment 被移除，爆炸击退减伤改由 EXPLOSION_KNOCKBACK_RESISTANCE 属性表达
@@ -329,17 +333,76 @@ public class _TempExplode {
                 float multiplier = this.explosionDamage * radius / 500;
                 // 启用击退效果
                 if (AmmoConfig.EXPLOSIVE_AMMO_KNOCK_BACK.get() && this.knockback) {
-                    entity.setDeltaMovement(entity.getDeltaMovement().add(
-                            deltaX * damage * multiplier, deltaY * damage * multiplier, deltaZ * damage * multiplier));
+                    Vec3 knockback = new Vec3(deltaX * damage * multiplier, deltaY * damage * multiplier, deltaZ * damage * multiplier);
+                    entity.push(knockback);
                     if (entity instanceof Player player) {
                         if (!player.isSpectator() && (!player.isCreative() || !player.getAbilities().flying)) {
-                            this.getHitPlayers().put(player, new Vec3(
-                                    deltaX * damage * multiplier, deltaY * damage * multiplier, deltaZ * damage * multiplier));
+                            this.getHitPlayers().put(player, knockback);
                         }
                     }
                 }
                 // 原版 1.21 起在爆炸击退后追加此调用（玩家据此把摔落伤害归因到本次冲量）
                 entity.onExplosionHit(this.exploder);
+            }
+
+            // 与原版一致：KEEP 模式不破坏方块，也就不做方块交互（没有掉落物）
+            if (this.getBlockInteraction() != Explosion.BlockInteraction.KEEP) {
+                this.interactWithBlocks(toBlow);
+            }
+            if (AmmoConfig.EXPLOSIVE_AMMO_FIRE.get()) {
+                this.createFire(toBlow);
+            }
+        }
+
+        /**
+         * 复刻原版 {@code ServerExplosion#interactWithBlocks}：交给方块自身处理爆炸，并合并掉落物
+         */
+        private void interactWithBlocks(List<BlockPos> toBlow) {
+            List<StackCollector> drops = new ArrayList<>();
+            Util.shuffle(toBlow, this.level.random);
+            for (BlockPos pos : toBlow) {
+                this.level.getBlockState(pos).onExplosionHit(this.level, pos, this,
+                        (stack, dropPos) -> addOrAppendStack(drops, stack, dropPos));
+            }
+            for (StackCollector drop : drops) {
+                Block.popResource(this.level, drop.pos, drop.stack);
+            }
+        }
+
+        private static void addOrAppendStack(List<StackCollector> drops, ItemStack stack, BlockPos pos) {
+            for (StackCollector drop : drops) {
+                if (drop.tryMerge(stack)) {
+                    return;
+                }
+            }
+            drops.add(new StackCollector(pos, stack));
+        }
+
+        /**
+         * 复刻原版 {@code ServerExplosion#createFire}
+         */
+        private void createFire(List<BlockPos> toBlow) {
+            for (BlockPos pos : toBlow) {
+                if (this.level.random.nextInt(3) == 0 && this.level.getBlockState(pos).isAir()
+                        && this.level.getBlockState(pos.below()).isSolidRender()) {
+                    this.level.setBlockAndUpdate(pos, BaseFireBlock.getState(this.level, pos));
+                }
+            }
+        }
+
+        private static class StackCollector {
+            final BlockPos pos;
+            ItemStack stack;
+
+            StackCollector(BlockPos pos, ItemStack stack) {
+                this.pos = pos;
+                this.stack = stack;
+            }
+
+            boolean tryMerge(ItemStack other) {
+                if (!ItemEntity.areMergable(this.stack, other)) return false;
+                this.stack = ItemEntity.merge(this.stack, other, 16);
+                return other.isEmpty();
             }
         }
     }

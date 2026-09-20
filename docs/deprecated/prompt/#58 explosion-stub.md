@@ -234,3 +234,47 @@ Compiles cleanly. Let me confirm there are no other modules affected.
 `:core:compileJava`、`:forge-compat:compileJava`、`:neoforge-compat:compileJava` 均 BUILD SUCCESSFUL（只剩仓库原有 deprecation 警告）。
 
 未提交，等你 review。游戏内仍未验证——RPG7 近距射击应同时出子弹伤害与爆炸伤害、方块被毁、有爆炸音效/粒子；另外这次动了发包内容和伤害源构造，建议顺手确认爆炸击退与玩家被炸的击退反馈正常。
+
+# 
+
+```
+现在继续处理1.21.1forge的移植
+```
+
+# 
+
+Now the same port for 1.21.1 Forge. Let me see what breaks there.
+
+The 1.21.1forge copy has only 2 errors left, and the file's mtime is recent. Let me check its state before touching anything.
+
+A commit `ba2f3586b Port #58 to 1.20.4` is already in this branch's history. Let me understand what's already here before editing.
+
+Only `ProtectionEnchantment` remains — removed in 1.21's enchantment overhaul. Let me find where the method moved.
+
+1.21.1 replaced blast protection's knockback dampener with the `EXPLOSION_KNOCKBACK_RESISTANCE` attribute. Let me confirm no helper method remains, then read the call site.
+
+IDEA's analysis for `ProjectileImpactManager` looks like a stale index (it can't even see a same-package class). Let me get the authoritative answer from the compiler.
+
+1.21.1forge 的 `_TempExplode` 改动已完成，但编译验证被你中断了，所以**尚未验证**。
+
+## 已做的改动（[`_TempExplode.java`](core/src/main/java/dev/xcolorful/customgun/core/projectile/impact/_TempExplode.java:323)）
+
+这个 worktree 里 1.20.4 的那批适配已经在了（commit `ba2f3586b "Port #58 to 1.20.4"`，只存在于 1.21.1forge 分支上），只剩 1 处 1.21.1 差异：
+
+| 报错点 | 1.20.x 写法 | 1.21.1 改法 |
+|---|---|---|
+| `ProtectionEnchantment` 整个类消失 | `getExplosionKnockbackAfterDampener(livingEntity, damage)` | `damage *= 1.0 - livingEntity.getAttributeValue(Attributes.EXPLOSION_KNOCKBACK_RESISTANCE)` |
+
+依据是 1.21.1 原版 `Explosion.explode()` 自己就是这么算的（`:282`）。两者数值等价：1.20.x 是 `damage * (1 - 0.15*爆炸保护等级)`，1.21 里爆炸保护改为提供 `+0.15/级` 的该属性，原版再乘 `(1 - 属性值)`。已用 `search_symbol` 确认全库不存在 `getExplosionKnockbackAfterDampener`。
+
+IDEA 对 `_TempExplode.java` 报 0 error。
+
+## 需要你决定的两件事
+
+**1. 编译没有跑完。** 被 kill（exit 137）。要我现在重跑 `:core:compileJava :forge-compat:compileJava` 吗？
+
+**2. 一个我没解释清楚的疑点，需要你这个知道上下文的人判断。** IDE 对 [`ProjectileImpactManager.java`](core/src/main/java/dev/xcolorful/customgun/core/projectile/impact/ProjectileImpactManager.java:75) 报了一堆错，包括「Cannot resolve symbol `_TempExplode`」和「Cannot resolve symbol `_ProjectileHit`」——这两个类就在同一个包里、文件确实存在。同包类解析不了 + `@Override` 全部失效 + `IGunProjectile` 的方法全找不到，这个形态像是 IDEA 索引过期（这个 worktree 刚被 merge 过），而不是真实编译错误。但我没有跑通编译来证实，所以**这不代表代码是好的**。
+
+如果你中断编译是因为它太重/在抢资源，或者你本来就想先手动看看这个 worktree 的历史（那个 `Port #58 to 1.20.4` 提交出现在 1.21.1forge 上、却不在 1.20.4 worktree 上，我按"不覆盖别人工作"处理了，没有动它），告诉我，我按你的意思来。
+
+未提交，等你 review。

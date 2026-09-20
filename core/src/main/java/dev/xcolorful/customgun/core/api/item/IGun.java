@@ -22,6 +22,41 @@ public interface IGun extends IGunRuntime, IAnimationItem,
     // --------IGunAmmoDataAccess--------
 
     @Override
+    default int getConsumableAmmoCount(@Nullable LivingEntity livingEntity, ItemStack gunItem, BoltType boltType) {
+        // 可消耗的子弹
+        int consumableAmmo;
+        final int DEFAULT_CONSUME_AMMO = 1; // 连续消耗子弹应改用burst模式
+        if (this.useInventoryAmmo(gunItem)) {
+            // 背包直读
+            if (livingEntity == null) return 0;
+
+            ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(livingEntity);
+            if (iLivingShooter.cgc$hasInfiniteAmmoFeed()) {
+                // 射手无限供弹
+                consumableAmmo = Integer.MAX_VALUE;
+            } else if (this.useDummyAmmo(gunItem)) {
+                // 仅在背包直读时，虚拟备弹作为优先指定的备弹源，才直接供弹，否则消耗枪管子弹
+                consumableAmmo = this.getDummyAmmoCount(gunItem);
+            } else {
+                // 背包物品
+                consumableAmmo = this.getInventoryAmmoCount(livingEntity, gunItem);
+            }
+        } else if (boltType.useBarrelAmmo()) {
+            // 使用枪管子弹
+            int barrelAmmo = this.getBarrelAmmoCount(gunItem);
+            if (barrelAmmo > 0) {
+                consumableAmmo = DEFAULT_CONSUME_AMMO;
+            } else {
+                consumableAmmo = 0;
+            }
+        } else {
+            // 使用弹匣子弹
+            consumableAmmo = getMagAmmoCount(gunItem);
+        }
+
+        return consumableAmmo;
+    }
+    @Override
     default int consumeAmmoOnce(@Nullable LivingEntity livingEntity, ItemStack gunItem, BoltType boltType) {
         if (PlannedRefactor.ON_CONSUME_AMMO) return 0;
 
@@ -31,12 +66,13 @@ public interface IGun extends IGunRuntime, IAnimationItem,
         if (this.useInventoryAmmo(gunItem)) {
             // 背包直读
             if (livingEntity == null) return 0;
+
             ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(livingEntity);
-            if (!iLivingShooter.cgc$needCheckAmmo()) {
-                // 不需要检查子弹
+            if (iLivingShooter.cgc$hasInfiniteAmmoFeed()) {
+                // 射手无限供弹
                 consumedAmmo = DEFAULT_CONSUME_AMMO;
             } else if (this.useDummyAmmo(gunItem)) {
-                // 虚拟备弹
+                // 仅在背包直读时，虚拟备弹作为优先指定的备弹源，才直接供弹，否则消耗枪管子弹
                 consumedAmmo = this.findAndExtractDummyAmmo(this, gunItem, DEFAULT_CONSUME_AMMO);
             } else {
                 // 背包物品
@@ -82,15 +118,16 @@ public interface IGun extends IGunRuntime, IAnimationItem,
         if (maxBarrelAmmo <= 0) return 0;
 
         int consumedAmmo;
+        /*
+        拉栓是把枪里的子弹拉上来，不是射手给枪feed子弹
+        因此不检查射手状态
+         */
         if (this.useInventoryAmmo(gunItem)) {
             // 背包直读
             if (livingEntity == null) return 0;
-            ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(livingEntity);
-            if (!iLivingShooter.cgc$needCheckAmmo()) {
-                // 不需要检查子弹
-                consumedAmmo = maxBarrelAmmo;
-            } else if (this.useDummyAmmo(gunItem)) {
-                // 虚拟备弹
+
+            if (this.useDummyAmmo(gunItem)) {
+                // 仅在背包直读时，虚拟备弹作为优先指定的备弹源，才直接供弹，否则使用枪里的子弹
                 consumedAmmo = this.findAndExtractDummyAmmo(this, gunItem, maxBarrelAmmo);
             } else {
                 // 背包物品

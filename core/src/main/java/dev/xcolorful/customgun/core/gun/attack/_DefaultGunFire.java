@@ -205,7 +205,8 @@ public class _DefaultGunFire {
             if (iLivingShooter.cgc$bypassGunFireConsumption()) {
                 // 不消耗子弹
             } else {
-                if (iGun.getConsumableAmmoCount(livingShooter, gunItem, boltType) <= 0) {
+                int consumedAmmo = iGun.consumeAmmoOnce(livingShooter, gunItem, boltType);
+                if (consumedAmmo <= 0) {
                     return IGunAttackRuntime.GunFireResult.AMMO_CONSUME_FAILED;
                 }
             }

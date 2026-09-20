@@ -34,6 +34,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -41,7 +42,7 @@ import org.joml.Vector3f;
 import java.awt.*;
 
 /**
- * Author: Forked from MrCrayfish, continued by Timeless devs
+ * Author: Forked from MrCrayfish, continued by Timeless devs, continued continued by XiaoColorful
  */
 public class BulletHoleParticle extends TextureSheetParticle {
 
@@ -53,12 +54,34 @@ public class BulletHoleParticle extends TextureSheetParticle {
     private final Quaternionf rotationCache;
     private final BlockPos posCache;
 
+    // ----------1.21.10----------
+    /**
+     * <ul>
+     *     [1.21.10, )
+     *     <li>{@code net.minecraft.client.renderer.state.QuadParticleRenderState} 的方片位于 XY 平面（法线为 +Z）</li>
+     *     <li>而 {@link net.minecraft.core.Direction#getRotation()} 假设方片位于 XZ 平面（法线为 +Y）</li>
+     *     <li>先把方片转到 getRotation 所假设的基上，法线才会与命中面朝向一致</li>
+     * </ul>
+     */
+    @ApiStatus.AvailableSince("1.21.10")
+    private static final Quaternionf QUAD_NORMAL_FIX = new Quaternionf().rotationX(-Mth.HALF_PI);
+    /**
+     * 沿命中面法线外推的距离，避免弹孔与方块面重合导致 z-fight
+     */
+    private static final float SURFACE_OFFSET = 0.005f;
+//    private final Vec3 surfaceOffset;
+
     public BulletHoleParticle(ClientLevel level, double x, double y, double z,
                               BulletHoleOption bulletHoleOption) {
         super(level, x, y, z);
         this.bulletHoleOption = bulletHoleOption;
-        this.rotationCache = this.bulletHoleOption.direction().getRotation();
+        this.rotationCache = new Quaternionf(
+                this.bulletHoleOption.direction()
+                        .getRotation()
+//                        .mul(QUAD_NORMAL_FIX) // [1.21.10, )
+        );
         this.posCache = this.bulletHoleOption.pos();
+//        this.surfaceOffset = this.bulletHoleOption.direction().getUnitVec3().scale(SURFACE_OFFSET); // [1.21.10, )
 
         this.setSprite(this.calculateSprite(this.posCache));
         this.lifetime = this.calculateLifetime(level);
@@ -116,10 +139,10 @@ public class BulletHoleParticle extends TextureSheetParticle {
         float particleZ = (float) (Mth.lerp(partialTicks, this.zo, this.z) - view.z());
         Vector3f[] points = new Vector3f[]{
                 // Y 值稍微大一点点，防止 z-fight
-                new Vector3f(-1.0F, 0.01F, -1.0F),
-                new Vector3f(-1.0F, 0.01F, 1.0F),
-                new Vector3f(1.0F, 0.01F, 1.0F),
-                new Vector3f(1.0F, 0.01F, -1.0F)
+                new Vector3f(-1.0F, SURFACE_OFFSET, -1.0F),
+                new Vector3f(-1.0F, SURFACE_OFFSET, 1.0F),
+                new Vector3f(1.0F, SURFACE_OFFSET, 1.0F),
+                new Vector3f(1.0F, SURFACE_OFFSET, -1.0F)
         };
         float scale = this.getQuadSize(partialTicks);
 

@@ -150,3 +150,79 @@ providers.get(BuiltInRegistries.PARTICLE_TYPE.getKey(options.getType()));       
 - `ClientModParticles` + `ParticleRegisterer` 这层转发是为了让 core 不依赖加载器，符合项目里其它注册的写法，不用动。
 
 `:forge-compat:compileJava` 还在跑（ForgeGradle 首次构建比较慢），跑完我确认。要我把这一行一并补到其它端口吗？即 1.20.1 / 1.20.2 / 1.20.4 / 1.21.1neoforge / 1.21.4 / 1.21.6 / 26.x 各自的 `CustomGunForge`、`CustomGunNeoforge`。
+
+# 
+---
+
+```
+现在要处理PR #59的问题：
+- 1.21.6的弹孔粒子正常，1.21.10起弹孔粒子方片的法线始终跟玩家视角朝向0 0的直线平行
+```
+
+# 
+
+I'll look at the bullet hole particle code and how it differs between versions.
+
+The particle code lives in the Custom-Gun-Continued repo. Let me find the bullet hole particle there.
+
+Found it — PR #59 is the bullet-hole skeleton in Custom-Gun-Continued. Let me read the particle code in both the 1.21.6 and 1.21.10 worktrees.
+
+Now let me look at the vanilla 1.21.10 `QuadParticleRenderState.add` to see what basis the quad is built in.
+
+Now I see the render basis changed. Let me check the supporting `direction().getRotation()` helper and `BulletHoleOption`.
+
+Let me check whether the newer branches (1.21.11, 26.x) already fixed this, and read the current file.
+
+Let me check where the bullet hole particle is spawned, to see the surface offset.
+
+Let me verify the JOML conventions empirically rather than by memory.
+
+Let me write a decisive test against the real JOML library.
+
+Confirmed the bug. Let me see the candidate fixes.
+
+The diagnosis is confirmed. Let me check the particle size constant and the target worktree state.
+
+Now let me read the target file properly before editing.
+
+Now I'll apply the fix.
+
+The diff is clean. Let me check the compile result.
+
+Gradle can't find a Java 21 toolchain. Let me look for a local JDK 21.
+
+Compiles cleanly. Let me record the environment/workflow facts I had to discover, then summarize.
+
+修好了。根因不在 `Direction.getRotation()`，而在 1.21.10 的粒子渲染重构。
+
+## 根因
+
+1.21.10 把 `Particle.render(VertexConsumer, Camera, float)` 换成了 `extract(QuadParticleRenderState, Camera, float)`，方片的顶点由 MC 自己生成（[QuadParticleRenderState.java:185](app://localhost/epitaxy/local_55a4b8da-0fd2-4f30-98f3-981d22b8b974)）：
+
+- 方片固定在 **XY 平面**，法线是 `+Z`；
+- 1.21.6 及以前自己画的方片在 **XZ 平面**，法线是 `+Y`。
+
+而 `Direction.getRotation()` 的语义是「把 `+Y` 转到该面朝向」（我用 JOML 1.10.8 复刻验证了 6 个方向全部成立）。所以把同一个 quaternion 塞给新的 render state，方片平面整体偏了 90°：朝北墙上的弹孔会变成水平躺在半空、法线朝下（`0,-1,0`）；地板的弹孔会变成竖着的。你看到的现象就是这个。
+
+## 改动
+
+[BulletHoleParticle.java](app://localhost/epitaxy/local_55a4b8da-0fd2-4f30-98f3-981d22b8b974)，两处：
+
+1. 构造时先乘一个 `rotationX(-π/2)`（把 `+Z` 转到 `+Y`），再交给 `QuadParticleRenderState`：
+    
+    ```java
+    this.rotationCache = new Quaternionf(direction.getRotation()).mul(QUAD_NORMAL_FIX);
+    ```
+    
+2. 顺手修了同一处重构留下的第二个问题：原来的 `particleY += 0.005F` 是全局 Y 抬升，只对地板/天花板有用，对墙面完全不起作用（等于没防 z-fight）。改回沿命中面法线外推 `0.005`。这两块是同一个 refactor 一起坏掉的，不修的话墙上的弹孔会重新和方块面打架。
+
+## 验证
+
+用 JOML 1.10.8 跑了复刻测试（`Direction.getRotation` + render state 的顶点顺序），修复后 6 个方向的**方片法线都等于命中面朝向、方片都贴合该面**；修复前 6 个方向全部偏 90°。文件单独编译通过（javac 25，针对上次构建产物拼的 classpath）。
+
+两点限制：`./gradlew` 在这台机器上跑不起来（没有 JDK 21，foojay 下载被墙，只有 8/17/25），所以我没法做完整构建；也没法进游戏实际看效果，视觉上的最后确认还得你来。
+
+## 需要你定
+
+- 同样这段代码在 `1.21.11neoforge`、`26.1.2neoforge`、`26.3neoforge` 三个 worktree 里一字不差，你说的是「1.21.10 起」——要我一并改过去吗？（那需要逐个确认 `Mth.HALF_PI` 等 API 在对应版本还在，我会分别验一遍。）
+- 还没提交。要我在这条 `1.21.10neoforge` 分支上建个 commit（PR #59 已经 merge 了，所以这会是新的分支/PR），还是你先自己过一眼 diff？

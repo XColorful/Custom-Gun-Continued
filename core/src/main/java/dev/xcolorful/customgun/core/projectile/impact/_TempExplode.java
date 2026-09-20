@@ -359,7 +359,8 @@ public class _TempExplode {
                 }
                 // 原版 1.21 起在爆炸击退后追加此调用（玩家据此把摔落伤害归因到本次冲量）
                 // 1.21.10 起原版新增：被爆炸波及的可转向弹射物改认爆炸源为发射者
-                if (entity.getType().is(EntityTypeTags.REDIRECTABLE_PROJECTILE) && entity instanceof Projectile projectile) {
+                // 26.1.2 起 EntityType#is 挪到了 Entity 上（原版此处也是 entity.is(...)）
+                if (entity.is(EntityTypeTags.REDIRECTABLE_PROJECTILE) && entity instanceof Projectile projectile) {
                     projectile.setOwner(this.getDamageSource().getEntity());
                 }
                 entity.onExplosionHit(this.exploder);

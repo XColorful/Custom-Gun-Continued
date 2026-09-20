@@ -19,11 +19,9 @@ public interface IShooterState extends IShooterLatency {
     boolean cgc$hasInfiniteAmmoFeed();
 
     /**
-     * 服务端，开火是否消耗弹药
-     *
-     * @return 如果为 false，那么开火不会消耗枪械弹药
+     * 枪械开火是否消耗弹药 (可无限连续射击)
      */
-    boolean cgc$consumesAmmoOrNot();
+    boolean cgc$bypassGunFireConsumption();
 
     /**
      * 根据情况返回玩家应当处于的冲刺状态，在玩家切换冲刺状态的时候调用。

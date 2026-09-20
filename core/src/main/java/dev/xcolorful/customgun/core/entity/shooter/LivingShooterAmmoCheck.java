@@ -18,10 +18,9 @@ public final class LivingShooterAmmoCheck extends LivingShooterAspect {
         return (this.livingShooter instanceof Player player) && player.isCreative();
     }
 
-    public boolean consumesAmmoOrNot() {
-        if (this.livingShooter instanceof Player player) {
-            return !player.isCreative() || GunConfig.CREATIVE_PLAYER_CONSUME_AMMO.get();
-        }
-        return true;
+    public boolean bypassGunFireConsumption() {
+        // 默认仅创造模式玩家
+        return this.livingShooter instanceof Player player && player.isCreative()
+                && GunConfig.BYPASS_GUN_FIRE_CONSUMPTION.get();
     }
 }

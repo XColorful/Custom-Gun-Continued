@@ -8,7 +8,7 @@ public class GunConfig {
     public static IModConfigSpec<Integer> DEFAULT_GUN_FIRE_SOUND_DISTANCE;
     public static IModConfigSpec<Integer> DEFAULT_GUN_SILENCE_SOUND_DISTANCE;
     public static IModConfigSpec<Integer> DEFAULT_GUN_OTHER_SOUND_DISTANCE;
-    public static IModConfigSpec<Boolean> CREATIVE_PLAYER_CONSUME_AMMO;
+    public static IModConfigSpec<Boolean> BYPASS_GUN_FIRE_CONSUMPTION;
     public static IModConfigSpec<Boolean> AUTO_RELOAD_WHEN_RESPAWN;
 
     public static void init(IModConfigSpecBuilder builder) {
@@ -23,12 +23,15 @@ public class GunConfig {
         builder.addComment(ModConfigTag.defaultGunOtherSoundDistance_comment);
         DEFAULT_GUN_OTHER_SOUND_DISTANCE = builder.addConfig(ModConfigTag.defaultGunOtherSoundDistance_path, 16, 0, Integer.MAX_VALUE);
 
-        builder.addComment(ModConfigTag.creativePlayerConsumeAmmo_comment);
-        CREATIVE_PLAYER_CONSUME_AMMO = builder.addConfig(ModConfigTag.creativePlayerConsumeAmmo_path, true);
+        builder.addComment(ModConfigTag.bypassGunFireConsumption_comment);
+        BYPASS_GUN_FIRE_CONSUMPTION = builder.addConfig(ModConfigTag.bypassGunFireConsumption_path, false);
+        CREATIVE_PLAYER_CONSUME_AMMO = BYPASS_GUN_FIRE_CONSUMPTION;
 
         builder.addComment(ModConfigTag.autoReloadWhenRespawn_comment);
         AUTO_RELOAD_WHEN_RESPAWN = builder.addConfig(ModConfigTag.autoReloadWhenRespawn_path, false);
 
         builder.finishBuild();
     }
+
+    @Deprecated(forRemoval = true) public static IModConfigSpec<Boolean> CREATIVE_PLAYER_CONSUME_AMMO;
 }

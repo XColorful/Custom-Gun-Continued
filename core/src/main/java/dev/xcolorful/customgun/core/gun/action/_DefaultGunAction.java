@@ -59,17 +59,20 @@ public class _DefaultGunAction {
 
         // 检查是否有子弹可拉栓
         boolean hasAmmo; {
+            /*
+            拉栓是把枪里的子弹拉上来，不是射手给枪feed子弹
+            因此不检查射手状态
+             */
+
             /**
              * 以 {@link IGun#boltBarrelAmmo} 为准
              */
             if (iGun.useInventoryAmmo(gunItem)) {
                 // 背包直读
                 if (livingShooter == null) hasAmmo = false;
-                else if (iLivingShooter.cgc$hasInfiniteAmmoFeed()) {
-                    // 射手无限供弹
-                    hasAmmo = true;
-                } else if (iGun.useDummyAmmo(gunItem)) {
-                    // 虚拟备弹
+
+                if (iGun.useDummyAmmo(gunItem)) {
+                    // 仅在背包直读时，虚拟备弹作为优先指定的备弹源，才直接供弹，否则使用枪里的子弹
                     hasAmmo = iGun.getDummyAmmoCount(gunItem) > 0;
                 } else {
                     // 背包物品
@@ -145,8 +148,8 @@ public class _DefaultGunAction {
                 currentMagAmmoCount >= magAmmoLimit
                 // 背包直读不需要换弹
                 || iGun.useInventoryAmmo(gunItem)
-                // 还有虚拟备弹
-                || iGun.useDummyAmmo(gunItem) && iGun.getDummyAmmoCount(gunItem) > 0
+                // 虚拟备弹作为优先指定的备弹源，如果没有则默认不使用其他备弹
+                || iGun.useDummyAmmo(gunItem) && iGun.getDummyAmmoCount(gunItem) <= 0
         ) return false;
 
         // 检查背包内子弹库存
@@ -244,7 +247,7 @@ public class _DefaultGunAction {
         int magAmmoCount = iGun.getMagAmmoCount(gunItem);
         int needAmmoCount = iGun.getMagAmmoLimit(gunItem) - magAmmoCount;
         _ReloadData reloadData = gunData.getReloadData();
-        boolean needConsumeAmmo = !iLivingShooter.cgc$hasInfiniteAmmoFeed() || reloadData.getFreeAmmoFeed();
+        boolean freeAmmoFeed = reloadData.getFreeAmmoFeed();
         int consumedAmmo;
         AmmoFeedType ammoFeedType = reloadData.getAmmoFeedType();
         switch (ammoFeedType) {
@@ -252,7 +255,7 @@ public class _DefaultGunAction {
                 // 手动供弹只能装一发
                 if (ammoFeedType == AmmoFeedType.MANUAL) needAmmoCount = Math.min(needAmmoCount, 1);
 
-                consumedAmmo = needConsumeAmmo ? consumeAmmoFromPlayer(iGun, gunItem, iLivingShooter, livingShooter, needAmmoCount)
+                consumedAmmo = !freeAmmoFeed ? consumeFeedFromPlayer(iGun, gunItem, iLivingShooter, livingShooter, needAmmoCount)
                         : needAmmoCount;
                 if (consumedAmmo > 0) {
                     iGun.setMagAmmoCount(gunItem, magAmmoCount + consumedAmmo);
@@ -260,7 +263,7 @@ public class _DefaultGunAction {
             }
             case FUEL -> {
                 // 消耗单个燃料物品补满弹药
-                consumedAmmo = needConsumeAmmo ? consumeAmmoFromPlayer(iGun, gunItem, iLivingShooter, livingShooter, 1)
+                consumedAmmo = !freeAmmoFeed ? consumeFeedFromPlayer(iGun, gunItem, iLivingShooter, livingShooter, 1)
                         : needAmmoCount;
                 if (consumedAmmo > 0) {
                     iGun.setMagAmmoCount(gunItem, magAmmoCount + needAmmoCount);
@@ -285,24 +288,24 @@ public class _DefaultGunAction {
                 new S2CMessageShooterReloadFeed(livingShooter.getId(), gunItem));
     }
     /**
+     * 不检查射手状态
      * 获取不到玩家 则 只能消耗枪械上的子弹
      */
     @ApiStatus.Internal
-    public static int consumeAmmoFromPlayer(IGun iGun, ItemStack gunItem,
+    public static int consumeFeedFromPlayer(IGun iGun, ItemStack gunItem,
                                             @Nullable ILivingShooter iLivingShooter, @Nullable LivingEntity livingShooter,
                                             int neededAmount) {
         if (neededAmount <= 0) return 0;
 
-        if (!iGun.useInventoryAmmo(gunItem) // 背包直读合并到从背包读取
-                && iGun.useDummyAmmo(gunItem)) {
-            // 虚拟备弹
+        // 射手无限供弹
+        if (iLivingShooter != null && iLivingShooter.cgc$hasInfiniteAmmoFeed()) return neededAmount;
+
+        if (iGun.useDummyAmmo(gunItem)) {
+            // 虚拟备弹作为优先指定的备弹源
             return iGun.findAndExtractDummyAmmo(iGun, gunItem, neededAmount);
         } else {
-            // 从背包读取
+            // 背包直读 / 从背包读取
             if (livingShooter == null) return 0;
-
-            // 射手无限供弹
-            if (iLivingShooter != null && iLivingShooter.cgc$hasInfiniteAmmoFeed()) return neededAmount;
 
             @Nullable IInventoryCapability inventoryCapability = CustomGun.getCapabilityProvider().getItemHandler(livingShooter, null);
             if (inventoryCapability == null) return 0;

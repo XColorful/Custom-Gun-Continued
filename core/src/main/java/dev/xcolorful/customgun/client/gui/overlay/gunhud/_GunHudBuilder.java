@@ -4,11 +4,13 @@ import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
 import dev.xcolorful.customgun.client.gui.tooltip.gun.GunStateInfoPart;
 import dev.xcolorful.customgun.client.resource.assets.display.GunDisplay;
 import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
+import dev.xcolorful.customgun.core.api.entity.ILivingShooter;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.gun.AmmoCountType;
 import dev.xcolorful.customgun.core.api.item.gun.BoltType;
 import dev.xcolorful.customgun.core.api.item.gun.FireModeType;
 import dev.xcolorful.customgun.core.api.resource.ResourceApi;
+import dev.xcolorful.customgun.core.gun.action._DefaultGunAction;
 import dev.xcolorful.customgun.core.resource.data.data.GunData;
 import dev.xcolorful.customgun.core.resource.instance.data.GunIndexInstance;
 import dev.xcolorful.customgun.core.util.ComponentUtils;
@@ -16,6 +18,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -45,15 +48,20 @@ public class _GunHudBuilder {
         // 备弹数量
         int reserveAmmoCount;
         ChatFormatting reserveAmmoColor;
-        if (!iGun.useInventoryAmmo(gunItem) // 背包直读合并到从背包读取
-                && iGun.useDummyAmmo(gunItem)) {
-            // 虚拟备弹
+        boolean forceShowReserveAmmo = false;
+        if (iGun.useDummyAmmo(gunItem)) {
+            /**
+             * 跟{@link _DefaultGunAction#consumeFeedFromPlayer}对齐
+             */
+            // 虚拟备弹作为优先指定的备弹源
             reserveAmmoCount = iGun.getDummyAmmoCount(gunItem);
             reserveAmmoColor = ChatFormatting.DARK_AQUA;
+            forceShowReserveAmmo = true; // 虚拟备弹强制显示备弹
         } else {
-            // 从背包读取
+            // 背包直读 / 从背包读取
             reserveAmmoCount = iGun.getInventoryAmmoCount(localPlayer, gunItem);
             reserveAmmoColor = ChatFormatting.GRAY;
+            if (iGun.useInventoryAmmo(gunItem)) forceShowReserveAmmo = true; // 背包直读强制显示备弹
         }
 
         @Nullable GunDisplayInstance gunDisplayInstance = ClientResourceApi.getGunDisplayInstance(gunItem);
@@ -66,7 +74,7 @@ public class _GunHudBuilder {
             }
         }
 
-        Component baseMessage = _buildBaseMessage(ammoCountType, currentAmmoCount, magAmmoLimit, reserveAmmoCount, reserveAmmoColor);
+        Component baseMessage = _buildBaseMessage(ammoCountType, currentAmmoCount, magAmmoLimit, reserveAmmoCount, reserveAmmoColor, forceShowReserveAmmo);
 
         // 开火模式
         FireModeType fireModeType = iGun.getFireModeType(gunItem);
@@ -75,7 +83,7 @@ public class _GunHudBuilder {
 
     private static @NotNull Component _buildBaseMessage(AmmoCountType ammoCountType,
                                                         int currentAmmoCount, int magAmmoLimit, int reserveAmmoCount,
-                                                        ChatFormatting reserveAmmoColor) {
+                                                        ChatFormatting reserveAmmoColor, boolean forceShowReserveAmmo) {
         MutableComponent message;
         return switch (ammoCountType) {
             case NORMAL -> {
@@ -89,7 +97,7 @@ public class _GunHudBuilder {
                         .withStyle(currentAmmoCount > 0 ? (currentAmmoCount >= magAmmoLimit ? ChatFormatting.AQUA : ChatFormatting.WHITE)
                                 : ChatFormatting.RED);
                 // 备弹
-                if (reserveAmmoCount > 0) {
+                if (reserveAmmoCount > 0 || forceShowReserveAmmo) {
                     message.append(Component.literal(" ")
                             )
                             .append(Component.literal(String.valueOf(reserveAmmoCount))

@@ -1,5 +1,6 @@
 package dev.xcolorful.customgun.core.api.item.gun;
 
+import dev.xcolorful.customgun.core.api.entity.shooter.IShooterState;
 import dev.xcolorful.customgun.core.api.gun.inventory.IGunInventoryRuntime;
 import dev.xcolorful.customgun.core.api.item.IAmmo;
 import net.minecraft.world.entity.LivingEntity;
@@ -62,6 +63,12 @@ public interface IGunAmmoDataAccess {
 
     /**
      * 是否使用虚拟备弹而不是背包物品
+     * <ul>
+     *     <li>只要写了虚拟备弹，就以此为备弹源，无论虚拟备弹数量为多少</li>
+     *     <li>如果虚拟备弹作为一个额外的消耗源，应该加在{@link IShooterState}</li>
+     *     <li>因此优先级高于背包直读</li>
+     * </ul>
+     * <br>
      */
     boolean useDummyAmmo(ItemStack gunItem);
     int getDummyAmmoCount(ItemStack gunItem);

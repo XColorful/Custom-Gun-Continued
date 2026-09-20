@@ -28,6 +28,7 @@ import dev.xcolorful.customgun.core.resource.instance.data.GunIndexInstance;
 import dev.xcolorful.customgun.core.util.NBTUtils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
@@ -293,7 +294,8 @@ public interface GunDataAccessor extends IGunDataAccess {
     }
     @Override
     default void setDummyAmmoCount(ItemStack gunItem, int amount) {
-        NBTUtils.setInt(gunItem, GunProperty.DUMMY_AMMO.getTagName(), Math.min(amount, this.getDummyAmmoLimit(gunItem)));
+        if (this.hasDummyAmmoLimit(gunItem)) NBTUtils.setInt(gunItem, GunProperty.DUMMY_AMMO.getTagName(), Mth.clamp(amount, 0, this.getDummyAmmoLimit(gunItem)));
+        else NBTUtils.setInt(gunItem, GunProperty.DUMMY_AMMO.getTagName(), Math.max(0, amount));
     }
     @Override
     default boolean hasDummyAmmoLimit(ItemStack gunItem) {

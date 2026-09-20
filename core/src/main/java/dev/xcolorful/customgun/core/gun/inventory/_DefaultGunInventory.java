@@ -47,19 +47,12 @@ public class _DefaultGunInventory {
         GunData gunData = gunIndexInstance.getGunData();
         _ReloadData reloadData = gunData.getReloadData();
 
-        // --------虚拟备弹--------
         if (iGun.useDummyAmmo(gunItem)) {
-            iGun.setMagAmmoCount(gunItem, 0);
-            // 不返还的类型
-            if (!reloadData.getAmmoFeedType().canRetrieveAmmo()) {
-                return;
-            }
-            iGun.setDummyAmmoCount(gunItem, magAmmoCount);
+            // 虚拟备弹作为优先指定的备弹源，是一种备弹，不退回
             return;
-        }
-        // --------背包直读/燃料类型不返还--------
-        else if (!reloadData.getAmmoFeedType().canRetrieveAmmo()) {
-            iGun.setMagAmmoCount(gunItem, 0);
+        } else if (!reloadData.getAmmoFeedType().canRetrieveAmmo()) {
+            // 不返还的类型 (背包直读/燃料)
+            iGun.setMagAmmoCount(gunItem, 0); // 背包直读也直接卸掉
             return;
         }
 
@@ -256,8 +249,8 @@ public class _DefaultGunInventory {
         if (dummyAmmoCount <= 0) return 0;
 
         int extract = Math.min(dummyAmmoCount, requiredAmmoCount);
+        // 虚拟备弹目前没有consume方法，set就当consume用
         iGun.setDummyAmmoCount(gunItem, dummyAmmoCount - extract);
-        int remain = iGun.getDummyAmmoCount(gunItem);
-        return dummyAmmoCount - remain;
+        return extract;
     }
 }

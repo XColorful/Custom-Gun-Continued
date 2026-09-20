@@ -158,7 +158,7 @@ public class _DefaultGunAction {
         for (int i = 0; i < inventoryCapability.getContainerSize(); i++) {
             final ItemStack ammoItem = inventoryCapability.getItemReadOnly(i);
 
-            if (iGun.isConsumableAmmo(gunItem, ammoItem)) {
+            if (iGun.hasMatchedAmmo(gunItem, ammoItem)) {
                 return true;
             }
         }

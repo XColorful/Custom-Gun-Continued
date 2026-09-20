@@ -264,12 +264,18 @@ public final class LocalShooterShoot extends LocalShooterAspect {
         long period = fireModeType == FireModeType.BURST ? _DefaultGunFire._getBurstShootIntervalMs(gunData) : 1;
         // 枪械最大连发数
         final int maxFireCount; { // shoot是射手shoot，fire是枪械fire，一次shooter shoot造成多次gun fire
-            BoltType boltType = gunData.getBoltType();
-            // 获取总余弹数
-            boolean hasInfiniteAmmoFeed = ILivingShooterGetter.cgc$fromLivingEntity(this.localShooter).cgc$hasInfiniteAmmoFeed();
-            int ammoCount = !hasInfiniteAmmoFeed ? Integer.MAX_VALUE
-                    : iGun.getMagAmmoCountWithBarrel(gunItem, boltType);
-            maxFireCount = Math.min(ammoCount, fireModeType == FireModeType.BURST ? gunData.getBurstData().getBurstAmount() : 1);
+            /**
+             * 跟{@link _DefaultGunFire#doGunFire}对齐
+             * 客户端提前算好gun一共能fire多少次，默认射击期间不会在消耗子弹的时候被其他机制多扣子弹
+             */
+            int consumableAmmoCount;
+            if (ILivingShooterGetter.cgc$fromLivingEntity(this.localShooter).cgc$bypassGunFireConsumption()) {
+                consumableAmmoCount = Integer.MAX_VALUE;
+            } else {
+                BoltType boltType = gunData.getBoltType();
+                consumableAmmoCount = iGun.getConsumableAmmoCount(localShooter, gunItem, boltType);
+            }
+            maxFireCount = Math.min(consumableAmmoCount, fireModeType == FireModeType.BURST ? gunData.getBurstData().getBurstAmount() : 1);
         }
         // 连发计数器
         AtomicInteger firedCount = new AtomicInteger(0);

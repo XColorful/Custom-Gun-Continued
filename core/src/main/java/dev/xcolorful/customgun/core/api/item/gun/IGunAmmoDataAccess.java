@@ -17,8 +17,8 @@ public interface IGunAmmoDataAccess {
     /**
      * 子弹类型满足{@link #isMatchedAmmo}，并且可消耗
      */
-    default boolean isConsumableAmmo(ItemStack gunItem, ItemStack ammoItem) {
-        return this.consumableAmmoCount(gunItem, ammoItem) > 0;
+    default boolean hasMatchedAmmo(ItemStack gunItem, ItemStack ammoItem) {
+        return this.getMatchedAmmoCount(gunItem, ammoItem) > 0;
     }
     /**
      * 获取满足{@link #isMatchedAmmo}的子弹数量，不涉及{@link IAmmo#hasInfiniteFeed}扩容
@@ -26,8 +26,20 @@ public interface IGunAmmoDataAccess {
      * @param ammoItem 子弹
      * @return 该子弹中可用于枪械的数量
      */
-    int consumableAmmoCount(ItemStack gunItem, ItemStack ammoItem);
+    int getMatchedAmmoCount(ItemStack gunItem, ItemStack ammoItem);
 
+    /**
+     * {@link #consumeAmmoOnce}的只读getter
+     * <ul>
+     *     <li>当无限供应时返回{@link Integer#MAX_VALUE}</li>
+     *     <li>不检查{@link IShooterState#cgc$bypassGunFireConsumption()}，如果bypass应该直接不调用这个方法</li>
+     * </ul>
+     */
+    int getConsumableAmmoCount(@Nullable LivingEntity livingEntity, ItemStack gunItem, BoltType boltType);
+    /**
+     * {@link #getConsumableAmmoCount(LivingEntity, ItemStack, BoltType)}的便利方法
+     */
+    int getConsumableAmmoCount(@Nullable LivingEntity livingEntity, ItemStack gunItem);
     /**
      * 为一次射击消耗一次子弹
      * <ul>

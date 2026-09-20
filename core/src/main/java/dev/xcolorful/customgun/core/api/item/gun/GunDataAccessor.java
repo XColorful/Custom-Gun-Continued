@@ -253,7 +253,7 @@ public interface GunDataAccessor extends IGunDataAccess {
         return true;
     }
     @Override
-    default int consumableAmmoCount(ItemStack gunItem, ItemStack ammoItem) {
+    default int getMatchedAmmoCount(ItemStack gunItem, ItemStack ammoItem) {
         @Nullable IAmmo iAmmo = IAmmoGetter.fromItemStack(ammoItem);
         if (iAmmo == null) return 0;
 
@@ -264,6 +264,12 @@ public interface GunDataAccessor extends IGunDataAccess {
         return iAmmo.getAmmoCount(ammoItem);
     }
 
+    @Override
+    default int getConsumableAmmoCount(@Nullable LivingEntity livingEntity, ItemStack gunItem) {
+        @Nullable BoltType boltType = _getBoltType(this, gunItem);
+        if (boltType == null) return 0;
+        return this.getConsumableAmmoCount(livingEntity, gunItem, boltType);
+    }
     @Override
     default int consumeAmmoOnce(@Nullable LivingEntity livingEntity, ItemStack gunItem) {
         @Nullable BoltType boltType = _getBoltType(this, gunItem);
@@ -330,7 +336,7 @@ public interface GunDataAccessor extends IGunDataAccess {
         for (int i = 0; i < inventoryCapability.getContainerSize(); i++) {
             final ItemStack ammoItem = inventoryCapability.getItemReadOnly(i);
 
-            if (iGun.isConsumableAmmo(gunItem, ammoItem)) {
+            if (iGun.hasMatchedAmmo(gunItem, ammoItem)) {
                 return true;
             }
         }
@@ -347,7 +353,7 @@ public interface GunDataAccessor extends IGunDataAccess {
         int count = 0;
         for (int i = 0; i < inventoryCapability.getContainerSize(); i++) {
             final ItemStack ammoItem = inventoryCapability.getItemReadOnly(i);
-            count += iGun.consumableAmmoCount(gunItem, ammoItem);
+            count += iGun.getMatchedAmmoCount(gunItem, ammoItem);
         }
         return count;
     }

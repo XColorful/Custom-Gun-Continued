@@ -77,32 +77,9 @@ public class _DefaultGunAttack {
 
         BoltType boltType = gunData.getBoltType();
         { // 2. 检查消耗子弹
-            boolean hasAmmo; {
-                /**
-                 * 以 {@link IGun#consumeAmmoOnce} 为准
-                 */
-                if (iGun.useInventoryAmmo(gunItem)) {
-                    // 背包直读
-                    if (livingShooter == null) hasAmmo = false;
-                    else if (!iLivingShooter.cgc$needCheckAmmo()) {
-                        // 不需要检查子弹
-                        hasAmmo = true;
-                    } else if (iGun.useDummyAmmo(gunItem)) {
-                        // 虚拟备弹
-                        hasAmmo = iGun.getDummyAmmoCount(gunItem) > 0;
-                    } else {
-                        // 背包物品
-                        hasAmmo = iGun.hasInventoryAmmo(livingShooter, gunItem);
-                    }
-                } else if (boltType.useBarrelAmmo()) {
-                    // 枪管供弹
-                    hasAmmo = iGun.hasBarrelAmmo(gunItem);
-                } else {
-                    // 弹匣供弹
-                    hasAmmo = iGun.getMagAmmoCount(gunItem) > 0;
-                }
+            if (iGun.getConsumableAmmoCount(livingShooter, gunItem, boltType) <= 0) {
+                return IGunAttackRuntime.ShooterFireResult.NO_AMMO;
             }
-            if (!hasAmmo) return IGunAttackRuntime.ShooterFireResult.NO_AMMO;
         }
 
         { // 3. 检查拉栓

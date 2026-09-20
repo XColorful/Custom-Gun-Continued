@@ -8,8 +8,14 @@
 package dev.xcolorful.customgun.client.particle;
 
 import dev.xcolorful.customgun.CustomGun;
+import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
 import dev.xcolorful.customgun.client.config.RenderConfig;
+import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
+import dev.xcolorful.customgun.client.resource.instance.data.ClientAmmoIndexInstance;
 import dev.xcolorful.customgun.client.util.ClientRenderUtils;
+import dev.xcolorful.customgun.core.api.block.IBulletVictimBlock;
+import dev.xcolorful.customgun.core.api.block.victim.IBulletVictimBlockGetter;
+import dev.xcolorful.customgun.core.api.minecraft.IMcRegistry;
 import dev.xcolorful.customgun.core.developer.PlannedRefactor;
 import dev.xcolorful.customgun.core.particle.BulletHoleOption;
 import net.minecraft.client.Camera;
@@ -30,9 +36,12 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 
 import static net.minecraft.world.level.block.Blocks.AIR;
+
+import java.awt.*;
 
 /**
  * Author: Forked from MrCrayfish, continued by Timeless devs
@@ -59,6 +68,17 @@ public class BulletHoleParticle extends SingleQuadParticle {
         this.hasPhysics = false;
         this.gravity = 0.0f;
         this.quadSize = PlannedRefactor.PARTICLE_SIZE;
+
+        if (this.shouldRemove()) this.remove();
+
+        // 曳光弹颜色
+        @Nullable Color tracerColor = this.calculateTracerColor();
+        if (tracerColor != null) {
+            this.rCol = tracerColor.getRed() / 255f;
+            this.gCol = tracerColor.getGreen() / 255f;
+            this.bCol = tracerColor.getBlue() / 255f;
+        }
+        this.alpha = 0.9f;
     }
     public ParticleRenderType getRenderType() {
         return ParticleRenderType.SINGLE_QUADS;
@@ -72,6 +92,11 @@ public class BulletHoleParticle extends SingleQuadParticle {
     private boolean shouldRemove() {
         final BlockState blockState = this.level.getBlockState(this.posCache);
         if (blockState.isAir()) return true;
+
+        @Nullable IBulletVictimBlock iBulletVictimBlock = IBulletVictimBlockGetter.fromBlock(blockState.getBlock());
+        if (iBulletVictimBlock != null && !iBulletVictimBlock.cgc$hasProjectileHitVisual()) {
+            return true;
+        }
 
         // 阻止弹孔在与方块不构成有效附着时继续渲染
         VoxelShape shape = blockState.getCollisionShape(this.level, this.posCache);
@@ -161,6 +186,31 @@ public class BulletHoleParticle extends SingleQuadParticle {
         int lifeTicks = RenderConfig.BULLET_HOLE_PARTICLE_LIFE.get();
         if (lifeTicks <= 1) return lifeTicks;
         else return lifeTicks + level.getRandom().nextInt(lifeTicks / 2);
+    }
+
+    private @Nullable Color calculateTracerColor() {
+        IMcRegistry mcRegistry = CustomGun.getMcRegistry();
+        @Nullable var gunDisplayLocation = mcRegistry.createResourceLocation(this.bulletHoleOption.gunDisplayLocation());
+        @Nullable var gunLocation = mcRegistry.createResourceLocation(this.bulletHoleOption.gunLocation());
+
+        @Nullable Color color = null; {
+            @Nullable GunDisplayInstance gunDisplayInstance = ClientResourceApi.getGunDisplayInstance(gunDisplayLocation, gunLocation);
+            // 优先枪械 display 的曳光弹颜色
+            if (gunDisplayInstance != null) {
+                color = gunDisplayInstance.getTracerColor();
+            }
+
+            // 其次用子弹的曳光弹颜色
+            if (color == null) {
+                @Nullable var ammoLocation = mcRegistry.createResourceLocation(this.bulletHoleOption.ammoLocation());
+                @Nullable ClientAmmoIndexInstance ammoIndexInstance = ClientResourceApi.getClientAmmoIndexInstance(ammoLocation);
+                if (ammoIndexInstance != null) {
+                    color = ammoIndexInstance.getAmmoDisplay().getTracerColor();
+                }
+            }
+        }
+
+        return color;
     }
 
     // --------Getter--------

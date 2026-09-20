@@ -69,7 +69,7 @@ public class BulletHoleParticle extends SingleQuadParticle {
      * 沿命中面法线外推的距离，避免弹孔与方块面重合导致 z-fight
      */
     private static final float SURFACE_OFFSET = 0.005f;
-//    private final Vec3 surfaceOffset;
+    private final Vec3 surfaceOffset;
 
     public BulletHoleParticle(ClientLevel level, double x, double y, double z,
                               BulletHoleOption bulletHoleOption) {
@@ -78,10 +78,10 @@ public class BulletHoleParticle extends SingleQuadParticle {
         this.rotationCache = new Quaternionf(
                 this.bulletHoleOption.direction()
                         .getRotation()
-//                        .mul(QUAD_NORMAL_FIX) // [1.21.10, )
+                        .mul(QUAD_NORMAL_FIX) // [1.21.10, )
         );
         this.posCache = this.bulletHoleOption.pos();
-//        this.surfaceOffset = this.bulletHoleOption.direction().getUnitVec3().scale(SURFACE_OFFSET); // [1.21.10, )
+        this.surfaceOffset = this.bulletHoleOption.direction().getUnitVec3().scale(SURFACE_OFFSET); // [1.21.10, )
 
         this.setSprite(this.calculateSprite(this.posCache));
         this.lifetime = this.calculateLifetime(level);
@@ -133,12 +133,10 @@ public class BulletHoleParticle extends SingleQuadParticle {
 
     @Override
     public void extract(QuadParticleRenderState particleTypeRenderState, Camera camera, float partialTicks) {
-        Vec3 view = camera.position();
-        float particleX = (float) (Mth.lerp(partialTicks, this.xo, this.x) - view.x());
-        float particleY = (float) (Mth.lerp(partialTicks, this.yo, this.y) - view.y());
-        float particleZ = (float) (Mth.lerp(partialTicks, this.zo, this.z) - view.z());
-        // Y 值稍微大一点点，防止 z-fight
-        particleY += 0.005F;
+        Vec3 view = camera.getPosition();
+        float particleX = (float) (Mth.lerp(partialTicks, this.xo, this.x) - view.x() + this.surfaceOffset.x);
+        float particleY = (float) (Mth.lerp(partialTicks, this.yo, this.y) - view.y() + this.surfaceOffset.y);
+        float particleZ = (float) (Mth.lerp(partialTicks, this.zo, this.z) - view.z() + this.surfaceOffset.z);
 
         // 结合缓存的面朝向与可能的自旋(roll)计算最终旋转矩阵
         Quaternionf quaternionf = new Quaternionf(this.rotationCache);

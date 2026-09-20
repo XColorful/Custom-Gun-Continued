@@ -451,3 +451,162 @@ cd D:/Github/Custom-Gun-Continued-1.21.1forge && ./gradlew :core:compileJava :fo
 - **游戏内没验证**：这次动的正是玩家被炸的击退与摔落伤害归因——建议实测"玩家被 RPG7 近距离炸飞"，确认位移同步正常、落地不吃额外摔落伤害；方块破坏/掉落/火焰那几个新抄的原版路径也一并看下。
 - 未提交，等你 review。1.21.4 的改动 `90+/25-`，1.21.1forge 是 `+2`。
 - 我把"爆炸 API 跨版本事实"和"JDK 21 工具链写法"记进 memory 了，后面的版本（1.21.6 / 26.x）移植可以直接查。
+
+# 
+
+```
+1.21.6没问题
+1.21.11有问题
+1.21.10单独编译文件看有没有问题，环境下的有点慢
+```
+
+# 
+
+收到。先确认这几个 worktree 在磁盘上的位置和状态。
+
+Both worktrees already carry a 1.21.4-style port (same file size, clean tree), and 1.21.11 has 4 distinct errors. Let me see if 1.21.10 is identical and locate its vanilla sources.
+
+1.21.10 and 1.21.11 files are byte-identical to my 1.21.4 version — the port was copied without adapting. Let me find the actual API deltas in each version.
+
+Key delta found: in 1.21.11 `Util` moved to `net.minecraft.util.Util`. Let me read the packet + `ServerExplosion` in both versions.
+
+IDEA's "no errors" for 1.21.10 is stale — the identical file can't compile there either, since 1.21.10's packet is also a 7-field record and `explode()` returns `int` in both. Let me read the real bodies.
+
+`explode()` returns the destroyed-block count in both. Let me see how vanilla builds the packet's `blockParticles`/`blockCount`.
+
+Now let me diff 1.21.4's `ServerExplosion`/packet against 1.21.11's to catch every delta, not just the ones IDEA flagged.
+
+Now let me read 1.21.11's `hurtEntities` in full to place the new pieces correctly.
+
+1.21.10 lacks the radius guard (1.21.11 added it) but both have the packet change, `int explode()`, and the projectile-redirect. Let me sanity-check the user's "1.21.6 没问题" against the actual 1.21.6 API, since IDEA gave a false clean result for 1.21.10.
+
+1.21.6 is genuinely fine (4-field packet, `void explode()`, `net.minecraft.Util`) — the user's read was right there. Now let me locate the exact edit points in the 1.21.10/1.21.11 copies.
+
+Making the edits now. First reading both files' current state.
+
+1.21.11 done. Now the same for 1.21.10 — minus the `Util` move and the radius guard (neither exists in 1.21.10).
+
+Edits applied to both. Now the real compile the user asked for — 1.21.10 first, timed.
+
+25s incremental — no need for a hand-rolled single-file compile. Now 1.21.11 plus both compat modules.
+
+The combined run exceeded 10 minutes and moved to the background — so the compat modules are the slow part (the 25s core compile was fine). Let me check interim progress and the IDE view while it runs.
+
+1.21.11 core+compat: **BUILD SUCCESSFUL** (8m18s — the compat module is the slow one). 1.21.10's compat is still running; I'll get notified. Meanwhile let me review the diffs.
+
+Both files now differ by exactly the two version deltas (Util package + radius guard). Let me extend the memory with what I learned about 1.21.6/1.21.10/1.21.11 while the last compile runs.
+
+1.21.11 修好了，1.21.10 也做了同样改动（少两处），并已用真编译验证。
+
+## 1.21.6：你是对的，确实没问题
+
+我对着 1.21.6 的反编译源逐项核过：packet 仍是 4 字段 record、`ServerExplosion.explode()` 仍是 `void`、`Util` 仍在 `net.minecraft.Util` → 1.21.4 的移植原样可用。
+
+## 1.21.11 的报错都是原版 API 变了（不是移植逻辑问题）
+
+| 报错 | 原因 | 改法 |
+|---|---|---|
+| `Cannot resolve symbol 'Util'` | 1.21.11 把 `net.minecraft.Util` 搬到了 **`net.minecraft.util.Util`** | 改 import |
+| packet「Expected 7 arguments but found 4」 | **1.21.10 起**发包又回到 7 字段：`(center, radius, blockCount, knockback, particle, sound, blockParticles)` | 补 3 个参数 |
+| `explode()` 返回值类型冲突 | **1.21.10 起** `ServerExplosion.explode()` 由 `void` 改成 **`int`**——返回"被炸方块数"，正是发包要的 `blockCount` | 签名改 `int` + `return toBlow.size()` |
+| （连带）`blockParticles` 从哪来 | 原版默认表 `Level.DEFAULT_EXPLOSION_BLOCK_PARTICLES` 是 **private** | 类内照抄一份（`POOF 0.5/1.0` + `SMOKE 1.0/1.0`，与原版逐字一致） |
+
+**1.21.10 与 1.21.11 的差别只有两处**：`Util` 的包没搬、没有半径守卫。两文件现在 diff 出来正好只有这一点，正是原版的差异。
+
+## 按"原版新增就用原版"补的两处
+
+- **被波及的可转向弹射物改认爆炸源为发射者**（1.21.10 起）：`if (entity.getType().is(EntityTypeTags.REDIRECTABLE_PROJECTILE) && entity instanceof Projectile p) p.setOwner(getDamageSource().getEntity());`
+- **半径趋近 0 的守卫**（仅 1.21.11 起，原版 `if (!(radius < 1.0E-5F))` 包住整个 `hurtEntities`）：我们用 `List.of()` 等价实现，**这会改变 `explodeScale=0` 的行为**——原移植下半径 0 会对贴脸生物造成满伤（TaCZ 公式 `minDistance*2/radius` 在半径 0 时等于 0 强度），加上守卫后改为完全不出实体伤害。这是原版行为，但确实是个行为变化，你要是不想要说一声。
+
+**没跟着搬的**：1.21.5+ 把方向向量与倍率整段重写（`getEyePosition().subtract(center).normalize()` + `× getSeenPercent × getKnockbackMultiplier`）。理由同之前：那是 TaCZ 用 15 角点延迟补偿视线替换掉的**伤害算法**部分，搬过来会把 TaCZ 的视线补偿逻辑弄丢。只搬了新增**机制**。
+
+## 验证
+
+| 分支 | 方式 | 结果 |
+|---|---|---|
+| 1.21.10 | `:core:compileJava` | **BUILD SUCCESSFUL in 25s** |
+| 1.21.10 `neoforge-compat` | 还在后台跑 | 完了我再报你 |
+| 1.21.11 | `:core:compileJava :neoforge-compat:compileJava` | **BUILD SUCCESSFUL in 8m 18s** |
+| 1.21.6 | 对照反编译源核对（未编译） | 与 1.21.4 一致，原样可用 |
+
+关于你说的"单独编译文件"——**不需要手工拉 classpath 跑 javac**：`:core:compileJava` 是增量的，25 秒就跑完；慢的是 compat 模块（1.21.11 那份花了 **8 分 18 秒**）。所以验证一个 core 文件只跑 `:core:compileJava` 就够，别带 compat。
+
+```bash
+cd D:/Github/Custom-Gun-Continued-1.21.10neoforge && ./gradlew :core:compileJava -Dorg.gradle.java.home="E:/Software/Minecraft/JDK/jdk-21.0.8"
+```
+
+## 一个要提醒你的坑
+
+**IDEA 的单文件分析给过假 clean**。1.21.10 那份 `_TempExplode.java` 明明用了 4 参数的 `ClientboundExplodePacket`（当地是 7 参数 record）、`explode()` 返回值也不兼容，`get_file_problems` 却返回 `errors: []`；而 1.21.11 上同一份文件它准准报出全部错误。差别是那个 worktree 的索引新不新鲜。**所以判定"没问题"要走 `:core:compileJava`**，别只看 IDE——你这轮说"1.21.6没问题"恰好是对的，但用同样方法看 1.21.10 就会漏掉。
+
+两处改动（1.21.11 `28+/6-`、1.21.10 `23+/4-`）都在各自的 worktree 里，未提交，等你 review；游戏内仍未验证（重点看爆炸粒子和方块破坏表现，因为这次动了发包内容）。
+
+# 
+
+```
+我之后会手动把1.21.10的修改cherry pick到1.21.11，两个版本相同的修改需要保持一致，仅1.21.11新增的修改允许在1.21.11加上，不然我cherry pick要解决冲突
+```
+
+# 
+
+明白了——共用改动必须逐字一致，只有该版本独有的改动才单独加，否则 cherry-pick 会冲突。让我用 `git merge-file` 精确模拟一次 cherry-pick（以 1.21.11 的 HEAD 为 base、我改完的两个文件为两侧），看会不会撞。
+
+实测 cherry-pick 会撞 3 处。让我看清每一处冲突到底是什么再决定怎么改。
+
+冲突 1、2 的根因清楚了（`Util` 搬包那行紧挨着共用改动插入的 import，被 git 并进同一区域）。冲突 3 按理不该冲突（1.21.10 侧那行没动），让我看两侧真实的 hunk 结构。
+
+`diff -u` 报了**整个文件一个大 hunk**——这通常是行尾不一致的信号。让我先确认行尾，再把三方统一成同一种行尾重新模拟（否则我的模拟结论本身是错的）。
+
+行尾是罪魁祸首——统一成 LF 后重测，**真实冲突只有 1 处**（不是我刚才说的 3 处，那是 CRLF/LF 混用造成的假象），就在 import 区。让我测两种修法哪种能让 cherry-pick 完全干净。
+
+两种都报 0 冲突，但我要确认"0 冲突"不是把错误的一侧静默吃掉了（尤其 shuffle 那行）。
+
+先纠正我自己上一条的错误结论：**那不是 3 处冲突，是我的模拟把 LF 的 base 和 CRLF 的工作文件混在一起了**。统一行尾后重测，真实情况是——
+
+**cherry-pick 会撞 1 处**，就在 import 区，根因是 1.21.11 独有的 `Util` 搬包：
+
+- 1.21.10 里 `import net.minecraft.Util;` 排在 `net.minecraft.core.BlockPos;` 上一行；共用改动要在 `BlockPos` 后面插入 `ExplosionParticleInfo`
+- 1.21.11 把这行删掉、并按排序挪到 `Mth` 之后——而共用改动又要在 `Mth` 后面插入 `WeightedList`
+
+两个"插入点"都紧贴被删的那行，git 把整段并成一个改动区域 → 冲突。（半径守卫那处反而是干净的，只有我们这一侧改了，能自动合。）
+
+我实测了两种放法，都能让 cherry-pick **0 冲突**且合并结果完全正确，代价是样式取舍不同：
+
+收到——你已经 cherry-pick 好了，我只把冲突改完、不提交。
+
+先看清当前状态（文件里现在有 `git stash apply` 留下的冲突标记）。
+
+状态清楚了：1.21.11 的 HEAD 已是 cherry-pick 进来的 `Port #58 to 1.21.10`，工作区是 `UU`（未合并），冲突只有 import 那一处，半径守卫已经带过来了——和我模拟的完全一致。我来解掉它。
+
+冲突只有那一处，栈里也没有残留 stash。解掉它——保留 import（放在排序正确的位置），这样两个版本的差异就只剩你允许的那两处。
+
+冲突解干净了，编译也过了。现在把它标记为已解决（只 `add` 不提交）。
+
+冲突解完了，没提交。
+
+## 做了什么
+
+1.21.11 文件里唯一的冲突（`git stash apply` 留下的 `UU`）就在 import 区，正是我上一条预测的那处。解法：**保留 `import net.minecraft.util.Util;`，放在排序正确的位置**（`Mth` 之后、`random.WeightedList` 之前）——也就是你 stash 里那份的写法，import 顺序不受影响。
+
+现在两个版本的差异**正好是你允许的两处**：
+
+```
+20d19   < import net.minecraft.Util;              ← 1.21.10 有、1.21.11 没有
+30a30   > import net.minecraft.util.Util;         ← 1.21.11 独有的搬包
+272c272 > // 半径守卫 + List.of() 三元           ← 1.21.11 独有的守卫
+```
+
+验证：残留标记 0 处；`:core:compileJava` **BUILD SUCCESSFUL in 13s**。
+
+状态：文件已 `git add` 标记为解决，`git status` 从 `UU` 变成 `M `（暂存 5 insertions/2 deletions），**没有提交**——剩下你自己 review 和提交。如果你不想让我动 index，`git restore --staged <file>` 就退回去。
+
+## 两点顺带确认
+
+- **1.21.10 worktree 是干净的**：我的改动已在你的提交 `595bdeada Port #58 to 1.21.10` 里，工作区无残留。
+- **stash 栈是空的**，没有留下需要清理的条目。
+
+## 关于我上次问的那个选择题
+
+既然 cherry-pick 已经做完、冲突也解了，我就按"保持 import 排序"来解（这也是你 stash 里的写法）。如果你更想要全限定名那种写法——它的价值是让**下一个版本对**的 cherry-pick 不再撞同一处——说一声我改。
+
+我把这条规矩记进 memory 了：**共用改动必须逐字一致，版本独有的改动（尤其搬 import）不要落在共用改动的同一 hunk 区**，并附了 `git merge-file` 预演冲突的方法（顺带记下那个行尾坑：`git show` 出 LF、工作区是 CRLF，混用会假报成片冲突——我上次误报"3 处冲突"就是踩了这个）。

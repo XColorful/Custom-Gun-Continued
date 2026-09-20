@@ -148,18 +148,23 @@ public class _DefaultGunAction {
                 currentMagAmmoCount >= magAmmoLimit
                 // 背包直读不需要换弹
                 || iGun.useInventoryAmmo(gunItem)
-                // 虚拟备弹作为优先指定的备弹源，如果没有则默认不使用其他备弹
-                || iGun.useDummyAmmo(gunItem) && iGun.getDummyAmmoCount(gunItem) <= 0
         ) return false;
 
-        // 检查背包内子弹库存
-        @Nullable IInventoryCapability inventoryCapability = CustomGun.getCapabilityProvider().getItemHandler(livingShooter, null);
-        if (inventoryCapability == null) return false;
-        for (int i = 0; i < inventoryCapability.getContainerSize(); i++) {
-            final ItemStack ammoItem = inventoryCapability.getItemReadOnly(i);
+        if (iGun.useDummyAmmo(gunItem)) {
+            // 虚拟备弹作为优先指定的备弹源
+            return iGun.getDummyAmmoCount(gunItem) > 0;
+        } else {
+            // 背包直读 / 从背包读取
 
-            if (iGun.hasMatchedAmmo(gunItem, ammoItem)) {
-                return true;
+            // 背包物品
+            @Nullable IInventoryCapability inventoryCapability = CustomGun.getCapabilityProvider().getItemHandler(livingShooter, null);
+            if (inventoryCapability == null) return false;
+            for (int i = 0; i < inventoryCapability.getContainerSize(); i++) {
+                final ItemStack ammoItem = inventoryCapability.getItemReadOnly(i);
+
+                if (iGun.hasMatchedAmmo(gunItem, ammoItem)) {
+                    return true;
+                }
             }
         }
 

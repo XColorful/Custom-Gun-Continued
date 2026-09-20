@@ -17,7 +17,6 @@ import dev.xcolorful.customgun.core.init.registry.ModBlocks;
 import dev.xcolorful.customgun.core.resource.data.data.gun.bullet._ExplosionData;
 import dev.xcolorful.customgun.core.util.EntityUtils;
 import dev.xcolorful.customgun.core.util.RayTraceUtils;
-import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ExplosionParticleInfo;
 import net.minecraft.core.particles.ParticleOptions;
@@ -28,6 +27,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.util.Mth;
+import net.minecraft.util.Util;
 import net.minecraft.util.random.WeightedList;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -269,7 +269,10 @@ public class _TempExplode {
             int minZ = Mth.floor(this.z - (double) radius - 1.0D);
             int maxZ = Mth.floor(this.z + (double) radius + 1.0D);
             radius *= 2;
-            List<Entity> entities = this.level.getEntities(this.exploder, new AABB(minX, minY, minZ, maxX, maxY, maxZ));
+            // 1.21.11 起原版对半径趋近 0 的爆炸跳过实体伤害与击退（原版与本移植都以 radius 作除数）
+            List<Entity> entities = this.radius < 1.0E-5F
+                    ? List.of()
+                    : this.level.getEntities(this.exploder, new AABB(minX, minY, minZ, maxX, maxY, maxZ));
             Vec3 explosionPos = new Vec3(this.x, this.y, this.z);
 
             for (Entity entity : entities) {

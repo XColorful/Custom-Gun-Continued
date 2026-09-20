@@ -1,19 +1,16 @@
 package dev.xcolorful.customgun.client.gui.overlay.gunhud;
 
-import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
 import dev.xcolorful.customgun.client.gui.tooltip.gun.GunStateInfoPart;
 import dev.xcolorful.customgun.client.resource.assets.display.GunDisplay;
 import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
-import dev.xcolorful.customgun.core.api.item.IAmmo;
+import dev.xcolorful.customgun.core.api.entity.ILivingShooter;
 import dev.xcolorful.customgun.core.api.item.IGun;
-import dev.xcolorful.customgun.core.api.item.ammo.IAmmoGetter;
 import dev.xcolorful.customgun.core.api.item.gun.AmmoCountType;
 import dev.xcolorful.customgun.core.api.item.gun.BoltType;
 import dev.xcolorful.customgun.core.api.item.gun.FireModeType;
-import dev.xcolorful.customgun.core.api.minecraft.capability.IInventoryCapability;
 import dev.xcolorful.customgun.core.api.resource.ResourceApi;
-import dev.xcolorful.customgun.core.gun.inventory._DefaultGunInventory;
+import dev.xcolorful.customgun.core.gun.action._DefaultGunAction;
 import dev.xcolorful.customgun.core.resource.data.data.GunData;
 import dev.xcolorful.customgun.core.resource.instance.data.GunIndexInstance;
 import dev.xcolorful.customgun.core.util.ComponentUtils;
@@ -21,6 +18,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -47,8 +45,24 @@ public class _GunHudBuilder {
         // 弹匣大小
         int magAmmoLimit = iGun.getMagAmmoLimit(gunItem);
 
-        // 背包备弹
-        int inventoryAmmoCount = _findInventoryAmmo(localPlayer, iGun, gunItem);
+        // 备弹数量
+        int reserveAmmoCount;
+        ChatFormatting reserveAmmoColor;
+        boolean forceShowReserveAmmo = false;
+        if (iGun.useDummyAmmo(gunItem)) {
+            /**
+             * 跟{@link _DefaultGunAction#consumeFeedFromPlayer}对齐
+             */
+            // 虚拟备弹作为优先指定的备弹源
+            reserveAmmoCount = iGun.getDummyAmmoCount(gunItem);
+            reserveAmmoColor = ChatFormatting.DARK_AQUA;
+            forceShowReserveAmmo = true; // 虚拟备弹强制显示备弹
+        } else {
+            // 背包直读 / 从背包读取
+            reserveAmmoCount = iGun.getInventoryAmmoCount(localPlayer, gunItem);
+            reserveAmmoColor = ChatFormatting.GRAY;
+            if (iGun.useInventoryAmmo(gunItem)) forceShowReserveAmmo = true; // 背包直读强制显示备弹
+        }
 
         @Nullable GunDisplayInstance gunDisplayInstance = ClientResourceApi.getGunDisplayInstance(gunItem);
         AmmoCountType ammoCountType; {
@@ -60,34 +74,16 @@ public class _GunHudBuilder {
             }
         }
 
-        Component baseMessage = _buildBaseMessage(ammoCountType, currentAmmoCount, magAmmoLimit, inventoryAmmoCount);
+        Component baseMessage = _buildBaseMessage(ammoCountType, currentAmmoCount, magAmmoLimit, reserveAmmoCount, reserveAmmoColor, forceShowReserveAmmo);
 
         // 开火模式
         FireModeType fireModeType = iGun.getFireModeType(gunItem);
         return _buildMessage(baseMessage, fireModeType);
     }
 
-    /**
-     * 同 {@link _DefaultGunInventory#findAndExtractInventoryAmmo}
-     */
-    private static int _findInventoryAmmo(@NotNull LocalPlayer localPlayer,
-                                          @NotNull IGun iGun, ItemStack gunItem) {
-        @Nullable IInventoryCapability inventoryCapability = CustomGun.getCapabilityProvider().getItemHandler(localPlayer, null);
-        if (inventoryCapability == null) return 0;
-
-        int found = 0;
-        for (int i = 0; i < inventoryCapability.getContainerSize(); i++) {
-            final ItemStack slotItemReadOnly = inventoryCapability.getItemReadOnly(i);
-            @Nullable IAmmo iAmmo = IAmmoGetter.fromItemStack(slotItemReadOnly);
-            if (iAmmo == null || !iGun.isMatchedAmmo(gunItem, slotItemReadOnly)) continue;
-
-            found += iAmmo.getAmmoCount(slotItemReadOnly);
-        }
-        return found;
-    }
-
     private static @NotNull Component _buildBaseMessage(AmmoCountType ammoCountType,
-                                                        int currentAmmoCount, int magAmmoLimit, int inventoryAmmoCount) {
+                                                        int currentAmmoCount, int magAmmoLimit, int reserveAmmoCount,
+                                                        ChatFormatting reserveAmmoColor, boolean forceShowReserveAmmo) {
         MutableComponent message;
         return switch (ammoCountType) {
             case NORMAL -> {
@@ -101,11 +97,11 @@ public class _GunHudBuilder {
                         .withStyle(currentAmmoCount > 0 ? (currentAmmoCount >= magAmmoLimit ? ChatFormatting.AQUA : ChatFormatting.WHITE)
                                 : ChatFormatting.RED);
                 // 备弹
-                if (inventoryAmmoCount > 0) {
+                if (reserveAmmoCount > 0 || forceShowReserveAmmo) {
                     message.append(Component.literal(" ")
                             )
-                            .append(Component.literal(String.valueOf(inventoryAmmoCount))
-                                    .withStyle(ChatFormatting.GRAY)
+                            .append(Component.literal(String.valueOf(reserveAmmoCount))
+                                    .withStyle(reserveAmmoColor)
                             );
                 }
 
@@ -121,10 +117,10 @@ public class _GunHudBuilder {
                 // 当前子弹
                 message = Component.literal(String.format("%.1f%%", 100f * currentAmmoCount / magAmmoLimit));
                 // 备弹
-                if (inventoryAmmoCount > 0) {
+                if (reserveAmmoCount > 0) {
                     message.append(Component.literal(" ")
                             )
-                            .append(Component.literal(String.format("%.1f%%", 100f * inventoryAmmoCount / magAmmoLimit))
+                            .append(Component.literal(String.format("%.1f%%", 100f * reserveAmmoCount / magAmmoLimit))
                                     .withStyle(ChatFormatting.GRAY)
                             );
                 }

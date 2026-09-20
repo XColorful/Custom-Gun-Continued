@@ -12,15 +12,15 @@ public final class LivingShooterAmmoCheck extends LivingShooterAspect {
         super(livingShooter, shooterProperty);
     }
 
-    public boolean needCheckAmmo() {
+    public boolean hasInfiniteAmmoFeed() {
         if (PlannedRefactor.ON_CREATIVE_NO_AMMO_CHECK) return false;
-        return !(this.livingShooter instanceof Player player) || !player.isCreative();
+        // 创造模式玩家有无限弹药供应
+        return (this.livingShooter instanceof Player player) && player.isCreative();
     }
 
-    public boolean consumesAmmoOrNot() {
-        if (this.livingShooter instanceof Player player) {
-            return !player.isCreative() || GunConfig.CREATIVE_PLAYER_CONSUME_AMMO.get();
-        }
-        return true;
+    public boolean bypassGunFireConsumption() {
+        // 默认仅创造模式玩家
+        return this.livingShooter instanceof Player player && player.isCreative()
+                && GunConfig.BYPASS_GUN_FIRE_CONSUMPTION.get();
     }
 }

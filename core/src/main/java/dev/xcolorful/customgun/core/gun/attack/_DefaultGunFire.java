@@ -202,9 +202,13 @@ public class _DefaultGunFire {
 
         BoltType boltType = gunData.getBoltType();
         { // 2. 消耗子弹
-            int consumedAmmo = iGun.consumeAmmoOnce(livingShooter, gunItem, boltType);
-            if (consumedAmmo <= 0) {
-                return IGunAttackRuntime.GunFireResult.AMMO_CONSUME_FAILED;
+            if (iLivingShooter.cgc$bypassGunFireConsumption()) {
+                // 不消耗子弹
+            } else {
+                int consumedAmmo = iGun.consumeAmmoOnce(livingShooter, gunItem, boltType);
+                if (consumedAmmo <= 0) {
+                    return IGunAttackRuntime.GunFireResult.AMMO_CONSUME_FAILED;
+                }
             }
         }
 

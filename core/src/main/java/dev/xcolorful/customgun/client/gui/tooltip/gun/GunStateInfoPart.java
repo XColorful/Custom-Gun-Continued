@@ -16,6 +16,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
@@ -46,7 +47,7 @@ public final class GunStateInfoPart extends AbstractTooltipPart implements GunTo
         /**
          * TaCZ到处都在重新拉一大坨枪的逻辑，是其根深蒂固的问题
          * 这里只显示枪的子弹
-         * 如果要硬核，唯一标准应为{@link IGun#consumeAmmoOnce}，即以枪的逻辑为标准
+         * 如果要硬核，唯一标准应为{@link IGun#consumeAmmoOnce(LivingEntity, ItemStack, BoltType)}，即以枪的逻辑为标准
          * 目前还有调用 {@link _GunHudBuilder#getMessage}
          */
         if (PlannedRefactor.UNIFY_GUN_API) {}

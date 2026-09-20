@@ -1,6 +1,5 @@
 package dev.xcolorful.customgun.core.api.script.context;
 
-import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.core.api.entity.ILivingShooter;
 import dev.xcolorful.customgun.core.api.entity.ShooterProperty;
 import dev.xcolorful.customgun.core.api.entity.shooter.modifier.ShooterGunModifierCache;
@@ -12,7 +11,6 @@ import dev.xcolorful.customgun.core.api.item.attachment.modifier.AttachmentModif
 import dev.xcolorful.customgun.core.api.item.attachment.modifier.IAttachmentModifier;
 import dev.xcolorful.customgun.core.api.item.gun.BoltType;
 import dev.xcolorful.customgun.core.api.item.gun.FireModeType;
-import dev.xcolorful.customgun.core.api.minecraft.capability.IInventoryCapability;
 import dev.xcolorful.customgun.core.api.resource.ResourceApi;
 import dev.xcolorful.customgun.core.api.resource.ResourceTag;
 import dev.xcolorful.customgun.core.entity.shooter.LivingShooterAspect;
@@ -262,7 +260,7 @@ public interface IGunScriptBackCompat extends IGunScriptContextAccess {
      */
     default boolean isShootingNeedConsumeAmmo() {
         @Nullable ILivingShooter iLivingShooter = this.getILivingShooter();
-        return iLivingShooter == null || iLivingShooter.cgc$consumesAmmoOrNot();
+        return iLivingShooter == null || !iLivingShooter.cgc$hasInfiniteAmmoFeed();
     }
 
     /**
@@ -270,7 +268,7 @@ public interface IGunScriptBackCompat extends IGunScriptContextAccess {
      */
     default boolean isReloadingNeedConsumeAmmo() {
         @Nullable ILivingShooter iLivingShooter = this.getILivingShooter();
-        return iLivingShooter == null || iLivingShooter.cgc$needCheckAmmo();
+        return iLivingShooter == null || !iLivingShooter.cgc$hasInfiniteAmmoFeed();
     }
 
     /**
@@ -326,25 +324,26 @@ public interface IGunScriptBackCompat extends IGunScriptContextAccess {
         ItemStack gunItem = this.getGunItem();
         @Nullable ILivingShooter iLivingShooter = this.getILivingShooter();
         @Nullable LivingEntity livingShooter = this.getLivingShooter();
-        return _DefaultGunAction.consumeAmmoFromPlayer(iGun, gunItem, iLivingShooter, livingShooter, neededAmount);
+        return _DefaultGunAction.consumeFeedFromPlayer(iGun, gunItem, iLivingShooter, livingShooter, neededAmount);
     }
 
     /**
-     * 检查玩家身上（或者虚拟备弹）是否有弹药可以消耗，通常用于循环换弹的打断。
+     * 检查虚拟备弹或玩家背包是否有弹药可以消耗，通常用于循环换弹的打断。
      * 创造模式的玩家会直接返回 true
-     * @return 玩家身上（或者虚拟备弹）是否有弹药可以消耗
+     * 这个旧API不是用来检测弹匣的
+     * @return 玩家虚拟备弹或玩家背包是否有弹药可以消耗
      */
     default boolean hasAmmoToConsume() {
         if (!this.isReloadingNeedConsumeAmmo()) return true;
         IGun iGun = this.getIGun();
         ItemStack gunItem = this.getGunItem();
+        // 虚拟备弹作为优先指定的备弹源
         if (iGun.useDummyAmmo(gunItem)) return iGun.getDummyAmmoCount(gunItem) > 0;
         else {
+            // 从背包读取
             @Nullable LivingEntity livingShooter = this.getLivingShooter();
             if (livingShooter == null) return false;
-            @Nullable IInventoryCapability inventoryCapability = CustomGun.getCapabilityProvider().getItemHandler(livingShooter, null);
-            // TODO 仅查询子弹的IGun runtime api
-            return false;
+            return iGun.hasInventoryAmmo(livingShooter, gunItem);
         }
     }
 

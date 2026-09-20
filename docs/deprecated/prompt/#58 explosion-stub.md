@@ -278,3 +278,176 @@ IDEA 对 `_TempExplode.java` 报 0 error。
 如果你中断编译是因为它太重/在抢资源，或者你本来就想先手动看看这个 worktree 的历史（那个 `Port #58 to 1.20.4` 提交出现在 1.21.1forge 上、却不在 1.20.4 worktree 上，我按"不覆盖别人工作"处理了，没有动它），告诉我，我按你的意思来。
 
 未提交，等你 review。
+
+# 
+
+```
+继续1.21.4
+```
+
+# 
+
+Continuing with 1.21.4neoforge. Let me check its state first.
+
+1.21.4 is past the 1.21.2 explosion refactor — `Explosion` is now an interface there. Let me read the real API and check for existing project usage.
+
+Found the decompiled 1.21.4 sources. Let me read the new `Explosion` API.
+
+Now let me extract the 1.21.4 sources to trace who sends the explode packet and what the interface methods are used for.
+
+Key finding: in 1.21.4 `Explosion` is an interface and `ClientboundExplodePacket` is a 4-field record (no block list). Let me read how `ServerLevel.explode` drives it.
+
+Now let me confirm the remaining 1.21.4 API details I'd need.
+
+Now let me read the current state of the 1.21.4 file so I can plan the restructuring precisely.
+
+Now let me verify the exact 1.21.4 signatures I need for the rewrite.
+
+I have the full picture now. Let me read the exact regions I'll edit.
+
+Now I'll make the edits. Starting with imports.
+
+IDEA reports clean. Now the authoritative check — compile.
+
+The failure is environmental, not a compile error — Gradle can't find a JDK 21 toolchain and can't download one. Let me check what's installed.
+
+No JDK 21 is installed (only 8, 17, 25) and the download is blocked — there are interrupted `.zip.part` files, which is likely what the killed compile was stuck on. Let me see if there's a prior compiled output I can check against.
+
+`IDEA has a JDK named "Java21" configured. Let me find its path so I can point Gradle at it.
+
+Found it — IDEA's `Java21` is at `E:/Software/Minecraft/JDK/jdk-21.0.8`. Let me point Gradle at it (per-invocation flag, no repo changes).
+
+`:core:compileJava` BUILD SUCCESSFUL with the JDK 21 path. Now the remaining modules — including finishing the 1.21.1forge verification that was previously interrupted.
+
+1.21.4 passes both modules. The 1.21.1forge failure needs its reason — let me look.
+
+1.21.4 is fully verified. The 1.21.1forge failure is again the toolchain (Gradle 8.12.1 doesn't seem to pick up the flag). Let me check its toolchain detection and the state of my earlier edit there.
+
+Two things to check: whether my earlier 1.21.1forge edit survived, and whether a fresh daemon picks up the toolchain path.
+
+My earlier 1.21.1forge edit survived (committed as `49f6cfe4c Port #58 to 1.21.1`). Let me try passing the toolchain path via the environment instead.
+
+1.21.4 is done and compiles. Here's the summary.
+
+## 1.21.4neoforge — `_TempExplode` 已移植并验证编译
+
+`:core:compileJava` 与 `:neoforge-compat:compileJava` 均 **BUILD SUCCESSFUL**（只剩仓库原有 deprecation 警告）。改动 85+/21-，全在这一个类里。
+
+这个版本不是小修，是结构性差异——1.21.2 起原版把爆炸重写了：
+
+| | 1.20.4 / 1.21.1 | 1.21.4 |
+|---|---|---|
+| `Explosion` | class（可继承、可只覆写 `explode()`） | **接口**，只有 `ServerExplosion` 一份实现，且 `calculateExplodedPositions` / `hurtEntities` / `interactWithBlocks` / `createFire` 全是 private |
+| 方块破坏/掉落 | `finalizeExplosion(true)` 包办 | 没有 `finalizeExplosion` 了，`explode()` 一次做完；掉落合并逻辑变 private |
+| 爆炸包 | 11 参构造（含 `toBlow` 方块列表） | **4 字段 record**：`(Vec3 center, Optional<Vec3> knockback, ParticleOptions particle, Holder<SoundEvent> sound)`，方块列表不再下发 |
+| 实体伤害 | `entity.hurt(DamageSource, float)` | `hurt` 被删，改 `hurtServer(ServerLevel, DamageSource, float)` |
+
+对应做法：`ProjectileExplosion` 从 `extends Explosion` 改为 **`extends ServerExplosion`**，整体覆写 `explode()`。这样 `level()`/`getHitPlayers()`/`getDamageSource()`/`isSmall()`/`canTriggerBlocks()`/`shouldAffectBlocklikeEntities()` 这些接口实现直接从父类拿到（尤其后两个带 GameRules 逻辑，手写容易错），我只需把原版的方块破坏/掉落合并/火焰三段搬进类内（`interactWithBlocks` + `addOrAppendStack` + `StackCollector` + `createFire`，与原版算法逐行一致）。粒子改成服务端按 `isSmall()` 选一个下发（原版 `ServerLevel` 同款），`clearToBlow()`/`getToBlow()` 随接口消失而删除。
+
+## 两处判断点，需要你确认
+
+1. **我没有加 `entity.onExplosionHit(this.source)`，也保留 `setDeltaMovement(add)` 而非原版 1.21.4 的 `push`。** 理由：保持与 1.20.4/1.21.1 移植行为一致（TaCZ 语义）。副作用：被枪械炸飞的玩家会吃普通摔落伤害，而原版 1.21.4 的爆炸会把这段摔落伤害归因到冲量上（`ServerPlayer.onExplosionHit` 新增机制）。要跟原版对齐的话我加上，只差一行。
+2. **继承 `ServerExplosion` 会白拿几个 1.21.4 原版行为**，与 1.20.x 版本会不同：物品实体/盔甲架是否被炸毁现在看 `shouldAffectBlocklikeEntities()`（受 `mobGriefing` 门控），按钮/门/拉杆不会被触发（`canTriggerBlocks()` 恒 false 因为我们的模式只有 KEEP/DESTROY），掉落物按玩家归属走 `getIndirectSourceEntity()`。这些我认为是"对"的（原版行为），但确实是跨版本差异，先告诉你。
+
+游戏内仍未验证——RPG7 近距射击应同时出子弹伤害与爆炸伤害、方块被毁且掉落实体数量正常（合并成 16 一组）、有爆炸音效/粒子；另外建议顺手确认 KEEP 模式（关掉配置里的方块破坏）下不掉落任何物品。
+
+## 1.21.1forge — 我上一轮那处改动已经进仓库了
+
+工作树是干净的：我上一轮改的 `ProtectionEnchantment → Attributes.EXPLOSION_KNOCKBACK_RESISTANCE` 已被提交为 `49f6cfe4c Port #58 to 1.21.1`，内容未变。
+
+**但 1.21.1forge 的 Gradle 编译在这台机器上跑不起来，和代码无关**：
+
+- 这台机器只装了 JDK 8/17/25，没有 21；1.21.1forge 和 1.21.4neoforge 都要求 `JavaLanguageVersion.of(21)`
+- JDK 21 实际存在，在 `E:/Software/Minecraft/JDK/jdk-21.0.8`（IDEA 的 `Java21` 就指向它），但不在 Gradle 的自动探测路径里
+- 让它下载也失败：`api.foojay.io` → GitHub 的 HEAD 请求不通（`.gradle/jdks/` 里留着下了一半的 `.zip.part`，我猜这就是你上次中断的那次编译卡住的原因）
+- 我加的 `-Dorg.gradle.java.installations.paths=...` **对 1.21.4（Gradle 9.2.1）有效，对 1.21.1forge（Gradle 8.12.1）无效**——`javaToolchains` 里根本没列出那个路径，`--no-daemon` 和 `GRADLE_OPTS` 都一样。所以 1.21.4 的编译结果是真的，1.21.1forge 的编译**我没能跑到**
+
+编 1.21.4 用的命令（你可复现）：
+
+```bash
+cd D:/Github/Custom-Gun-Continued-1.21.4neoforge && ./gradlew :core:compileJava :neoforge-compat:compileJava -Dorg.gradle.java.installations.paths="E:/Software/Minecraft/JDK/jdk-21.0.8" -Dorg.gradle.java.installations.auto-download=false
+```
+
+要解开 1.21.1forge（以及后面的版本），得动仓库外的东西，所以先问你：
+
+- **A**：把 `org.gradle.java.installations.paths=E:/Software/Minecraft/JDK/jdk-21.0.8` 写进全局 `C:/Users/Administrator/.gradle/gradle.properties`（目前不存在该文件）——一次解决所有版本的 CLI 编译
+- **B**：把 JDK 21 复制/软链到 `C:/Program Files/Java/`，让 Gradle 自动探测到
+- **C**：不用管，1.21.1forge 就在 IDEA 里编（IDEA 已有 Java21，分析也是 0 error）
+
+未提交，等你 review。
+
+# 
+
+```
+改成跟MC原版对齐，如果是MC对爆炸机制新增的内容，就用MC原版的
+```
+
+# 
+
+收到——按原版对齐。这两个都是 MC 在 1.21.2 新增到爆炸流程里的东西，所以用原版的。先确认 `push` 的签名。
+
+`Entity.push(Vec3)` exists, and I confirmed 1.20.4's vanilla `Explosion` itself uses `setDeltaMovement(...add(...))` — so 1.20.4/1.21.1 are already aligned and only 1.21.4 needs these two.
+
+Confirmed: with our plain default calculator those two hooks are constant (`true` / `1.0F`), so wiring them would be dead code. Now let me re-verify.
+
+Let me check whether 1.21.1's vanilla has the same additions, since the user's principle applies there too.
+
+1.21.1's vanilla **does** call `entity.onExplosionHit(this.source)` (line 299) but uses `setDeltaMovement` (line 291). So 1.21.1 needs one of the two. Let me confirm the API exists there.
+
+1.21.1 needs that one line too (its vanilla calls it). Let me confirm 1.20.4 has no such call and read the 1.21.1 call site.
+
+1.20.4 has no `Entity.onExplosionHit` at all — so it needs nothing. 1.21.1 does. Adding the line there.
+
+The `-Dorg.gradle.java.home` trick works — 1.21.1forge now compiles too. Let me collect the final state of both changes.
+
+Both changes are in and verified. Let me record the environment + API findings in memory for the remaining version ports.
+
+There's already a `local-jdk21-path.md` memory — let me read it and the current index before writing anything.
+
+已按"跟原版对齐、MC 新增的就用原版的"改完，三个分支都重新验证过编译。
+
+## 1.21.4neoforge（两处，你指的那两个）
+
+- `entity.setDeltaMovement(getDeltaMovement().add(...))` → **`entity.push(knockback)`**（1.21.4 原版 `ServerExplosion.hurtEntities` 的写法，多带 `hasImpulse`，玩家被炸飞的位移同步才正常）。顺带把击退向量抽成一个 `Vec3`，`getHitPlayers().put(player, knockback)` 复用同一个对象——原来那个表达式写了两遍。
+- 击退之后追加 **`entity.onExplosionHit(this.exploder)`**（原版同一位置调用）。
+
+## 1.21.1forge（一处）
+
+查了 1.21.1 的原版 `Explosion.explode()`：`:299` **确实有** `entity.onExplosionHit(this.source)`，所以加了这一行；但 `:291` 原版用的仍是 `setDeltaMovement(getDeltaMovement().add(vec31))`，所以 `push` **不**改。这个分支 1.21.1 的移植本就是按原版来的，只有这一处漏了。
+
+## 1.20.4（不用改）
+
+1.20.4 根本没有 `Entity.onExplosionHit`（我用 `search_symbol` 查过，只有方块侧的 `BlockBehaviour.onExplosionHit`），而且原版 `Explosion` 就是用 `setDeltaMovement`——已经是原版写法。
+
+## 有一类原版钩子我故意没接，先说明
+
+1.21.2 起 `ExplosionDamageCalculator` 上的 `shouldDamageEntity` / `getEntityDamageAmount` / `getSeenPercent` / `getKnockbackMultiplier`。这些属于 **TaCZ 主动替换掉的伤害算法部分**（PR #58 的核心就是"伤害与半径分离 + 对生物用延迟补偿碰撞箱做 15 角点视线"），不是 MC 新增机制。而且我们传的是 plain `ExplosionDamageCalculator`，它的默认实现是常量：
+
+```java
+public boolean shouldDamageEntity(Explosion e, Entity ent) { return true; }
+public float getKnockbackMultiplier(Entity ent) { return 1.0F; }
+```
+
+接上去就是 `if (true)` 和 `× 1.0F`，纯死代码。**如果你要的其实是"连伤害也算回原版"**，那是把 PR #58 的核心推翻（RPG7 那套 `explodeDamage`/`explodeScale` 分离的数值会失效），这个我不敢替你决定——说一声我再动。
+
+## 编译验证（都过了）
+
+| 分支 | 结果 |
+|---|---|
+| 1.21.4neoforge | `:core:compileJava` + `:neoforge-compat:compileJava` **BUILD SUCCESSFUL** |
+| 1.21.1forge | `:core:compileJava` + `:forge-compat:compileJava` **BUILD SUCCESSFUL** |
+| 1.20.4 | 无改动（工作树干净） |
+
+**工具链问题解决了，不用动你的机器**——之前问你的 A/B 都不需要了。原因是 Gradle 8.12.1 不认 `-Dorg.gradle.java.installations.paths`，但让 Gradle 自己跑在 JDK 21 上就两边都成立：
+
+```bash
+cd D:/Github/Custom-Gun-Continued-1.21.1forge && ./gradlew :core:compileJava :forge-compat:compileJava -Dorg.gradle.java.home="E:/Software/Minecraft/JDK/jdk-21.0.8"
+```
+
+（1.21.4 用同样加 `-Dorg.gradle.java.home` 也行，不必再带 `installations.paths`。）
+
+## 仍未验证 / 待你决定
+
+- **游戏内没验证**：这次动的正是玩家被炸的击退与摔落伤害归因——建议实测"玩家被 RPG7 近距离炸飞"，确认位移同步正常、落地不吃额外摔落伤害；方块破坏/掉落/火焰那几个新抄的原版路径也一并看下。
+- 未提交，等你 review。1.21.4 的改动 `90+/25-`，1.21.1forge 是 `+2`。
+- 我把"爆炸 API 跨版本事实"和"JDK 21 工具链写法"记进 memory 了，后面的版本（1.21.6 / 26.x）移植可以直接查。

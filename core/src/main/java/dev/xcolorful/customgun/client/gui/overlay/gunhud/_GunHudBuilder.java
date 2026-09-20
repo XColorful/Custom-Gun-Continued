@@ -42,8 +42,19 @@ public class _GunHudBuilder {
         // 弹匣大小
         int magAmmoLimit = iGun.getMagAmmoLimit(gunItem);
 
-        // 背包备弹
-        int inventoryAmmoCount = iGun.getInventoryAmmoCount(localPlayer, gunItem);
+        // 备弹数量
+        int reserveAmmoCount;
+        ChatFormatting reserveAmmoColor;
+        if (!iGun.useInventoryAmmo(gunItem) // 背包直读合并到从背包读取
+                && iGun.useDummyAmmo(gunItem)) {
+            // 虚拟备弹
+            reserveAmmoCount = iGun.getDummyAmmoCount(gunItem);
+            reserveAmmoColor = ChatFormatting.DARK_AQUA;
+        } else {
+            // 从背包读取
+            reserveAmmoCount = iGun.getInventoryAmmoCount(localPlayer, gunItem);
+            reserveAmmoColor = ChatFormatting.GRAY;
+        }
 
         @Nullable GunDisplayInstance gunDisplayInstance = ClientResourceApi.getGunDisplayInstance(gunItem);
         AmmoCountType ammoCountType; {
@@ -55,7 +66,7 @@ public class _GunHudBuilder {
             }
         }
 
-        Component baseMessage = _buildBaseMessage(ammoCountType, currentAmmoCount, magAmmoLimit, inventoryAmmoCount);
+        Component baseMessage = _buildBaseMessage(ammoCountType, currentAmmoCount, magAmmoLimit, reserveAmmoCount, reserveAmmoColor);
 
         // 开火模式
         FireModeType fireModeType = iGun.getFireModeType(gunItem);
@@ -63,7 +74,8 @@ public class _GunHudBuilder {
     }
 
     private static @NotNull Component _buildBaseMessage(AmmoCountType ammoCountType,
-                                                        int currentAmmoCount, int magAmmoLimit, int inventoryAmmoCount) {
+                                                        int currentAmmoCount, int magAmmoLimit, int reserveAmmoCount,
+                                                        ChatFormatting reserveAmmoColor) {
         MutableComponent message;
         return switch (ammoCountType) {
             case NORMAL -> {
@@ -77,11 +89,11 @@ public class _GunHudBuilder {
                         .withStyle(currentAmmoCount > 0 ? (currentAmmoCount >= magAmmoLimit ? ChatFormatting.AQUA : ChatFormatting.WHITE)
                                 : ChatFormatting.RED);
                 // 备弹
-                if (inventoryAmmoCount > 0) {
+                if (reserveAmmoCount > 0) {
                     message.append(Component.literal(" ")
                             )
-                            .append(Component.literal(String.valueOf(inventoryAmmoCount))
-                                    .withStyle(ChatFormatting.GRAY)
+                            .append(Component.literal(String.valueOf(reserveAmmoCount))
+                                    .withStyle(reserveAmmoColor)
                             );
                 }
 
@@ -97,10 +109,10 @@ public class _GunHudBuilder {
                 // 当前子弹
                 message = Component.literal(String.format("%.1f%%", 100f * currentAmmoCount / magAmmoLimit));
                 // 备弹
-                if (inventoryAmmoCount > 0) {
+                if (reserveAmmoCount > 0) {
                     message.append(Component.literal(" ")
                             )
-                            .append(Component.literal(String.format("%.1f%%", 100f * inventoryAmmoCount / magAmmoLimit))
+                            .append(Component.literal(String.format("%.1f%%", 100f * reserveAmmoCount / magAmmoLimit))
                                     .withStyle(ChatFormatting.GRAY)
                             );
                 }

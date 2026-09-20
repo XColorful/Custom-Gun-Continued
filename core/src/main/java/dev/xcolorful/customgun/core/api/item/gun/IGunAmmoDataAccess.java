@@ -34,6 +34,7 @@ public interface IGunAmmoDataAccess {
      *     <li>{@link BoltType#MANUAL_ACTION}只消耗枪管里的子弹 ({@link IGunAmmoDataAccess#hasBarrelAmmo})</li>
      *     <li>{@link BoltType#CLOSED_BOLT}只消耗枪管里的子弹，无论枪管是否有子弹，射击后都会自动上膛</li>
      *     <li>{@link BoltType#OPEN_BOLT}只消耗弹匣子弹 ({@link IGunAmmoDataAccess#getMagAmmoCount})，不消耗枪管子弹</li>
+     *     <li>虚拟备弹({@link #useDummyAmmo})本身不直接供弹，它只是个备弹，仅在背包直读({@link #useInventoryAmmo})时直供消耗</li>
      *     <li>无论是否实际消耗了子弹，返回正数即代表“应消耗了子弹”</li>
      * </ul>
      * @return 消耗的子弹数，返回{@code 0}则无法消耗子弹

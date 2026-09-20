@@ -27,6 +27,10 @@ public interface IGunInventoryRuntime {
      * <ul>
      *     <li>明确需要将枪内子弹取回</li>
      * </ul>
+     * 注：
+     * <ul>
+     *     <li>虚拟备弹({@link IGun#useDummyAmmo}本身就是备弹，不退回</li>
+     * </ul>
      * @param gunItem 枪械物品
      * @param livingShooter 准备退弹的实体
      */
@@ -35,6 +39,10 @@ public interface IGunInventoryRuntime {
 
     /**
      * 枪械寻弹和扣除背包弹药逻辑
+     * <ul>
+     *     <li>该方法用于支持consume的runtime</li>
+     *     <li>只读getter对应静态的{@link IGun#getInventoryAmmoCount}</li>
+     * </ul>
      * @param inventoryCapability 目标实体的背包
      * @param gunItem 枪械物品
      * @param requiredAmmoCount 需要的弹药 (物品) 数量

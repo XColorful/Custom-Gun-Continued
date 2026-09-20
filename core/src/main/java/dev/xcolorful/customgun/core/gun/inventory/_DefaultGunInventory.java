@@ -14,6 +14,7 @@ import dev.xcolorful.customgun.core.api.item.IAmmo;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.ammo.IAmmoGetter;
 import dev.xcolorful.customgun.core.api.item.builder.AmmoBuilder;
+import dev.xcolorful.customgun.core.api.item.gun.GunDataAccessor;
 import dev.xcolorful.customgun.core.api.minecraft.capability.IInventoryCapability;
 import dev.xcolorful.customgun.core.api.resource.ResourceApi;
 import dev.xcolorful.customgun.core.init.registry.ModItems;
@@ -46,19 +47,12 @@ public class _DefaultGunInventory {
         GunData gunData = gunIndexInstance.getGunData();
         _ReloadData reloadData = gunData.getReloadData();
 
-        // --------虚拟备弹--------
         if (iGun.useDummyAmmo(gunItem)) {
-            iGun.setMagAmmoCount(gunItem, 0);
-            // 不返还的类型
-            if (!reloadData.getAmmoFeedType().canRetrieveAmmo()) {
-                return;
-            }
-            iGun.setDummyAmmoCount(gunItem, magAmmoCount);
+            // 虚拟备弹作为优先指定的备弹源，是一种备弹，不退回
             return;
-        }
-        // --------背包直读/燃料类型不返还--------
-        else if (!reloadData.getAmmoFeedType().canRetrieveAmmo()) {
-            iGun.setMagAmmoCount(gunItem, 0);
+        } else if (!reloadData.getAmmoFeedType().canRetrieveAmmo()) {
+            // 不返还的类型 (背包直读/燃料)
+            iGun.setMagAmmoCount(gunItem, 0); // 背包直读也直接卸掉
             return;
         }
 
@@ -188,6 +182,7 @@ public class _DefaultGunInventory {
     }
 
     /**
+     * 标准同{@link IGun#getInventoryAmmoCount} (默认实现为{@link GunDataAccessor#getInventoryAmmoCount})
      * @param requiredAmmoCount 需要的扣除的子弹数
      * @return 已经扣除的子弹数
      */
@@ -199,44 +194,46 @@ public class _DefaultGunInventory {
         for (int i = 0; i < inventoryCapability.getContainerSize() && requiredAmmoCount > 0; i++) {
             final ItemStack slotItemReadOnly = inventoryCapability.getItemReadOnly(i);
             @Nullable IAmmo iAmmo = IAmmoGetter.fromItemStack(slotItemReadOnly);
-            if (iAmmo == null || !iGun.isMatchedAmmo(gunItem, slotItemReadOnly)) continue;
+            if (iAmmo == null || !iGun.hasMatchedAmmo(gunItem, slotItemReadOnly)) continue;
 
-            ItemStack modifiedItem = inventoryCapability.extractItem(i,
-                    slotItemReadOnly.getCount(), // 取整个ItemStack
-                    false);
-            iAmmo = IAmmoGetter.fromItemStack(modifiedItem);
-            if (iAmmo == null) {
-                CustomGun.LOGGER.warn("_DefaultGunInventory: slot {} is IAmmo before but not in extracted item in IInventoryCapability", i);
-                continue;
-            }
+            // @Deprecated
+//            ItemStack modifiedItem = inventoryCapability.extractItem(i,
+//                    slotItemReadOnly.getCount(), // 取整个ItemStack
+//                    false);
+//            iAmmo = IAmmoGetter.fromItemStack(modifiedItem);
+//            if (iAmmo == null) {
+//                CustomGun.LOGGER.warn("_DefaultGunInventory: slot {} is IAmmo before but not in extracted item in IInventoryCapability", i);
+//                continue;
+//            }
+//
+//            // slotItemReadOnly 是槽位的活引用，extractItem 已将其 shrink 清空，须从抽出的 modifiedItem 读取数量
+//            int existAmmoCount = iAmmo.getAmmoCount(modifiedItem);
+//            int currentExtract;
+//            if (existAmmoCount <= requiredAmmoCount) {
+//                // 全部扣除
+//                currentExtract = existAmmoCount;
+//                iAmmo.setAmmoCount(modifiedItem, 0);
+//
+//                if (!modifiedItem.isEmpty()) { // 没抽成ItemStack.EMPTY就放回去，适用于IAmmoBox
+//                    ItemStack remain = inventoryCapability.insertItem(i, modifiedItem, false);
+//                    if (!remain.isEmpty()) {
+//                        CustomGun.LOGGER.warn("_DefaultGunInventory: can't fully insert item after extraction in slot {} in IInventoryCapability", i);
+//                    }
+//                }
+//            } else {
+//                // 部分扣除 (需要塞回)
+//                currentExtract = requiredAmmoCount;
+//
+//                iAmmo.setAmmoCount(modifiedItem, existAmmoCount - currentExtract);
+//                ItemStack remain = inventoryCapability.insertItem(i, modifiedItem, false);
+//                if (!remain.isEmpty()) {
+//                    CustomGun.LOGGER.warn("_DefaultGunInventory: can't fully insert item after extraction in slot {} in IInventoryCapability", i);
+//                }
+//            }
+            int consumedAmmo = iAmmo.consumeAmmo(slotItemReadOnly, requiredAmmoCount);
 
-            // slotItemReadOnly 是槽位的活引用，extractItem 已将其 shrink 清空，须从抽出的 modifiedItem 读取数量
-            int existAmmoCount = iAmmo.getAmmoCount(modifiedItem);
-            int currentExtract;
-            if (existAmmoCount <= requiredAmmoCount) {
-                // 全部扣除
-                currentExtract = existAmmoCount;
-                iAmmo.setAmmoCount(modifiedItem, 0);
-
-                if (!modifiedItem.isEmpty()) { // 没抽成ItemStack.EMPTY就放回去，适用于IAmmoBox
-                    ItemStack remain = inventoryCapability.insertItem(i, modifiedItem, false);
-                    if (!remain.isEmpty()) {
-                        CustomGun.LOGGER.warn("_DefaultGunInventory: can't fully insert item after extraction in slot {} in IInventoryCapability", i);
-                    }
-                }
-            } else {
-                // 部分扣除 (需要塞回)
-                currentExtract = requiredAmmoCount;
-
-                iAmmo.setAmmoCount(modifiedItem, existAmmoCount - currentExtract);
-                ItemStack remain = inventoryCapability.insertItem(i, modifiedItem, false);
-                if (!remain.isEmpty()) {
-                    CustomGun.LOGGER.warn("_DefaultGunInventory: can't fully insert item after extraction in slot {} in IInventoryCapability", i);
-                }
-            }
-
-            extracted += currentExtract;
-            requiredAmmoCount -= currentExtract;
+            extracted += consumedAmmo;
+            requiredAmmoCount -= consumedAmmo;
         }
         return extracted;
     }
@@ -252,8 +249,8 @@ public class _DefaultGunInventory {
         if (dummyAmmoCount <= 0) return 0;
 
         int extract = Math.min(dummyAmmoCount, requiredAmmoCount);
+        // 虚拟备弹目前没有consume方法，set就当consume用
         iGun.setDummyAmmoCount(gunItem, dummyAmmoCount - extract);
-        int remain = iGun.getDummyAmmoCount(gunItem);
-        return dummyAmmoCount - remain;
+        return extract;
     }
 }

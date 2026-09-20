@@ -16,8 +16,8 @@ public class ModConfigTag {
     public static final String defaultGunOtherSoundDistance_path = "DefaultGunOtherSoundDistance";
     public static final String defaultGunOtherSoundDistance_comment = "The range (block) of other gun sound, reloading sound etc.";
 
-    public static final String creativePlayerConsumeAmmo_path = "CreativePlayerConsumeAmmo";
-    public static final String creativePlayerConsumeAmmo_comment = "Whether or not the player will consume ammo in creative mode";
+    public static final String bypassGunFireConsumption_path = "BypassGunFireConsumption";
+    public static final String bypassGunFireConsumption_comment = "Whether the gun fire will consume ammo in Creative Mode";
 
     public static final String autoReloadWhenRespawn_path = "AutoReloadWhenRespawn";
     public static final String autoReloadWhenRespawn_comment = "Auto reload all the guns in player inventory, useful for pvp servers";

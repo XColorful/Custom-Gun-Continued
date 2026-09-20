@@ -28,6 +28,7 @@ import dev.xcolorful.customgun.core.resource.instance.data.GunIndexInstance;
 import dev.xcolorful.customgun.core.util.NBTUtils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
@@ -235,26 +236,40 @@ public interface GunDataAccessor extends IGunDataAccess {
 
     @Override
     default boolean isMatchedAmmo(ItemStack gunItem, ItemStack ammoItem) {
-        return this.consumableAmmoCount(gunItem, ammoItem) > 0;
+        @Nullable IAmmo iAmmo = IAmmoGetter.fromItemStack(ammoItem);
+        if (iAmmo == null) return false;
+
+        @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(this.getGunLocation(gunItem));
+        if (gunIndexInstance == null) return false;
+
+        @Nullable var customData = NBTUtils.getCustomData(ammoItem);
+        if (customData == null) return false;
+        @NotNull CompoundTag customDataTag = NBTUtils.getCustomDataTag(customData);
+        if (!iAmmo.getAmmoLocation(customDataTag).equals(gunIndexInstance.getGunData().getAmmoLocation()) // 子弹类型不对
+                && !iAmmo.isAlmightyAmmo(customDataTag)) { // 不是全能子弹
+            return false;
+        }
+
+        return true;
     }
     @Override
-    default int consumableAmmoCount(ItemStack gunItem, ItemStack ammoItem) {
+    default int getMatchedAmmoCount(ItemStack gunItem, ItemStack ammoItem) {
         @Nullable IAmmo iAmmo = IAmmoGetter.fromItemStack(ammoItem);
         if (iAmmo == null) return 0;
 
-        @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(this.getGunLocation(gunItem));
-        if (gunIndexInstance == null) return 0;
-
-        @Nullable var customData = NBTUtils.getCustomData(ammoItem);
-        if (customData == null) return 0;
-        @NotNull CompoundTag customDataTag = NBTUtils.getCustomDataTag(customData);
-        if (!iAmmo.getAmmoLocation(customDataTag).equals(gunIndexInstance.getGunData().getAmmoLocation())
-                && !iAmmo.isAlmightyAmmo(customDataTag)) {
-            return 0;
-        }
+        if (!this.isMatchedAmmo(gunItem, ammoItem)) return 0;
+        /**
+         * 不涉及{@link IAmmo#hasInfiniteFeed}扩容
+         */
         return iAmmo.getAmmoCount(ammoItem);
     }
 
+    @Override
+    default int getConsumableAmmoCount(@Nullable LivingEntity livingEntity, ItemStack gunItem) {
+        @Nullable BoltType boltType = _getBoltType(this, gunItem);
+        if (boltType == null) return 0;
+        return this.getConsumableAmmoCount(livingEntity, gunItem, boltType);
+    }
     @Override
     default int consumeAmmoOnce(@Nullable LivingEntity livingEntity, ItemStack gunItem) {
         @Nullable BoltType boltType = _getBoltType(this, gunItem);
@@ -285,7 +300,8 @@ public interface GunDataAccessor extends IGunDataAccess {
     }
     @Override
     default void setDummyAmmoCount(ItemStack gunItem, int amount) {
-        NBTUtils.setInt(gunItem, GunProperty.DUMMY_AMMO.getTagName(), Math.min(amount, this.getDummyAmmoLimit(gunItem)));
+        if (this.hasDummyAmmoLimit(gunItem)) NBTUtils.setInt(gunItem, GunProperty.DUMMY_AMMO.getTagName(), Mth.clamp(amount, 0, this.getDummyAmmoLimit(gunItem)));
+        else NBTUtils.setInt(gunItem, GunProperty.DUMMY_AMMO.getTagName(), Math.max(0, amount));
     }
     @Override
     default boolean hasDummyAmmoLimit(ItemStack gunItem) {
@@ -318,9 +334,9 @@ public interface GunDataAccessor extends IGunDataAccess {
         if (inventoryCapability == null) return false;
 
         for (int i = 0; i < inventoryCapability.getContainerSize(); i++) {
-            ItemStack ammoItem = inventoryCapability.getItemReadOnly(i);
+            final ItemStack ammoItem = inventoryCapability.getItemReadOnly(i);
 
-            if (iGun.isMatchedAmmo(gunItem, ammoItem)) {
+            if (iGun.hasMatchedAmmo(gunItem, ammoItem)) {
                 return true;
             }
         }
@@ -336,9 +352,8 @@ public interface GunDataAccessor extends IGunDataAccess {
 
         int count = 0;
         for (int i = 0; i < inventoryCapability.getContainerSize(); i++) {
-            ItemStack ammoItem = inventoryCapability.getItemReadOnly(i);
-
-            count += iGun.consumableAmmoCount(gunItem, ammoItem);
+            final ItemStack ammoItem = inventoryCapability.getItemReadOnly(i);
+            count += iGun.getMatchedAmmoCount(gunItem, ammoItem);
         }
         return count;
     }

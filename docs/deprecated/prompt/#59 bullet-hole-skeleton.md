@@ -146,3 +146,35 @@ if (gunProjectile.level() instanceof ServerLevel serverLevel) {
 顺带更正我上一条说错的地方：我当时说"受弹方块自己实现而不 discard 时，:167 会把速度清成 `hitLoc - pos`，子弹停在命中点附近、可能反复生成弹孔"——**这是错的**。:170 在默认逻辑里，不委托的方块根本走不到它，速度不会被清除。实际后果相反：子弹保持入射速度，`physicMove` 会把整 tick 的位移照跑，于是穿过墙面一格。同一个道理，这种方块也不会拿到 :174 的弹孔。
 
 未提交，等你 review。要我接着修客户端那三处保真度差异（曳光色染色 / `alpha = 0.9f` / 构造期剔除时机）吗？
+
+# 
+
+```
+继续修客户端三处
+```
+
+# 
+
+继续修改客户端。先看现有的曳光色解析与取色器模式，以便复用。
+
+现在修改客户端粒子：补曳光色、`alpha`、构造期剔除。
+
+三处都补完了，[`BulletHoleParticle.java`](core/src/main/java/dev/xcolorful/customgun/client/particle/BulletHoleParticle.java) 编译通过（无新增警告）。
+
+**1. 曳光色染色** — 新增 [`calculateTracerColor()`](core/src/main/java/dev/xcolorful/customgun/client/particle/BulletHoleParticle.java:161)，构造器里写进 `rCol/gCol/bCol`。复用了 CGC 已有的两段 fallback 写法：
+
+- 枪械 display 用 [`getGunDisplayInstance(displayLocation, gunLocation)`](core/src/main/java/dev/xcolorful/customgun/client/api/resource/ClientResourceApi.java:176) —— 两参数重载正好对应 TaCZ `getGunDisplay(displayId, gunId)` 的二级回退，这也是 `BulletHoleOption` 要带 `gunLocation` 的原因
+- 取不到就回退子弹 display 的曳光色，与 [`GunProjectileRenderer:141-149`](core/src/main/java/dev/xcolorful/customgun/client/renderer/entity/GunProjectileRenderer.java:141) 同款
+
+**2. `alpha = 0.9f`** — 加在构造器末尾，`render()` 里的淡出曲线基数与 TaCZ 一致了。
+
+**3. 构造期剔除** — `if (this.shouldRemove()) this.remove();` 加在 `quadSize` 之后。TaCZ 那条 `ModBlocks.TARGET` 判定跳过（CGC 没有打靶方块）；首帧就消失的弹孔不再多渲染一 tick。
+
+两处有意的偏差，说明一下：
+
+- **枪械 display 完全缺失时**：TaCZ 因为整个 `ifPresent` 块不执行而保持白色；CGC 这里仍会回退到子弹的曳光色。我按项目内已有写法（枪械 → 子弹 → 默认白）保持一致，只在"包缺 display 资源"这种坏包场景下才有区别。
+- **用 `ResourceLocation.tryParse` 而非 `new ResourceLocation`**：粒子选项是跨网络过来的，解析失败返回 null 就走"无颜色"分支，不会在客户端抛异常。
+
+**未在游戏内验证。** 建议实机确认：弹孔带曳光色（用 RPG7 或任何曳光弹看颜色是否对上）、整体比之前暗一点（0.9 vs 1.0）、打到方块边缘时首帧不残留。
+
+未提交，等你 review。

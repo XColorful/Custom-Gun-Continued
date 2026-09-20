@@ -45,7 +45,7 @@ public class _GunProjectileConstructor {
         _this.stateCache.bulletSpeed = bulletData.getBulletSpeed();
         _this.stateCache.gravity = bulletData.getGravity();
         _this.stateCache.friction = bulletData.getFriction();
-        _this.stateCache.pierce = bulletData.getPierceCount();
+        _this.stateCache.pierce = Math.max(1, bulletData.getPierceCount());
         int tracerInterval = bulletData.getTracerInterval();
         if (tracerInterval >= 0) {
             Entity owner = _this.getOwner();

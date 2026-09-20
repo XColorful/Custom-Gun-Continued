@@ -11,6 +11,7 @@ import dev.xcolorful.customgun.core.api.projectile.impact.IProjectileImpactManag
 import dev.xcolorful.customgun.core.api.projectile.physics.IProjectilePhysicsRuntime;
 import dev.xcolorful.customgun.core.api.projectile.process.IProjectileProcessRuntime;
 import dev.xcolorful.customgun.core.developer.PlannedRefactor;
+import dev.xcolorful.customgun.core.util.EntityUtils;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.BlockHitResult;
@@ -59,12 +60,8 @@ public class ProjectileImpactManager implements IProjectileImpactManager {
      */
     protected boolean onNonBulletVictimHit(BlockHitResult blockHitResult, Block block,
                                            IGunProjectile iGunProjectile, Entity gunProjectile) {
-        gunProjectile.setDeltaMovement(blockHitResult.getLocation().subtract(gunProjectile.position()));
-        gunProjectile.discard();
-        return true;
-//        ↑楼上等楼下完成后删除
-        // TODO AmmoHitBlockEvent
-        // TODO ExplodeUtil
+        if (true) return cgc$onProjectileImpact(blockHitResult, iGunProjectile, gunProjectile);
+        else return true;
     }
 
     // --------IProjectileImpactRuntime--------
@@ -74,7 +71,8 @@ public class ProjectileImpactManager implements IProjectileImpactManager {
                               IGunProjectile iGunProjectile, Entity gunProjectile) {
         if (tickContext.logicalSide.isClient()) return;
         // ----仅逻辑服务端执行----
-        // TODO 爆炸的信息在 什么时候 什么方式 写入比较好? (要通用性抽象)
+
+        if (true) _TempExplode.preExplode(tickContext, iGunProjectile, gunProjectile);
     }
 
     @Override
@@ -150,7 +148,15 @@ public class ProjectileImpactManager implements IProjectileImpactManager {
     @ApiStatus.Internal
     public static boolean cgc$onProjectileImpact(IProjectilePhysicsRuntime.EntityHitResult entityHitResult,
                                                  IGunProjectile iGunProjectile, Entity gunProjectile) {
-        return _ProjectileHit.onProjectileHitEntity(entityHitResult, iGunProjectile, gunProjectile);
+        boolean processed = _ProjectileHit.onProjectileHitEntity(entityHitResult, iGunProjectile, gunProjectile);
+        if (!processed) return false;
+
+        // ↑先出伤再爆炸↓
+        if (_TempExplode.isExplode(iGunProjectile, gunProjectile)) {
+            EntityUtils.setInvulnerableTime(entityHitResult.entity(), 0);
+            _TempExplode.explode(entityHitResult.hitPos(), iGunProjectile, gunProjectile);
+        }
+        return true;
     }
 
     // --------IBulletVictimImpactBlock--------
@@ -158,8 +164,11 @@ public class ProjectileImpactManager implements IProjectileImpactManager {
     @ApiStatus.Internal
     public static boolean cgc$onProjectileImpact(BlockHitResult blockHitResult,
                                                  IGunProjectile iGunProjectile, Entity gunProjectile) {
-        // TODO
         gunProjectile.setDeltaMovement(blockHitResult.getLocation().subtract(gunProjectile.position()));
+
+        if (true) if (_TempExplode.explode(blockHitResult.getLocation(), iGunProjectile, gunProjectile)) return true;
+
+        // TODO 命中效果 (弹孔/点燃等)
         gunProjectile.discard();
         return true;
     }

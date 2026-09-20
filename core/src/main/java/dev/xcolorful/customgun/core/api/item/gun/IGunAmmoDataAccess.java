@@ -1,6 +1,8 @@
 package dev.xcolorful.customgun.core.api.item.gun;
 
+import dev.xcolorful.customgun.core.api.entity.shooter.IShooterState;
 import dev.xcolorful.customgun.core.api.gun.inventory.IGunInventoryRuntime;
+import dev.xcolorful.customgun.core.api.item.IAmmo;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -9,16 +11,35 @@ import org.jetbrains.annotations.Nullable;
 public interface IGunAmmoDataAccess {
 
     /**
-     * 子弹类型是否匹配
+     * 子弹类型是否匹配，不检查是否可消耗
      */
     boolean isMatchedAmmo(ItemStack gunItem, ItemStack ammoItem);
     /**
+     * 子弹类型满足{@link #isMatchedAmmo}，并且可消耗
+     */
+    default boolean hasMatchedAmmo(ItemStack gunItem, ItemStack ammoItem) {
+        return this.getMatchedAmmoCount(gunItem, ammoItem) > 0;
+    }
+    /**
+     * 获取满足{@link #isMatchedAmmo}的子弹数量，不涉及{@link IAmmo#hasInfiniteFeed}扩容
      * @param gunItem 枪械
      * @param ammoItem 子弹
      * @return 该子弹中可用于枪械的数量
      */
-    int consumableAmmoCount(ItemStack gunItem, ItemStack ammoItem);
+    int getMatchedAmmoCount(ItemStack gunItem, ItemStack ammoItem);
 
+    /**
+     * {@link #consumeAmmoOnce}的只读getter
+     * <ul>
+     *     <li>当无限供应时返回{@link Integer#MAX_VALUE}</li>
+     *     <li>不检查{@link IShooterState#cgc$bypassGunFireConsumption()}，如果bypass应该直接不调用这个方法</li>
+     * </ul>
+     */
+    int getConsumableAmmoCount(@Nullable LivingEntity livingEntity, ItemStack gunItem, BoltType boltType);
+    /**
+     * {@link #getConsumableAmmoCount(LivingEntity, ItemStack, BoltType)}的便利方法
+     */
+    int getConsumableAmmoCount(@Nullable LivingEntity livingEntity, ItemStack gunItem);
     /**
      * 为一次射击消耗一次子弹
      * <ul>
@@ -26,6 +47,7 @@ public interface IGunAmmoDataAccess {
      *     <li>{@link BoltType#MANUAL_ACTION}只消耗枪管里的子弹 ({@link IGunAmmoDataAccess#hasBarrelAmmo})</li>
      *     <li>{@link BoltType#CLOSED_BOLT}只消耗枪管里的子弹，无论枪管是否有子弹，射击后都会自动上膛</li>
      *     <li>{@link BoltType#OPEN_BOLT}只消耗弹匣子弹 ({@link IGunAmmoDataAccess#getMagAmmoCount})，不消耗枪管子弹</li>
+     *     <li>虚拟备弹({@link #useDummyAmmo})本身不直接供弹，它只是个备弹，仅在背包直读({@link #useInventoryAmmo})时直供消耗</li>
      *     <li>无论是否实际消耗了子弹，返回正数即代表“应消耗了子弹”</li>
      * </ul>
      * @return 消耗的子弹数，返回{@code 0}则无法消耗子弹
@@ -53,6 +75,12 @@ public interface IGunAmmoDataAccess {
 
     /**
      * 是否使用虚拟备弹而不是背包物品
+     * <ul>
+     *     <li>只要写了虚拟备弹，就以此为备弹源，无论虚拟备弹数量为多少</li>
+     *     <li>如果虚拟备弹作为一个额外的消耗源，应该加在{@link IShooterState}</li>
+     *     <li>因此优先级高于背包直读</li>
+     * </ul>
+     * <br>
      */
     boolean useDummyAmmo(ItemStack gunItem);
     int getDummyAmmoCount(ItemStack gunItem);
@@ -70,6 +98,9 @@ public interface IGunAmmoDataAccess {
      * 检查背包是否有备弹，无关是否为直读模式
      */
     boolean hasInventoryAmmo(LivingEntity livingEntity, ItemStack gunItem);
+    /**
+     * 获取背包子弹数量，不涉及{@link IAmmo#hasInfiniteFeed}扩容
+     */
     int getInventoryAmmoCount(LivingEntity livingEntity, ItemStack gunItem);
 
     /**

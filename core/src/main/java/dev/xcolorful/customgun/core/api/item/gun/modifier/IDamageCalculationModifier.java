@@ -29,6 +29,15 @@ public interface IDamageCalculationModifier<T extends ResourcePojo<T>> extends I
         float multiplier = SyncConfig.DAMAGE_BASE_MULTIPLIER.get().floatValue();
 
         List<_DistanceDamageData> result = new ArrayList<>(source.size());
+        if (source.isEmpty()) {
+            // 没有距离伤害表时(例如旧格式没写 damage_adjust)，用子弹的原始伤害作为唯一一段伤害
+            _DistanceDamageData flat = new _DistanceDamageData();
+            flat.setDistance(Float.MAX_VALUE);
+            flat.setDamage((gunData.getBulletData().getDisplayDamage() + fireAdjustDamage) * multiplier);
+            result.add(flat);
+            return result;
+        }
+
         for (_DistanceDamageData entry : source) {
             _DistanceDamageData copy = new _DistanceDamageData();
             copy.setDistance(entry.getDistance());

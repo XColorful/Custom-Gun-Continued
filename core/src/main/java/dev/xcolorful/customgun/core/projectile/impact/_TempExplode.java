@@ -378,7 +378,7 @@ public class _TempExplode {
          */
         private void interactWithBlocks(List<BlockPos> toBlow) {
             List<StackCollector> drops = new ArrayList<>();
-            Util.shuffle(toBlow, this.level.random);
+            Util.shuffle(toBlow, this.level.getRandom());
             for (BlockPos pos : toBlow) {
                 this.level.getBlockState(pos).onExplosionHit(this.level, pos, this,
                         (stack, dropPos) -> addOrAppendStack(drops, stack, dropPos));
@@ -402,7 +402,7 @@ public class _TempExplode {
          */
         private void createFire(List<BlockPos> toBlow) {
             for (BlockPos pos : toBlow) {
-                if (this.level.random.nextInt(3) == 0 && this.level.getBlockState(pos).isAir()
+                if (this.level.getRandom().nextInt(3) == 0 && this.level.getBlockState(pos).isAir()
                         && this.level.getBlockState(pos.below()).isSolidRender()) {
                     this.level.setBlockAndUpdate(pos, BaseFireBlock.getState(this.level, pos));
                 }

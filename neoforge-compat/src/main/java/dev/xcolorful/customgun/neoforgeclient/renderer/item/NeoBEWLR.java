@@ -66,7 +66,7 @@ public class NeoBEWLR implements
                 nodeCollector,
                 packedLight, packedOverlay);
 
-//       if (!OculusCompat.endBatch(bufferSource)) { // [1.21.10, 26.2)
+//       if (!IrisCompat.endBatch(bufferSource)) { // [1.21.10, 26.2)
 //           bufferSource.endBatch();
 //       }
     }

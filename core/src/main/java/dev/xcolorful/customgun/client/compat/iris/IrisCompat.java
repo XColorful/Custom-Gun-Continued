@@ -1,8 +1,14 @@
-package dev.xcolorful.customgun.client.compat.oculus;
+package dev.xcolorful.customgun.client.compat.iris;
 
 import net.minecraft.client.renderer.MultiBufferSource;
 
-public class OculusCompat {
+/**
+ * <ul>
+ *     <li>1.20.1为Oculus</li>
+ *     <li>1.21.1+为Iris Shaders</li>
+ * </ul>
+ */
+public class IrisCompat {
 
     public static boolean isRenderShadow() {
         // mixin注入点

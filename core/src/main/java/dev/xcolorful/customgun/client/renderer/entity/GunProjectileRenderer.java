@@ -234,7 +234,11 @@ public class GunProjectileRenderer extends EntityRenderer<GunProjectile, GunProj
                 double offsetReducer = Math.max(0, (50 - disToEye)) / 50;
 
                 /**
-                 * <ul>
+                 * 现已改回「无条件做这一对旋转」：muzzleRenderOffset 在 GunItemRenderer.cacheMuzzlePosition 采集时
+                 * 乘过 RenderSystem.getModelViewMatrix()，已经是「视图空间」量，两种环境下都要先还原到世界轴再施加
+                 * <br>
+                 * 以下是旧说明：
+                 * @deprecated <ul>
                  *     1.21.1起不再做摄像机旋转的还原/重放
                  *     <li>muzzleRenderOffset 是在枪械渲染的 poseStack 上采集的，而那个 poseStack 里已经含有摄像机的 view 变换</li>
                  *     <li>1.20.1 的摄像机约定是 Qx(+pitch) · Qy(-180-yaw) // GameRenderer 里 XP 后 YP 两次 mulPose</li>

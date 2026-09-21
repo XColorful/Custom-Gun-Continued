@@ -7,6 +7,7 @@
 
 package dev.xcolorful.customgun.client.renderer.item;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
@@ -310,6 +311,18 @@ public class GunItemRenderer extends AnimateGeoItemRenderer<GunModelObject, GunA
         if (muzzleFlashPosPath == null) return;
 
         poseStack.pushPose(); {
+            {
+            /*
+            先把 RenderSystem.getModelViewMatrix() 乘进来，采到的偏移才是「视图空间」量：
+            vanilla 1.21.1 的手部基底是摄像机旋转、modelview 是它的逆，相乘正好抵消；
+            Iris 的 HandRenderer 通道本来就给单位阵基底 + 只含 bob 的 modelview
+            不乘的话两者含义不同（vanilla 是世界轴量、Iris 是视图空间量），同一个公式会随 yaw 把偏移拽向横向
+            但是1.20.1加了这行也没问题，装Oculus+开关光影都正常，不装Oculus也正常
+             */
+            // [1.20.1, ) // [1.21.1, )
+            poseStack.last().pose().mulLocal(RenderSystem.getModelViewMatrix());
+            }
+
             // 计算出枪口相对于摄像机中心的坐标
             for (int i = 0; i < muzzleFlashPosPath.size(); i++) {
                 BedrockPart bedrockPart = muzzleFlashPosPath.get(i);
@@ -323,12 +336,15 @@ public class GunItemRenderer extends AnimateGeoItemRenderer<GunModelObject, GunA
             {
             // [1.20.1, 1.21.1)
             // 手部 poseStack 的基坐标系就是摄像机（view）坐标系，m32 本身就是「沿视线」分量，直接缩放即可
+            // 乘上上面的 modelview 之后，下面这个 1.20.x 的写法对 1.21.1+ 同样成立（m32 就是视图空间的「沿视线」分量）
             // 缓存转换后的偏移坐标
             State.muzzleRenderOffset.set(
                     pose.m30(),
                     pose.m31(),
                     pose.m32() * Math.tan(itemRenderFov / 2 * Math.PI / 180) / Math.tan(levelRenderFov / 2 * Math.PI / 180));
 
+            // ↓旧写法（已被上面「乘 modelview 后缩放 m32」取代，保留供参考/revert）
+            { // ----旧代码开始----
             /*
             1.21.1起
             GameRenderer.renderItemInHand 给手部 poseStack 的基底换成了摄像机旋转的逆（camera.rotation().conjugate()）
@@ -361,6 +377,7 @@ public class GunItemRenderer extends AnimateGeoItemRenderer<GunModelObject, GunA
 //                    offset.x(),
 //                    offset.y(),
 //                    offset.z());
+            } // ----旧代码结束----
             }
         }
         poseStack.popPose();

@@ -24,6 +24,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SingleQuadParticle;
+import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.client.renderer.state.level.QuadParticleRenderState;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
@@ -180,17 +181,23 @@ public class BulletHoleParticle extends SingleQuadParticle {
 
     // --------便利方法--------
 
+    /**
+     * @since 26.1.x {@link Level}不再是{@link BlockAndTintGetter}，只有{@link ClientLevel}实现了该接口
+     */
     private TextureAtlasSprite calculateSprite(BlockPos pos) {
-        Minecraft minecraft = Minecraft.getInstance();
-        Level world = minecraft.level;
-        if (world != null) {
-            BlockState state = world.getBlockState(pos);
-//            return minecraft.getBlockRenderer().getBlockModelShaper().getParticleIcon(state, world, pos);
-        }
-        CustomGun.LOGGER.warn("BulletHoleParticle: In calculateSprite {}, minecraft.level is null", pos);
-//        return minecraft.getModelManager().getMissingBlockStateModel().particleIcon(world, BlockPos.ZERO, AIR.defaultBlockState());
-        // TODO 貌似没找到 TextureAtlasSprite 获取方式
-        return null;
+        BlockState state = this.level.getBlockState(pos);
+        return Minecraft.getInstance()
+
+//                .getBlockRenderer() // [1.20.1, 26.1.x)
+                .getModelManager() // [26.1.x, )
+
+//                .getBlockModelShaper() // [1.20.1, 26.1.x)
+                .getBlockStateModelSet() // [26.1.x, )
+
+//                .getTexture(state, this.level, pos) // [1.20.1, 1.21.6)
+//                .getParticleIcon(state, this.level, pos) // [1.21.6, 26.1.x)
+                .getParticleMaterial(state, this.level, pos).sprite() // [26.1.x, )
+                ;
     }
 
     @Override

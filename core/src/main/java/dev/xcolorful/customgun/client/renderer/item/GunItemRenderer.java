@@ -338,10 +338,10 @@ public class GunItemRenderer extends AnimateGeoItemRenderer<GunModelObject, GunA
             // 手部 poseStack 的基坐标系就是摄像机（view）坐标系，m32 本身就是「沿视线」分量，直接缩放即可
             // 乘上上面的 modelview 之后，下面这个 1.20.x 的写法对 1.21.1+ 同样成立（m32 就是视图空间的「沿视线」分量）
             // 缓存转换后的偏移坐标
-//            State.muzzleRenderOffset.set(
-//                    pose.m30(),
-//                    pose.m31(),
-//                    pose.m32() * Math.tan(itemRenderFov / 2 * Math.PI / 180) / Math.tan(levelRenderFov / 2 * Math.PI / 180));
+            State.muzzleRenderOffset.set(
+                    pose.m30(),
+                    pose.m31(),
+                    pose.m32() * Math.tan(itemRenderFov / 2 * Math.PI / 180) / Math.tan(levelRenderFov / 2 * Math.PI / 180));
 
             // ↓旧写法（已被上面「乘 modelview 后缩放 m32」取代，保留供参考/revert）
             { // ----旧代码开始----
@@ -355,28 +355,28 @@ public class GunItemRenderer extends AnimateGeoItemRenderer<GunModelObject, GunA
             // [1.21.1, )
             // 手部模型以 itemRenderFov 渲染、曳光弹以 levelRenderFov 渲染
             // 想让曳光弹起点落在枪口「看起来」所在的位置，就得把偏移中「沿视线方向」的分量按 FOV 比例缩放，横向分量保持不动
-            double fovRatio = Math.tan(itemRenderFov / 2 * Math.PI / 180) / Math.tan(levelRenderFov / 2 * Math.PI / 180);
-            Vector3f offset = new Vector3f(pose.m30(), pose.m31(), pose.m32());
-            if (!IrisCompat.isHandPoseStackWorldSpace()) {
-                /*
-                光影下 Iris 的 HandRenderer 用空 PoseStack 渲染手部，基底是单位阵，
-                采到的是「视图空间」量；而 vanilla 的基底是 camera.rotation()，采到的是世界轴量。
-                下面的 FOV 补偿和 GunProjectileRenderer 的 translate 都按世界轴写，所以先换算
-                 */
-                offset.rotate(ClientRenderUtils.getMainCamera(Minecraft.getInstance()).rotation());
-            }
-            Vector3f lookDirection = _getCameraLookDirection();
-            float depth = offset.dot(lookDirection);
-            float fovScale = (float) (fovRatio - 1);
-            offset.set(
-                    offset.x + fovScale * depth * lookDirection.x,
-                    offset.y + fovScale * depth * lookDirection.y,
-                    offset.z + fovScale * depth * lookDirection.z);
+//            double fovRatio = Math.tan(itemRenderFov / 2 * Math.PI / 180) / Math.tan(levelRenderFov / 2 * Math.PI / 180);
+//            Vector3f offset = new Vector3f(pose.m30(), pose.m31(), pose.m32());
+//            if (!IrisCompat.isHandPoseStackWorldSpace()) {
+//                /*
+//                光影下 Iris 的 HandRenderer 用空 PoseStack 渲染手部，基底是单位阵，
+//                采到的是「视图空间」量；而 vanilla 的基底是 camera.rotation()，采到的是世界轴量。
+//                下面的 FOV 补偿和 GunProjectileRenderer 的 translate 都按世界轴写，所以先换算
+//                 */
+//                offset.rotate(ClientRenderUtils.getMainCamera(Minecraft.getInstance()).rotation());
+//            }
+//            Vector3f lookDirection = _getCameraLookDirection();
+//            float depth = offset.dot(lookDirection);
+//            float fovScale = (float) (fovRatio - 1);
+//            offset.set(
+//                    offset.x + fovScale * depth * lookDirection.x,
+//                    offset.y + fovScale * depth * lookDirection.y,
+//                    offset.z + fovScale * depth * lookDirection.z);
             // 缓存转换后的偏移坐标
-            State.muzzleRenderOffset.set(
-                    offset.x(),
-                    offset.y(),
-                    offset.z());
+//            State.muzzleRenderOffset.set(
+//                    offset.x(),
+//                    offset.y(),
+//                    offset.z());
             } // ----旧代码结束----
             }
         }

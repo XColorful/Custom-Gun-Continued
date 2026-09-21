@@ -152,3 +152,104 @@ Compat 的 `libs/` 里那份 CGC jar 还是旧的 `compat/oculus/OculusCompat.cl
 **游戏内只有你能确认**：Sodium 0.8 + Iris 1.8.14 开光影包时，枪身/枪口火焰/抛壳/手部外观是否和 vanilla 一致，阴影 pass 里有没有火焰/弹壳鬼影，以及不开光影包时的对照行为。
 
 未 commit、未 push。另外我把 Forge/NeoForge 这套 mixin 差异记进了长期记忆，省得以后给新的 CGC-Compat-* 写 mixin 时再踩一遍。
+
+# 
+
+```
+当前1.21.1，开光影后复现了#50 1.21.1render-offset-fix.md的问题，只是枪没有偏移，第一人称看到的枪射物起点偏了
+- 在玩家朝向121.3 -1.6时，枪射物从屏幕右边往前方射出；在90 -1.9时也是在右边射出；44.7 -2.8也是
+- 朝另半边的时候对称，-142.8 -1.2在屏幕左边射出；-57.4 -0.5也是从左边射出
+- 无论开镜瞄准进度为多少，都是偏的
+- 关闭光影时没有第一人称枪射物起点偏移问题
+- 关闭光影时，第一人称看红点瞄准镜(cbrg:red_dot)的ocular，朝前方的一面正常应该是看不见的，也就是scopeBodyPath/scope_body/lens/下有个位置-0.563,1.4375,-1.3125尺寸1.126,1.2229,0的块，北面有红点贴图，但是正常情况下应该是从第一人称（从后面看）看不见这个朝向前方的贴图的
+- 光影用的是Complementary
+
+当不安装光影及Compat Shader时，没有以上问题
+- 最新一次安装光影mod的log在D:\Temp-File\debug.log
+
+可以在CGC 1.21.1做修改，但不得引入gradle环境；如果需要新增API则依旧是放在Compat Shader里注入
+```
+
+# 
+
+Let me start by reading the referenced issue and the log.
+
+The #50 doc gives me the previous fix. Now let me check whether our mixin actually applied, and find the muzzle-offset code.
+
+Mixin is applied. Now the muzzle-offset path.
+
+Let me read how the cached FOV values are produced — the fix hinges on them.
+
+Let me check how Iris handles FOV for the hand pass — that's what the offset correction depends on.
+
+Strong lead: Iris renders the hand through its own `HandRenderer`. Let me see what poseStack basis it builds.
+
+Decisive lead: Iris builds the hand poseStack as **identity + bob only**. Let me confirm against vanilla's setup.
+
+Let me confirm the vanilla basis precisely — what `projectionMatrix` is at that call site.
+
+Found the root cause. Let me nail down the exact poseStack state where CGC's first-person render is invoked.
+
+Root cause of the tracer offset is clear. Let me check how CGC's gun render gets its buffer source, then write up.
+
+Both bugs may share this root cause — let me find every site that reads translations off the hand pose matrix.
+
+Let me settle the camera-rotation convention from vanilla's own usage — this determines the sign of the fix.
+
+Confirmed: `camera.rotation()` is view→world, so vanilla's hand basis makes the captured offset world-axis while Iris's empty PoseStack makes it view-space. Let me check Iris's `canRender` gate.
+
+Root cause confirmed with three independent derivations. Let me set up tasks and implement.
+
+两个仓库都已重新构建并验证。先把结论说清楚：
+
+## 症状 1（曳光弹起点偏）：根因已定位并修复
+
+**Iris 的 `HandRenderer` 把 CGC 依赖的那个 poseStack 基底抽掉了。**
+
+vanilla 1.21.1 的 `GameRenderer.renderItemInHand` 给手部 poseStack 设的基底是 `matrix4f1.invert()`，而 `matrix4f1 = rotation(camera.rotation().conjugate())` —— 也就是 `camera.rotation()`（视图空间→世界）。所以 `cacheMuzzlePosition` 读到的 `m30/m31/m32` 是**世界轴**量，#50 那套写法正是按这个来的。
+
+光影包启用时 Iris 的 `HandRenderer.renderSolid` 干的是另一套（我从 `irisshaders-455508-8242804.jar` 反编译确认）：
+
+```java
+setupGlState(...) → 投影乘 scale(1,1,0.125)，然后 poseStack.setIdentity() + bob
+renderSolid(...)  → modelview = 上面那个 poseStack
+                 → renderHandsWithItems(f, new PoseStack(), bufferSource.getUnflushableWrapper(), ...)
+                                        ^^^^^^^^^^^^^^^ 空栈，单位阵基底
+```
+
+于是 `m30/m31/m32` 退化成**视图空间**量（等价于 1.20.x 的语义），而 `GunProjectileRenderer` 仍然把它当世界向量 `translate` 出去 → 误差 = 该偏移被摄像机旋转了一次，横向上表现为 **∝ sin(yaw)**。
+
+这个式子把你的 5 个观察全对上了：枪口在视图空间约前 0.6 格时，横向误差 ≈ `0.6·sin(yaw)` —— 121.3°/90°/44.7° 全为正（右），−142.8°/−57.4° 全为负（左），且**与开镜进度无关**（错的是基底，不是 FOV 补偿）。枪模型本身正常也解释得通：外层 modelview 会把基底抵消，最终渲染矩阵在两种情况下等价，只有「读出矩阵分量再拿去算」才会错。
+
+**改法**（按你说的，新 API 放 Compat Shader 注入）：
+
+| 文件 | 改动 |
+|---|---|
+| `Custom-Gun-Continued-1.21.1neoforge` `client/compat/iris/IrisCompat.java` | 新增 `isHandPoseStackWorldSpace()`，stub 返回 `true` |
+| 同上 `renderer/item/GunItemRenderer.java` | `cacheMuzzlePosition` 里拿到 `false` 时先 `offset.rotate(camera.rotation())` 换算到世界轴，再做原有 FOV 补偿 |
+| `CGC-Compat-Shader-iris-1.21.1neoforge` [IrisCompatMixin.java](core/src/main/java/dev/xcolorful/cgccompat/shader/client/mixin/iris/IrisCompatMixin.java) | 注入 `!HandRenderer.INSTANCE.isActive()` |
+
+判断条件我**没有**用 `IrisApi.isShaderPackInUse()`，而是用 `HandRenderer.INSTANCE.isActive()`：摄像机 detached 之类的情况下 Iris 的 `canRender` 为 false、仍走 vanilla 那条路，那时基底是含摄像机旋转的，用「装了光影包」判断会误伤。
+
+构建产物已验证：新 jar 里 `IrisCompat` 多了 `isHandPoseStackWorldSpace()`；compat jar 里 mixin 有 4 个注入（含新增那个，调用 `HandRenderer.isActive()`）；CGC 编译产物确认调到了 `IrisCompat.isHandPoseStackWorldSpace()` + `Camera.rotation()` + `Vector3f.rotate`。
+
+**这个诊断是从字节码 + vanilla 源码推出的，没有运行时验证过** —— 请你开光影试一下 yaw≈±90（原来最明显）和 yaw=0/180（原来不偏），确认都回正、且不开光影时没有变化。
+
+## 症状 2（红点 lens 朝前那面可见）：我只到假设，没定根因
+
+查到的事实：瞄具走的是**模板缓冲遮罩** —— `_AttachmentModelRender.renderDivisionOnly` 会 `_disableDepthTest()` 然后用 `GL_EQUAL, i+1` 只画模板命中的部分，而 `_clearStencilBuffer` 是 `glClearStencil(0)` + `_clear(GL_STENCIL_BUFFER_BIT)`，清的是**当时绑定的那个 framebuffer**。
+
+假设：Iris 把世界画进它自己的 framebuffer，CGC 清/写的模板跟 Iris 实际用的那份可能不是同一个，遮罩失效后 lens 就露出来了。但这条我没法从代码断定。
+
+需要你给一点能区分的信息（任一即可）：
+
+- 这个 lens 是**只开镜时**出现，还是**任何时候**看 ocular 都出现？
+- 露出来的是**整个 lens 面**，还是只有一部分/带缺口？（整个面 → 更像 culling/模板全失效；带缺口 → 更像模板圆孔没对上）
+- 有条件的话给张开光影的截图，我对着 `scopeBodyPath` 的节点树看。
+
+## 另外
+
+- 1.20.1 分支我没动（按规则只改当前分支）。它的 `cacheMuzzlePosition` 还是 #50 之前的写法，**如果 Oculus 的手部通道也是同一套 `HandRenderer`，那边很可能有同样的问题**，要不要同步你定。
+- 我把这次发现补进了长期记忆（`1.21.1 手部 poseStack` 那条），顺便修正了「`getBedrockPartCenter` 不受基底影响」的判断依据 —— 它乘了 modelview，两种情况都能抵消，所以瞄具定位是对的、不是这个 bug 的来源。
+
+未 commit、未 push。

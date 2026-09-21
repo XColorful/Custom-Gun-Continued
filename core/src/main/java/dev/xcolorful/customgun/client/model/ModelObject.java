@@ -5,14 +5,14 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import dev.xcolorful.customgun.client.api.model.IModelObjectRender;
 import dev.xcolorful.customgun.client.api.model.bedrock.IBedrockRenderer;
 import dev.xcolorful.customgun.client.api.renderer.model.IModelComponentRenderer;
-import dev.xcolorful.customgun.client.compat.oculus.OculusCompat;
-import dev.xcolorful.customgun.client.model.bedrock.NodeTransform;
-import dev.xcolorful.customgun.client.util.ClientRenderHelper;
-import dev.xcolorful.customgun.core.api.resource.assets.model.bedrock.geometry.NodeName;
+import dev.xcolorful.customgun.client.compat.iris.IrisCompat;
 import dev.xcolorful.customgun.client.model.bedrock.BedrockPart;
+import dev.xcolorful.customgun.client.model.bedrock.NodeTransform;
 import dev.xcolorful.customgun.client.resource.assets.model.BedrockModel;
 import dev.xcolorful.customgun.client.resource.assets.model.bedrock.geometry._Bone;
 import dev.xcolorful.customgun.client.util.ClientModelUtils;
+import dev.xcolorful.customgun.client.util.ClientRenderHelper;
+import dev.xcolorful.customgun.core.api.resource.assets.model.bedrock.geometry.NodeName;
 import dev.xcolorful.customgun.core.resource.instance.PojoInstance;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -232,7 +232,7 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
                 }
                 matrixStack.popPose();
 
-                if (!OculusCompat.endBatch(bufferSource)) {
+                if (!IrisCompat.endBatch(bufferSource)) {
                     bufferSource.endBatch();
                 }
 

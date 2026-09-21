@@ -226,3 +226,151 @@ Compiles cleanly. Let me record the environment/workflow facts I had to discover
 
 - 同样这段代码在 `1.21.11neoforge`、`26.1.2neoforge`、`26.3neoforge` 三个 worktree 里一字不差，你说的是「1.21.10 起」——要我一并改过去吗？（那需要逐个确认 `Mth.HALF_PI` 等 API 在对应版本还在，我会分别验一遍。）
 - 还没提交。要我在这条 `1.21.10neoforge` 分支上建个 commit（PR #59 已经 merge 了，所以这会是新的分支/PR），还是你先自己过一眼 diff？
+
+#
+---
+
+```
+现在需要修PR #15引入的，#59涉及的的问题，关于dev.xcolorful.customgun.client.particle.BulletHoleParticle
+- 当前IDEA打开了1.21.1（跟neoforge相同）、1.21.4、1.21.6、1.21.10（跟1.21.11相同）、26.1.x（跟26.1.2相同）、26.2（跟26.3相同）
+- 之前PR#15在calculateSprite临时引入的deprecation需要重新检查正确方式，1.21.1、1.21.4、1.21.6、1.21.10、26.1.x分别独立，需要都研究一遍（括号标的相同版本不需要重复修改，我会手动cherry pick）
+- 26.2起创造粒子时会有明显卡顿，而且没粒子
+- 日志在D:\Temp-File\下众多文件
+- 所有版本都研究好修改好后再通知我，完成后不要提交
+```
+
+# 
+
+I'll start by understanding the current state of the code and the issues.
+
+The 26.3 log confirms the issue: `minecraft.level is null` in `calculateSprite`, so the particle fails to spawn. Let me compare all versions.
+
+Now let me look at 1.21.4 and 1.21.6, and understand the API history.
+
+Now let me inspect the actual Minecraft API in each IDEA project.
+
+1.21.1: `getTexture(state, level, pos)` is **not** deprecated there. Let me examine 26.2's model API.
+
+26.2 has a completely new model API. Let me inspect it.
+
+`BlockStateModelSet.getParticleMaterial()` is the 26.2 replacement. Let me inspect `Material.Baked`.
+
+Let me check 1.21.10's model API directly.
+
+Let me find where MC sources live for the 1.21.10 project via IDEA.
+
+Let me verify the actual 1.21.10 API by decompiling the class from IDEA.
+
+Found the MC sources. Let me extract the actual APIs for each version.
+
+The agent confirmed: `calculateSprite` is from PR #15. Now let me check the real 1.21.10 API.
+
+1.21.10 still has `BlockModelShaper.getParticleIcon(state, level, pos)` (non-deprecated); `getTexture` was removed. Let me check the 26.2 log.
+
+All of 26.1.x/26.2/26.3 fail the same way. Let me see the full context in the 26.2 log.
+
+Let me trace the particle spawn path.
+
+Let me check the `ParticleEngine.createParticle` path in 26.2.
+
+The particle is spawned via `ClientLevel.addParticle` from a network packet, so `minecraft.level` should not be null. Let me check `ClientLevel.addParticle` and whether level is set before construction.
+
+Let me check how vanilla 26.2 turns a block state into a particle sprite (the canonical pattern).
+
+The canonical 26.2 pattern is `getBlockStateModelSet().getParticleMaterial(state).sprite()`. Now let me check 26.1.x's version.
+
+Let me check 26.1.x's model API.
+
+Let me verify how `ParticleEngine.level` is set across versions.
+
+Let me look for the first occurrence and surrounding context in the 26.1.x log.
+
+Let me check precisely how `Minecraft.level` is declared.
+
+Let me check `TextureSheetParticle`/`SingleQuadParticle` in 1.21.10 and 1.21.4.
+
+I now have a clear picture. Let me verify the remaining API details before implementing.
+
+I have all the API facts. Let me verify the remaining versions' exact signatures.
+
+I now have a complete picture of all five versions. Let me set up tasks and implement.
+
+Now implementing. Starting with 1.21.1:
+
+Now 1.21.10 — `getTexture` was removed, so it needs the `getParticleIcon` replacement plus a proper fallback.
+
+Let me clean that up — the structure I wrote was convoluted.
+
+Now 26.1.x — where `BlockModelShaper` is gone entirely.
+
+All five edits are in. Let me compile each version to verify.
+
+1.21.1 compiles clean. Let me compile the rest.
+
+1.21.6 still reports a deprecation in this file — let me find exactly which call.
+
+Let me get the precise deprecation location via javac.
+
+The leftover deprecation is `TextureAtlas.LOCATION_BLOCKS` in the fallback. Let me find the clean constant for 1.21.6.
+
+Let me check whether `TextureAtlas.LOCATION_BLOCKS` is deprecated in 1.21.4 as well.
+
+The real fix is to drop `minecraft.level` entirely and use the constructor's level, which makes the fallbacks dead code. Let me simplify all six consistently.
+
+Now cleaning up imports that are no longer used.
+
+Now removing the now-unused imports.
+
+Let me revert my temporary lint change and recompile all versions.
+
+Now recompiling all six versions to verify.
+
+That's a stale file lock from the earlier full recompile, not a code error. Let me clear it.
+
+1.21.6 compiles clean (warnings are pre-existing, in other files). Now the remaining three.
+
+`Level` doesn't implement `BlockAndTintGetter` in 26.x (only `ClientLevel` does). Let me check what the level argument actually affects.
+
+`BlockAndTintGetter` is implemented by `ClientLevel` but not the `Level` base type in 26.x. The particle icon is baked per-model, so the impl is what matters — casting the actual `ClientLevel` is correct.
+
+`BlockAndTintGetter` moved packages in 26.x. Let me fix the import.
+
+All six compile. Let me verify no deprecation remains in the touched file for the versions where it matters.
+
+No deprecation warnings in the touched file (the 55 are pre-existing, in other files). Let me do a final review of all six diffs.
+
+Diffs are clean and surgical. Let me confirm no stray changes in any worktree.
+
+全部六个版本已完成修改并编译通过。
+
+## 根因
+
+`calculateSprite` 取贴图用的是 `Minecraft.getInstance().level`，而粒子实际是构造器里的 `level` 参数。前者在粒子创建时可能为 null（日志里的 `minecraft.level is null`），于是贴图解析失败：
+
+- **1.21.1 / 1.21.4 / 1.21.6 / 1.21.10**：有 fallback，拿到"缺失贴图"，弹孔渲染成黑紫块或看不见
+- **26.1.x / 26.2 / 26.3**：没有 fallback，`setSprite(null)` → `getU0()` 空指针 → 被 `ClientPacketListener.handleParticleEvent` 的 catch 吞掉并打警告 → **弹孔完全不出现**，同时每次开火都走一遍"抛异常+建崩溃报告+写日志"的循环，这就是 26.2 的卡顿来源
+
+修复方式：`calculateSprite` 改用构造器传入的 level（来自 `ParticleEngine.level`，有保证），并换成各版本当前正确的贴图 API。
+
+## 各版本 calculateSprite 正确写法
+
+| 版本 | 正确 API | 核对结果 |
+|---|---|---|
+| 1.21.1 | `getBlockModelShaper().getTexture(state, level, pos)` | 本来就没弃用 |
+| 1.21.4 | 同上 | 同上；本来那句 `@SuppressWarnings` 是空的（被注释掉了），已删 |
+| 1.21.6 | `getParticleIcon(state, level, pos)` | 单参 `getParticleIcon(BlockState)` 才是弃用的，三参未弃用 |
+| 1.21.10 | `getParticleIcon(state, level, pos)` | `getTexture` 已移除；旧的单参 `particleIcon()` fallback 也是弃用的，换成未弃用的 `BlockStateModelExtension.particleIcon(level, pos, state)` |
+| 26.1.x | `getModelManager().getBlockStateModelSet().getParticleMaterial(state, level, pos).sprite()` | `BlockModelShaper` 已整个移除；这正是 vanilla `TerrainParticle` 的写法 |
+| 26.2 | 同 26.1.x | 同上 |
+
+两个 26.x 的额外坑：`BlockAndTintGetter` 搬到了 `net.minecraft.client.renderer.block`，且 26.x 起 `Level` 不再是它的父类型（只有 `ClientLevel` 实现），所以要显式转型。
+
+## 验证情况
+
+- 六个版本 `:core:compileJava` 全部通过
+- 用 `-Xlint:deprecation` 复检：`BulletHoleParticle.java` 已无任何弃用告警（工程里剩下的 55 个告警都在别的文件，是既有的）
+- 源码里已无 `Minecraft.getInstance().level`，日志里那串 `minecraft.level is null` 不会再出现
+
+每个 worktree 只有这一个文件被改，未提交。按你说的，1.21.11（照 1.21.10）和 26.3（照 26.2）我没动，等你 cherry-pick。
+
+**未做真机验证**：根因和 API 已从源码层面确认，但弹孔实际渲染效果、以及 26.2 的卡顿是否真的消失，需要你实机打一枪确认。

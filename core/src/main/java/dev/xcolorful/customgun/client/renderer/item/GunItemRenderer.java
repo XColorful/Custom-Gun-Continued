@@ -320,7 +320,7 @@ public class GunItemRenderer extends AnimateGeoItemRenderer<GunModelObject, GunA
             但是1.20.1加了这行也没问题，装Oculus+开关光影都正常，不装Oculus也正常
              */
             // [1.20.1, 1.21.1, )
-            poseStack.last().pose().mulLocal(RenderSystem.getModelViewMatrix());
+            poseStack.last().pose().mulLocal(ClientRenderHelper.GL._getModelViewMatrix());
             }
 
             // 计算出枪口相对于摄像机中心的坐标

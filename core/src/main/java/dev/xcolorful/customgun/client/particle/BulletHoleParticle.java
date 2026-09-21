@@ -29,6 +29,7 @@ import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
+import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
@@ -182,15 +183,23 @@ public class BulletHoleParticle extends TextureSheetParticle {
 
     // --------便利方法--------
 
-    @SuppressWarnings("deprecation")
+    /**
+     * @since 26.1.x {@link Level}不再是{@link BlockAndTintGetter}，只有{@link ClientLevel}实现了该接口
+     */
     private TextureAtlasSprite calculateSprite(BlockPos pos) {
-        Minecraft minecraft = Minecraft.getInstance();
-        Level world = minecraft.level;
-        if (world != null) {
-            BlockState state = world.getBlockState(pos);
-            return minecraft.getBlockRenderer().getBlockModelShaper().getParticleIcon(state, world, pos);
-        }
-        return minecraft.getTextureAtlas(TextureAtlas.LOCATION_BLOCKS).apply(ClientRenderUtils.getMissingTextureLocation());
+        BlockState state = this.level.getBlockState(pos);
+        return Minecraft.getInstance()
+
+                .getBlockRenderer() // [1.20.1, 26.1.x)
+//                .getModelManager() // [26.1.x, )
+
+                .getBlockModelShaper() // [1.20.1, 26.1.x)
+//                .getBlockStateModelSet() // [26.1.x, )
+
+//                .getTexture(state, this.level, pos) // [1.20.1, 1.21.6)
+                .getParticleIcon(state, level, pos) // [1.21.6, 26.1.x)
+//                .getParticleMaterial(state, level, pos).sprite() // [26.1.x, )
+                ;
     }
 
     @Override

@@ -152,9 +152,3 @@ Compat 的 `libs/` 里那份 CGC jar 还是旧的 `compat/oculus/OculusCompat.cl
 **游戏内只有你能确认**：Sodium 0.8 + Iris 1.8.14 开光影包时，枪身/枪口火焰/抛壳/手部外观是否和 vanilla 一致，阴影 pass 里有没有火焰/弹壳鬼影，以及不开光影包时的对照行为。
 
 未 commit、未 push。另外我把 Forge/NeoForge 这套 mixin 差异记进了长期记忆，省得以后给新的 CGC-Compat-* 写 mixin 时再踩一遍。
-
-# 
-
-```
-现在点开视频设置会崩溃，看下什么问题，日志在D:\Temp-File了
-```

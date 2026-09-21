@@ -12,7 +12,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import dev.xcolorful.customgun.client.api.renderer.model.IModelComponentRenderer;
 import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
-import dev.xcolorful.customgun.client.compat.oculus.OculusCompat;
+import dev.xcolorful.customgun.client.compat.iris.IrisCompat;
 import dev.xcolorful.customgun.client.model.GunModelObject;
 import dev.xcolorful.customgun.client.model.bedrock.SlotModel;
 import dev.xcolorful.customgun.client.resource.assets.display.GunDisplay;
@@ -80,7 +80,7 @@ public class MuzzleFlashRender implements IModelComponentRenderer {
                        int light, int overlay) {
         if (!State.isSelf) return;
 
-        if (OculusCompat.isRenderShadow()) return;
+        if (IrisCompat.isRenderShadow()) return;
 
         final long currentTimeMillis = System.currentTimeMillis() - State.lastShootTimestamp;
         if (currentTimeMillis > TIME_RANGE) return;

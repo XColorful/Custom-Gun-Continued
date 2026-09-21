@@ -14,6 +14,7 @@ import dev.xcolorful.customgun.client.api.renderer.KeepingItemRenderer;
 import dev.xcolorful.customgun.client.api.renderer.item.IAnimateGeoItemRenderer;
 import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
 import dev.xcolorful.customgun.client.api.sound.gun.GunSoundType;
+import dev.xcolorful.customgun.client.compat.iris.IrisCompat;
 import dev.xcolorful.customgun.client.config.SoundConfig;
 import dev.xcolorful.customgun.client.renderer.item.AnimateGeoItemRenderer;
 import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
@@ -119,6 +120,7 @@ public class FirstPersonRender implements IEventHandler {
 
         // 防止内存泄漏
         // 26.2 MultiBufferSource 已移除，endBatch 机制不复存在，由 SubmitNodeCollector 统一提交
+        IrisCompat.endBatch(mc.renderBuffers().bufferSource());
 
         renderer.renderFirstPerson(event.getPoseStack(),
                 event,

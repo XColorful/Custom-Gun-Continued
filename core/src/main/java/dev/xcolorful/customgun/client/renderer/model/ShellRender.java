@@ -12,7 +12,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import dev.xcolorful.customgun.client.api.renderer.model.IModelComponentRenderer;
 import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
-import dev.xcolorful.customgun.client.compat.oculus.OculusCompat;
+import dev.xcolorful.customgun.client.compat.iris.IrisCompat;
 import dev.xcolorful.customgun.client.model.AmmoModelObject;
 import dev.xcolorful.customgun.client.model.GunModelObject;
 import dev.xcolorful.customgun.client.resource.assets.display.AmmoDisplay;
@@ -28,7 +28,6 @@ import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
 import dev.xcolorful.customgun.core.api.resource.ResourceApi;
 import dev.xcolorful.customgun.core.resource.data.data.GunData;
 import dev.xcolorful.customgun.core.resource.instance.data.GunIndexInstance;
-import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -87,7 +86,7 @@ public class ShellRender implements IModelComponentRenderer {
                        int light, int overlay) {
         if (!State.isSelf) return;
 
-        if (OculusCompat.isRenderShadow()) return;
+        if (IrisCompat.isRenderShadow()) return;
 
         ItemStack gunItem = this.gunModelObject.getCurrentGunItem();
         @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);

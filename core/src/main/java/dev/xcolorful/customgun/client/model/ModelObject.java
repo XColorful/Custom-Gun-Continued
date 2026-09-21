@@ -4,13 +4,14 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import dev.xcolorful.customgun.client.api.model.IModelObjectRender;
 import dev.xcolorful.customgun.client.api.model.bedrock.IBedrockRenderer;
 import dev.xcolorful.customgun.client.api.renderer.model.IModelComponentRenderer;
-import dev.xcolorful.customgun.client.model.bedrock.NodeTransform;
-import dev.xcolorful.customgun.client.util.ClientRenderHelper;
-import dev.xcolorful.customgun.core.api.resource.assets.model.bedrock.geometry.NodeName;
+import dev.xcolorful.customgun.client.compat.iris.IrisCompat;
 import dev.xcolorful.customgun.client.model.bedrock.BedrockPart;
+import dev.xcolorful.customgun.client.model.bedrock.NodeTransform;
 import dev.xcolorful.customgun.client.resource.assets.model.BedrockModel;
 import dev.xcolorful.customgun.client.resource.assets.model.bedrock.geometry._Bone;
 import dev.xcolorful.customgun.client.util.ClientModelUtils;
+import dev.xcolorful.customgun.client.util.ClientRenderHelper;
+import dev.xcolorful.customgun.core.api.resource.assets.model.bedrock.geometry.NodeName;
 import dev.xcolorful.customgun.core.resource.instance.PojoInstance;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderType;
@@ -227,9 +228,9 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
                     }
                 }
 
-//                if (!OculusCompat.endBatch(bufferSource)) {
-//                    bufferSource.endBatch();
-//                }
+                if (!IrisCompat.endBatch(bufferSource)) {
+                    bufferSource.endBatch();
+                }
 
                 for (int i = 0; i < this.delegateRenderers.size(); i++) {
                     IModelComponentRenderer renderer = delegateRenderers.get(i);

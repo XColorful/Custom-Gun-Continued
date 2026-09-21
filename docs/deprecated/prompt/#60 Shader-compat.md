@@ -88,3 +88,73 @@ CGC-Compat-Shader：新增 [IrisCompatMixin.java](core/src/main/java/dev/xcolorf
 - 顺带一提：compat 的 `mod_version=0.0.0`，产物名是 `cgccshader-0.0.0-forge-1.20.1.jar`——脚手架遗留，发布前你自己定。
 
 未 commit、未 push，等你 review。
+
+# 
+
+```
+现在继续1.21.1neoforge，环境已经搭好了，要求跟之前相同
+```
+
+# 
+
+Continuing to 1.21.1 NeoForge. Let me survey both new repos.
+
+CGC 1.21.1 already has the stub and all 5 call sites. Now the critical unknown — the Iris 1.21.1 API surface.
+
+Confirmed: Iris 1.21.1 still has the no-op `endBatch(RenderType)`, and production uses official (readable) names. Let me check the remaining state.
+
+Iris 1.21.1's batched-entity mixins are `required: true` (always applied), same mechanism. The compat `libs/` jar is still the stale `compat/oculus` one, so a rebuild+swap is needed here too. Setting up tasks.
+
+MachineMax's NeoForge artifacts contain no refmap at all — MDG doesn't generate one, and NeoForge's official namespace makes it unnecessary. So no `remap = false` here. Building CGC 1.21.1.
+
+Verified end to end. Saving the cross-loader gotcha for future compat repos.
+
+1.21.1 NeoForge 做完了，两个仓库构建通过。
+
+## CGC 1.21.1 侧不用改
+
+PR #60 的 merge（`1e010f240 Add Iris Shaders compat skeleton`）已经把 `client/compat/iris/IrisCompat` 和 5 处调用点带过来了，工作区是干净的。`docs-tacz` 里的 `|oculus|iris|` 也已同步。所以我这次没碰 CGC 的源码。
+
+## Iris 1.21.1 的 API 核对（反编译确认）
+
+编译目标是 `irisshaders-455508-8242804.jar` = **Iris 1.8.14-beta.1+mc1.21.1**，和 `iris_version_range=[1.8.13,)` 对得上：
+
+- `net.irisshaders.batchedentityrendering.impl.FullyBufferedMultiBufferSource` 仍在，`endBatch(RenderType)` **依然是 `{ return; }`** —— 和 Oculus 1.8.0 一模一样的空实现。
+- Iris 的 `iris-batched-entity-rendering.mixins.json` 是 `"required": true`，**不依赖光影包是否启用**，装了 Iris 就一直生效。
+- 顺带：Iris 1.21.1 明确把 Embeddium 声明为 `type = "incompatible"`，所以这边的搭配是 **Sodium 0.8**，不是 Embeddium —— compat 的 gradle 和 mods.toml 本来就写的 sodium，一致。
+
+## 改动（只有 compat 仓库）
+
+新增 [IrisCompatMixin.java](../../CGC-Compat-Shader-iris-1.21.1neoforge/core/src/main/java/dev/xcolorful/cgccompat/shader/client/mixin/iris/IrisCompatMixin.java)，在 [cgccshaderclient.mixins.json](../../CGC-Compat-Shader-iris-1.21.1neoforge/core/src/main/resources/cgccshaderclient.mixins.json) 注册。三个 `@Inject` 和 1.20.1 同源，但**没有** `remap = false`：
+
+| | Forge 1.20.1 | NeoForge 1.21.1 |
+|---|---|---|
+| 生产环境 MC 名 | SRG（`m_109911_`） | official（`endBatch`） |
+| `remap = false` | 必须加，否则 AP 报错编译不过 | 不需要，AP 直接接受 |
+| refmap | 生成了但是空的（reobf 已把方法体重写成 SRG） | MDG 根本不生成 |
+
+所以这里的字节码里直接就是 `invokevirtual MultiBufferSource$BufferSource.endBatch:()V` —— 生产环境本来就叫这个名字，不需要 refmap 兜。这也和 `CGC-Compat-MachineMax` 的 NeoForge 写法一致（它也没 `remap = false`、产物里也没有 refmap）。
+
+另外 `neoforge-compat` 不重新编译 core 的源码（只 `from project(':core').sourceSets.main.output`），所以**不需要**像 Forge 那边给 neoforge-compat 重复声明 iris 依赖。
+
+## 换包与验证
+
+Compat 的 `libs/` 里那份 CGC jar 还是旧的 `compat/oculus/OculusCompat.class`，所以照样得先换包。已重建 CGC 1.21.1 并替换（该目录 gitignore，不留 diff）。
+
+产物核对结果：
+
+- CGC jar 含 `compat/iris/IrisCompat.class`、不再有 `compat/oculus/`
+- compat jar（`cgccshader-0.0.0-neoforge-1.21.1.jar`）含 `IrisCompatMixin.class`、mixins json、`logo.png`/`pack.mcmeta`，结构完整
+- `@Mixin(value=[class Ldev/xcolorful/customgun/client/compat/iris/IrisCompat;])`
+- 三个 `@Inject` 的 `method`/`HEAD`/`cancellable=true` 参数齐全
+- `neoforge.mods.toml` 的 `[[mixins]] config="cgccshaderclient.mixins.json"` 与全部占位符已展开
+
+**游戏内只有你能确认**：Sodium 0.8 + Iris 1.8.14 开光影包时，枪身/枪口火焰/抛壳/手部外观是否和 vanilla 一致，阴影 pass 里有没有火焰/弹壳鬼影，以及不开光影包时的对照行为。
+
+未 commit、未 push。另外我把 Forge/NeoForge 这套 mixin 差异记进了长期记忆，省得以后给新的 CGC-Compat-* 写 mixin 时再踩一遍。
+
+# 
+
+```
+现在点开视频设置会崩溃，看下什么问题，日志在D:\Temp-File了
+```

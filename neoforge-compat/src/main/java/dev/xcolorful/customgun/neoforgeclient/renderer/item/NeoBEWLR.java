@@ -6,7 +6,7 @@ import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.api.item.IItemBEWLR;
 import dev.xcolorful.customgun.client.api.renderer.item.ItemDisplayContextTracker;
 import dev.xcolorful.customgun.client.api.renderer.item._SpecialModelRenderer;
-import dev.xcolorful.customgun.client.compat.oculus.OculusCompat;
+import dev.xcolorful.customgun.client.compat.iris.IrisCompat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.SubmitNodeCollector;
@@ -70,7 +70,7 @@ public class NeoBEWLR implements
                 bufferSource,
                 packedLight, packedOverlay);
 
-       if (!OculusCompat.endBatch(bufferSource)) { // [1.21.10, 26.2)
+       if (!IrisCompat.endBatch(bufferSource)) { // [1.21.10, 26.2)
            bufferSource.endBatch();
        }
     }

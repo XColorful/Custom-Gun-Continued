@@ -1,5 +1,7 @@
 package dev.xcolorful.customgun.client.compat.iris;
 
+import org.jetbrains.annotations.ApiStatus;
+
 /**
  * <ul>
  *     <li>1.20.1为Oculus</li>
@@ -24,5 +26,19 @@ public class IrisCompat {
     public static boolean endBatch(Object bufferSource) {
         // mixin注入点
         return false;
+    }
+
+    /**
+     * 手部 poseStack 里采到的位移是否已经是「世界轴」量
+     * <ul>
+     *     <li>vanilla 的 {@code GameRenderer.renderItemInHand} 把手部 poseStack 的基底设成 {@code camera.rotation()}（视图空间→世界），采到的是世界轴量</li>
+     *     <li>Iris 的 {@code HandRenderer} 交给 {@code renderHandsWithItems} 的是空 PoseStack，基底是单位阵，采到的是视图空间量，用之前得乘 {@code camera.rotation()} 换算</li>
+     * </ul>
+     * @return false 表示需要换算
+     */
+    @ApiStatus.AvailableSince("1.21.1")
+    public static boolean isHandPoseStackWorldSpace() {
+        // mixin注入点
+        return true;
     }
 }

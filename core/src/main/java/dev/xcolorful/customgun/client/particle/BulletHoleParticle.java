@@ -196,8 +196,8 @@ public class BulletHoleParticle extends TextureSheetParticle {
 //                .getBlockStateModelSet() // [26.1.x, )
 
 //                .getTexture(state, this.level, pos) // [1.20.1, 1.21.6)
-                .getParticleIcon(state, level, pos) // [1.21.6, 26.1.x)
-//                .getParticleMaterial(state, level, pos).sprite() // [26.1.x, )
+                .getParticleIcon(state, this.level, pos) // [1.21.6, 26.1.x)
+//                .getParticleMaterial(state, this.level, pos).sprite() // [26.1.x, )
                 ;
     }
 

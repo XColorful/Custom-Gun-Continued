@@ -319,7 +319,7 @@ public class GunItemRenderer extends AnimateGeoItemRenderer<GunModelObject, GunA
             不乘的话两者含义不同（vanilla 是世界轴量、Iris 是视图空间量），同一个公式会随 yaw 把偏移拽向横向
             但是1.20.1加了这行也没问题，装Oculus+开关光影都正常，不装Oculus也正常
              */
-            // [1.20.1, ) // [1.21.1, )
+            // [1.20.1, 1.21.1, )
             poseStack.last().pose().mulLocal(RenderSystem.getModelViewMatrix());
             }
 
@@ -334,7 +334,7 @@ public class GunItemRenderer extends AnimateGeoItemRenderer<GunModelObject, GunA
             double itemRenderFov = GunCameraHelper.State.ITEM_MODEL_FOV_DYNAMICS.get();
 
             {
-            // [1.20.1, 1.21.1)
+            // [1.20.1, 1.21.1, )
             // 手部 poseStack 的基坐标系就是摄像机（view）坐标系，m32 本身就是「沿视线」分量，直接缩放即可
             // 乘上上面的 modelview 之后，下面这个 1.20.x 的写法对 1.21.1+ 同样成立（m32 就是视图空间的「沿视线」分量）
             // 缓存转换后的偏移坐标

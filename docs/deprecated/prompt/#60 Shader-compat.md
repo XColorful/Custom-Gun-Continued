@@ -669,3 +669,444 @@ BufferUploader.drawWithShader(builder.buildOrThrow());   // 网格是 POSITION_C
 2. 如果你愿意，我下一步就把那个 shader 绑定探针**只在 Sodium-only 条件下**重新加上（仍然是最小改动、不删任何注释），一次测完就能确定圆孔是不是被 Sodium 的 program 画歪了。
 
 未 commit、未 push。
+
+# 
+
+```
+现在继续#60 Shader-compat.md，目前的进度是测出只在安装sodium的情况下有lens被渲染出来（bug）的问题
+之前的修改，已经merge到1.21.11并且测试第一人称曳光弹、红点lens、4倍镜开镜都没问题
+注意到TaCZ1.21.1非官方移植是没有#60提到的所有问题的
+
+oculus在CGC Compat Shader环境里，sodium/iris在CGC Compat Shader 1.21.1环境里
+
+现在开始排查1.21.1 sodium
+```
+
+# 
+
+I'll locate the #60 Shader-compat doc first.
+
+Read the full #60 history. Let me check the current state of both repos.
+
+Now let me find the ocular/scope rendering code.
+
+Interesting — there's a custom `pipeline`/`stencil` API layer with mixins. Let me read it.
+
+These are forward-compat stubs. Let me read the actual 1.21.1 ocular code.
+
+Let me gather the key facts in parallel — the GL wrapper, the render type selection, and the compat deps.
+
+Let me check the log for the exact Sodium version and mod list.
+
+Big clue: Sodium has an **FRAPI `ItemRendererMixin`**. Let me find the actual mods folder and Sodium jar.
+
+Let me enumerate every class Sodium mixes into.
+
+Sodium mixes into `MultiBufferSource$BufferSource`, `RenderBuffers`, `PoseStack`, `RenderTarget`. Let me see those specific mixins.
+
+Found it — Sodium. Let me extract and inspect the relevant mixin classes.
+
+Prime suspect found: Sodium mixes into `MultiBufferSource$BufferSource` (the exact class CGC's `endBatch()` hits). Let me disassemble.
+
+The extracted Sodium 0.6.13 lacks `MultiBufferSourceMixin` — so the installed Sodium is newer. Let me pin down which version.
+
+Sodium **0.8.13+mc1.21.1** is the compile target — the earlier extraction was 0.6.13, the wrong version. Let me extract the right one.
+
+Now the prime suspect. Let me disassemble Sodium's `MultiBufferSourceMixin`.
+
+Let me get the injection targets compactly for all relevant Sodium mixins.
+
+Let me look at CGC's bedrock model geometry generation — that determines what the lens quad actually is.
+
+A zero-depth box generates **two coplanar quads** (north + south) with different UVs. Let me check vanilla's `endBatch` to see if Sodium's quad sort can reorder them.
+
+Let me use the IDEA MCP as the project instructions direct, to read vanilla's `endBatch`.
+
+Let me see which `ItemRenderer` methods Sodium redirects.
+
+Let me get the full annotation targets for Sodium's FRAPI `ItemRendererMixin`.
+
+Sodium FRAPI injects at the `isCustomRenderer()` call in `ItemRenderer.render`, cancellable. Let me read vanilla's code there.
+
+Let me look at CGC's `RenderType_` wrapper — the user flagged it as suspicious.
+
+Let me check Sodium's `VertexConsumerMixin` target and whether vanilla `VertexConsumer` has that 11-arg `addVertex`.
+
+Let me check who constructs the bedrock cube (delta handling) and read Sodium's `PoseStackMixin`.
+
+Let me delegate the upstream-port comparison while I continue on Sodium.
+
+While that runs, let me confirm how CGC's gun reaches the renderer.
+
+Let me read CGC's `ClientRenderHelper` — it wraps the GL state and hands out the collector.
+
+Let me check what render type the attachment/scope portion actually gets inside the gun model.
+
+The agent found the smoking gun: upstream's library ships a **Sodium-specific software face-culling workaround** for bedrock models. Let me read it.
+
+Let me check whether the port's attachment (scope) model actually goes through the Sodium-aware cube.
+
+Let me check vanilla's first-person hand pass for cull-state handling.
+
+This is promising — `entityTranslucent` is NO_CULL **and** sortOnUpload. Let me check the actual default of `enable_transparency`.
+
+Big difference found: the port renders first-person via NeoForge's `RenderHandEvent`, CGC at `renderHandsWithItems` HEAD. Let me see where NeoForge fires that event.
+
+两个仓库都没动过，工作区干净。这轮只排查，没改代码。
+
+## 新证据（这轮唯一的实质进展）
+
+上游那套 `simplebedrockmodel` 库里有一套**专门给渲染 mod 准备的 bedrock 立方体**：
+
+- `SodiumCompat.init()` 之后，`BedrockModel.createCubeBox()/createCubePerFace()` 一旦检测到装了 sodium 就返回 `SodiumBedrockCubeBox`（Embeddium 同理）。移植版在客户端 setup 里会调它。
+- 这两个子类相对普通 `BedrockCubeBox` 的**功能差异只有两处**：顶点绕过 `VertexConsumer`、直接用渲染 mod 的 `VertexBufferWriter.push(...)` 写进缓冲；以及**软件背面剔除**：
+
+```java
+boolean enableCulling = RenderSystem.getModelViewMatrix().m32() == 0;
+if (enableCulling && !shouldRenderFace(i, normals)) continue;
+// center·normal <= 0 才画
+```
+
+也就是说**同一批作者确认过「装了渲染 mod 之后 bedrock 立方体的背面会出问题」**，并靠软件剔除兜。症状类型和你这次完全一致。
+
+**但要提醒**：那个 `m32 == 0` 门槛我判断是 **GUI/物品栏**那一类视角（modelview 无 z 平移），第一人称手部通道的 modelview 乘了投影矩阵、m32 不为 0。所以这个补丁很可能**不是为第一人称手部写的**，它更像在修「背包/改装界面里看枪」。
+
+## 这轮排除掉的（都有证据，别重走）
+
+| 假设 | 结论 |
+|---|---|
+| Sodium 的四边形排序把两个共面 quad 换了序 | **不成立**。排序只在 `renderType.sortOnUpload()` 为真时跑，而 `entity_cutout` 是 `false`（`RenderType.java:91`）。Sodium 的 `MultiBufferSourceMixin` 只 `@WrapOperation` 了 `MeshData.sortQuads` |
+| Sodium 改了 `RenderType.draw` / 剔除状态 | **不成立**。Sodium 的 mixin 目标表里没有 `RenderType`；`draw()` 仍是 setup→draw→clear，`entity_cutout` 走默认 `CULL`（`CompositeStateBuilder:1337`） |
+| vanilla 第一人称通道关了剔除 | **不成立**。`ItemInHandRenderer` 整个类**没有一处** `RenderSystem.*`，枪绘制时剔除是开着的 |
+| Sodium 的 `PoseStack`/`RenderBuffers`/`RenderTarget` mixin 有副作用 | **不成立**。分别是 Pose 对象缓存、section 缓冲池重定向、只动 `blitToScreen` |
+| 上游的 sodium 兜底解释了移植版免疫 | **覆盖不到瞄具**。移植版的瞄具由它自己的 `BedrockModel`（独立类，直接 `new BedrockCubeBox(...)`）构建，全 repo 只 import 了库的 3 个接口 |
+
+**卡点**：`entityCutout` 下背面剔除在 Sodium 和 vanilla 里应该是一样的，所以「零厚度立方体北面被画出来」用纯剔除解释说不通。
+
+## 两个问题请你确认
+
+1. **移植版在「装了 Sodium + 同一把 cbrg:red_dot」下那片 lens 面真的不出现吗？** 按静态代码它也该有病。这一个数据点决定我是继续挖 CGC 侧差异，还是照上游思路做。
+2. 同一把枪装 Sodium 时，**改装界面/背包里**看这个瞄具正常吗？（那正是上游补丁覆盖的场景。）
+
+## 建议先做的判定实验（不用重新构建）
+
+改**枪包数据**：把 `scope_body/lens` 那个 cube 的 `size` 第三位从 `0` 改成 `0.01`，进游戏看。
+
+- **消失** → 根因是「两个共面 quad + Sodium 下的顺序/剔除」，修法落在模型加载器（给退化立方体极小厚度，或照上游做软件剔除）。
+- **还在** → 与共面无关，是遮罩/模板那条链，我换方向。
+
+未 commit、未 push。等你这两个答案再决定动手方向。
+
+# 
+
+```
+改0.01没用，依然有问题
+用最新的tacz-neoforge-1.21.1-1.1.8-hotfix-r6.jar，配合sodium，确实没问题，帧数很高
+可以浏览SBM git历史
+```
+
+# 
+
+Two commits jump out. Let me read them.
+
+Let me check whether CGC's gun also gets rendered through vanilla's item path (the port cancels it; CGC may not).
+
+Strong lead in SBM's commit `2a6c72c 修正剔除面未正常被剔除的问题` touching `BedrockCubePerFace`. Let me check CGC's per-face cube and the port's.
+
+Let me read CGC's per-face cube — whether it skips undeclared faces.
+
+This is the crux. Let me read CGC's `BedrockPolygon` and check the port's per-face support.
+
+Let me check what Sodium does to `Direction` — CGC calls `Direction.step()` and mutates the result.
+
+Let me read the port's own per-face cube and compare to CGC's.
+
+The port's cube geometry is identical to CGC's. Let me compare the port's first-person render entry against CGC's.
+
+Let me look for the actual gunpack model to confirm the lens's face declaration.
+
+没改任何代码，两边工作区仍然干净。你这两条测试结果把方向**掉了个头**，我先说清楚新结论。
+
+## 0.01 没用 → 那片 lens 是一个「只声明了一面」的 per-face cube
+
+CGC 的 [BedrockCubePerFace.java:67-77](core/src/main/java/dev/xcolorful/customgun/client/model/bedrock/BedrockCubePerFace.java:67) 对**没有声明 UV 的面**不是跳过，而是塞一个**退化四边形**：
+
+```java
+private static final BedrockVertex EMPTY = new BedrockVertex(0, 0, 0, 0.0F, 0.0F);
+private static final BedrockVertex[] EMPTY_VERTEX = new BedrockVertex[]{EMPTY, EMPTY, EMPTY, EMPTY};
+...
+if (face == _FaceUv.EMPTY) {
+    return new BedrockPolygon(EMPTY_VERTEX, ...);   // 四个顶点全在模型原点，零面积
+}
+```
+
+也就是说：如果 `scope_body/lens` 这个 cube 用的是 `per_face_uv`、**只有 `north` 有贴图**，那么它**唯一真实的面就是北面**，其余五个是零面积退化面（永远画不出来）。
+
+**这就解释了为什么 0.01 没用**：南面本来就是退化的，改 z 尺寸动不到它。同时它把结论钉死了：
+
+> 那片 lens 在 vanilla 里看不见，**完全、且仅仅**依赖背面剔除（北面背对摄像机 → 被 cull）。**没有第二条防线。**
+
+所以 0.01 那次不是「排除了共面」，而是**证明了根因是「Sodium 下背面剔除没生效」**。
+
+⚠️ 这一步我是**从你的描述推的**，麻烦确认一下：把 `cbrg` 枪包里 `red_dot` 的 bedrock 模型 JSON 中 `lens` 那个 cube 那段发我（看它是不是 `per_face_uv`、是不是只声明了 `north`）。这一段能直接一锤定音。
+
+## SBM 历史确实指向同一条路
+
+按你指的翻了 SBM：
+
+- `2a6c72c 修正剔除面未正常被剔除的问题，再次尝试修正手部问题` —— 给 `SodiumBedrockCubePerFace` 补了 `emptyFacesMask` 检查，**「本该不画的面被画出来了」**，和我们同一个 bug 类。
+- `1c64cba 尝试移植tlm的剔除算法` —— 给 `SodiumBedrockCubeBox` / `SodiumBedrockCubePerFace` 加了**软件背面剔除**（`shouldRenderFace`，按「面中心·面法线 ≤ 0」判断），门槛是 `RenderSystem.getModelViewMatrix().m32() == 0`。
+
+**这就是「装了渲染 mod 之后 bedrock 面的剔除不可靠」的官方答案：软件剔除兜底。**
+
+两个要说清的：
+
+1. 那个 `m32 == 0` 门槛我算下来**第一人称手部通道是 -1**（手部 modelview = 层 modelview × 投影矩阵，投影矩阵 m32 = -1），所以上游这套补丁**很可能只覆盖 GUI/物品栏场景**，不是第一人称。要照搬得重新想门槛。
+2. **移植版那边我仍然解释不通**：我读了它的 `BedrockAttachmentModel` → 它自己的 `BedrockModel` → `BedrockCubeBox`/`BedrockCubePerFace`，和 CGC 的形状、退化面写法**逐字一样**，SBM 的软件剔除根本覆盖不到它；`AnimateGeoItemRenderer` 只 `implements IFPGeoItemRenderer` 一个接口。也就是按静态代码，移植版的瞄具也该有这病 —— 但你实测它是好的。
+
+## 想请你做两件事（都很便宜）
+
+1. **这是全局剔除丢失，还是只这一块？** 装 Sodium 时，红点那把枪**别的背面几何有没有异常**（弹匣、枪身镂空处、瞄具外环）？如果全枪都正常、只有这片 lens 露出来，那就不是「剔除整体失效」，范围会小很多。
+2. **改装界面/背包里看这个瞄具正常吗？**（那是上游补丁真正覆盖的 GUI 场景。）顺带能给我开个 **Sodium-only（不装 Iris）的 log** —— `D:\Temp-File\debug.log` 那份是 Iris+Sodium，我想看 Sodium-only 下有没有 mixin 告警。
+
+给全这两条 + 那段模型 JSON，我就能确定是「照 SBM 做软件剔除」还是「CGC loader 侧跳过空面」，再动代码给你 review。
+
+# 
+
+```
+正常枪没看到明显的剔除问题，红点模型本身就只有这一个块用到了这个做法，不清楚是否是全局，红点模型和log放D:\Temp-File了，完成带assets的部分也在目录下D:\Temp-File\tacz了
+在改装界面切到枪口位置从枪前往枪后看，能看见lens（本来就是）
+切到瞄准镜位置从枪后往前看，仍然能看到lens（跟第一人称一样）
+```
+
+# 
+
+Let me look at the model and the new log.
+
+Model confirmed — all 8 `lens` cubes are zero-depth **per-face cubes with only `north` declared**. So culling is the only thing hiding them. Let me check Sodium's `BufferBuilder` intrinsics.
+
+Let me check the new log — is it Sodium-only, and does it show anything unusual?
+
+Let me settle the port contradiction — whether its src cubes do any software culling.
+
+Let me check CGC's `bakePipelineState` — the one wrapper the port doesn't have.
+
+Let me read the port's equivalent of `renderModelPart` — the actual flush path.
+
+Model confirmed: all 8 `lens` cubes are `size z=0` per-face cubes with **only `north`** declared, so CGC's `EMPTY_VERTEX` path makes every other face a zero-area quad — the lens's invisibility rests **100%** on back-face culling. Let me check line endings before patching.
+
+Model confirms the degenerate-face path is involved. Let me apply upstream's fix shape (skip undeclared faces instead of emitting zero-area quads) as a probe.
+
+Patch is minimal and CRLF-clean. Now let me build it.
+
+Build succeeded. Let me verify the jar and its bytecode.
+
+Bytecode verified: `getTexturedQuad` returns null on undeclared faces, `compile` skips them. Let me sync the jar into the compat repo's `libs/`.
+
+Let me record the cross-repo finding for future sessions, then report.
+
+模型确认了推断，我改了一处并构建好了。
+
+## 模型证实：这 8 个块是「只声明 north 的 per-face cube」
+
+`red_dot_geo.json` 的 `lens` 骨骼下 8 个 cube **全部**是 `size` z=0、**`uv` 对象里只有 `north`**：
+
+```json
+{"origin": [-0.563, 1.4375, -1.3125], "size": [1.126, 1.22294, 0],
+ "uv": {"north": {"uv": [21.5, 21.5], "uv_size": [10.5, 10.5]}}}
+```
+
+而 [BedrockCubePerFace.java:67](core/src/main/java/dev/xcolorful/customgun/client/model/bedrock/BedrockCubePerFace.java:67) 对没声明的面**不是跳过**，是塞一个零面积退化四边形（`EMPTY_VERTEX` = 4 个都落在模型原点的顶点）。所以：
+
+> 这个 cube **唯一真实的面就是 north**，其余五个永远画不出像素。从枪后看它本该看不见，**100% 靠背面剔除**——没有第二条防线。
+
+这就解释了 0.01 为什么没用（南面本来就是退化的），也解释了为什么全枪只有这一处露馅：闭合箱体的背面被自己的正面深度挡住，看不见；只有这种单面零厚度几何没有东西遮它。
+
+## 改动（1 个文件，10 增 6 删）
+
+[BedrockCubePerFace.java](core/src/main/java/dev/xcolorful/customgun/client/model/bedrock/BedrockCubePerFace.java)：未声明 UV 的面**不再画退化四边形，直接跳过不画**，并删掉因此失效的 `EMPTY`/`EMPTY_VERTEX` 两个静态字段。
+
+这**不是新发明**，是 SBM `2a6c72c 修正剔除面未正常被剔除的问题` 的同一条修法（上游用的是 `emptyFacesMask`）。选它当探针的理由：退化四边形本身画不出任何像素，**所以在 vanilla 下这是纯等价改动**，不会影响其他枪；改动只落在 per-face 路径上，`BedrockCubeBox` 一行没动。
+
+**它同时是一个判据**：
+- lens 消失 → 根因就是「网格里混进 4 个重合顶点」这件事被 Sodium 的顶点写入/四边形展开路径搞乱（退化面被当成真面画出来）。
+- lens 还在 → 与退化顶点无关，是背面剔除本身没生效，那就走 SBM 那条软件剔除（`shouldRenderFace`）。
+
+## 构建与产物
+
+- 构建通过（`JAVA_HOME=jdk-21.0.8`），产物 `customgun-0.0.17-neoforge-1.21.1.jar` 已重建。
+- 字节码核对：`getTexturedQuad` 命中 `_FaceUv.EMPTY` 后 `aconst_null; areturn`；`compile` 里有 `ifnonnull` 跳过；类里已无 `EMPTY_VERTEX` 引用。
+- 该 jar 已换进 CGC-Compat-Shader-iris 的 `libs/`（gitignore，无 diff）。**compat 仓库源码一行没动，不用重编。**
+
+## 另外发现一处差异，但我没改
+
+同一条绘制路径上，移植版和 CGC 有个真实的写法差异：
+
+| | 刷新方式 |
+|---|---|
+| 移植版 `renderTempPart` | `bufferSource.endBatch(renderType)` —— 只刷这一个类型 |
+| CGC `renderModelPart` | `bufferSource.endBatch()` —— 无参，额外把 `fixedBuffers` 全刷一遍 |
+
+我判断它对 Sodium 场景大概率**是空动作**（那些 fixed buffer 是原版区块用的 solid/cutout/translucent 等，Sodium 的区块走自己的通道，里面应该是空的），所以没动它。如果上面那版探针没用，我会把这个也试一下。
+
+## 需要你测两件事
+
+1. **装 Sodium**，用同一把 `cbrg:red_dot` 从枪后看（第一人称 + 改装界面瞄准镜视角）—— lens 还在吗？顺带在**不装 Sodium** 时确认其他枪外观没变化（按分析不该变）。
+2. **移植版在装 Sodium 下，这片 lens 到底在不在？** 这个我必须再确认一次：移植版的瞄具模型也是它自己的 loader（`com.tacz.guns.client.model.bedrock.BedrockModel`，不继承 SBM），几何和渲染路径跟 CGC 逐字一样、也没有软件剔除 —— 按静态代码它**也应该**有这个病。如果它确实没有，那说明还有一个我没找到的差异，我继续查；如果它其实也有，那方向就完全清楚了，我照 SBM 做软件剔除。
+
+未 commit、未 push。另外把 SBM 那套 Sodium/Embeddium 兼容的存在和两个坑记进了长期记忆。
+
+# 
+
+```
+还是没修好
+再次确认了，1.21.1非官方移植版确实在安装sodium的情况下没有渲染lens，log在D:\Temp-File\debug.log
+```
+
+# 
+
+Let me examine the port+Sodium log.
+
+SBM mixins `PlayerModel` — and CGC has its own `PlayerModelMixin`. Let me compare them.
+
+Let me compare the Sodium mixin set between the port run and the earlier CGC run.
+
+Let me check exactly which render types are the "fixed buffers" that CGC's no-arg `endBatch()` flushes.
+
+The port's log shows the same Sodium mixin set, so Sodium behaves identically in both runs — which points at a confound I missed. Let me first revert my probe (it didn't help, and I want attribution clean) and rebuild.
+
+没修好，我把探针撤了并重建了。这轮的关键发现是：**两次对比测试根本不是同一个环境** —— 我之前的前提是错的。
+
+## 证据：移植版那次根本就没装 ModernFix / PhysicsMod
+
+`D:\Temp-File\debug.log`（移植版 + Sodium，22 个 mod）里按 `from mod <id>` 统计 mixin 应用条数：
+
+| mod | 移植版那次 | CGC 那次（55 mod） |
+|---|---|---|
+| modernfix | **0**（没加载） | 有（大量 `safety.*` / `bugfix.*` mixin） |
+| physicsmod | **0** | 有（且它注入 `ItemRenderer` 那处**失败**了） |
+| shouldersurfing | **0** | 有 |
+| sound_physics_remastered | **0** | 有 |
+| reforgedplaymod | 217 | 有 |
+| sodium | 有 | 有 |
+
+两边的 Sodium mixin 目标表（各 66 条）我也逐条比过了，**完全一致** —— 也就是说 Sodium 在两次运行里干的事一模一样。
+
+**所以「移植版没病」这个结论是在一个近乎干净的包里得出的，而 CGC 那次是在 55 个 mod 的包里。这不是对照实验，我之前顺着它推了一整轮，方向从一开始就站不住。**
+
+**ModernFix 是最可疑的那个**：它的存在意义就是改别的 mod 的渲染/加载，它带一整套 `safety.*`、`bugfix.*` mixin，还能动态关掉别的 mod 的 mixin；而且它有一条 `bugfix.entity_pose_stack.PoseStackAccessor` 注入 `PoseStack` —— **和 Sodium 的 `features.render.immediate.matrix_stack.PoseStackMixin` 打在同一个类上**。
+
+## 这轮我做了什么
+
+- **撤销**了上一版的探针（[BedrockCubePerFace.java](core/src/main/java/dev/xcolorful/customgun/client/model/bedrock/BedrockCubePerFace.java) 已 `git checkout` 还原），并重新构建，让 jar 和源码一致（上一次「jar 比源码新」的坑不想再踩）。
+- 工作区干净，jar 已同步进 compat 的 `libs/`。
+- 那个探针的结论仍然有效：**去掉退化四边形没用** ⇒ SBM `2a6c72c`（跳过未声明面）那条修法不是 CGC 的答案；SBM 那边真正可能管用的是 `1c64cba` 的**软件背面剔除**。
+
+## 请做这一个对照测试（最省事的一种）
+
+**在你平时那个 55 mod 的包里，只把 ModernFix 去掉，看那片 lens 还在不在。**
+
+- **消失** → 根因是 ModernFix × Sodium（跟 CGC 代码无关），我再去查它改了哪块；这种情况就不该在 CGC 里加补丁。
+- **还在** → 再把 PhysicsMod、ShoulderSurfing 依次去掉；如果全去掉还在，那就退到**最小包（只留 CGC + Sodium）**再测一次 —— 那次要是还出，才是 CGC × Sodium 本身的问题，我照 SBM 做软件背面剔除。
+
+我不再凭猜测改代码了：先把这个包变量钉死，再决定补丁往哪打。未 commit、未 push。
+
+# 
+
+```
+确实没有渲染lens了，log还是在Temp-File
+这个问题先报告一下目前为止的进展，在对话里说明，我会留在提示词.md文件里之后再排查，目前先搁置
+```
+
+# 
+
+Confirmed — ModernFix was the trigger. Let me verify the log and the current state before writing the report.
+
+ModernFix 去掉后问题消失。两边仓库都干净、无未提交改动。下面是这次排查的完整记录，可直接存进 `提示词.md`。
+
+---
+
+# 1.21.1neoforge · #60 Sodium
+
+# 
+
+```
+不要写在memory里，直接在对话里报告，我会手动将对话内容保存到.md文件
+```
+
+# 
+
+The log is decisive — but not the way I assumed. Let me confirm.
+
+核实完了，情况和我在上一轮说的**不一样**，报告里我按实际日志写。
+
+---
+
+# 1.21.1neoforge · #60 Sodium 下红点 lens 被画出来 —— 排查记录（2026-09-22，暂时搁置）
+
+## 一、结论
+
+**在最小包（只有 CGC + Sodium）下问题不出现。** `D:\Temp-File\debug.log`（22 Sep 00:00，完整一次启动到退出）里，mixin 应用行涉及到的 mod id 只有 `customgun`、`sodium` 和 Sodium 内嵌的 `fabric_*` 三个；ModernFix / PhysicsMod / ShoulderSurfing / Flywheel / Iris / reforgedplaymod 一个都没有。这一轮就是「CGC + Sodium 单独」。
+
+⇒ **这个 bug 需要第三个 mod 参与，不是 CGC × Sodium 本身的组合。**
+
+⚠️ 需要纠正一点：我上一条让你「只去掉 ModernFix」，但这份日志显示那一轮其实**没装任何其他 mod**，所以「ModernFix 是元凶」**没有被证明**。它只是「55 mod 包里存在、而最小包里不存在」的候选之一。
+
+## 二、症状与几何事实（已核实）
+
+- 现象：装 Sodium 时，第一人称 + 改装界面，从枪后朝前看 `cbrg:red_dot` 的 `lens`，能看到本该被剔除的北面。不装 Sodium 正常。
+- `red_dot_geo.json` 的 `lens` 骨骼下 8 个 cube **全部**是 `size` z=0、`uv` 对象里**只声明 `north``**：
+
+```json
+{"origin": [-0.563, 1.4375, -1.3125], "size": [1.126, 1.22294, 0],
+ "uv": {"north": {"uv": [21.5, 21.5], "uv_size": [10.5, 10.5]}}}
+```
+
+- [BedrockCubePerFace.java:67](core/src/main/java/dev/xcolorful/customgun/client/model/bedrock/BedrockCubePerFace.java:67) 对未声明的面不是跳过，而是塞 `EMPTY_VERTEX`（4 个都落在模型原点的顶点）→ 零面积退化四边形。**⇒ 这些 cube 唯一真实的面就是 north，从枪后看它本该看不见，完全依赖背面剔除。**
+- 这也解释了为什么把 z 由 0 改成 0.01 没用：南面本来就是退化的，改尺寸动不到它。
+
+## 三、踩过的坑（重要）
+
+**「TaCZ 非官方移植版没这问题」这个前提不成立 —— 两次测试根本不在同一个 mod 包。**
+
+| mod | 移植版那次（22 mod） | CGC 那次（55 mod） | 最小包那次 |
+|---|---|---|---|
+| modernfix | 0 | 有（大量 `safety.*`/`bugfix.*`） | 0 |
+| physicsmod | 0 | 有（注入 `ItemRenderer` 那处**失败**） | 0 |
+| shouldersurfing / sound_physics | 0 | 有 | 0 |
+| reforgedplaymod | 217 行 | 有 | 0 |
+| sodium | 有 | 有 | 有 |
+
+两边 Sodium 的 mixin 目标表（各 66 条）逐条比过，**完全一致** —— 差异不在 Sodium。
+
+## 四、已排除（都有证据，下次别重走）
+
+- `RenderType.entityCutout` 带 `CULL`，且 `sortOnUpload=false`（`RenderType.java:91`）⇒ Sodium 的四边形排序碰不到它。
+- Sodium **不** mixin `RenderType`，`RenderType.draw()` 的 setup→draw→clear 原样保留。
+- vanilla 第一人称通道（`ItemInHandRenderer`）整个类**没有一处** `RenderSystem.*` ⇒ 枪绘制时剔除是开着的。
+- Sodium 的 `PoseStack`（Pose 对象缓存）/`RenderBuffers`（区块缓冲池）/`RenderTarget`（只动 `blitToScreen`）mixin 都良性；`DirectionMixin` 只 overwrite `getNearest`。
+- **把退化四边形改成直接跳过无效** ⇒ SBM `2a6c72c`（跳过未声明面）不是答案。
+- PhysicsMod 注入 `ItemRenderer` 的 mixin 在 CGC 那次是**失败**的（`Invalid descriptor`，它按 Sodium 的 `VertexBufferWriter` 签名写的）。
+
+## 五、上游参考（下次有用的抓手）
+
+`D:\Github\SimpleBedrockModel`（SBM，分支 `1.21.1-dev`）**自带 Sodium/Embeddium 兼容**：
+`BedrockModel.createCubeBox()/createCubePerFace()` 检测到装了 Sodium/Embeddium 就返回 `SodiumBedrockCubeBox` / `EmbeddiumBedrockCubeBox`，这两个子类相对普通立方体只多两件事 —— 顶点走渲染 mod 的 `VertexBufferWriter` 直写、以及**软件背面剔除**（`shouldRenderFace`：面中心·面法线 ≤ 0 才画），门槛 `RenderSystem.getModelViewMatrix().m32() == 0`（这个门槛只覆盖 GUI/物品栏那类视角，第一人称手部通道 m32 ≈ -1，照搬会漏）。相关提交：`2a6c72c`、`1c64cba`（TLM 剔除算法）、`48d7b21`、`5e779cc`。
+
+注意：TaCZ 移植版虽然 `libs/` 带了 SBM 2.2.1，但它自己的枪/瞄具模型由 `com.tacz.guns.client.model.bedrock.BedrockModel`（独立类，不继承 SBM）构建，**SBM 的 Sodium 兼容覆盖不到它的枪和瞄具**。
+
+## 六、下次从这里接
+
+1. **在同一个包里对照**：把 CGC 和移植版分别放进**同一个** mod 包测同一把 `cbrg:red_dot`。不要在包不一致的前提下拿「移植版正常」当基准。
+2. **二分 55 mod 包**找出第三个 mod。优先怀疑「以改写别的 mod 渲染/加载为目的」的那类：ModernFix（它还带 `bugfix.entity_pose_stack.PoseStackAccessor` 注入 `PoseStack`，和 Sodium 的 `features.render.immediate.matrix_stack.PoseStackMixin` 打在同一类上）、PhysicsMod、ShoulderSurfing。
+3. 若确认是 CGC × Sodium（即最小包也出，目前**不是**），再照 SBM 做软件背面剔除；那是 SBM 那边唯一还没被排除的修法。
+
+## 七、代码与仓库状态
+
+- 两个仓库工作区**干净**，无未提交改动，未 push。
+- 本轮所有探针都已 `git checkout` 撤销；CGC jar 已按还原后的源码重建（23:50）并同步进 compat 的 `libs/`（gitignore）。
+- 本轮改动**全部作废**，不留任何代码痕迹。
+
+---
+
+另外：你说了不要写进 memory，我已经把刚才那个报告类 memory 文件删掉了（SBM 那条参考笔记我留着，如果你也要删，说一声）。

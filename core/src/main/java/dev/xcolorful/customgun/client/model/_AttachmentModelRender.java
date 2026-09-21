@@ -10,7 +10,7 @@ package dev.xcolorful.customgun.client.model;
 import com.mojang.blaze3d.vertex.*;
 import dev.xcolorful.customgun.client.api.entity.shooter.ILocalShooterGetter;
 import dev.xcolorful.customgun.client.compat.ar.AttachmentModelAR;
-import dev.xcolorful.customgun.client.compat.oculus.OculusCompat;
+import dev.xcolorful.customgun.client.compat.iris.IrisCompat;
 import dev.xcolorful.customgun.client.model.bedrock.BedrockPart;
 import dev.xcolorful.customgun.client.renderer.model.BeamRender;
 import dev.xcolorful.customgun.client.util.ClientRenderHelper;
@@ -234,7 +234,7 @@ public class _AttachmentModelRender {
                             vertexConsumer,
                             light, overlay);
 
-                    if (!OculusCompat.endBatch(bufferSource)) {
+                    if (!IrisCompat.endBatch(bufferSource)) {
                         bufferSource.endBatch();
                     }
                 }

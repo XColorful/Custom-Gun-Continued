@@ -224,7 +224,7 @@ Notation:
 |com.tacz.guns.compat|dev.xcolorful.customgun.client.compat|
 |---|---|
 |ar|ar|
-|oculus|oculus|
+|oculus|iris|
 |optifine|optifine|
 |playeranimator|playeranimator|
 |shouldersurfing|shouldersurfing|

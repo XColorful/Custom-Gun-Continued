@@ -199,7 +199,7 @@ public class ClientRenderHelper {
         private static boolean stencilEnabled = false;
 
         @ApiStatus.AvailableSince("1.21.6")
-        private static MultiBufferSource.BufferSource stencilBufferSource;
+        private static Object stencilBufferSource;
         /**
          * 取当前该用的模型顶点缓冲源
          * <ul>
@@ -215,13 +215,13 @@ public class ClientRenderHelper {
          * </ul>
          */
         @ApiStatus.AvailableSince("1.21.6")
-        public static MultiBufferSource.BufferSource getModelBufferSource() {
+        public static Object getModelBufferSource() {
             /*
             暂时还未实现1.21.6修复，目前保持修改前的状态（即该util封装保持跟原先行为相同
             见./docs/deprecated/prompt/single/60 Shader-compat-fork1.md
              */
             // [1.20.1, 1.21.6)
-            return Minecraft.getInstance().renderBuffers().bufferSource(); // 让IDE保留下面的引用关系
+//            return Minecraft.getInstance().renderBuffers().bufferSource(); // 让IDE保留下面的引用关系
 
             // [1.21.6, )
 //            if (!stencilEnabled) {
@@ -232,6 +232,7 @@ public class ClientRenderHelper {
 //                stencilBufferSource = MultiBufferSource.immediate(new ByteBufferBuilder(786432));
 //            }
 //            return stencilBufferSource;
+            return null;
         }
 
         public static void _stencilFunc(int func, int ref, int readMask) {

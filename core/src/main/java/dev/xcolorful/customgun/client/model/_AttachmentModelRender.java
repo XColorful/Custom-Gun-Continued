@@ -9,10 +9,9 @@ package dev.xcolorful.customgun.client.model;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
+import com.mojang.blaze3d.vertex.PoseStack;
 import dev.xcolorful.customgun.client.api.entity.shooter.ILocalShooterGetter;
 import dev.xcolorful.customgun.client.compat.ar.AttachmentModelAR;
-import dev.xcolorful.customgun.client.compat.iris.IrisCompat;
 import dev.xcolorful.customgun.client.model.bedrock.BedrockPart;
 import dev.xcolorful.customgun.client.renderer.model.BeamRender;
 import dev.xcolorful.customgun.client.util.ClientRenderHelper;
@@ -235,9 +234,9 @@ public class _AttachmentModelRender {
                             vertexConsumer,
                             light, overlay);
 
-                    if (!IrisCompat.endBatch(bufferSource)) {
-                        bufferSource.endBatch();
-                    }
+//                    if (!IrisCompat.endBatch(bufferSource)) {
+//                        bufferSource.endBatch();
+//                    }
                 }
                 part.visible = false;
                 }

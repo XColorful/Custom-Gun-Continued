@@ -23,6 +23,7 @@ import dev.xcolorful.customgun.core.resource.data.data.gun._ReloadData;
 import dev.xcolorful.customgun.core.resource.data.index.AmmoIndex;
 import dev.xcolorful.customgun.core.resource.instance.data.AmmoIndexInstance;
 import dev.xcolorful.customgun.core.resource.instance.data.GunIndexInstance;
+import dev.xcolorful.customgun.core.util.EntityUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
@@ -168,7 +169,7 @@ public class _DefaultGunInventory {
                     .build();
             ItemEntity itemEntity = new ItemEntity(serverLevel, pos.x, pos.y, pos.z, ammoItem);
             itemEntity.setPickUpDelay(10);
-            itemEntity.setThrower(livingShooter.getUUID());
+            EntityUtils.setThrower(itemEntity, livingShooter);
 
             if (!serverLevel.addFreshEntity(itemEntity)) {
                 CustomGun.LOGGER.warn("_DefaultGunInventory: Failed to add item entity {} to world, canceled dropAmmoToWorld", itemEntity.toString());

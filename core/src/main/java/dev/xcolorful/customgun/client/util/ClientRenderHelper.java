@@ -210,7 +210,7 @@ public class ClientRenderHelper {
         @ApiStatus.AvailableSince("1.21.6")
         public static MultiBufferSource.BufferSource getModelBufferSource() {
             // [1.20.1, 1.21.6)
-            if (true) return Minecraft.getInstance().renderBuffers().bufferSource(); // 让IDE保留下面的引用关系
+//            if (true) return Minecraft.getInstance().renderBuffers().bufferSource(); // 让IDE保留下面的引用关系
 
             // [1.21.6, )
             if (!stencilEnabled) {
@@ -218,7 +218,7 @@ public class ClientRenderHelper {
             }
             if (stencilBufferSource == null) {
                 // 尺寸与 vanilla RenderBuffers 的共享源一致；ByteBufferBuilder 会按需扩容
-//                stencilBufferSource = MultiBufferSource.immediate(new ByteBufferBuilder(786432));
+                stencilBufferSource = MultiBufferSource.immediate(new ByteBufferBuilder(786432));
             }
             return stencilBufferSource;
         }

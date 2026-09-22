@@ -1,6 +1,6 @@
 package dev.xcolorful.customgun.client.compat.iris;
 
-import com.mojang.blaze3d.pipeline.RenderPipeline;
+//import com.mojang.blaze3d.pipeline.RenderPipeline;//1.21.4没有RenderPipeline
 import net.minecraft.client.renderer.MultiBufferSource;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -49,7 +49,7 @@ public class IrisCompat {
     }
 
     @ApiStatus.AvailableSince("1.21.6")
-    public static void registerRenderPipelines(Consumer<RenderPipeline> registrar) {
+    public static void registerRenderPipelines(Consumer<Object> registrar) {
         // mixin注入点
     }
 }

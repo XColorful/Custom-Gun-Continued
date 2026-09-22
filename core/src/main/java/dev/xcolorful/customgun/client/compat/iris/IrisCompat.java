@@ -25,8 +25,20 @@ public class IrisCompat {
     }
 
     /**
+     * <ul>
+     *     <li>level 渲染期间 {@code RenderBuffers.bufferSource()} 给的是全缓冲源</li>
+     *     <li>它把 {@code endBatch(RenderType)} 实现成了空方法，per-type 立即提交会静默失效</li>
+     *     <li>只有无参 {@code endBatch()} 会真正提交并清空已排队几何体</li>
+     * </ul>
+     * 1.21.10 移除
+     * <ul>
+     *     <li>Iris 1.9.7 起整个 {@code batchedentityrendering} 模块被删掉</li>
+     *     <li>{@code RenderBuffers.bufferSource()} 不再被换成全缓冲源</li>
+     *     <li>{@code endBatch(RenderType)} 就是真的提交，CGC 那句兜底不需要接管</li>
+     * </ul>
      * @return 是否接管渲染
      */
+//    @Deprecated(since = "1.21.10")
     public static boolean endBatch(MultiBufferSource.BufferSource bufferSource) {
         // mixin注入点
         return false;

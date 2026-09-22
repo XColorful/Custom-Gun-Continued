@@ -46,7 +46,7 @@ public class HandRender implements IModelComponentRenderer {
             Minecraft mc = Minecraft.getInstance();
 
             ClientRenderHelper.renderFirstPersonArm(mc.player, this.humanoidArm, poseStack1, _light);
-            mc.renderBuffers().bufferSource().endBatch();
+            ClientRenderHelper.GL.getModelBufferSource().endBatch();
         });
     }
 

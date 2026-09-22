@@ -190,6 +190,38 @@ public class ClientRenderHelper {
         @ApiStatus.AvailableSince("1.21.6")
         private static boolean stencilEnabled = false;
 
+        @ApiStatus.AvailableSince("1.21.6")
+        private static MultiBufferSource.BufferSource stencilBufferSource;
+        /**
+         * 取当前该用的模型顶点缓冲源
+         * <ul>
+         *     模板测试启用期间必须绕开 {@code RenderBuffers.bufferSource()}
+         *     <li>1.21.6 上 NeoForge 的模板测试（{@code RenderSystem.STENCIL_TEST}）只有 {@code RenderType#draw} 会读它</li>
+         *     <li>而装了 Iris 后bufferSource 被换成全缓冲源，其 flush 是自己建 {@code RenderPass} 再 {@code drawIndexed}，模板测试被整个丢掉（目镜遮罩、镜身、准心的 {@code GL_EQUAL} 一律退化成恒真）</li>
+         *     <li>模板测试关闭时保持共享源，让 Iris 的批处理照常生效</li>
+         * </ul>
+         * 注意这只解决「不开光影」那一种
+         * <ul>
+         *     <li>开光影时 Iris 会把命中材质映射的几何体重定向到它自己的framebuffer（实测无 stencil 附件），圆形模板孔又留在主 target，两边不在同一缓冲——那种情况</li>
+         *     <li>换缓冲源救不了，得从 Iris 侧或改掉依赖 stencil 的遮罩实现</li>
+         * </ul>
+         */
+        @ApiStatus.AvailableSince("1.21.6")
+        public static MultiBufferSource.BufferSource getModelBufferSource() {
+            // [1.20.1, 1.21.6)
+            if (true) return Minecraft.getInstance().renderBuffers().bufferSource(); // 让IDE保留下面的引用关系
+
+            // [1.21.6, )
+            if (!stencilEnabled) {
+                return Minecraft.getInstance().renderBuffers().bufferSource();
+            }
+            if (stencilBufferSource == null) {
+                // 尺寸与 vanilla RenderBuffers 的共享源一致；ByteBufferBuilder 会按需扩容
+//                stencilBufferSource = MultiBufferSource.immediate(new ByteBufferBuilder(786432));
+            }
+            return stencilBufferSource;
+        }
+
         public static void _stencilFunc(int func, int ref, int readMask) {
             // [1.20.1, 1.21.6)
             RenderSystem.stencilFunc(func, ref, readMask);

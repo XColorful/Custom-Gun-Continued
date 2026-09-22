@@ -212,18 +212,22 @@ public class ClientRenderHelper {
          */
         @ApiStatus.AvailableSince("1.21.6")
         public static MultiBufferSource.BufferSource getModelBufferSource() {
+            /*
+            暂时还未实现1.21.6修复，目前保持修改前的状态（即该util封装保持跟原先行为相同
+            见./docs/deprecated/prompt/single/60 Shader-compat-fork1.md
+             */
             // [1.20.1, 1.21.6)
-            if (true) return Minecraft.getInstance().renderBuffers().bufferSource(); // 让IDE保留下面的引用关系
+            return Minecraft.getInstance().renderBuffers().bufferSource(); // 让IDE保留下面的引用关系
 
             // [1.21.6, )
-            if (!stencilEnabled) {
-                return Minecraft.getInstance().renderBuffers().bufferSource();
-            }
-            if (stencilBufferSource == null) {
-                // 尺寸与 vanilla RenderBuffers 的共享源一致；ByteBufferBuilder 会按需扩容
+//            if (!stencilEnabled) {
+//                return Minecraft.getInstance().renderBuffers().bufferSource();
+//            }
+//            if (stencilBufferSource == null) {
+//                // 尺寸与 vanilla RenderBuffers 的共享源一致；ByteBufferBuilder 会按需扩容
 //                stencilBufferSource = MultiBufferSource.immediate(new ByteBufferBuilder(786432));
-            }
-            return stencilBufferSource;
+//            }
+//            return stencilBufferSource;
         }
 
         public static void _stencilFunc(int func, int ref, int readMask) {

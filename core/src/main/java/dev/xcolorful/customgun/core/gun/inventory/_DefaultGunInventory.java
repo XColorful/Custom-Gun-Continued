@@ -99,18 +99,18 @@ public class _DefaultGunInventory {
 
                 ItemStack modifiedItem = inventoryCapability.extractItem(i,
                         slotItemReadOnly.getCount(), // 取整个ItemStack
-                        false);
-                iAmmo = IAmmoGetter.fromItemStack(modifiedItem);
-                if (iAmmo == null) {
-                    CustomGun.LOGGER.warn("_DefaultGunInventory: slot {} is IAmmo before but not in extracted item in IInventoryCapability of {}", i, livingShooter.toString());
-                    continue;
-                }
+                        false); {
+                    iAmmo = IAmmoGetter.fromItemStack(modifiedItem);
+                    if (iAmmo == null) {
+                        CustomGun.LOGGER.warn("_DefaultGunInventory: slot {} is IAmmo before but not in extracted item in IInventoryCapability of {}", i, livingShooter.toString());
+                        continue;
+                    }
 
-                iAmmo.setAmmoCount(modifiedItem, existAmmoCount + stackSize);
-                ItemStack remain = inventoryCapability.insertItem(i, modifiedItem, false);
-                if (!remain.isEmpty()) {
-                    CustomGun.LOGGER.warn("_DefaultGunInventory: can't fully insert item after extraction in slot {} in IInventoryCapability of {}", i, livingShooter.toString());
+                    iAmmo.setAmmoCount(modifiedItem, existAmmoCount + stackSize);
                 }
+                ItemStack remain = inventoryCapability.insertItem(i, modifiedItem, false);
+
+                if (!remain.isEmpty()) CustomGun.LOGGER.warn("_DefaultGunInventory: can't fully insert item after extraction in slot {} in IInventoryCapability of {}", i, livingShooter.toString());
 
                 @Nullable IAmmo _iAmmo = IAmmoGetter.fromItemStack(remain);
                 int remainAmmoCount = _iAmmo != null ? _iAmmo.getAmmoCount(remain) : remain.getCount();
@@ -230,7 +230,15 @@ public class _DefaultGunInventory {
 //                    CustomGun.LOGGER.warn("_DefaultGunInventory: can't fully insert item after extraction in slot {} in IInventoryCapability", i);
 //                }
 //            }
-            int consumedAmmo = iAmmo.consumeAmmo(slotItemReadOnly, requiredAmmoCount);
+            int consumedAmmo;
+            ItemStack ammoItem = inventoryCapability.extractItem(i,
+                    slotItemReadOnly.getCount(), // 取整个ItemStack
+                    false); {
+                consumedAmmo = iAmmo.consumeAmmo(ammoItem, requiredAmmoCount);
+            }
+            ItemStack remain = inventoryCapability.insertItem(i, ammoItem, false);
+
+            if (!remain.isEmpty()) CustomGun.LOGGER.warn("_DefaultGunInventory: can't fully insert item after extraction in slot {} in IInventoryCapability", i);
 
             extracted += consumedAmmo;
             requiredAmmoCount -= consumedAmmo;

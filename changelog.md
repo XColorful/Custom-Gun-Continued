@@ -1,5 +1,17 @@
 ### 0.0.x
 
+#### 0.0.18
+- Add inventory feed type
+- Remake dummy ammo mechanism
+- Temporary add legacy ammo explosion
+- Limit minimum gun projectile pierce count to 1
+- Add gun config `bypassGunFireConsumption`
+
+Client:
+- Display dummy ammo in gun HUD
+- Force display reserve ammo in gun HUD for inventory feed type
+- Add bullet hole particles
+
 #### 0.0.17
 - Add built-in third-person living shooter animation
 - Fix pitch clamp when prone

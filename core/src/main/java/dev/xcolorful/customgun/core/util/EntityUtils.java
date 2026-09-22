@@ -6,6 +6,7 @@ import dev.xcolorful.customgun.core.api.entity.hitbox.IEntityHitboxHistoryGetter
 import dev.xcolorful.customgun.core.api.entity.shooter.ILivingShooterGetter;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -40,6 +41,14 @@ public class EntityUtils {
 
         // [26.3, )
 //        entity.setInvulnerableTime(ticks);
+    }
+
+    public static void setThrower(ItemEntity itemEntity, Entity thrower) {
+        // [1.20.1, 1.21.10)
+        itemEntity.setThrower(thrower.getUUID());
+
+        // [1.21.10, )
+//        itemEntity.setThrower(thrower);
     }
 
     public static class Hitbox {

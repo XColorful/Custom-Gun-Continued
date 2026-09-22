@@ -76,8 +76,7 @@ public class TextRender implements IModelComponentRenderer {
             poseStack2.last().pose().mul(pose);
             poseStack2.scale(2 / 300f * scale, -2 / 300f * scale, -2 / 300f);
 
-            Minecraft mc = Minecraft.getInstance();
-            MultiBufferSource.BufferSource bufferSource = mc.renderBuffers().bufferSource();
+            MultiBufferSource.BufferSource bufferSource = ClientRenderHelper.GL.getModelBufferSource();
             font.drawInBatch(text,
                     -xOffset,
                     -font.lineHeight / 2f,

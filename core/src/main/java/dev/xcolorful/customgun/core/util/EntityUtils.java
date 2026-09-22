@@ -44,10 +44,10 @@ public class EntityUtils {
     }
 
     public static void setThrower(ItemEntity itemEntity, Entity thrower) {
-        // [1.20.1, 1.21.10)
+        // [1.20.1, 1.20.4)
         itemEntity.setThrower(thrower.getUUID());
 
-        // [1.21.10, )
+        // [1.20.4, )
 //        itemEntity.setThrower(thrower);
     }
 

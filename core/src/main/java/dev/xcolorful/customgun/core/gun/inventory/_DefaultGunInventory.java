@@ -23,6 +23,7 @@ import dev.xcolorful.customgun.core.resource.data.data.gun._ReloadData;
 import dev.xcolorful.customgun.core.resource.data.index.AmmoIndex;
 import dev.xcolorful.customgun.core.resource.instance.data.AmmoIndexInstance;
 import dev.xcolorful.customgun.core.resource.instance.data.GunIndexInstance;
+import dev.xcolorful.customgun.core.util.EntityUtils;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
@@ -99,18 +100,18 @@ public class _DefaultGunInventory {
 
                 ItemStack modifiedItem = inventoryCapability.extractItem(i,
                         slotItemReadOnly.getCount(), // 取整个ItemStack
-                        false);
-                iAmmo = IAmmoGetter.fromItemStack(modifiedItem);
-                if (iAmmo == null) {
-                    CustomGun.LOGGER.warn("_DefaultGunInventory: slot {} is IAmmo before but not in extracted item in IInventoryCapability of {}", i, livingShooter.toString());
-                    continue;
-                }
+                        false); {
+                    iAmmo = IAmmoGetter.fromItemStack(modifiedItem);
+                    if (iAmmo == null) {
+                        CustomGun.LOGGER.warn("_DefaultGunInventory: slot {} is IAmmo before but not in extracted item in IInventoryCapability of {}", i, livingShooter.toString());
+                        continue;
+                    }
 
-                iAmmo.setAmmoCount(modifiedItem, existAmmoCount + stackSize);
-                ItemStack remain = inventoryCapability.insertItem(i, modifiedItem, false);
-                if (!remain.isEmpty()) {
-                    CustomGun.LOGGER.warn("_DefaultGunInventory: can't fully insert item after extraction in slot {} in IInventoryCapability of {}", i, livingShooter.toString());
+                    iAmmo.setAmmoCount(modifiedItem, existAmmoCount + stackSize);
                 }
+                ItemStack remain = inventoryCapability.insertItem(i, modifiedItem, false);
+
+                if (!remain.isEmpty()) CustomGun.LOGGER.warn("_DefaultGunInventory: can't fully insert item after extraction in slot {} in IInventoryCapability of {}", i, livingShooter.toString());
 
                 @Nullable IAmmo _iAmmo = IAmmoGetter.fromItemStack(remain);
                 int remainAmmoCount = _iAmmo != null ? _iAmmo.getAmmoCount(remain) : remain.getCount();
@@ -168,7 +169,7 @@ public class _DefaultGunInventory {
                     .build();
             ItemEntity itemEntity = new ItemEntity(serverLevel, pos.x, pos.y, pos.z, ammoItem);
             itemEntity.setPickUpDelay(10);
-            itemEntity.setThrower(livingShooter);
+            EntityUtils.setThrower(itemEntity, livingShooter);
 
             if (!serverLevel.addFreshEntity(itemEntity)) {
                 CustomGun.LOGGER.warn("_DefaultGunInventory: Failed to add item entity {} to world, canceled dropAmmoToWorld", itemEntity.toString());
@@ -230,7 +231,15 @@ public class _DefaultGunInventory {
 //                    CustomGun.LOGGER.warn("_DefaultGunInventory: can't fully insert item after extraction in slot {} in IInventoryCapability", i);
 //                }
 //            }
-            int consumedAmmo = iAmmo.consumeAmmo(slotItemReadOnly, requiredAmmoCount);
+            int consumedAmmo;
+            ItemStack ammoItem = inventoryCapability.extractItem(i,
+                    slotItemReadOnly.getCount(), // 取整个ItemStack
+                    false); {
+                consumedAmmo = iAmmo.consumeAmmo(ammoItem, requiredAmmoCount);
+            }
+            ItemStack remain = inventoryCapability.insertItem(i, ammoItem, false);
+
+            if (!remain.isEmpty()) CustomGun.LOGGER.warn("_DefaultGunInventory: can't fully insert item after extraction in slot {} in IInventoryCapability", i);
 
             extracted += consumedAmmo;
             requiredAmmoCount -= consumedAmmo;

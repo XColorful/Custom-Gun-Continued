@@ -91,6 +91,7 @@ CGC-Compat-Shader：新增 [IrisCompatMixin.java](core/src/main/java/dev/xcolorf
 
 # 
 [fork1](./single/60%20Shader-compat-fork1.md)
+[fork2](./single/60%20Shader-compat-fork2.md)
 
 # 
 

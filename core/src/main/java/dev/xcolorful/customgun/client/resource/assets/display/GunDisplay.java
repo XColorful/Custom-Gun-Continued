@@ -3,12 +3,16 @@ package dev.xcolorful.customgun.client.resource.assets.display;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import dev.xcolorful.customgun.CustomGun;
+import dev.xcolorful.customgun.client.animation.AnimationHelper;
+import dev.xcolorful.customgun.client.animation.ObjectAnimation;
 import dev.xcolorful.customgun.client.api.item.gun.DamageDisplayType;
 import dev.xcolorful.customgun.client.api.item.gun.IShooterAnimationCategory;
 import dev.xcolorful.customgun.client.api.item.gun.ShooterAnimationCategory;
 import dev.xcolorful.customgun.client.api.model.gun.GunModelType;
 import dev.xcolorful.customgun.client.api.model.gun.IGunModelType;
+import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
 import dev.xcolorful.customgun.client.api.sound.gun.GunSoundType;
+import dev.xcolorful.customgun.client.resource.assets.animation.BedrockAnimation;
 import dev.xcolorful.customgun.client.resource.assets.display.gun.*;
 import dev.xcolorful.customgun.core.api.item.gun.AmmoCountType;
 import dev.xcolorful.customgun.core.api.resource.ResourceTag;
@@ -106,6 +110,9 @@ public final class GunDisplay extends _AssetsDisplay<GunDisplay> {
                     case GunDisplayTag.PRELOAD_SOUND_LOCATION, GunDisplayTag.PRELOAD_SOUND_LOCATION_OLD1 -> pojo.preloadSoundLocation = JsonUtils.readList(reader, JsonUtils::readResourceLocation);
 
                     case GunDisplayTag.CONTROLLABLE_DATA, GunDisplayTag.CONTROLLABLE_DATA_OLD1 -> pojo.controllableData = JsonUtils.read(reader, _ControllableData::fromJson);
+
+                    case GunDisplayTag.USE_DEFAULT_ANIMATION -> pojo.useDefaultAnimation = JsonUtils.readString(reader);
+                    case GunDisplayTag.DEFAULT_ANIMATION -> pojo.default_animation = JsonUtils.readString(reader);
                     default -> reader.skipValue();
                 }
             }
@@ -401,4 +408,42 @@ public final class GunDisplay extends _AssetsDisplay<GunDisplay> {
     // --------Special--------
 
     public static @NotNull ResourceLocation DEFAULT_SCRIPT_LOCATION = CustomGun.getMcRegistry().createResourceLocation(String.format("%s:%s", CustomGun.MOD_ID_OLD1, "default_state_machine"));
+
+    // --------Deprecated--------
+    // TODO 临时移植，以后换成别的默认动画的填充方式
+
+    @Deprecated @Nullable String useDefaultAnimation;
+    @Deprecated @Nullable String default_animation;
+
+    @Deprecated public static final @NotNull ResourceLocation LEGACY_DEFAULT_RIFLE_ANIMATION_LOCATION = CustomGun.getMcRegistry().createResourceLocation(String.format("%s:%s", CustomGun.MOD_ID_OLD1, "rifle_default"));
+    @Deprecated public static final @NotNull ResourceLocation LEGACY_DEFAULT_PISTOL_ANIMATION_LOCATION = CustomGun.getMcRegistry().createResourceLocation(String.format("%s:%s", CustomGun.MOD_ID_OLD1, "pistol_default"));
+
+    @Deprecated public static List<ObjectAnimation> legacyDefaultRifleAnimation;
+    @Deprecated public static List<ObjectAnimation> legacyDefaultPistolAnimation;
+
+    @Deprecated public static void _reloadLegacyDefaultAnimation() {
+        @Nullable BedrockAnimation bedrockAnimation = ClientResourceApi.getBedrockAnimation(LEGACY_DEFAULT_RIFLE_ANIMATION_LOCATION);
+        if (bedrockAnimation != null) legacyDefaultRifleAnimation = AnimationHelper.createAnimationFromBedrock(bedrockAnimation);
+        bedrockAnimation = ClientResourceApi.getBedrockAnimation(LEGACY_DEFAULT_PISTOL_ANIMATION_LOCATION);
+        if (bedrockAnimation != null) legacyDefaultPistolAnimation = AnimationHelper.createAnimationFromBedrock(bedrockAnimation);
+    }
+
+    @Deprecated public @Nullable List<ObjectAnimation> getDefaultAnimation() {
+        if (this.default_animation != null) {
+            @Nullable BedrockAnimation bedrockAnimation = ClientResourceApi.getBedrockAnimation(CustomGun.getMcRegistry().createResourceLocation(this.default_animation));
+            if (bedrockAnimation == null) return null;
+
+            return AnimationHelper.createAnimationFromBedrock(bedrockAnimation);
+        } else if (this.useDefaultAnimation != null) {
+            switch (this.useDefaultAnimation) {
+                case "rifle" -> {
+                    return legacyDefaultRifleAnimation;
+                }
+                case "pistol" -> {
+                    return legacyDefaultPistolAnimation;
+                }
+            }
+        }
+        return null;
+    }
 }

@@ -837,6 +837,9 @@ Reverted cleanly. Now re-applying just the four real fixes.
 未 commit、未 push。
 
 # 
+[fork1](#fork1)
+
+# 
 
 ```
 就目前git暂存区的改动，虽然1.21.6才加，但是放在1.20.1-1.21.4是否行为跟之前保持一致？
@@ -942,3 +945,133 @@ if (true) return Minecraft.getInstance().renderBuffers().bufferSource(); // 让I
 ## 我没动这个分支
 
 按 CLAUDE.md「除非显式要求，只改当前任务的分支」，1.20.1 这个 worktree 我一个字没改。那个笔误要不要我顺手修，你点头我就改。
+
+# fork1
+
+```
+之前测试的应该都没有装CGC Compat Shader
+现在代码状态下测试：
+- 不装iris/sodium/Compat，4倍镜ocular里会渲染手，其他都正常
+- 在iris/sodium/Compat，开启光影后，持枪（含倍镜）待机的时候手的位置固定在玩家朝向-180 0时的持枪待机时的手，并且红点和4倍镜准心始终可见
+- 日志我还是留的之前的，不是新测的，可以看看是否是没装Compat
+- 1.21.4不装光影和光影+Compat没问题
+
+看下最近三个commit的修复，疑似把非光影状态下给搞坏了
+```
+
+# 
+
+Let me look at the recent commits and the actual state, plus check whether the old logs had Compat.
+
+Worktree is **clean** — my changes were committed. And the old logs had **no Compat** (confirming your suspicion). Let me see exactly what landed.
+
+Worktree clean, and the old logs indeed had no Compat. Let me read the actual current code paths before theorizing.
+
+Two key facts: the fix landed in `527c5a9d4` (with `getModelBufferSource` **disabled** by an `if (true)` short-circuit), and `f0824d720` then **enabled** it. Let me read the actual draw/flush pairing.
+
+Let me review exactly what the fix commit landed, file by file.
+
+The `_stencilFunc` region looks suspicious — the `[1.20.1, 1.21.6)` legacy call may have been uncommented. Let me read the actual current text.
+
+## 三个 commit 的实际情况
+
+|commit|内容|行为影响|
+|---|---|---|
+|`fea05f3d8`|`IrisCompat` +2 行|无|
+|`527c5a9d4`|整个修复（5 个调用点 + `getModelBufferSource`），但里面 `if (true) return 共享源;` **是生效的**，且 `stencilBufferSource = ...` 那行**被注释**掉了|**等于没改**（那个函数恒返回共享源）|
+|`f0824d720`|把那两行对调：短路注释掉、赋值放开|**修复从这一刻才真正生效**|
+
+所以"最近三个 commit"里**唯一改变行为的是 `f0824d720`**——它打开了那套切换。你怀疑的方向对：非光影状态坏掉，就是这套切换的后果（之前一直没被测到，因为关闭光影+Iris 的组合修好之后就往前推了，无 iris 的基线没回头复测）。
+
+旧日志确实没装 Compat（`cgccshader` 出现 0 次），这也解释了为什么那轮诊断里 `IrisCompat` 全是空实现。
+
+## 我认为最可疑的一处（代码级，不是猜）
+
+`HandRender:40` 和 `TextRender:61` 都写着同一句设计意图：
+
+```
+和枪械模型共用顶点缓冲的都需要代理到渲染结束后渲染
+```
+
+delegate 拿到的 `_vertexBuffer` 就是枪械模型那支 `VertexConsumer` —— 这套设计**故意让手/文字和枪体共用同一个顶点缓冲**（这样它们和枪体在同一个批次、同一个模板状态下被提交）。而我的改动把这三处（`renderFirstPersonArm`、`HandRender`、`TextRender`）换成了**另一个独立的 `MultiBufferSource`**，正好把这层耦合拆掉了。渲染结果、批次边界、以及它们落在哪个模板状态里，全都跟着变。
+
+还有一个结构性脆弱点：`getModelBufferSource()` 是**每次调用都重新求值**的。凡是"写"和"冲"是两次独立调用（`renderFirstPersonArm` 写 / `HandRender` 冲；`TextRender` 同理），只要中间 `stencilEnabled` 翻过一次，写进去的几何就会留在那个源里，被**下一次**某个 `endBatch()` 带着当时的相机矩阵画出来——这正是你报的"手的位置固定在某个朝向"那种症状。而 `renderModelPart` / `ModelObject.render` 是把源**存进局部变量**再自己冲的，那两处天然成对，不会错位。
+
+## 建议
+
+先说清取舍：**手那部分正是"iris 无光影时手不再出现在目镜里"的功臣**，所以整体回退会让那个已修的 case 复发。
+
+Understood — reporting only, no code changes, no memory. Let me verify the state you reverted to so the report is accurate.
+
+确认：HEAD 是 `51ab750f0 Revert "Update ClientRenderHelper.java"`，`getModelBufferSource()` 里的 `if (true) return 共享源;` 重新生效，5 个调用点留着但全部落到共享源上——即**行为回到了修改前**。工作区干净。
+
+以下是留在对话里的报告。
+
+---
+
+# #60 光影兼容 · 1.21.6 阶段报告
+
+## 1. 交付状态
+
+代码回到修改前，未留未提交改动。当前 1.21.6 现象：
+
+|环境|表现|
+|---|---|
+|无 iris / sodium|正常|
+|iris + sodium，**开或不开光影**|准心始终可见 + 倍镜 ocular 为黑色|
+|上述再 ± Compat Shader|**无差别**|
+
+即 `527c5a9d4` 那轮修复已被 `51ab750f0` 整体回退，问题回到起点。1.21.1 / 1.21.4 不受影响。
+
+## 2. 唯一一条硬结论（实测，可复用）
+
+**开光影时准心/目镜失灵的根因：Iris 把命中材质映射的几何体重定向到它自己的 framebuffer，那个 framebuffer 没有 stencil 附件；而圆形模板孔留在主 target，两边根本不在同一个缓冲。**
+
+探针打在 `GlCommandEncoder.drawFromBuffers`（`trySetup` **之后**、真正发 GL 绘制前），按绘制打标签：
+
+|环境|绘制|`GL_STENCIL_TEST`|pass 的 StencilTest|`fbo`|stencil 附件|
+|---|---|---|---|---|---|
+|关光影|write / mask / ret / invert / clear|`true`|与 CGC 请求逐字一致|`4`|**TEXTURE**|
+|开光影|write / mask / ret / read-divonly / clear|`true`|逐字一致|**`77`**|**NONE**|
+|开光影|invert（`debugTriangleFan`）|`true`|`INVERT`|`4`|TEXTURE|
+
+结论：状态传递、顺序、开关**全部正确**，是收件方被换掉了。所以 CGC 侧换缓冲源/改状态都无效。
+
+**可投稿给 Iris 的要点**：环境 MC 1.21.6 / NeoForge 21.6.20-beta / Iris 1.9.6 / Sodium 0.7.2 / ComplementaryReimagined r5.8.1；用法 `RenderSystem.enableStencil` → `RenderType#draw` → `RenderPass#enableStencilTest`；诉求是让重定向后绘制所用 framebuffer 的深度纹理带上 stencil 方面（Iris 本就从主 target 推导 `DepthBufferFormat`，且有 `DEPTH_STENCIL` / `isCombinedStencil()` 分支），否则请明确该 API 在光影下不支持。我未查清 `fbo=77` 具体用的是哪张深度纹理（`RenderTargets` 里除主深度外还有 `noHand` / `noTranslucents`）。
+
+## 3. 被推翻的假设（别重走）
+
+- ~~Iris 自己的 render target 没有 stencil~~（据 `IrisRenderingPipeline` 从主 target 推导深度格式而否掉）→ **实际是对的**，但判据错：关键不是深度纹理格式，而是**绘制所用 FBO 的附件**。中途我因此撤回了一次正确结论。
+- ~~`iris$bypassSetup` 的 `CustomPass` 绕过吃掉了模板应用~~ → `setCustomPass` 只被合成/后处理 pass 使用（`CenterDepthProbe`/`CompositeRenderer`/`FinalPassRenderer`/`ShadowCompositeRenderer`），`HandRenderer` 引用 0 次，不适用。
+- ~~`clear` 插进 write 与 read 之间~~、~~一帧内跑多遍、顺序错乱~~ → 时序探针显示控制流与关光影**完全一致**。
+- ~~`endBatch(RenderType)` 空实现是开光影症状的原因~~ → 那条对"关光影 + Iris"成立，但对开光影不是。
+
+## 4. 非光影回归的定位（未验完）
+
+三个 commit 里**只有 `f0824d720` 改变了行为**——它把 `getModelBufferSource()` 里那两行对调，让切换真正生效（之前 `if (true)` + 赋值被注释，函数恒返回共享源，等于没改）。`51ab750f0` 又把它退回去了。
+
+两条候选机制，都没验完就回退了：
+
+1. **拆掉了"手/文字与枪械模型共用顶点缓冲"的既定耦合。** `HandRender:40`、`TextRender:61` 都注明"和枪械模型共用顶点缓冲的需要代理到渲染结束后渲染"，delegate 拿到的 `_vertexBuffer` 就是枪体那支 consumer。给它们单独的 `MultiBufferSource` 等于把这层耦合拆了，批次边界与所处模板状态随之改变。
+2. **`getModelBufferSource()` 每次调用重新求值**，而 `renderFirstPersonArm`（写）与 `HandRender`（冲）是两次独立调用，`TextRender` 同理。中间只要 `stencilEnabled` 翻过一次，写进去的几何会留在那个源里，被**后续**某个 `endBatch()` 用当时的相机矩阵画出来——这正是"手固定在某个朝向"的签名。`renderModelPart` / `ModelObject.render` 把源存进局部变量再自己冲，那两处天然成对、不会错位。
+
+当时准备好的候选修法是"**显式传源**"（`HandRender`/`TextRender` 取一次源，传给 `renderFirstPersonArm`，并冲同一个对象），以消除第 2 条的脆弱性、同时保留 iris 无光影那条已观测到的改善。已回退，未实施。
+
+另外要说明：**iris 无光影那条的根因从来没定位过**。当时只观测到"手不再出现在目镜里"，没证明机制。
+
+## 5. 下次接手的建议
+
+- **别再给 arm/text 换独立缓冲源。** 与既定设计冲突（见 4.1）。若要继续 iris-无光影那条，方向应该是查**为什么 Iris 的全缓冲源 flush 会丢模板**，以及让手/文字留回与枪体同一批次。
+- **开光影那条**只有两条路：上游 Iris（材料见第 2 节），或把瞄具遮罩改成不依赖 stencil（alpha / 几何遮罩）。设计级改动，建议先出方案。
+- **探针要避的坑**（我这轮踩了三次）：采样点必须在 `trySetup` **之后**（`GlCommandEncoder.drawFromBuffers`，不是 `executeDraw` HEAD——后者读到的前一筆）；去重键必须**包含状态值**，否则会把不同模板函数压成一条；用 tag 标出被观察的那几笔绘制；上限按 **per-tag** 而不是全局，否则日志会在开头就被截断。
+- **测试矩阵**：无 iris / iris-无光影 / iris-有光影 / 各自 ± Compat，共 6 组。旧的两份日志（`D:\Temp-File\debug-iris-sodium-*.log`）**都是没装 Compat 的**（`cgccshader` 出现 0 次），所以之前所有结论都只覆盖"无 Compat"这一列。
+
+## 6. 顺手的记录
+
+- `527c5a9d4` 里新增了 `docs/deprecated/prompt/single/60 Shader-compat-fork1.md`（944 行），是这轮过程的记录。
+- 带全部探针的版本我存过一份快照在 `/tmp/cgc-1216-with-probes.patch`（300 行，临时目录，可能已被清理）。
+- `IrisCompat.registerRenderPipelines` 那条（激光束自定义管线在光影下绑 ShaderKey）**始终没做**，与本次症状无关，仍是独立待办。
+
+---
+
+需要我把这份报告落到仓库文档里，或者按第 5 节的方向出个具体方案，说一声。

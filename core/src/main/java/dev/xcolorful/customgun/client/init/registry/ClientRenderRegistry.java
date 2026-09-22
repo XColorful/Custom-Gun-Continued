@@ -1,11 +1,11 @@
 package dev.xcolorful.customgun.client.init.registry;
 
 import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.mojang.blaze3d.pipeline.BlendFunction;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.api.minecraft.texture.CustomTexture;
+import dev.xcolorful.customgun.client.compat.iris.IrisCompat;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
@@ -57,6 +57,6 @@ public class ClientRenderRegistry {
         registrar.accept(LaserBeamRenderState.LASER_BEAM_PIPELINE);
         registrar.accept(LaserBeamRenderState.LASER_BEAM_ENTITY_PIPELINE);
 
-        // TODO IrisShaders register
+        IrisCompat.registerRenderPipelines(registrar);
     }
 }

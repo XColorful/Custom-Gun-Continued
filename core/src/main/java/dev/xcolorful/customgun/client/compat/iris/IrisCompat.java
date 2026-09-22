@@ -1,7 +1,10 @@
 package dev.xcolorful.customgun.client.compat.iris;
 
+import com.mojang.blaze3d.pipeline.RenderPipeline;
 import net.minecraft.client.renderer.MultiBufferSource;
 import org.jetbrains.annotations.ApiStatus;
+
+import java.util.function.Consumer;
 
 /**
  * <ul>
@@ -43,5 +46,10 @@ public class IrisCompat {
     public static boolean isHandPoseStackWorldSpace() {
         // mixin注入点
         return true;
+    }
+
+    @ApiStatus.AvailableSince("1.21.6")
+    public static void registerRenderPipelines(Consumer<RenderPipeline> registrar) {
+        // mixin注入点
     }
 }

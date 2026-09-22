@@ -228,9 +228,7 @@ public class _AttachmentModelRender {
 
             {
                 part.visible = true; {
-                    Minecraft mc = Minecraft.getInstance();
-
-                    MultiBufferSource.BufferSource bufferSource = mc.renderBuffers().bufferSource();
+                    MultiBufferSource.BufferSource bufferSource = ClientRenderHelper.GL.getModelBufferSource();
                     VertexConsumer vertexConsumer = bufferSource.getBuffer(bakedRenderType);
                     part.render(poseStack,
                             transformType,

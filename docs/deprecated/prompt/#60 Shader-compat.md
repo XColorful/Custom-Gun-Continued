@@ -90,6 +90,9 @@ CGC-Compat-Shader：新增 [IrisCompatMixin.java](core/src/main/java/dev/xcolorf
 未 commit、未 push，等你 review。
 
 # 
+[fork1](./single/60%20Shader-compat-fork1.md)
+
+# 
 
 ```
 现在继续1.21.1neoforge，环境已经搭好了，要求跟之前相同

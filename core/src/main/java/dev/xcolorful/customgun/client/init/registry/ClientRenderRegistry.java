@@ -6,6 +6,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import dev.xcolorful.customgun.client.api.minecraft.texture.CustomTexture;
+import dev.xcolorful.customgun.client.compat.iris.IrisCompat;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
@@ -83,6 +84,6 @@ public class ClientRenderRegistry {
 //        registrar.accept(LaserBeamRenderState.LASER_BEAM_PIPELINE);
 //        registrar.accept(LaserBeamRenderState.LASER_BEAM_ENTITY_PIPELINE);
 
-        // TODO IrisShaders register
+        IrisCompat.registerRenderPipelines(registrar);
     }
 }

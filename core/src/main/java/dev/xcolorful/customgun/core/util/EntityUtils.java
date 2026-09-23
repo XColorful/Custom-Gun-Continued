@@ -4,10 +4,12 @@ import dev.xcolorful.customgun.core.api.entity.IEntityHitboxHistory;
 import dev.xcolorful.customgun.core.api.entity.ILivingShooter;
 import dev.xcolorful.customgun.core.api.entity.hitbox.IEntityHitboxHistoryGetter;
 import dev.xcolorful.customgun.core.api.entity.shooter.ILivingShooterGetter;
+import dev.xcolorful.customgun.core.api.minecraft.entity.IEntityExtension;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.phys.AABB;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,6 +28,13 @@ public class EntityUtils {
     @Deprecated(forRemoval = true, since = "1.21.4")
     public static float getOldWalkDist(@NotNull Entity entity) {
         return getMoveDist(entity);
+    }
+
+    @ApiStatus.Internal public static float getHorizontalMoveDist(@NotNull Entity entity) {
+        return ((IEntityExtension) entity).cgc$getHorizontalMoveDist();
+    }
+    @ApiStatus.Internal public static float getHorizontalMoveDistOld(@NotNull Entity entity) {
+        return ((IEntityExtension) entity).cgc$getHorizontalMoveDistOld();
     }
 
     public static int getInvulnerableTime(Entity entity) {

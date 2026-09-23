@@ -176,13 +176,21 @@ public interface IClientGunScriptBackCompat extends IClientGunScriptContextAcces
     default void anchorWalkDist() {
         @Nullable Entity cameraShooter = this.getCameraShooter();
         if (cameraShooter == null) return;
-        float moveDist = EntityUtils.getMoveDist(cameraShooter);
+        float moveDist; {
+            float horizontalMoveDist = EntityUtils.getHorizontalMoveDist(cameraShooter);
+            float horizontalMoveDistOld = EntityUtils.getHorizontalMoveDistOld(cameraShooter);
+            moveDist = horizontalMoveDist + (horizontalMoveDist - horizontalMoveDistOld) * this.getPartialTicks();
+        }
         this.setWalkDistAnchor(moveDist);
     }
     default float getWalkDist() {
         @Nullable Entity cameraShooter = this.getCameraShooter();
         if (cameraShooter == null) return 0;
-        float moveDist = EntityUtils.getMoveDist(cameraShooter);
+        float moveDist; {
+            float horizontalMoveDist = EntityUtils.getHorizontalMoveDist(cameraShooter);
+            float horizontalMoveDistOld = EntityUtils.getHorizontalMoveDistOld(cameraShooter);
+            moveDist = horizontalMoveDist + (horizontalMoveDist - horizontalMoveDistOld) * this.getPartialTicks();
+        }
         return moveDist - this.getWalkDistAnchor();
     }
 

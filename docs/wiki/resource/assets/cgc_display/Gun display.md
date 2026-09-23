@@ -1,7 +1,7 @@
 [English](#English)
 
 # 枪械显示
-> wiki 版本：`0.0.5`.3
+> wiki 版本：`0.0.18`.5
 
 - `model_location`/`model`（ResourceLocation）：
 - `model_transform`/`transform`（\_ModelTransform）：
@@ -76,6 +76,9 @@
 - `preload_sound_location`/`preload_sounds`（List\<ResourceLocation>）：
 ---
 - `controllable_data`/`controllable`（\_ControllableData）：
+---
+- ~~`use_default_animation`~~：
+- ~~`default_animation`~~：
 
 ```json
 {
@@ -175,12 +178,15 @@
 	],
 	
 	"controllable_data": {
-	}
+	},
+	
+	"use_default_animation": "",
+	"default_animation": ""
 }
 ```
 
 # English
-> wiki version: `0.0.15`.4
+> wiki version: `0.0.18`.5
 
 - `model_location`/`model`(ResourceLocation):
 - `model_transform`/`transform`(\_ModelTransform):
@@ -255,6 +261,9 @@
 - `preload_sound_location`/`preload_sounds`(List\<ResourceLocation>):
 ---
 - `controllable_data`/`controllable`(\_ControllableData):
+---
+- ~~`use_default_animation`~~:
+- ~~`default_animation`~~:
 
 ```json
 {
@@ -354,6 +363,9 @@
 	],
 	
 	"controllable_data": {
-	}
+	},
+	
+	"use_default_animation": "",
+	"default_animation": ""
 }
 ```

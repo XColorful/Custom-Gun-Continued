@@ -2,6 +2,7 @@ package dev.xcolorful.customgun.client.resource;
 
 import dev.xcolorful.customgun.client.api.entity.shooter.ILocalShooterGetter;
 import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
+import dev.xcolorful.customgun.client.resource.assets.display.GunDisplay;
 import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
 import dev.xcolorful.customgun.client.resource.instance.data.ClientAmmoIndexInstance;
 import dev.xcolorful.customgun.client.resource.instance.data.ClientAttachmentIndexInstance;
@@ -55,6 +56,8 @@ public class _AssetsInstanceManager {
      */
     public static void reload() {
         clear();
+
+        GunDisplay._reloadLegacyDefaultAnimation(); // 旧格式预先准备默认动画的钩子，在pojo后，instance前
 
         buildPojoInstance(ResourceApi.getAllGunIndex(), GUN_INDEX, ClientGunIndexInstance::fromPojo, ClientGunIndexInstance.class);
         buildPojoInstance(ResourceApi.getAllAttachmentIndex(), ATTACHMENT_INDEX, ClientAttachmentIndexInstance::fromPojo, ClientAttachmentIndexInstance.class);

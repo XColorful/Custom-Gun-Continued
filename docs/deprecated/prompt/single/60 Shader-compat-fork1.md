@@ -1175,3 +1175,95 @@ if (stencilTest != null) pass.enableStencilTest(stencilTest);
 Iris 的 `endBatch()` 是**整批** flush，而 vanilla 的 `endBatch(rt)` 只冲那一个 RenderType。所以 CGC 模板窗口内**第一次** flush 时，若共享源里正好还留着别人排队的几何体，它也会吃到当次的模板状态。实际暴露面很小：CGC 每个绘制点都会触发整批 flush，队列基本是空的；而且带 `ocularRingPath` 的常见路径下窗口内第一笔用的是 `GL_ALWAYS/KEEP`（等于没开）。真正的暴露只有 `ocularRingPath == null` 时窗口内第一笔就是 `REPLACE` 写入这一种。若你测出某个第一人称元素消失/被裁，就是这条，届时我再决定是加"窗口开启前先冲一次"还是别的收口方式。
 
 未 commit、未 push；CGC 1.21.6 与其余 worktree 全干净，编译用绝对路径 `"$R/gradlew" -p "$R"`（这轮 shell cwd 又漂了一次，我已把这条环境坑记进记忆）。
+
+# 
+
+```
+已经修复关光影下的问题，现在继续开光影时的问题修复
+```
+
+# 
+
+关光影已过，很好。开光影这条要断的是"模板缓冲在哪个 target"，我先把 Iris 侧的深度纹理格式链路查清。
+
+关键还差一环：光影下这些几何体的 pass 用的是哪个 depth 纹理。我并行查两边——Iris 的包装类型指向哪个 target，以及 MC 主 target 的深度格式。
+
+这条比关光影深，我先把一个决定性问题交给子 Agent 静态查清（它会读字节码），同时我自己梳理设计空间。
+
+子 Agent 在查 Iris 内部。我同时从 CGC 侧确认枪械渲染在帧内的位置（这决定"改投递目标"是否可行）。
+
+我已经把关键问题交给了子 Agent（静态追 Iris 在光影下把 CGC 的几何体渲染到哪个 target、那个 depth 有没有 stencil 附件），结果回来后我再给方案。
+
+同时我自己这一侧的结论先补充一点：**1.21.10+ 的"关光影正常、开光影仍坏"正好佐证了机制**——那些版本 Iris 已删掉批处理，CGC 的绘制走 vanilla `RenderType.draw`，也就是模板测试**本来就带上了**，可开光影仍然坏。这说明开光影缺的不是"状态传递"（那一环关光影已经被修掉了），而是**收件方的 framebuffer 没有 stencil 附件**——和上一轮探针在 `fbo=77` 上量到的 `stencil=NONE` 一致。
+
+所以开光影这条只剩两种可能出路，都取决于子 Agent 要回答的那个问题：
+
+1. 若那批几何体本就该落在带 stencil 的 target 上（只是 `endBatch` 挑了别处），那可以在现有 mixin 里再补一步"模板窗口期间改写传给 `createRenderPass` 的 color/depth 视图"——几行的量级；
+2. 若它落在一个结构上就没有 stencil 的 gbuffer 上（且那正是枪体获得光影效果所必需的），那 GL 模板这条路在光影下就不成立，需要按你之前提的方向把瞄具遮罩改成不依赖 stencil 的实现（属于设计级改动 + 跨版本门控，我会先出方案再落地）。
+
+等结果。
+
+子 Agent 的结论推翻了我之前的假设，而且指向一个更具体的位置。我要亲自核实两处关键实现。
+
+`addDepthAttachment` 用的是 `GL_DEPTH_ATTACHMENT`(36096)——这很可能就是开光影缺 stencil 的原因。我核实 Iris 的世界 FBO 是否复用主 target 的 depth 纹理。
+
+`addDepthAttachment` 用 `GL_DEPTH_ATTACHMENT`(36096) 挂的是**主 target 的 depth-stencil 纹理**——所以 stencil 方面被丢掉了。我核实覆盖范围（所有 FBO 构造路径）和调用签名。
+
+机制已经闭环：Iris 把**主 target 的 depth-stencil 纹理**用 `GL_DEPTH_ATTACHMENT` 挂到自己的 FBO 上，stencil 方面因此不可见。我确认一下纹理格式 API 后落地第二处修复。
+
+机制确认完毕。现在写第二处 mixin——让 Iris 的 FBO 用 `GL_DEPTH_STENCIL_ATTACHMENT` 挂那张 depth-stencil 纹理。
+
+项目里没有生成 refmap——说明 mixin 注解处理器没跑，`@Local` sugar（依赖 AP）会在运行时失效。我改用纯 Mixin 的写法。
+
+开光影这条的根因找到了，而且是字节码级可验证的一处具体缺陷。已落地第二处 mixin，编译通过。
+
+## 根因（开光影）
+
+上一轮探针量到的 `fbo=77 / stencil=NONE` 和 `fbo=4 / stencil=TEXTURE` 这对差异，现在能完整解释：
+
+**1. 绘制落点由"当前绑定的 FBO"决定，而不是 pass 自己的 FBO。** Iris 的 `MixinGlCommandEncoder` 对 `createRenderPass` 内部的 `_glBindFramebuffer` 做了 `@Redirect`：
+
+```java
+if (shadows || ImmediateState.safeToMultiply) { this.tempFBO = fbo; return; }  // 跳过绑定
+```
+
+而 `safeToMultiply` 只在 `FullyBufferedMultiBufferSource.endBatch()` 的首尾置真/假——也就是说 **CGC 的瞄具几何体在 Iris 的 flush 窗口内画时，压根没绑到自己那个 pass 的 FBO**，而是落进 Iris 当时已绑定的世界 FBO（colortex0 + 世界深度）。这就是 `fbo=77`。圆形模板孔走 `debugTriangleFan().draw(...)`，在 flush 窗口之外，所以真绑 → 主 target 的 FBO → `fbo=4`。（顺带修正上一轮文档里一处说法：`debugTriangleFan` 也是 `CompositeRenderType`、`iris$getPipeline()` 非 null，区分点不是"pipeline 是否为 null"，而是"在不在 flush 窗口内"。）
+
+**2. 那个世界 FBO 的 depth 附件把 stencil 方面丢掉了。** Iris 的 `RenderTargets` **复用的就是主 target 那张 depth 纹理**（`IrisRenderingPipeline` 取 `MainTarget.getDepthTexture()` 传进去，`createGbufferFramebuffer` / `createColorFramebufferWithDepth` 都走 `addDepthAttachment(currentDepthTexture)`）。而 `GlFramebuffer.addDepthAttachment` 是：
+
+```java
+IrisRenderSystem.framebufferTexture2D(fbo, 36160 /*FRAMEBUFFER*/, 36096 /*DEPTH_ATTACHMENT*/, 3553, texId, 0);
+```
+
+`36096 = GL_DEPTH_ATTACHMENT`——combined depth-stencil 纹理这么挂，只有一个 depth 方面，stencil 不可见（所以 `GL_STENCIL_ATTACHMENT` 查到 `GL_NONE`）。**我核过 CGC 确实已经让主 target 用上 stencil 格式**，也核过那个 FBO 就是模板孔所在的同一张纹理。
+
+⇒ 开光影坏的完整链条：模板状态传递（上一轮已修）没问题了，但这批几何体的**收件方**既不是主 target（被 Iris 跳过绑定），自己又不暴露 stencil → 测试无从比较 → 遮罩/准心恒真、写入也不生效。
+
+## 改动（仍是 Compat Shader 1.21.6，CGC 本体零改动）
+
+新增 [GlFramebufferDepthStencilMixin.java](app://localhost/epitaxy/local_1fec1fe6-1e34-43b4-9002-70dc89169ecc)：`@Redirect` 掉 `addDepthAttachment` 里那次 `framebufferTexture2D`，当纹理格式 `hasStencilAspect()` 时把附件点从 `GL_DEPTH_ATTACHMENT`(36096) 换成 `GL_DEPTH_STENCIL_ATTACHMENT`(33306)，depth-only 的（如阴影用 `DEPTH32`）保持原样。外加上 mixins.json 一行注册。
+
+关键收益：Iris 的世界 FBO 与主 target **共用同一张深度纹理**，而 stencil 缓冲是纹理的一部分——**于是两者共享同一个模板缓冲**。模板写入、目镜黑遮罩、准心（经 Iris 缓冲源画在世界 FBO）、圆形模板孔（画在主 target FBO）、以及 `_clearStencilBuffer` 清的，全部落在同一个模板缓冲里。
+
+这也比"把整批几何体改投主 target"更合适：枪体保持画在 Iris 的世界 FBO 里，光影效果不受影响。
+
+## 请实测（build 已编译好）
+
+开光影，装 iris+sodium+Compat：
+
+1. 红点/倍镜准心只出现在圆形视野内；
+2. 4 倍镜开镜后 ocular 里是场景，不是模型自身的黑色；
+3. 关镜后枪体没有被残留圆形区域裁掉。
+
+同时**请再复测一遍关光影**：这处新 mixin 改的是 Iris 自己的 FBO 装配，理论上不开光影时 Iris 不建这些 FBO（`RenderTargets` 只在加载光影包时构造）所以应当是空操作，但我不想只靠推断。
+
+要盯的两点（我无法在游戏里判断）：
+
+- **遮罩现在画进 Iris 的世界颜色缓冲、在 composite 之前**，所以黑色镜圈/准心可能被光影包着色（受光照/雾/色调映射影响）。如果看起来"被打了光"而不是纯黑，那是下一步要调的点，不是本次机制错了。
+- 与前一轮同样的整批 flush 副作用：若某个第一人称元素被误裁，报我。
+
+## 状态
+
+未 commit、未 push（pack-off 那轮你已经提交为 `d4483b5`，我这次只新增一个文件 + json 一行，`git status` 里就这两项）。CGC 1.21.6 工作区干净。
+
+顺带记一条踩到的坑：这几个 compat 仓库**不跑 mixin 注解处理器**（`build` 里没有 refmap），所以 MixinExtras 的 sugar 注解 `@Local`/`@Share` 会在运行时静默失效——我原本用 `@Local` 拿方法入参，改成了 `@Inject(HEAD)` 存 `@Unique` 字段。`@WrapOperation` 这类运行期内建的注解不受影响。

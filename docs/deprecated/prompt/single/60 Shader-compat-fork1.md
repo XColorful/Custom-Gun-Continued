@@ -1267,3 +1267,83 @@ IrisRenderSystem.framebufferTexture2D(fbo, 36160 /*FRAMEBUFFER*/, 36096 /*DEPTH_
 未 commit、未 push（pack-off 那轮你已经提交为 `d4483b5`，我这次只新增一个文件 + json 一行，`git status` 里就这两项）。CGC 1.21.6 工作区干净。
 
 顺带记一条踩到的坑：这几个 compat 仓库**不跑 mixin 注解处理器**（`build` 里没有 refmap），所以 MixinExtras 的 sugar 注解 `@Local`/`@Share` 会在运行时静默失效——我原本用 `@Local` 拿方法入参，改成了 `@Inject(HEAD)` 存 `@Unique` 字段。`@WrapOperation` 这类运行期内建的注解不受影响。
+
+# 
+
+```
+现在直到26.2都没问题，26.3 Compat Shader需要再调整（编译不过）
+26.3渲染API移到了com.mojang.renderpearl
+```
+
+# 
+
+现在有 26.3 的移植任务：Compat Shader 26.3 编译不过，26.3 把渲染 API 挪到了 `com.mojang.renderpearl`。先看两边仓库状态和真实编译错误。
+
+26.3 里 `FullyBufferedMultiBufferSourceMixin` 已按 Iris ≥1.9.7 规则留空壳，只有 `GlFramebufferDepthStencilMixin` 需要改包名。我先查清 26.3 的新 API 与 Iris 源码。
+
+Iris 源码仓库正好在 26.3 分支——可以直接读源码而不必反编译。
+
+上游 Iris 源码里这段正好有一段被注释掉的 TODO，方向与我们的修法一致。现在确认 26.3 的 `hasStencilAspect()` 与新包名。
+
+26.3 的 API 全部对上了。现在改这个文件——只有包名和描述符需要适配。
+
+这是网络问题（NeoGradle 拉 `version_manifest.json` 失败），不是代码问题。重试并备用离线模式。
+
+再确认一处：26.3 里模板测试是随 `RenderPipeline` 走的，我要验证 Iris 的 flush 路径会把它应用上（决定这次移植是否完整）。
+
+26.3 移植完成，编译通过。26.2 我也顺手验证了（`BUILD SUCCESSFUL`，工作区干净），确认没被带坏。
+
+## 26.3 的编译错误只有一处
+
+```
+GlFramebufferDepthStencilMixin.java:3: error: package com.mojang.blaze3d.textures does not exist
+```
+
+`FullyBufferedMultiBufferSourceMixin` 你在 cherry-pick 时已经按 Iris ≥1.9.7 的规则留了空壳（`@Mixin` 与注入全部注释、只留 `@Deprecated(since = "1.21.10")` 说明），所以它没报错——这是对的：26.x 里模板测试改由 `RenderPipeline` 携带（`com.mojang.renderpearl.api.pipeline.DepthStencilState`），CGC 又用 `bakePipelineState` 把它烘进 RenderType，Iris 的 flush 调 `pass.setPipeline` 时自然带上，不需要那一层接管。
+
+## 改动：3 行
+
+[GlFramebufferDepthStencilMixin.java](app://localhost/epitaxy/local_1fec1fe6-1e34-43b4-9002-70dc89169ecc) 只改了 API 位置：
+
+- `import com.mojang.blaze3d.textures.GpuTexture` → `com.mojang.renderpearl.api.textures.GpuTexture`
+- `@Inject` / `@Redirect` 的方法描述符 `addDepthAttachment(...)` 同步换包名
+
+`IrisRenderSystem.framebufferTexture2D(IIIIII)V`、`GlFramebuffer` 本身、`GL30.GL_DEPTH_STENCIL_ATTACHMENT` 都没变，逻辑一字未动。`GL30.GL_DEPTH_STENCIL_ATTACHMENT` = 33306，与 `hasStencilAspect()` 的判定配合不变。
+
+## 这次是拿着真实源码核的，不是反编译推断
+
+你把 `D:\Github\Iris` 加进来了，正好是 **26.3 分支**，所以这次几个前提是直接读源码确认的：
+
+- `GlFramebuffer.addDepthAttachment(GpuTexture)` 用的还是 `GL_DEPTH_ATTACHMENT`，`addDepthAttachmentBypass` 同理；
+- `RenderTargets` 的 gbuffer / `createColorFramebufferWithDepth` 仍然 `addDepthAttachment(currentDepthTexture)`，即世界 FBO 挂的就是主 target 那张 depth 纹理——和 1.21.6 的机制一致，所以同一个修法成立；
+- `IrisRenderSystem.framebufferTexture2D(int,int,int,int,int,int)` 签名未变；
+- `GpuTexture.getFormat()` 返回 `GpuFormat`，`hasStencilAspect()` 仍是 public（`S8_UINT` / `D32_FLOAT_S8_UINT` / `D24_UNORM_S8_UINT` 为真）；
+- MC 26.3 侧 `FrameBufferCache` 仍按 `depthAttachment.hasStencilAspect()` 决定 FBO 有没有 stencil 附件——**丢 stencil 的机制在 26.3 原样存在**；
+- 26.3 的 CGC 仍在 `ConfigureMainRenderTargetEvent` 里 `enableStencil()`，所以主 target 的 depth 格式确实带 stencil 方面。
+
+另外值得一提：**Iris 上游自己就留了这段的 TODO**——
+
+```java
+// TODO: NeoForge 1.21.5
+//if (texture.getFormat().hasStencilAspect()) {
+//	IrisRenderSystem.framebufferTexture2D(fb, GL30C.GL_FRAMEBUFFER, GL30C.GL_DEPTH_STENCIL_ATTACHMENT, ...);
+//} else {
+	IrisRenderSystem.framebufferTexture2D(fb, GL30C.GL_FRAMEBUFFER, GL30C.GL_DEPTH_ATTACHMENT, ...);
+//}
+```
+
+方向和我们的 mixin 完全一致（它是被注释掉的，且那段写的是传 `GpuTexture` 对象给收 `int` 的形参，所以照抄编译不过）。这条以后可以考虑推给上游，就不必长期带着 mixin。
+
+## 编译与状态
+
+```
+BUILD SUCCESSFUL in 14s   (:core:compileJava :neoforge-compat:compileJava)
+```
+
+一个环境提示：直接跑会失败在 NeoGradle 拉 `piston-meta.mojang.com/.../version_manifest.json`（网络不通），**加 `--offline` 就走缓存正常**。26.2 我复验时也用了 `--offline`。
+
+改动未 commit：26.3 只有那 1 个文件、3 行；26.2 与 CGC 各仓库都没动。
+
+## 请实测 26.3（26.2 同样值得复测一次）
+
+开光影、装 iris+sodium+Compat：红点/倍镜准心只在圆形视野内、4 倍镜开镜后 ocular 是场景；关镜后枪体没被残留圆形裁掉；再关光影对照一次。26.3 是 deferred/submit 那套（你备忘录里也记着 `submitCustomGeometry` 顺序会变），如果遮罩出现"整体错位"而不是"没裁住"，那是另一类问题，把现象描述给我。

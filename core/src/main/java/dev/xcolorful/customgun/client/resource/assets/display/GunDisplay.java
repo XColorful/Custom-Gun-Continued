@@ -415,8 +415,8 @@ public final class GunDisplay extends _AssetsDisplay<GunDisplay> {
     @Deprecated @Nullable String useDefaultAnimation;
     @Deprecated @Nullable String default_animation;
 
-    @Deprecated public static final @NotNull ResourceLocation LEGACY_DEFAULT_RIFLE_ANIMATION_LOCATION = CustomGun.getMcRegistry().createResourceLocation(String.format("%s:%s", CustomGun.MOD_ID_OLD1, "rifle_default"));
-    @Deprecated public static final @NotNull ResourceLocation LEGACY_DEFAULT_PISTOL_ANIMATION_LOCATION = CustomGun.getMcRegistry().createResourceLocation(String.format("%s:%s", CustomGun.MOD_ID_OLD1, "pistol_default"));
+    @Deprecated public static final @NotNull Identifier LEGACY_DEFAULT_RIFLE_ANIMATION_LOCATION = CustomGun.getMcRegistry().createResourceLocation(String.format("%s:%s", CustomGun.MOD_ID_OLD1, "rifle_default"));
+    @Deprecated public static final @NotNull Identifier LEGACY_DEFAULT_PISTOL_ANIMATION_LOCATION = CustomGun.getMcRegistry().createResourceLocation(String.format("%s:%s", CustomGun.MOD_ID_OLD1, "pistol_default"));
 
     @Deprecated public static List<ObjectAnimation> legacyDefaultRifleAnimation;
     @Deprecated public static List<ObjectAnimation> legacyDefaultPistolAnimation;

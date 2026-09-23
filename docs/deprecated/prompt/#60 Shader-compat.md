@@ -1114,3 +1114,258 @@ The log is decisive — but not the way I assumed. Let me confirm.
 ---
 
 另外：你说了不要写进 memory，我已经把刚才那个报告类 memory 文件删掉了（SBM 那条参考笔记我留着，如果你也要删，说一声）。
+
+# 
+---
+
+```
+./docs/deprecated/prompt/#60 Shader-compat.md已经查清楚了，是物理模组导致的问题，更新到最新版就没问题了
+- 当前环境已经添加两个版本的physics mod
+- TaCZ1.21.1在物理模组老版本也有这个问题
+
+现在研究物理模组这两个版本之间的差异，在对话里给出分析，我会手动将报告保留在./docs/deprecated/prompt/#60 Shader-compat.md，你无需写进memory
+```
+
+# 
+
+先读那份文档了解问题背景。
+
+两个版本 jar 都在 `libs/`：3.0.27（旧）和 3.0.34（新）。先读文档确认问题现象。
+
+读文档末尾的结论部分，然后开始对比两个 jar。
+
+上下文清楚了：零厚度 `lens` 面（只声明 `north`）在 Sodium 下背面剔除失效，最小包不出、55 mod 包出。文档里有一条关键线索——PhysicsMod 注入 `ItemRenderer` 的 mixin 应用**失败**（`Invalid descriptor`，按 Sodium 的 `VertexBufferWriter` 签名写的）。
+
+开始对比两个 jar。
+
+用 Python 做可靠的清单对比。
+
+3.0.34 内嵌了一整套 ANTLR 运行时——说明新增了某种表达式/脚本语言。先把 ANTLR 排除，看真正的 mod 代码差异。
+
+主题很清楚了：3.0.34 重写了着色器注入基础设施（新增 ANTLR GLSL 解析器 + 全新 GL 抽象层 + Iris `MixinProgramSamplers` + `ShaderInstanceAccessor`），并删掉了旧的 `MixinJcppProcessor`。先看 mixin 配置。
+
+找到关键项了：`item.MixinItemRenderer` 两个版本都有。看它的完整注入定义。
+
+`item` 包是 PhysicsMod 的物理物品渲染。先确认类路径，再用 IDEA 反编译。
+
+`MixinItemRenderer` 两个版本都注入 `renderQuadList`（含一个 Sodium 变体）。先试 IDEA 反编译拿到注解确定目标。
+
+这是个关键发现：`item.MixinItemRenderer` 在 3.0.27 里除了注入 vanilla `renderModelLists`，还有一条 `method="renderBakedItemQuads", remap=false` + `@Coerce Object writer` —— 这正是文档里那条 `Invalid descriptor` 失败项。
+
+现在做全量 CRC 对比，找出两个版本间真正改动过的类。
+
+强烈信号：`minecraft/weather/RainParticle` 和 `SnowParticle` 在 **3.0.27 里调用 `disableCull`，但不在 `enableCull` 名单里**（3.0.34 里这两个类根本没有这些引用）。先看这个包的整体差异。
+
+`RainParticle` 是 PhysicsMod 自绘的四顶点雨滴四边形。定位它调用 `RenderSystem` 的位置。
+
+**关键证据**：3.0.27 的 `RainParticle.render()` 第 0 条指令就是 `RenderSystem.disableCull()`，而整类中**没有对应的 `enableCull`**；3.0.34 的 `render()` 里这个调用完全消失。同时 3.0.34 新增了 `render/gl/GlStateSnapshot`（含 disableCull/enableCull/blendFunc/depthMask）——一个 GL 状态快照/还原工具。
+
+先核实 27 是否在方法尾部还原，以及 34 里换成了什么。
+
+3.0.34 的 `render()` 不再关剔除，改为带 `normal` 场的正确朝向计算。现在核实文档里那条 `renderBakedItemQuads` 的目标方法在 MC 1.21.1 里是否存在。
+
+**具体差异确认**：同一个 `item.MixinItemRenderer` 的 `renderBakedItemQuads` 注入器——
+
+- 3.0.27：参数表含 `ItemColor colorProvider`（7 参），无 `require`
+- 3.0.34：去掉了 `ItemColor`（6 参），并加了 `require = 0`
+
+正是文档里那条 `Invalid descriptor` 失败项的参数表被修正了。现在看资源侧着色器差异。
+
+PhysicsMod 不在资源包里覆盖 vanilla 着色器（无 `assets/minecraft/shaders`）——它是在运行时改着色器源码。现在需要确认 vanilla 1.21.1 的 `ParticleRenderType.end()` 是否真的会补回剔除。先验证 IDEA 外部符号检索可用。
+
+IDEA 外部检索可用（MC 源码在 neoforge-21.1.219-sources.jar）。读这两个类。
+
+决定性事实：1.21.1 的 `ItemRenderer` 里根本没有 `renderBakedItemQuads`（等价物是 `renderQuadList(PoseStack, VertexConsumer, List, ItemStack, int, int)`）——所以那条注入注定失败。而 `ParticleRenderType` 各实现**既不 disableCull 也没有 end() 补回**。现在读 `ParticleEngine` 确认粒子通道是否有人补回剔除。
+
+**决定性证据**：`ParticleEngine.render()`（1.21.1 NeoForge）全程**没有** `disableCull`/`enableCull`——`particlerendertype.begin()` → 逐粒子 `render()` → `BufferUploader.drawWithShader()`，结束只做 `depthMask(true)` / `disableBlend()`。
+
+所以 3.0.27 的 `RainParticle.render()` 开头那句 `disableCull()` **没有任何人补回，会泄漏到本帧后续所有渲染**。核实它是否真的被注册使用，以及 SnowParticle 同样情况。
+
+`RainParticle`/`SnowParticle` 在 27 里都是第 0 条指令 `disableCull()`、无还原；34 里两者都消失了。现在需要确认一个关键前提：vanilla 的 `RenderType.setupRenderState()` 是否会在绘制枪时把剔除设回来（若会，泄漏就解释不通）。
+
+**机制闭合了。** `RenderStateShard.CullStateShard`（1.21.1）只在 `!useCull` 时才动作：
+
+```java
+super("cull", () -> { if (!useCull) RenderSystem.disableCull(); },
+              () -> { if (!useCull) RenderSystem.enableCull(); }, useCull);
+```
+
+即 `CULL` 分片（`entityCutout` 用的）**既不 enable 也不 disable**——它假设剔除已经开着。所以任何 `disableCull()` 泄漏都不会被后续 vanilla RenderType 修回来。
+
+再补两项：元数据差异和新增的 `GlStateSnapshot`。
+
+`GlStateSnapshot` 是新增的作用域式 GL 状态快照（`AutoCloseable` + ThreadLocal 栈，含 cull/depth/blend/UBO/SSBO/纹理全套，line 159 捕获 cull、412/450 还原）。它服务于 PhysicsMod 自己的渲染通道，跟雨雪粒子无关（那边是直接删掉了 `disableCull`）。
+
+最后看元数据差异。
+
+元数据差异也很有信息量：3.0.27 声明 MC `[1.21,1.22)` / NeoForge `[21.0.0-beta,)`（1.21.0 时代构建），3.0.34 收紧为 MC `[1.21.1,1.22)` / NeoForge `[21.1.219,)`。
+
+最后确认剔除相关的**唯一**版本差异，以及 3.0.34 里仍未配对的几处是否被作用域包住。
+
+34 的 `OceanRenderer` 新增了 `capturePatchState()/restorePatchState()`——它改用了作用域式快照，所以 cull 的还原落在 `GlStateSnapshot` 里。快查一下雨雪粒子的注册条件，然后写报告。
+
+`ConfigClient.weatherParticles` 开启时，PhysicsMod **取消了 vanilla 的 `renderSnowAndRain`**。而 vanilla 的 `weather` 渲染类型是 `NO_CULL`——它的 `clearRenderState()` 才会调 `enableCull()`。确认这两点。
+
+粒子通道在 `renderLevel` 里位于 1191/1197/1209，随后 1219 `renderClouds`、1225/1234 `renderSnowAndRain`（后者被 PhysicsMod 取消）。确认这两个渲染类型的剔除状态。
+
+**链条闭合了。** `RenderType.CLOUDS` 是 `NO_CULL`，而 vanilla 在粒子通道之后紧接着就画云——云的 `clearRenderState()` 会调 `enableCull()`，**把泄漏修回来**。这正好解释了「不装 Sodium 正常」。查一下 Sodium jar 是否在手边以证实它替换了云渲染。
+
+分析完成。下面是可直接存入 `./docs/deprecated/prompt/#60 Shader-compat.md` 的报告。
+
+---
+
+# 1.21.1neoforge · #60 PhysicsMod 3.0.27 → 3.0.34 差异分析与根因（2026-09-23）
+
+## 一、结论
+
+**PhysicsMod 3.0.27 的雨/雪粒子渲染器泄漏了全局剔除状态。**
+
+`RainParticle.render()` / `SnowParticle.render()` 的第一条指令就是 `RenderSystem.disableCull()`，且 PhysicsMod 内部**没有任何地方**调 `enableCull()` 把它还原；vanilla 的粒子通道不还原剔除，`CULL` 渲染状态分片又是**空操作**（它假设剔除已经开着）。vanilla 里唯一会还原它的是紧随粒子之后的云通道（`RenderType.CLOUDS` 是 `NO_CULL`）。**装了 Sodium 后云由 Sodium 自绘，这个还原点消失** ⇒ 剔除从粒子通道开始一直关到帧尾 ⇒ CGC 的枪（`RenderType.entityCutout`，声明 CULL 但分片是空操作）实际按"不剔除"绘制 ⇒ 零厚度、只声明 `north` 面的 `cbrg:red_dot` `lens` 露出背面。
+
+3.0.34 删掉了这两处 `disableCull()`（雨雪粒子改成带 `normal` 的显式朝向四边形），所以无论装不装 Sodium 都不再出问题。
+
+这是一次**全局渲染状态泄漏**，跟 CGC 的代码无关——任何"靠背面剔除才不露"的几何都会中招，与你观察到的「TaCZ 1.21.1 + 老版 PhysicsMod 同样有」完全一致。CGC 的 `lens` 只是最容易看出这个泄漏的形状（size z=0、只声明 north）。
+
+## 二、版本差异总览（二进制证据）
+
+对比对象：`libs/physics-mod-3.0.27-mc-1.21.1-neoforge.jar`（61 MB）与 `libs/physics-mod-3.0.34-mc-1.21.1-neoforge.jar`（94 MB）。
+
+|项|3.0.27|3.0.34|
+|---|---|---|
+|文件数|1652|2226|
+|新增 / 删除文件|—|+587 / −13|
+|共有文件中内容变化|—|797（含 676 个 `.class`）|
+|mixin client 列表|110|135（+26 / −1）|
+|NeoForge 依赖|`[21.0.0-beta,)`|`[21.1.219,)`|
+|MC 依赖|`[1.21,1.22)`|`[1.21.1,1.22)`|
+
+**依赖范围这一条本身就值得记一笔**：3.0.27 是 **1.21.0 时代**构建、在 1.21.1 上"勉强运行"（NeoForge 21.0.x vs 21.1.x），3.0.34 才收紧成正经的 1.21.1 构建。文档里那条 mixin 注入失败的观察，和这个背景是吻合的（见第四节）。
+
+### 新增的主要子系统（与渲染无关的略）
+
+- **整套 ANTLR v4 运行时** + `net/diebuddies/glsl/*`（`GlslInterfaceAnalyzer`、`GlslInterfaceBlock`、`GlslType`…）——运行时 GLSL 接口解析。同时**删除**了 `net/diebuddies/mixins/ocean/MixinJcppProcessor`：着色器注入机制从 jcpp 预处理器改写成了自带的 GLSL 分析器。
+- `net/diebuddies/render/gl/*`：一层新的 GPU 抽象（`GpuDevice`、`RenderPass`、`ColorTarget`、`GpuBuffer`、`GpuTexture`、`VertexWriter`、`InstancedRenderer`…）+ `GlStateSnapshot`。
+- 液体 GPU 计算：`physics/liquid/compute/*`（PBF/SPH，19 个 `.comp`）。
+- 烟雾/火焰体积光：`physics/smoke/*`（含 `volumetric/`、`raymarch/`，GL 与 Vulkan 双后端）。
+- 海洋 FFT：`render/fft/*` + `shaders/core/ocean_fft.*`、`ocean_ripple_simulate.*`。
+- 新兼容层：EMF、Voxy、Vivecraft、Flashback、Create/Sable 子关卡。
+- 资源：+30 种语言、`cloth/default.dae`、`models/smoke/smoke_plane.obj`。
+
+### mixin 增删（client）
+
+- **删除**：`ocean.MixinJcppProcessor`
+- **新增（渲染相关）**：`iris.MixinProgramSamplers`、`ShaderInstanceAccessor`、`sodium.MixinEntityRenderer8`、`vines.*` 一整套 Sodium 区块 mixin（`MixinRenderSection*`、`MixinRenderSectionManagerSodium*`、`MixinSectionCollectorSodium08`）、`emf.MixinEMFModelPart*`、`immediatelyfast.MixinSignText`、`voxy.MixinSoftwareModelTextureBakery`、`smoke.MixinFinalPassRenderer`、`ocean.MixinScreen`、`cloth.MixinBannerSimulation`
+
+两边都没有 `assets/minecraft/shaders`（只有 `assets/minecraft/models/block/grass_block_snow.json`）⇒ PhysicsMod **不通过资源包覆盖 vanilla 着色器**，对着色器的干扰纯粹发生在运行时。
+
+## 三、渲染状态差异：唯一删除的剔除调用就是那两个粒子类
+
+把两个 jar 全部 `.class` 按常量池扫 `disableCull` / `enableCull`：
+
+|类|3.0.27|3.0.34|
+|---|---|---|
+|`minecraft/weather/RainParticle`|**disableCull（无 enableCull）**|无|
+|`minecraft/weather/SnowParticle`|**disableCull（无 enableCull）**|无|
+|`render/OceanRenderer`|disableCull|disableCull（改用 `capturePatchState()/restorePatchState()` 作用域快照）|
+|`render/MainRenderer`、`ClothRenderer`、`LiquidDeferredRenderer`、`VerletSimulation`|disable + enable|同|
+|`render/gl/GlStateSnapshot`（新）|—|disable + enable|
+
+**版本间的剔除状态增量只有一件事：两个雨雪粒子类删掉了 `disableCull()`。** 3.0.34 新增的 `enableCull` 只出现在 `render/gl/GlStateSnapshot` 和 `render/DebugRenderer`（即新增的作用域式状态管理），**没有**给雨雪粒子补还原——它是直接把那句调用去掉了。
+
+`GlStateSnapshot`（新）是 `AutoCloseable` + ThreadLocal 栈的全套 GL 状态快照：构造时捕获 cull/depth/blend/colorMask/viewport/UBO/SSBO/纹理等，`close()` 时整套还原（cull 在 `restoreRaster()` 里还原）。`OceanRenderer` 在 3.0.34 就是靠它兜住的。**但它不参与雨雪粒子那条路径。**
+
+## 四、根因链条（每一步都可核对）
+
+**1）3.0.27 的泄漏点（字节码）**
+
+```
+RainParticle.render(VertexConsumer, Camera, float):
+   0: invokestatic  RenderSystem.disableCull()      <-- 第一句
+   3: aload_2 ; Camera.getPosition() ...
+```
+
+`SnowParticle.render` 完全同构。两类的常量池里**不存在** `enableCull` 符号。
+
+**2）没有任何回收者**——`ParticleEngine.render()`（`neoforge-21.1.219-sources.jar`）：
+
+```java
+BufferBuilder bufferbuilder = particlerendertype.begin(tesselator, this.textureManager);
+for (Particle particle : queue) { particle.render(bufferbuilder, camera, partialTick); }
+BufferUploader.drawWithShader(bufferbuilder.build());
+...
+RenderSystem.depthMask(true);
+RenderSystem.disableBlend();          // 全程没有 cull
+```
+
+**3）vanilla 的 `CULL` 分片是空操作**——`RenderStateShard.CullStateShard`：
+
+```java
+super("cull", () -> { if (!useCull) RenderSystem.disableCull(); },
+              () -> { if (!useCull) RenderSystem.enableCull(); }, useCull);
+```
+
+⇒ `RenderType.entityCutout`（`setCullState(CULL)`）的 setup/clear **既不开也不关**剔除，它假设剔除已经开着。所以 CGC 后面画枪时**不会**把泄漏修回来。（只有 `NO_CULL` 类型才会在 `clearRenderState()` 里 `enableCull()`。）
+
+**4）vanilla 里唯一的还原点就是紧随其后的云**——`LevelRenderer.renderLevel` 的顺序：
+
+```
+1186-1209  this.minecraft.particleEngine.render(...)     <-- 泄漏发生
+1217-1221  if (options.getCloudsType() != CloudStatus.OFF) this.renderClouds(...)
+1225/1234  this.renderSnowAndRain(...)
+```
+
+而 `RenderType.CLOUDS` 是 `setCullState(NO_CULL)`（`RenderType.createClouds`）⇒ 云画完的 `clearRenderState()` 会 `enableCull()`，**正好把泄漏修掉**。这就是「不装 Sodium 正常」的原因。
+
+**5）Sodium 让第 4 步失效**：云改由 Sodium 自绘，不再走 vanilla 的 `RenderType.CLOUDS`，于是"粒子之后必然有一次 `enableCull`"这个 vanilla 隐含前提被破坏 ⇒ 剔除一直关到帧尾。另外 PhysicsMod 在 `ConfigClient.weatherParticles` 开启时会 `info.cancel()` 掉 vanilla `renderSnowAndRain`（`weather` 渲染类型同样是 `NO_CULL`），又拿掉一个可能的还原点。
+
+> ⚠️ 这条里的「Sodium 自绘云」是我**推断**的（本机没有 Sodium jar 可核对，见第七节）。链条其余各步都有源码/字节码依据。
+
+**6）为什么与 CGC 无关**：全局状态泄漏，凡是"必须靠背面剔除才不露"的几何都会中招。CGC 的 `lens` 恰好是 size z=0、`uv` 只声明 `north` 的退化四边形——它唯一真实的面就是 north，从枪后看它本该看不见；剔除一关，它就露出来了。
+
+## 五、附带发现：那条注入失败的 `renderBakedItemQuads`
+
+文档里记的「PhysicsMod 注入 `ItemRenderer` 那处失败」有具体落点，两版差异很干净。
+
+`net/diebuddies/mixins/item/MixinItemRenderer`（`@Mixin(ItemRenderer.class)`）第二个注入器：
+
+```java
+// 3.0.27
+@Inject(at = {@At("HEAD")}, method = {"renderBakedItemQuads"}, remap = false)
+private void physicsmod$grabSodiumItemBreakTransformation(
+    PoseStack.Pose matrices, @Coerce Object writer, List<BakedQuad> quads,
+    ItemStack itemStack, ItemColor colorProvider, int light, int overlay, CallbackInfo info)
+
+// 3.0.34 —— 去掉 ItemColor 参数，并显式 require = 0
+@Inject(at = {@At("HEAD")}, method = {"renderBakedItemQuads"}, remap = false, require = 0)
+private void physicsmod$grabSodiumItemBreakTransformation(
+    PoseStack.Pose matrices, @Coerce Object writer, List<BakedQuad> quads,
+    ItemStack itemStack, int light, int overlay, CallbackInfo info)
+```
+
+而 1.21.1 的 `net.minecraft.client.renderer.entity.ItemRenderer` **没有** `renderBakedItemQuads` 这个方法：它的等价物是
+
+```java
+public void renderModelLists(BakedModel, ItemStack, int, int, PoseStack, VertexConsumer)
+public void renderQuadList(PoseStack poseStack, VertexConsumer buffer, List<BakedQuad>, ItemStack, int, int)
+```
+
+首参是 `PoseStack` 而非 `PoseStack.Pose`，也带 `ItemColor` 的痕迹但签名不同。所以这条注入（按 Sodium 侧编码器的签名写的，用了 `@Coerce Object`）在 `ItemRenderer` 上**注定匹配不到**；两版 mixin 配置都是 `injectors.defaultRequire: -1`（注入可选），所以它只记一条失败日志、不影响启动——与文档里的观察吻合。3.0.34 把参数表改短 + `require = 0`，是在收口这个 Sodium 兼容钩子。
+
+这条**不是** lens 红点问题的原因（它只影响"物品被物理化成方块"的变换抓取），但可以作为"3.0.27 是在 1.21.1 上勉强运行的 1.21.0 时代构建"的旁证。
+
+## 六、可验证的推论（下次直接测这几条）
+
+按上面的机理，症状应当是**间歇性、跟着降水走**的：
+
+1. **只在下雨/下雪/沙尘时出现**：`render()` 是逐粒子调用的，没有存活粒子就没有泄漏。雨停后当帧即恢复。这能解释文档里几轮观察互相矛盾（不是 ModernFix，也不是 CGC，而是"测的那几轮有没有在下雨"）。
+2. **判定性测试**：Sodium + PhysicsMod 3.0.27，在下雨时看红点 lens → 应露背面；把 PhysicsMod 配置里 `weatherParticles` 关掉（或 `/weather clear`）→ 应当当帧消失。这一条能直接把"泄漏"钉死。
+3. **推论**：**把 vanilla 云关掉（`CloudStatus.OFF`）后，即使不装 Sodium 也应该复现**——因为第 4 步的还原点被跳过。这是个很好的反证测试：如果据此真的在无 Sodium 下复现了，机理就完全确认。
+4. 3.0.34 下上述任意组合都不应复现。
+
+## 七、本次分析的边界
+
+- 已核对：两个 jar 的全量条目/CRC 差异、mixin 配置、所有 `.class` 的 `disableCull`/`enableCull` 常量池扫描、关键类的字节码；vanilla 侧读了 `ParticleEngine`、`ParticleRenderType`、`RenderStateShard.CullStateShard`、`RenderType`、`LevelRenderer.renderLevel`、`ItemRenderer`（均取自 `core/.gradle/repositories/ng_dummy_ng/net/neoforged/neoforge/21.1.219/neoforge-21.1.219-sources.jar`）。
+- **未核对**：第四节第 5 步「Sodium 自绘云」。本机没有 Sodium jar（`~/.gradle/caches`、`.minecraft`、各 modpack 目录都没有），所以这是推断；建议用第六节第 2/3 条测试来确认。
+- 本文只针对 3.0.27 与 3.0.34 两个 jar；未做中间版本的二分，因此**不知道这两个版本之间的泄漏是哪一版引入/修复的**。若需要，可以拿中间版本按同一套扫描快速定位。
+
+未改任何代码，两个仓库工作区未动。

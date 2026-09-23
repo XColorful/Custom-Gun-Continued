@@ -4,6 +4,7 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "customgun.refmap.json",
   "mixins": [
+    "entity.EntityMixin",
     "entity.LivingEntityMixin",
     "entity.ServerPlayerMixin",
     "network.ServerGamePacketListenerImplMixin"

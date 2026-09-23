@@ -4,6 +4,7 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.animation.AnimationHelper;
+import dev.xcolorful.customgun.client.animation.ObjectAnimation;
 import dev.xcolorful.customgun.client.animation.controller.AnimController;
 import dev.xcolorful.customgun.client.animation.statemachine.GunAnimStateContext;
 import dev.xcolorful.customgun.client.animation.statemachine.LuaAnimStateMachine;
@@ -120,6 +121,15 @@ public final class GunDisplayInstance extends PojoInstance<GunDisplay> {
         { // 动画控制器
             animController = loadAnimController(this.gunModel);
             if (animController == null) return false;
+
+            @Nullable List<ObjectAnimation> legacyDefaultAnimation = pojo.getDefaultAnimation();
+            if (legacyDefaultAnimation != null) {
+                // 获取到旧格式指定的默认动画，填入动画控制器
+                for (int i = 0; i < legacyDefaultAnimation.size(); i++) {
+                    ObjectAnimation animation = legacyDefaultAnimation.get(i);
+                    animController.providePrototypeIfAbsent(animation.name, () -> new ObjectAnimation(animation));
+                }
+            }
         }
 
         { // 状态机脚本
@@ -197,8 +207,6 @@ public final class GunDisplayInstance extends PojoInstance<GunDisplay> {
             }
             CustomGun.LOGGER.debug("GunDisplayInstance: Animation {} not found", animationLocation);
             return null;
-
-            // TODO 将默认动画填入动画控制器?
         } else {
             return new AnimController(new ArrayList<>(), gunModel);
         }

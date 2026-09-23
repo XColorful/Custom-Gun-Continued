@@ -1075,3 +1075,103 @@ Understood — reporting only, no code changes, no memory. Let me verify the sta
 ---
 
 需要我把这份报告落到仓库文档里，或者按第 5 节的方向出个具体方案，说一声。
+
+#
+---
+
+```
+现在继续处理./docs/deprecated/prompt/single/60 Shader-compat-fork1.md的问题
+
+当前：
+- CGC Compat Shader 1.21.1和1.21.4代码没区别，都正常工作
+- 1.21.6安装sodium没问题，安装iris+sodium后，无论开不开光影，都会始终显示红点/倍镜的准心，切倍镜的ocular始终是模型自身的黑色
+- 1.21.16 iris/sodium降回最低支持的1.21.6版本仍然存在该问题，默认直接以最新iris/sodium为准进行兼容
+- 1.21.10-26.3，安装iris+sodium，在不开光影的时候正常，开光影时问题仍存在
+
+iris+sodium+关光影时的问题仅在1.21.6存在，允许CGC Compat Shader对iris/sodium进行mixin来实现关光影的情况下正常
+
+iris+sodium+开光影时的问题默认先处理1.21.6，等通过后cherry pick到高版本验证是否需要再适配
+- 如果要大改渲染方式，考虑是否能通过封装渲染接口，如新增渲染管线等，让1.20.1-1.21.4使用旧的渲染，1.21.6起解除门控注释来更换渲染的方式实现，从而实现跨版本统一
+
+当前IDEA打开了CGC 1.21.1，1.21.6，26.3，1.20.1，CGC Compat Shader1.21.1，1.21.6，26.3多个窗口供浏览源码
+- iris和sodium源码在Compat Shader窗口里浏览
+```
+
+# 
+
+我先读取该提示文档。
+
+我先做侦察：确认两个 1.21.6 仓库的当前状态与 Compat Shader 的既有 mixin 结构。
+
+第一条命令的 `cd` 影响了并行执行——我用显式路径重查 CGC 工作区，避免上次那种工作目录漂移。
+
+现在我读 Compat Shader 的构建配置和 CGC 侧的兼容层现状。
+
+现在定位 Iris/Sodium 的 jar，确认要 mixin 的目标类。
+
+类都在。用 IDEA MCP 反编译 Iris 的批处理源，确认 flush 路径。
+
+现在读 CGC 侧的绘制点，确认 flush 语义。
+
+现在核对 MC 1.21.6 的 `RenderPass` 模板 API，确认 mixin 注入点可行。
+
+核对 MC 侧 FBO 的 stencil 附件判定，以及 Iris 在不开光影时把 pass 指向哪个 target。
+
+关键发现：`endBatch` 里 `iris$getPipeline() == null` 时走的是 vanilla `type.draw()`。我需要确认哪条分支在不开光影时生效。
+
+分析完成，根因链已在源码级确认。建立任务清单后实施。
+
+git 报的是整文件 EOL 变化，我先隔离这是不是行尾归一化造成的假象。
+
+我的 sed 在文件末尾多塞了一个 CR。改用只做定点插入的方式重做，保证除新增行外逐字节不变。
+
+编译通过。现在用 javap 核对注入点的字节码描述符是否逐字匹配。
+
+工作目录又漂到了 CGC 仓库，我改用显式路径复查改动。
+
+工作区改动完成且其它 worktree 未受影响。我把这次踩到的环境坑记入记忆。
+
+改动完成、编译通过。以下是这一轮的结论与变更。
+
+## 根因链（源码级确认，非推断）
+
+之前那份文档里"关光影靠换缓冲源修好"的做法要改在兼容层做，但**根因本身和缓冲源无关**，链路是：
+
+1. `iris-batched-entity-rendering.mixins.json` 是 `"required": true`，所以装了 Iris 就**恒定**把 `RenderBuffers.bufferSource()` 换成 `FullyBufferedMultiBufferSource`——**跟开不开光影包无关**（这解释了为什么关光影也坏）。
+2. 它的 `endBatch()` 按 `type.iris$getPipeline()` 分叉。`RenderType.CompositeRenderType` 的 `iris$getPipeline()` 返回 `this.renderPipeline`（`MixinRenderType` 字节码），**恒非空**，所以 CGC 的几何体恒走 Iris 那条自建 `RenderPass` 分支，而不是 vanilla 的 `type.draw()`。
+3. 那条链（`createRenderPass` → `setPipeline` → `RenderSystem.bindDefaultUniforms` → `BufferSegmentRenderer.drawInner`）**没有 `enableStencilTest`**。而 1.21.6 的 `RenderSystem.STENCIL_TEST` 在 vanilla 侧唯一读取者就是 `RenderType.CompositeRenderType.draw` 的那两行。
+4. ⇒ 模板状态设了但到不了绘制：写入（`GREATER/REPLACE`）不生效、读取（`EQUAL i+1` 目镜遮罩 / `EQUAL ~(i+1)` 准心 / `EQUAL 0` 镜身）全部退化成恒真。
+
+顺带确认了两件让修法可行的前提：`_clearStencilBuffer` 清的是**主 target** 的模板，CGC 的 RenderType 默认 `OutputState = MAIN_TARGET`（`RenderStateShard.MAIN_TARGET`），所以两者的目标一致；主 target 有 stencil 附件（CGC 经 `ConfigureMainRenderTargetEvent::enableStencil` 打开）。圆形模板孔走 `RenderType.debugTriangleFan().draw(...)` 的即时路径，本来就读 `STENCIL_TEST`，不受影响。
+
+## 改动（只在 CGC Compat Shader 1.21.6，CGC 本体零改动）
+
+新增 [FullyBufferedMultiBufferSourceMixin.java](app://localhost/epitaxy/local_1fec1fe6-1e34-43b4-9002-70dc89169ecc)：用 MixinExtras `@WrapOperation` 包住 `endBatch` / `endBatchWithType` 里那次 `CommandEncoder.createRenderPass(...)`，把 vanilla 那两行补回去：
+
+```java
+StencilTest stencilTest = RenderSystem.STENCIL_TEST;
+if (stencilTest != null) pass.enableStencilTest(stencilTest);
+```
+
+外加上 `cgccshaderclient.mixins.json` 一行注册。注入点的字节码描述符我用 `javap -c` 逐字核过（两个方法各一处，`invokeinterface CommandEncoder.createRenderPass:(Supplier;GpuTextureView;OptionalInt;GpuTextureView;OptionalDouble)RenderPass;`）。
+
+**为什么这次不会像上轮那样把非光影基线搞坏**：上轮坏在改 `getModelBufferSource()` 的取源点（拆了手/文字与枪体共用顶点缓冲的耦合）。这次 CGC 一个字没动，`getModelBufferSource()` 保持回退后的原样；这个 mixin 只在装了 Iris 时才存在，`RenderSystem.STENCIL_TEST` 为 null（模板窗口之外）时纯 no-op。另外 `_colorMask(false)`/`_depthMask(false)` 那条链本来就活着（`GlRenderPass.setPipeline:74` 会 `applyPipelineModifiers`），缺的只有模板测试这一项，所以补这一行就够。
+
+## 开光影那条：本次**未改**，行为与现在一致
+
+光影包开启时 pass 的目标是 Iris 自己的 framebuffer，深度纹理没有 stencil 方面 → 按 GL 规范"没有 stencil 缓冲等同恒真"，这一行加不加表现一样。所以我没有为它加门控（无谓的分支），这条仍按你的计划留到下一步。
+
+## 需要你实测确认
+
+装 iris+sodium、**不**开光影：
+
+1. 红点/倍镜准心只在圆形视野内（不再满屏）；
+2. 4 倍镜开镜后 ocular 里是场景，不是模型自身的黑色；
+3. 关镜后枪体没有被残留圆形区域裁掉；
+4. 顺带看一眼**第一人称的其他几何体有没有被误裁**（见下面的残余风险）。
+
+## 残余风险（我没法在游戏里验，如实报）
+
+Iris 的 `endBatch()` 是**整批** flush，而 vanilla 的 `endBatch(rt)` 只冲那一个 RenderType。所以 CGC 模板窗口内**第一次** flush 时，若共享源里正好还留着别人排队的几何体，它也会吃到当次的模板状态。实际暴露面很小：CGC 每个绘制点都会触发整批 flush，队列基本是空的；而且带 `ocularRingPath` 的常见路径下窗口内第一笔用的是 `GL_ALWAYS/KEEP`（等于没开）。真正的暴露只有 `ocularRingPath == null` 时窗口内第一笔就是 `REPLACE` 写入这一种。若你测出某个第一人称元素消失/被裁，就是这条，届时我再决定是加"窗口开启前先冲一次"还是别的收口方式。
+
+未 commit、未 push；CGC 1.21.6 与其余 worktree 全干净，编译用绝对路径 `"$R/gradlew" -p "$R"`（这轮 shell cwd 又漂了一次，我已把这条环境坑记进记忆）。

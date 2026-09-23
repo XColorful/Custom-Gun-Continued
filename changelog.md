@@ -1,3 +1,12 @@
+### 26.9
+
+#### 26.9.19
+- First official release
+- Add gun display default animation backward compatibility
+
+1.21.10+:
+- Fix survival mode reload issue
+
 ### 0.0.x
 
 #### 0.0.18

@@ -40,11 +40,6 @@ public class ForgeAddServerReloadListenerEvent extends ForgeEvent implements IAd
     }
 
     @Override
-    public RegistryAccess getRegistryAccess() {
-        return this.addReloadListenerEvent.getRegistryAccess();
-    }
-
-    @Override
     public @Nullable CommandSourceStack createCommandSourceStack(@Nullable CommandSource source) {
         return null;
     }

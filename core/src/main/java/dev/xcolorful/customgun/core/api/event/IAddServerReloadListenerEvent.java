@@ -4,6 +4,7 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
+import org.jetbrains.annotations.Nullable;
 
 public interface IAddServerReloadListenerEvent extends IEvent {
 
@@ -16,5 +17,12 @@ public interface IAddServerReloadListenerEvent extends IEvent {
 
     ReloadableServerResources getServerResources();
 
-    RegistryAccess getRegistryAccess();
+    /**
+     * 改用 {@link ITagsUpdatedEvent#getLookupProvider()}
+     * @deprecated {@link IAddServerReloadListenerEvent}触发的时候还不包含当前reload的tag
+     */
+    @Deprecated(since = "1.20.1", forRemoval = true)
+    default @Nullable RegistryAccess getRegistryAccess() {
+        return null;
+    }
 }

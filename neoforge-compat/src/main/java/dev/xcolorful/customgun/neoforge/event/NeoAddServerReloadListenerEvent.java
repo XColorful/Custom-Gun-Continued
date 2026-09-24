@@ -4,7 +4,6 @@ import dev.xcolorful.customgun.core.api.event.EventType;
 import dev.xcolorful.customgun.core.api.event.IAddServerReloadListenerEvent;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.ReloadableServerResources;
@@ -37,11 +36,6 @@ public class NeoAddServerReloadListenerEvent extends NeoEvent implements IAddSer
     @Override
     public ReloadableServerResources getServerResources() {
         return this.addServerReloadListenersEvent.getServerResources();
-    }
-
-    @Override
-    public RegistryAccess getRegistryAccess() {
-        return this.addServerReloadListenersEvent.getRegistryAccess();
     }
 
     @Override

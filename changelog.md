@@ -1,5 +1,9 @@
 ### 26.9
 
+#### 26.9.19.1
+26.3neoforge:
+- Update to NeoForge 26.3.0.16-beta
+
 #### 26.9.19
 - First official release
 - Add gun display default animation backward compatibility

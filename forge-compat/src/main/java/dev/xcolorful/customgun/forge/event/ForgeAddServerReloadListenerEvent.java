@@ -4,7 +4,6 @@ import dev.xcolorful.customgun.core.api.event.EventType;
 import dev.xcolorful.customgun.core.api.event.IAddServerReloadListenerEvent;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.ReloadableServerResources;
@@ -37,11 +36,6 @@ public class ForgeAddServerReloadListenerEvent extends ForgeEvent implements IAd
     @Override
     public ReloadableServerResources getServerResources() {
         return this.addReloadListenerEvent.getServerResources();
-    }
-
-    @Override
-    public RegistryAccess getRegistryAccess() {
-        return this.addReloadListenerEvent.getRegistryAccess();
     }
 
     @Override

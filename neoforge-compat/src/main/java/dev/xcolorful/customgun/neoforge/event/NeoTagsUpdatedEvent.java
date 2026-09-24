@@ -36,7 +36,7 @@ public class NeoTagsUpdatedEvent extends NeoEvent implements ITagsUpdatedEvent {
 
     @Override
     public HolderLookup.Provider getLookupProvider() {
-        return tagsUpdatedEvent.getLookupProvider();
+        return tagsUpdatedEvent.getRegistries();
     }
 
     @Override
@@ -46,9 +46,10 @@ public class NeoTagsUpdatedEvent extends NeoEvent implements ITagsUpdatedEvent {
 
     @Override
     public UpdateCause getUpdateCause() {
-        return switch (tagsUpdatedEvent.getUpdateCause()) {
-            case SERVER_DATA_LOAD -> UpdateCause.SERVER_DATA_LOAD;
-            case CLIENT_PACKET_RECEIVED -> UpdateCause.CLIENT_PACKET_RECEIVED;
+        return switch (tagsUpdatedEvent) {
+            case TagsUpdatedEvent.ServerDataLoad ignored -> UpdateCause.SERVER_DATA_LOAD;
+            case TagsUpdatedEvent.ClientPacketReceived ignored -> UpdateCause.CLIENT_PACKET_RECEIVED;
+            default -> throw new IllegalStateException("Unexpected TagsUpdatedEvent: " + tagsUpdatedEvent.getClass().getName());
         };
     }
 

@@ -16,6 +16,7 @@ public interface ITagsUpdatedEvent extends IEvent, ILogicalSideOnly {
 
     /**
      * [1.20.1, 1.21.1] 为 RegistryAccess
+     * [26.2, ) 为 RegistryAccess
      */
     HolderLookup.Provider getLookupProvider();
     @Deprecated(since = "1.21.4") @Nullable RegistryAccess getRegistryAccess();

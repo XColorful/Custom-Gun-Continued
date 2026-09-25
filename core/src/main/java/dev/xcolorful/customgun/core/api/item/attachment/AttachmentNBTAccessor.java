@@ -1,11 +1,16 @@
 package dev.xcolorful.customgun.core.api.item.attachment;
 
 import dev.xcolorful.customgun.core.api.item.AttachmentProperty;
+import dev.xcolorful.customgun.core.api.item.IAttachment;
+import dev.xcolorful.customgun.core.api.resource.ResourceApi;
 import dev.xcolorful.customgun.core.api.resource.ResourceTag;
+import dev.xcolorful.customgun.core.resource.data.index.AttachmentIndex;
+import dev.xcolorful.customgun.core.resource.instance.data.AttachmentIndexInstance;
 import dev.xcolorful.customgun.core.util.NBTUtils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public interface AttachmentNBTAccessor extends IAttachmentNBTAccess {
 
@@ -25,7 +30,17 @@ public interface AttachmentNBTAccessor extends IAttachmentNBTAccess {
     @Override
     default @NotNull AttachmentCategory getAttachmentCategory(CompoundTag attachmentCustomDataTag) {
         AttachmentCategory category = AttachmentCategory.fromString(NBTUtils.getString(attachmentCustomDataTag, AttachmentProperty.ATTACHMENT_CATEGORY.getTagName()));
-        return category != null ? category : AttachmentCategory.NONE;
+        if (category != null) return category;
+
+        /**
+         * {@link IAttachment#getBuiltinAttachmentCategory}
+         */
+        var attachmentLocation = this.getAttachmentLocation(attachmentCustomDataTag);
+        @Nullable AttachmentIndexInstance attachmentIndexInstance = ResourceApi.getAttachmentIndexInstance(attachmentLocation);
+        if (attachmentIndexInstance == null) return AttachmentCategory.NONE;
+
+        AttachmentIndex attachmentIndex = attachmentIndexInstance.getPojo();
+        return attachmentIndex.getAttachmentCategory();
     }
     @Override
     default void setAttachmentCategory(CompoundTag attachmentCustomDataTag, AttachmentCategory attachmentCategory) {

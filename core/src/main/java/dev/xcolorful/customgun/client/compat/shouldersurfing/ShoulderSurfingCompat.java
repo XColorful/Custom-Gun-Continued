@@ -66,14 +66,13 @@ public class ShoulderSurfingCompat {
         if (!CustomGun.getMcRegistry().isModLoaded(MOD_ID)) return;
 
         try {
-            Class<?> shoulderSurfingClass = Class.forName("com.github.exopandora.shouldersurfing.api.client.ShoulderSurfing");
+            Class<?> iShoulderSurfingClass = Class.forName("com.github.exopandora.shouldersurfing.api.client.IShoulderSurfing");
 
-            getInstance = shoulderSurfingClass.getMethod("getInstance");
+            getInstance = iShoulderSurfingClass.getMethod("getInstance");
             shoulderSurfing = invoke(getInstance, null);
 
-            Class<?> iShoulderSurfingClass = Class.forName("com.github.exopandora.shouldersurfing.api.client.IShoulderSurfing");
             Class<?> iShoulderSurfingCameraClass = Class.forName("com.github.exopandora.shouldersurfing.api.client.IShoulderSurfingCamera");
-            Class<?> perspectiveClass = Class.forName("com.github.exopandora.shouldersurfing.api.model.Perspective");
+            Class<?> perspectiveClass = Class.forName("com.github.exopandora.shouldersurfing.api.client.Perspective");
 
             isShoulderSurfing = iShoulderSurfingClass.getMethod("isShoulderSurfing");
             Method getCamera = iShoulderSurfingClass.getMethod("getCamera");

@@ -1,5 +1,9 @@
 ### 26.9
 
+#### 26.9.20
+26.2+:
+- Fixed Shoulder Surfing Reloaded compatibility issue
+
 #### 26.9.19.1
 26.3neoforge:
 - Update to NeoForge 26.3.0.16-beta

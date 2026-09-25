@@ -1,7 +1,10 @@
 package dev.xcolorful.customgun.core.api.item.attachment;
 
 import dev.xcolorful.customgun.core.api.item.AttachmentProperty;
+import dev.xcolorful.customgun.core.api.resource.ResourceApi;
 import dev.xcolorful.customgun.core.api.resource.ResourceTag;
+import dev.xcolorful.customgun.core.resource.data.index.AttachmentIndex;
+import dev.xcolorful.customgun.core.resource.instance.data.AttachmentIndexInstance;
 import dev.xcolorful.customgun.core.util.NBTUtils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -31,7 +34,7 @@ public interface AttachmentDataAccessor extends AttachmentNBTAccessor, IAttachme
     @Override
     default @NotNull AttachmentCategory getAttachmentCategory(ItemStack attachmentItem) {
         @Nullable var customData = NBTUtils.getCustomData(attachmentItem);
-        if (customData == null) return AttachmentCategory.NONE;
+        if (customData == null) return this.getBuiltinAttachmentCategory(attachmentItem);
         @NotNull CompoundTag customDataTag = NBTUtils.getCustomDataTag(customData);
         return this.getAttachmentCategory(customDataTag);
     }
@@ -41,6 +44,16 @@ public interface AttachmentDataAccessor extends AttachmentNBTAccessor, IAttachme
         @NotNull CompoundTag customDataTag = NBTUtils.getCustomDataTag(customData);
         this.setAttachmentCategory(customDataTag, attachmentCategory);
         NBTUtils.setCustomDataTag(attachmentItem, customDataTag);
+    }
+
+    @Override
+    default @NotNull AttachmentCategory getBuiltinAttachmentCategory(ItemStack attachmentItem) {
+        var attachmentLocation = this.getAttachmentLocation(attachmentItem);
+        @Nullable AttachmentIndexInstance attachmentIndexInstance = ResourceApi.getAttachmentIndexInstance(attachmentLocation);
+        if (attachmentIndexInstance == null) return AttachmentCategory.NONE;
+
+        AttachmentIndex attachmentIndex = attachmentIndexInstance.getPojo();
+        return attachmentIndex.getAttachmentCategory();
     }
 
     @Override

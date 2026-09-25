@@ -2,8 +2,10 @@ package dev.xcolorful.customgun.core.api.item.attachment;
 
 import dev.xcolorful.customgun.client.resource.assets.display.AttachmentDisplay;
 import dev.xcolorful.customgun.core.api.resource.ResourceTag;
+import dev.xcolorful.customgun.core.resource.data.index.AttachmentIndex;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 public interface IAttachmentDataAccess extends IAttachmentStateAccess,
@@ -21,6 +23,14 @@ public interface IAttachmentDataAccess extends IAttachmentStateAccess,
      */
     @NotNull AttachmentCategory getAttachmentCategory(ItemStack attachmentItem);
     void setAttachmentCategory(ItemStack attachmentItem, AttachmentCategory attachmentCategory);
+
+    /**
+     * 请优先使用 {@link #getAttachmentCategory(ItemStack)}
+     * <br>
+     * 获取{@link AttachmentIndex}定义的配件类型，如无则返回 {@link AttachmentCategory#NONE}
+     */
+    @ApiStatus.Internal
+    @NotNull AttachmentCategory getBuiltinAttachmentCategory(ItemStack attachmentItem);
 
     /**
      * {@link AttachmentDisplay#getScopeViewIndex()}

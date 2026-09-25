@@ -1,5 +1,8 @@
 ### 26.9
 
+#### 26.9.21
+- Fall back to the attachment category defined in attachment index when item NBT lacks attachment category
+
 #### 26.9.20
 26.2+:
 - Fixed Shoulder Surfing Reloaded compatibility issue

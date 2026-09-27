@@ -75,11 +75,11 @@ public class CustomGunNeoforge {
         ModParticles.PARTICLE_TYPES.registerAll(modEventBus);
 
         if (mcSide == McSide.CLIENT) {
-            _GunModNeoforgeClient.init();
+            _CustomGunNeoforgeClient.init();
         }
     }
 
-    private static class _GunModNeoforgeClient {
+    private static class _CustomGunNeoforgeClient {
         public static void init() {
             CustomGunNeoforgeClient.init();
         }

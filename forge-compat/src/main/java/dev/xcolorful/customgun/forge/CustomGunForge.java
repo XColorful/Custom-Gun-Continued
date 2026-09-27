@@ -75,11 +75,11 @@ public class CustomGunForge {
         ModParticles.PARTICLE_TYPES.registerAll(modEventBus);
 
         if (mcSide == McSide.CLIENT) {
-            _GunModForgeClient.init();
+            _CustomGunForgeClient.init();
         }
     }
 
-    private static class _GunModForgeClient {
+    private static class _CustomGunForgeClient {
         public static void init() {
             CustomGunForgeClient.init();
         }

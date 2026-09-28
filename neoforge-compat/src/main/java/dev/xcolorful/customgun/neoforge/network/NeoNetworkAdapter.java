@@ -8,6 +8,7 @@ import dev.xcolorful.customgun.core.network.LoginIndexHolder;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.network.NetworkRegistry;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.PlayNetworkDirection;
@@ -31,7 +32,7 @@ public class NeoNetworkAdapter implements INetworkAdapter {
     private final SimpleChannel HANDSHAKE_CHANNEL;
     private final SimpleChannel CHANNEL;
 
-    public NeoNetworkAdapter(@NotNull IMcRegistry mcRegistry,
+    public NeoNetworkAdapter(IEventBus modEventBus, @NotNull IMcRegistry mcRegistry,
                              String modId, int protocolVersion) {
         this.protocolVersion = protocolVersion;
         this.protocolVersionString = String.valueOf(protocolVersion);

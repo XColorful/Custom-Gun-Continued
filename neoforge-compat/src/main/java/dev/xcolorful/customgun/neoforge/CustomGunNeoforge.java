@@ -47,7 +47,7 @@ public class CustomGunNeoforge {
         CustomGunNeoforge.registrarFactory = new NeoRegistrarFactory();
         CustomGunNeoforge.mcRegistry = new NeoRegistry();
         CustomGunNeoforge.capabilityProvider = new NeoCapabilityProvider();
-        CustomGunNeoforge.networkAdapter = new NeoNetworkAdapter(CustomGunNeoforge.mcRegistry, CustomGun.MOD_ID, NetworkHandler.protocol_version);
+        CustomGunNeoforge.networkAdapter = new NeoNetworkAdapter(modEventBus, CustomGunNeoforge.mcRegistry, CustomGun.MOD_ID, NetworkHandler.protocol_version);
         CustomGunNeoforge.networkHook = new NeoNetworkHook();
         CustomGunNeoforge.eventRegister = new NeoEventRegister();
         CustomGunNeoforge.modConfigSpecBuilderSupplier = NeoModConfigSpecBuilder::new;

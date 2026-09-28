@@ -11,6 +11,7 @@ import dev.xcolorful.customgun.core.api.minecraft.IMcRegistry;
 import dev.xcolorful.customgun.core.api.network.INetworkAdapter;
 import dev.xcolorful.customgun.core.api.network.INetworkHook;
 import dev.xcolorful.customgun.core.init.registry.*;
+import dev.xcolorful.customgun.core.network.NetworkHandler;
 import dev.xcolorful.customgun.forge.common.ForgeSideExecutor;
 import dev.xcolorful.customgun.forge.config.ForgeModConfigSpecBuilder;
 import dev.xcolorful.customgun.forge.event.ForgeEventRegister;
@@ -47,7 +48,7 @@ public class CustomGunForge {
         CustomGunForge.registrarFactory = new ForgeRegistrarFactory();
         CustomGunForge.mcRegistry = new ForgeRegistry();
         CustomGunForge.capabilityProvider = new ForgeCapabilityProvider();
-        CustomGunForge.networkAdapter = new ForgeNetworkAdapter();
+        CustomGunForge.networkAdapter = new ForgeNetworkAdapter(CustomGunForge.mcRegistry, NetworkHandler.protocol_version);
         CustomGunForge.networkHook = new ForgeNetworkHook();
         CustomGunForge.eventRegister = new ForgeEventRegister();
         CustomGunForge.modConfigSpecBuilderSupplier = ForgeModConfigSpecBuilder::new;

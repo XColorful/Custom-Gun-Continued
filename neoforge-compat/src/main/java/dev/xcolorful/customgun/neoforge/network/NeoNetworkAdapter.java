@@ -1,44 +1,52 @@
 package dev.xcolorful.customgun.neoforge.network;
 
-import dev.xcolorful.customgun.CustomGun;
+import dev.xcolorful.customgun.core.api.minecraft.IMcRegistry;
 import dev.xcolorful.customgun.core.api.network.INetworkAdapter;
 import dev.xcolorful.customgun.core.api.network.MessageDirection;
 import dev.xcolorful.customgun.core.api.network.message.IMessage;
 import dev.xcolorful.customgun.core.network.LoginIndexHolder;
-import dev.xcolorful.customgun.core.network.NetworkHandler;
-import dev.xcolorful.customgun.neoforge.CustomGunNeoforge;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.neoforged.neoforge.network.NetworkRegistry;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.PlayNetworkDirection;
 import net.neoforged.neoforge.network.simple.SimpleChannel;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 public class NeoNetworkAdapter implements INetworkAdapter {
 
+    private final int protocolVersion;
+    private final String protocolVersionString;
+    private boolean isProtocolAccepted(String removeVersion) {
+        return removeVersion.equals(protocolVersionString);
+    }
+    private Predicate<String> getProtocolAcceptancePredicate() {
+        return this::isProtocolAccepted;
+    }
+
     private final SimpleChannel HANDSHAKE_CHANNEL;
     private final SimpleChannel CHANNEL;
-    private final String protocolVersionString = NetworkHandler.PROTOCOL_VERSION;
 
-    public NeoNetworkAdapter() {
-        ResourceLocation handshakeName = CustomGunNeoforge.mcRegistry.createResourceLocation(String.format("%s:handshake", CustomGun.MOD_ID));
-        ResourceLocation networkName = CustomGunNeoforge.mcRegistry.createResourceLocation(String.format("%s:network", CustomGun.MOD_ID));
+    public NeoNetworkAdapter(@NotNull IMcRegistry mcRegistry,
+                             String modId, int protocolVersion) {
+        this.protocolVersion = protocolVersion;
+        this.protocolVersionString = String.valueOf(protocolVersion);
 
         this.HANDSHAKE_CHANNEL = NetworkRegistry.newSimpleChannel(
-                handshakeName,
+                mcRegistry.createResourceLocation(String.format("%s:handshake", modId)),
                 () -> this.protocolVersionString,
-                this.protocolVersionString::equals,
-                this.protocolVersionString::equals
+                this.getProtocolAcceptancePredicate(), // 服务端 -> 客户端
+                this.getProtocolAcceptancePredicate() // 客户端 -> 服务端
         );
         this.CHANNEL = NetworkRegistry.newSimpleChannel(
-                networkName,
+                mcRegistry.createResourceLocation(String.format("%s:network", modId)),
                 () -> this.protocolVersionString,
-                this.protocolVersionString::equals,
-                this.protocolVersionString::equals
+                this.getProtocolAcceptancePredicate(), // 服务端 -> 客户端
+                this.getProtocolAcceptancePredicate() // 客户端 -> 服务端
         );
     }
 

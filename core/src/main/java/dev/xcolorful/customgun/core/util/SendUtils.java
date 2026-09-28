@@ -1,7 +1,3 @@
-/*
- * 跟 BattleRoyale 同构
- */
-
 package dev.xcolorful.customgun.core.util;
 
 import dev.xcolorful.customgun.core.api.network.message.IMessage;

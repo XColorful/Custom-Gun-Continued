@@ -1,35 +1,47 @@
 package dev.xcolorful.customgun.forge.network;
 
-import dev.xcolorful.customgun.CustomGun;
+import dev.xcolorful.customgun.core.api.minecraft.IMcRegistry;
 import dev.xcolorful.customgun.core.api.network.INetworkAdapter;
 import dev.xcolorful.customgun.core.api.network.MessageDirection;
 import dev.xcolorful.customgun.core.api.network.message.IMessage;
 import dev.xcolorful.customgun.core.network.LoginIndexHolder;
-import dev.xcolorful.customgun.core.network.NetworkHandler;
-import dev.xcolorful.customgun.forge.CustomGunForge;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraftforge.network.*;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 public class ForgeNetworkAdapter implements INetworkAdapter {
+
+    private final int protocolVersion;
+    private final String protocolVersionString;
+    private boolean isProtocolAccepted(String removeVersion) {
+        return removeVersion.equals(protocolVersionString);
+    }
+    private Predicate<String> getProtocolAcceptancePredicate() {
+        return this::isProtocolAccepted;
+    }
 
     private final SimpleChannel HANDSHAKE_CHANNEL;
     private final SimpleChannel CHANNEL;
 
-    public ForgeNetworkAdapter() {
-        int protocolVersion = NetworkHandler.protocol_version;
+    public ForgeNetworkAdapter(@NotNull IMcRegistry mcRegistry,
+                               String modId, int protocolVersion) {
+        this.protocolVersion = protocolVersion;
+        this.protocolVersionString = String.valueOf(protocolVersion);
+
         Channel.VersionTest acceptedVersions = Channel.VersionTest.exact(protocolVersion);
         this.HANDSHAKE_CHANNEL = ChannelBuilder
-                .named(CustomGunForge.mcRegistry.createResourceLocation(String.format("%s:handshake", CustomGun.MOD_ID)))
+                .named(mcRegistry.createResourceLocation(String.format("%s:handshake", modId)))
                 .networkProtocolVersion(protocolVersion) // 协议版本必须是 int
                 .clientAcceptedVersions(acceptedVersions) // 客户端接受版本
                 .serverAcceptedVersions(acceptedVersions) // 服务端接受版本
                 .simpleChannel(); // 创建 SimpleChannel 实例
         this.CHANNEL = ChannelBuilder
-                .named(CustomGunForge.mcRegistry.createResourceLocation(String.format("%s:network", CustomGun.MOD_ID)))
+                .named(mcRegistry.createResourceLocation(String.format("%s:network", modId)))
                 .networkProtocolVersion(protocolVersion)
                 .clientAcceptedVersions(acceptedVersions)
                 .serverAcceptedVersions(acceptedVersions)

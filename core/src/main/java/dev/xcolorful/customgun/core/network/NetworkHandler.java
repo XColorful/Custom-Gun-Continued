@@ -42,7 +42,7 @@ public class NetworkHandler {
         return NetworkHandler::isProtocolAccepted;
     }
 
-    private NetworkHandler(INetworkAdapter adapter) {
+    protected NetworkHandler(INetworkAdapter adapter) {
         this.adapter = adapter;
     }
 

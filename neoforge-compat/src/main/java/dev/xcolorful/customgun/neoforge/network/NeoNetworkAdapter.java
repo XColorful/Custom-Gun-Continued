@@ -1,11 +1,10 @@
 package dev.xcolorful.customgun.neoforge.network;
 
-import dev.xcolorful.customgun.CustomGun;
+import dev.xcolorful.customgun.core.api.minecraft.IMcRegistry;
 import dev.xcolorful.customgun.core.api.network.INetworkAdapter;
 import dev.xcolorful.customgun.core.api.network.MessageDirection;
 import dev.xcolorful.customgun.core.api.network.message.IMessage;
 import dev.xcolorful.customgun.core.network.LoginIndexHolder;
-import dev.xcolorful.customgun.neoforge.CustomGunNeoforge;
 import net.minecraft.network.Connection;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -14,21 +13,29 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.handling.IPayloadHandler;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
-@EventBusSubscriber(modid = CustomGun.MOD_ID)
 public class NeoNetworkAdapter implements INetworkAdapter {
-    public static NeoNetworkAdapter INSTANCE = new NeoNetworkAdapter();
+    private final int protocolVersion;
+    private final String protocolVersionString;
+    private boolean isProtocolAccepted(String removeVersion) {
+        return removeVersion.equals(protocolVersionString);
+    }
+    private Predicate<String> getProtocolAcceptancePredicate() {
+        return this::isProtocolAccepted;
+    }
 
     private record RegisteredPacket<T extends IMessage<T>>(
             Class<T> messageType,
@@ -51,29 +58,37 @@ public class NeoNetworkAdapter implements INetworkAdapter {
     }
 
     private final List<RegisteredPacket<?>> registeredPackets = new ArrayList<>();
-    private final String modId = CustomGun.MOD_ID;
+    private final String modId;
+    private final IMcRegistry mcRegistry;
 
-    public NeoNetworkAdapter() {
+    public NeoNetworkAdapter(IEventBus modEventBus, @NotNull IMcRegistry mcRegistry,
+                             String modId, int protocolVersion) {
+        this.protocolVersion = protocolVersion;
+        this.protocolVersionString = String.valueOf(protocolVersion);
+
+        this.modId = modId;
+        this.mcRegistry = mcRegistry;
+        modEventBus.register(this);
     }
 
     @Override
     public <T extends IMessage<T>> void registerMessage(int id, Class<T> clazz, Function<FriendlyByteBuf, T> decoder, MessageDirection direction) {
         String path = clazz.getSimpleName().toLowerCase();
-        ResourceLocation packetId = CustomGunNeoforge.mcRegistry.createResourceLocation(String.format("%s:%s", modId, path));
+        var packetId = this.mcRegistry.createResourceLocation(String.format("%s:%s", modId, path));
         registeredPackets.add(new RegisteredPacket<>(clazz, packetId, decoder, direction, false));
     }
 
     @Override
     public <T extends LoginIndexHolder & IMessage<T>> void registerHandshakeAcknowledge(int id, Class<T> clazz, Function<FriendlyByteBuf, T> decoder) {
         String path = clazz.getSimpleName().toLowerCase();
-        ResourceLocation packetId = CustomGunNeoforge.mcRegistry.createResourceLocation(String.format("%s:%s", modId, path));
+        var packetId = this.mcRegistry.createResourceLocation(String.format("%s:%s", modId, path));
         registeredPackets.add(new RegisteredPacket<>(clazz, packetId, decoder, MessageDirection.CLIENT_TO_SERVER, true));
     }
 
     @Override
     public <T extends LoginIndexHolder & IMessage<T>> void registerHandshakeMessage(int id, Class<T> clazz, Function<FriendlyByteBuf, T> decoder) {
         String path = clazz.getSimpleName().toLowerCase();
-        ResourceLocation packetId = CustomGunNeoforge.mcRegistry.createResourceLocation(String.format("%s:%s", modId, path));
+        var packetId = this.mcRegistry.createResourceLocation(String.format("%s:%s", modId, path));
         registeredPackets.add(new RegisteredPacket<>(clazz, packetId, decoder, MessageDirection.SERVER_TO_CLIENT, true));
     }
 
@@ -148,11 +163,11 @@ public class NeoNetworkAdapter implements INetworkAdapter {
     }
 
     @SubscribeEvent
-    public static void register(RegisterPayloadHandlersEvent event) {
-        final PayloadRegistrar registrar = event.registrar(INSTANCE.modId);
+    public void register(RegisterPayloadHandlersEvent event) {
+        final PayloadRegistrar registrar = event.registrar(this.modId);
 
-        for (RegisteredPacket<?> rp : INSTANCE.registeredPackets) {
-            INSTANCE.registerPacketInternal(registrar, rp);
+        for (RegisteredPacket<?> rp : this.registeredPackets) {
+            this.registerPacketInternal(registrar, rp);
         }
     }
 

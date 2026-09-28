@@ -31,10 +31,13 @@ public class NetworkHandler {
     private final AtomicInteger HANDSHAKE_ID_COUNT = new AtomicInteger(0);
 
     public static final int protocol_version = 17;
+    @Deprecated(forRemoval = true)
     public static final String PROTOCOL_VERSION = String.valueOf(protocol_version);
+    @Deprecated(forRemoval = true)
     public static boolean isProtocolAccepted(String remoteVersion) {
         return remoteVersion.equals(PROTOCOL_VERSION);
     }
+    @Deprecated(forRemoval = true)
     public static Predicate<String> getProtocolAcceptancePredicate() {
         return NetworkHandler::isProtocolAccepted;
     }

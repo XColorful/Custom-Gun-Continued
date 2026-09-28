@@ -11,6 +11,7 @@ import dev.xcolorful.customgun.core.api.minecraft.IMcRegistry;
 import dev.xcolorful.customgun.core.api.network.INetworkAdapter;
 import dev.xcolorful.customgun.core.api.network.INetworkHook;
 import dev.xcolorful.customgun.core.init.registry.*;
+import dev.xcolorful.customgun.core.network.NetworkHandler;
 import dev.xcolorful.customgun.neoforge.common.NeoSideExecutor;
 import dev.xcolorful.customgun.neoforge.config.NeoModConfigSpecBuilder;
 import dev.xcolorful.customgun.neoforge.event.NeoEventRegister;
@@ -47,7 +48,7 @@ public class CustomGunNeoforge {
         CustomGunNeoforge.registrarFactory = new NeoRegistrarFactory();
         CustomGunNeoforge.mcRegistry = new NeoRegistry();
         CustomGunNeoforge.capabilityProvider = new NeoCapabilityProvider();
-        CustomGunNeoforge.networkAdapter = NeoNetworkAdapter.INSTANCE;
+        CustomGunNeoforge.networkAdapter = new NeoNetworkAdapter(modEventBus, CustomGunNeoforge.mcRegistry, CustomGun.MOD_ID, NetworkHandler.protocol_version);
         CustomGunNeoforge.networkHook = new NeoNetworkHook();
         CustomGunNeoforge.eventRegister = new NeoEventRegister();
         CustomGunNeoforge.modConfigSpecBuilderSupplier = NeoModConfigSpecBuilder::new;

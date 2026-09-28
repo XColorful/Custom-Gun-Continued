@@ -1,6 +1,5 @@
 package dev.xcolorful.customgun.forge.network;
 
-import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.core.api.minecraft.IMcRegistry;
 import dev.xcolorful.customgun.core.api.network.INetworkAdapter;
 import dev.xcolorful.customgun.core.api.network.MessageDirection;
@@ -32,18 +31,18 @@ public class ForgeNetworkAdapter implements INetworkAdapter {
     private final SimpleChannel CHANNEL;
 
     public ForgeNetworkAdapter(@NotNull IMcRegistry mcRegistry,
-                               int protocolVersion) {
+                               String modId, int protocolVersion) {
         this.protocolVersion = protocolVersion;
         this.protocolVersionString = String.valueOf(protocolVersion);
 
         this.HANDSHAKE_CHANNEL = NetworkRegistry.newSimpleChannel(
-                mcRegistry.createResourceLocation(String.format("%s:handshake", CustomGun.MOD_ID)),
+                mcRegistry.createResourceLocation(String.format("%s:handshake", modId)),
                 () -> this.protocolVersionString,
                 this.getProtocolAcceptancePredicate(), // 服务端 -> 客户端
                 this.getProtocolAcceptancePredicate() // 客户端 -> 服务端
         );
         this.CHANNEL = NetworkRegistry.newSimpleChannel(
-                mcRegistry.createResourceLocation(String.format("%s:network", CustomGun.MOD_ID)),
+                mcRegistry.createResourceLocation(String.format("%s:network", modId)),
                 () -> this.protocolVersionString,
                 this.getProtocolAcceptancePredicate(), // 服务端 -> 客户端
                 this.getProtocolAcceptancePredicate() // 客户端 -> 服务端

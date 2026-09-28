@@ -48,7 +48,7 @@ public class CustomGunForge {
         CustomGunForge.registrarFactory = new ForgeRegistrarFactory();
         CustomGunForge.mcRegistry = new ForgeRegistry();
         CustomGunForge.capabilityProvider = new ForgeCapabilityProvider();
-        CustomGunForge.networkAdapter = new ForgeNetworkAdapter(CustomGunForge.mcRegistry, NetworkHandler.protocol_version);
+        CustomGunForge.networkAdapter = new ForgeNetworkAdapter(CustomGunForge.mcRegistry, CustomGun.MOD_ID, NetworkHandler.protocol_version);
         CustomGunForge.networkHook = new ForgeNetworkHook();
         CustomGunForge.eventRegister = new ForgeEventRegister();
         CustomGunForge.modConfigSpecBuilderSupplier = ForgeModConfigSpecBuilder::new;

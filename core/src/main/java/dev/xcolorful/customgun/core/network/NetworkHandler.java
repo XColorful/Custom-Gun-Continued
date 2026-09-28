@@ -18,6 +18,7 @@ import dev.xcolorful.customgun.core.network.message.shooter.*;
 import dev.xcolorful.customgun.core.network.message.sync.S2CMessageUpdateEntityData;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -46,10 +47,12 @@ public class NetworkHandler {
         this.adapter = adapter;
     }
 
+    @ApiStatus.Internal
     public static void initialize(INetworkAdapter adapter) {
         INSTANCE = new NetworkHandler(adapter);
     }
 
+    @ApiStatus.Internal
     public static NetworkHandler get() {
         return INSTANCE;
     }

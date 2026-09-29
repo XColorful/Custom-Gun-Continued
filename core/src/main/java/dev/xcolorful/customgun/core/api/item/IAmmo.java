@@ -9,6 +9,8 @@ import org.jetbrains.annotations.NotNull;
 public interface IAmmo extends IAmmoDataAccess, IAmmoGetter,
         IPojoItem {
 
+    // --------IPojoItem--------
+
     @Override
     default @NotNull Identifier getPojoLocation(ItemStack ammoItem) {
         return this.getAmmoLocation(ammoItem);
@@ -16,5 +18,14 @@ public interface IAmmo extends IAmmoDataAccess, IAmmoGetter,
     @Override
     default void setPojoLocation(ItemStack ammoItem, Identifier ammoLocation) {
         this.setAmmoLocation(ammoItem, ammoLocation);
+    }
+
+    @Override
+    default @NotNull ResourceLocation getPojoDisplayLocation(ItemStack ammoItem) {
+        return this.getAmmoLocation(ammoItem);
+    }
+    @Override
+    default void setPojoDisplayLocation(ItemStack ammoItem, ResourceLocation ammoDisplayLocation) {
+//        this.setAmmoLocation(ammoItem, ammoDisplayLocation);
     }
 }

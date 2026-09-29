@@ -15,6 +15,7 @@ import dev.xcolorful.customgun.core.config.AmmoConfig;
 import dev.xcolorful.customgun.core.config.SyncConfig;
 import dev.xcolorful.customgun.core.init.registry.ModBlocks;
 import dev.xcolorful.customgun.core.resource.data.data.gun.bullet._ExplosionData;
+import dev.xcolorful.customgun.core.util.ClassUtils;
 import dev.xcolorful.customgun.core.util.EntityUtils;
 import dev.xcolorful.customgun.core.util.RayTraceUtils;
 import net.minecraft.core.BlockPos;
@@ -350,7 +351,7 @@ public class _TempExplode {
     private static BlockHitResult rayTraceBlocks(Level level, Vec3 startPos, Vec3 endPos) {
         ClipContext clipContext = new ClipContext(startPos, endPos, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, CollisionContext.empty());
         IMcRegistry mcRegistry = CustomGun.getMcRegistry();
-        List<String> passThroughBlocks = AmmoConfig.PASS_THROUGH_BLOCKS.get();
+        ClassUtils.ArraySet<String> passThroughBlocks = AmmoConfig.passThroughBlocksCache;
         return RayTraceUtils.BlockTrace.rayTraceBlocksWithFilter(
                 level,
                 startPos,

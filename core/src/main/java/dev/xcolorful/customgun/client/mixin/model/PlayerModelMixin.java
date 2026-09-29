@@ -44,7 +44,7 @@ public class PlayerModelMixin<T extends LivingEntity> extends HumanoidModel<T> {
      * {@link dev.xcolorful.customgun.client.util.ClientRenderHelper#renderFirstPersonArm} 直接对
      * {@code arm} 调 {@code resetPose()} 并写回 {@code zRot = ±0.1F}（等于
      * {@code AnimationUtils#bobModelPart} 在 {@code ageInTicks == 0} 时的贡献），
-     * 本注入已经没有存在的必要
+     * 本注入目前是未使用的
      */
     @Inject(method = "setupAnim(Lnet/minecraft/world/entity/LivingEntity;FFFFF)V", at = @At(value = "TAIL"))
     private void cgc$setRotationAnglesTail(T entityIn,
@@ -61,8 +61,13 @@ public class PlayerModelMixin<T extends LivingEntity> extends HumanoidModel<T> {
             // ↓这里实际上已经不会触发了
             cgc$resetRotation(this.rightArm);
             cgc$resetRotation(this.leftArm);
-            this.rightSleeve.copyFrom(this.rightArm);
-            this.leftSleeve.copyFrom(this.leftArm);
+            {
+                // [1.20.1, 1.21.4)
+                this.rightSleeve.copyFrom(this.rightArm);
+                this.leftSleeve.copyFrom(this.leftArm);
+
+                // [1.21.4, )
+            }
         }
     }
 

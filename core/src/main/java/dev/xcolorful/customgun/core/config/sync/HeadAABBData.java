@@ -20,7 +20,7 @@ public class HeadAABBData {
 
     public static void reloadHeadAABB() {
         // 先构建好再整体换引用：读方不会看到清空到一半的表
-        Map<ResourceLocation, AABB> rebuilt = new HashMap<>(); {
+        Map<Identifier, AABB> rebuilt = new HashMap<>(); {
             for (String entry : SyncConfig.HEAD_SHOT_AABB.get()) {
                 _parseEntry(rebuilt, entry);
             }
@@ -31,7 +31,7 @@ public class HeadAABBData {
     @ApiStatus.Internal
     public static @Nullable AABB addHeadAABB(String entry) {
         // 已发布的表不再原地改，复制一份改完再换上去
-        Map<ResourceLocation, AABB> rebuilt = new HashMap<>(AABB_CHECK);
+        Map<Identifier, AABB> rebuilt = new HashMap<>(AABB_CHECK);
         AABB aabb = _parseEntry(rebuilt, entry);
         if (aabb != null) {
             AABB_CHECK = rebuilt;
@@ -39,7 +39,7 @@ public class HeadAABBData {
         return aabb;
     }
 
-    private static @Nullable AABB _parseEntry(Map<ResourceLocation, AABB> target, String entry) {
+    private static @Nullable AABB _parseEntry(Map<Identifier, AABB> target, String entry) {
         Matcher matcher = REG.matcher(entry);
         if (matcher.find()) {
             var id = CustomGun.getMcRegistry().createResourceLocation(matcher.group(1));

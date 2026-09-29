@@ -7,6 +7,8 @@ import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
 
+import java.util.List;
+
 public class ForgeModConfigSpecBuilder implements IModConfigSpecBuilder {
     private final ForgeConfigSpec.Builder builder;
 
@@ -39,6 +41,12 @@ public class ForgeModConfigSpecBuilder implements IModConfigSpecBuilder {
     }
     @Override public IModConfigSpec<Double> addConfig(String path, double defaultValue, double min, double max) {
         return new ForgeModConfigSpec<>(builder.defineInRange(path, defaultValue, min, max));
+    }
+    @Override public <E extends Enum<E>> IModConfigSpec<E> addConfig(String path, E defaultValue) {
+        return new ForgeModConfigSpec<>(builder.defineEnum(path, defaultValue));
+    }
+    @Override public <T> IModConfigSpec<List<T>> addConfig(String path, List<T> defaultValue) {
+        return new ForgeModConfigSpec<>(builder.define(path, defaultValue, o -> o instanceof List));
     }
 
     @Override

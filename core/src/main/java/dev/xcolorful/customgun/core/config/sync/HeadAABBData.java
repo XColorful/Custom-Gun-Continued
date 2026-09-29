@@ -13,20 +13,33 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class HeadAABBData {
-    private static final Map<ResourceLocation, AABB> AABB_CHECK = new HashMap<>();
+    private static volatile Map<ResourceLocation, AABB> AABB_CHECK = new HashMap<>();
     // 解析格式：minecraft:herobrine [-0.225, 1.35, -0.225, 0.225, 1.8, 0.225]
     // 生物ID + 碰撞箱
     private static final Pattern REG = Pattern.compile("^([a-z0-9_.-]+:[a-z0-9/._-]+)\s*?\\[([-+]?[0-9]*\\.?[0-9]+),\s*?([-+]?[0-9]*\\.?[0-9]+),\s*?([-+]?[0-9]*\\.?[0-9]+),\s*?([-+]?[0-9]*\\.?[0-9]+),\s*?([-+]?[0-9]*\\.?[0-9]+),\s*?([-+]?[0-9]*\\.?[0-9]+),*?\s*?]");
 
     public static void reloadHeadAABB() {
-        AABB_CHECK.clear();
-        for (String entry : SyncConfig.HEAD_SHOT_AABB.get()) {
-            addHeadAABB(entry);
+        // 先构建好再整体换引用：读方不会看到清空到一半的表
+        Map<ResourceLocation, AABB> rebuilt = new HashMap<>(); {
+            for (String entry : SyncConfig.HEAD_SHOT_AABB.get()) {
+                _parseEntry(rebuilt, entry);
+            }
         }
+        AABB_CHECK = rebuilt;
     }
 
     @ApiStatus.Internal
     public static @Nullable AABB addHeadAABB(String entry) {
+        // 已发布的表不再原地改，复制一份改完再换上去
+        Map<ResourceLocation, AABB> rebuilt = new HashMap<>(AABB_CHECK);
+        AABB aabb = _parseEntry(rebuilt, entry);
+        if (aabb != null) {
+            AABB_CHECK = rebuilt;
+        }
+        return aabb;
+    }
+
+    private static @Nullable AABB _parseEntry(Map<ResourceLocation, AABB> target, String entry) {
         Matcher matcher = REG.matcher(entry);
         if (matcher.find()) {
             var id = CustomGun.getMcRegistry().createResourceLocation(matcher.group(1));
@@ -37,7 +50,7 @@ public class HeadAABBData {
             double y2 = Double.parseDouble(matcher.group(6));
             double z2 = Double.parseDouble(matcher.group(7));
             AABB aabb = new AABB(x1, y1, z1, x2, y2, z2);
-            AABB_CHECK.put(id, aabb);
+            target.put(id, aabb);
             return aabb;
         }
         return null;

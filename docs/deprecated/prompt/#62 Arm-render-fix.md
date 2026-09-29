@@ -462,3 +462,57 @@ CGC 的对应抽象就是 `IAnimateGeoItem.cgc$getCustomRenderer(stack)`。
 - 本次改动纯类型放宽，未编译、未跑客户端；建议跑一次 `:core:compileJava`（我也没做，需要的话我来跑）。
 - 上面 ① 的第 1、2 条是**待实测**项，不是结论。
 - 我没有提交，改动都在工作区。
+
+# 
+
+```
+对于原版setModelProperties，TaCZ是否有哪里手动设置？CGC是否漏了？
+目前测试下持枪的时候旁观模式第一第三人称都看不见
+```
+
+# 
+
+我需要确认原版在旁观者模式下到底跳过了什么。直接把 MC 源码解出来查。
+
+决定性证据找到了。再确认一下 TaCZ 侧有没有对应的处理。
+
+## 结论：旁观者模式看不见是原版挡的，和 `setModelProperties`、`arm.visible` 都无关
+
+两处原版闸门（1.20.1 Forge sources）：
+
+- **第一人称**：`GameRenderer.renderItemInHand` L855 ——
+  ```java
+  if (this.minecraft.options.getCameraType().isFirstPerson() && !flag && !this.minecraft.options.hideGui
+          && this.minecraft.gameMode.getPlayerMode() != GameType.SPECTATOR) {
+      ... this.itemInHandRenderer.renderHandsWithItems(...);
+  }
+  ```
+  旁观者模式下**整个 `renderHandsWithItems` 不执行** → Forge `RenderHandEvent` 不发 → CGC 的 `FirstPersonRender`、`ClientRenderHelper.renderFirstPersonArm` 根本不进，`arm.visible = true` 也没机会执行。
+- **第三人称**：`LivingEntityRenderer.render` L129 ——
+  ```java
+  if (!p_115308_.isSpectator()) {
+     for (RenderLayer<T, M> renderlayer : this.layers) { renderlayer.render(...); }
+  }
+  ```
+  旁观者时**所有 layer 都不执行** → `ItemInHandLayer` 不跑 → 手上的枪不画；身体只按 `setModelProperties` 画成"只剩头 + 帽子"的幽灵形态。
+
+所以"持枪 + 旁观，第一/第三人称都看不见"是纯原版行为。
+
+## TaCZ 有没有手动设置 `setModelProperties`？——没有
+
+在 TaCZ 的 `client/` + `mixin/client/` 里 grep `setAllVisible` **零命中**（只有一堆 `isSpectator` 在按键/HUD 里做判断）。TaCZ 的 `RenderHelper.renderFirstPersonArm` 调 `renderer.renderRightHand(...)`，`setModelProperties` 是原版 `PlayerRenderer.renderHand` 内部顺手做的，TaCZ 自己一行都没写。TaCZ 的第一人称事件处理（`FirstPersonRenderEvent.onRenderHand`，现已由 SBM 的 `FirstPersonRenderHandler.onRenderHand` 取代）也**没有** spectator 判断。
+
+## CGC 是否漏了？——严格说没复刻，但不需要
+
+| `setModelProperties` 干的事 | CGC 是否需要 |
+|---|---|
+| `setAllVisible(true)` + ArmPose 计算 | 不需要：CGC 只画 arm/sleeve，且姿态已被 `arm.resetPose()` 归零 |
+| spectator 分支 `setAllVisible(false)`、只留 head/hat | **不可达**：第一人称整条路已被 `GameType.SPECTATOR` 挡掉 |
+| 对共享 `PlayerModel` 可见性的写入 | 无残留：`PlayerRenderer.render` 每帧都会重新 `setModelProperties`，且 CGC 只强制 `arm.visible = true`，和原版非旁观分支同值 |
+
+## 顺带两条留档（我都没改）
+
+1. **隐身 vs 旁观**：真正与*原版*不一致的是隐身——原版空手 + 隐身时 `renderArmWithItem` 会跳过手臂，而 CGC/TaCZ 自己的手臂渲染都不检查 `isInvisible()`，隐身时会照画（枪也照画）。两侧一致，所以不算 CGC 的移植遗漏，是否对齐原版由你定。
+2. **TaCZ 现在的入口门比 CGC 还宽**：`FirstPersonRenderEvent`（以及实际生效的 SBM `FirstPersonRenderHandler`）连 `IGun` 门都没有，只看 `getCustomRenderer() instanceof AnimateGeoItemRenderer`（SBM 版更细：还有 per-item 的 `canRenderInHand`）。CGC 现在是 `IAnimationItem` + renderer 双层门。要完全对齐，CGC 那层 `IAnimationItem` 还能再退一步——代价是 `switchItemNeedReset` 调用要换成 TaCZ 那种精确 `ItemStack.matches`（顺带一提：TaCZ 的 init 门用精确 `matches`，CGC 用 NBT 容忍的 `switchItemNeedReset` 取反，这是有意分歧，我没动）。
+
+要的话我把 ① 的结论写成一段注释挂在 [ClientRenderHelper.renderFirstPersonArm](core/src/main/java/dev/xcolorful/customgun/client/util/ClientRenderHelper.java:104) 上方，免得以后有人以为"没检查 spectator/invisible"是漏写。

@@ -121,6 +121,8 @@ public class _LocalAnimHandler implements IEventHandler {
     }
     /**
      * 原模组移除了对{@link IGun}的限制，本模组同样只要求「是动画物品」
+     * 见 #62 Arm-render-fix.md
+     * 目前默认有{@link IAnimateGeoItemRenderer}的物品一定实现IAnimationItem，也就是下面用到的{@link IAnimationItem#switchItemNeedReset}不写在{@link IAnimateGeoItemRenderer}
      * <br>
      * 是否真的能渲染由下面的{@link IAnimateGeoItem#cgc$getCustomRenderer(ItemStack)}把关，
      * 若{@link AnimateGeoItemRenderer}作为API给扩展模组用，应该让扩展模组自己监听

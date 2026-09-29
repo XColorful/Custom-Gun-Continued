@@ -16,6 +16,7 @@ import dev.xcolorful.customgun.core.config.AmmoConfig;
 import dev.xcolorful.customgun.core.config.sync.HeadAABBData;
 import dev.xcolorful.customgun.core.entity.projectile.GunProjectile;
 import dev.xcolorful.customgun.core.init.registry.ModBlocks;
+import dev.xcolorful.customgun.core.util.ClassUtils;
 import dev.xcolorful.customgun.core.util.RayTraceUtils;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.Mth;
@@ -78,7 +79,7 @@ public class ProjectilePhysicsManager implements IProjectilePhysicsManager {
 
         ClipContext context = new ClipContext(tickContext.startPos, tickContext.endPos, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, gunProjectile);
         IMcRegistry mcRegistry = CustomGun.getMcRegistry();
-        List<String> ignoreBlocks = AmmoConfig.PASS_THROUGH_BLOCKS.get();
+        ClassUtils.ArraySet<String> ignoreBlocks = AmmoConfig.passThroughBlocksCache;
         BlockHitResult blockHitResult = RayTraceUtils.BlockTrace.rayTraceBlocksWithFilter(
                 gunProjectile.level(),
                 context.getFrom(),

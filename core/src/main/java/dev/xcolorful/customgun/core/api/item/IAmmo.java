@@ -21,11 +21,11 @@ public interface IAmmo extends IAmmoDataAccess, IAmmoGetter,
     }
 
     @Override
-    default @NotNull ResourceLocation getPojoDisplayLocation(ItemStack ammoItem) {
+    default @NotNull Identifier getPojoDisplayLocation(ItemStack ammoItem) {
         return this.getAmmoLocation(ammoItem);
     }
     @Override
-    default void setPojoDisplayLocation(ItemStack ammoItem, ResourceLocation ammoDisplayLocation) {
+    default void setPojoDisplayLocation(ItemStack ammoItem, Identifier ammoDisplayLocation) {
 //        this.setAmmoLocation(ammoItem, ammoDisplayLocation);
     }
 }

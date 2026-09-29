@@ -3,12 +3,12 @@ package dev.xcolorful.customgun.core.config;
 import dev.xcolorful.customgun.core.api.config.IModConfigSpec;
 import dev.xcolorful.customgun.core.api.config.IModConfigSpecBuilder;
 import dev.xcolorful.customgun.core.api.config.ModConfigTag;
+import dev.xcolorful.customgun.core.util.ClassUtils;
 
 import java.util.Collections;
 import java.util.List;
 
 public class AmmoConfig {
-    // TODO 这个得改ArraySet
     public static IModConfigSpec<List<String>> PASS_THROUGH_BLOCKS;
     public static IModConfigSpec<Boolean> DESTROY_GLASS;
     public static IModConfigSpec<Double> GLOBAL_BULLET_SPEED_MODIFIER;
@@ -50,5 +50,13 @@ public class AmmoConfig {
         EXPLOSIVE_AMMO_VISIBLE_DISTANCE = builder.addConfig(ModConfigTag.explosiveAmmoVisibleDistance_path, 192, 0, Integer.MAX_VALUE);
 
         builder.finishBuild();
+    }
+
+    // --------Cache--------
+
+    public static ClassUtils.ArraySet<String> passThroughBlocksCache = new ClassUtils.ArraySet<>();
+    public static void reloadPassThroughBlocks() {
+        passThroughBlocksCache.clear();
+        passThroughBlocksCache.addAll(PASS_THROUGH_BLOCKS.get());
     }
 }

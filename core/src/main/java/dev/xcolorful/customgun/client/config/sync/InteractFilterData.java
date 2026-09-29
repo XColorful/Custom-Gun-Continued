@@ -51,7 +51,7 @@ public class InteractFilterData {
     @ApiStatus.Internal
     public static boolean addBlockFilter(Identifier rl, @Nullable Boolean allowed) {
         // 已发布的表不再原地改，复制一份改完再换上去
-        Map<Identifier, Boolean> rebuilt = new HashMap<>(BLOCK_FILTER);
+        var rebuilt = new HashMap<>(BLOCK_FILTER);
         boolean changed = allowed == null ? rebuilt.remove(rl) != null : rebuilt.put(rl, allowed) != null;
         BLOCK_FILTER = rebuilt;
         return changed;

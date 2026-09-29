@@ -20,36 +20,41 @@ public class InteractFilterData {
      * 默认给用 -> 默认一般玩家不知道去哪设置
      * 默认不给用 -> 避免所有普通方块也显示 (更重要)
      */
-    private static boolean DEFAULT_RESULT = false;
+    private static volatile boolean DEFAULT_RESULT = false;
     // 方块
-    private static final Map<Identifier, Boolean> BLOCK_FILTER = new HashMap<>();
+    private static volatile Map<Identifier, Boolean> BLOCK_FILTER = new HashMap<>();
     // 实体
-    private static final Map<Identifier, Boolean> ENTITY_FILTER = new HashMap<>();
+    private static volatile Map<Identifier, Boolean> ENTITY_FILTER = new HashMap<>();
 
     public static void reloadInteractFilter() {
-        BLOCK_FILTER.clear();
-        ENTITY_FILTER.clear();
         IMcRegistry mcRegistry = CustomGun.getMcRegistry();
-        // 方块
-        for (String blockEntry : SyncConfig.INTERACT_KEY_BLACKLIST_BLOCKS.get())
-            BLOCK_FILTER.put(mcRegistry.createResourceLocation(blockEntry), false);
-        for (String blockEntry : SyncConfig.INTERACT_KEY_WHITELIST_BLOCKS.get())
-            BLOCK_FILTER.put(mcRegistry.createResourceLocation(blockEntry), true);
 
-        // 实体
-        for (String entityEntry : SyncConfig.INTERACT_KEY_BLACKLIST_ENTITIES.get())
-            ENTITY_FILTER.put(mcRegistry.createResourceLocation(entityEntry), false);
-        for (String entityEntry : SyncConfig.INTERACT_KEY_WHITELIST_ENTITIES.get())
-            ENTITY_FILTER.put(mcRegistry.createResourceLocation(entityEntry), true);
+        // 先构建好再整体换引用：读方不会看到清空到一半的过滤器
+        Map<ResourceLocation, Boolean> blocks = new HashMap<>();
+        Map<ResourceLocation, Boolean> entities = new HashMap<>(); {
+            // 方块
+            for (String blockEntry : SyncConfig.INTERACT_KEY_BLACKLIST_BLOCKS.get())
+                blocks.put(mcRegistry.createResourceLocation(blockEntry), false);
+            for (String blockEntry : SyncConfig.INTERACT_KEY_WHITELIST_BLOCKS.get())
+                blocks.put(mcRegistry.createResourceLocation(blockEntry), true);
+
+            // 实体
+            for (String entityEntry : SyncConfig.INTERACT_KEY_BLACKLIST_ENTITIES.get())
+                entities.put(mcRegistry.createResourceLocation(entityEntry), false);
+            for (String entityEntry : SyncConfig.INTERACT_KEY_WHITELIST_ENTITIES.get())
+                entities.put(mcRegistry.createResourceLocation(entityEntry), true);
+        }
+        BLOCK_FILTER = blocks;
+        ENTITY_FILTER = entities;
     }
 
     @ApiStatus.Internal
     public static boolean addBlockFilter(Identifier rl, @Nullable Boolean allowed) {
-        if (allowed == null) {
-            return BLOCK_FILTER.remove(rl) != null;
-        } else {
-            return BLOCK_FILTER.put(rl, allowed) != null;
-        }
+        // 已发布的表不再原地改，复制一份改完再换上去
+        var rebuilt = new HashMap<>(BLOCK_FILTER);
+        boolean changed = allowed == null ? rebuilt.remove(rl) != null : rebuilt.put(rl, allowed) != null;
+        BLOCK_FILTER = rebuilt;
+        return changed;
     }
     public static void setDefaultResult(boolean result) {
         DEFAULT_RESULT = result;

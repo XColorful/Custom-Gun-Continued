@@ -136,6 +136,13 @@ public class ClientRenderUtils {
             // [26.1, )
 //            return RenderTypes.entityCutoutCull(textureLocation);
         }
+        public static RenderType entitySolid(ResourceLocation textureLocation) {
+            // [1.20.1, 1.21.11)
+            return RenderType.entitySolid(textureLocation);
+
+            // [1.21.11, )
+//            return RenderTypes.entitySolid(textureLocation);
+        }
         public static RenderType entityTranslucent(ResourceLocation textureLocation) {
             // [1.20.1, 1.21.11)
             return RenderType.entityTranslucent(textureLocation);

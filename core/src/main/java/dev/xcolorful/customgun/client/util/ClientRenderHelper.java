@@ -162,15 +162,15 @@ public class ClientRenderHelper {
                  * 袖子跟随手臂：对应原版 PlayerModel#setupAnim 末尾的 copyFrom，以及 {@link PlayerRenderer#renderHand} 的两段式渲染
                  */
                 // [1.20.1, 1.21.4)
-                sleeve.copyFrom(arm);
-                arm.render(matrixStack,
-                        buffer.getBuffer(ClientRenderUtils.RenderType_.entitySolid(skinLocation)),
-                        combinedLight,
-                        OverlayTexture.NO_OVERLAY);
-                sleeve.render(matrixStack,
-                        buffer.getBuffer(ClientRenderUtils.RenderType_.entityTranslucent(skinLocation)),
-                        combinedLight,
-                        OverlayTexture.NO_OVERLAY);
+//                sleeve.copyFrom(arm);
+//                arm.render(matrixStack,
+//                        buffer.getBuffer(ClientRenderUtils.RenderType_.entitySolid(skinLocation)),
+//                        combinedLight,
+//                        OverlayTexture.NO_OVERLAY);
+//                sleeve.render(matrixStack,
+//                        buffer.getBuffer(ClientRenderUtils.RenderType_.entityTranslucent(skinLocation)),
+//                        combinedLight,
+//                        OverlayTexture.NO_OVERLAY);
 
                 /**
                  * <ul>
@@ -181,10 +181,10 @@ public class ClientRenderHelper {
                  * </ul>
                  */
                 // [1.21.4, 26.2)
-//                arm.render(matrixStack,
-//                        buffer.getBuffer(ClientRenderUtils.RenderType_.entityTranslucent(skinLocation)),
-//                        combinedLight,
-//                        OverlayTexture.NO_OVERLAY);
+                arm.render(matrixStack,
+                        buffer.getBuffer(ClientRenderUtils.RenderType_.entityTranslucent(skinLocation)),
+                        combinedLight,
+                        OverlayTexture.NO_OVERLAY);
 
                 // [26.2, )
 //                arm.render(_poseStack,

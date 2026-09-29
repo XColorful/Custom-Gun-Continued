@@ -184,16 +184,16 @@ public class ClientRenderHelper {
                  * </ul>
                  */
                 // [1.21.4, 26.2)
-                arm.render(matrixStack,
-                        buffer.getBuffer(ClientRenderUtils.RenderType_.entityTranslucent(skinLocation)),
-                        combinedLight,
-                        OverlayTexture.NO_OVERLAY);
-
-                // [26.2, )
-//                arm.render(_poseStack,
-//                        vertexConsumer,
+//                arm.render(matrixStack,
+//                        buffer.getBuffer(ClientRenderUtils.RenderType_.entityTranslucent(skinLocation)),
 //                        combinedLight,
 //                        OverlayTexture.NO_OVERLAY);
+
+                // [26.2, )
+                arm.render(_poseStack,
+                        vertexConsumer,
+                        combinedLight,
+                        OverlayTexture.NO_OVERLAY);
             }
 
             ARCompat.resetRenderingLevel();

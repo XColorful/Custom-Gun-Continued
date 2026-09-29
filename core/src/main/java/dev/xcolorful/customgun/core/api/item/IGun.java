@@ -156,4 +156,13 @@ public interface IGun extends IGunRuntime, IAnimationItem,
     default void setPojoLocation(ItemStack gunItem, Identifier gunLocation) {
         this.setGunLocation(gunItem, gunLocation);
     }
+
+    @Override
+    default @NotNull ResourceLocation getPojoDisplayLocation(ItemStack gunItem) {
+        return this.getGunDisplayLocation(gunItem);
+    }
+    @Override
+    default void setPojoDisplayLocation(ItemStack gunItem, ResourceLocation gunDisplayLocation) {
+        this.setGunDisplayLocation(gunItem, gunDisplayLocation);
+    }
 }

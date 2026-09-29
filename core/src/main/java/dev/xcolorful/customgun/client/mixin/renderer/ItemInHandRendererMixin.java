@@ -4,8 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.api.event.render.BeforeRenderHandEvent;
 import dev.xcolorful.customgun.client.api.renderer.KeepingItemRenderer;
-import dev.xcolorful.customgun.core.api.item.IGun;
-import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
+import dev.xcolorful.customgun.core.api.item.animation.IAnimationItemGetter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.ItemInHandRenderer;
@@ -16,8 +15,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import javax.annotation.Nullable;
 
 // @Deprecated(since = "26.3")
 @Mixin(ItemInHandRenderer.class)
@@ -64,12 +61,11 @@ public class ItemInHandRendererMixin implements KeepingItemRenderer {
             }
         }
 
-        ItemStack gunItem = mc.player.getMainHandItem();
-        @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
-        if (iGun != null) {
+        ItemStack animationItem = mc.player.getMainHandItem();
+        if (IAnimationItemGetter.fromItemStack(animationItem) != null) {
             this.mainHandHeight = 1.0f;
             this.oMainHandHeight = 1.0f;
-            this.mainHandItem = gunItem;
+            this.mainHandItem = animationItem;
         }
     }
 

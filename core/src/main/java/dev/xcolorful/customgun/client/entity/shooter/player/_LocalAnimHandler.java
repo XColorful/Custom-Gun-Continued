@@ -26,7 +26,9 @@ import dev.xcolorful.customgun.client.util.ClientInputUtils;
 import dev.xcolorful.customgun.core.api.event.EventType;
 import dev.xcolorful.customgun.core.api.event.IEvent;
 import dev.xcolorful.customgun.core.api.event.IEventHandler;
+import dev.xcolorful.customgun.core.api.item.IAnimationItem;
 import dev.xcolorful.customgun.core.api.item.IGun;
+import dev.xcolorful.customgun.core.api.item.animation.IAnimationItemGetter;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
 import dev.xcolorful.customgun.core.config.GunConfig;
 import net.minecraft.client.Minecraft;
@@ -118,22 +120,25 @@ public class _LocalAnimHandler implements IEventHandler {
         this._tickAnimRender(event, player, gunItem);
     }
     /**
-     * 原模组移除了对{@link IGun}的限制
+     * 原模组移除了对{@link IGun}的限制，本模组同样只要求「是动画物品」
+     * 见 #62 Arm-render-fix.md
+     * 目前默认有{@link IAnimateGeoItemRenderer}的物品一定实现IAnimationItem，也就是下面用到的{@link IAnimationItem#switchItemNeedReset}不写在{@link IAnimateGeoItemRenderer}
      * <br>
+     * 是否真的能渲染由下面的{@link IAnimateGeoItem#cgc$getCustomRenderer(ItemStack)}把关，
      * 若{@link AnimateGeoItemRenderer}作为API给扩展模组用，应该让扩展模组自己监听
      */
     private void _tickAnimRender(IRenderFrameEvent event,
                                  LocalPlayer player,
                                  ItemStack gunItem) {
-        @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
-        if (iGun == null) return;
+        @Nullable IAnimationItem iAnimationItem = IAnimationItemGetter.fromItemStack(gunItem);
+        if (iAnimationItem == null) return;
 
         // 渲染相关内容整理到物品的IClientItemExtensions了，这个接口有待进一步抽象
         @Nullable IAnimateGeoItemRenderer<?, ?> renderer = IAnimateGeoItem.cgc$getCustomRenderer(gunItem);
         if (renderer == null) return;
 
         // 如果物品不一样了，先尝试初始化状态机
-        if (!iGun.switchItemNeedReset(player.getMainHandItem(), gunItem) && renderer.needReInit(gunItem)) {
+        if (!iAnimationItem.switchItemNeedReset(player.getMainHandItem(), gunItem) && renderer.needReInit(gunItem)) {
             renderer.tryInit(gunItem, player, event.getPartialTick());
 
             @Nullable GunDisplayInstance gunDisplayInstance = ClientResourceApi.getGunDisplayInstance(gunItem);

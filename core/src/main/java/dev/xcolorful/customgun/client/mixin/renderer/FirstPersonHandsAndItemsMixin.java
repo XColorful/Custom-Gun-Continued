@@ -1,14 +1,11 @@
 package dev.xcolorful.customgun.client.mixin.renderer;
 
 import dev.xcolorful.customgun.client.api.renderer.KeepingItemRenderer;
-import dev.xcolorful.customgun.core.api.item.IGun;
-import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
+import dev.xcolorful.customgun.core.api.item.animation.IAnimationItemGetter;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import javax.annotation.Nullable;
 
 /*
 为了跨版本提前知道26.3neoforge的移植方式，添加此类作为占位符
@@ -48,12 +45,11 @@ public class FirstPersonHandsAndItemsMixin implements KeepingItemRenderer {
             }
         }
 
-        ItemStack gunItem = player.getMainHandItem();
-        @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
-        if (iGun != null) {
+        ItemStack animationItem = player.getMainHandItem();
+        if (IAnimationItemGetter.fromItemStack(animationItem) != null) {
             this.mainHandHeight = 1.0f;
             this.oMainHandHeight = 1.0f;
-            this.mainHandItem = gunItem;
+            this.mainHandItem = animationItem;
         }
     }
 

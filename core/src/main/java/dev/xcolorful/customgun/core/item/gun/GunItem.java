@@ -157,20 +157,4 @@ public class GunItem extends Item implements IGun, GunDataAccessor {
                 .gunStateManager()
                 .tickHeatCooldown(shooterProperty, iGun, gunItem, iLivingShooter, livingShooter);
     }
-
-    // --------IAnimationItem--------
-
-    @Override
-    public boolean switchItemNeedReset(ItemStack oldItem, ItemStack newItem) {
-        if (oldItem.isEmpty() || newItem.isEmpty()) {
-            return oldItem.isEmpty() != newItem.isEmpty();
-        }
-        IGun iGun1 = IGunGetter.fromItemStack(oldItem);
-        IGun iGun2 = IGunGetter.fromItemStack(newItem);
-        if (iGun1 != null && iGun2 != null) {
-            return !iGun1.getGunLocation(oldItem).equals(iGun2.getGunLocation(newItem))
-                    || !iGun1.getGunDisplayLocation(oldItem).equals(iGun2.getGunDisplayLocation(newItem));
-        }
-        return !ItemStack.matches(oldItem, newItem);
-    }
 }

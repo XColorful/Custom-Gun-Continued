@@ -9,6 +9,8 @@ import org.jetbrains.annotations.NotNull;
 public interface IAttachment extends IAttachmentDataAccess, IAttachmentGetter,
         IPojoItem {
 
+    // --------IPojoItem--------
+
     @Override
     default @NotNull Identifier getPojoLocation(ItemStack attachmentItem) {
         return this.getAttachmentLocation(attachmentItem);
@@ -16,5 +18,14 @@ public interface IAttachment extends IAttachmentDataAccess, IAttachmentGetter,
     @Override
     default void setPojoLocation(ItemStack attachmentItem, Identifier attachmentLocation) {
         this.setAttachmentLocation(attachmentItem, attachmentLocation);
+    }
+
+    @Override
+    default @NotNull ResourceLocation getPojoDisplayLocation(ItemStack attachmentItem) {
+        return this.getAttachmentLocation(attachmentItem);
+    }
+    @Override
+    default void setPojoDisplayLocation(ItemStack attachmentItem, ResourceLocation attachmentDisplayLocation) {
+//        this.setAttachmentLocation(attachmentItem, attachmentDisplayLocation);
     }
 }

@@ -842,3 +842,61 @@ Let me record this cross-version API delta in memory, since it affects every bra
 Sources:
 - [Class PlayerModel (1.21.5 javadoc)](https://aldak0.ru/javadoc/1.21.5-21.5.x/net/minecraft/client/model/PlayerModel.html#leftSleeve)
 - [PlayerModelPart (Fabric Yarn javadoc)](https://maven.fabricmc.net/docs/yarn-1.21.11+build.1/net/minecraft/client/render/entity/model/PlayerEntityModel.html#getTexturedModelData(net.minecraft.client.model.Dilation,boolean))
+
+# 
+
+```
+1.21.6正常，现在移到1.21.10，PlayerModelMixin编译不过，看下怎么改
+```
+
+# 
+
+Let me look at the 1.21.10 `PlayerModelMixin` and compare with 1.21.6.
+
+Let me get the actual compile errors.
+
+The errors are on the two `copyFrom` calls. Let me check what happened to `ModelPart` in 1.21.10.
+
+`PlayerModel` still has sleeves as arm children; now let me confirm what replaced `copyFrom` in `ModelPart`.
+
+`copyFrom` was removed in 1.21.10. Let me check how the newer branches already resolved this — that's the project's own precedent.
+
+Let me confirm `copyFrom` is fully gone and see the 1.21.10 worktree's current state.
+
+I've got the full picture. Before I change it, there's a genuine fork here that affects your other branches.
+
+**Compile error**: `ModelPart.copyFrom` was **removed** in 1.21.10 (replaced by `storePose()` / `loadPose(PartPose)`). Lines 70–71 are the only failures — the `AvatarRenderState` rename was already done.
+
+**But the same finding as 1.21.4 applies**: in 1.21.10 `PlayerModel` still does `this.leftSleeve = this.leftArm.getChild("left_sleeve")` — sleeves are arm **children**, so `copyFrom` into them is exactly the double-transform we just removed from `ClientRenderHelper`. And this mixin's own javadoc already says the injection never fires and "已经没有存在的必要".
+
+Understood — only the 1.21.10 file, and you'll back-port.
+
+Compiles clean. Here's the change:
+
+改好了，`BUILD SUCCESSFUL`。
+
+## 编译错误原因
+
+`ModelPart#copyFrom` **在 1.21.10 被移除了**。1.21.10 的 `ModelPart` 现在是 `final class`，只留 `storePose()` / `loadPose(PartPose)` / `resetPose()` / `get|setInitialPose()`。所以 `a.copyFrom(b)` 的等价写法是 `a.loadPose(b.storePose())`。整个文件只有第 70–71 行报错，`AvatarRenderState` 那部分之前已经改好了。
+
+## 写法（[PlayerModelMixin.java:70](core/src/main/java/dev/xcolorful/customgun/client/mixin/model/PlayerModelMixin.java:70)）
+
+按你 96bc3425c 那套标记法，`[1.20.1, 1.21.4)` 的 `copyFrom` 原句注释保留，`[1.21.4, )` 不再需要——因为袖子已经是手臂子节点，原版 `setupAnim` 自己也不 copyFrom 了，而这时候再 copy 一次就是把手臂位移叠两遍（和刚修的 `ClientRenderHelper` 那个多出一只手的 bug 同源）。
+
+两点要你确认：
+
+1. **marker 下界我用了 `1.21.4`**，和 `ClientRenderHelper` 一致、也和袖子的实际边界一致。如果你想 1.21.4 / 1.21.6 保持原样、只在 1.21.10+ 注释掉，把下界改成 `1.21.10`（那才是 `copyFrom` 被移除的 API 边界）即可，其余不用动。
+2. 如果你更想要"行为逐字一致"的机械替换，就是 `this.rightSleeve.loadPose(this.rightArm.storePose());` 两行。这条路是死代码（javadoc 自己写的"实际已经不会触发"），两种写法画面上没区别。
+
+## back-port 时要一起改的
+
+`1.21.11` / `26.2` / `26.3` 三个 worktree 里这两个文件都还是老样子，同样会编译不过 / 同样有那只多出来的手：
+
+| 文件 | 需要的改动 |
+|---|---|
+| `mixin/model/PlayerModelMixin.java` | 本次这一处（`copyFrom`） |
+| `util/ClientRenderHelper.java` | `renderFirstPersonArm` 里去掉 `sleeve.copyFrom` + 第二次 `sleeve.render`，arm 改 `entityTranslucent`（1.21.4 那轮的改动） |
+
+`@Shadow` 的 `leftSleeve`/`rightSleeve` 现在只被注释行引用了，按你"没用到的不要删"保留了。照例我没跑客户端，进游戏看一眼第一人称手臂和袖子。
+
+按约定没有提交，改动留在 1.21.10 的工作区。

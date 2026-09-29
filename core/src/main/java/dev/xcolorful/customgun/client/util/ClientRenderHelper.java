@@ -118,12 +118,15 @@ public class ClientRenderHelper {
         boolean isSleeveVisible;
         var model = renderer.getModel();
         ModelPart arm;
+        ModelPart sleeve;
         if (hand == HumanoidArm.RIGHT) {
             isSleeveVisible = player.isModelPartShown(PlayerModelPart.RIGHT_SLEEVE);
             arm = model.rightArm;
+            sleeve = model.rightSleeve;
         } else {
             isSleeveVisible = player.isModelPartShown(PlayerModelPart.LEFT_SLEEVE);
             arm = model.leftArm;
+            sleeve = model.leftSleeve;
         }
 
         RenderType bakedRenderType = bakePipelineState(ClientRenderUtils.RenderType_.entityTranslucent(skinLocation)); // [26.2, )
@@ -144,10 +147,13 @@ public class ClientRenderHelper {
             model.rightSleeve.visible = isSleeveVisible;
             model.leftArm.zRot = -0.1F;
             model.rightArm.zRot = 0.1F;
-            arm.render(matrixStack,
-                    buffer.getBuffer(ClientRenderUtils.RenderType_.entityTranslucent(skinLocation)),
-                    combinedLight,
-                    OverlayTexture.NO_OVERLAY);
+            /**
+             * 袖子跟随手臂：对应原版 PlayerModel#setupAnim 末尾的 copyFrom，以及 {@link PlayerRenderer#renderHand} 的两段式渲染
+             */
+            sleeve.copyFrom(arm);
+            var armBuffer = buffer.getBuffer(ClientRenderUtils.RenderType_.entityTranslucent(skinLocation));
+            arm.render(matrixStack, armBuffer, combinedLight, OverlayTexture.NO_OVERLAY);
+            sleeve.render(matrixStack, armBuffer, combinedLight, OverlayTexture.NO_OVERLAY);
 
             ARCompat.resetRenderingLevel();
         }

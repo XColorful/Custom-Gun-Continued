@@ -45,13 +45,23 @@ public class ModConfig {
         private Event() {}
 
         public void onLoadingConfig(ModConfigType modConfigType) {
-            if (modConfigType == ModConfigType.SERVER) {
-                HeadAABBData.reloadHeadAABB();
+            switch (modConfigType) {
+                case SERVER -> {
+                    HeadAABBData.reloadHeadAABB();
+                }
+                case COMMON -> {
+                    AmmoConfig.reloadPassThroughBlocks();
+                }
             }
         }
         public void onReloadingConfig(ModConfigType modConfigType) {
-            if (modConfigType == ModConfigType.SERVER) {
-                HeadAABBData.reloadHeadAABB();
+            switch (modConfigType) {
+                case SERVER -> {
+                    HeadAABBData.reloadHeadAABB();
+                }
+                case COMMON -> {
+                    AmmoConfig.reloadPassThroughBlocks();
+                }
             }
         }
     }

@@ -8,4 +8,7 @@ public interface IPojoItemDataAccess {
 
     @NotNull ResourceLocation getPojoLocation(ItemStack pojoItem);
     void setPojoLocation(ItemStack pojoItem, ResourceLocation pojoLocation);
+
+    @NotNull ResourceLocation getPojoDisplayLocation(ItemStack pojoItem);
+    void setPojoDisplayLocation(ItemStack pojoItem, ResourceLocation displayLocation);
 }

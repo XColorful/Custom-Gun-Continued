@@ -16,6 +16,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
@@ -106,6 +107,11 @@ public class ClientRenderHelper {
         if (collector == null) return;
 
         if (player == null) return;
+        /**
+         * MC原版隐身玩家不渲染第一人称手臂
+         * 判断逻辑同 {@link ItemInHandRenderer#renderArmWithItem}和{@link ItemInHandRenderer#renderOneHandedMap}的{@link LocalPlayer#isInvisible()}
+         */
+        if (player.isInvisible()) return;
 
         Minecraft mc = Minecraft.getInstance();
         EntityRenderDispatcher renderManager = mc.getEntityRenderDispatcher();

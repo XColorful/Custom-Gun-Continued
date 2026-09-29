@@ -516,3 +516,46 @@ CGC 的对应抽象就是 `IAnimateGeoItem.cgc$getCustomRenderer(stack)`。
 2. **TaCZ 现在的入口门比 CGC 还宽**：`FirstPersonRenderEvent`（以及实际生效的 SBM `FirstPersonRenderHandler`）连 `IGun` 门都没有，只看 `getCustomRenderer() instanceof AnimateGeoItemRenderer`（SBM 版更细：还有 per-item 的 `canRenderInHand`）。CGC 现在是 `IAnimationItem` + renderer 双层门。要完全对齐，CGC 那层 `IAnimationItem` 还能再退一步——代价是 `switchItemNeedReset` 调用要换成 TaCZ 那种精确 `ItemStack.matches`（顺带一提：TaCZ 的 init 门用精确 `matches`，CGC 用 NBT 容忍的 `switchItemNeedReset` 取反，这是有意分歧，我没动）。
 
 要的话我把 ① 的结论写成一段注释挂在 [ClientRenderHelper.renderFirstPersonArm](core/src/main/java/dev/xcolorful/customgun/client/util/ClientRenderHelper.java:104) 上方，免得以后有人以为"没检查 spectator/invisible"是漏写。
+
+# 
+
+```
+我测试了下，原版隐身的时候手持地图确实不渲染手臂，这个怎么实现的需要加上，加上后不影响枪械渲染，我看代码修改情况决定是否加config
+```
+
+# 
+
+加好了，一行判断。
+
+## 改动
+
+[ClientRenderHelper.java:108-112](core/src/main/java/dev/xcolorful/customgun/client/util/ClientRenderHelper.java:108)（`renderFirstPersonArm` 入口）：
+
+```java
+if (player == null) return;
+// 对齐原版：隐身玩家不渲染第一人称手臂（原版见 ItemInHandRenderer#renderArmWithItem 与 #renderOneHandedMap 的 !isInvisible() 判断），
+// 物品本身仍照常渲染——原版渲染物品的那条分支并不检查隐身
+if (player.isInvisible()) return;
+```
+
+核对了原版的三处判断（都在 `ItemInHandRenderer`）：L365（空手 `renderPlayerArm`）、L154（单手持图）、L183（双手持图），用的都是 `!player.isInvisible()`。
+
+放在这里的原因：
+
+- 它是唯一的手臂渲染入口，`HandRender` 和 `_GunModelRender._renderHandInternal` 都从这里进，所以一处覆盖两条路径（含 26.x 的提交式路径）。
+- 早于 `arm.resetPose()`/`arm.render()` 返回，所以**手臂和袖子一起跳过**——和原版一致（原版是包住整个 `renderPlayerArm` 调用，内部 arm+sleeve 两段一起不画）。
+- **不影响枪械渲染**：枪由 `renderFirstPerson` 自己画，和这里无关，正是你要的效果。这也符合原版语义——原版对"有物品"的那条分支不检查隐身，物品照画，只有"手臂"会被跳过。
+
+## 若要加 config，挂点就在这一行
+
+```java
+if (!SomeConfig.HIDE_ARM_WHEN_INVISIBLE.get() && player.isInvisible()) return;
+```
+
+放这一行能同时覆盖两个调用点；如果想让手臂渲染器保持"只负责画、不做策略"，那就把判断挪到两个调用点里（`HandRender.render` 开头 + `_GunModelRender._renderHandInternal` 开头）。
+
+## 一条需要你权衡的留档
+
+**TaCZ 和 SBM 都是"隐身也照画手臂"**——`RenderHelper.renderFirstPersonArm` 里没有任何 `isInvisible()` 判断。所以这个改动是**向原版对齐、与 TaCZ/SBM 分叉**。你之前的目标一直是 TaCZ 行为对齐，所以如果要加 config，我建议默认值就按"对齐原版（跳过）"，并在注释里写明这是与原版对齐而非与 TaCZ 对齐，免得以后有人照 TaCZ 对比时以为是 bug。
+
+未编译、未跑客户端。要我跑一次 `:core:compileJava` 吗？

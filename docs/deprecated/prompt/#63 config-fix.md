@@ -485,3 +485,51 @@ handler 体只有微秒级（clear + 重填几十个字符串），所以实际�
 要不要现在改？如果要，我建议在 **1.20.1 的 `AmmoConfig`（你手上那份 WIP）** 上改，然后同样内容同步到 1.21.1forge —— 和前面一样保持两分支逐字相同。
 
 另外提一句（不一定要做）：`InteractFilterData.reloadInteractFilter()` 和 `HeadAABBData.reloadHeadAABB()` 是同样的 `clear()+fill` 原地改写法，暴露面相同。要一并硬化的话是三个类一起改，但那是既有代码，我按规矩不主动动。
+
+# 
+
+```
+帮我都改volatile
+```
+
+# 
+
+"都" 指的是那三个类 —— 但 `HeadAABBData`/`InteractFilterData` 有运行时可变入口（`addHeadAABB`/`addBlockFilter`），换引用会丢掉它们。先把这三个文件和调用方看清楚。
+
+1.20.1 的 `HeadAABBData` 你已经给字段加了 `volatile` —— 但**单独加 volatile 对 `clear()+put()` 是无效的**（引用从没变过，volatile 只保证引用可见性）。配合"换引用"才起作用，所以我三个类都按"本地构建 → 整体换引用"来改。
+
+改完了，两分支都编译通过，未提交。
+
+## 先纠正一点：单独加 `volatile` 在这里是无效的
+
+`volatile` 只保证**引用**的可见性，而这三个缓存的引用从来没变过（一直是 `clear()` + `put()` 改同一个对象内部）—— 所以你在 1.20.1 `HeadAABBData` 上加的那个 `volatile` 目前不起任何作用。要让它生效，必须配合**换引用**。三个类都按这个改：
+
+| 文件 | 字段 | 改法 |
+|---|---|---|
+| `AmmoConfig` | `passThroughBlocksCache` | `volatile` + 建新 `ArraySet` 再赋值 |
+| `HeadAABBData` | `AABB_CHECK` | `volatile` + reload 本地建 map，一次赋值 |
+| `InteractFilterData` | `BLOCK_FILTER` / `ENTITY_FILTER` / `DEFAULT_RESULT` | 同上，三个字段都 `volatile` |
+
+## 顺带必须处理的两个运行时可变入口
+
+`HeadAABBData.addHeadAABB` 和 `InteractFilterData.addBlockFilter` 都是 `@ApiStatus.Internal` 的**公开 API**（仓库内无调用方，应该是给扩展模组用的）。它们原来是"解析 + 原地 put"——只要还原地改，已发布的表就仍会被改，换引用就白做了。所以改成**复制 → 改副本 → 换上去**：
+
+- `HeadAABBData`：解析逻辑抽成私有 `parseEntry(target, entry)`，因为 `reloadHeadAABB` 现在必须"本地建好再一次换上"，不能再像原来那样循环调 `addHeadAABB`（那样读方会看到"清空到一半"的中间态）。`addHeadAABB` 的返回值语义不变（解析失败返回 `null` 且不动表）。
+- `InteractFilterData.addBlockFilter`：同样是复制副本再换，返回值语义不变。
+
+这样解决了两类并发：**读 vs 重建**（读方只会看到完整旧版或完整新版）+ **重建 vs 重建**（各建各的，最后写入者生效，`ArraySet` 的 list/set 不会失步）。
+
+## 验证
+
+- 两分支 `:forge-compat:compileJava` 通过（exit 0，无 error）
+- `javap -p` 确认四个字段都带 `volatile`
+- 三个文件里 `clear()` 已完全消失
+- 两分支这三个文件**逐字相同**
+
+## 三点如实说明
+
+1. `InteractFilterData` 的 `BLOCK_FILTER` / `ENTITY_FILTER` 是先后两次赋值，所以极端窗口内理论上可能读到"新方块表 + 旧实体表"。要完全原子得把两张表包成一个对象一起换 —— 我按最小改动没做（窗口是两条赋值指令之间，影响仅是某一次交互判定用了上一版规则）。
+2. `addBlockFilter` / `addHeadAABB` 现在是 O(n) 复制。这两个 API 在仓库内没有调用方，如果外部真有热路径循环调用，告诉我，我换个方案（比如只在重建时换引用、运行时改动走另一条带锁路径）。
+3. `setDefaultResult` 没找到调用方，我只把字段加了 `volatile`。
+
+另外：1.20.1 上 `AmmoConfig` 是你那份 WIP，被我一起改成了换引用写法（其余部分没动 —— 缓存、TODO 移除、消费侧都是你的），所以两分支现在完全一致。老的三件事（其它分支补那 2 个 overload、消费侧要不要缓存 `ResourceLocation` 省掉 `toString()`、`docs/deprecated/prompt/#63` 那份记录要不要我继续维护）按你的节奏来。

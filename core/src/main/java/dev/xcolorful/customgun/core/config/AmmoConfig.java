@@ -54,9 +54,12 @@ public class AmmoConfig {
 
     // --------Cache--------
 
-    public static ClassUtils.ArraySet<String> passThroughBlocksCache = new ClassUtils.ArraySet<>();
+    public static volatile ClassUtils.ArraySet<String> passThroughBlocksCache = new ClassUtils.ArraySet<>();
     public static void reloadPassThroughBlocks() {
-        passThroughBlocksCache.clear();
-        passThroughBlocksCache.addAll(PASS_THROUGH_BLOCKS.get());
+        // 先构建好再整体换引用：读方只会看到完整的一版，两个线程同时重建也各建各的、不会互相踩
+        ClassUtils.ArraySet<String> rebuilt = new ClassUtils.ArraySet<>(); {
+            rebuilt.addAll(PASS_THROUGH_BLOCKS.get());
+        }
+        passThroughBlocksCache = rebuilt;
     }
 }

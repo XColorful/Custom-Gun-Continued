@@ -47,7 +47,7 @@ public class ModConfig {
         public void onLoadingConfig(ModConfigType modConfigType) {
             switch (modConfigType) {
                 case SERVER -> {
-                HeadAABBData.reloadHeadAABB();
+                    HeadAABBData.reloadHeadAABB();
                 }
                 case COMMON -> {
                     AmmoConfig.reloadPassThroughBlocks();
@@ -57,7 +57,7 @@ public class ModConfig {
         public void onReloadingConfig(ModConfigType modConfigType) {
             switch (modConfigType) {
                 case SERVER -> {
-                HeadAABBData.reloadHeadAABB();
+                    HeadAABBData.reloadHeadAABB();
                 }
                 case COMMON -> {
                     AmmoConfig.reloadPassThroughBlocks();

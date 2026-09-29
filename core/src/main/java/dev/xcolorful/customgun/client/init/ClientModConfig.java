@@ -39,8 +39,8 @@ public class ClientModConfig {
         public void onLoadingConfig(ModConfigType modConfigType) {
             switch (modConfigType) {
                 case SERVER -> {
-                HeadAABBData.reloadHeadAABB();
-                InteractFilterData.reloadInteractFilter();
+                    HeadAABBData.reloadHeadAABB();
+                    InteractFilterData.reloadInteractFilter();
                 }
                 case COMMON -> {
                     AmmoConfig.reloadPassThroughBlocks();
@@ -50,8 +50,8 @@ public class ClientModConfig {
         public void onReloadingConfig(ModConfigType modConfigType) {
             switch (modConfigType) {
                 case SERVER -> {
-                HeadAABBData.reloadHeadAABB();
-                InteractFilterData.reloadInteractFilter();
+                    HeadAABBData.reloadHeadAABB();
+                    InteractFilterData.reloadInteractFilter();
                 }
                 case COMMON -> {
                     AmmoConfig.reloadPassThroughBlocks();

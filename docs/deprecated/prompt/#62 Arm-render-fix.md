@@ -559,3 +559,203 @@ if (!SomeConfig.HIDE_ARM_WHEN_INVISIBLE.get() && player.isInvisible()) return;
 **TaCZ 和 SBM 都是"隐身也照画手臂"**——`RenderHelper.renderFirstPersonArm` 里没有任何 `isInvisible()` 判断。所以这个改动是**向原版对齐、与 TaCZ/SBM 分叉**。你之前的目标一直是 TaCZ 行为对齐，所以如果要加 config，我建议默认值就按"对齐原版（跳过）"，并在注释里写明这是与原版对齐而非与 TaCZ 对齐，免得以后有人照 TaCZ 对比时以为是 bug。
 
 未编译、未跑客户端。要我跑一次 `:core:compileJava` 吗？
+
+# 
+
+```
+第三人称隐身时渲染物品，正常应该手臂覆盖的部分会被挡住，例如手持剑的时候只能看到手后的剑柄和剑身，现在枪械似乎没有这个限制，看看能怎么修？
+```
+
+# 
+
+这个要查清楚是"手臂没写深度"还是"枪关了深度测试"。先看原版图层代码和 CGC 的深度测试开关。
+
+理论推不出来，直接对比渲染类型与批次顺序。
+
+这批渲染类型的事实拿到了，但还差 CGC 第三人称枪械走哪条路。看一下 `ModelObject` 的渲染与缓冲。
+
+查完了，先说一个会改变前提的原版事实。
+
+## 原版在"自己隐身 + F5"时**根本不画身体**
+
+`LivingEntityRenderer.render`（1.20.1 sources L118-126）：
+
+```java
+boolean flag  = this.isBodyVisible(entity);                       // !isInvisible() → false
+boolean flag1 = !flag && !entity.isInvisibleTo(minecraft.player); // false！
+RenderType rendertype = this.getRenderType(entity, flag, flag1, flag2);
+if (rendertype != null) { ...model.renderToBuffer... }            // rendertype == null → 不画
+```
+
+`Entity.isInvisibleTo`（Entity.java:2214）在你**没有**同队 `seeFriendlyInvisibles` 时，对任何查看者（包括你自己）都返回 `isInvisible()`；而 `getRenderType(..., translucent=false, ...)` 直接返回 `null`。所以：
+
+- **自己隐身看自己** → 身体、手臂一个像素都不画；只有 **layer 不被跳过**（`LivingEntityRenderer:129` 只跳过旁观者），所以手持物品照画 → 你看到的是**漂浮的物品，旁边没有手**。
+- **15% 幽灵**只对**旁观者**或**开了 seeFriendlyInvisibles 的同队玩家**出现。只有那种情况下，`itemEntityTranslucentCull`（我核过：它带 `COLOR_DEPTH_WRITE`，**会写深度**）才会把手上的物品裁掉一部分——也就是你说的"手臂覆盖的部分被挡住"。
+
+所以我得先确认你看到的是哪种场景，这决定后面完全是两条路：
+
+**A. 自己隐身 + F5**：原版的剑也是**完全可见**的（没有东西能挡它）。如果你看到剑被裁掉了一截，那不是"手臂遮挡"，得另找原因（比如剑自身的模型/持握偏移）。→ 请确认一下这一点。
+
+**B. 看别人（旁观或同队）**：幽灵手臂写深度、物品按深度测试被裁 —— 这时枪没被裁才是 CGC 的问题。
+
+## 若确认是 B，我静态查到的结论是"理论上应该被裁"
+
+CGC 第三人称枪的路径我顺着走了一遍：`GunItemRenderer.renderByItem` → `ModelObject.render` → [`ClientRenderHelper.GL.getModelBufferSource()`](core/src/main/java/dev/xcolorful/customgun/client/model/ModelObject.java:191)（1.20.1 上就是共享的 `renderBuffers().bufferSource()`），渲染类型 `entityCutout`（写深度 + 测深度），并且在 `:233-234` 主动 `endBatch()`——这个 flush 会先落幽灵模型的深度，枪的几何体随后绘制，顺序上**正确**。所以从代码上看不出差异，得在实测环境里再看一眼（`IrisCompat.endBatch` 分支、pack 开了透明时走 `entityTranslucent`，这些都还没验证）。
+
+## 如果你要的效果是"隐身时枪也该被看不见的手裁掉"
+
+那和原版不是一回事（原版自己隐身时压根不画模型），实现上是**再画一遍只写深度、不写颜色的手臂 pass**：
+
+```java
+ClientRenderHelper.GL._colorMask(false);   // 已有封装
+...arm.render(...);                        // 只写深度
+ClientRenderHelper.GL._colorMask(true);
+```
+
+这样物品会被"看不见的手"裁掉，视觉上正是"物品像被握在手里"。位置可放在 `ClientRenderHelper.renderFirstPersonArm`（第一人称）和第三人称对应的手部渲染点；只影响与手体积重叠的部分，不改变枪本身的绘制，且**和上一轮加的"隐身不画手臂"不冲突**（那条是"不画"，这条是"画但不写颜色"）。
+
+需要你回一句：是 A 还是 B？如果是 B，要"被裁"还是"跟原版一样不裁"？定了我再动手——这两条路我不打算替你猜。
+
+# 
+
+```
+现在是在有队伍的情况下，玩家半透明，枪械最好能被手臂给裁掉一部分，原版在这个状态下手持剑是能看出裁掉了，怎么改？
+```
+
+# 
+
+明白了，是 B。那问题就落在"枪为什么没被幽灵手臂裁"。我看一下第三人称枪的变换链。
+
+方案 B 确认。先确认 `RenderLayer` 的 API 能不能拿到手臂 ModelPart。
+
+方案确认了。这个改法要动 `ItemInHandLayerMixin`，先读当前状态。
+
+方案明确了：补一次"只写深度、不写颜色"的手臂，在物品之前画进当前 target。开始改。
+
+改完了。做法是**在物品渲染前补一遍"只写深度、不写颜色"的手臂**，而不是去追幽灵模型那份深度为什么没生效。
+
+## 改动（[ItemInHandLayerMixin.java](core/src/main/java/dev/xcolorful/customgun/client/mixin/renderer/ItemInHandLayerMixin.java)）
+
+在 `renderArmWithItem` 的 HEAD 注入里，取消左手物品那条分支的 `else` 里调用新方法 `cgc$renderGhostArmDepth`（[:64-68](core/src/main/java/dev/xcolorful/customgun/client/mixin/renderer/ItemInHandLayerMixin.java:64)、[:81-110](core/src/main/java/dev/xcolorful/customgun/client/mixin/renderer/ItemInHandLayerMixin.java:81)）：
+
+- **触发条件**：物品非空 + 物品挂了自定义渲染器（`IAnimateGeoItem`，所以原版物品完全不受影响）+ 实体隐身**且对该查看者可见**（= 原版会画 15% 幽灵的那个条件）。
+- **做法**：取被渲染玩家的 `PlayerModel`，`_colorMask(false,false,false,false)` 后把该手的手臂和袖子 `render` 一遍（`entityTranslucentCull`，不做 alpha 裁切、不指定 output target），再恢复 colorMask。它画进**当前 target**，位置就是幽灵模型所在的那份模型空间（同一个 `poseStack`、同一份 `setupAnim` 结果）。
+- **为什么这样做**：我核过 `MultiBufferSource.BufferSource`，所有非 fixed 的 RenderType 共用**同一个 `BufferBuilder`**，切类型时会立刻 flush 上一个——照理幽灵的深度一定先落盘，枪随后画就该被裁。既然实测没有，说明问题在"幽灵的深度与枪不在同一个 target/批次"这类我静态看不出来的地方；直接在物品之前写一遍深度，就绕开了这个不确定性。
+
+## 需要你实测的两点，以及两种结果的含义
+
+1. **枪在拳头位置被裁掉一截** → 成了。
+2. **完全没变化** → 那深度就不是原因，问题在**几何位置**：枪的第三人称位置来自 `GunItemRenderer._applyPositioningTransform` → `model.getThirdPersonHandOriginPath()`（也就是包里那个"第三人称手部定位组"节点），如果它没把枪的握把放进手臂体积里，那就没有任何东西可裁。那种情况的修法在**包的节点数据/定位变换**，不在渲染层——我会顺着这条线再查。
+
+另外这个 pass 只在"幽灵可见 + 自定义渲染物品"时跑，正常情况下零开销。
+
+## 未能验证的部分
+
+没有编译、没有跑客户端。两处我不确定但影响很小的点：`entityTranslucentCull(LOCATION_BLOCKS)` 的纹理内容无意义（颜色被屏蔽），但如果你开了光影（Iris），`RenderSystem.colorMask` 可能被光影管线接管，届时表现要另看；另外幽灵在 vanilha 用的是 `itemEntityTranslucentCull`（带 `ITEM_ENTITY_TARGET`，会绑定主 target），我特意选了不带 output target 的类型，好处是它和枪的 `entityCutout` 落在同一个 target，代价是极小概率下裁切范围与幽灵本体的深度略有出入。
+
+要我先跑一次 `:core:compileJava` 确认编译吗？
+
+# 
+
+```
+你这个画出来的手材质有问题，有很多钟、指南针、悬挂告示牌，疑似是材质错误，而且没有裁掉手覆盖的部分
+```
+
+# 
+
+我的方案有问题，先查 `RenderBuffers` 的 fixed buffer 列表——这能解释为什么深度没生效。
+
+我的改动有两个问题，先撤回，然后说清楚这次失败的实验告诉我们什么。
+
+用户只是重排了格式，逻辑没变。现在完整撤回。
+
+已完整撤回（`git diff` 对那个文件是空的，工作区没留我的改动）。两个症状都查清了，其中一个还给出了关键线索。
+
+## 1. 垃圾材质（时钟/指南针/悬挂告示牌）是我的锅
+
+我用 `RenderType.entityTranslucentCull(TextureAtlas.LOCATION_BLOCKS)`，手臂的 UV 是按**皮肤**编的，却在**方块图集**上采样 → 采到图集里那些图标（正好是 clock/compass/sign 的位置）。
+
+而"颜色被屏蔽所以纹理无所谓"这个前提**是错的**：`_colorMask`（`RenderSystem.colorMask`）是**缓冲期**设的 GL 状态，而我们走的是 `BufferSource` 的**延迟绘制**——真正画的时候 `RenderType.setupRenderState()` 会用该类型的 `WriteMaskStateShard`（`COLOR_DEPTH_WRITE`）把 colorMask **覆盖回全通道可写**。所以颜色照写、深度也没按我想的方式"只写深度"。
+
+（若真要"只写深度"，得用 `RenderType.create(...)` + `setWriteMaskState(DEPTH_WRITE)`，但那两个 shard 是 `RenderStateShard` 的 `protected` 成员，CGC 这边访问不到；替代方案是**即时模式**自己画，像 `ClientRenderHelper.innerBlit` 那样绕开 RenderType 的 setup。）
+
+## 2. "没裁掉"才是关键线索——它排除了深度顺序问题
+
+我核过原版实现：
+
+- `MultiBufferSource.BufferSource` 里**所有非 fixed 类型共用同一个 `BufferBuilder`**，一换类型就立刻 flush 上一个 → 我那个 pass 的深度**保证**在被缓冲的那一刻就先于枪落盘；
+- `RenderBuffers` 的 fixed buffer 列表（solid/cutout/cutoutMipped/translucent、盾/床/潜影盒/告示牌/悬挂告示牌/箱子、各 glint、waterMask、DESTROY_TYPES）里**没有** `itemEntityTranslucentCull` → 幽灵模型的几何体走共享 builder、切类型即落盘 → 也一定在物品之前。
+
+所以"幽灵的深度迟到 / 落到别的批次"这类假设都不成立。**剩下的唯一解释是几何**：枪的几何体在 3D 里**不在手臂体积的后面**——很可能是枪的握把体积把拳头**包在里面**了（握把比 4px 的手臂粗），于是枪的最外层表面始终比手臂更靠近摄像机 → 没有任何"枪在手臂之后"的片段可裁。原版剑相反：剑柄细，拳头包在剑柄外面 → 拳头在剑柄之前 → 所以能裁掉一部分。
+
+## 3. 请先做一个不用改代码的判别
+
+**不隐身**、第三人称看自己（F5）或别人持枪：**拳头看得见吗？**
+- **拳头被枪吞掉了（看不见手）** → 证实上面的几何解释。
+- **拳头露在枪外面** → 那我的推断有漏洞，请顺便告诉我你的图形设置（流畅/高品质/极佳），因为只有"极佳"会把半透明丢进独立 target。
+
+## 4. 确认后怎么修（两条路，取决于你想要的效果）
+
+- **想让手露出来**：不能靠深度——需要**模板测试**把枪在手臂体积内挖掉：先把手臂体积写进 stencil，再让枪在命中区域不绘制。项目里已经有现成的 stencil API（`IStencilOperator`/`StencilFunction`/`StencilOperation`，瞄具在用），所以这是可行且不依赖几何的。这条我建议做，效果就是你要的"枪被手裁掉一部分"。
+- **只是包的数据问题**：调整 `third_person_hand_origin` / `_ModelTransform` 的偏移，让手落在握把外侧（那就是包作者的事，代码侧只需要确认 `GunItemRenderer._applyPositioningTransform` 的兜底是否合理）。
+
+先告诉我第 3 步的观察结果，我再动手——这次不猜了。
+
+# 
+
+```
+手臂是能看见的，并且右手手臂没被身体挡住的部分才显示错误材质
+这个暂时不管了，描述一下问题和可能的修法就结束
+```
+
+# 
+
+已撤回，改法不再动。下面是留档用的完整描述。
+
+## 问题
+
+**现象**：第三人称，隐身且对查看者可见（同队 `seeFriendlyInvisibles`、或旁观者）时，原版会把玩家画成 15% alpha 的幽灵。此时原版物品（剑）会被幽灵手臂裁掉一部分，**而枪械整把完整绘制，没有被裁**。
+
+**精确触发条件**：`entity.isInvisible() && !entity.isInvisibleTo(viewer)`（`Entity#isInvisibleTo`，sources L2214）。
+- 自己隐身看自己（F5）时 `isInvisibleTo(self)` 为 true → 身体模型**根本不画**（`LivingEntityRenderer#getRenderType` 返回 null）→ 不存在此问题，物品本来就完整可见。
+- 第一人称无此问题：`GameRenderer#renderItemInHand` 有 `GameType.SPECTATOR` 门，且手臂已被 `isInvisible()` 早退跳过。
+
+## 已核实的原版事实（不必重复查）
+
+- 幽灵模型的渲染类型是 `RenderType.itemEntityTranslucentCull(皮肤)`，其 writeMask 为 `COLOR_DEPTH_WRITE` → **写深度**，具备裁后续物品的能力。
+- `RenderBuffers` 的 fixedBuffers 列表里**没有** `itemEntityTranslucentCull`；`BufferSource` 中所有非 fixed 类型**共用同一个 `BufferBuilder`**，一换类型立刻 flush → 幽灵几何体的落盘顺序**必定早于**物品。
+- 原版物品用 block sheet 类型（**fixed buffer**，由 `LevelRenderer` 末尾显式 flush）；枪用 `RenderType.entityCutout(枪自己的贴图)`（非 fixed，进共享 builder，并在 `ModelObject.render` 内部主动 `endBatch()`）。
+- 结论：**"幽灵的深度迟到 / 落错批次"不成立**。
+
+## 试过并失败的改法（教训可复用）
+
+在 `ItemInHandLayer#renderArmWithItem` 的 HEAD 补一遍"只写深度、不写颜色的手臂"。两个问题：
+
+1. **垃圾材质**（右臂露出身体的部位显示时钟/指南针/悬挂告示牌）：我用了方块图集，手臂 UV 是按皮肤编的 → 采到图集图标。更根本的是**颜色没有被屏蔽**——`_colorMask`（`RenderSystem.colorMask`）是**缓冲期**状态，真正绘制时 `RenderType#setupRenderState()` 会用该类型的 `WriteMaskStateShard`（`COLOR_DEPTH_WRITE`）把它覆盖掉。
+   → **教训**：`colorMask` 只能配合**即时模式**（`Tesselator` + 手动 `RenderSystem` 状态，绕开 RenderType 的 setup）使用；想"只写深度"不能用缓冲式 RenderType。
+2. **仍然没裁掉枪**：这个 pass 的深度按上面的 buffer 语义**保证**先于枪落盘，却依然无效 → 直接排除了"深度缺失/迟到"，并把问题推向绘制通道/target 层面。
+
+## 遗留疑点（未解）
+
+可见状态下拳头确实露在枪外（即存在"手臂在枪之前"的片段），按理幽灵手臂应裁掉枪的对应部分，实测没有。剩下可能是：
+
+- 图形设置"极佳"下 `ITEM_ENTITY_TARGET` 与半透明 target 分家；
+- 光影（Iris/Oculus）或 Accelerated Rendering 接管了枪的绘制通道；
+- 枪走了一条与幽灵不同的绘制通道/target。
+
+**待补信息**：图形设置（流畅/高品质/极佳）、是否装光影或 AR；以及一次对照实验——把枪的渲染类型临时换成 `itemEntityTranslucentCull(皮肤)`（与幽灵**同类型同批次**），若此时被裁掉，即可证实是"批次/target 分家"。
+
+## 可能的修法（按可靠性排序）
+
+1. **模板测试挖洞**（不依赖深度关系，最可靠）：把手臂体积写进 stencil，再让枪在 stencil 命中处不绘制。项目已有 stencil 抽象（`IStencilOperator`/`StencilFunction`/`StencilOperation`/`StencilState`，瞄具在用；1.20.1 直用 `GL11.GL_STENCIL_TEST` + `RenderSystem.stencil*`），`ClientRenderHelper.GL` 也已封装了 AR/Iris 的坑。代价是多一次 stencil 写入 + 一次带 stencil 的枪绘制。
+2. **对齐批次/target**：物品渲染前显式 `bufferSource.endBatch()` 把幽灵深度落到当前 target，或让枪改用带 `ITEM_ENTITY_TARGET` 的类型。若根因是 target 分家，这条最省。
+3. **几何/包数据**：若最终确认是包的三方手部定位组把握把摆到了手臂外侧（`GunItemRenderer._applyPositioningTransform` + `getThirdPersonHandOriginPath`），那就该在包数据/兜底变换上解决，而不是渲染层。
+
+## 这一轮已落地、与本问题无关的改动
+
+- `ClientRenderHelper#renderFirstPersonArm`：隐身时跳过手臂（对齐原版）。
+- `FirstPersonRender` / `_LocalAnimHandler`：`IGun` → `IAnimationItem` 放宽。
+- `PlayerModelMixin`：确认悬空、已写进 javadoc。
+- 本问题涉及的 `ItemInHandLayerMixin` 已完整撤回，工作区无残留。
+
+要我把这段追加到 [docs/deprecated/prompt/#62 Arm-render-fix.md](docs/deprecated/prompt/%2362%20Arm-render-fix.md) 吗？

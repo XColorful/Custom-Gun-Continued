@@ -22,8 +22,9 @@ import dev.xcolorful.customgun.client.sound.SoundPlayManager;
 import dev.xcolorful.customgun.core.api.event.EventType;
 import dev.xcolorful.customgun.core.api.event.IEvent;
 import dev.xcolorful.customgun.core.api.event.IEventHandler;
+import dev.xcolorful.customgun.core.api.item.IAnimationItem;
 import dev.xcolorful.customgun.core.api.item.IGun;
-import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
+import dev.xcolorful.customgun.core.api.item.animation.IAnimationItemGetter;
 import dev.xcolorful.customgun.core.config.GunConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -68,7 +69,7 @@ public class FirstPersonRender implements IEventHandler {
 
         if (event.getHand() == InteractionHand.OFF_HAND) {
             ItemStack gunItem = KeepingItemRenderer.cgc$getRenderer().cgc$getCurrentItem();
-            if (IGunGetter.fromItemStack(gunItem) != null) {
+            if (IAnimationItemGetter.fromItemStack(gunItem) != null) {
                 event.setCanceled(true);
             }
             return;
@@ -78,12 +79,15 @@ public class FirstPersonRender implements IEventHandler {
         ItemStack gunItem = event.getItemStack();
 
         /**
-         * 原模组移除了对{@link IGun}的限制
+         * 原模组移除了对{@link IGun}的限制，本模组同样只要求「是动画物品」
+         * 见 #62 Arm-render-fix.md
+         * 目前默认有{@link IAnimateGeoItemRenderer}的物品一定实现IAnimationItem，也就是下面用到的{@link IAnimationItem#switchItemNeedReset}不写在{@link IAnimateGeoItemRenderer}
          * <br>
+         * 是否真的能渲染由下面的{@link IAnimateGeoItem#cgc$getCustomRenderer(ItemStack)}把关，
          * 若{@link AnimateGeoItemRenderer}作为API给扩展模组用，应该让扩展模组自己监听
          */
-        @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
-        if (iGun == null) return;
+        @Nullable IAnimationItem iAnimationItem = IAnimationItemGetter.fromItemStack(gunItem);
+        if (iAnimationItem == null) return;
 
         // 获取 TransformType
         ItemDisplayContext transformType = event.getHand() == InteractionHand.MAIN_HAND ? ItemDisplayContext.FIRST_PERSON_RIGHT_HAND : ItemDisplayContext.FIRST_PERSON_LEFT_HAND;
@@ -103,7 +107,7 @@ public class FirstPersonRender implements IEventHandler {
         }
 
         // 物品处于后台时，阻止状态机初始化
-        if (!iGun.switchItemNeedReset(player.getMainHandItem(), gunItem) && renderer.needReInit(gunItem)) {
+        if (!iAnimationItem.switchItemNeedReset(player.getMainHandItem(), gunItem) && renderer.needReInit(gunItem)) {
             renderer.tryInit(gunItem, player, event.getPartialTick());
 
             @Nullable GunDisplayInstance gunDisplayInstance = ClientResourceApi.getGunDisplayInstance(gunItem);

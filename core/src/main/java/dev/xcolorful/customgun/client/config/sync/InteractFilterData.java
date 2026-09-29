@@ -30,8 +30,8 @@ public class InteractFilterData {
         IMcRegistry mcRegistry = CustomGun.getMcRegistry();
 
         // 先构建好再整体换引用：读方不会看到清空到一半的过滤器
-        Map<ResourceLocation, Boolean> blocks = new HashMap<>();
-        Map<ResourceLocation, Boolean> entities = new HashMap<>(); {
+        Map<Identifier, Boolean> blocks = new HashMap<>();
+        Map<Identifier, Boolean> entities = new HashMap<>(); {
             // 方块
             for (String blockEntry : SyncConfig.INTERACT_KEY_BLACKLIST_BLOCKS.get())
                 blocks.put(mcRegistry.createResourceLocation(blockEntry), false);

@@ -160,18 +160,41 @@ public class ClientRenderHelper {
              */
 //            model.leftArm.zRot = -0.1F;
 //            model.rightArm.zRot = 0.1F;
-            /**
-             * 袖子跟随手臂：对应原版 PlayerModel#setupAnim 末尾的 copyFrom，以及 {@link PlayerRenderer#renderHand} 的两段式渲染
-             */
-            sleeve.copyFrom(arm);
-            arm.render(_poseStack,
-                    vertexConsumer,
-                    combinedLight,
-                    OverlayTexture.NO_OVERLAY);
-            sleeve.render(_poseStack,
-                    vertexConsumer,
-                    combinedLight,
-                    OverlayTexture.NO_OVERLAY);
+            {
+                /**
+                 * 袖子跟随手臂：对应原版 PlayerModel#setupAnim 末尾的 copyFrom，以及 {@link PlayerRenderer#renderHand} 的两段式渲染
+                 */
+                // [1.20.1, 1.21.4)
+                sleeve.copyFrom(arm);
+                arm.render(matrixStack,
+                        buffer.getBuffer(ClientRenderUtils.RenderType_.entitySolid(skinLocation)),
+                        combinedLight,
+                        OverlayTexture.NO_OVERLAY);
+                sleeve.render(matrixStack,
+                        buffer.getBuffer(ClientRenderUtils.RenderType_.entityTranslucent(skinLocation)),
+                        combinedLight,
+                        OverlayTexture.NO_OVERLAY);
+
+                /**
+                 * <ul>
+                 *     1.21.4起
+                 *     <li>袖子变成手臂的子节点（{@code PlayerModel} 用 {@code leftArm.getChild("left_sleeve")} 取，PartPose.ZERO）</li>
+                 *     <li>子节点已继承父节点变换</li>
+                 *     <li>原版 {@code renderHand} 只剩一次 {@code arm.render}，且整只手臂（含袖子）统一用 entityTranslucent</li>
+                 * </ul>
+                 */
+                // [1.21.4, 26.2)
+//                arm.render(matrixStack,
+//                        buffer.getBuffer(ClientRenderUtils.RenderType_.entityTranslucent(skinLocation)),
+//                        combinedLight,
+//                        OverlayTexture.NO_OVERLAY);
+
+                // [26.2, )
+//                arm.render(_poseStack,
+//                        vertexConsumer,
+//                        combinedLight,
+//                        OverlayTexture.NO_OVERLAY);
+            }
 
             ARCompat.resetRenderingLevel();
         }

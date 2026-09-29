@@ -145,8 +145,12 @@ public class ClientRenderHelper {
             arm.visible = true;
             model.leftSleeve.visible = isSleeveVisible;
             model.rightSleeve.visible = isSleeveVisible;
-            model.leftArm.zRot = -0.1F;
-            model.rightArm.zRot = 0.1F;
+            /*
+            MC原版有加 -0.1 rad ≈ 5.7° 手臂旋转
+            但是BlockBench里动画是不叠加原版旋转的，所以去掉
+             */
+//            model.leftArm.zRot = -0.1F;
+//            model.rightArm.zRot = 0.1F;
             /**
              * 袖子跟随手臂：对应原版 PlayerModel#setupAnim 末尾的 copyFrom，以及 {@link PlayerRenderer#renderHand} 的两段式渲染
              */

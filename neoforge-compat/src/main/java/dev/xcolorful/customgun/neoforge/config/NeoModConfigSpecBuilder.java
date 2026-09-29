@@ -7,6 +7,8 @@ import dev.xcolorful.customgun.neoforge.CustomGunNeoforge;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
+import java.util.List;
+
 public class NeoModConfigSpecBuilder implements IModConfigSpecBuilder {
     private final ModConfigSpec.Builder builder;
 
@@ -39,6 +41,12 @@ public class NeoModConfigSpecBuilder implements IModConfigSpecBuilder {
     }
     @Override public IModConfigSpec<Double> addConfig(String path, double defaultValue, double min, double max) {
         return new NeoModConfigSpec<>(builder.defineInRange(path, defaultValue, min, max));
+    }
+    @Override public <E extends Enum<E>> IModConfigSpec<E> addConfig(String path, E defaultValue) {
+        return new NeoModConfigSpec<>(builder.defineEnum(path, defaultValue));
+    }
+    @Override public <T> IModConfigSpec<List<T>> addConfig(String path, List<T> defaultValue) {
+        return new NeoModConfigSpec<>(builder.define(path, defaultValue, o -> o instanceof List));
     }
 
     @Override

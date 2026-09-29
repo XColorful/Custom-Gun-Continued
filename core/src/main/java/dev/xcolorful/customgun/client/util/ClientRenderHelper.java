@@ -12,10 +12,12 @@ import dev.xcolorful.customgun.client.api.minecraft.stencil.StencilOperation;
 import dev.xcolorful.customgun.client.api.minecraft.stencil.StencilState;
 import dev.xcolorful.customgun.client.compat.ar.ARCompat;
 import dev.xcolorful.customgun.client.compat.optifine.OptifineCompat;
+import dev.xcolorful.customgun.client.config.RenderConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
@@ -106,6 +108,11 @@ public class ClientRenderHelper {
         if (collector == null) return;
 
         if (player == null) return;
+        /**
+         * MC原版隐身玩家不渲染第一人称手臂
+         * 判断逻辑同 {@link ItemInHandRenderer#renderArmWithItem}和{@link ItemInHandRenderer#renderOneHandedMap}的{@link LocalPlayer#isInvisible()}
+         */
+        if (player.isInvisible() && !RenderConfig.RENDER_FIRST_PERSON_INVISIBLE_ARM.get()) return;
 
         Minecraft mc = Minecraft.getInstance();
         EntityRenderDispatcher renderManager = mc.getEntityRenderDispatcher();
@@ -118,12 +125,15 @@ public class ClientRenderHelper {
         boolean isSleeveVisible;
         var model = renderer.getModel();
         ModelPart arm;
+        ModelPart sleeve;
         if (hand == HumanoidArm.RIGHT) {
             isSleeveVisible = player.isModelPartShown(PlayerModelPart.RIGHT_SLEEVE);
             arm = model.rightArm;
+            sleeve = model.rightSleeve;
         } else {
             isSleeveVisible = player.isModelPartShown(PlayerModelPart.LEFT_SLEEVE);
             arm = model.leftArm;
+            sleeve = model.leftSleeve;
         }
 
         RenderType bakedRenderType = bakePipelineState(ClientRenderUtils.RenderType_.entityTranslucent(skinLocation)); // [26.2, )
@@ -142,9 +152,21 @@ public class ClientRenderHelper {
             arm.visible = true;
             model.leftSleeve.visible = isSleeveVisible;
             model.rightSleeve.visible = isSleeveVisible;
-            model.leftArm.zRot = -0.1F;
-            model.rightArm.zRot = 0.1F;
+            /*
+            MC原版有加 -0.1 rad ≈ 5.7° 手臂旋转
+            但是BlockBench里动画是不叠加原版旋转的，所以去掉
+             */
+//            model.leftArm.zRot = -0.1F;
+//            model.rightArm.zRot = 0.1F;
+            /**
+             * 袖子跟随手臂：对应原版 PlayerModel#setupAnim 末尾的 copyFrom，以及 {@link PlayerRenderer#renderHand} 的两段式渲染
+             */
+            sleeve.copyFrom(arm);
             arm.render(matrixStack,
+                    buffer.getBuffer(ClientRenderUtils.RenderType_.entitySolid(skinLocation)),
+                    combinedLight,
+                    OverlayTexture.NO_OVERLAY);
+            sleeve.render(matrixStack,
                     buffer.getBuffer(ClientRenderUtils.RenderType_.entityTranslucent(skinLocation)),
                     combinedLight,
                     OverlayTexture.NO_OVERLAY);

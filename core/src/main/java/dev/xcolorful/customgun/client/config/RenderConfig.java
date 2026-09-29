@@ -9,6 +9,7 @@ public class RenderConfig {
     public static IModConfigSpec<Integer> GUN_LOD_RENDER_DISTANCE;
     public static IModConfigSpec<Boolean> DISABLE_GUN_TILTING;
     public static IModConfigSpec<Boolean> ENABLE_FIRST_PERSON_BULLET_TRACER;
+    public static IModConfigSpec<Boolean> RENDER_FIRST_PERSON_INVISIBLE_ARM;
     public static IModConfigSpec<Boolean> REPLACE_VANILLA_CROSSHAIR;
     public static IModConfigSpec<CrosshairType> CROSSHAIR_TYPE;
     public static IModConfigSpec<Boolean> ENABLE_GUN_HUD;
@@ -34,6 +35,9 @@ public class RenderConfig {
         builder.addComment(ClientModConfigTag.enableFirstPersonBulletTracer_comment);
         ENABLE_FIRST_PERSON_BULLET_TRACER = builder.addConfig(ClientModConfigTag.enableFirstPersonBulletTracer_path, true);
         FIRST_PERSON_BULLET_TRACER_ENABLE = ENABLE_FIRST_PERSON_BULLET_TRACER;
+
+        builder.addComment(ClientModConfigTag.renderFirstPersonInvisibleArm_comment);
+        RENDER_FIRST_PERSON_INVISIBLE_ARM = builder.addConfig(ClientModConfigTag.renderFirstPersonInvisibleArm_path, false);
 
         builder.addComment(ClientModConfigTag.replaceVanillaCrosshair_comment);
         REPLACE_VANILLA_CROSSHAIR = builder.addConfig(ClientModConfigTag.replaceVanillaCrosshair_path, true);

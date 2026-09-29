@@ -64,7 +64,10 @@ public class ClientModConfigTag {
     public static final String targetRenderDistance_comment = "The farthest render distance of the target, including minecarts type";
 
     public static final String enableFirstPersonBulletTracer_path = "EnableFirstPersonBulletTracer";
-    public static final String enableFirstPersonBulletTracer_comment = "Whether or not to render first person bullet trail";
+    public static final String enableFirstPersonBulletTracer_comment = "Whether to render the first-person bullet tracer";
+
+    public static final String renderFirstPersonInvisibleArm_path = "RenderFirstPersonInvisibleArm";
+    public static final String renderFirstPersonInvisibleArm_comment = "Whether to render the first-person arm while invisible";
 
     public static final String enableShooterOperationHUD_path = "EnableShooterOperationHUD";
     public static final String enableShooterOperationHUD_comment = "Whether to display the shooter operation's HUD";

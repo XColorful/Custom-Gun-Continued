@@ -69,8 +69,8 @@ public class PlayerModelMixin extends HumanoidModel<PlayerRenderState> {
             cgc$resetRotation(this.leftArm);
             {
                 // [1.20.1, 1.21.4)
-                this.rightSleeve.copyFrom(this.rightArm);
-                this.leftSleeve.copyFrom(this.leftArm);
+//                this.rightSleeve.copyFrom(this.rightArm);
+//                this.leftSleeve.copyFrom(this.leftArm);
 
                 // [1.21.4, )
             }

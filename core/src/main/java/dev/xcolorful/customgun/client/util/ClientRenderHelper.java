@@ -12,6 +12,7 @@ import dev.xcolorful.customgun.client.api.minecraft.stencil.StencilOperation;
 import dev.xcolorful.customgun.client.api.minecraft.stencil.StencilState;
 import dev.xcolorful.customgun.client.compat.ar.ARCompat;
 import dev.xcolorful.customgun.client.compat.optifine.OptifineCompat;
+import dev.xcolorful.customgun.client.config.RenderConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.player.LocalPlayer;
@@ -111,7 +112,7 @@ public class ClientRenderHelper {
          * MC原版隐身玩家不渲染第一人称手臂
          * 判断逻辑同 {@link ItemInHandRenderer#renderArmWithItem}和{@link ItemInHandRenderer#renderOneHandedMap}的{@link LocalPlayer#isInvisible()}
          */
-        if (player.isInvisible()) return;
+        if (player.isInvisible() && !RenderConfig.RENDER_FIRST_PERSON_INVISIBLE_ARM.get()) return;
 
         Minecraft mc = Minecraft.getInstance();
         EntityRenderDispatcher renderManager = mc.getEntityRenderDispatcher();

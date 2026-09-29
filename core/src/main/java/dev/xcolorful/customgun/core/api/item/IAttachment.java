@@ -21,11 +21,11 @@ public interface IAttachment extends IAttachmentDataAccess, IAttachmentGetter,
     }
 
     @Override
-    default @NotNull ResourceLocation getPojoDisplayLocation(ItemStack attachmentItem) {
+    default @NotNull Identifier getPojoDisplayLocation(ItemStack attachmentItem) {
         return this.getAttachmentLocation(attachmentItem);
     }
     @Override
-    default void setPojoDisplayLocation(ItemStack attachmentItem, ResourceLocation attachmentDisplayLocation) {
+    default void setPojoDisplayLocation(ItemStack attachmentItem, Identifier attachmentDisplayLocation) {
 //        this.setAttachmentLocation(attachmentItem, attachmentDisplayLocation);
     }
 }

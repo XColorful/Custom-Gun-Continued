@@ -1,12 +1,13 @@
 [English](#English)
 
 # 渲染配置
-> wiki 版本：`0.0.15`.13
+> wiki 版本：`26.9.21`.14
 
 路径：`render`
 - `GunLodRenderDistance`（整数）：远距离模型显示距离，设为0则始终显示
 - `DisableGunTilting`（bool）：是否禁止蹲下时倾斜枪械
 - `EnableFirstPersonBulletTracer`（bool）：是否渲染第一人称曳光弹轨迹
+- `RenderFirstPersonInvisibleArm`（bool）：是否在隐身状态下渲染第一人称手臂
 - `ReplaceVanillaCrosshair`（bool）：持枪时是否替换原版准心
 - `CrosshairType`（枚举）：持枪时的准星样式
 	- `DEFAULT`
@@ -32,6 +33,7 @@
 	GunLodRenderDistance = 0
 	DisableGunTilting = true
 	EnableFirstPersonBulletTracer = true
+	RenderFirstPersonInvisibleArm = false
 	ReplaceVanillaCrosshair = true
 	CrosshairType = "DEFAULT"
 	EnableGunHUD = true
@@ -46,15 +48,16 @@
 ```
 
 # English
-> wiki version: `0.0.15`.13
+> wiki version: `26.9.21`.14
 
 ## Render Config
 
 Path: `render`
 - `GunLodRenderDistance` (integer): How far to display the LOD model, 0 means always display
 - `DisableGunTilting` (bool): Whether to disable gun tilting while crouching
-- `EnableFirstPersonBulletTracer` (bool): Whether to render first person bullet trail
-- `ReplaceVanillaCrosshair`(bool): Whether to replace the vanilla crosshair when holding a gun
+- `EnableFirstPersonBulletTracer` (bool): Whether to render the first-person bullet tracer
+- `RenderFirstPersonInvisibleArm` (bool): Whether to render the first-person arm while invisible
+- `ReplaceVanillaCrosshair` (bool): Whether to replace the vanilla crosshair when holding a gun
 - `CrosshairType` (enum): The crosshair when holding a gun
 	- `DEFAULT`
 	- `BLANK`
@@ -79,6 +82,7 @@ Path: `render`
 	GunLodRenderDistance = 0
 	DisableGunTilting = true
 	EnableFirstPersonBulletTracer = true
+	RenderFirstPersonInvisibleArm = false
 	ReplaceVanillaCrosshair = true
 	CrosshairType = "DEFAULT"
 	EnableGunHUD = true

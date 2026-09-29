@@ -759,3 +759,86 @@ ClientRenderHelper.GL._colorMask(true);
 - 本问题涉及的 `ItemInHandLayerMixin` 已完整撤回，工作区无残留。
 
 要我把这段追加到 [docs/deprecated/prompt/#62 Arm-render-fix.md](docs/deprecated/prompt/%2362%20Arm-render-fix.md) 吗？
+
+# 
+---
+
+```
+PR #62 现移植到1.21.4，经测试1.21.1neoforge正常，1.21.4 dev.xcolorful.customgun.client.util.ClientRenderHelper有问题：
+- 第一人称在原手上渲染了袖子，但是左手左边还渲染了一个更朝前一点位置的手
+- 我的皮肤是手前面是紫色，手臂是黑色，这个额外渲染的手是紫色的，并且原本袖子上的颜色在这个额外手上面也有出现
+- 右手也有，但是第一人称不明显
+
+当注释掉sleeve.render后，这个额外手仍然存在
+当sleeve.copyFrom也注释掉后，看起来像额外手渲染在原本手的位置
+```
+
+# 
+
+I'll start by reading the modified file and understanding the context.
+
+Let me see the current uncommitted diff and compare with the 1.21.1 version.
+
+I accidentally changed the session's cwd with that `cd` — let me restore it and investigate with absolute paths (per my memory note on multi-worktree cwd drift).
+
+Let me compare the 1.21.1 (working) and 1.21.4 versions, and check the PlayerModel structure.
+
+Let me inspect the vanilla `PlayerModel` structure in both worktrees via IDEA MCP.
+
+Confirmed: in 1.21.4 the sleeve is a **child** of the arm. Let me verify 1.21.1 differs.
+
+Root cause is clear now. Let me confirm how vanilla 1.21.4 renders the first-person arm (render types for arm vs. sleeve).
+
+Now let me confirm the 1.21.1 vanilla shape for comparison.
+
+Let me check the "Align first person arm render type with vanilla" commit to understand the intent behind the current shape.
+
+Let me pin down which version made the sleeve a child, checking local caches and the docs.
+
+There's a 1.21.6 worktree — let me check whether it already solved this (useful precedent).
+
+Let me check `ClientRenderUtils.RenderType_` and whether newer branches share the bug.
+
+Let me verify `ModelPart.resetPose()` semantics in 1.21.4 (does it recurse into children like the sleeve?).
+
+All three of your observations now check out against the root cause. Let me apply the fix.
+
+Now let me verify it compiles.
+
+Let me record this cross-version API delta in memory, since it affects every branch ≥1.21.4.
+
+根因找到了：**1.21.4 起 `PlayerModel` 的袖子是手臂的子节点**，而 PR #62 的袖子代码是按 1.20.1/1.21.1 的"兄弟节点"结构写的。
+
+## 证据（两个版本的原版源码对比）
+
+| | 1.21.1 | 1.21.4 |
+|---|---|---|
+| 取袖子 | `root.getChild("left_sleeve")` — 与 `leftArm` **平级** | `this.leftArm.getChild("left_sleeve")` — **子节点**，`PartPose.ZERO` |
+| 姿态同步 | `PlayerModel#setupAnim` 末尾 `copyFrom` | 不需要，子节点继承父节点变换 |
+| 原版 `renderHand` | 两段式：arm `entitySolid` + sleeve `entityTranslucent` | 只剩一次 `arm.render(..., entityTranslucent, ...)`，袖子被 `ModelPart#render` 递归带出 |
+
+所以在 1.21.4 上照抄旧写法会多画一份：
+- `ModelPart#render` 递归渲染 `children` → `arm.render()` **已经**把袖子画在正确位置；
+- `copyFrom` 连 `x/y/z` 一起拷（1.21.4 `ModelPart.java:70-80`）→ 子袖子在手臂局部空间**再平移一次** (5,2,0)，画到 (10,4,0)，就是那只"更朝前、偏左的额外手臂"；
+- `sleeve.render()` 再把这份位移的袖子多画一遍。
+
+你三条观测全部对上：注释 `sleeve.render` 后额外手仍在（`arm.render` 画的那份）→ 再注释 `copyFrom` 后它就落回原手臂位置（子袖子局部姿态归零，与手臂重合，所以"看起来像"多渲染）。
+
+## 改动
+
+[ClientRenderHelper.java:160-189](core/src/main/java/dev/xcolorful/customgun/client/util/ClientRenderHelper.java:160)：按 1.21.4 原版只保留一次 `arm.render`，**render type 从 `entitySolid` 改成 `entityTranslucent`**（1.21.4 原版整只手臂含袖子统一 translucent；640cb8213 那句 "Align ... with vanilla" 对齐的其实是 1.21.1 的两段式形状）。旧写法按本文件惯例注释成 `[1.20.1, 1.21.4)` 保留。
+
+`:core:compileJava` 通过（只有一处既有的 `GunProjectileRenderer` deprecation 提示，与本改动无关）。**但我没有跑客户端**，需要你实际进游戏确认第一人称手臂和袖子。
+
+## 两个需要你决定的点
+
+1. **同一缺陷在其它分支上也在**：1.21.6 / 1.21.10 / 1.21.11 / 26.2 / 26.3 的 `ClientRenderHelper.renderFirstPersonArm` 与 1.21.4 改动前的代码**完全一致**，应该都有这只额外手臂。按约定我没碰别的分支。
+2. **未验证项**：1.21.2/1.21.3 是否也已改成子节点我没能确认（仓库没有这两个分支，本地也没有对应源码 jar）。版本标记写 `[1.21.4, )` 对本仓库现有的分支集合是精确的，但对 1.21.2/1.21.3 可能不成立。
+
+另外 `sleeve` 局部变量和 `bakedRenderType` 现在都没被使用了 —— 按你之前"没用到的不要删"的要求保留了。`model.leftSleeve/rightSleeve.visible` 仍都用当前这只手的标记赋值，这点 1.21.4 原版 `renderHand` 也是这么写的，所以没动。
+
+按约定我没有提交，改动留在工作区等你 review。
+
+Sources:
+- [Class PlayerModel (1.21.5 javadoc)](https://aldak0.ru/javadoc/1.21.5-21.5.x/net/minecraft/client/model/PlayerModel.html#leftSleeve)
+- [PlayerModelPart (Fabric Yarn javadoc)](https://maven.fabricmc.net/docs/yarn-1.21.11+build.1/net/minecraft/client/render/entity/model/PlayerEntityModel.html#getTexturedModelData(net.minecraft.client.model.Dilation,boolean))

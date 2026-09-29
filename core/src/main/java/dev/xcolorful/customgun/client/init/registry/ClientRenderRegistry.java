@@ -8,8 +8,10 @@ import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.api.minecraft.texture.CustomTexture;
 import dev.xcolorful.customgun.client.compat.iris.IrisCompat;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.rendertype.LayeringTransform;
+import net.minecraft.client.renderer.rendertype.OutputTarget;
+import net.minecraft.client.renderer.rendertype.RenderSetup;
 import net.minecraft.client.renderer.rendertype.RenderType;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -25,10 +27,10 @@ public class ClientRenderRegistry {
         public LaserBeamRenderState(String pName, Runnable pSetupState, Runnable pClearState) {
         }
 
-        public static final RenderPipeline LASER_BEAM_PIPELINE = RenderPipeline.builder(RenderPipelines.MATRICES_PROJECTION_SNIPPET)
+        public static final RenderPipeline LASER_BEAM_PIPELINE = RenderPipeline.builder(RenderPipelines.MATRICES_FOG_SNIPPET)
                 .withLocation(CustomGun.getMcRegistry().createResourceLocation(String.format("%s:laser_beam", CustomGun.MOD_ID)))
-                .withVertexShader("core/position_color_tex_lightmap")
-                .withFragmentShader("core/position_color_tex_lightmap")
+                .withVertexShader("core/particle")
+                .withFragmentShader("core/particle")
                 .withSampler("Sampler0")
                 .withSampler("Sampler2")
                 .withBlend(BlendFunction.LIGHTNING)
@@ -42,12 +44,30 @@ public class ClientRenderRegistry {
                 .withCull(false)
                 .build();
 
+        protected static final RenderType LASER_BEAM = RenderType.create("laser_beam",
+                RenderSetup.builder(LASER_BEAM_PIPELINE)
+                        .setLayeringTransform(LayeringTransform.VIEW_OFFSET_Z_LAYERING)
+                        .setOutputTarget(OutputTarget.ITEM_ENTITY_TARGET)
+                        .useLightmap()
+                        .withTexture("Sampler0", LASER_BEAM_TEXTURE)
+                        .sortOnUpload()
+                        .createRenderSetup());
+
+        protected static final RenderType LASER_BEAM_ENTITY = RenderType.create("laser_beam_entity",
+                RenderSetup.builder(LASER_BEAM_ENTITY_PIPELINE)
+                        .setLayeringTransform(LayeringTransform.VIEW_OFFSET_Z_LAYERING)
+                        .setOutputTarget(OutputTarget.ITEM_ENTITY_TARGET)
+                        .useOverlay()
+                        .withTexture("Sampler0", LASER_BEAM_TEXTURE)
+                        .sortOnUpload()
+                        .createRenderSetup());
+
         public static RenderType getLaserBeam() {
-            return RenderTypes.entityTranslucent(LASER_BEAM_TEXTURE);
+            return LASER_BEAM;
         }
 
         public static RenderType getLaserBeamEntity() {
-            return RenderTypes.entityTranslucent(LASER_BEAM_TEXTURE);
+            return LASER_BEAM_ENTITY;
         }
     }
 

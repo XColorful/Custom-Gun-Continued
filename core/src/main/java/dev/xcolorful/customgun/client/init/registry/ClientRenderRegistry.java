@@ -50,9 +50,15 @@ public class ClientRenderRegistry {
         }
     }
 
+    /**
+     * <ul>
+     *     需要进游戏实测的测试项：
+     *     <li>1.21.6+：激光是否渲染</li>
+     *     <li>1.21.10+：启动是否黑屏 (取消注册可以临时解决)</li>
+     * </ul>
+     */
     @ApiStatus.AvailableSince("1.21.6")
     public static void onRegisterRenderPipelines(Consumer<RenderPipeline> registrar) {
-        if (true) return;
 
         registrar.accept(LaserBeamRenderState.LASER_BEAM_PIPELINE);
         registrar.accept(LaserBeamRenderState.LASER_BEAM_ENTITY_PIPELINE);

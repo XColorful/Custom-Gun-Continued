@@ -97,25 +97,75 @@ public class BeamRender {
         float halfWidth = width / 2;
         int endAlpha = fadeOut ? 0 : 255;
         int light = ClientRenderUtils.LightTexture_.pack(15, 15);
-        pConsumer.vertex(pPose.pose(), -halfWidth, -halfWidth, 0).color(r, g, b, 255).uv(0, 0).uv2(light).endVertex();
-        pConsumer.vertex(pPose.pose(), -halfWidth, halfWidth, 0).color(r, g, b, 255).uv(0, 1).uv2(light).endVertex();
-        pConsumer.vertex(pPose.pose(), -halfWidth, halfWidth, z).color(r, g, b, endAlpha).uv(1, 1).uv2(light).endVertex();
-        pConsumer.vertex(pPose.pose(), -halfWidth, -halfWidth, z).color(r, g, b, endAlpha).uv(1, 0).uv2(light).endVertex();
+        /*
+        setNormal 在顶点格式没有 Normal 时是空操作；26.x 开光影包时 Iris 会把与 BLOCK 等价的格式
+        扩展成 IrisVertexFormats.TERRAIN（比 BLOCK 多一个 Normal）
+        不写就会在 endLastVertex 抛"Missing elements in vertex: "（缺失项名字算不出来，消息是空的）
+         */
+        pConsumer.vertex(pPose.pose(), -halfWidth, -halfWidth, 0).color(r, g, b, 255).uv(0, 0).uv2(light)
+                .normal(0.0F, 1.0F, 0.0F)
+                .endVertex()
+        ;
+        pConsumer.vertex(pPose.pose(), -halfWidth, halfWidth, 0).color(r, g, b, 255).uv(0, 1).uv2(light)
+                .normal(0.0F, 1.0F, 0.0F)
+                .endVertex()
+        ;
+        pConsumer.vertex(pPose.pose(), -halfWidth, halfWidth, z).color(r, g, b, endAlpha).uv(1, 1).uv2(light)
+                .normal(0.0F, 1.0F, 0.0F)
+                .endVertex()
+        ;
+        pConsumer.vertex(pPose.pose(), -halfWidth, -halfWidth, z).color(r, g, b, endAlpha).uv(1, 0).uv2(light)
+                .normal(0.0F, 1.0F, 0.0F)
+                .endVertex()
+        ;
 
-        pConsumer.vertex(pPose.pose(), -halfWidth, halfWidth, 0).color(r, g, b, 255).uv(0, 0).uv2(light).endVertex();
-        pConsumer.vertex(pPose.pose(), halfWidth, halfWidth, 0).color(r, g, b, 255).uv(0, 1).uv2(light).endVertex();
-        pConsumer.vertex(pPose.pose(), halfWidth, halfWidth, z).color(r, g, b, endAlpha).uv(1, 1).uv2(light).endVertex();
-        pConsumer.vertex(pPose.pose(), -halfWidth, halfWidth, z).color(r, g, b, endAlpha).uv(1, 0).uv2(light).endVertex();
+        pConsumer.vertex(pPose.pose(), -halfWidth, halfWidth, 0).color(r, g, b, 255).uv(0, 0).uv2(light)
+                .normal(0.0F, 1.0F, 0.0F)
+                .endVertex()
+        ;
+        pConsumer.vertex(pPose.pose(), halfWidth, halfWidth, 0).color(r, g, b, 255).uv(0, 1).uv2(light)
+                .normal(0.0F, 1.0F, 0.0F)
+                .endVertex();
+        pConsumer.vertex(pPose.pose(), halfWidth, halfWidth, z).color(r, g, b, endAlpha).uv(1, 1).uv2(light)
+                .normal(0.0F, 1.0F, 0.0F)
+                .endVertex();
+        pConsumer.vertex(pPose.pose(), -halfWidth, halfWidth, z).color(r, g, b, endAlpha).uv(1, 0).uv2(light)
+                .normal(0.0F, 1.0F, 0.0F)
+                .endVertex();
 
-        pConsumer.vertex(pPose.pose(), halfWidth, halfWidth, 0).color(r, g, b, 255).uv(0, 0).uv2(light).endVertex();
-        pConsumer.vertex(pPose.pose(), halfWidth, -halfWidth, 0).color(r, g, b, 255).uv(0, 1).uv2(light).endVertex();
-        pConsumer.vertex(pPose.pose(), halfWidth, -halfWidth, z).color(r, g, b, endAlpha).uv(1, 1).uv2(light).endVertex();
-        pConsumer.vertex(pPose.pose(), halfWidth, halfWidth, z).color(r, g, b, endAlpha).uv(1, 0).uv2(light).endVertex();
+        pConsumer.vertex(pPose.pose(), halfWidth, halfWidth, 0).color(r, g, b, 255).uv(0, 0).uv2(light)
+                .normal(0.0F, 1.0F, 0.0F)
+                .endVertex()
+        ;
+        pConsumer.vertex(pPose.pose(), halfWidth, -halfWidth, 0).color(r, g, b, 255).uv(0, 1).uv2(light)
+                .normal(0.0F, 1.0F, 0.0F)
+                .endVertex()
+        ;
+        pConsumer.vertex(pPose.pose(), halfWidth, -halfWidth, z).color(r, g, b, endAlpha).uv(1, 1).uv2(light)
+                .normal(0.0F, 1.0F, 0.0F)
+                .endVertex()
+        ;
+        pConsumer.vertex(pPose.pose(), halfWidth, halfWidth, z).color(r, g, b, endAlpha).uv(1, 0).uv2(light)
+                .normal(0.0F, 1.0F, 0.0F)
+                .endVertex()
+        ;
 
-        pConsumer.vertex(pPose.pose(), halfWidth, -halfWidth, 0).color(r, g, b, 255).uv(0, 1).uv2(light).endVertex();
-        pConsumer.vertex(pPose.pose(), -halfWidth, -halfWidth, 0).color(r, g, b, 255).uv(0, 1).uv2(light).endVertex();
-        pConsumer.vertex(pPose.pose(), -halfWidth, -halfWidth, z).color(r, g, b, endAlpha).uv(1, 1).uv2(light).endVertex();
-        pConsumer.vertex(pPose.pose(), halfWidth, -halfWidth, z).color(r, g, b, endAlpha).uv(1, 0).uv2(light).endVertex();
+        pConsumer.vertex(pPose.pose(), halfWidth, -halfWidth, 0).color(r, g, b, 255).uv(0, 1).uv2(light)
+                .normal(0.0F, 1.0F, 0.0F)
+                .endVertex()
+        ;
+        pConsumer.vertex(pPose.pose(), -halfWidth, -halfWidth, 0).color(r, g, b, 255).uv(0, 1).uv2(light)
+                .normal(0.0F, 1.0F, 0.0F)
+                .endVertex()
+        ;
+        pConsumer.vertex(pPose.pose(), -halfWidth, -halfWidth, z).color(r, g, b, endAlpha).uv(1, 1).uv2(light)
+                .normal(0.0F, 1.0F, 0.0F)
+                .endVertex()
+        ;
+        pConsumer.vertex(pPose.pose(), halfWidth, -halfWidth, z).color(r, g, b, endAlpha).uv(1, 0).uv2(light)
+                .normal(0.0F, 1.0F, 0.0F)
+                .endVertex()
+        ;
     }
 
     // public仅用于文档链接

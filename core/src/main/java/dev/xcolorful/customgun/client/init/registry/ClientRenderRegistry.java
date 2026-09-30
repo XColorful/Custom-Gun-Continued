@@ -3,6 +3,7 @@ package dev.xcolorful.customgun.client.init.registry;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.renderpearl.api.pipeline.BlendFunction;
 import com.mojang.renderpearl.api.pipeline.ColorTargetState;
+import com.mojang.renderpearl.api.pipeline.DepthStencilState;
 import com.mojang.renderpearl.api.pipeline.PrimitiveTopology;
 import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import dev.xcolorful.customgun.CustomGun;
@@ -34,6 +35,12 @@ public class ClientRenderRegistry {
                 .withFragmentShader("core/particle")
                 .withBindGroupLayout(BindGroupLayouts.SAMPLER0_SAMPLER2)
                 .withColorTargetState(new ColorTargetState(BlendFunction.LIGHTNING))
+                /*
+                [26.1.x, ) 不写这条时管线没有 depthStencilState (26.1 起 Builder 的默认值从「LEQUAL + 写深度」变成 null)
+                而 null 在 applyPipelineState 里等价于关闭深度测试
+                于是光束无视枪体直接画在最上层；1.21.11 及以前靠 Builder 默认值自带深度测试
+                 */
+                .withDepthStencilState(DepthStencilState.DEFAULT)
                 .withCull(false)
                 .withVertexBinding(0, DefaultVertexFormat.PARTICLE)
                 .withPrimitiveTopology(PrimitiveTopology.QUADS)

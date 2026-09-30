@@ -31,8 +31,8 @@ public class ClientRenderRegistry {
 
         public static final RenderPipeline LASER_BEAM_PIPELINE = RenderPipeline.builder(RenderPipelines.MATRICES_FOG_SNIPPET)
                 .withLocation(CustomGun.getMcRegistry().createResourceLocation(String.format("%s:laser_beam", CustomGun.MOD_ID)))
-                .withVertexShader("core/position_color_tex_lightmap")
-                .withFragmentShader("core/position_color_tex_lightmap")
+                .withVertexShader("core/particle")
+                .withFragmentShader("core/particle")
                 .withBindGroupLayout(BindGroupLayouts.SAMPLER0_SAMPLER2)
                 .withColorTargetState(new ColorTargetState(BlendFunction.LIGHTNING))
                 .withCull(false)

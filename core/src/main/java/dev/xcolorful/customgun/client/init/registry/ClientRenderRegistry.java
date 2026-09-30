@@ -1,5 +1,7 @@
 package dev.xcolorful.customgun.client.init.registry;
 
+import com.mojang.blaze3d.pipeline.BlendFunction;
+import com.mojang.blaze3d.pipeline.ColorTargetState;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
@@ -32,14 +34,14 @@ public class ClientRenderRegistry {
                 .withFragmentShader("core/particle")
                 .withSampler("Sampler0")
                 .withSampler("Sampler2")
-//                .withBlend(BlendFunction.LIGHTNING)
+                .withColorTargetState(new ColorTargetState(BlendFunction.LIGHTNING))
                 .withCull(false)
                 .withVertexFormat(DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS)
                 .build();
 
         public static final RenderPipeline LASER_BEAM_ENTITY_PIPELINE = RenderPipeline.builder(RenderPipelines.ENTITY_EMISSIVE_SNIPPET)
                 .withLocation(CustomGun.getMcRegistry().createResourceLocation(String.format("%s:laser_beam_entity", CustomGun.MOD_ID)))
-//                .withBlend(BlendFunction.LIGHTNING)
+                .withColorTargetState(new ColorTargetState(BlendFunction.LIGHTNING))
                 .withCull(false)
                 .build();
 

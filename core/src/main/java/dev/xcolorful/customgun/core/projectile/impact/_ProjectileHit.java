@@ -120,7 +120,7 @@ public class _ProjectileHit {
                     // 没被移除
                     !victimEntity.isRemoved()
                     // 没死亡 (生物)
-                    && (victimLivingEntity != null && !victimLivingEntity.isDeadOrDying())
+                    && (victimLivingEntity == null || !victimLivingEntity.isDeadOrDying())
                     // 有普通伤害
                     && (bulletDamage = hitEvent.context.getBulletDamage()) != null && armorIgnorePercent < 1
             ) {
@@ -132,7 +132,7 @@ public class _ProjectileHit {
                     // 没被移除
                     !victimEntity.isRemoved()
                     // 没死亡 (生物)
-                    && (victimLivingEntity != null && !victimLivingEntity.isDeadOrDying())
+                    && (victimLivingEntity == null || !victimLivingEntity.isDeadOrDying())
                     // 有穿甲伤害
                     && (pierceDamage = hitEvent.context.getPiercerDamage()) != null && armorIgnorePercent > 0
             ) {

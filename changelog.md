@@ -1,5 +1,21 @@
 ### 26.9
 
+#### 26.9.22
+- Fixed potential crashes caused by configurations
+- Fixed list-type configuration items not being saved
+- Fixed 5.7° rotation offset on first-person arm
+- Fixed first-person arm rendered while invisible
+- Add render config `RenderFirstPersonInvisibleArm`
+
+1.20.1-1.21.1:
+- Fixed shooter's sleeves not rendering in first-person view
+
+1.21.1forge:
+- Fixed crash when modifying configuration
+
+1.21.11+:
+- Fixed crash when rendering laser beam
+
 #### 26.9.21
 - Fall back to the attachment category defined in attachment index when item NBT lacks attachment category
 

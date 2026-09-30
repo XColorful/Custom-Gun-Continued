@@ -26,10 +26,10 @@ public class ClientRenderRegistry {
             super(pName, pSetupState, pClearState);
         }
 
-        public static final RenderPipeline LASER_BEAM_PIPELINE = RenderPipeline.builder(RenderPipelines.MATRICES_PROJECTION_SNIPPET)
+        public static final RenderPipeline LASER_BEAM_PIPELINE = RenderPipeline.builder(RenderPipelines.MATRICES_FOG_SNIPPET)
                 .withLocation(CustomGun.getMcRegistry().createResourceLocation(String.format("%s:laser_beam", CustomGun.MOD_ID)))
-                .withVertexShader("core/position_color_tex_lightmap")
-                .withFragmentShader("core/position_color_tex_lightmap")
+                .withVertexShader("core/particle")
+                .withFragmentShader("core/particle")
                 .withSampler("Sampler0")
                 .withSampler("Sampler2")
                 .withBlend(BlendFunction.LIGHTNING)

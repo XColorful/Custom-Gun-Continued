@@ -48,6 +48,7 @@ public abstract class AnimationManager<T extends ResourcePojo<T>> extends Resour
         }
     }
 
+    @Deprecated(forRemoval = true)
     public static class PlayerAnimationManager extends AnimationManager<BedrockAnimation> {
         @ApiStatus.Internal
         public PlayerAnimationManager() {

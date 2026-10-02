@@ -64,7 +64,7 @@ public class _AllAssetsManager implements IEventHandler {
     /**
      * ./resourcepacks/{resourcepack}/assets/{namespace}/{@link AssetsFolderType#PLAYER_ANIMATOR}
      */
-    public @Nullable AnimationManager.PlayerAnimationManager playerAnimationManager;
+    public @Deprecated(forRemoval = true) @Nullable AnimationManager.PlayerAnimationManager playerAnimationManager;
     /**
      * ./resourcepacks/{resourcepack}/assets/{namespace}/{@link AssetsFolderType#SCRIPT}
      */
@@ -114,10 +114,10 @@ public class _AllAssetsManager implements IEventHandler {
         _AllAssetsManager.INSTANCE.reloadAndRegister(event);
         PlayerAnimatorCompat.registerReloadListener(event);
 
-        if (CustomGun.getMcRegistry().isModLoaded(PlayerAnimator.MOD_ID)) {
-            INSTANCE.playerAnimationManager = INSTANCE.addToListener(INSTANCE.reloadListeners, new AnimationManager.PlayerAnimationManager());
-            event.addListener(INSTANCE.playerAnimationManager.getRegistryName(), INSTANCE.playerAnimationManager);
-        }
+//        if (CustomGun.getMcRegistry().isModLoaded(PlayerAnimator.MOD_ID)) {
+//            INSTANCE.playerAnimationManager = INSTANCE.addToListener(INSTANCE.reloadListeners, new AnimationManager.PlayerAnimationManager());
+//            event.addListener(INSTANCE.playerAnimationManager.getRegistryName(), INSTANCE.playerAnimationManager);
+//        }
     }
 
     /**

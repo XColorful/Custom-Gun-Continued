@@ -1,3 +1,9 @@
+### 26.10
+
+#### 26.10.23
+- Fixed gun projectile not dealing damage to entities
+- Deprecated built-in PlayerAnimator resource manager (unused)
+
 ### 26.9
 
 #### 26.9.22

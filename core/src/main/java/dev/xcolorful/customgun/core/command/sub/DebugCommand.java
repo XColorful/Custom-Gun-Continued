@@ -194,7 +194,6 @@ public class DebugCommand {
                     testManager(indent, path, allAssetsManager.ammoDisplayManager);
                     testManager(indent, path, allAssetsManager.blockDisplayManager);
                     testManager(indent, path, allAssetsManager.bedrockModelManager);
-                    testManager(indent, path, allAssetsManager.playerAnimationManager);
                 }
 
                 source.sendSuccess(() -> Component.literal("All data successfully exported to ./" + path), true);

@@ -7,7 +7,7 @@ import dev.xcolorful.customgun.core.api.resource.data.DataFolderType;
 import dev.xcolorful.customgun.core.resource.ResourcePojoManager;
 import dev.xcolorful.customgun.core.resource.data.recipefilter.RecipeFilterData;
 import dev.xcolorful.customgun.core.resource.network.SyncDataType;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackType;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -20,7 +20,7 @@ import java.util.Map;
 public final class RecipeFilterDataManager extends ResourcePojoManager<RecipeFilterData> implements INetworkCacheReloadListener {
 
     @Override
-    protected void onPreparePojo(Map<ResourceLocation, RecipeFilterData> map, ResourceLocation pojoLocation, RecipeFilterData pojo) {
+    protected void onPreparePojo(Map<Identifier, RecipeFilterData> map, Identifier pojoLocation, RecipeFilterData pojo) {
         RecipeFilterData current = map.get(pojoLocation);
         if (current == null) {
             super.onPreparePojo(map, pojoLocation, pojo);

@@ -41,7 +41,7 @@ public abstract class ModTagManager <T extends _SimpleTagData<T>> extends Resour
     }
 
     @Override
-    protected void onPreparePojo(Map<ResourceLocation, T> map, ResourceLocation pojoLocation, T pojo) {
+    protected void onPreparePojo(Map<Identifier, T> map, Identifier pojoLocation, T pojo) {
         T current = map.get(pojoLocation);
         if (current == null) {
             super.onPreparePojo(map, pojoLocation, pojo);

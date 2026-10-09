@@ -52,7 +52,7 @@ public final class ScriptManager extends ResourceFileManager<DataScript> {
 
     @Override
     protected @NotNull Map<ResourceLocation, DataScript> prepare(@NotNull ResourceManager resourceManager, @NotNull ProfilerFiller profiler) {
-        GLOBALS = secureStandardGlobals();
+        GLOBALS = secureStandardGlobals(LIBRARIES);
         return super.prepare(resourceManager, profiler);
     }
 
@@ -74,7 +74,7 @@ public final class ScriptManager extends ResourceFileManager<DataScript> {
 
     public static Globals getGlobals() {
         if (GLOBALS == null) {
-            GLOBALS = secureStandardGlobals();
+            GLOBALS = secureStandardGlobals(LIBRARIES);
         }
         return GLOBALS;
     }
@@ -83,7 +83,8 @@ public final class ScriptManager extends ResourceFileManager<DataScript> {
         return resourceLocation.getNamespace() + "_" + resourceLocation.getPath();
     }
 
-    private static Globals secureStandardGlobals() {
+    @ApiStatus.Internal
+    public static Globals secureStandardGlobals(List<LuaLibrary> LIBRARIES) {
         Globals g = new Globals();
         g.load(new JseBaseLib());
         g.load(new PackageLib());

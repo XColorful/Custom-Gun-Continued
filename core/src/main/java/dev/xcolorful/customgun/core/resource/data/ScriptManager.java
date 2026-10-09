@@ -18,6 +18,7 @@ import org.luaj.vm2.LoadState;
 import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.compiler.LuaC;
+import org.luaj.vm2.lib.BaseLib;
 import org.luaj.vm2.lib.Bit32Lib;
 import org.luaj.vm2.lib.PackageLib;
 import org.luaj.vm2.lib.TableLib;
@@ -40,6 +41,18 @@ public final class ScriptManager extends ResourceFileManager<DataScript> {
      * 内置的 Lua 常量库扩展列表
      */
     private static final List<LuaLibrary> LIBRARIES = List.of(new LuaGunLogicLib());
+
+    /**
+     * 严格档禁用的全局
+     */
+    private static final String[] UNSAFE_GLOBALS = {
+            "collectgarbage",
+            "dofile",
+            "getmetatable",
+            "load",
+            "loadfile",
+            "print"
+    };
 
     @ApiStatus.Internal
     public ScriptManager() {
@@ -85,16 +98,42 @@ public final class ScriptManager extends ResourceFileManager<DataScript> {
 
     @ApiStatus.Internal
     public static Globals secureStandardGlobals(List<LuaLibrary> LIBRARIES) {
+        return secureGlobals(LIBRARIES, false);
+    }
+
+    /**
+     * 严格档：仅表达式所需的最小环境
+     * <ul>
+     *     <li>不加载 PackageLib / LoadState，也不提供 require、dofile、loadfile、load、print</li>
+     *     <li>可供一般脚本计算复用 (如 {@link dev.xcolorful.customgun.core.util.ScriptUtils})</li>
+     * </ul>
+     */
+    @ApiStatus.Internal
+    public static Globals secureExpressionGlobals() {
+        return secureGlobals(List.of(), true);
+    }
+
+    private static Globals secureGlobals(List<LuaLibrary> libraries, boolean strict) {
         Globals g = new Globals();
-        g.load(new JseBaseLib());
-        g.load(new PackageLib());
+        if (strict) {
+            g.load(new BaseLib());
+        } else {
+            g.load(new JseBaseLib());
+            g.load(new PackageLib());
+        }
         g.load(new Bit32Lib());
         g.load(new TableLib());
         g.load(new JseStringLib());
         g.load(new JseMathLib());
-        LoadState.install(g);
+        if (strict) {
+            for (String name : UNSAFE_GLOBALS) {
+                g.set(name, LuaValue.NIL);
+            }
+        } else {
+            LoadState.install(g);
+            libraries.forEach(luaLibrary -> luaLibrary.install(g));
+        }
         LuaC.install(g);
-        LIBRARIES.forEach(luaLibrary -> luaLibrary.install(g));
         return g;
     }
 }

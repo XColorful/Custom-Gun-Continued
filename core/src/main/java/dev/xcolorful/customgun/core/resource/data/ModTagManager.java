@@ -6,10 +6,10 @@ import dev.xcolorful.customgun.core.api.resource.data.DataFolderName;
 import dev.xcolorful.customgun.core.api.resource.data.DataFolderType;
 import dev.xcolorful.customgun.core.api.resource.data.modtag.ModTagSubFolderType;
 import dev.xcolorful.customgun.core.api.resource.data.modtag.ModTagSubFolderTypeTag;
-import dev.xcolorful.customgun.core.resource.ResourcePojo;
 import dev.xcolorful.customgun.core.resource.ResourcePojoManager;
 import dev.xcolorful.customgun.core.resource.data.modtags.AttachmentTagData;
 import dev.xcolorful.customgun.core.resource.data.modtags.GunAttachmentData;
+import dev.xcolorful.customgun.core.resource.data.modtags._SimpleTagData;
 import dev.xcolorful.customgun.core.resource.network.SyncDataType;
 import dev.xcolorful.customgun.core.util.JsonUtils;
 import net.minecraft.resources.ResourceLocation;
@@ -18,12 +18,13 @@ import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 /**
  * 目录名称{@link DataFolderType} + 子目录名称{@link ModTagSubFolderType}
  */
-public abstract class ModTagManager <T extends ResourcePojo<T>> extends ResourcePojoManager<T> {
+public abstract class ModTagManager <T extends _SimpleTagData<T>> extends ResourcePojoManager<T> {
 
     public ModTagManager(String subPrefix, String extension, JsonUtils.ReadFunction<T> fromJson) {
         super(PackType.SERVER_DATA, Arrays.asList(DataFolderType.MOD_TAG.getFolderName() + "/" + subPrefix, DataFolderName.MOD_TAGS_OLD1 + "/" + subPrefix),
@@ -37,6 +38,16 @@ public abstract class ModTagManager <T extends ResourcePojo<T>> extends Resource
     }
     public ModTagManager(PackType packType, List<String> prefixList, String extension, JsonUtils.ReadFunction<T> fromJson) {
         super(packType, prefixList, extension, fromJson);
+    }
+
+    @Override
+    protected void onPreparePojo(Map<ResourceLocation, T> map, ResourceLocation pojoLocation, T pojo) {
+        T current = map.get(pojoLocation);
+        if (current == null) {
+            super.onPreparePojo(map, pojoLocation, pojo);
+        } else {
+            current.appendRaw(pojo);
+        }
     }
 
     public static final class AttachmentTagDataManager extends ModTagManager<AttachmentTagData> implements INetworkCacheReloadListener {

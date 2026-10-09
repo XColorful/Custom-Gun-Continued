@@ -1,5 +1,12 @@
 ### 26.10
 
+#### 26.10.24
+- Merge mod tags from data packs as vanilla does
+- Fix potential RCE vulnerability in attachment data #65
+
+Network:
+- Update network protocol version to `24`, which prevents connections between new and older versions
+
 #### 26.10.23
 - Fixed gun projectile not dealing damage to entities
 - Deprecated built-in PlayerAnimator resource manager (unused)

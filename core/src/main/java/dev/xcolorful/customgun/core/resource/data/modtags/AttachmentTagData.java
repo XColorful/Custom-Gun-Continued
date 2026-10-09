@@ -52,6 +52,13 @@ public final class AttachmentTagData extends _SimpleTagData<AttachmentTagData> {
         this.setValid(true);
     }
 
+    // --------IResourcePojoExtension--------
+
+    @Override
+    public AttachmentTagData asPojo() {
+        return this;
+    }
+
     // --------Back compatibility--------
 
     @Override

@@ -31,7 +31,7 @@ public class NetworkHandler {
     protected final AtomicInteger ID_COUNT = new AtomicInteger(0);
     protected final AtomicInteger HANDSHAKE_ID_COUNT = new AtomicInteger(0);
 
-    public static final int protocol_version = 17;
+    public static final int protocol_version = 24;
     @Deprecated(forRemoval = true)
     public static final String PROTOCOL_VERSION = String.valueOf(protocol_version);
     @Deprecated(forRemoval = true)

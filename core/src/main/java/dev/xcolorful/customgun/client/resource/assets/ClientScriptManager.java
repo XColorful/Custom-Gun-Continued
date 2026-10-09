@@ -33,6 +33,7 @@ import java.util.Map;
 
 /**
  * 同 {@link ScriptManager}
+ * 隔离类继承({@code instanceof})，功能复用
  */
 public final class ClientScriptManager extends ResourceFileManager<AssetsScript> {
 
@@ -57,7 +58,7 @@ public final class ClientScriptManager extends ResourceFileManager<AssetsScript>
 
     @Override
     protected @NotNull Map<ResourceLocation, AssetsScript> prepare(@NotNull ResourceManager resourceManager, @NotNull ProfilerFiller profiler) {
-        GLOBALS = secureStandardGlobals();
+        GLOBALS = secureStandardGlobals(LIBRARIES);
         return super.prepare(resourceManager, profiler);
     }
 
@@ -79,26 +80,17 @@ public final class ClientScriptManager extends ResourceFileManager<AssetsScript>
 
     public static Globals getGlobals() {
         if (GLOBALS == null) {
-            GLOBALS = secureStandardGlobals();
+            GLOBALS = secureStandardGlobals(LIBRARIES);
         }
         return GLOBALS;
     }
 
     public static String getModuleName(ResourceLocation resourceLocation) {
-        return resourceLocation.getNamespace() + "_" + resourceLocation.getPath();
+        return ScriptManager.getModuleName(resourceLocation);
     }
 
-    private static Globals secureStandardGlobals() {
-        Globals g = new Globals();
-        g.load(new JseBaseLib());
-        g.load(new PackageLib());
-        g.load(new Bit32Lib());
-        g.load(new TableLib());
-        g.load(new JseStringLib());
-        g.load(new JseMathLib());
-        LoadState.install(g);
-        LuaC.install(g);
-        LIBRARIES.forEach(luaLibrary -> luaLibrary.install(g));
-        return g;
+    @ApiStatus.Internal
+    public static Globals secureStandardGlobals(List<LuaLibrary> LIBRARIES) {
+        return ScriptManager.secureStandardGlobals(LIBRARIES);
     }
 }

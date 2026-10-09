@@ -121,9 +121,13 @@ public abstract class ResourcePojoManager<T extends ResourcePojo<T>>
         Map<ResourceLocation, T> map = new HashMap<>();
         try {
             for (FileToIdConverter fileToIdConverter : this.fileToIdConverters) {
-                fileToIdConverter.listMatchingResources(resourceManager).forEach((location, resource) -> {
+                fileToIdConverter.listMatchingResourceStacks(resourceManager).forEach((location, resourceList) -> {
                     var pojoLocation = fileToIdConverter.fileToId(location);
                     if (!isPojoLocationValid(pojoLocation)) return;
+
+                    for (int i = 0; i < resourceList.size(); i++)
+                    {
+                    var resource = resourceList.get(i);
 
                     try (Reader reader = resource.openAsReader();
                          JsonReader jsonReader = new JsonReader(reader)) {
@@ -151,6 +155,7 @@ public abstract class ResourcePojoManager<T extends ResourcePojo<T>>
                         if (this.logParseException) {
                             CustomGun.LOGGER.error("{}: Failed to read pojo file at: {}", this.managerName, pojoLocation, e);
                         }
+                    }
                     }
                 });
             }

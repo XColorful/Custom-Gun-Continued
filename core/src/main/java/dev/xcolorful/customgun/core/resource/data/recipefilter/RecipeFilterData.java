@@ -4,6 +4,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.core.api.minecraft.IMcRegistry;
+import dev.xcolorful.customgun.core.api.resource.IResourcePojoExtension;
 import dev.xcolorful.customgun.core.api.resource.data.recipefilter.RecipeFilterDataTag;
 import dev.xcolorful.customgun.core.resource.ResourcePojo;
 import dev.xcolorful.customgun.core.util.JsonUtils;
@@ -15,7 +16,8 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-public final class RecipeFilterData extends ResourcePojo<RecipeFilterData> {
+public final class RecipeFilterData extends ResourcePojo<RecipeFilterData>
+        implements IResourcePojoExtension.Appendable<RecipeFilterData> {
 
     private List<String> whitelistRaw;
     private List<Identifier> _whitelistLiteral;
@@ -140,6 +142,24 @@ public final class RecipeFilterData extends ResourcePojo<RecipeFilterData> {
     }
     public void setBlacklistPattern(List<Pattern> blacklistPattern) {
         this._blacklistPattern = blacklistPattern;
+    }
+
+    // --------IResourcePojoExtension--------
+
+    @Override
+    public RecipeFilterData asPojo() {
+        return this;
+    }
+
+    @Override
+    public void appendRaw(RecipeFilterData pojo) {
+        this.whitelistRaw.addAll(pojo.whitelistRaw);
+        this._whitelistLiteral.addAll(pojo._whitelistLiteral);
+        this._whitelistPattern.addAll(pojo._whitelistPattern);
+
+        this.blacklistRaw.addAll(pojo.blacklistRaw);
+        this._blacklistLiteral.addAll(pojo._blacklistLiteral);
+        this._blacklistPattern.addAll(pojo._blacklistPattern);
     }
 
     // --------Back compatibility--------

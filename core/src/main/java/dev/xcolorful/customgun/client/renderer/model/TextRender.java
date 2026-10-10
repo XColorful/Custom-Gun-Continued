@@ -68,7 +68,7 @@ public class TextRender implements IModelComponentRenderer {
             int color = this.modelNodeTextDisplay.getTextColor();
             float scale = this.modelNodeTextDisplay.getTextScale();
             int packLight = ClientRenderUtils.LightTexture_.pack(this.modelNodeTextDisplay.getTextLight(), this.modelNodeTextDisplay.getTextLight());
-            int width = font.width(text);
+            int width = font.width(parsed);
             int xOffset = (int) (width * this.modelNodeTextDisplay.getXOffsetScale());
 
             PoseStack poseStack2 = new PoseStack();
@@ -77,7 +77,7 @@ public class TextRender implements IModelComponentRenderer {
             poseStack2.scale(2 / 300f * scale, -2 / 300f * scale, -2 / 300f);
 
             MultiBufferSource.BufferSource bufferSource = ClientRenderHelper.GL.getModelBufferSource();
-            font.drawInBatch(text,
+            font.drawInBatch(parsed,
                     -xOffset,
                     -font.lineHeight / 2f,
                     color,

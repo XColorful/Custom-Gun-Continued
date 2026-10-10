@@ -3,17 +3,13 @@ package dev.xcolorful.customgun.client.input.config;
 import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.api.event.IInputKeyEvent;
 import dev.xcolorful.customgun.client.api.event.IMouseButtonEvent;
-import dev.xcolorful.customgun.client.api.input.IInputKeyManager;
-import dev.xcolorful.customgun.client.api.input.IKeyConflictContext;
-import dev.xcolorful.customgun.client.api.input.IKeyMapping;
-import dev.xcolorful.customgun.client.api.input.IKeyModifier;
+import dev.xcolorful.customgun.client.api.input.*;
 import dev.xcolorful.customgun.client.api.minecraft.input.CustomInputKey;
 import dev.xcolorful.customgun.client.init.registry.ClientInputCategory;
 import dev.xcolorful.customgun.client.input.InputKey;
 import dev.xcolorful.customgun.client.util.ClientInputUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import org.lwjgl.glfw.GLFW;
 
 /**
  * 已移至{@code dev.xcolorful.cgcconfig.client.input.config.ConfigKey}
@@ -37,7 +33,7 @@ public final class ConfigKey extends InputKey {
                 IKeyConflictContext.Type.IN_GAME,
                 IKeyModifier.Type.ALT,
                 ClientInputUtils.KeyType.keyboard(),
-                GLFW.GLFW_KEY_T,
+                ClientInputUtils.KeyCode._KEY_T(),
                 ClientInputCategory.CONFIG);
     }
 
@@ -66,7 +62,7 @@ public final class ConfigKey extends InputKey {
         this.onConfigKeyInput(event.getAction());
     }
     private void onConfigKeyInput(int action) {
-        if (action != GLFW.GLFW_PRESS) return;
+        if (InputAction.of(action) != InputAction.PRESS) return;
 
         if (!ClientInputUtils.isGameplayFocused()) return; // 不在焦点
 

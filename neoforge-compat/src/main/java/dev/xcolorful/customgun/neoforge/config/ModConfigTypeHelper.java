@@ -7,18 +7,18 @@ public class ModConfigTypeHelper {
 
     public static ModConfigType convert(ModConfig.Type type) {
         return switch (type) {
-            case COMMON -> ModConfigType.COMMON;
+            case LOCAL -> ModConfigType.COMMON;
             case CLIENT -> ModConfigType.CLIENT;
-            case SERVER -> ModConfigType.SERVER;
+            case SYNCED -> ModConfigType.SERVER;
             default -> ModConfigType.COMMON;
         };
     }
 
     public static ModConfig.Type convert(ModConfigType type) {
         return switch (type) {
-            case COMMON -> ModConfig.Type.COMMON;
+            case COMMON -> ModConfig.Type.LOCAL;
             case CLIENT -> ModConfig.Type.CLIENT;
-            case SERVER -> ModConfig.Type.SERVER;
+            case SERVER -> ModConfig.Type.SYNCED;
         };
     }
 }

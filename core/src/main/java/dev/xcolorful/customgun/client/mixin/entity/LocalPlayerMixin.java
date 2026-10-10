@@ -167,6 +167,11 @@ public class LocalPlayerMixin implements ILocalShooter {
 
     // --------ILocalShooterState--------
 
+    @Override
+    public String cgc$getLocalShooterName() {
+        return this.cgc$localShooter.getDisplayName().getString();
+    }
+
     @Override public boolean cgc$isAim() {
         return this.cgc$localAim.isAim();
     }

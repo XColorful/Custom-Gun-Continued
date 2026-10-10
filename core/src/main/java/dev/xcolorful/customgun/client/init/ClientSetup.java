@@ -5,6 +5,7 @@ import dev.xcolorful.customgun.client.compat.shouldersurfing.ShoulderSurfingComp
 import dev.xcolorful.customgun.client.gui.overlay.crosshair.DefaultCrosshair;
 import dev.xcolorful.customgun.client.gui.overlay.gunhud.DefaultGunHud;
 import dev.xcolorful.customgun.client.gui.overlay.shooteroperation.DefaultShooterOperation;
+import dev.xcolorful.customgun.client.text.placeholder.shooter.LocalShooterNameParser;
 
 public class ClientSetup {
 
@@ -27,6 +28,7 @@ public class ClientSetup {
         DefaultShooterOperation.init();
         DefaultShooterAnimator.init();
         ShoulderSurfingCompat.init();
+        LocalShooterNameParser.init();
     }
 
     @FunctionalInterface

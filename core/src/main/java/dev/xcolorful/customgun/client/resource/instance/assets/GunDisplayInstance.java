@@ -91,6 +91,9 @@ public final class GunDisplayInstance extends PojoInstance<GunDisplay> {
                 CustomGun.LOGGER.debug("GunDisplayInstance: BedrockModel {} not found", modelLocation);
             }
         }
+
+        if (this.gunModel != null) this.gunModel.setTextShowList(pojo.getModelNodeTextDisplay());
+
         @Nullable _LodDisplay lodDisplay = pojo.getLodDisplay();
         if (lodDisplay != null) {
             @Nullable var lodModelLocation = lodDisplay.getModelLocation();

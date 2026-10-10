@@ -1035,9 +1035,12 @@ Notation:
 
 |com.tacz.guns.client.model|dev.xcolorful.customgun.core.text|
 |---|---|
-|papi.`AmmoCountPapi`|_Deprecated_|
+|papi.`AmmoCountPapi`|placeholder.gun.`GunAmmoParser`.INSTANCE_OLD1|
 |papi.`PapiManager`|placeholder.`PlaceholderManager`|
-|papi.`PlayerNamePapi`|_Deprecated_|
+
+|com.tacz.guns.client.model|dev.xcolorful.customgun.client.text|
+|---|---|
+|papi.`PlayerNamePapi`|placeholder.gun.`LocalShooterNameParser`.INSTANCE_OLD1|
 
 |com.tacz.guns.client.model|dev.xcolorful.customgun.client.animation|
 |---|---|

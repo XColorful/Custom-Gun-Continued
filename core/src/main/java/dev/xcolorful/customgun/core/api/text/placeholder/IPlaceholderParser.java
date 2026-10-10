@@ -5,6 +5,9 @@ import org.jetbrains.annotations.NotNull;
 
 public interface IPlaceholderParser {
 
+    /*
+    文档译名: 占位符键 (XiaoColorful译)
+     */
     String getPlaceholderKey();
 
     /**

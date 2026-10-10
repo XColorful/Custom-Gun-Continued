@@ -12,6 +12,7 @@ import dev.xcolorful.customgun.core.api.minecraft.Color64;
 import dev.xcolorful.customgun.core.developer.PlannedRefactor;
 import dev.xcolorful.customgun.core.resource.data.data.GunData;
 import dev.xcolorful.customgun.core.resource.instance.data.GunIndexInstance;
+import dev.xcolorful.customgun.core.text.placeholder.gun.GunAmmoParser;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
@@ -48,7 +49,7 @@ public final class GunStateInfoPart extends AbstractTooltipPart implements GunTo
          * TaCZ到处都在重新拉一大坨枪的逻辑，是其根深蒂固的问题
          * 这里只显示枪的子弹
          * 如果要硬核，唯一标准应为{@link IGun#consumeAmmoOnce(LivingEntity, ItemStack, BoltType)}，即以枪的逻辑为标准
-         * 目前还有调用 {@link _GunHudBuilder#getMessage}
+         * 目前还有调用 {@link _GunHudBuilder#getMessage}, {@link GunAmmoParser#parsePlaceholderKey}
          */
         if (PlannedRefactor.UNIFY_GUN_API) {}
 

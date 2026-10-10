@@ -2,6 +2,8 @@ package dev.xcolorful.customgun.client.api.entity.shooter;
 
 public interface ILocalShooterState {
 
+    String cgc$getLocalShooterName();
+
     /**
      * 客户端是否处于瞄准状态
      */

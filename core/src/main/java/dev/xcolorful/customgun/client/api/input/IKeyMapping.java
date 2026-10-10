@@ -3,6 +3,7 @@ package dev.xcolorful.customgun.client.api.input;
 import com.mojang.blaze3d.platform.InputConstants;
 import dev.xcolorful.customgun.client.api.event.IInputKeyEvent.KeyEvent;
 import dev.xcolorful.customgun.client.api.event.IMouseButtonEvent.MouseButtonEvent;
+import dev.xcolorful.customgun.client.util.ClientInputUtils;
 import net.minecraft.client.KeyMapping;
 
 /**
@@ -27,6 +28,11 @@ public interface IKeyMapping {
     }
 
     interface Creator {
+
+        /**
+         * @param inputType 推荐用 {@link ClientInputUtils.KeyType}
+         * @param keyCode 推荐用 {@link ClientInputUtils.KeyCode}
+         */
         IKeyMapping create(String name,
                            IKeyConflictContext.Type contextType, IKeyModifier.Type modifierType,
                            InputConstants.Type inputType, int keyCode,

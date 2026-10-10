@@ -7,10 +7,7 @@ import dev.xcolorful.customgun.client.api.event.IClientTickEvent;
 import dev.xcolorful.customgun.client.api.event.IInputKeyEvent;
 import dev.xcolorful.customgun.client.api.event.IMouseButtonEvent;
 import dev.xcolorful.customgun.client.api.event.IPrepareClientTickEvent;
-import dev.xcolorful.customgun.client.api.input.IInputKeyManager;
-import dev.xcolorful.customgun.client.api.input.IKeyConflictContext;
-import dev.xcolorful.customgun.client.api.input.IKeyMapping;
-import dev.xcolorful.customgun.client.api.input.IKeyModifier;
+import dev.xcolorful.customgun.client.api.input.*;
 import dev.xcolorful.customgun.client.api.minecraft.input.CustomInputKey;
 import dev.xcolorful.customgun.client.entity.shooter.LocalShooterSprint;
 import dev.xcolorful.customgun.client.init.registry.ClientInputCategory;
@@ -29,7 +26,6 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -52,7 +48,7 @@ public final class ShootKey extends InputKey implements IEventHandler {
                 IKeyConflictContext.Type.IN_GAME,
                 IKeyModifier.Type.NONE,
                 ClientInputUtils.KeyType.mouse(),
-                GLFW.GLFW_MOUSE_BUTTON_LEFT,
+                ClientInputUtils.KeyCode._MOUSE_BUTTON_LEFT(),
                 ClientInputCategory.SHOOTER);
     }
 
@@ -103,9 +99,9 @@ public final class ShootKey extends InputKey implements IEventHandler {
         // 不在焦点就不进input队列，否则从screen点击回去的时候会误触
         if (!ClientInputUtils.isGameplayFocused()) return;
 
-        switch (action) {
-            case GLFW.GLFW_PRESS -> this.inputQueue.offer(ShootInput.PRESS);
-            case GLFW.GLFW_RELEASE -> this.inputQueue.offer(ShootInput.RELEASE);
+        switch (InputAction.of(action)) {
+            case PRESS -> this.inputQueue.offer(ShootInput.PRESS);
+            case RELEASE -> this.inputQueue.offer(ShootInput.RELEASE);
         }
     }
 

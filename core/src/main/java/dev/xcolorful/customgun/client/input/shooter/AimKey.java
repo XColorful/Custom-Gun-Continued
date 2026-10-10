@@ -7,10 +7,7 @@ import dev.xcolorful.customgun.client.api.event.IClientTickEvent;
 import dev.xcolorful.customgun.client.api.event.IInputKeyEvent;
 import dev.xcolorful.customgun.client.api.event.IMouseButtonEvent;
 import dev.xcolorful.customgun.client.api.event.IPrepareClientTickEvent;
-import dev.xcolorful.customgun.client.api.input.IInputKeyManager;
-import dev.xcolorful.customgun.client.api.input.IKeyConflictContext;
-import dev.xcolorful.customgun.client.api.input.IKeyMapping;
-import dev.xcolorful.customgun.client.api.input.IKeyModifier;
+import dev.xcolorful.customgun.client.api.input.*;
 import dev.xcolorful.customgun.client.api.minecraft.input.CustomInputKey;
 import dev.xcolorful.customgun.client.config.KeyConfig;
 import dev.xcolorful.customgun.client.init.registry.ClientInputCategory;
@@ -20,7 +17,6 @@ import dev.xcolorful.customgun.core.api.event.*;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import org.lwjgl.glfw.GLFW;
 
 public final class AimKey extends InputKey implements IEventHandler {
 
@@ -40,7 +36,7 @@ public final class AimKey extends InputKey implements IEventHandler {
                 IKeyConflictContext.Type.IN_GAME,
                 IKeyModifier.Type.NONE,
                 ClientInputUtils.KeyType.mouse(),
-                GLFW.GLFW_MOUSE_BUTTON_RIGHT,
+                ClientInputUtils.KeyCode._MOUSE_BUTTON_RIGHT(),
                 ClientInputCategory.SHOOTER);
     }
 
@@ -97,11 +93,11 @@ public final class AimKey extends InputKey implements IEventHandler {
         ILocalShooter localShooter = ILocalShooterGetter.fromLocalPlayer(player);
         boolean holdToAim = KeyConfig.HOLD_TO_AIM.get();
 
-        switch (action) {
-            case GLFW.GLFW_PRESS -> {
+        switch (InputAction.of(action)) {
+            case PRESS -> {
                 localShooter.cgc$aim(holdToAim || !localShooter.cgc$isAim());
             }
-            case GLFW.GLFW_RELEASE -> {
+            case RELEASE -> {
                 if (holdToAim) localShooter.cgc$aim(false);
             }
         }

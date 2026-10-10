@@ -5,10 +5,7 @@ import dev.xcolorful.customgun.client.api.entity.ILocalShooter;
 import dev.xcolorful.customgun.client.api.entity.shooter.ILocalShooterGetter;
 import dev.xcolorful.customgun.client.api.event.IInputKeyEvent;
 import dev.xcolorful.customgun.client.api.event.IMouseButtonEvent;
-import dev.xcolorful.customgun.client.api.input.IInputKeyManager;
-import dev.xcolorful.customgun.client.api.input.IKeyConflictContext;
-import dev.xcolorful.customgun.client.api.input.IKeyMapping;
-import dev.xcolorful.customgun.client.api.input.IKeyModifier;
+import dev.xcolorful.customgun.client.api.input.*;
 import dev.xcolorful.customgun.client.api.minecraft.input.CustomInputKey;
 import dev.xcolorful.customgun.client.init.registry.ClientInputCategory;
 import dev.xcolorful.customgun.client.input.InputKey;
@@ -18,7 +15,6 @@ import dev.xcolorful.customgun.core.network.message.shooter.C2SMessageShooterZoo
 import dev.xcolorful.customgun.core.util.SendUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import org.lwjgl.glfw.GLFW;
 
 public final class ZoomKey extends InputKey {
 
@@ -38,7 +34,7 @@ public final class ZoomKey extends InputKey {
                 IKeyConflictContext.Type.IN_GAME,
                 IKeyModifier.Type.NONE,
                 ClientInputUtils.KeyType.keyboard(),
-                GLFW.GLFW_KEY_V,
+                ClientInputUtils.KeyCode._KEY_V(),
                 ClientInputCategory.SHOOTER);
     }
 
@@ -67,7 +63,7 @@ public final class ZoomKey extends InputKey {
         this.onZoomKeyInput(event.getAction());
     }
     private void onZoomKeyInput(int action) {
-        if (action != GLFW.GLFW_PRESS) return;
+        if (InputAction.of(action) != InputAction.PRESS) return;
 
         if (!ClientInputUtils.isGameplayFocused()) return; // 不在焦点
 

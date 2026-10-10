@@ -59,6 +59,7 @@ public final class ClientAttachmentIndexInstance extends PojoInstance<Attachment
                     // 把 display 里的 scope/sight 标记同步到模型，否则倍镜不会走模板渲染，ocular 会显示成黑色
                     this.attachmentModel.setEnableScope(this.attachmentDisplayCache.getEnableScope());
                     this.attachmentModel.setEnableSight(this.attachmentDisplayCache.getEnableSight());
+                    this.attachmentModel.setTextShowList(this.attachmentDisplayCache.getModelNodeTextDisplay());
                     this._correctScopeViewIndex(this.attachmentModel); // 向后兼容
                 } else {
                     CustomGun.LOGGER.debug("ClientAttachmentIndexInstance: Failed to create AttachmentModelObject {}", modelLocation);

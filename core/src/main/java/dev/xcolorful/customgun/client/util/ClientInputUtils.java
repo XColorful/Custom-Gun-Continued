@@ -6,7 +6,6 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.player.Input;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
-import org.lwjgl.glfw.GLFW;
 
 public class ClientInputUtils {
 
@@ -120,152 +119,152 @@ public class ClientInputUtils {
         // ----26字母----
 
         public static int _KEY_A() {
-            return GLFW.GLFW_KEY_A; // InputConstants.KEY_A;
+            return InputConstants.KEY_A;
         }
         public static int _KEY_B() {
-            return GLFW.GLFW_KEY_B; // InputConstants.KEY_B;
+            return InputConstants.KEY_B;
         }
         public static int _KEY_C() {
-            return GLFW.GLFW_KEY_C; // InputConstants.KEY_C;
+            return InputConstants.KEY_C;
         }
         public static int _KEY_D() {
-            return GLFW.GLFW_KEY_D; // InputConstants.KEY_D;
+            return InputConstants.KEY_D;
         }
         public static int _KEY_E() {
-            return GLFW.GLFW_KEY_E; // InputConstants.KEY_E;
+            return InputConstants.KEY_E;
         }
         public static int _KEY_F() {
-            return GLFW.GLFW_KEY_F; // InputConstants.KEY_F;
+            return InputConstants.KEY_F;
         }
         public static int _KEY_G() {
-            return GLFW.GLFW_KEY_G; // InputConstants.KEY_G;
+            return InputConstants.KEY_G;
         }
         public static int _KEY_H() {
-            return GLFW.GLFW_KEY_H; // InputConstants.KEY_H;
+            return InputConstants.KEY_H;
         }
         public static int _KEY_I() {
-            return GLFW.GLFW_KEY_I; // InputConstants.KEY_I;
+            return InputConstants.KEY_I;
         }
         public static int _KEY_J() {
-            return GLFW.GLFW_KEY_J; // InputConstants.KEY_J;
+            return InputConstants.KEY_J;
         }
         public static int _KEY_K() {
-            return GLFW.GLFW_KEY_K; // InputConstants.KEY_K;
+            return InputConstants.KEY_K;
         }
         public static int _KEY_L() {
-            return GLFW.GLFW_KEY_L; // InputConstants.KEY_L;
+            return InputConstants.KEY_L;
         }
         public static int _KEY_M() {
-            return GLFW.GLFW_KEY_M; // InputConstants.KEY_M;
+            return InputConstants.KEY_M;
         }
         public static int _KEY_N() {
-            return GLFW.GLFW_KEY_N; // InputConstants.KEY_N;
+            return InputConstants.KEY_N;
         }
         public static int _KEY_O() {
-            return GLFW.GLFW_KEY_O; // InputConstants.KEY_O;
+            return InputConstants.KEY_O;
         }
         public static int _KEY_P() {
-            return GLFW.GLFW_KEY_P; // InputConstants.KEY_P;
+            return InputConstants.KEY_P;
         }
         public static int _KEY_Q() {
-            return GLFW.GLFW_KEY_Q; // InputConstants.KEY_Q;
+            return InputConstants.KEY_Q;
         }
         public static int _KEY_R() {
-            return GLFW.GLFW_KEY_R; // InputConstants.KEY_R;
+            return InputConstants.KEY_R;
         }
         public static int _KEY_S() {
-            return GLFW.GLFW_KEY_S; // InputConstants.KEY_S;
+            return InputConstants.KEY_S;
         }
         public static int _KEY_T() {
-            return GLFW.GLFW_KEY_T; // InputConstants.KEY_T;
+            return InputConstants.KEY_T;
         }
         public static int _KEY_U() {
-            return GLFW.GLFW_KEY_U; // InputConstants.KEY_U;
+            return InputConstants.KEY_U;
         }
         public static int _KEY_V() {
-            return GLFW.GLFW_KEY_V; // InputConstants.KEY_V;
+            return InputConstants.KEY_V;
         }
         public static int _KEY_W() {
-            return GLFW.GLFW_KEY_W; // InputConstants.KEY_W;
+            return InputConstants.KEY_W;
         }
         public static int _KEY_X() {
-            return GLFW.GLFW_KEY_X; // InputConstants.KEY_X;
+            return InputConstants.KEY_X;
         }
         public static int _KEY_Y() {
-            return GLFW.GLFW_KEY_Y; // InputConstants.KEY_Y;
+            return InputConstants.KEY_Y;
         }
         public static int _KEY_Z() {
-            return GLFW.GLFW_KEY_Z; // InputConstants.KEY_Z;
+            return InputConstants.KEY_Z;
         }
 
         // ----大键盘数字----
 
         public static int _KEY_1() {
-            return GLFW.GLFW_KEY_1; // InputConstants.KEY_1;
+            return InputConstants.KEY_1;
         }
         public static int _KEY_2() {
-            return GLFW.GLFW_KEY_2; // InputConstants.KEY_2;
+            return InputConstants.KEY_2;
         }
         public static int _KEY_3() {
-            return GLFW.GLFW_KEY_3; // InputConstants.KEY_3;
+            return InputConstants.KEY_3;
         }
         public static int _KEY_4() {
-            return GLFW.GLFW_KEY_4; // InputConstants.KEY_4;
+            return InputConstants.KEY_4;
         }
         public static int _KEY_5() {
-            return GLFW.GLFW_KEY_5; // InputConstants.KEY_5;
+            return InputConstants.KEY_5;
         }
         public static int _KEY_6() {
-            return GLFW.GLFW_KEY_6; // InputConstants.KEY_6;
+            return InputConstants.KEY_6;
         }
         public static int _KEY_7() {
-            return GLFW.GLFW_KEY_7; // InputConstants.KEY_7;
+            return InputConstants.KEY_7;
         }
         public static int _KEY_8() {
-            return GLFW.GLFW_KEY_8; // InputConstants.KEY_8;
+            return InputConstants.KEY_8;
         }
         public static int _KEY_9() {
-            return GLFW.GLFW_KEY_9; // InputConstants.KEY_9;
+            return InputConstants.KEY_9;
         }
         public static int _KEY_0() {
-            return GLFW.GLFW_KEY_0; // InputConstants.KEY_0;
+            return InputConstants.KEY_0;
         }
 
         // ----特殊按键----
 
         public static int _KEY_LEFT_ALT() {
-            return GLFW.GLFW_KEY_LEFT_ALT; // InputConstants.KEY_LALT;
+            return InputConstants.KEY_LALT;
         }
         public static int _KEY_RIGHT_ALT() {
-            return GLFW.GLFW_KEY_RIGHT_ALT; // InputConstants.KEY_RALT;
+            return InputConstants.KEY_RALT;
         }
         public static int _KEY_LEFT_CONTROL() {
-            return GLFW.GLFW_KEY_LEFT_CONTROL; // InputConstants.KEY_LCONTROL;
+            return InputConstants.KEY_LCONTROL;
         }
         public static int _KEY_RIGHT_CONTROL() {
-            return GLFW.GLFW_KEY_RIGHT_CONTROL; // InputConstants.KEY_RCONTROL;
+            return InputConstants.KEY_RCONTROL;
         }
         public static int _KEY_LEFT_SHIFT() {
-            return GLFW.GLFW_KEY_LEFT_SHIFT; // InputConstants.KEY_LSHIFT;
+            return InputConstants.KEY_LSHIFT;
         }
         public static int _KEY_RIGHT_SHIFT() {
-            return GLFW.GLFW_KEY_RIGHT_SHIFT; // InputConstants.KEY_RSHIFT;
+            return InputConstants.KEY_RSHIFT;
         }
         public static int _KEY_TAB() {
-            return GLFW.GLFW_KEY_TAB; // InputConstants.KEY_TAB;
+            return InputConstants.KEY_TAB;
         }
 
         // ----鼠标----
         // 默认不使用侧键
 
         public static int _MOUSE_BUTTON_LEFT() {
-            return GLFW.GLFW_MOUSE_BUTTON_LEFT; // InputConstants.MOUSE_BUTTON_LEFT;
+            return InputConstants.MOUSE_BUTTON_LEFT;
         }
         public static int _MOUSE_BUTTON_MIDDLE() {
-            return GLFW.GLFW_MOUSE_BUTTON_MIDDLE; // InputConstants.MOUSE_BUTTON_MIDDLE;
+            return InputConstants.MOUSE_BUTTON_MIDDLE;
         }
         public static int _MOUSE_BUTTON_RIGHT() {
-            return GLFW.GLFW_MOUSE_BUTTON_RIGHT; // InputConstants.MOUSE_BUTTON_RIGHT;
+            return InputConstants.MOUSE_BUTTON_RIGHT;
         }
 
         // ----小键盘----
@@ -275,40 +274,40 @@ public class ClientInputUtils {
         // F12以上的默认没有
 
         public static int _KEY_F1() {
-            return GLFW.GLFW_KEY_F1; // InputConstants.KEY_F1;
+            return InputConstants.KEY_F1;
         }
         public static int _KEY_F2() {
-            return GLFW.GLFW_KEY_F2; // InputConstants.KEY_F2;
+            return InputConstants.KEY_F2;
         }
         public static int _KEY_F3() {
-            return GLFW.GLFW_KEY_F3; // InputConstants.KEY_F3;
+            return InputConstants.KEY_F3;
         }
         public static int _KEY_F4() {
-            return GLFW.GLFW_KEY_F4; // InputConstants.KEY_F4;
+            return InputConstants.KEY_F4;
         }
         public static int _KEY_F5() {
-            return GLFW.GLFW_KEY_F5; // InputConstants.KEY_F5;
+            return InputConstants.KEY_F5;
         }
         public static int _KEY_F6() {
-            return GLFW.GLFW_KEY_F6; // InputConstants.KEY_F6;
+            return InputConstants.KEY_F6;
         }
         public static int _KEY_F7() {
-            return GLFW.GLFW_KEY_F7; // InputConstants.KEY_F7;
+            return InputConstants.KEY_F7;
         }
         public static int _KEY_F8() {
-            return GLFW.GLFW_KEY_F8; // InputConstants.KEY_F8;
+            return InputConstants.KEY_F8;
         }
         public static int _KEY_F9() {
-            return GLFW.GLFW_KEY_F9; // InputConstants.KEY_F9;
+            return InputConstants.KEY_F9;
         }
         public static int _KEY_F10() {
-            return GLFW.GLFW_KEY_F10; // InputConstants.KEY_F10;
+            return InputConstants.KEY_F10;
         }
         public static int _KEY_F11() {
-            return GLFW.GLFW_KEY_F11; // InputConstants.KEY_F11;
+            return InputConstants.KEY_F11;
         }
         public static int _KEY_F12() {
-            return GLFW.GLFW_KEY_F12; // InputConstants.KEY_F12;
+            return InputConstants.KEY_F12;
         }
     }
 
@@ -319,11 +318,11 @@ public class ClientInputUtils {
     @ApiStatus.Internal
     public static class KeyAction {
 
-        public static final int _PRESS = GLFW.GLFW_PRESS; // InputConstants.PRESS;
+        public static final int _PRESS = InputConstants.PRESS;
 
-        public static final int _RELEASE = GLFW.GLFW_RELEASE; // InputConstants.RELEASE;
+        public static final int _RELEASE = InputConstants.RELEASE;
 
-        public static final int _REPEAT = GLFW.GLFW_REPEAT; // InputConstants.REPEAT;
+        public static final int _REPEAT = InputConstants.REPEAT;
     }
 
     // --------Deprecated--------

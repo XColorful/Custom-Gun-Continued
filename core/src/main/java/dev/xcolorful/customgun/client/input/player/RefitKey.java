@@ -4,10 +4,7 @@ import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.api.event.IInputKeyEvent;
 import dev.xcolorful.customgun.client.api.event.IMouseButtonEvent;
 import dev.xcolorful.customgun.client.api.gui.screen.refit.IGunRefitScreen;
-import dev.xcolorful.customgun.client.api.input.IInputKeyManager;
-import dev.xcolorful.customgun.client.api.input.IKeyConflictContext;
-import dev.xcolorful.customgun.client.api.input.IKeyMapping;
-import dev.xcolorful.customgun.client.api.input.IKeyModifier;
+import dev.xcolorful.customgun.client.api.input.*;
 import dev.xcolorful.customgun.client.api.minecraft.input.CustomInputKey;
 import dev.xcolorful.customgun.client.gui.screen.GunRefitScreen;
 import dev.xcolorful.customgun.client.init.registry.ClientInputCategory;
@@ -20,7 +17,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
-import org.lwjgl.glfw.GLFW;
 
 public final class RefitKey extends InputKey {
 
@@ -40,7 +36,7 @@ public final class RefitKey extends InputKey {
                 IKeyConflictContext.Type.IN_GAME,
                 IKeyModifier.Type.NONE,
                 ClientInputUtils.KeyType.keyboard(),
-                GLFW.GLFW_KEY_Z,
+                ClientInputUtils.KeyCode._KEY_Z(),
                 ClientInputCategory.PLAYER);
     }
 
@@ -69,7 +65,7 @@ public final class RefitKey extends InputKey {
         this.onRefitKeyInput(event.getAction());
     }
     private void onRefitKeyInput(int action) {
-        if (action != GLFW.GLFW_PRESS) return;
+        if (InputAction.of(action) != InputAction.PRESS) return;
 
         Minecraft mc = Minecraft.getInstance();
         LocalPlayer player = mc.player;

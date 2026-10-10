@@ -5,10 +5,7 @@ import dev.xcolorful.customgun.client.api.entity.shooter.ILocalShooterGetter;
 import dev.xcolorful.customgun.client.api.event.IClientPlayerTickEvent;
 import dev.xcolorful.customgun.client.api.event.IInputKeyEvent;
 import dev.xcolorful.customgun.client.api.event.IMouseButtonEvent;
-import dev.xcolorful.customgun.client.api.input.IInputKeyManager;
-import dev.xcolorful.customgun.client.api.input.IKeyConflictContext;
-import dev.xcolorful.customgun.client.api.input.IKeyMapping;
-import dev.xcolorful.customgun.client.api.input.IKeyModifier;
+import dev.xcolorful.customgun.client.api.input.*;
 import dev.xcolorful.customgun.client.api.minecraft.input.CustomInputKey;
 import dev.xcolorful.customgun.client.config.KeyConfig;
 import dev.xcolorful.customgun.client.init.registry.ClientInputCategory;
@@ -24,7 +21,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
-import org.lwjgl.glfw.GLFW;
 
 public final class ReloadKey extends InputKey implements IEventHandler {
 
@@ -44,7 +40,7 @@ public final class ReloadKey extends InputKey implements IEventHandler {
                 IKeyConflictContext.Type.IN_GAME,
                 IKeyModifier.Type.NONE,
                 ClientInputUtils.KeyType.keyboard(),
-                GLFW.GLFW_KEY_R,
+                ClientInputUtils.KeyCode._KEY_R(),
                 ClientInputCategory.SHOOTER);
     }
 
@@ -88,7 +84,7 @@ public final class ReloadKey extends InputKey implements IEventHandler {
         this.onReloadKeyInput(event.getAction());
     }
     private void onReloadKeyInput(int action) {
-        if (action != GLFW.GLFW_PRESS) return;
+        if (InputAction.of(action) != InputAction.PRESS) return;
 
         if (!ClientInputUtils.isGameplayFocused()) return; // 不在焦点
 

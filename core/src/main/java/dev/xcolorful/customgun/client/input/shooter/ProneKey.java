@@ -6,10 +6,7 @@ import dev.xcolorful.customgun.client.api.entity.shooter.ILocalShooterGetter;
 import dev.xcolorful.customgun.client.api.event.IInputKeyEvent;
 import dev.xcolorful.customgun.client.api.event.IMouseButtonEvent;
 import dev.xcolorful.customgun.client.api.event.IPrepareClientTickEvent;
-import dev.xcolorful.customgun.client.api.input.IInputKeyManager;
-import dev.xcolorful.customgun.client.api.input.IKeyConflictContext;
-import dev.xcolorful.customgun.client.api.input.IKeyMapping;
-import dev.xcolorful.customgun.client.api.input.IKeyModifier;
+import dev.xcolorful.customgun.client.api.input.*;
 import dev.xcolorful.customgun.client.api.minecraft.input.CustomInputKey;
 import dev.xcolorful.customgun.client.config.KeyConfig;
 import dev.xcolorful.customgun.client.init.registry.ClientInputCategory;
@@ -18,7 +15,6 @@ import dev.xcolorful.customgun.client.util.ClientInputUtils;
 import dev.xcolorful.customgun.core.api.event.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import org.lwjgl.glfw.GLFW;
 
 public final class ProneKey extends InputKey implements IEventHandler {
 
@@ -38,7 +34,7 @@ public final class ProneKey extends InputKey implements IEventHandler {
                 IKeyConflictContext.Type.IN_GAME,
                 IKeyModifier.Type.NONE,
                 ClientInputUtils.KeyType.keyboard(),
-                GLFW.GLFW_KEY_C,
+                ClientInputUtils.KeyCode._KEY_C(),
                 ClientInputCategory.SHOOTER);
     }
 
@@ -91,11 +87,11 @@ public final class ProneKey extends InputKey implements IEventHandler {
         ILocalShooter localShooter = ILocalShooterGetter.fromLocalPlayer(player);
         boolean holdToProne = KeyConfig.HOLD_TO_PRONE.get();
 
-        switch (action) {
-            case GLFW.GLFW_PRESS -> {
+        switch (InputAction.of(action)) {
+            case PRESS -> {
                 localShooter.cgc$prone(holdToProne || !localShooter.cgc$isProne());
             }
-            case GLFW.GLFW_RELEASE -> {
+            case RELEASE -> {
                 if (holdToProne) localShooter.cgc$prone(false);
             }
         }

@@ -1,5 +1,14 @@
 ### 26.10
 
+#### 26.10.25
+- Fixed gun model not rendering text
+- Add built-in placeholder key `gun_ammo`, `local_shooter_name`
+- Add legacy placeholder key `ammo_count`, `player_name`
+
+26.3neoforge:
+- Update to NeoForge 26.3.0.58-beta
+- Fixed default input key binding issue
+
 #### 26.10.24
 - Merge mod tags from data packs as vanilla does
 - Fix potential RCE vulnerability in attachment data #65

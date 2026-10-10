@@ -5,10 +5,7 @@ import dev.xcolorful.customgun.client.CustomGunClient;
 import dev.xcolorful.customgun.client.api.event.IInputKeyEvent;
 import dev.xcolorful.customgun.client.api.event.IInteractionMappingEvent;
 import dev.xcolorful.customgun.client.api.event.IMouseButtonEvent;
-import dev.xcolorful.customgun.client.api.input.IInputKeyManager;
-import dev.xcolorful.customgun.client.api.input.IKeyConflictContext;
-import dev.xcolorful.customgun.client.api.input.IKeyMapping;
-import dev.xcolorful.customgun.client.api.input.IKeyModifier;
+import dev.xcolorful.customgun.client.api.input.*;
 import dev.xcolorful.customgun.client.api.minecraft.input.CustomInputKey;
 import dev.xcolorful.customgun.client.config.sync.InteractFilterData;
 import dev.xcolorful.customgun.client.init.registry.ClientInputCategory;
@@ -24,7 +21,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
-import org.lwjgl.glfw.GLFW;
 
 public final class InteractKey extends InputKey implements IEventHandler {
 
@@ -44,7 +40,7 @@ public final class InteractKey extends InputKey implements IEventHandler {
                 IKeyConflictContext.Type.IN_GAME,
                 IKeyModifier.Type.NONE,
                 ClientInputUtils.KeyType.keyboard(),
-                GLFW.GLFW_KEY_O,
+                ClientInputUtils.KeyCode._KEY_O(),
                 ClientInputCategory.PLAYER);
     }
 
@@ -89,7 +85,7 @@ public final class InteractKey extends InputKey implements IEventHandler {
         this.onInteractKeyInput(event.getAction());
     }
     private void onInteractKeyInput(int action) {
-        if (action != GLFW.GLFW_PRESS) return;
+        if (InputAction.of(action) != InputAction.PRESS) return;
 
         if (!ClientInputUtils.isGameplayFocused()) return; // 不在焦点
 

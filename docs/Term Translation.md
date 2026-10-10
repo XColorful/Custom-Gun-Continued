@@ -132,3 +132,12 @@
  * @see dev.xcolorful.customgun.core.api.projectile.process
  */
 ```
+
+### Text
+
+- placeholder key：占位符键
+```java
+/**
+ * @see dev.xcolorful.customgun.core.api.text.placeholder.IPlaceholderParser#getPlaceholderKey}
+ */
+```

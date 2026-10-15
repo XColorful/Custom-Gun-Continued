@@ -82,7 +82,7 @@ public class LivingShooterSyncHandler implements IEventHandler {
     private void onPlayerClone(IPlayerCloneEvent event) {
         Player original = event.getOriginalPlayer();
 //        try {
-        original.reviveCaps();
+//        original.reviveCaps();
 //        } catch (NoSuchMethodError ignored) {} // neoforge1.20.4+没这方法，省一个forge侧mixin
 
         SyncDataHolder oldHolder = SyncedEntityData.instance().getSyncDataHolder(original);
@@ -90,7 +90,7 @@ public class LivingShooterSyncHandler implements IEventHandler {
             return;
         }
 //        try {
-        original.invalidateCaps();
+//        original.invalidateCaps();
 //        } catch (NoSuchMethodError ignored) {} // neoforge1.20.4+没这方法，省一个forge侧mixin
 
         Player player = event.getEntity();

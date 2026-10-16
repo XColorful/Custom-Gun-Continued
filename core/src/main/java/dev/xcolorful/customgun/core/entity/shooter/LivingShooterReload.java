@@ -51,7 +51,7 @@ public final class LivingShooterReload extends LivingShooterAspect {
                 // 射击后冷却50ms (比客户端快一点)
                 currentTimeMillis - this.shooterProperty.lastShootTimestamp < RELOAD_COOLDOWN_MS
                 // 倒地禁枪
-                || PlayerReviveCompat.isBleeding(this.livingShooter) && PlayerReviveCompat.shouldDisableShoot()
+                || PlayerReviveCompat.isBleeding(this.livingShooter) && PlayerReviveCompat.shouldDisableReload()
         ) return;
 
         { // 3. IGunRuntime操作结果 -> Shooter状态

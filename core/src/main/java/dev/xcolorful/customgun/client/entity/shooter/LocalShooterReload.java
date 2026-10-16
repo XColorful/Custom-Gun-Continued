@@ -49,7 +49,7 @@ public final class LocalShooterReload extends LocalShooterAspect {
                 // 射击后冷却100ms
                 System.currentTimeMillis() - this.localShooterProperty.clientShootTimestamp < RELOAD_COOLDOWN_MS
                 // 倒地禁枪
-                || PlayerReviveClientCompat.isBleeding(this.localShooter) && PlayerReviveClientCompat.shouldDisableShoot()
+                || PlayerReviveClientCompat.isBleeding(this.localShooter) && PlayerReviveClientCompat.shouldDisableReload()
         ) return;
 
         { // 3. IGunRuntime操作结果 -> Shooter状态

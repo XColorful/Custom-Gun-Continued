@@ -32,6 +32,9 @@
 ### 模组兼容
 > _./core/compat_
 
+[模组兼容框架](/docs/wiki/developer/Mod%20compat%20framework.md)
+- playerrevive：玩家救援
+
 ### 配置
 > _./core/config_
 
@@ -265,6 +268,9 @@ Module division based on the `dev.xcolorful.customgun.core` top-level package
 
 ### Mod Compat
 > _./core/compat_
+
+[Mod compat framework](/docs/wiki/developer/Mod%20compat%20framework.md#English)
+- playerrevive: PlayerRevive
 
 ### Config
 > _./core/config_

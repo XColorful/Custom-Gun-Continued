@@ -15,6 +15,7 @@ import dev.xcolorful.customgun.client.api.entity.LocalShooterProperty;
 import dev.xcolorful.customgun.client.api.entity.shooter.ILocalShooterGetter;
 import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
 import dev.xcolorful.customgun.client.api.sound.gun.GunSoundType;
+import dev.xcolorful.customgun.client.compat.playerrevive.PlayerReviveClientCompat;
 import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
 import dev.xcolorful.customgun.client.sound.SoundPlayManager;
 import dev.xcolorful.customgun.core.api.common.McLogicalSide;
@@ -238,6 +239,8 @@ public final class LocalShooterShoot extends LocalShooterAspect {
                 || iLivingShooter.cgc$getSynIsBolting()
                 // 正在疾跑
                 || iLivingShooter.cgc$getSynSprintTime() > 0
+                // 倒地禁枪
+                || PlayerReviveClientCompat.isBleeding(this.localShooter) && PlayerReviveClientCompat.shouldDisableShoot()
         ) return true;
 
         return false;

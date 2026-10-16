@@ -4,6 +4,7 @@ import dev.xcolorful.customgun.core.api.entity.ShooterProperty;
 import dev.xcolorful.customgun.core.api.entity.shooter.ILivingShooterGetter;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
+import dev.xcolorful.customgun.core.compat.playerrevive.PlayerReviveCompat;
 import dev.xcolorful.customgun.core.entity.shooter.modifier.ShooterGunModifierManager;
 import dev.xcolorful.customgun.core.network.message.shooter.S2CMessageShooterSwitchFireMode;
 import dev.xcolorful.customgun.core.util.SendUtils;
@@ -24,8 +25,9 @@ public final class LivingShooterSwitchFireMode extends LivingShooterAspect {
         @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return;
 
-        if ( // 2.2 检查状态锁
-                false
+        if ( // 2.2 检查状态
+                // 倒地禁枪
+                PlayerReviveCompat.isBleeding(this.livingShooter) && PlayerReviveCompat.shouldDisableSwitchFireMode()
         ) return;
 
         // 3. IGunRuntime操作结果 -> Shooter状态

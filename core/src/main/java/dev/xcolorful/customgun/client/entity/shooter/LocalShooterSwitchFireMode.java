@@ -6,6 +6,7 @@ import dev.xcolorful.customgun.client.api.animation.statemachine.GunAnimationSta
 import dev.xcolorful.customgun.client.api.entity.LocalShooterProperty;
 import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
 import dev.xcolorful.customgun.client.api.sound.gun.GunSoundType;
+import dev.xcolorful.customgun.client.compat.playerrevive.PlayerReviveClientCompat;
 import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
 import dev.xcolorful.customgun.client.sound.SoundPlayManager;
 import dev.xcolorful.customgun.core.api.entity.shooter.ILivingShooterGetter;
@@ -34,6 +35,10 @@ public final class LocalShooterSwitchFireMode extends LocalShooterAspect {
 
         if ( // 2.1 检查状态锁
                 this.localShooterProperty.clientStateLock(SWITCH_FIRE_MODE_OPERATION)
+        ) return;
+        else if ( // 2.2 检查状态
+                // 倒地禁枪
+                PlayerReviveClientCompat.isBleeding(this.localShooter) && PlayerReviveClientCompat.shouldDisableSwitchFireMode()
         ) return;
 
         // 3. IGunRuntime操作结果 -> Shooter状态

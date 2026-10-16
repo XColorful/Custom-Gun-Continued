@@ -30,7 +30,7 @@
 
 [模组兼容框架](/docs/wiki/developer/Mod%20compat%20framework.md)
 - ar：加速渲染
-- oculus：Oculus
+- iris：Iris Shaders / Oculus
 - optifine：Optifine
 - playeranimator：Player Animator
 - shouldersurfing：越肩视角

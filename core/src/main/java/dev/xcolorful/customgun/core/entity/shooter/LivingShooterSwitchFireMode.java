@@ -26,7 +26,8 @@ public final class LivingShooterSwitchFireMode extends LivingShooterAspect {
         if (iGun == null) return;
 
         if ( // 2.2 检查状态
-                false
+                // 倒地禁枪
+                PlayerReviveCompat.isBleeding(this.livingShooter) && PlayerReviveCompat.shouldDisableShoot()
         ) return;
 
         // 3. IGunRuntime操作结果 -> Shooter状态

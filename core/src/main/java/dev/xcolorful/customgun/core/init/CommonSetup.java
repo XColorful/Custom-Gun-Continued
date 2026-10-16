@@ -1,5 +1,6 @@
 package dev.xcolorful.customgun.core.init;
 
+import dev.xcolorful.customgun.core.compat.playerrevive.PlayerReviveCompat;
 import dev.xcolorful.customgun.core.entity.LivingShooterSyncKey;
 import dev.xcolorful.customgun.core.network.NetworkHandler;
 import dev.xcolorful.customgun.core.text.placeholder.gun.GunAmmoParser;
@@ -23,6 +24,7 @@ public class CommonSetup {
      */
     private void _onBuiltinAddonClientSetup() {
         GunAmmoParser.init();
+        PlayerReviveCompat.init();
     }
 
     private boolean LOAD_COMPLETE = false;

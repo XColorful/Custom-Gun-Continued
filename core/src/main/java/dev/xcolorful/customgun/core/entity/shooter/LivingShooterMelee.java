@@ -16,6 +16,7 @@ import dev.xcolorful.customgun.core.api.item.attachment.AttachmentCategory;
 import dev.xcolorful.customgun.core.api.item.gun.GunDataAccessor;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
 import dev.xcolorful.customgun.core.api.item.gun.MeleeType;
+import dev.xcolorful.customgun.core.compat.playerrevive.PlayerReviveCompat;
 import dev.xcolorful.customgun.core.network.message.shooter.S2CMessageShooterMelee;
 import dev.xcolorful.customgun.core.resource.data.data.attachment._MeleeModifierData;
 import dev.xcolorful.customgun.core.resource.data.data.gun.melee._DefaultMeleeData;
@@ -51,6 +52,8 @@ public final class LivingShooterMelee extends LivingShooterAspect {
         if ( // 2.2 检查状态
                 // 近战冷却
                 _getMeleeCooldownMs(currentTimeMillis, iGun, gunItem) > 0
+                // 倒地禁枪
+                || PlayerReviveCompat.isBleeding(this.livingShooter) && PlayerReviveCompat.shouldDisableMelee()
         ) return;
 
         @Nullable IGunAttackRuntime.MeleePreparation meleePreparation;

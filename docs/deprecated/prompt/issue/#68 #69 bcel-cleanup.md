@@ -165,3 +165,59 @@ A 方案完成并已验证。
 - **C（TaCZ 那行 `//LuaJC.install`）**：结论是可以直接删（包路径已迁移到 `org.luaj.vm2.luajc`，按原文 import 根本编译不过），但按你的规则我没动 TACZ 仓库。你已把 TACZ 本地更到 `b482eff8`，`AttachmentScriptManager` 现在本地可见，我之前提到的那个版本差异作废。
 
 按 CLAUDE.md 规则，改动已就位、未提交，等你 review。
+
+# 
+---
+
+```
+看下最近的#69合并怎么在neoforge-compat/build.gradle同步修改?
+```
+
+# 
+
+让我先看看 #69 那个提交改了什么，以及当前 neoforge-compat/build.gradle 的状态。
+
+#69 提交里改了 core、forge-compat、gradle.properties，但没改 neoforge-compat——工作区里那段注释看起来是手动补的。让我看看提交的实际改动内容。
+
+提交里还带了个设计文档，先读它看设计意图。
+
+现在对比清楚了：forge-compat 侧 #69 加了两处改动，而 neoforge-compat 工作区只注释掉了 jarJar 块，缺了 luaj-jse 上的 exclude。先验证 neoforge 侧 bcel 是否仍会被传递进来。
+
+JDK 17 可用。运行依赖报告看 bcel 是否仍在 jarJar 配置里。
+
+jarJar 配置里已经不含 bcel 了。但依赖报告未必展示传递依赖，我用真实产物验证。
+
+那个 jar 是 14:29 构建的，含 bcel。需要确认它是改动前还是改动后构建的。
+
+jar 是改动前（14:29）构建的，所以含 bcel 不能说明问题。先确认 luaj-jse 的元数据里 bcel 是不是传递依赖。
+
+forge 侧的 `commons-lang3` exclude 是 #69 之前就有的，说明 ForgeGradle 的 jarJar 会拉传递依赖；但 neoforge 侧没写任何 exclude，产物里也没有 commons-lang3——所以这边 jarJar 看起来不传递。用真实构建定论。
+
+离线模式缺 Minecraft 资源，改为联网构建（耗时较长）。
+
+网络不可用，无法完整构建。改用 init script 直接检查 jarJar 配置的传递性并解析文件（离线可行）。
+
+决定性结论：NeoGradle 的 `jarJar` 配置是**非传递的**（`isTransitive=false`），解析结果里根本没有 bcel。再确认全仓没有其它活引用。
+
+## 结论：neoforge 这边只需要注释掉那三行，**不需要**像 forge 那样加 `exclude`
+
+`#69`（7b2a8c4dc）只动了 `core/build.gradle`、`forge-compat/build.gradle`、`gradle.properties`，没碰 neoforge-compat。而工作区里 [neoforge-compat/build.gradle:86-88](neoforge-compat/build.gradle:86) 已经被注释掉了（未提交，时间戳 23:33，晚于那条提交）。
+
+我验证了这个同步是**完整且正确**的，差异不是遗漏：
+
+| 模块 | 配置 | 传递性 | 移除 bcel 的做法 |
+|---|---|---|---|
+| forge-compat | `minecraftLibrary(jarJar(...))` | **传递** | 注释块 **+** 在 luaj-jse 上 `exclude org.apache.bcel:bcel` |
+| neoforge-compat | `jarJar(...)` | **非传递** | 只注释块 |
+
+证据：用 init script 打印出 `configurations.jarJar.isTransitive() == false`，且解析结果只有 `luaj-core` / `luaj-jse` / `commons-math3`，没有 bcel。这也解释了为什么 forge 侧早就写着 `exclude group: 'org.apache.commons', module: 'commons-lang3'` 而这种 exclude 在 neoforge 侧从未需要——ForgeGradle 那个包装会拉传递依赖，NeoGradle 的裸 `jarJar` 不会。
+
+`gradle.properties:57-58` 和 `core/build.gradle:23` 是根/共享文件，`#69` 的注释已经同时覆盖两个 loader，无需再改。
+
+## 未完成项（按 Rule 10 明确说明）
+
+**产物验证没做**。`neoforge-compat/build/libs/customgun-26.10.26-neoforge-1.20.2.jar` 是 14:29 构建的（早于改动），里面仍有 `META-INF/jarjar/bcel-6.6.1.jar`。当前机器**没有网络** —— `:neoforge-compat:jarJar` 联网跑挂在 ForgeGradle 插件解析上，`--offline` 跑挂在 Minecraft 资源下载上。所以「bcel 从产物中消失」这一点尚未实测，等有网时补跑一次 `:neoforge-compat:jarJar` 即可。
+
+我没有提交任何改动，等你 review。
+
+（另：要不要在注释块上补一句跟 forge 侧对称的 `// bcel 仅 LuaJC 使用，CGC 未启用 LuaJC`？目前那三行是裸注释，你决定。）

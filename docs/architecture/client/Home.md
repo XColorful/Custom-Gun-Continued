@@ -220,7 +220,7 @@ Module division based on the `dev.xcolorful.customgun.client` top-level package
 
 [Mod compat framework](/docs/wiki/developer/Mod%20compat%20framework.md#English)
 - ar: Accelerated Rendering
-- oculus: Oculus
+- iris：Iris Shaders / Oculus
 - optifine: Optifine
 - playeranimator: Player Animator
 - shouldersurfing: Shoulder Surfing Reloaded

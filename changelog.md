@@ -1,5 +1,16 @@
 ### 26.10
 
+#### 26.10.26
+
+Add built-in PlayerRevive compatibility:
+- Disable shoot, melee, reload, switch fire mode while bleeding
+
+1.20.4neoforge:
+- Fixed crash when player respawns
+
+26.3neoforge:
+- Update to NeoForge 26.3.0.83
+
 #### 26.10.25
 - Fixed gun model not rendering text
 - Add built-in placeholder key `gun_ammo`, `local_shooter_name`

@@ -97,12 +97,14 @@ dependencies {
     }
     minecraftLibrary(jarJar("${luaj_figuramc_jse}")) {
         exclude group: 'org.apache.commons', module: 'commons-lang3'
+        // bcel 仅 LuaJC 使用，CGC 未启用 LuaJC
+        exclude group: 'org.apache.bcel', module: 'bcel'
         jarJar.ranged(it, "[${luaj_figuramc_version},)")
     }
-    minecraftLibrary(jarJar("${luaj_bcel}")) {
-        exclude group: 'org.apache.commons', module: 'commons-lang3'
-        jarJar.ranged(it, "[${luaj_bcel_version},)")
-    }
+//    minecraftLibrary(jarJar("${luaj_bcel}")) {
+//        exclude group: 'org.apache.commons', module: 'commons-lang3'
+//        jarJar.ranged(it, "[${luaj_bcel_version},)")
+//    }
 
     // Apache Commons Math3
     minecraftLibrary(jarJar("${apache_commons_math3}")) {

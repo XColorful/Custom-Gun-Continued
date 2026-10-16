@@ -6,6 +6,7 @@ import dev.xcolorful.customgun.client.api.animation.statemachine.GunAnimationSta
 import dev.xcolorful.customgun.client.api.entity.LocalShooterProperty;
 import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
 import dev.xcolorful.customgun.client.api.sound.gun.GunSoundType;
+import dev.xcolorful.customgun.client.compat.playerrevive.PlayerReviveClientCompat;
 import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
 import dev.xcolorful.customgun.client.sound.SoundPlayManager;
 import dev.xcolorful.customgun.core.api.entity.ILivingShooter;
@@ -47,6 +48,8 @@ public final class LocalShooterReload extends LocalShooterAspect {
         else if ( // 2.2 检查状态
                 // 射击后冷却100ms
                 System.currentTimeMillis() - this.localShooterProperty.clientShootTimestamp < RELOAD_COOLDOWN_MS
+                // 倒地禁枪
+                || PlayerReviveClientCompat.isBleeding(this.localShooter) && PlayerReviveClientCompat.shouldDisableReload()
         ) return;
 
         { // 3. IGunRuntime操作结果 -> Shooter状态

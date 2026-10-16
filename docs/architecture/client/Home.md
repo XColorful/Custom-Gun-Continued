@@ -33,6 +33,7 @@
 - iris：Iris Shaders / Oculus
 - optifine：Optifine
 - playeranimator：Player Animator
+- playerrevive：玩家救援
 - shouldersurfing：越肩视角
 
 ### 配置
@@ -223,6 +224,7 @@ Module division based on the `dev.xcolorful.customgun.client` top-level package
 - iris：Iris Shaders / Oculus
 - optifine: Optifine
 - playeranimator: Player Animator
+- playerrevive: PlayerRevive
 - shouldersurfing: Shoulder Surfing Reloaded
 
 ### Config

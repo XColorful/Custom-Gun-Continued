@@ -20,6 +20,7 @@ import dev.xcolorful.customgun.core.api.item.gun.FireModeType;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
 import dev.xcolorful.customgun.core.api.item.gun.modifier.IRpmModifier;
 import dev.xcolorful.customgun.core.api.resource.ResourceApi;
+import dev.xcolorful.customgun.core.compat.playerrevive.PlayerReviveCompat;
 import dev.xcolorful.customgun.core.config.SyncConfig;
 import dev.xcolorful.customgun.core.network.message.shooter.S2CMessageShooterBaseTimestamp;
 import dev.xcolorful.customgun.core.network.message.shooter.S2CMessageShooterShoot;
@@ -133,6 +134,8 @@ public final class LivingShooterShoot extends LivingShooterAspect {
                 || this.shooterProperty.isBolting
                 // 正在疾跑
                 || this.shooterProperty.sprintTimeS > 0
+                // 倒地禁枪
+                || PlayerReviveCompat.isBleeding(this.livingShooter) && PlayerReviveCompat.shouldDisableShoot()
         ) return true;
 
         return false;

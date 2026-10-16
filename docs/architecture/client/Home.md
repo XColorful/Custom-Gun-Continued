@@ -30,9 +30,10 @@
 
 [模组兼容框架](/docs/wiki/developer/Mod%20compat%20framework.md)
 - ar：加速渲染
-- oculus：Oculus
+- iris：Iris Shaders / Oculus
 - optifine：Optifine
 - playeranimator：Player Animator
+- playerrevive：玩家救援
 - shouldersurfing：越肩视角
 
 ### 配置
@@ -220,9 +221,10 @@ Module division based on the `dev.xcolorful.customgun.client` top-level package
 
 [Mod compat framework](/docs/wiki/developer/Mod%20compat%20framework.md#English)
 - ar: Accelerated Rendering
-- oculus: Oculus
+- iris：Iris Shaders / Oculus
 - optifine: Optifine
 - playeranimator: Player Animator
+- playerrevive: PlayerRevive
 - shouldersurfing: Shoulder Surfing Reloaded
 
 ### Config

@@ -5,6 +5,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Method;
 import java.util.List;
 
 public class PlayerReviveCompat {
@@ -67,30 +68,54 @@ public class PlayerReviveCompat {
     public static boolean enableBuiltinCompat = false;
 
     // 反射字段
+    private static Method isBleeding;
+    private static Method getBleeding;
+    private static Method revive;
+    private static Method kill;
+    private static Method revivingPlayers;
 
     public static void init() {
         if (!CustomGun.getMcRegistry().isModLoaded(PlayerReviveCompat.MOD_ID)) return;
 
         try {
+            Class<?> playerReviveServerClass = Class.forName("team.creative.playerrevive.server.PlayerReviveServer");
+            Class<?> iBleedingClass = Class.forName("team.creative.playerrevive.api.IBleeding");
+
+            isBleeding = playerReviveServerClass.getMethod("isBleeding", Player.class);
+            getBleeding = playerReviveServerClass.getMethod("getBleeding", Player.class);
+            revive = playerReviveServerClass.getMethod("revive", Player.class);
+            kill = playerReviveServerClass.getMethod("kill", Player.class);
+
+            revivingPlayers = iBleedingClass.getMethod("revivingPlayers");
 
             enableBuiltinCompat = true;
         } catch (ReflectiveOperationException e) {
-            CustomGun.LOGGER.debug("Failed to initialize PlayerRevive client compatibility", e);
+            CustomGun.LOGGER.debug("Failed to initialize PlayerRevive compatibility", e);
         }
     }
 
     private static boolean _isBleeding(LivingEntity livingEntity) {
-        return false;
+        if (!(livingEntity instanceof Player player)) return false;
+        return (boolean) invoke(isBleeding, null, player);
     }
 
     private static void _revive(LivingEntity livingEntity) {
+        if (!(livingEntity instanceof Player player)) return;
+        invoke(revive, null, player);
     }
 
     private static void _kill(LivingEntity livingEntity) {
+        if (!(livingEntity instanceof Player player)) return;
+        invoke(kill, null, player);
     }
 
     private static @Nullable List<Player> _getRevivingPlayers(LivingEntity livingEntity) {
-        return null;
+        if (!(livingEntity instanceof Player player)) return null;
+        Object bleeding = invoke(getBleeding, null, player);
+        if (bleeding == null) return null;
+        @SuppressWarnings("unchecked")
+        List<Player> players = (List<Player>) invoke(revivingPlayers, bleeding);
+        return players;
     }
 
     private static boolean _shouldDisableShoot() {
@@ -104,5 +129,13 @@ public class PlayerReviveCompat {
     }
     private static boolean _shouldDisableMelee() {
         return true;
+    }
+
+    private static Object invoke(Method method, Object target, Object... args) {
+        try {
+            return method.invoke(target, args);
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException("Failed to invoke PlayerRevive API", e);
+        }
     }
 }

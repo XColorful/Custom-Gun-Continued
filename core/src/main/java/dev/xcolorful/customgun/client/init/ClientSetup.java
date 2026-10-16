@@ -1,6 +1,7 @@
 package dev.xcolorful.customgun.client.init;
 
 import dev.xcolorful.customgun.client.animation.shooter.animator.DefaultShooterAnimator;
+import dev.xcolorful.customgun.client.compat.playerrevive.PlayerReviveClientCompat;
 import dev.xcolorful.customgun.client.compat.shouldersurfing.ShoulderSurfingCompat;
 import dev.xcolorful.customgun.client.gui.overlay.crosshair.DefaultCrosshair;
 import dev.xcolorful.customgun.client.gui.overlay.gunhud.DefaultGunHud;
@@ -29,6 +30,7 @@ public class ClientSetup {
         DefaultShooterAnimator.init();
         ShoulderSurfingCompat.init();
         LocalShooterNameParser.init();
+        PlayerReviveClientCompat.init();
     }
 
     @FunctionalInterface

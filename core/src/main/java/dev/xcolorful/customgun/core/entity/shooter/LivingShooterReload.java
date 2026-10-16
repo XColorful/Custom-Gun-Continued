@@ -8,6 +8,7 @@ import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.gun.BoltType;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
 import dev.xcolorful.customgun.core.api.resource.ResourceApi;
+import dev.xcolorful.customgun.core.compat.playerrevive.PlayerReviveCompat;
 import dev.xcolorful.customgun.core.network.message.shooter.S2CMessageShooterReload;
 import dev.xcolorful.customgun.core.resource.data.data.GunData;
 import dev.xcolorful.customgun.core.resource.instance.data.GunIndexInstance;
@@ -49,6 +50,8 @@ public final class LivingShooterReload extends LivingShooterAspect {
         else if ( // 2.2 检查状态
                 // 射击后冷却50ms (比客户端快一点)
                 currentTimeMillis - this.shooterProperty.lastShootTimestamp < RELOAD_COOLDOWN_MS
+                // 倒地禁枪
+                || PlayerReviveCompat.isBleeding(this.livingShooter) && PlayerReviveCompat.shouldDisableReload()
         ) return;
 
         { // 3. IGunRuntime操作结果 -> Shooter状态

@@ -46,6 +46,8 @@ public class ShoulderSurfingCompat {
         if (enableBuiltinCompat) _setYRot(yRot);
     }
 
+    // --------Built-in Compat--------
+
     public static boolean enableBuiltinCompat = false;
 
     // 反射字段
@@ -63,7 +65,7 @@ public class ShoulderSurfingCompat {
     private static Method setYRot;
 
     public static void init() {
-        if (!CustomGun.getMcRegistry().isModLoaded(MOD_ID)) return;
+        if (!CustomGun.getMcRegistry().isModLoaded(ShoulderSurfingCompat.MOD_ID)) return;
 
         try {
             Class<?> shoulderSurfingClass = Class.forName("com.github.exopandora.shouldersurfing.api.client.ShoulderSurfing");

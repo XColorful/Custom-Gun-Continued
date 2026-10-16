@@ -13,6 +13,7 @@ import dev.xcolorful.customgun.client.api.animation.statemachine.GunAnimationSta
 import dev.xcolorful.customgun.client.api.entity.LocalShooterProperty;
 import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
 import dev.xcolorful.customgun.client.api.sound.gun.GunSoundType;
+import dev.xcolorful.customgun.client.compat.playerrevive.PlayerReviveClientCompat;
 import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
 import dev.xcolorful.customgun.client.sound.SoundPlayManager;
 import dev.xcolorful.customgun.core.api.entity.ILivingShooter;
@@ -43,6 +44,10 @@ public final class LocalShooterMelee extends LocalShooterAspect {
 
         if ( // 2.1 检查状态锁
                 this.localShooterProperty.clientStateLock(MELEE_STATE)
+        ) return;
+        else if ( // 2.2 检查状态
+                // 倒地禁枪
+                PlayerReviveClientCompat.isBleeding(this.localShooter) && PlayerReviveClientCompat.shouldDisableMelee()
         ) return;
 
         @Nullable IGunAttackRuntime.MeleePreparation meleePreparation;

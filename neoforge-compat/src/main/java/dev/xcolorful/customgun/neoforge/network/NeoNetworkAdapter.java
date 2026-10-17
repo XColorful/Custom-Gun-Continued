@@ -59,7 +59,7 @@ public class NeoNetworkAdapter implements INetworkAdapter {
         this.CHANNEL.<T>messageBuilder(clazz, id, neoDirection)
                 .encoder((messageInstance, buffer) -> messageInstance.encode(messageInstance, buffer))
                 .decoder(decoder::apply)
-                .consumerMainThread((messageInstance, context) -> {
+                .consumerNetworkThread((messageInstance, context) -> {
                     IMessage.NetworkContext netContext = new IMessage.NetworkContext(
                             context.getNetworkManager(),
                             MessageDirectionHelper.convertDynamic(context.getDirection()),

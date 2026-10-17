@@ -14,7 +14,7 @@ public class C2SMessageShooterReload implements IMessage<C2SMessageShooterReload
     }
 
     @Override
-    public void encode(C2SMessageShooterReload message, FriendlyByteBuf buffer) {
+    public void encode(FriendlyByteBuf buffer) {
     }
 
     public static C2SMessageShooterReload decode(FriendlyByteBuf buffer) {
@@ -22,7 +22,7 @@ public class C2SMessageShooterReload implements IMessage<C2SMessageShooterReload
     }
 
     @Override
-    public void handle(C2SMessageShooterReload message, Consumer<Runnable> handler, NetworkContext context) {
+    public void handle(Consumer<Runnable> handler, NetworkContext context) {
         if (CustomGun.getSideExecutor().getLogicalSide().isServer()) {
             handler.accept(() -> {
                 if (!(context.sender() instanceof ServerPlayer player)) {

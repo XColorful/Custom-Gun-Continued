@@ -14,7 +14,7 @@ public class C2SMessageShooterBolt implements IMessage<C2SMessageShooterBolt> {
     }
 
     @Override
-    public void encode(C2SMessageShooterBolt message, FriendlyByteBuf buffer) {
+    public void encode(FriendlyByteBuf buffer) {
     }
 
     public static C2SMessageShooterBolt decode(FriendlyByteBuf buffer) {
@@ -22,7 +22,7 @@ public class C2SMessageShooterBolt implements IMessage<C2SMessageShooterBolt> {
     }
 
     @Override
-    public void handle(C2SMessageShooterBolt message, Consumer<Runnable> handler, NetworkContext context) {
+    public void handle(Consumer<Runnable> handler, NetworkContext context) {
         if (CustomGun.getSideExecutor().getLogicalSide().isServer()) {
             handler.accept(() -> {
                 if (!(context.sender() instanceof ServerPlayer player)) {

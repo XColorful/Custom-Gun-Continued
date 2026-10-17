@@ -1,7 +1,7 @@
 [English](#English)
 
 # 渲染配置
-> wiki 版本：`26.9.26`.15
+> wiki 版本：`26.9.26`.16
 
 路径：`render`
 - `GunLodRenderDistance`（整数）：远距离模型显示距离，设为0则始终显示
@@ -41,7 +41,7 @@
 	KeepDisplayGunHUD = false
 	ForceDisplayGunHUD = true
 	EnableShooterOperationHUD = true
-	GunDescriptionWidth = 200
+	GunDescriptionWidth = 180
 	AppendResourceLocationInTooltip = true
 	EnableLaserFadeOut = true
 	BulletHoleParticleLife = 400
@@ -50,7 +50,7 @@
 ```
 
 # English
-> wiki version: `26.9.26`.15
+> wiki version: `26.9.26`.16
 
 ## Render Config
 
@@ -92,7 +92,7 @@ Path: `render`
 	KeepDisplayGunHUD = false
 	ForceDisplayGunHUD = true
 	EnableShooterOperationHUD = true
-	GunDescriptionWidth = 200
+	GunDescriptionWidth = 180
 	AppendResourceLocationInTooltip = true
 	EnableLaserFadeOut = true
 	BulletHoleParticleLife = 400

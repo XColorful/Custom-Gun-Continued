@@ -50,8 +50,11 @@ public class BeamRender {
                               ItemDisplayContext transformType,
                               @NotNull List<BedrockPart> path,
                               ItemStack pojoItem) {
-        if (pojoItem == null
-                || (!transformType.firstPerson() && transformType != ItemDisplayContext.THIRD_PERSON_RIGHT_HAND)) return;
+        if (pojoItem == null) return;
+        // 第三人称只有主手会走到这里：副手由 ItemInHandLayerMixin 取消，因此左右手都要放行
+        if (!transformType.firstPerson()
+                && transformType != ItemDisplayContext.THIRD_PERSON_RIGHT_HAND
+                && transformType != ItemDisplayContext.THIRD_PERSON_LEFT_HAND) return;
 
         if (BeamRenderAR.render(poseStack, transformType, path, pojoItem)) return;
 

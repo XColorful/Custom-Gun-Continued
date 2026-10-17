@@ -21,7 +21,8 @@ public record C2SMessageShooterRefit_unload(int gunSlotIndex,
         implements IMessage<C2SMessageShooterRefit_unload> {
 
     @Override
-    public void encode(C2SMessageShooterRefit_unload message, FriendlyByteBuf buffer) {
+    public void encode(FriendlyByteBuf buffer) {
+        var message = this;
         buffer.writeInt(message.gunSlotIndex);
         buffer.writeEnum(message.attachmentCategory);
     }
@@ -31,7 +32,8 @@ public record C2SMessageShooterRefit_unload(int gunSlotIndex,
     }
 
     @Override
-    public void handle(C2SMessageShooterRefit_unload message, Consumer<Runnable> handler, NetworkContext context) {
+    public void handle(Consumer<Runnable> handler, NetworkContext context) {
+        var message = this;
         if (CustomGun.getSideExecutor().getLogicalSide().isServer()) {
             handler.accept(() -> {
                 if (!(context.sender() instanceof ServerPlayer player)) {

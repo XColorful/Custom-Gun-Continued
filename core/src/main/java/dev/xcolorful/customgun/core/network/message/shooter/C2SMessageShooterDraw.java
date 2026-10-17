@@ -16,7 +16,7 @@ public class C2SMessageShooterDraw implements IMessage<C2SMessageShooterDraw> {
     }
 
     @Override
-    public void encode(C2SMessageShooterDraw message, FriendlyByteBuf buffer) {
+    public void encode(FriendlyByteBuf buffer) {
     }
 
     public static C2SMessageShooterDraw decode(FriendlyByteBuf buffer) {
@@ -24,7 +24,7 @@ public class C2SMessageShooterDraw implements IMessage<C2SMessageShooterDraw> {
     }
 
     @Override
-    public void handle(C2SMessageShooterDraw message, Consumer<Runnable> handler, NetworkContext context) {
+    public void handle(Consumer<Runnable> handler, NetworkContext context) {
         if (CustomGun.getSideExecutor().getLogicalSide().isServer()) {
             handler.accept(() -> {
                 if (!(context.sender() instanceof ServerPlayer player)) {

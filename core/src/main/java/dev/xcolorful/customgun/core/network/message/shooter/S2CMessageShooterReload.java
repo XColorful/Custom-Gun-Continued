@@ -14,7 +14,8 @@ public record S2CMessageShooterReload(int shooterId,
         implements IMessage<S2CMessageShooterReload> {
 
     @Override
-    public void encode(S2CMessageShooterReload message, FriendlyByteBuf buffer) {
+    public void encode(FriendlyByteBuf buffer) {
+        var message = this;
         buffer.writeVarInt(message.shooterId);
         NetworkUtils.writeItem(buffer, message.gunItem);
     }
@@ -26,7 +27,8 @@ public record S2CMessageShooterReload(int shooterId,
     }
 
     @Override
-    public void handle(S2CMessageShooterReload message, Consumer<Runnable> handler, NetworkContext context) {
+    public void handle(Consumer<Runnable> handler, NetworkContext context) {
+        var message = this;
         if (CustomGun.getSideExecutor().getLogicalSide().isClient()) {
             handler.accept(() -> _S2CMessageShooterReload.doClientEvent(message));
         }

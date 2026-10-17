@@ -12,7 +12,8 @@ public record C2SMessageShooterAim(boolean isAim)
         implements IMessage<C2SMessageShooterAim> {
 
     @Override
-    public void encode(C2SMessageShooterAim message, FriendlyByteBuf buffer) {
+    public void encode(FriendlyByteBuf buffer) {
+        var message = this;
         buffer.writeBoolean(message.isAim);
     }
 
@@ -21,7 +22,8 @@ public record C2SMessageShooterAim(boolean isAim)
     }
 
     @Override
-    public void handle(C2SMessageShooterAim message, Consumer<Runnable> handler, NetworkContext context) {
+    public void handle(Consumer<Runnable> handler, NetworkContext context) {
+        var message = this;
         if (CustomGun.getSideExecutor().getLogicalSide().isServer()) {
             handler.accept(() -> {
                 if (!(context.sender() instanceof ServerPlayer player)) {

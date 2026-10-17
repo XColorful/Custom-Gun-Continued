@@ -15,7 +15,8 @@ public record S2CMessageUpdateEntityData(int entityId,
         implements IMessage<S2CMessageUpdateEntityData> {
 
     @Override
-    public void encode(S2CMessageUpdateEntityData message, FriendlyByteBuf buffer) {
+    public void encode(FriendlyByteBuf buffer) {
+        var message = this;
         buffer.writeVarInt(message.entityId);
         buffer.writeVarInt(message.entries.size());
         message.entries.forEach(entry -> entry.write(buffer));
@@ -32,7 +33,8 @@ public record S2CMessageUpdateEntityData(int entityId,
     }
 
     @Override
-    public void handle(S2CMessageUpdateEntityData message, Consumer<Runnable> handler, NetworkContext context) {
+    public void handle(Consumer<Runnable> handler, NetworkContext context) {
+        var message = this;
         if (CustomGun.getSideExecutor().getLogicalSide().isClient()) {
             handler.accept(() -> _S2CMessageUpdateEntityData.onHandle(message));
         }

@@ -24,7 +24,8 @@ public record C2SMessageShooterRefit_install(int attachmentSlotIndex,
         implements IMessage<C2SMessageShooterRefit_install> {
 
     @Override
-    public void encode(C2SMessageShooterRefit_install message, FriendlyByteBuf buffer) {
+    public void encode(FriendlyByteBuf buffer) {
+        var message = this;
         buffer.writeInt(message.attachmentSlotIndex);
         buffer.writeInt(message.gunSlotIndex);
         buffer.writeEnum(message.attachmentCategory);
@@ -35,7 +36,8 @@ public record C2SMessageShooterRefit_install(int attachmentSlotIndex,
     }
 
     @Override
-    public void handle(C2SMessageShooterRefit_install message, Consumer<Runnable> handler, NetworkContext context) {
+    public void handle(Consumer<Runnable> handler, NetworkContext context) {
+        var message = this;
         if (CustomGun.getSideExecutor().getLogicalSide().isServer()) {
             handler.accept(() -> {
                 if (!(context.sender() instanceof ServerPlayer player)) {

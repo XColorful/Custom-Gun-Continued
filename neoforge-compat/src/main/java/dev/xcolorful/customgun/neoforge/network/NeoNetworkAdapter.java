@@ -206,7 +206,7 @@ public class NeoNetworkAdapter implements INetworkAdapter {
             // ↓貌似不会自动发message
             registrar.configuration(id, decoder, handler::handle);
         } else {
-            registrar.common(id, decoder, handler);
+            registrar.play(id, decoder, handler::handle);
         }
     }
 

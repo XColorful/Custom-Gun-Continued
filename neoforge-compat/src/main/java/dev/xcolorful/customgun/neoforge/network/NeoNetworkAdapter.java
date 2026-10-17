@@ -54,7 +54,7 @@ public class NeoNetworkAdapter implements INetworkAdapter {
             , Supplier<CustomPacketPayload> handshakePayloadFactory
     ) {
         public RegisteredPacket(Class<T> messageType,
-                                ResourceLocation id,
+                                Identifier id,
                                 Function<FriendlyByteBuf, T> decoder,
                                 MessageDirection direction,
                                 boolean isHandshake) {

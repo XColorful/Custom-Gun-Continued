@@ -19,7 +19,8 @@ public record C2SMessageShooterShoot(long timestamp,
         implements IMessage<C2SMessageShooterShoot> {
 
     @Override
-    public void encode(C2SMessageShooterShoot message, FriendlyByteBuf buffer) {
+    public void encode(FriendlyByteBuf buffer) {
+        var message = this;
         buffer.writeLong(message.timestamp);
         buffer.writeFloat(message.chargeProgress);
     }
@@ -29,7 +30,8 @@ public record C2SMessageShooterShoot(long timestamp,
     }
 
     @Override
-    public void handle(C2SMessageShooterShoot message, Consumer<Runnable> handler, NetworkContext context) {
+    public void handle(Consumer<Runnable> handler, NetworkContext context) {
+        var message = this;
         if (CustomGun.getSideExecutor().getLogicalSide().isServer()) {
             handler.accept(() -> {
                 if (!(context.sender() instanceof ServerPlayer player)) {

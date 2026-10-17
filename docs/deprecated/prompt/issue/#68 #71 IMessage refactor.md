@@ -99,6 +99,7 @@ CGC Tactical Addon 当前没有任何 `IMessage` 实现，只依赖 CGC 的 `INe
 # 
 
 [fork1](#fork1)
+[fork2](#fork2)
 
 # fork1
 
@@ -160,3 +161,42 @@ adapter / ID_COUNT has private access
 ```
 
 原因是 addon 的 `NetworkHandler` 继承 CGC 的 `NetworkHandler`，而 26.9.21 发布 jar 里这些成员是 `private`；core1.20.1 在 `26.10.24` 已把它们改成 `protected`。所以 addon 需要换用包含该改动的 CGC jar 才能编译，这与 IMessage 过渡无关。addon 仓库未做任何修改。
+
+# fork2
+
+```
+现在forge侧已经处理好，开始neoforge侧的修改，按cherry pick规则只修改必要的分支并重新给表格
+```
+
+# 
+
+先核对各 neoforge worktree 的当前状态：core 是否已经带上过渡改法、适配器调用点是否仍为旧签名。
+
+三个分支的适配器已改完，逐个编译验证。
+
+NeoForge 侧完成。所有 neoforge worktree 的 core 已带着与 core1.20.1 完全一致的过渡改动（`IMessage<T>` 无界、34/34 消息已迁移），因此本次只改适配器调用点。
+
+## 修改的分支
+
+|分支|修改内容|编译|
+|---|---|---|
+|1.20.2|6 处：3× `messageInstance.encode(buffer)`、3× `messageInstance.handle(context::enqueueWork, netContext)`|BUILD SUCCESSFUL|
+|1.20.4|2 处：`this.message.encode(buffer)`、`message.handle(Runnable::run, netContext)`|BUILD SUCCESSFUL|
+|1.21.1neoforge|2 处：`this.message.encode(buffer)`、`message.handle(context::enqueueWork, netContext)`|BUILD SUCCESSFUL|
+
+## Cherry-pick 表
+
+|分支|是否需要改|复用来源|
+|---|---|---|
+|1.20.2|已改|独立（6 处调用，文件结构与后续版本不同）|
+|1.20.4|已改|独立（`Runnable::run` 与 1.20.2 不同）|
+|1.21.1neoforge|已改|该组首个版本|
+|1.21.4neoforge|不改|复用 1.21.1neoforge（文件逐字节相同）|
+|1.21.6neoforge|不改|复用 1.21.1neoforge（文件逐字节相同）|
+|1.21.10neoforge|不改|复用 1.21.1neoforge（`git apply --check` 通过）|
+|1.21.11neoforge|不改|复用 1.21.1neoforge（`ResourceLocation`→`Identifier` 在调用点之外，补丁可干净应用）|
+|26.1–26.3|暂不处理|与 1.21.11 相同，按前述约定跳过|
+
+1.21.1neoforge 的补丁已用 `git apply --check` 在 1.21.4/1.21.6/1.21.10/1.21.11 四个 worktree 上验证，均可干净应用。
+
+三个分支均为未提交状态，等你 review。

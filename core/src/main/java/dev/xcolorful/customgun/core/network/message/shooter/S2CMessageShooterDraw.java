@@ -15,7 +15,8 @@ public record S2CMessageShooterDraw(int entityId,
         implements IMessage<S2CMessageShooterDraw> {
 
     @Override
-    public void encode(S2CMessageShooterDraw message, FriendlyByteBuf buffer) {
+    public void encode(FriendlyByteBuf buffer) {
+        var message = this;
         buffer.writeVarInt(message.entityId);
         NetworkUtils.writeItem(buffer, message.previousGunItem);
         NetworkUtils.writeItem(buffer, message.currentGunItem);
@@ -29,7 +30,8 @@ public record S2CMessageShooterDraw(int entityId,
     }
 
     @Override
-    public void handle(S2CMessageShooterDraw message, Consumer<Runnable> handler, NetworkContext context) {
+    public void handle(Consumer<Runnable> handler, NetworkContext context) {
+        var message = this;
         if (CustomGun.getSideExecutor().getLogicalSide().isClient()) {
             handler.accept(() -> _S2CMessageShooterDraw.doClientEvent(message));
         }

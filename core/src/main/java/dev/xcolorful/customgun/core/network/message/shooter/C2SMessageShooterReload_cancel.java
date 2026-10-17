@@ -14,7 +14,7 @@ public class C2SMessageShooterReload_cancel implements IMessage<C2SMessageShoote
     }
 
     @Override
-    public void encode(C2SMessageShooterReload_cancel message, FriendlyByteBuf buffer) {
+    public void encode(FriendlyByteBuf buffer) {
     }
 
     public static C2SMessageShooterReload_cancel decode(FriendlyByteBuf buffer) {
@@ -22,7 +22,7 @@ public class C2SMessageShooterReload_cancel implements IMessage<C2SMessageShoote
     }
 
     @Override
-    public void handle(C2SMessageShooterReload_cancel message, Consumer<Runnable> handler, NetworkContext context) {
+    public void handle(Consumer<Runnable> handler, NetworkContext context) {
         if (CustomGun.getSideExecutor().getLogicalSide().isServer()) {
             handler.accept(() -> {
                 if (!(context.sender() instanceof ServerPlayer player)) {

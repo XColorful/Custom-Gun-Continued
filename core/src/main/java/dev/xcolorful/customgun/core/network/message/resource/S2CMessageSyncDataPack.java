@@ -16,7 +16,8 @@ public record S2CMessageSyncDataPack(Map<SyncDataType, Map<ResourceLocation, Str
         implements IMessage<S2CMessageSyncDataPack> {
 
     @Override
-    public void encode(S2CMessageSyncDataPack message, FriendlyByteBuf buffer) {
+    public void encode(FriendlyByteBuf buffer) {
+        var message = this;
         NetworkUtils.writeEnumMap(buffer, message.cache(), NetworkUtils::writeResourceLocationMap);
     }
 
@@ -26,7 +27,8 @@ public record S2CMessageSyncDataPack(Map<SyncDataType, Map<ResourceLocation, Str
     }
 
     @Override
-    public void handle(S2CMessageSyncDataPack message, Consumer<Runnable> handler, NetworkContext context) {
+    public void handle(Consumer<Runnable> handler, NetworkContext context) {
+        var message = this;
         if (CustomGun.getSideExecutor().getLogicalSide().isClient()) {
             CustomGun.LOGGER.debug("ServerMessageSyncGunPack: Received sync pack message from server");
             Connection connection = context.connection();

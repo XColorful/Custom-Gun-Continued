@@ -80,6 +80,14 @@ public class NeoNetworkAdapter implements INetworkAdapter {
 
     @Override
     public <T extends LoginIndexHolder & IMessage<T>> void registerHandshakeAcknowledge(int id, Class<T> clazz, Function<FriendlyByteBuf, T> decoder) {
+        this.registeredPackets.stream()
+                .filter(rp -> rp.isHandshake() && rp.direction() == MessageDirection.CLIENT_TO_SERVER)
+                .findFirst()
+                .ifPresent(existing -> {
+                    throw new IllegalStateException(String.format(
+                            "Multiple handshake acknowledge messages registered: %s and %s; only one is supported",
+                            existing.messageType().getName(), clazz.getName()));
+                });
         String path = clazz.getSimpleName().toLowerCase();
         var packetId = this.mcRegistry.createResourceLocation(String.format("%s:%s", modId, path));
         registeredPackets.add(new RegisteredPacket<>(clazz, packetId, decoder, MessageDirection.CLIENT_TO_SERVER, true));
@@ -87,6 +95,14 @@ public class NeoNetworkAdapter implements INetworkAdapter {
 
     @Override
     public <T extends LoginIndexHolder & IMessage<T>> void registerHandshakeMessage(int id, Class<T> clazz, Function<FriendlyByteBuf, T> decoder) {
+        this.registeredPackets.stream()
+                .filter(rp -> rp.isHandshake() && rp.direction() == MessageDirection.SERVER_TO_CLIENT)
+                .findFirst()
+                .ifPresent(existing -> {
+                    throw new IllegalStateException(String.format(
+                            "Multiple handshake messages registered: %s and %s; only one is supported",
+                            existing.messageType().getName(), clazz.getName()));
+                });
         String path = clazz.getSimpleName().toLowerCase();
         var packetId = this.mcRegistry.createResourceLocation(String.format("%s:%s", modId, path));
         registeredPackets.add(new RegisteredPacket<>(clazz, packetId, decoder, MessageDirection.SERVER_TO_CLIENT, true));

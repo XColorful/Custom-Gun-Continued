@@ -14,7 +14,7 @@ public class S2CMessageShooterRefit_refresh implements IMessage<S2CMessageShoote
     }
 
     @Override
-    public void encode(S2CMessageShooterRefit_refresh message, FriendlyByteBuf buffer) {
+    public void encode(FriendlyByteBuf buffer) {
     }
 
     public static S2CMessageShooterRefit_refresh decode(FriendlyByteBuf buffer) {
@@ -22,7 +22,7 @@ public class S2CMessageShooterRefit_refresh implements IMessage<S2CMessageShoote
     }
 
     @Override
-    public void handle(S2CMessageShooterRefit_refresh message, Consumer<Runnable> handler, NetworkContext context) {
+    public void handle(Consumer<Runnable> handler, NetworkContext context) {
         if (CustomGun.getSideExecutor().getLogicalSide().isClient()) {
             handler.accept(() -> CustomGun.getSideExecutor().executeOn(McSide.CLIENT, () -> _S2CMessageShooterRefit_refresh::updateScreen
             ));

@@ -14,7 +14,7 @@ public class C2SMessageShooterMelee implements IMessage<C2SMessageShooterMelee> 
     }
 
     @Override
-    public void encode(C2SMessageShooterMelee message, FriendlyByteBuf buffer) {
+    public void encode(FriendlyByteBuf buffer) {
     }
 
     public static C2SMessageShooterMelee decode(FriendlyByteBuf buffer) {
@@ -22,7 +22,7 @@ public class C2SMessageShooterMelee implements IMessage<C2SMessageShooterMelee> 
     }
 
     @Override
-    public void handle(C2SMessageShooterMelee message, Consumer<Runnable> handler, NetworkContext context) {
+    public void handle(Consumer<Runnable> handler, NetworkContext context) {
         if (CustomGun.getSideExecutor().getLogicalSide().isServer()) {
             handler.accept(() -> {
                 if (!(context.sender() instanceof ServerPlayer player)) {

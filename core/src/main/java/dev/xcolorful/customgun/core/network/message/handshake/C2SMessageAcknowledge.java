@@ -16,7 +16,7 @@ public class C2SMessageAcknowledge extends LoginIndexHolder implements IMessage<
     }
 
     @Override
-    public void encode(C2SMessageAcknowledge message, FriendlyByteBuf buffer) {
+    public void encode(FriendlyByteBuf buffer) {
     }
 
     public static C2SMessageAcknowledge decode(FriendlyByteBuf buffer) {
@@ -24,7 +24,7 @@ public class C2SMessageAcknowledge extends LoginIndexHolder implements IMessage<
     }
 
     @Override
-    public void handle(C2SMessageAcknowledge message, Consumer<Runnable> handler, NetworkContext context) {
+    public void handle(Consumer<Runnable> handler, NetworkContext context) {
         CustomGun.LOGGER.debug(ACKNOWLEDGE, "Received acknowledgement from client");
         context.setHandled();
     }

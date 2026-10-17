@@ -12,7 +12,8 @@ public record S2CMessagePlayerCraft(int menuId)
         implements IMessage<S2CMessagePlayerCraft> {
 
     @Override
-    public void encode(S2CMessagePlayerCraft message, FriendlyByteBuf buffer) {
+    public void encode(FriendlyByteBuf buffer) {
+        var message = this;
         buffer.writeVarInt(message.menuId);
     }
 
@@ -21,7 +22,8 @@ public record S2CMessagePlayerCraft(int menuId)
     }
 
     @Override
-    public void handle(S2CMessagePlayerCraft message, Consumer<Runnable> handler, NetworkContext context) {
+    public void handle(Consumer<Runnable> handler, NetworkContext context) {
+        var message = this;
         if (CustomGun.getSideExecutor().getLogicalSide().isClient()) {
             handler.accept(() -> {
                 CustomGun.getSideExecutor().executeOn(McSide.CLIENT, () -> () ->

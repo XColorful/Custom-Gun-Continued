@@ -271,6 +271,7 @@ public void handleCustomPayload(ClientboundCustomPayloadPacket p) {
 # 
 
 [fork1](#fork1)
+[fork2](#fork2)
 
 # fork1
 
@@ -508,3 +509,147 @@ core 的 `NetworkHandler` 只注册了一条 `S2CMessageSyncedEntityDataMapping`
 1.20.1 会通过 `markAsLoginPacket()` **自动发送**那一条登录包；Forge 1.20.2+ 没有等价的公开 API，所以仍然不发送。Neo 1.21.x 已通过配置任务补齐，Neo 1.20.2/1.20.4 没有对应 API。
 
 要不要把 1.20.1 的自动发送也停掉（例如不调用 `markAsLoginPacket()`，让握手在所有版本都变成"注册但不发送"）？这样完全一致，但 1.20.1 的握手会一起失效。目前我保留它，只限制了"多条"。
+
+# fork2
+
+```
+现在要排查当前1.21.1neoforge代码状态的问题，客户端无法连上专用服务端，双端的日志在D:\Temp-File\下
+```
+
+# 
+
+先看日志目录结构。
+
+崩溃点是 `ClientPayloadContext.player()` 在配置阶段被调用。先确认崩溃时的 jar 是否包含当前源码改动，以及第 276 行对应哪段代码。
+
+已定位直接原因：客户端**刚进入 play、`Minecraft.player` 还没赋值**时收到服务端 play 包，网络线程上 `context.player()` 抛异常。我先确认服务端时序和是否还有第二个问题。
+
+文件在此期间被外部重构过（配置任务改成支持多个握手消息），我的 `sender` 修复已叠加。现在编译验证当前状态。
+
+再确认网络线程上 `getLogicalSide()` 不会触碰客户端状态。
+
+网络线程上 `getLogicalSide()` 依赖 `EffectiveSide.get()`，必须确认 Netty 线程被归到正确的 SidedThreadGroup，否则 C2S 逻辑会被跳过。
+
+已定位并修复。客户端崩溃不是配置阶段的问题，而是**刚进入 play、客户端 player 还没赋值时，网络线程上取了 `context.player()`**。
+
+## 根因
+
+崩溃栈：
+
+```
+ClientPayloadContext.player (配置阶段/无 player 时抛 UOE)
+  ← NeoNetworkAdapter.lambda$registerPacketInternal$25 (NeoNetworkAdapter.java:276)
+  ← NetworkRegistry.handleModdedPayload (:329)
+  ← ClientCommonPacketListenerImpl.handleCustomPayload
+  ← Netty Client IO #1
+```
+
+反编译 jar 后确认第 276 行就是：
+
+```java
+rp.isHandshake ? null : context.player()
+```
+
+日志时序：
+
+|时间（客户端时钟）|事件|
+|---|---|
+|14:52:31.869|Netty 线程收到握手 mapping：`Received synced key mappings from server`|
+|14:52:32.331|Render 线程正在初始化 `ClientPacketListener`（`handleLogin` 相关 mixin）|
+|14:52:32.543|Netty 线程处理一个 **play** 包，`context.player()` 抛异常 → 断线|
+
+服务端时钟对应位置也印证了握手是成功的：
+
+```
+14:52:26.903 [Netty Server IO #2] [CustomGun/HANDSHAKE_ACKNOWLEDGE]: Received acknowledgement from client
+14:52:27.599 XiaoColorful joined the game
+14:52:27.742 XiaoColorful lost connection: Disconnected
+```
+
+即：**新的配置任务握手已经正常完成**，问题出在 join 后紧接着的 play 包。
+
+`ClientPayloadContext.player()` 的异常文案不准确——它在 `Minecraft.getInstance().player == null` 时就会抛，不只是配置阶段。登录包由主线程处理并赋值 `Minecraft.player`，而 Netty 线程会并发收到紧随其后的 play 包。
+
+## 为什么现在才出现
+
+之前 `PayloadRegistrar` 默认 `HandlerThread.MAIN`，handler 被 `MainThreadPayloadHandler` 包一层 `enqueueWork`，真正执行时主线程已经把 player 设好了。改成 `executesOn(HandlerThread.NETWORK)` 后，handler 在 Netty 线程立即执行，就踩到了这个时间窗。
+
+## 修复
+
+[NeoNetworkAdapter.java:273](app://localhost/Custom-Gun-Continued-1.21.1neoforge/neoforge-compat/src/main/java/dev/xcolorful/customgun/neoforge/network/NeoNetworkAdapter.java:273)：
+
+```java
+Player sender = null;
+if (!rp.isHandshake && rp.direction == MessageDirection.CLIENT_TO_SERVER) {
+    sender = context.player();
+}
+```
+
+- 只有 **C2S play 包**（在服务端处理）才取 `context.player()`，此时 `ServerPlayer` 一定存在
+- S2C 包和握手包一律传 `null`
+- 这正好符合 core 里 `NetworkContext.sender` 的约定：`客户端统一从 Minecraft 获取 LocalPlayer`；core 的所有 S2C handler 都没有使用 `sender`
+- 检查了 `D:\Github` 下的 CGC 插件仓库，没有任何地方使用 `.sender()`，无兼容风险
+
+编译验证：`1.21.1neoforge:neoforge-compat:compileJava` BUILD SUCCESSFUL。
+
+## Cherry-pick
+
+|改动|已改版本|复用|
+|---|---|---|
+|网络线程上只对 C2S play 解析 `player()`|**1.21.1neoforge**|1.21.4neoforge、1.21.6neoforge（文件相同）；1.21.10/1.21.11 需解 import 冲突|
+
+## 日志里的其他噪音（与本次问题无关）
+
+- 服务端 `ClassNotFoundException: org.jetbrains.annotations.ApiStatus$Internal`：Mixin 扫描类元数据时的警告，启动早期就出现，不影响运行
+- 客户端 `java.net.ConnectException: Connection timed out`：某个 mod 的外部连接（更新检查之类）
+- MTS/Journeymap/ModernFix 的报错均为既有问题
+
+请重新打包后再连一次专用服务端；如果仍有问题，把新的双端日志放到同一目录即可。
+
+# 
+
+```
+已修复，检查1.20.1-1.21.1其他分支是否有这个问题
+```
+
+# 
+
+逐个分支核对：是否在**网络线程上解析了客户端 player**。先看 1.20.4 Neo 的 `Optional<Player>` 构造和 1.20.2 Neo 的 `getSender()`。
+
+检查完成。结论：**1.20.1–1.21.1 的其他分支都没有这个崩溃**，但 1.21.4 以上（含 26.x）都还带着同样的隐患。
+
+## 各分支核对
+
+|分支|play handler 线程|取 player 的方式|是否有同样问题|
+|---|---|---|---|
+|1.20.1 forge|网络线程|`context.getSender()`（客户端返回 null）+ `getNetworkManager()`|否|
+|1.20.2 forge|网络线程（上轮已改）|`context.getSender()` + `getConnection()`|否|
+|1.20.4 forge|网络线程|同上|否|
+|1.21.1 forge|网络线程|同上|否|
+|1.20.2 neoforge|网络线程（上轮已改）|`context.getSender()`（仅 ServerPlayer，客户端 null）+ `getNetworkManager()`|否|
+|1.20.4 neoforge|网络线程（平台默认）|`context.player()` 返回 `Optional<Player>`，join 窗口为 empty，不会抛异常|否|
+|1.21.1 neoforge|网络线程（`executesOn`）|已改为只对 C2S play 调用 `context.player()`|**已修复**|
+
+依据：
+
+- Forge 1.20.1/1.20.2/1.20.4/1.21.1 的 `CustomPayloadEvent.Context.getSender()` / `NetworkEvent.Context.getSender()` 实现都只返回 `ServerPlayer`，客户端侧一律 `null`，不存在 `Minecraft.player == null` 抛异常的问题。
+- NeoForge 20.2.93 的 `NetworkEvent.Context.getSender()` 同样只返回 `ServerPlayer` 或 `null`。
+- NeoForge 20.4.251 的 `PlayPayloadContext.player()` 是 `Optional.ofNullable(playPacketListener.getMinecraft().player)`，join 尚未完成时返回 empty，不抛异常。
+
+## 需要留意的 1.20.4 Neo 差异（不是崩溃）
+
+1.20.4 在 join 窗口内 `context.player()` 为空，导致 adapter 里的 `connection` 为 `null`。这不影响连接，但 `S2CMessageSyncDataPack.handle` 会因此把 `remoteConnection` 判成 `false`，跳过 `_AllDataManager.clearInstance()`。属于既有的小偏差，和这次的崩溃无关；该平台没有 `IPayloadContext.connection()`，要彻底修需要另找拿 `Connection` 的途径。
+
+## 1.21.4 以上仍有同样问题
+
+这些分支已经拿到了 `executesOn(HandlerThread.NETWORK)`，但 `sender` 仍是旧写法：
+
+|分支|位置|
+|---|---|
+|1.21.4neoforge|`NeoNetworkAdapter.java:204`|
+|1.21.6neoforge|`:204`|
+|1.21.10neoforge|`:205`|
+|1.21.11neoforge|`:205`|
+|26.1.2 / 26.1.x / 26.2 / 26.3|`:205`|
+
+它们都会在 join 窗口收到首个 play 包时抛出同样的 `UnsupportedOperationException`。按之前的流程，我没有改这些分支，等你在 1.21.1neoforge 上 cherry-pick；需要我直接改也可以说一声。

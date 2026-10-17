@@ -72,6 +72,9 @@ public class ClientModConfigTag {
     public static final String enableShooterOperationHUD_path = "EnableShooterOperationHUD";
     public static final String enableShooterOperationHUD_comment = "Whether to display the shooter operation's HUD";
 
+    public static final String gunDescriptionWidth_path = "GunDescriptionWidth";
+    public static final String gunDescriptionWidth_comment = "The maximum width of each line of the gun description in the item tooltip";
+
     public static final String autoSelectGunSmithTableFilter_path = "AutoSelectGunSmithTableFilter";
     public static final String autoSelectGunSmithTableFilter_comment = "Whether or not to automatically select the gun smith table's held item filter when opening it with a gun, attachment or ammo in main hand";
 

@@ -55,7 +55,7 @@ public class ForgeNetworkAdapter implements INetworkAdapter {
         NetworkDirection<?> forgeDirection = MessageDirectionHelper.convert(direction);
 
         this.CHANNEL.messageBuilder(clazz, id, forgeDirection)
-                .encoder((message, buffer) -> message.encode(message, buffer))
+                .encoder((message, buffer) -> message.encode(buffer))
                 .decoder(decoder::apply) // 为啥这里要 apply 才过编译? 抽风了?
                 .consumerNetworkThread((messageInstance, context) -> {
                     IMessage.NetworkContext netContext = new IMessage.NetworkContext(
@@ -65,7 +65,7 @@ public class ForgeNetworkAdapter implements INetworkAdapter {
                             (replyMsg) -> CHANNEL.reply(replyMsg, context),
                             null
                     );
-                    messageInstance.handle(messageInstance, context::enqueueWork, netContext);
+                    messageInstance.handle(context::enqueueWork, netContext);
                     context.setPacketHandled(true);
                 })
                 .add();
@@ -80,7 +80,7 @@ public class ForgeNetworkAdapter implements INetworkAdapter {
         }
         this.handshakeAckClass = clazz.getName();
         this.HANDSHAKE_CHANNEL.messageBuilder(clazz, id, NetworkDirection.LOGIN_TO_SERVER)
-                .encoder((message, buffer) -> message.encode(message, buffer))
+                .encoder((message, buffer) -> message.encode(buffer))
                 .decoder(decoder)
                 .consumerNetworkThread((message, context) -> {
                     IMessage.NetworkContext netContext = new IMessage.NetworkContext(
@@ -90,7 +90,7 @@ public class ForgeNetworkAdapter implements INetworkAdapter {
                             (replyMsg) -> HANDSHAKE_CHANNEL.reply(replyMsg, context),
                             () -> context.setPacketHandled(true)
                     );
-                    message.handle(message, context::enqueueWork, netContext);
+                    message.handle(context::enqueueWork, netContext);
                 })
                 .add();
     }
@@ -104,7 +104,7 @@ public class ForgeNetworkAdapter implements INetworkAdapter {
         }
         this.handshakeMessageClass = clazz.getName();
         this.HANDSHAKE_CHANNEL.messageBuilder(clazz, id, NetworkDirection.LOGIN_TO_CLIENT)
-                .encoder((message, buffer) -> message.encode(message, buffer))
+                .encoder((message, buffer) -> message.encode(buffer))
                 .decoder(decoder)
                 .consumerNetworkThread((message, context) -> {
                     IMessage.NetworkContext netContext = new IMessage.NetworkContext(
@@ -114,7 +114,7 @@ public class ForgeNetworkAdapter implements INetworkAdapter {
                             (replyMsg) -> HANDSHAKE_CHANNEL.send(replyMsg, context.getConnection()),
                             () -> context.setPacketHandled(true)
                     );
-                    message.handle(message, context::enqueueWork, netContext);
+                    message.handle(context::enqueueWork, netContext);
                 })
                 .add();
     }

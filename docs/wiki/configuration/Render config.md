@@ -1,7 +1,7 @@
 [English](#English)
 
 # 渲染配置
-> wiki 版本：`26.9.21`.14
+> wiki 版本：`26.9.26`.15
 
 路径：`render`
 - `GunLodRenderDistance`（整数）：远距离模型显示距离，设为0则始终显示
@@ -23,6 +23,7 @@
 - `KeepDisplayGunHUD`（bool）：是否持续显示枪械HUD
 - `ForceDisplayGunHUD`（bool）：是否强制显示枪械HUD
 - `EnableShooterOperationHUD`（bool）：是否显示射手操作HUD
+- `GunDescriptionWidth`（int）：物品提示框中每行枪械描述的最大宽度
 - `AppendResourceLocationInTooltip`（bool）：是否在提示框枪包信息后附加显示资源位置
 - `EnableLaserFadeOut`（bool）：是否对激光应用淡出效果
 - `BulletHoleParticleLife`（整数）：弹孔粒子存在时间（tick）
@@ -40,6 +41,7 @@
 	KeepDisplayGunHUD = false
 	ForceDisplayGunHUD = true
 	EnableShooterOperationHUD = true
+	GunDescriptionWidth = 200
 	AppendResourceLocationInTooltip = true
 	EnableLaserFadeOut = true
 	BulletHoleParticleLife = 400
@@ -48,7 +50,7 @@
 ```
 
 # English
-> wiki version: `26.9.21`.14
+> wiki version: `26.9.26`.15
 
 ## Render Config
 
@@ -72,6 +74,7 @@ Path: `render`
 - `KeepDisplayGunHUD` (bool): Whether to keep the gun's HUD displayed
 - `ForceDisplayGunHUD` (bool): Whether to force the gun's HUD to be displayed
 - `EnableShooterOperationHUD` (bool): Whether to display the shooter operation's HUD
+- `GunDescriptionWidth` (int): The maximum width of each line of the gun description in the item tooltip
 - `AppendResourceLocationInTooltip` (bool): Whether to append resource location after gunpack information in tooltips
 - `EnableLaserFadeOut` (bool): Whether to apply fadeout effect on the laser beam
 - `BulletHoleParticleLife` (integer): The existence time of bullet hole particles, in ticks
@@ -89,6 +92,7 @@ Path: `render`
 	KeepDisplayGunHUD = false
 	ForceDisplayGunHUD = true
 	EnableShooterOperationHUD = true
+	GunDescriptionWidth = 200
 	AppendResourceLocationInTooltip = true
 	EnableLaserFadeOut = true
 	BulletHoleParticleLife = 400

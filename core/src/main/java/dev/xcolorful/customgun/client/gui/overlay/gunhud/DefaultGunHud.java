@@ -93,7 +93,7 @@ public class DefaultGunHud implements IOverlaySubManager, IEventHandler {
 
         Minecraft mc = Minecraft.getInstance();
         LocalPlayer localPlayer = mc.player;
-        if (localPlayer == null) {
+        if (localPlayer == null || localPlayer.isSpectator()) { // 旁观模式不显示
             this.state.reset();
             return;
         }

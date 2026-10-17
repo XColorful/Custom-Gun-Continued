@@ -1,5 +1,18 @@
 ### 26.10
 
+#### 26.10.27
+- Disable gun HUD triggers in spectator mode
+- Fixed third-person gun rendering when left hand is set to main hand
+- Fixed FOV jitter caused by mounting while sprinting holding non-gun items
+- Fix being unable to shoot after local player rebuild
+- Fix camera tilt not resetting when switching to third person view
+- Add render config `GunDescriptionWidth`
+- Reduce default gun description width in item tooltip
+- Remove built-in BCEL library
+
+For developer:
+- Update `IMessage` interface
+
 #### 26.10.26
 
 Add built-in PlayerRevive compatibility:

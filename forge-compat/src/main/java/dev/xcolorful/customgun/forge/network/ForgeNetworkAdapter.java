@@ -55,7 +55,7 @@ public class ForgeNetworkAdapter implements INetworkAdapter {
         this.CHANNEL.messageBuilder(clazz, id, forgeDirection)
                 .encoder((message, buffer) -> message.encode(message, buffer))
                 .decoder(decoder::apply) // 为啥这里要 apply 才过编译? 抽风了?
-                .consumerMainThread((messageInstance, context) -> {
+                .consumerNetworkThread((messageInstance, context) -> {
                     IMessage.NetworkContext netContext = new IMessage.NetworkContext(
                             context.getConnection(),
                             context.isClientSide() ? MessageDirection.SERVER_TO_CLIENT : MessageDirection.CLIENT_TO_SERVER,
@@ -64,6 +64,7 @@ public class ForgeNetworkAdapter implements INetworkAdapter {
                             null
                     );
                     messageInstance.handle(messageInstance, context::enqueueWork, netContext);
+                    context.setPacketHandled(true);
                 })
                 .add();
     }

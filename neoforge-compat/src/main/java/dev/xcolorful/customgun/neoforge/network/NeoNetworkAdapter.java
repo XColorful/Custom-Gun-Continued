@@ -11,22 +11,29 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.ConfigurationTask;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.configuration.ICustomConfigurationTask;
+import net.neoforged.neoforge.network.event.RegisterConfigurationTasksEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.handling.IPayloadHandler;
 import net.neoforged.neoforge.network.registration.HandlerThread;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public class NeoNetworkAdapter implements INetworkAdapter {
     private final int protocolVersion;
@@ -44,7 +51,16 @@ public class NeoNetworkAdapter implements INetworkAdapter {
             Function<FriendlyByteBuf, T> decoder,
             MessageDirection direction,
             boolean isHandshake
-    ) {}
+            , Supplier<CustomPacketPayload> handshakePayloadFactory
+    ) {
+        public RegisteredPacket(Class<T> messageType,
+                                ResourceLocation id,
+                                Function<FriendlyByteBuf, T> decoder,
+                                MessageDirection direction,
+                                boolean isHandshake) {
+            this(messageType, id, decoder, direction, isHandshake, null);
+        }
+    }
 
     private record NeoPayload<T extends IMessage<T>>(ResourceLocation id, T message) implements CustomPacketPayload {
 
@@ -61,6 +77,7 @@ public class NeoNetworkAdapter implements INetworkAdapter {
     private final List<RegisteredPacket<?>> registeredPackets = new ArrayList<>();
     private final String modId;
     private final IMcRegistry mcRegistry;
+    private ConfigurationTask.Type handshakeTaskType;
 
     public NeoNetworkAdapter(IEventBus modEventBus, @NotNull IMcRegistry mcRegistry,
                              String modId, int protocolVersion) {
@@ -106,7 +123,26 @@ public class NeoNetworkAdapter implements INetworkAdapter {
                 });
         String path = clazz.getSimpleName().toLowerCase();
         var packetId = this.mcRegistry.createResourceLocation(String.format("%s:%s", modId, path));
-        registeredPackets.add(new RegisteredPacket<>(clazz, packetId, decoder, MessageDirection.SERVER_TO_CLIENT, true));
+
+        Supplier<CustomPacketPayload> payloadFactory = null;
+        try {
+            clazz.getDeclaredConstructor();
+            payloadFactory = () -> {
+                try {
+                    return new NeoPayload<>(packetId, clazz.getDeclaredConstructor().newInstance());
+                } catch (ReflectiveOperationException e) {
+                    throw new IllegalStateException("Failed to instantiate handshake message " + clazz.getName(), e);
+                }
+            };
+            // 任务标识取第一个可发送的握手消息，仍然只由 modid + 注册类名组成
+            if (this.handshakeTaskType == null) {
+                this.handshakeTaskType = new ConfigurationTask.Type(packetId);
+            }
+        } catch (NoSuchMethodException e) {
+            throw new IllegalStateException("Handshake message " + clazz.getName() + " has no no-arg constructor", e);
+        }
+
+        registeredPackets.add(new RegisteredPacket<>(clazz, packetId, decoder, MessageDirection.SERVER_TO_CLIENT, true, payloadFactory));
     }
 
     @Override
@@ -188,6 +224,33 @@ public class NeoNetworkAdapter implements INetworkAdapter {
         }
     }
 
+    @ApiStatus.AvailableSince("1.21.1")
+    @SubscribeEvent
+    public void registerConfigurationTasks(RegisterConfigurationTasksEvent event) {
+        boolean hasAck = this.registeredPackets.stream()
+                .anyMatch(rp -> rp.isHandshake() && rp.direction() == MessageDirection.CLIENT_TO_SERVER);
+        List<Supplier<CustomPacketPayload>> payloadFactories = this.registeredPackets.stream()
+                .filter(rp -> rp.isHandshake() && rp.direction() == MessageDirection.SERVER_TO_CLIENT)
+                .map(RegisteredPacket::handshakePayloadFactory)
+                .filter(Objects::nonNull)
+                .toList();
+        if (!hasAck || this.handshakeTaskType == null || payloadFactories.isEmpty()) {
+            return;
+        }
+        final ConfigurationTask.Type taskType = this.handshakeTaskType;
+        event.register(new ICustomConfigurationTask() {
+            @Override
+            public ConfigurationTask.Type type() {
+                return taskType;
+            }
+
+            @Override
+            public void run(Consumer<CustomPacketPayload> sender) {
+                payloadFactories.forEach(factory -> sender.accept(factory.get()));
+            }
+        });
+    }
+
     private <T extends IMessage<T>> void registerPacketInternal(PayloadRegistrar registrar, RegisteredPacket<T> rp) {
         ResourceLocation id = rp.id;
 
@@ -199,10 +262,24 @@ public class NeoNetworkAdapter implements INetworkAdapter {
         IPayloadHandler<NeoPayload<T>> handler = (payload, context) -> {
             final T message = payload.message();
 
+            Runnable setHandledFunc = null;
+            if (rp.isHandshake) {
+                if (rp.direction == MessageDirection.CLIENT_TO_SERVER && this.handshakeTaskType != null) {
+                    setHandledFunc = () -> context.enqueueWork(() -> context.finishCurrentTask(this.handshakeTaskType));
+                } else {
+                    setHandledFunc = () -> {};
+                }
+            }
+
+            Player sender = null;
+            if (!rp.isHandshake && rp.direction == MessageDirection.CLIENT_TO_SERVER) {
+                sender = context.player();
+            }
+
             IMessage.NetworkContext netContext = new IMessage.NetworkContext(
                     context.connection(),
                     rp.direction,
-                    rp.isHandshake ? null : context.player(),
+                    sender,
                     (replyMsg) -> {
                         this.registeredPackets.stream()
                                 .filter(r -> r.messageType().isInstance(replyMsg))
@@ -213,7 +290,7 @@ public class NeoNetworkAdapter implements INetworkAdapter {
                                     context.reply(replyPayload);
                                 });
                     },
-                    rp.isHandshake ? () -> {} : null
+                    setHandledFunc
             );
 
             message.handle(message, context::enqueueWork, netContext);

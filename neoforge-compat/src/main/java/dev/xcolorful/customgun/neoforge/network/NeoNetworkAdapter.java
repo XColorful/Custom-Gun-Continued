@@ -15,10 +15,10 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.handling.IPayloadHandler;
+import net.neoforged.neoforge.network.registration.HandlerThread;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import org.jetbrains.annotations.NotNull;
 
@@ -164,7 +164,7 @@ public class NeoNetworkAdapter implements INetworkAdapter {
 
     @SubscribeEvent
     public void register(RegisterPayloadHandlersEvent event) {
-        final PayloadRegistrar registrar = event.registrar(this.modId);
+        final PayloadRegistrar registrar = event.registrar(this.modId).executesOn(HandlerThread.NETWORK);
 
         for (RegisteredPacket<?> rp : this.registeredPackets) {
             this.registerPacketInternal(registrar, rp);
@@ -182,20 +182,10 @@ public class NeoNetworkAdapter implements INetworkAdapter {
         IPayloadHandler<NeoPayload<T>> handler = (payload, context) -> {
             final T message = payload.message();
 
-            Connection connection = null;
-            {
-                Player player = context.player();
-                if (player instanceof ServerPlayer sp) {
-                    connection = sp.connection.getConnection();
-                } else if (FMLLoader.getDist().isClient()) {
-                    connection = _LocalPlayer.getConnection(player);
-                }
-            }
-
             IMessage.NetworkContext netContext = new IMessage.NetworkContext(
-                    connection,
+                    context.connection(),
                     rp.direction,
-                    context.player(),
+                    rp.isHandshake ? null : context.player(),
                     (replyMsg) -> {
                         this.registeredPackets.stream()
                                 .filter(r -> r.messageType().isInstance(replyMsg))
@@ -209,9 +199,7 @@ public class NeoNetworkAdapter implements INetworkAdapter {
                     rp.isHandshake ? () -> {} : null
             );
 
-            context.enqueueWork(() -> {
-                message.handle(message, Runnable::run, netContext);
-            });
+            message.handle(message, context::enqueueWork, netContext);
         };
 
         CustomPacketPayload.Type<NeoPayload<T>> payloadType = new CustomPacketPayload.Type<>(id);
@@ -230,6 +218,10 @@ public class NeoNetworkAdapter implements INetworkAdapter {
         }
     }
 
+    /**
+     * 仅1.20.4neoforge使用，1.21.1起不再需要
+     */
+    @Deprecated(since = "1.21.1")
     private static class _LocalPlayer {
         private static Connection getConnection(Player player) {
             if (player instanceof net.minecraft.client.player.LocalPlayer lp) {

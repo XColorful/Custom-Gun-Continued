@@ -1,6 +1,7 @@
 package dev.xcolorful.customgun.client.gui.tooltip.gun;
 
 import dev.xcolorful.customgun.client.api.item.gun.GunTooltipMask;
+import dev.xcolorful.customgun.client.config.RenderConfig;
 import dev.xcolorful.customgun.client.gui.tooltip.AbstractTooltipPart;
 import dev.xcolorful.customgun.core.api.minecraft.Color64;
 import dev.xcolorful.customgun.core.resource.data.index.GunIndex;
@@ -25,7 +26,14 @@ public final class GunDescriptionPart extends AbstractTooltipPart implements Gun
     /**
      * 扩展模组可以动态识别当前鼠标到边界的距离来调整
      */
-    @ApiStatus.Internal public static volatile int _textLineWidth = 300;
+    public static int getGunDescriptionLineWidth() {
+        // mixin注入点
+        return RenderConfig.GUN_DESCRIPTION_WIDTH.get();
+    }
+    /**
+     * 改用{@link #getGunDescriptionLineWidth()}
+     */
+    @Deprecated(forRemoval = true) @ApiStatus.Internal public static volatile int _textLineWidth = 300;
     private static final Color64 _defaultDescriptionColor = Color64.fromChatFormatting(ChatFormatting.GRAY);
 
     @Override
@@ -37,7 +45,7 @@ public final class GunDescriptionPart extends AbstractTooltipPart implements Gun
             GunIndex gunIndex = gunIndexInstance.getPojo();
             String tooltipLang = gunIndex.getTooltipLang();
 
-            desc = font.split(Component.translatable(tooltipLang), _textLineWidth);
+            desc = font.split(Component.translatable(tooltipLang), getGunDescriptionLineWidth());
         }
         context.view.desc = desc;
         for (int i = 0; i < desc.size(); i++) {

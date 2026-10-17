@@ -124,6 +124,13 @@ public class GunCameraHelper implements IEventHandler {
         // 设置没开视角摇晃 (玩家移动时的镜头晃动)
         if (!Minecraft.getInstance().options.bobView().get()) return;
 
+        /*
+        非第一人称不应用摄像机动画：状态机在此视角只做visualUpdate，不会更新（也不会清空）
+        摄像机动画四元数，继续应用会把镜头倾斜固定在切出第一人称时的角度
+         */
+        //
+        if (!Minecraft.getInstance().options.getCameraType().isFirstPerson()) return;
+
         ItemStack currentItem = KeepingItemRenderer.cgc$getRenderer().cgc$getCurrentItem();
 
         // 尝试调用物品的自定义相机动画

@@ -7,6 +7,7 @@ import dev.xcolorful.customgun.core.api.entity.shooter.ILivingShooterGetter;
 import dev.xcolorful.customgun.core.api.minecraft.entity.IEntityExtension;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.ApiStatus;
@@ -84,6 +85,23 @@ public class EntityUtils {
         }
         public static @NotNull AABB getTracedHitbox(@NotNull Entity entity) {
             return getTracedHitbox(entity, null);
+        }
+    }
+
+    /**
+     * 不作为通用API，仅适配特定平台
+     */
+    public static class Forge {
+
+        public static void reviveCaps(@NotNull LivingEntity livingEntity) {
+            try {
+                livingEntity.reviveCaps();
+            } catch (NoSuchMethodError ignored) {} // neoforge1.20.4+没这方法，省一个forge侧mixin
+        }
+        public static void invalidateCaps(@NotNull LivingEntity livingEntity) {
+            try {
+                livingEntity.invalidateCaps();
+            } catch (NoSuchMethodError ignored) {} // neoforge1.20.4+没这方法，省一个forge侧mixin
         }
     }
 }

@@ -14,6 +14,7 @@ import dev.xcolorful.customgun.core.entity.sync.SyncedDataKey;
 import dev.xcolorful.customgun.core.entity.sync.SyncedEntityData;
 import dev.xcolorful.customgun.core.network.message.shooter.S2CMessageShooterBaseTimestamp;
 import dev.xcolorful.customgun.core.network.message.sync.S2CMessageUpdateEntityData;
+import dev.xcolorful.customgun.core.util.EntityUtils;
 import dev.xcolorful.customgun.core.util.SendUtils;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -81,17 +82,13 @@ public class LivingShooterSyncHandler implements IEventHandler {
 
     private void onPlayerClone(IPlayerCloneEvent event) {
         Player original = event.getOriginalPlayer();
-        try {
-        original.reviveCaps();
-        } catch (NoSuchMethodError ignored) {} // neoforge1.20.4+没这方法，省一个forge侧mixin
+        EntityUtils.Forge.reviveCaps(original);
 
         SyncDataHolder oldHolder = SyncedEntityData.instance().getSyncDataHolder(original);
         if (oldHolder == null) {
             return;
         }
-        try {
-        original.invalidateCaps();
-        } catch (NoSuchMethodError ignored) {} // neoforge1.20.4+没这方法，省一个forge侧mixin
+        EntityUtils.Forge.invalidateCaps(original);
 
         Player player = event.getEntity();
         SyncDataHolder newHolder = SyncedEntityData.instance().getSyncDataHolder(player);

@@ -58,7 +58,7 @@ public class ForgeNetworkAdapter implements INetworkAdapter {
         this.CHANNEL.registerMessage(
                 id,
                 clazz,
-                (messageInstance, buffer) -> messageInstance.encode(messageInstance, buffer),
+                (messageInstance, buffer) -> messageInstance.encode(buffer),
                 decoder,
                 (message, contextSupplier) -> {
                     NetworkEvent.Context context = contextSupplier.get();
@@ -69,7 +69,7 @@ public class ForgeNetworkAdapter implements INetworkAdapter {
                             (replyMsg) -> CHANNEL.reply(replyMsg, context),
                             null
                     );
-                    message.handle(message, context::enqueueWork, netContext);
+                    message.handle(context::enqueueWork, netContext);
                     context.setPacketHandled(true);
                 },
                 Optional.of(forgeDirection)
@@ -86,7 +86,7 @@ public class ForgeNetworkAdapter implements INetworkAdapter {
         this.handshakeAckClass = clazz.getName();
         this.HANDSHAKE_CHANNEL.messageBuilder(clazz, id)
                 .loginIndex(LoginIndexHolder::getLoginIndex, LoginIndexHolder::setLoginIndex)
-                .encoder((messageInstance, buffer) -> messageInstance.encode(messageInstance, buffer))
+                .encoder((messageInstance, buffer) -> messageInstance.encode(buffer))
                 .decoder(decoder)
                 .consumerNetworkThread(HandshakeHandler.indexFirst((handler, messageInstance, contextSupplier) -> {
                     NetworkEvent.Context context = contextSupplier.get();
@@ -97,7 +97,7 @@ public class ForgeNetworkAdapter implements INetworkAdapter {
                             (replyMsg) -> HANDSHAKE_CHANNEL.reply(replyMsg, context),
                             () -> context.setPacketHandled(true)
                     );
-                    messageInstance.handle(messageInstance, context::enqueueWork, netContext);
+                    messageInstance.handle(context::enqueueWork, netContext);
                 }))
                 .add();
     }
@@ -111,7 +111,7 @@ public class ForgeNetworkAdapter implements INetworkAdapter {
         this.handshakeMessageClass = clazz.getName();
         this.HANDSHAKE_CHANNEL.messageBuilder(clazz, id)
                 .loginIndex(LoginIndexHolder::getLoginIndex, LoginIndexHolder::setLoginIndex)
-                .encoder((messageInstance, buffer) -> messageInstance.encode(messageInstance, buffer))
+                .encoder((messageInstance, buffer) -> messageInstance.encode(buffer))
                 .decoder(decoder)
                 .consumerNetworkThread((message, contextSupplier) -> {
                     NetworkEvent.Context context = contextSupplier.get();
@@ -122,7 +122,7 @@ public class ForgeNetworkAdapter implements INetworkAdapter {
                             (replyMsg) -> HANDSHAKE_CHANNEL.reply(replyMsg, context),
                             () -> context.setPacketHandled(true)
                     );
-                    message.handle(message, context::enqueueWork, netContext);
+                    message.handle(context::enqueueWork, netContext);
                 })
                 .markAsLoginPacket()
                 .add();

@@ -13,7 +13,7 @@ public class S2CMessageShooterBaseTimestamp implements IMessage<S2CMessageShoote
     }
 
     @Override
-    public void encode(S2CMessageShooterBaseTimestamp message, FriendlyByteBuf buffer) {
+    public void encode(FriendlyByteBuf buffer) {
     }
 
     public static S2CMessageShooterBaseTimestamp decode(FriendlyByteBuf buffer) {
@@ -21,7 +21,7 @@ public class S2CMessageShooterBaseTimestamp implements IMessage<S2CMessageShoote
     }
 
     @Override
-    public void handle(S2CMessageShooterBaseTimestamp message, Consumer<Runnable> handler, NetworkContext context) {
+    public void handle(Consumer<Runnable> handler, NetworkContext context) {
         if (CustomGun.getSideExecutor().getLogicalSide().isClient()) {
             long timestamp = System.currentTimeMillis();
             handler.accept(() -> {

@@ -15,7 +15,8 @@ public record C2SMessagePlayerCraft(
         implements IMessage<C2SMessagePlayerCraft> {
 
     @Override
-    public void encode(C2SMessagePlayerCraft message, FriendlyByteBuf buffer) {
+    public void encode(FriendlyByteBuf buffer) {
+        var message = this;
         NetworkUtils.writeResourceLocation(buffer, message.recipeLocation);
         buffer.writeVarInt(message.menuId);
     }
@@ -25,7 +26,7 @@ public record C2SMessagePlayerCraft(
     }
 
     @Override
-    public void handle(C2SMessagePlayerCraft message, Consumer<Runnable> handler, NetworkContext context) {
+    public void handle(Consumer<Runnable> handler, NetworkContext context) {
         if (CustomGun.getSideExecutor().getLogicalSide().isServer()) {
             handler.accept(() -> {
                 if (!(context.sender() instanceof ServerPlayer player)) {

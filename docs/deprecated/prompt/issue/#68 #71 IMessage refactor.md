@@ -100,6 +100,7 @@ CGC Tactical Addon 当前没有任何 `IMessage` 实现，只依赖 CGC 的 `INe
 
 [fork1](#fork1)
 [fork2](#fork2)
+[fork3](https://github.com/XColorful/BattleRoyale/blob/HEAD/docs/deprecated/prompt/issue/%2362%20IMessage%20refactor.md#fork3)
 
 # fork1
 

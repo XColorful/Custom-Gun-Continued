@@ -14,7 +14,7 @@ public class C2SMessageShooterZoom implements IMessage<C2SMessageShooterZoom> {
     }
 
     @Override
-    public void encode(C2SMessageShooterZoom message, FriendlyByteBuf buffer) {
+    public void encode(FriendlyByteBuf buffer) {
     }
 
     public static C2SMessageShooterZoom decode(FriendlyByteBuf buffer) {
@@ -22,7 +22,7 @@ public class C2SMessageShooterZoom implements IMessage<C2SMessageShooterZoom> {
     }
 
     @Override
-    public void handle(C2SMessageShooterZoom message, Consumer<Runnable> handler, NetworkContext context) {
+    public void handle(Consumer<Runnable> handler, NetworkContext context) {
         if (CustomGun.getSideExecutor().getLogicalSide().isServer()) {
             handler.accept(() -> {
                 if (!(context.sender() instanceof ServerPlayer player)) {

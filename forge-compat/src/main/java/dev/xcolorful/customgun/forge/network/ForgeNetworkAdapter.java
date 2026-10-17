@@ -55,7 +55,7 @@ public class ForgeNetworkAdapter implements INetworkAdapter {
         NetworkDirection forgeDirection = MessageDirectionHelper.convert(direction);
 
         this.CHANNEL.<T>messageBuilder(clazz, id, forgeDirection)
-                .encoder((messageInstance, buffer) -> messageInstance.encode(messageInstance, buffer))
+                .encoder((messageInstance, buffer) -> messageInstance.encode(buffer))
                 .decoder(decoder)
                 .consumerNetworkThread((messageInstance, context) -> {
                     IMessage.NetworkContext netContext = new IMessage.NetworkContext(
@@ -65,7 +65,7 @@ public class ForgeNetworkAdapter implements INetworkAdapter {
                             (replyMsg) -> CHANNEL.reply(replyMsg, context),
                             null
                     );
-                    messageInstance.handle(messageInstance, context::enqueueWork, netContext);
+                    messageInstance.handle(context::enqueueWork, netContext);
                     context.setPacketHandled(true);
                 })
                 .add();
@@ -81,7 +81,7 @@ public class ForgeNetworkAdapter implements INetworkAdapter {
         this.handshakeAckClass = clazz.getName();
         this.HANDSHAKE_CHANNEL.messageBuilder(clazz, id, NetworkDirection.LOGIN_TO_SERVER)
 //                .loginIndex(LoginIndexHolder::getLoginIndex, LoginIndexHolder::setLoginIndex) // 去掉后也能进单人游戏/多人游戏
-                .encoder((messageInstance, buffer) -> messageInstance.encode(messageInstance, buffer))
+                .encoder((messageInstance, buffer) -> messageInstance.encode(buffer))
                 .decoder(decoder)
                 .consumerNetworkThread((messageInstance, context) -> { // 去掉了HandshakeHandler.indexFirst，Context不再Supplier
                     IMessage.NetworkContext netContext = new IMessage.NetworkContext(
@@ -91,7 +91,7 @@ public class ForgeNetworkAdapter implements INetworkAdapter {
                             (replyMsg) -> HANDSHAKE_CHANNEL.reply(replyMsg, context),
                             () -> context.setPacketHandled(true)
                     );
-                    messageInstance.handle(messageInstance, context::enqueueWork, netContext);
+                    messageInstance.handle(context::enqueueWork, netContext);
                 })
                 .add();
     }
@@ -105,7 +105,7 @@ public class ForgeNetworkAdapter implements INetworkAdapter {
         this.handshakeMessageClass = clazz.getName();
         this.HANDSHAKE_CHANNEL.messageBuilder(clazz, id, NetworkDirection.LOGIN_TO_CLIENT)
 //                .loginIndex(LoginIndexHolder::getLoginIndex, LoginIndexHolder::setLoginIndex)
-                .encoder((messageInstance, buffer) -> messageInstance.encode(messageInstance, buffer))
+                .encoder((messageInstance, buffer) -> messageInstance.encode(buffer))
                 .decoder(decoder)
                 .consumerNetworkThread((messageInstance, context) -> {
                     IMessage.NetworkContext netContext = new IMessage.NetworkContext(
@@ -115,7 +115,7 @@ public class ForgeNetworkAdapter implements INetworkAdapter {
                             (replyMsg) -> HANDSHAKE_CHANNEL.send(replyMsg, context.getConnection()),
                             () -> context.setPacketHandled(true)
                     );
-                    messageInstance.handle(messageInstance, context::enqueueWork, netContext);
+                    messageInstance.handle(context::enqueueWork, netContext);
                 })
                 .add();
     }

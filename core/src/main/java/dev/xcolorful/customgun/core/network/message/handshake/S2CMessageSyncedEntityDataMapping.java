@@ -31,7 +31,7 @@ public class S2CMessageSyncedEntityDataMapping extends LoginIndexHolder implemen
     }
 
     @Override
-    public void encode(S2CMessageSyncedEntityDataMapping message, FriendlyByteBuf buffer) {
+    public void encode(FriendlyByteBuf buffer) {
         Set<SyncedDataKey<?, ?>> keys = SyncedEntityData.instance().getKeys();
         buffer.writeInt(keys.size());
         keys.forEach(key -> {
@@ -55,7 +55,8 @@ public class S2CMessageSyncedEntityDataMapping extends LoginIndexHolder implemen
     }
 
     @Override
-    public void handle(S2CMessageSyncedEntityDataMapping message, Consumer<Runnable> handler, NetworkContext context) {
+    public void handle(Consumer<Runnable> handler, NetworkContext context) {
+        var message = this;
         CustomGun.LOGGER.debug(HANDSHAKE, "Received synced key mappings from server");
         CountDownLatch block = new CountDownLatch(1);
         handler.accept(() -> {

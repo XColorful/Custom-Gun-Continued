@@ -16,7 +16,8 @@ public record S2CMessageResourceSound(int entityId,
         implements IMessage<S2CMessageResourceSound> {
 
     @Override
-    public void encode(S2CMessageResourceSound message, FriendlyByteBuf buffer) {
+    public void encode(FriendlyByteBuf buffer) {
+        var message = this;
         buffer.writeVarInt(message.entityId);
         NetworkUtils.writeResourceLocation(buffer, message.gunLocation);
         NetworkUtils.writeResourceLocation(buffer, message.gunDisplayLocation);
@@ -38,7 +39,8 @@ public record S2CMessageResourceSound(int entityId,
     }
 
     @Override
-    public void handle(S2CMessageResourceSound message, Consumer<Runnable> handler, NetworkContext context) {
+    public void handle(Consumer<Runnable> handler, NetworkContext context) {
+        var message = this;
         if (CustomGun.getSideExecutor().getLogicalSide().isClient()) {
             handler.accept(() -> {
                 CustomGun.getSideExecutor().executeOn(McSide.CLIENT, () -> () ->

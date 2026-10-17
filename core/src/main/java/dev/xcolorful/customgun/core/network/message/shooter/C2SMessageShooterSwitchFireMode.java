@@ -14,7 +14,7 @@ public class C2SMessageShooterSwitchFireMode implements IMessage<C2SMessageShoot
     }
 
     @Override
-    public void encode(C2SMessageShooterSwitchFireMode message, FriendlyByteBuf buffer) {
+    public void encode(FriendlyByteBuf buffer) {
     }
 
     public static C2SMessageShooterSwitchFireMode decode(FriendlyByteBuf buffer) {
@@ -22,7 +22,7 @@ public class C2SMessageShooterSwitchFireMode implements IMessage<C2SMessageShoot
     }
 
     @Override
-    public void handle(C2SMessageShooterSwitchFireMode message, Consumer<Runnable> handler, NetworkContext context) {
+    public void handle(Consumer<Runnable> handler, NetworkContext context) {
         if (CustomGun.getSideExecutor().getLogicalSide().isServer()) {
             handler.accept(() -> {
                 if (!(context.sender() instanceof ServerPlayer player)) {

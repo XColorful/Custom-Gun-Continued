@@ -13,7 +13,8 @@ public record C2SMessageShooterProne(boolean isProne)
         implements IMessage<C2SMessageShooterProne> {
 
     @Override
-    public void encode(C2SMessageShooterProne message, FriendlyByteBuf buffer) {
+    public void encode(FriendlyByteBuf buffer) {
+        var message = this;
         buffer.writeBoolean(message.isProne);
     }
 
@@ -22,7 +23,8 @@ public record C2SMessageShooterProne(boolean isProne)
     }
 
     @Override
-    public void handle(C2SMessageShooterProne message, Consumer<Runnable> handler, NetworkContext context) {
+    public void handle(Consumer<Runnable> handler, NetworkContext context) {
+        var message = this;
         if (CustomGun.getSideExecutor().getLogicalSide().isServer()) {
             handler.accept(() -> {
                 @Nullable LivingEntity livingShooter = context.sender();

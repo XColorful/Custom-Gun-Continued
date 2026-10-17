@@ -69,7 +69,7 @@ public class NeoNetworkAdapter implements INetworkAdapter {
         }
 
         public void write(FriendlyByteBuf buffer) {
-            this.message.encode(this.message, buffer);
+            this.message.encode(buffer);
         }
     }
 
@@ -292,7 +292,7 @@ public class NeoNetworkAdapter implements INetworkAdapter {
                     setHandledFunc
             );
 
-            message.handle(message, context::enqueueWork, netContext);
+            message.handle(context::enqueueWork, netContext);
         };
 
         CustomPacketPayload.Type<NeoPayload<T>> payloadType = new CustomPacketPayload.Type<>(id);

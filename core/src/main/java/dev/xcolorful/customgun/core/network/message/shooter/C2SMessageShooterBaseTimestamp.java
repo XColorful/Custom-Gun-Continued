@@ -18,7 +18,7 @@ public class C2SMessageShooterBaseTimestamp implements IMessage<C2SMessageShoote
     }
 
     @Override
-    public void encode(C2SMessageShooterBaseTimestamp message, FriendlyByteBuf buffer) {
+    public void encode(FriendlyByteBuf buffer) {
     }
 
     public static C2SMessageShooterBaseTimestamp decode(FriendlyByteBuf buffer) {
@@ -26,7 +26,7 @@ public class C2SMessageShooterBaseTimestamp implements IMessage<C2SMessageShoote
     }
 
     @Override
-    public void handle(C2SMessageShooterBaseTimestamp message, Consumer<Runnable> handler, NetworkContext context) {
+    public void handle(Consumer<Runnable> handler, NetworkContext context) {
         if (CustomGun.getSideExecutor().getLogicalSide().isServer()) {
             long timestamp = System.currentTimeMillis();
             handler.accept(() -> {

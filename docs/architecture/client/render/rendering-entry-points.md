@@ -31,7 +31,7 @@
 
 第三人称分两部分：
 
-- 主手 / 副手正常持有的枪械：走原版 `ItemRenderer.renderStatic` → BEWLR 的 `renderByItem(THIRD_PERSON_RIGHT_HAND)`，由 `GunItemRenderer.renderByItem()` 应用第三人称定位组变换后渲染。`ItemInHandLayerMixin` 在主手持枪时取消左臂渲染，防止重复。
+- 主手 / 副手正常持有的枪械：走原版 `ItemRenderer.renderStatic` → BEWLR 的 `renderByItem(THIRD_PERSON_RIGHT_HAND)`，由 `GunItemRenderer.renderByItem()` 应用第三人称定位组变换后渲染。`ItemInHandLayerMixin` 按 `getMainArm()` 判定副手：主手握枪时取消副手物品渲染，副手握枪时取消其原版渲染（交给包围显示）。主手的枪在左手模式下走 `THIRD_PERSON_LEFT_HAND`，同样由 `renderByItem()` 渲染。
 - 副手枪械与热键栏包围显示：`ItemInHandLayerMixin` 在 `ItemInHandLayer.render` 尾部调用 `HumanoidOffhandRender.renderGun()`，读取 display 中的 offhand / hotbar 包围显示配置，逐个渲染到实体身上。
 
 ## GUI、掉落物、展示框
@@ -40,7 +40,7 @@
 
 - GUI 场景（含物品栏图标、tooltip 里的 3D 模型）：`GunItemRenderer.renderByItem()` 看到 `ItemDisplayContext.GUI` 时改为渲染扁平的槽位图标纹理（`slotTextureLocation`），不渲染 3D 模型。
 - 掉落物（`GROUND`）与展示框（`FIXED`）：应用对应定位组的位移 / 旋转 / 缩放后渲染 3D 模型。
-- 第一人称左右手、第三人称副手在这些场景里被显式跳过，交给上面的专用路径处理。
+- 第一人称左右手在 `renderByItem()` 里被显式跳过；第三人称副手由 `ItemInHandLayerMixin` 按主手判定取消，其余交给上面的专用路径处理。
 
 ## 逐帧驱动
 

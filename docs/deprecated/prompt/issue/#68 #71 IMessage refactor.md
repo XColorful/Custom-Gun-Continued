@@ -95,3 +95,68 @@ CGC Tactical Addon 当前没有任何 `IMessage` 实现，只依赖 CGC 的 `INe
 | 26.1–26.3 | 按你说明同 1.21.11 | — | 同 1.21.11 |
 
 按你的要求，1.20.2–1.21.1forge 的差异留给主分支 merge；neoforge 侧尚未改动。
+
+# 
+
+[fork1](#fork1)
+
+# fork1
+
+```
+1.20.2、1.20.4、1.21.1forge已经在合并中，处理合并冲突但不要提交
+- neoforge侧先不要处理，防止改动跟Merge混在一起
+- Tactical Addon已切换分支，现在可检查IMessage兼容问题
+```
+
+# 
+
+先查看三个 worktree 的合并状态与冲突文件。
+
+三个 worktree 的合并都只卡在 `ForgeNetworkAdapter.java`。先读取冲突内容与合并双方版本。
+
+三个分支的冲突已解决并编译通过。现在检查 Tactical Addon 的 `Network-skeleton` 分支。
+
+## 合并冲突处理（未提交）
+
+三个 worktree 的冲突都只有 [ForgeNetworkAdapter.java]，已全部解决并 `git add` 标记为已解决；`.git/MERGE_HEAD` 仍在，未创建任何提交。
+
+解决原则：保留各分支自己的 ChannelBuilder 结构、握手方向和 `loginIndex` 取舍，只合入无 T 调用：
+
+- `.encoder((m, buffer) -> m.encode(buffer))`
+- `.handle(context::enqueueWork, netContext)`
+
+|Worktree|冲突块|编译|
+|---|---|---|
+|1.20.2|5 处（3 builder + 2 handle）|`BUILD SUCCESSFUL`|
+|1.20.4|同上|`BUILD SUCCESSFUL`|
+|1.21.1forge|4 处（`message` 命名、`decoder::apply`）|`BUILD SUCCESSFUL`|
+
+三个分支的 `IMessage` 与 34 个消息类都已正确合入（34/34 无 T 方法），无残留冲突标记。neoforge 侧未触碰。
+
+## Tactical Addon 兼容检查
+
+`Network-skeleton` 分支现有 12 个消息类，全部使用旧签名：
+
+```java
+public void encode(Xxx message, FriendlyByteBuf buffer)
+public void handle(Xxx message, Consumer<Runnable> handler, NetworkContext context)
+```
+
+它直接使用 CGC 的 `ForgeNetworkAdapter` 注册和发包，没有自建适配器，也没有直接调用 `encode`/`handle`。这正是过渡方案要覆盖的场景，**兼容成立**：
+
+- 旧 jar 的接口描述符为 `encode(Object, FriendlyByteBuf)` / `handle(Object, Consumer, NetworkContext)`
+- 新接口保留了完全相同的描述符（只是从 abstract 变成 default）
+- addon 编译出的桥方法仍然覆盖它们，适配器调用无 T 默认方法 → 转发到 addon 的旧签名实现
+
+新旧描述符已用 `javap -s` 逐个核对，转发链用 JVM 实验验证过。
+
+### 一个与 IMessage 无关的阻塞项
+
+用当前 `libs/customgun-26.9.21-forge-1.20.1.jar` 编译 addon 分支会失败：
+
+```
+NetworkHandler(INetworkAdapter) has private access
+adapter / ID_COUNT has private access
+```
+
+原因是 addon 的 `NetworkHandler` 继承 CGC 的 `NetworkHandler`，而 26.9.21 发布 jar 里这些成员是 `private`；core1.20.1 在 `26.10.24` 已把它们改成 `protected`。所以 addon 需要换用包含该改动的 CGC jar 才能编译，这与 IMessage 过渡无关。addon 仓库未做任何修改。

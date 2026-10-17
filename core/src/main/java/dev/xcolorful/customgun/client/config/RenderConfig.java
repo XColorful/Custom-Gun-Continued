@@ -1,6 +1,7 @@
 package dev.xcolorful.customgun.client.config;
 
 import dev.xcolorful.customgun.client.api.config.ClientModConfigTag;
+import dev.xcolorful.customgun.client.api.gui.GuiSize;
 import dev.xcolorful.customgun.client.api.textures.crosshair.CrosshairType;
 import dev.xcolorful.customgun.core.api.config.IModConfigSpec;
 import dev.xcolorful.customgun.core.api.config.IModConfigSpecBuilder;
@@ -16,6 +17,7 @@ public class RenderConfig {
     public static IModConfigSpec<Boolean> KEEP_DISPLAY_GUN_HUD;
     public static IModConfigSpec<Boolean> FORCE_DISPLAY_GUN_HUD;
     public static IModConfigSpec<Boolean> ENABLE_SHOOTER_OPERATION_HUD;
+    public static IModConfigSpec<Integer> GUN_DESCRIPTION_WIDTH;
     public static IModConfigSpec<Boolean> APPEND_RESOURCE_LOCATION_IN_TOOLTIP;
 
     public static IModConfigSpec<Boolean> ENABLE_LASER_FADE_OUT;
@@ -58,6 +60,9 @@ public class RenderConfig {
         builder.addComment(ClientModConfigTag.enableShooterOperationHUD_comment);
         ENABLE_SHOOTER_OPERATION_HUD = builder.addConfig(ClientModConfigTag.enableShooterOperationHUD_path, true);
         DISABLE_INTERACT_HUD_TEXT = ENABLE_SHOOTER_OPERATION_HUD;
+
+        builder.addComment(ClientModConfigTag.gunDescriptionWidth_comment);
+        GUN_DESCRIPTION_WIDTH = builder.addConfig(ClientModConfigTag.gunDescriptionWidth_path, GuiSize.Text.CHINESE_CHAR_WIDTH * 20, GuiSize.Text.CHINESE_CHAR_WIDTH * 10, GuiSize.Text.CHINESE_CHAR_WIDTH * 30);
 
         builder.addComment(ClientModConfigTag.appendResourceLocationInTooltip_comment);
         APPEND_RESOURCE_LOCATION_IN_TOOLTIP = builder.addConfig(ClientModConfigTag.appendResourceLocationInTooltip_path, true);

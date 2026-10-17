@@ -13,7 +13,7 @@ public class S2CMessagePlayerSwapItem implements IMessage<S2CMessagePlayerSwapIt
     }
 
     @Override
-    public void encode(S2CMessagePlayerSwapItem message, FriendlyByteBuf buffer) {
+    public void encode(FriendlyByteBuf buffer) {
     }
 
     public static S2CMessagePlayerSwapItem decode(FriendlyByteBuf buffer) {
@@ -21,7 +21,8 @@ public class S2CMessagePlayerSwapItem implements IMessage<S2CMessagePlayerSwapIt
     }
 
     @Override
-    public void handle(S2CMessagePlayerSwapItem message, Consumer<Runnable> handler, NetworkContext context) {
+    public void handle(Consumer<Runnable> handler, NetworkContext context) {
+        var message = this;
         if (CustomGun.getSideExecutor().getLogicalSide().isClient()) {
             handler.accept(() -> _S2CMessagePlayerSwapItem.doClientEvent(message));
         }

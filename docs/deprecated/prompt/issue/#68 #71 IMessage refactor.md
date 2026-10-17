@@ -1,0 +1,97 @@
+> #71 提示词
+
+# 
+
+```
+读Issue #68 https://github.com/XColorful/Custom-Gun-Continued/issues/68 里对于IMessage的提问
+- 现在IDEA打开了1.20.1-1.21.11各分支的窗口，供浏览源码；26.1.x到26.3的NeoNetworkAdapter跟1.21.11一样，当前不处理26.1+版本
+- 如果不同版本之间需要修改的代码相同，则只修改第一个版本，并说明后续要cherry pick到哪几个版本（假设1.20.2和1.20.4修改相同，那么只要说明1.20.2修改了，1.20.4复用1.20.2的修改即可）
+- 可分配多Agent执行，先分析哪些版本的修改是一致的（在任务完成后给出cherry pick表格），再开始修改
+- 可先浏览上一个处理的变更"#68 #70 network adapter.md"
+
+当前IMessage接口为目前设计的过渡方式，CGC本体先都效仿C2SMessageShooterAim用var message = this;来移植，forge/neoforge层改用无T message的版本，已有扩展mod仍然由default转发为带T message的版本，且不要求CGC本体再实现带T message的版本
+- 需要分析这个过渡方案是否可行，例如CGC Tactical Addon作为一个Forge/NeoNetworkAdapter的用户需要保证临时的向后兼容
+- 目前先处理core1.20.1，1.20.1-1.21.1forge直接由主分支core1.20.1merge时处理差异
+- 后续处理neoforge侧才检查cherry pick规则
+```
+
+# 
+
+I'll read Issue #68 and the related design document first, then inspect the current code.
+
+现在检查各版本的消息类与适配器调用点，确认过渡方案的编译与二进制兼容性关键点。
+
+方案的核心是二进制兼容性，我先在 JVM 层面验证泛型擦除/桥方法的行为，再决定接口写法。
+
+JVM 实验确认：`T extends IMessage<T>` 会改变擦除签名，老 addon 的桥方法不再覆盖接口方法，默认实现被触发（若是空实现则静默丢失收发）。因此过渡接口必须保持 `T` 无界。现在开始改代码。
+
+编译通过。现在核对各版本源码是否一致，生成 cherry-pick 关系。
+
+## 结论
+
+方案可行，但**工作区里那版 `IMessage<T extends IMessage<T>>` 必须撤掉**。这是唯一会破坏向后兼容的改动，其余设计成立。
+
+### 为什么这个上界不能加
+
+类型参数的上界会改变方法擦除签名：
+
+- `IMessage<T>`（无界）：`encode(T, FriendlyByteBuf)` 擦除为 `encode(Object, FriendlyByteBuf)`
+- `IMessage<T extends IMessage<T>>`：擦除为 `encode(IMessage, FriendlyByteBuf)`
+
+旧扩展 mod 编译时会为 `encode(MyMsg, buf)` 生成一个 `encode(Object, buf)` 的桥方法。一旦上界改变，这个桥方法不再覆盖接口方法，调用会落到接口默认实现——如果默认是空实现，就是**静默不收发**。
+
+我用 JDK 21 做了最小复现（旧接口编译 addon → 运行时换新接口）：
+
+```
+--- 保持 T 无界
+ADDON-ENCODE
+ADDON-HANDLE
+--- 加上 T extends IMessage<T>
+ENCODE-FAIL: UnsupportedOperationException
+HANDLE-FAIL: UnsupportedOperationException
+```
+
+所以 `IMessage<T>` 的类型参数必须保持无界。这个约束已写入 [IMessage.java](core/src/main/java/dev/xcolorful/customgun/core/api/network/message/IMessage.java:12) 的类注释。
+
+### 兼容矩阵
+
+| 实现方式 | 运行时行为 |
+|---|---|
+| 已发布 addon 的旧 class（只实现带 T 方法） | 正常：无 T 默认方法转发到桥方法 → addon 实现 |
+| 旧 addon 重新源码编译 | 正常：带 T 方法仍是可覆盖的 default |
+| 新 addon 只实现无 T 方法 | 正常 |
+| 两者都不实现 | 抛 `UnsupportedOperationException`，不会静默发包 |
+| addon 自建适配器、直接调用 CGC 消息的带 T 方法 | 会抛异常（唯一不兼容面；CGC 消息不再实现旧签名） |
+
+CGC Tactical Addon 当前没有任何 `IMessage` 实现，只依赖 CGC 的 `INetworkAdapter` 发包，因此**不受影响**；后续若加自定义消息，两种签名都可以实现。
+
+我做的另一个判断是把旧签名默认实现设为**抛异常**而不是空实现（你工作区里原是 `{}`）。理由是漏实现时能立刻暴露；如果你更希望保持空实现，我可以改回。
+
+## 本次改动（core1.20.1）
+
+- [IMessage.java](core/src/main/java/dev/xcolorful/customgun/core/api/network/message/IMessage.java)：`T` 恢复无界；新增无 T 默认方法，单向转发到旧签名；旧签名标记 `@Deprecated(forRemoval = true)`。
+- core 下 **34/34** 个消息类改为 `encode(FriendlyByteBuf)` / `handle(Consumer, NetworkContext)`，实现体按 `var message = this;` 移植。
+- [ForgeNetworkAdapter.java](forge-compat/src/main/java/dev/xcolorful/customgun/forge/network/ForgeNetworkAdapter.java)：6 处调用改为无 T 版本。
+
+`./gradlew :core:compileJava :forge-compat:compileJava` **BUILD SUCCESSFUL**。未提交。
+
+## Cherry-pick 表（已核对各 worktree 的 HEAD 内容）
+
+**core 补丁**：1.20.2、1.20.4、1.21.1forge、1.21.1neoforge、1.21.4neoforge、1.21.6neoforge、1.21.10neoforge 的消息文件与 1.20.1 HEAD 完全一致，直接复用。1.21.11neoforge 有 6 个文件仅 `ResourceLocation` → `Identifier` 改名，方法签名一致，同一补丁可用（上下文冲突只需接受改名）。
+
+**适配器补丁**只需两行模式：`x.encode(x, buffer)` → `x.encode(buffer)`；`x.handle(x, handler, ctx)` → `x.handle(handler, ctx)`。
+
+| 分支 | core | ForgeNetworkAdapter | NeoNetworkAdapter |
+|---|---|---|---|
+| core1.20.1（本次） | 已改 | 已改 | — |
+| 1.20.2 | 复用 1.20.1 | 复用 1.20.1 的两行改法（ChannelBuilder 写法不同） | 6 处（3 encode + 3 handle，`messageInstance`） |
+| 1.20.4 | 复用 1.20.2 | 复用 1.20.2 | 2 处（`this.message` + `Runnable::run`），与 1.20.2 不同 |
+| 1.21.1forge | 复用 1.20.1 | 复用 1.20.2 的改法 | — |
+| 1.21.1neoforge | 复用 1.20.1 | — | 2 处 |
+| 1.21.4neoforge | 复用 1.21.1neoforge | — | 复用 1.21.1neoforge |
+| 1.21.6neoforge | 复用 1.21.1neoforge | — | 复用 1.21.1neoforge |
+| 1.21.10neoforge | 复用 1.21.1neoforge | — | 2 处（调用行与 1.21.11 相同，文件其余部分有差异） |
+| 1.21.11neoforge | core 补丁可用（6 文件改名上下文） | — | 复用 1.21.10 |
+| 26.1–26.3 | 按你说明同 1.21.11 | — | 同 1.21.11 |
+
+按你的要求，1.20.2–1.21.1forge 的差异留给主分支 merge；neoforge 侧尚未改动。

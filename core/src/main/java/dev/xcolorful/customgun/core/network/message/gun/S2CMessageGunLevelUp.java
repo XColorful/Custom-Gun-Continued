@@ -15,7 +15,8 @@ public record S2CMessageGunLevelUp(ItemStack gun,
         implements IMessage<S2CMessageGunLevelUp> {
 
     @Override
-    public void encode(S2CMessageGunLevelUp message, FriendlyByteBuf buffer) {
+    public void encode(FriendlyByteBuf buffer) {
+        var message = this;
         NetworkUtils.writeItem(buffer, message.gun);
         buffer.writeInt(message.level);
     }
@@ -27,7 +28,8 @@ public record S2CMessageGunLevelUp(ItemStack gun,
     }
 
     @Override
-    public void handle(S2CMessageGunLevelUp message, Consumer<Runnable> handler, NetworkContext context) {
+    public void handle(Consumer<Runnable> handler, NetworkContext context) {
+        var message = this;
         if (CustomGun.getSideExecutor().getLogicalSide().isClient()) {
             handler.accept(() -> {
                 CustomGun.getSideExecutor().executeOn(McSide.CLIENT, () -> () ->

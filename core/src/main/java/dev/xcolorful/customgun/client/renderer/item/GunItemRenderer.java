@@ -417,8 +417,7 @@ public class GunItemRenderer extends AnimateGeoItemRenderer<GunModelObject, GunA
             if (
                     // 第一人称就不渲染了，交给别的地方
                     transformType == FIRST_PERSON_LEFT_HAND || transformType == FIRST_PERSON_RIGHT_HAND
-                    // 第三人称副手也不渲染了
-                    || transformType == THIRD_PERSON_LEFT_HAND
+                    // 第三人称副手由 ItemInHandLayerMixin 按主手判定取消，这里不能再按左右手写死
             ) return;
 
             poseStack.pushPose(); {

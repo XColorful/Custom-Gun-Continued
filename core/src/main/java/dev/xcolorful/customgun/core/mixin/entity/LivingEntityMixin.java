@@ -66,7 +66,16 @@ public abstract class LivingEntityMixin extends Entity implements ILivingShooter
         this.cgc$bolt.tickBolt();
         this.cgc$melee.scheduleTickMelee();
         this.cgc$heat.tickHeat();
-        cgc$shooter.setSprinting(this.cgc$getProcessedSprintStatus(this.cgc$shooter.isSprinting()));
+        /*
+         * 只在状态确实需要改变时才调用：
+         * LivingEntity.setSprinting 每次都会先移除再挂回冲刺移速修饰符，把 MOVEMENT_SPEED 属性标脏
+         * 服务端随后会把属性快照发给玩家本人（ServerEntity#broadcastAndSend）
+         * 每tick重复调用会让客户端属性反复被服务端快照覆盖，与原版移速 FOV 冲突（骑乘时尤为明显）
+         */
+        boolean isSprinting = cgc$shooter.isSprinting();
+        boolean processedSprint = this.cgc$getProcessedSprintStatus(isSprinting);
+        if (isSprinting != processedSprint) cgc$shooter.setSprinting(processedSprint);
+
         // 从服务端同步数据
         LivingShooterSyncKey.SHOOT_COOL_DOWN_KEY.setValue(cgc$shooter, this.cgc$shoot.getShootCooldown());
         LivingShooterSyncKey.MELEE_COOL_DOWN_KEY.setValue(cgc$shooter, this.cgc$melee.getMeleeCooldownMs(System.currentTimeMillis()));

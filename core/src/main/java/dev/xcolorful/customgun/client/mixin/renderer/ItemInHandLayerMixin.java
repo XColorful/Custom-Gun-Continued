@@ -57,7 +57,11 @@ public class ItemInHandLayerMixin<S extends ArmedEntityRenderState, M extends En
             MuzzleFlashRender.State.isSelf = true;
             ShellRender.State.isSelf = true;
         }
-        if (IGunGetter.fromMainHand(livingEntity) != null && arm == HumanoidArm.LEFT) {
+        // 主手握枪时隐藏副手物品；副手握枪时也隐藏其原版渲染，交给 HumanoidOffhandRender 的包围显示
+        // 必须按主手判定而不是固定左手，否则左手模式下主手的枪会被当成副手取消掉
+        if (livingEntity != null && arm != livingEntity.getMainArm()
+                && (IGunGetter.fromMainHand(livingEntity) != null
+                    || IGunGetter.fromItemStack(itemStack) != null)) {
             ci.cancel();
         }
     }

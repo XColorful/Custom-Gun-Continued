@@ -95,12 +95,12 @@ public class EntityUtils {
 
         public static void reviveCaps(@NotNull LivingEntity livingEntity) {
 //            try {
-            livingEntity.reviveCaps();
+//            livingEntity.reviveCaps();
 //            } catch (NoSuchMethodError ignored) {} // neoforge1.20.4+没这方法，省一个forge侧mixin
         }
         public static void invalidateCaps(@NotNull LivingEntity livingEntity) {
 //            try {
-            livingEntity.invalidateCaps();
+//            livingEntity.invalidateCaps();
 //            } catch (NoSuchMethodError ignored) {} // neoforge1.20.4+没这方法，省一个forge侧mixin
         }
     }

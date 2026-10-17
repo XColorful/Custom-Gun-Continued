@@ -41,6 +41,11 @@ public class GuiSize {
 
         public static final int TEXT_LINE_SPACING = _textLineSpacingPixel / _sizeToPixelRatio;
 
+        /**
+         * 一个中文字符宽36像素 (文字+阴影32像素、文字后的空间占4像素)
+         */
+        public static final int CHINESE_CHAR_WIDTH = 36 / _sizeToPixelRatio;
+
         private Text() {}
     }
 

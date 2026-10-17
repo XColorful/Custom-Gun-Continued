@@ -55,7 +55,7 @@ public class ForgeNetworkAdapter implements INetworkAdapter {
         this.CHANNEL.<T>messageBuilder(clazz, id, forgeDirection)
                 .encoder((messageInstance, buffer) -> messageInstance.encode(messageInstance, buffer))
                 .decoder(decoder)
-                .consumerMainThread((messageInstance, context) -> {
+                .consumerNetworkThread((messageInstance, context) -> {
                     IMessage.NetworkContext netContext = new IMessage.NetworkContext(
                             context.getConnection(),
                             MessageDirectionHelper.convert(context.getDirection()),
@@ -64,6 +64,7 @@ public class ForgeNetworkAdapter implements INetworkAdapter {
                             null
                     );
                     messageInstance.handle(messageInstance, context::enqueueWork, netContext);
+                    context.setPacketHandled(true);
                 })
                 .add();
     }

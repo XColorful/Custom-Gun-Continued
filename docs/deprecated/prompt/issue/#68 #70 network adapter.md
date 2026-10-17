@@ -202,3 +202,309 @@ public void handleCustomPayload(ClientboundCustomPayloadPacket p) {
 - `1.21.1neoforge`：BUILD SUCCESSFUL
 
 审计过所有 `IMessage.handle`：`handler.accept(...)` 之外只有 `getLogicalSide()`、日志、时间戳、`context.connection()/reply()/setHandled()` 这些线程安全的操作；`S2CMessageSyncDataPack.doSync` 本来就是设计成网络线程解析。未运行游戏，未提交。
+
+# 
+
+```
+现在cherry pick好了，再继续检查config事件监听注册的问题
+- ForgeNetworkAdapter/NeoNetworkAdapter预期是一个可让其他mod复用的设计（构造函数内传了信息），如果注册事件需要唯一标识，尽可能只用传入的modid以及注册时保留信息/直接用注册的事件类名等可用的标识
+- 同样只完成首个差异版本，相同的后续版本等我cherry pick
+```
+
+# 
+
+我先确认各分支里与 `RegisterConfigurationTasksEvent` / 配置阶段任务相关的现有代码，以及适配器实例化与事件总线注册的位置。
+
+先查历史里是否曾有配置阶段任务注册（判断这是“移植丢失”还是“从未实现”）。
+
+发现最近有个 `#68 #70 network adapter.md` 文档提交，先读它。
+
+按 `RegisterConfigurationTasksEvent` 补上握手任务注册；Task 类型用 `modId` + 注册的握手消息类名，避免硬编码。
+
+`config 事件监听` 的检查结果和修复已完成，1.21.1 编译通过。
+
+## 检查结果
+
+**payload 注册事件**（`RegisterPayloadHandlersEvent`）
+
+- 参数语义随版本变化：1.20.4 是 `registrar(String namespace)`，1.21.x 是 `registrar(String version)`。当前统一传 `this.modId` 是刻意的跨版本写法，两个语义下都成立，且满足"复用适配器时只用构造函数传入的 modId"。
+- 消息唯一标识已经是 `modId + 注册类名`：`"%s:%s"` → `modId:classsimplelower`。没有硬编码 `customgun`。
+- 这部分**不需要改**。
+
+**配置阶段任务注册**（`RegisterConfigurationTasksEvent`）
+
+- 之前适配器只注册了 `RegisterPayloadHandlersEvent`，从未注册 `RegisterConfigurationTasksEvent`。结果是 1.20.2+ 的"握手"消息只有注册、没有发送，完全是死路径；1.20.1 靠 Forge 的 `markAsLoginPacket()` 自动发送，所以只有 1.20.1 能跑。
+- 已补上。唯一标识直接用注册信息推导：`ConfigurationTask.Type(packetId)`，即 `modId:<握手消息类名>`，不引入任何硬编码 id。
+
+## 修改内容（1.21.1neoforge）
+
+[NeoNetworkAdapter.java](app://localhost/Custom-Gun-Continued-1.21.1neoforge/neoforge-compat/src/main/java/dev/xcolorful/customgun/neoforge/network/NeoNetworkAdapter.java)
+
+- 实现 `@SubscribeEvent registerConfigurationTasks(RegisterConfigurationTasksEvent)`：
+    - 只有同时注册了握手 ack（C2S）和握手消息（S2C）时才注册任务，避免只有一半时把连接卡在配置阶段
+    - 任务类型 = `modId:握手消息类名`（与 payload id 一致）
+    - `run(...)` 时通过反射创建消息实例并发出（与 1.20.1 `markAsLoginPacket` 的隐式无参构造一致；`S2CMessageSyncedEntityDataMapping` 本来就有无参构造）
+    - 注册时校验无参构造；不存在则记录错误并且不注册任务（不让连接卡死）
+- ack 的处理通过 `NetworkContext.setHandled()` 接回配置任务：`setHandledFunc = () -> context.enqueueWork(() -> context.finishCurrentTask(taskType))`
+    - 只对 `CLIENT_TO_SERVER` 握手包生效；S2C mapping 仍然是空 lambda
+    - `finishCurrentTask` 走 `enqueueWork` 提交到主线程，和 NeoForge 自己 `ServerPayloadHandler` 的调用方式一致
+- 任务实例用的 `Supplier<CustomPacketPayload>` 每次连接重新创建，避免跨连接共享可变消息对象
+
+现在的流程与 1.20.1 对齐：服务端配置阶段发送 mapping → 客户端解析并更新映射 → 回 ack → 服务端完成配置任务。
+
+## Cherry-pick
+
+|改动|已改版本|复用|说明|
+|---|---|---|---|
+|Neo 配置任务注册 + 握手发送/完成|**1.21.1neoforge**|1.21.4neoforge、1.21.6neoforge|文件相同，可直接应用|
+|同上|—|1.21.10neoforge、1.21.11neoforge|逻辑相同；import 区域需解一次冲突（`ClientPacketDistributor`/`Identifier`）|
+|同上|—|26.1.2 / 26.1.x / 26.2 / 26.3|按要求暂不处理|
+
+## 未覆盖的版本
+
+- **Neo 1.20.4**：对应 API 是 `OnGameConfigurationEvent` + `ICustomConfigurationTask` + `ITaskCompletedHandler`，和 1.21.x 不是同一份改动，不能 cherry-pick，需要单独移植。
+- **Neo 1.20.2**：NeoForge 20.2.93 没有配置任务 API（源码里连 `ConfigurationTask` 都没有），无法实现。
+- **Forge 1.20.2+**：Forge 也没有 mod 侧配置任务事件，且 `markAsLoginPacket` 已删除；握手保持现状（不发送）。
+
+编译验证：`1.21.1neoforge:neoforge-compat:compileJava` BUILD SUCCESSFUL。未运行游戏，未提交。需要我继续补 1.20.4 的 `OnGameConfigurationEvent` 版本吗？
+
+# 
+
+[fork1](#fork1)
+
+# fork1
+
+```
+握手消息是否NeoForge只支持注册一个/不会有多个注册的需求？目前的实现似乎默认了只注册一个？用bool和遍历registeredPackets来筛选的区别？
+```
+
+# 
+
+先核实两件事：vanilla 的 `finishCurrentTask` 语义，以及当前实现在多次注册时会怎样。
+
+NeoForge 本身不限制注册数量，但当前实现确实是"单条"假设。我先确认 vanilla 的任务完成语义，再改成按 `registeredPackets` 推导。
+
+NeoForge 本身没有数量限制，但 CGC 的**握手协议**只支持"N 条 S2C + 1 条 ack"。当前实现确实默认了单条，已改成从 `registeredPackets` 推导。
+
+## 回答
+
+**1. NeoForge 是否只支持一个？**
+
+- payload 注册层面没有限制：`configurationToClient` / `configurationToServer` / 配置任务都可以注册任意多个。
+- 但 CGC 的握手协议里 ack 是**无内容、无标识**的 `C2SMessageAcknowledge`，而 vanilla 的 `finishCurrentTask(Type)` 只认当前那一个任务：
+
+    ```java
+    if (!taskType.equals(currentTask.type()))    throw new IllegalStateException("Unexpected request for task finish, ...");
+    ```
+
+  所以：
+    - 多条 S2C 握手消息可以放在**同一个任务**里一起发，客户端处理完回一次 ack；
+    - 多条 ack 没有语义：第一个 ack 完成后任务就切换了，第二个再 `finishCurrentTask` 会抛异常（可能导致断连）。Forge 1.20.1 靠 login index 区分多条，payload 路径没有这个信息。
+
+**2. 原实现的问题**  
+`handshakeTaskType` / `handshakePayloadFactory` 是单值字段，第二次 `registerHandshakeMessage` 会静默覆盖：所有消息都注册为可接收，但任务只发最后一条。`hasHandshakeAck` 只是"有没有 ack"的存在标记，不是问题根源。
+
+**3. bool vs 遍历 `registeredPackets`**
+
+- bool：O(1)，但是和 `registeredPackets` 重复的状态，只回答"有没有 ack"，不携带任何消息信息。
+- 遍历：`registeredPackets` 已经保存了 `isHandshake` / `direction` / `messageType`，是唯一数据源；天然支持多条；`RegisterConfigurationTasksEvent` 每个连接只触发一次，n≈30 的遍历开销可以忽略。
+- 因此去掉了 bool，改为在事件触发时筛选。
+
+## 现在的实现
+
+- `RegisteredPacket` 增加 `Supplier<CustomPacketPayload> handshakePayloadFactory`（仅 S2C 握手消息非空）
+- `registerHandshakeMessage` 在注册时校验无参构造并生成工厂；`handshakeTaskType` 只取**第一个可发送**握手消息的 id（仍然是 `modId + 注册类名`，不硬编码）
+- `registerConfigurationTasks` 遍历：
+    - `hasAck` = 存在 `isHandshake && CLIENT_TO_SERVER`
+    - `payloadFactories` = 所有 `isHandshake && SERVER_TO_CLIENT` 且工厂非空的项
+    - 条件不足（无 S2C / 无 ack）就不注册任务，避免把连接卡在配置阶段
+    - 任务 `run` 里依次发送所有工厂
+- 重复注册 ack 时记录 error（协议只支持一个）
+- `setHandledFunc` 仍只给 C2S 握手包挂 `finishCurrentTask`，S2C mapping 保持空 lambda
+
+注意一个协议层面的约束：如果以后加的第二条 S2C 握手消息也回复 ack，就会变成二次 `finishCurrentTask`。要真正支持"每条消息各自确认"，需要给 ack 加任务/消息标识，这属于协议改动，不在本次范围。
+
+编译验证：`1.21.1neoforge:neoforge-compat:compileJava` BUILD SUCCESSFUL。本次仍是同一份 1.21.x 改动，cherry-pick 目标不变（1.21.4/1.21.6 直接应用，1.21.10/1.21.11 解 import 冲突）。文件里的 `@ApiStatus.AvailableSince("1.21.1")` 是外部编辑加的，我保留了。
+
+# 
+
+```
+那么1.20.1目前实现是否支持多条注册？login index是否是forge专有的？
+如果只能注册一个，log error改成throw？
+```
+
+# 
+
+## 1.20.1 的实现支持多条注册
+
+Forge 1.20.1 的 `SimpleChannel` 两边都支持多条：
+
+**S2C（`markAsLoginPacket`）**
+
+```java
+private List<Function<Boolean, ? extends List<? extends Pair<String,?>>>> loginPackets;
+...
+if (this.loginPacketGenerators != null)
+    this.channel.loginPackets.add(this.loginPacketGenerators);
+```
+
+`loginPackets` 是列表，`networkLoginGather` 遍历它逐个生成并发送，每条都有独立的 login index。
+
+**C2S（`HandshakeHandler.indexFirst`）**
+
+```java
+// 取收到的 login index，和 sentMessages 里记录的服务端已发 index 对账
+this.sentMessages.removeIf(i -> i == message.getAsInt());
+if (!removed) LOGGER.error("Recieved unexpected index {} in client reply");
+```
+
+`NetworkEvent.Context` 在构造时就绑定了 `packet.getIndex()`，`reply`/`getPacketDispatcher()` 会用同一个 index 回包，所以多个 ack 类型可以按 index 各自对应。
+
+结论：1.20.1 是 **N 条 S2C + N 条 ack**；payload + 配置任务路径只能做到 **N 条 S2C + 1 条 ack**。
+
+## login index 是 Forge 专有的
+
+- 它属于 Forge `SimpleChannel` 的 login-packet 机制：`NetworkEvent.getLoginIndex()`、`PacketDispatcher` 的 index、`LoginIndexHolder` 都是这条链路的一部分（`LoginIndexHolder` 来自 MrCrayfish Framework 的实现）。
+- NeoForge 20.2.93 的 SimpleChannel 是同一份代码的分支，仍有 `loginIndex(...)`；但从 **NeoForge 20.4 的 payload API** 开始没有这个概念，1.21.x 的配置任务也没有任务内的消息序号。
+- Forge **1.20.2+** 删掉了 `markAsLoginPacket` 和 index 对账，只剩 `LOGIN_TO_*` 方向，也没有替代品。
+- 所以现代 NeoForge 的配置任务只能用"一个任务 + 一个无标识 ack"来表达握手，这就是当前实现只能支持一个 ack 的根本原因。
+
+## log error 已改成 throw
+
+[NeoNetworkAdapter.java](app://localhost/Custom-Gun-Continued-1.21.1neoforge/neoforge-compat/src/main/java/dev/xcolorful/customgun/neoforge/network/NeoNetworkAdapter.java)：
+
+```java
+this.registeredPackets.stream()
+        .filter(rp -> rp.isHandshake() && rp.direction() == MessageDirection.CLIENT_TO_SERVER)
+        .findFirst()
+        .ifPresent(existing -> {
+            throw new IllegalStateException(String.format(
+                    "Multiple handshake acknowledge messages registered: %s and %s; only one is supported",
+                    existing.messageType().getName(), clazz.getName()));
+        });
+```
+
+理由：重复注册 ack 在运行期会变成 vanilla 的  
+`IllegalStateException("Unexpected request for task finish, ...")`（第二次 `finishCurrentTask`），可能直接断连；在注册期抛出能在启动时就暴露，错误信息也更明确。
+
+另外还有一个同类的静默失败点：**握手消息没有无参构造**时目前只是 `LOGGER.error` 并且不发送（握手静默失效）。按同样的 fail-loud 思路也可以改成 throw（Forge 1.20.1 是在 login 时抛 `RuntimeException("Inaccessible no-arg constructor for message ...")`）。要不要一起改？
+
+编译验证：`:neoforge-compat:compileJava` BUILD SUCCESSFUL。文件里外部加的无参构造重载（5 参数便捷构造）我保留了。
+
+# 
+
+```
+也改throw，并且按照现在的话，是否1.20.1会发送多条握手导致跟高版本有差异？如果只注册一个，是否不需要LoginIndexHolder？
+```
+
+# 
+
+已把无参构造的报错也改成 throw，并移除了不再使用的 `CustomGun` import。编译通过。
+
+## 1.20.1 会不会发多条，跟高版本有没有差异？
+
+**取决于注册数量，而不是版本本身。**
+
+- 1.20.1：`markAsLoginPacket()` 把每条注册的 S2C 消息都加入 `loginPackets`，登录时全部发送，每条带独立 login index，并期望对应 index 的 ack。
+- 1.21.x Neo：当前实现把一个任务里所有注册的 S2C 消息依次发出，但**只能有一个无标识 ack** 来完成任务。
+
+所以：
+
+|注册情况|1.20.1|1.21.x Neo|是否等价|
+|---|---|---|---|
+|1 条 S2C + 1 条 ack（core 现状）|发 1 条，1 个 index ack|发 1 条，1 个 ack|**等价**|
+|N 条 S2C + 1 条 ack|发 N 条，期望 N 个 index ack|发 N 条，只能收 1 个 ack|不等价|
+|N 条 ack|按 index 可对应|已 throw|—|
+
+core 的 `NetworkHandler` 只注册了一条 `S2CMessageSyncedEntityDataMapping` 和一条 `C2SMessageAcknowledge`，所以**当前实际行为没有差异**。差异只在"有人注册多条"时出现。
+
+如果确认没有多条需求，最省心的做法是把语义统一成"1 条 S2C + 1 条 ack"：在第二条 `registerHandshakeMessage` 时也 throw，同时把任务简化为单条发送。需要的话我可以改；当前实现是多条一起发、单 ack 完成。
+
+## 只注册一个时 LoginIndexHolder 是否还需要？
+
+分平台：
+
+**1.21.x Neo：不需要**  
+适配器完全没有使用它：
+
+- 不调用 `getLoginIndex` / `setLoginIndex`
+- `NeoPayload` 不写 index
+- 配置任务靠 `ConfigurationTask.Type`，不是 login index
+
+它只是 core `INetworkAdapter` 的类型约束和两个消息类的父类。因为 core 跨版本共享且冻结，不能只为 Neo 删掉。
+
+**1.20.1 Forge：仍然需要，即使只有一条**
+
+- `loginIndex` 不是"消息序号"这么简单，它是 login 阶段的**应答关联 id**。
+- 登录包由 `GatherLoginPayloadsEvent` 统一收集，index 由 Forge 跨所有 mod 的 login payload 分配，不保证是 0（其他 mod 的登录包可能排在前面）。
+- 服务端回包时 `PacketDispatcher` 带着接收到的 index 发回；`HandshakeHandler.handleIndexedMessage` 用这个 index 去 `sentMessages` 对账：
+
+    ```java
+    boolean removed = this.sentMessages.removeIf(i -> i == message.getAsInt());if (!removed) LOGGER.error("Recieved unexpected index {} in client reply");
+    ```
+
+- 如果去掉 `.loginIndex(...)`，消息里的 index 保持默认值，回包 index 对不上，轻则报错，重则登录握手无法正确完成。
+
+所以 `LoginIndexHolder` 必须留在 core；它的价值只在 1.20.1 的 Forge login-index 机制里，在 1.21.x 只是无害的兼容类型约束。
+
+## 编译
+
+`:neoforge-compat:compileJava` BUILD SUCCESSFUL。当前 1.21.1neoforge 的待提交改动包括：配置任务注册、多 S2C 汇总发送、重复 ack / 无无参构造改为 throw。
+
+# 
+
+```
+增加限制，使1.20.1跟高版本统一，1.20.1额外有但高版本没有的需要限制不使用
+```
+
+# 
+
+统一为"1 条 S2C + 1 条 ack"，并对所有版本加注册数量限制。先改 1.20.1 Forge。
+
+已把"1 条 S2C + 1 条 ack"的约束加到所有适配器，1.20.1 的多条注册能力被限制掉。所有改动编译通过。
+
+## 改动内容
+
+每个适配器在 `registerHandshakeAcknowledge` / `registerHandshakeMessage` 开头加了注册数量检查，第二次注册直接 `IllegalStateException`（消息里带两个类名）。
+
+|分支/文件|方式|
+|---|---|
+|1.20.1 Forge|新增 `handshakeAckClass` / `handshakeMessageClass` 字段，第二次注册 throw|
+|1.20.2 Forge（1.20.4 相同）|同上|
+|1.21.1 Forge（1.21.x forge-compat 相同）|同上|
+|Neo 1.20.2|同上（SimpleChannel 没有统一列表，用字段）|
+|Neo 1.20.4|用已有 `registeredPackets` 筛选 `isHandshake + direction`，第二次注册 throw|
+|Neo 1.21.1|ack 原本已 throw；本次补上 S2C 的同样检查|
+
+这样：
+
+- 1.20.1 的 `markAsLoginPacket()` 只会自动发送一条登录包，不再可能因为多条注册而出现"高版本没有"的多包/多 index 行为。
+- 所有版本的 `INetworkAdapter` 握手契约统一为：**最多 1 条 ack、最多 1 条 S2C 消息**。
+- 无参构造缺失仍然是 throw（上一轮已改）。
+
+## 验证
+
+```
+1.20.1      :forge-compat:compileJava          BUILD SUCCESSFUL
+1.20.2      :forge-compat + :neoforge-compat   BUILD SUCCESSFUL
+1.20.4      :neoforge-compat:compileJava       BUILD SUCCESSFUL
+1.21.1forge :forge-compat:compileJava          BUILD SUCCESSFUL
+1.21.1neo   :neoforge-compat:compileJava       BUILD SUCCESSFUL
+```
+
+## Cherry-pick
+
+|改动|已改版本|复用|
+|---|---|---|
+|Forge 握手注册数量限制|**1.20.1**|无（唯一文件）|
+|同上|**1.20.2forge**|1.20.4forge|
+|同上|**1.21.1forge**|1.21.1neoforge、1.21.4、1.21.6、1.21.10、1.21.11 的 `forge-compat`|
+|Neo 握手注册数量限制|**1.20.2neoforge**|无|
+|同上|**1.20.4neoforge**|无|
+|同上|**1.21.1neoforge**|1.21.4、1.21.6（1.21.10/1.21.11 解 import 冲突）|
+
+## 仍存在的一处能力差异
+
+1.20.1 会通过 `markAsLoginPacket()` **自动发送**那一条登录包；Forge 1.20.2+ 没有等价的公开 API，所以仍然不发送。Neo 1.21.x 已通过配置任务补齐，Neo 1.20.2/1.20.4 没有对应 API。
+
+要不要把 1.20.1 的自动发送也停掉（例如不调用 `markAsLoginPacket()`，让握手在所有版本都变成"注册但不发送"）？这样完全一致，但 1.20.1 的握手会一起失效。目前我保留它，只限制了"多条"。

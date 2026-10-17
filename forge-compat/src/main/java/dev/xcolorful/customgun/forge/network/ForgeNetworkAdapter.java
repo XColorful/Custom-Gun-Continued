@@ -27,6 +27,8 @@ public class ForgeNetworkAdapter implements INetworkAdapter {
 
     private final SimpleChannel HANDSHAKE_CHANNEL;
     private final SimpleChannel CHANNEL;
+    private String handshakeAckClass;
+    private String handshakeMessageClass;
 
     public ForgeNetworkAdapter(@NotNull IMcRegistry mcRegistry,
                                String modId, int protocolVersion) {
@@ -71,6 +73,12 @@ public class ForgeNetworkAdapter implements INetworkAdapter {
 
     @Override
     public <T extends LoginIndexHolder & IMessage<T>> void registerHandshakeAcknowledge(int id, Class<T> clazz, Function<FriendlyByteBuf, T> decoder) {
+        if (this.handshakeAckClass != null) {
+            throw new IllegalStateException(String.format(
+                    "Multiple handshake acknowledge messages registered: %s and %s; only one is supported",
+                    this.handshakeAckClass, clazz.getName()));
+        }
+        this.handshakeAckClass = clazz.getName();
         this.HANDSHAKE_CHANNEL.messageBuilder(clazz, id, NetworkDirection.LOGIN_TO_SERVER)
                 .encoder((message, buffer) -> message.encode(message, buffer))
                 .decoder(decoder)
@@ -89,6 +97,12 @@ public class ForgeNetworkAdapter implements INetworkAdapter {
 
     @Override
     public <T extends LoginIndexHolder & IMessage<T>> void registerHandshakeMessage(int id, Class<T> clazz, Function<FriendlyByteBuf, T> decoder) {
+        if (this.handshakeMessageClass != null) {
+            throw new IllegalStateException(String.format(
+                    "Multiple handshake messages registered: %s and %s; only one is supported",
+                    this.handshakeMessageClass, clazz.getName()));
+        }
+        this.handshakeMessageClass = clazz.getName();
         this.HANDSHAKE_CHANNEL.messageBuilder(clazz, id, NetworkDirection.LOGIN_TO_CLIENT)
                 .encoder((message, buffer) -> message.encode(message, buffer))
                 .decoder(decoder)

@@ -59,7 +59,7 @@ public class NeoNetworkAdapter implements INetworkAdapter {
         PlayNetworkDirection neoDirection = MessageDirectionHelper.convert(direction);
 
         this.CHANNEL.<T>messageBuilder(clazz, id, neoDirection)
-                .encoder((messageInstance, buffer) -> messageInstance.encode(messageInstance, buffer))
+                .encoder((messageInstance, buffer) -> messageInstance.encode(buffer))
                 .decoder(decoder::apply)
                 .consumerNetworkThread((messageInstance, context) -> {
                     IMessage.NetworkContext netContext = new IMessage.NetworkContext(
@@ -69,7 +69,7 @@ public class NeoNetworkAdapter implements INetworkAdapter {
                             (replyMsg) -> this.CHANNEL.reply(replyMsg, context),
                             null
                     );
-                    messageInstance.handle(messageInstance, context::enqueueWork, netContext);
+                    messageInstance.handle(context::enqueueWork, netContext);
                 })
                 .add();
     }
@@ -84,7 +84,7 @@ public class NeoNetworkAdapter implements INetworkAdapter {
         this.handshakeAckClass = clazz.getName();
         this.HANDSHAKE_CHANNEL.messageBuilder(clazz, id)
                 .loginIndex(LoginIndexHolder::getLoginIndex, LoginIndexHolder::setLoginIndex)
-                .encoder((messageInstance, buffer) -> messageInstance.encode(messageInstance, buffer))
+                .encoder((messageInstance, buffer) -> messageInstance.encode(buffer))
                 .decoder(decoder::apply)
                 .consumerNetworkThread((messageInstance, context) -> {
                     IMessage.NetworkContext netContext = new IMessage.NetworkContext(
@@ -94,7 +94,7 @@ public class NeoNetworkAdapter implements INetworkAdapter {
                             (replyMsg) -> this.HANDSHAKE_CHANNEL.reply(replyMsg, context),
                             () -> context.setPacketHandled(true)
                     );
-                    messageInstance.handle(messageInstance, context::enqueueWork, netContext);
+                    messageInstance.handle(context::enqueueWork, netContext);
                 })
                 .add();
     }
@@ -109,7 +109,7 @@ public class NeoNetworkAdapter implements INetworkAdapter {
         this.handshakeMessageClass = clazz.getName();
         this.HANDSHAKE_CHANNEL.messageBuilder(clazz, id)
                 .loginIndex(LoginIndexHolder::getLoginIndex, LoginIndexHolder::setLoginIndex)
-                .encoder((messageInstance, buffer) -> messageInstance.encode(messageInstance, buffer))
+                .encoder((messageInstance, buffer) -> messageInstance.encode(buffer))
                 .decoder(decoder::apply)
                 .consumerNetworkThread((messageInstance, context) -> {
                     IMessage.NetworkContext netContext = new IMessage.NetworkContext(
@@ -119,7 +119,7 @@ public class NeoNetworkAdapter implements INetworkAdapter {
                             (replyMsg) -> this.HANDSHAKE_CHANNEL.reply(replyMsg, context),
                             () -> context.setPacketHandled(true)
                     );
-                    messageInstance.handle(messageInstance, context::enqueueWork, netContext);
+                    messageInstance.handle(context::enqueueWork, netContext);
                 })
                 .add();
     }

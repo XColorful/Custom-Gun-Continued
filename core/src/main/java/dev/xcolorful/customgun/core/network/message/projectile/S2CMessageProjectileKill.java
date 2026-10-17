@@ -15,7 +15,8 @@ public record S2CMessageProjectileKill(int bulletId, int victimEntityId, int sho
         implements IMessage<S2CMessageProjectileKill> {
 
     @Override
-    public void encode(S2CMessageProjectileKill message, FriendlyByteBuf buffer) {
+    public void encode(FriendlyByteBuf buffer) {
+        var message = this;
         buffer.writeInt(message.bulletId);
         buffer.writeInt(message.victimEntityId);
         buffer.writeInt(message.shooterId);
@@ -39,7 +40,8 @@ public record S2CMessageProjectileKill(int bulletId, int victimEntityId, int sho
     }
 
     @Override
-    public void handle(S2CMessageProjectileKill message, Consumer<Runnable> handler, NetworkContext context) {
+    public void handle(Consumer<Runnable> handler, NetworkContext context) {
+        var message = this;
         if (CustomGun.getSideExecutor().getLogicalSide().isClient()) {
             handler.accept(() -> _S2CMessageProjectileKill.onKill(message));
         }

@@ -50,7 +50,8 @@ public class C2SMessageShooterRefit_laserColor implements IMessage<C2SMessageSho
     }
 
     @Override
-    public void encode(C2SMessageShooterRefit_laserColor message, FriendlyByteBuf buffer) {
+    public void encode(FriendlyByteBuf buffer) {
+        var message = this;
         NetworkUtils.writeEnumIntMap(buffer, message.colorMap);
         buffer.writeBoolean(message.applyGunColor);
         buffer.writeInt(message.gunColor);
@@ -67,7 +68,8 @@ public class C2SMessageShooterRefit_laserColor implements IMessage<C2SMessageSho
     }
 
     @Override
-    public void handle(C2SMessageShooterRefit_laserColor message, Consumer<Runnable> handler, NetworkContext context) {
+    public void handle(Consumer<Runnable> handler, NetworkContext context) {
+        var message = this;
         if (CustomGun.getSideExecutor().getLogicalSide().isServer()) {
             handler.accept(() -> {
                 if (!(context.sender() instanceof ServerPlayer player) || message.gunSlotIndex == -1) {

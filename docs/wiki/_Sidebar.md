@@ -56,6 +56,7 @@
 				- [配方数据](https://github.com/XColorful/Custom-Gun-Continued/wiki/Recipe-data)
 			- tags
 				- blocks
+				    - [玻璃方块](https://github.com/XColorful/Custom-Gun-Continued/wiki/Glass-block)
 				    - bypass_bullet
 					    - [免疫子弹方块](https://github.com/XColorful/Custom-Gun-Continued/wiki/Bypass-bullet-block)
 					- interact_key
@@ -164,6 +165,7 @@
 				- [Recipe data](https://github.com/XColorful/Custom-Gun-Continued/wiki/Recipe-data#English)
 			- tags
 				- blocks
+				    - [Glass block](https://github.com/XColorful/Custom-Gun-Continued/wiki/Glass-block#English)
 				    - bypass_bullet
 					    - [Bypass bullet block](https://github.com/XColorful/Custom-Gun-Continued/wiki/Bypass-bullet-block#English)
 					- interact_key

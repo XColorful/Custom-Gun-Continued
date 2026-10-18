@@ -1,7 +1,7 @@
 [English](#English)
 
 # 免疫子弹实体
-> wiki 版本：`26.10.26`.2
+> wiki 版本：`26.10.27`.2
 
 ## 护甲附魔
 > _armor_enchantment.json_
@@ -33,7 +33,7 @@
 ```
 
 # English
-> wiki version: `26.10.26`.2
+> wiki version: `26.10.27`.2
 
 ## Armor enchantment
 > _armor_enchantment.json_

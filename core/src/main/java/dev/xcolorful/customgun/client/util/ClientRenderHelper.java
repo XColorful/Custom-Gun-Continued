@@ -521,7 +521,7 @@ public class ClientRenderHelper {
          * 未处于第一人称渲染时为 {@code null}
          */
         @Deprecated(since = "1.21.10")
-        public static @Nullable MultiBufferSource getFirstPersonArmBufferSource() {
+        public static @Nullable Object getFirstPersonArmBufferSource() {
             // [1.20.1, 1.21.10)
 //            Object collector = FIRST_PERSON_ARM_COLLECTOR.get();
 //            return collector instanceof MultiBufferSource bufferSource ? bufferSource : null;

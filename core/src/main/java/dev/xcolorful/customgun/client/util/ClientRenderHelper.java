@@ -76,6 +76,13 @@ public class ClientRenderHelper {
 
     public static void disableItemEntityStencilTest() {
         RenderSystem.assertOnRenderThread();
+        {
+            // [1.20.1, 1.21.10)
+            // 模板窗口内使用独立即时源，窗口关闭前把残留几何体（枪口火焰等不会自行 flush 的委托渲染）绘制掉
+            GL._flushStencilBufferSource();
+
+            // [1.21.10, )
+        }
         GL.stencilEnabled = false;
         // [1.20.1, 1.21.6)
 //        GL11.glDisable(GL11.GL_STENCIL_TEST);
@@ -244,7 +251,7 @@ public class ClientRenderHelper {
          *     模板测试启用期间必须绕开 {@code RenderBuffers.bufferSource()}
          *     <li>1.21.6 上 NeoForge 的模板测试（{@code RenderSystem.STENCIL_TEST}）只有 {@code RenderType#draw} 会读它</li>
          *     <li>而装了 Iris 后bufferSource 被换成全缓冲源，其 flush 是自己建 {@code RenderPass} 再 {@code drawIndexed}，模板测试被整个丢掉（目镜遮罩、镜身、准心的 {@code GL_EQUAL} 一律退化成恒真）</li>
-         *     <li>模板测试关闭时保持共享源，让 Iris 的批处理照常生效</li>
+         *     <li>模板测试关闭时优先使用 RenderHandEvent 传入的缓冲源，没有时才回退共享源</li>
          * </ul>
          * 注意这只解决「不开光影」那一种
          * <ul>
@@ -255,13 +262,43 @@ public class ClientRenderHelper {
         @ApiStatus.AvailableSince("1.21.6")
         public static MultiBufferSource.BufferSource getModelBufferSource() {
             /*
-            暂时还未实现1.21.6修复，目前保持修改前的状态（即该util封装保持跟原先行为相同
-            见./docs/deprecated/prompt/single/60 Shader-compat-fork1.md
+            1.21.6 模板/缓冲源问题的完整背景见 ./docs/deprecated/prompt/single/60 Shader-compat-fork1.md
              */
-            // [1.20.1, 1.21.6)
+            // [1.20.1, 1.21.10)
+            /*
+            模板窗口内必须立即绘制
+            1.20.1 的模板是裸 GL 状态，而 RenderHandEvent 传入的源在光影下是 Iris/Oculus 的 UnflushableWrapper，
+            会延迟到 HandRenderer#renderSolid 结束才 flush；那时模板窗口已关闭、模板缓冲也已清空，ocular/准心遮罩会失效
+            同时也不使用 RenderBuffers#bufferSource()，避免其 getBuffer 丢弃 separate entity draws 已挂起的 segment（TaCZ #755）
+             */
+            if (stencilEnabled) {
+                if (stencilBufferSource == null) {
+                    // 尺寸与 vanilla RenderBuffers 的共享源一致
+                    stencilBufferSource = MultiBufferSource.immediate(
+                            new BufferBuilder( // new ByteBufferBuilder(
+                                    786432
+                            ));
+                }
+                return stencilBufferSource;
+            }
+
+            /*
+            非模板窗口：优先使用 RenderHandEvent 传入的缓冲源
+            光影下它是 Iris/Oculus 的 UnflushableWrapper：顶点写进 HandRenderer 的私有全缓冲源，由 Iris 在 renderSolid 结束时代为 flush
+            这样 CGC 不再在渲染枪械时触碰 RenderBuffers#bufferSource()，避免其 getBuffer 丢弃 separate entity draws 已挂起的 segment（TaCZ #755）
+            非第一人称渲染没有传入源，保持共享源
+             */
+            MultiBufferSource firstPersonBufferSource = FirstPersonArmHelper.getFirstPersonArmBufferSource();
+            if (firstPersonBufferSource instanceof MultiBufferSource.BufferSource bufferSource) {
+                return bufferSource;
+            }
+            if (true) return Minecraft.getInstance().renderBuffers().bufferSource(); // 让IDE保留下面的引用关系
+
+            // [1.21.10, )
+            // 1.21.10 起 RenderHandEvent 只提供 SubmitNodeCollector，且 Iris 1.9.7 已删除批处理，共享源重新变成即时提交
             return Minecraft.getInstance().renderBuffers().bufferSource(); // 让IDE保留下面的引用关系
 
-            // [1.21.6, )
+            // [1.21.6, 1.21.10) 旧方案（已被上方取代，保留供参考/revert）
 //            if (!stencilEnabled) {
 //                return Minecraft.getInstance().renderBuffers().bufferSource();
 //            }
@@ -270,6 +307,18 @@ public class ClientRenderHelper {
 //                stencilBufferSource = MultiBufferSource.immediate(new ByteBufferBuilder(786432));
 //            }
 //            return stencilBufferSource;
+        }
+
+        /**
+         * 在模板窗口关闭前提交独立即时源里残留的几何体
+         */
+        private static void _flushStencilBufferSource() {
+            // [1.20.1, 1.21.10)
+            if (stencilBufferSource != null) {
+                stencilBufferSource.endBatch();
+            }
+
+            // [1.21.10, )
         }
 
         public static void _stencilFunc(int func, int ref, int readMask) {
@@ -450,6 +499,24 @@ public class ClientRenderHelper {
             } else {
                 FIRST_PERSON_ARM_COLLECTOR.set(collector);
             }
+        }
+
+        /**
+         * 第一人称渲染入口经 {@code IRenderHandEvent#getMultiBufferSource_SubmitNodeCollector()} 传入的缓冲源
+         * <ul>
+         *     <li>[1.20.1, 1.21.10)：事件给 {@code MultiBufferSource}，光影下是 Iris/Oculus 的 {@code UnflushableWrapper}</li>
+         *     <li>[1.21.10, )：事件改成 {@code SubmitNodeCollector}，本方法返回 {@code null}</li>
+         * </ul>
+         * 未处于第一人称渲染时为 {@code null}
+         */
+//        @Deprecated(since = "1.21.10")
+        public static @Nullable MultiBufferSource getFirstPersonArmBufferSource() {
+            // [1.20.1, 1.21.10)
+            Object collector = FIRST_PERSON_ARM_COLLECTOR.get();
+            return collector instanceof MultiBufferSource bufferSource ? bufferSource : null;
+
+            // [1.21.10, )
+//            return null;
         }
 
         /**

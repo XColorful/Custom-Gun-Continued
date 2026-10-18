@@ -1,11 +1,11 @@
 [English](#English)
 
 # 子弹配置
-> wiki 版本：`0.0.15`.3
+> wiki 版本：`26.10.27`.5
 
 路径：`ammo`
 - `PassThroughBlocks`（字符串列表）：子弹可穿透的方块
-- `DestroyGlass`（bool）：子弹是否能破坏玻璃
+- `DestroyGlass`（bool）：子弹是否能破坏[玻璃](https://github.com/XColorful/Custom-Gun-Continued/wiki/Glass-block)
 - `GlobalBulletSpeedModifier`（浮点，0.01~20.0）：全局子弹速度系数
 - `IgniteBlock`（bool）：子弹是否能点燃方块
 - `IgniteEntity`（bool）：子弹是否能点燃实体
@@ -27,13 +27,13 @@
 ```
 
 # English
-> wiki version: `0.0.15`.4
+> wiki version: `26.10.27`.5
 
 ## Ammo Config
 
 Path: `ammo`
 - `PassThroughBlocks` (string list): Blocks that the ammo can pass through
-- `DestroyGlass` (bool): Whether ammo can break glass
+- `DestroyGlass` (bool): Whether ammo can break [glass](https://github.com/XColorful/Custom-Gun-Continued/wiki/Glass-block#English)
 - `GlobalBulletSpeedModifier` (float, 0.01~20.0): Global bullet speed modifier, the initial speed of the bullet will be multiplied by this value
 - `IgniteBlock` (bool): Whether ammo can ignite blocks
 - `IgniteEntity` (bool): Whether ammo can ignite entities

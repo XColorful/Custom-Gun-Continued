@@ -23,7 +23,6 @@ import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import dev.xcolorful.customgun.core.api.item.IAttachment;
 import dev.xcolorful.customgun.core.api.item.attachment.AttachmentCategory;
 import dev.xcolorful.customgun.core.api.item.attachment.IAttachmentGetter;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -57,8 +56,7 @@ public class AttachmentRender implements IModelComponentRenderer {
             @Nullable Object collector = ClientRenderHelper.FirstPersonArmHelper.getFirstPersonArmCollector();
             if (collector == null) return;
 
-            Minecraft mc = Minecraft.getInstance();
-            MultiBufferSource bufferSource = mc.renderBuffers().bufferSource();
+            MultiBufferSource bufferSource = ClientRenderHelper.GL.getModelBufferSource();
             {
                 VertexConsumer buffer = bufferSource.getBuffer(ClientRenderUtils.RenderType_.entityTranslucent(ClientRenderUtils.getMissingTextureLocation()));
                 AttachmentItemRenderer.SLOT_ATTACHMENT_MODEL.renderToBuffer(poseStack, buffer, light, overlay, 1.0f, 1.0f, 1.0f, 1.0f);

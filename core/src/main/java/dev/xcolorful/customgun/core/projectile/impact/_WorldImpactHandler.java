@@ -47,7 +47,7 @@ public class _WorldImpactHandler implements ICustomEventHandler {
             // 破坏玻璃
             BlockPos blockPos = event.getBlockHitResult().getBlockPos();
             if (this.isGlass(level, blockPos, victimBlock)) {
-                this.onHitGlass(level, event.getBlockHitResult().getBlockPos());
+                this.onHitGlass(level, blockPos);
             }
         }
     }

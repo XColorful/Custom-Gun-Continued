@@ -116,7 +116,7 @@ public class ClientRenderHelper {
         Minecraft mc = Minecraft.getInstance();
         EntityRenderDispatcher renderManager = mc.getEntityRenderDispatcher();
         PlayerRenderer renderer = (PlayerRenderer) renderManager.getRenderer(player);
-        MultiBufferSource buffer = Minecraft.getInstance().renderBuffers().bufferSource();
+        MultiBufferSource buffer = GL.getModelBufferSource();
         // int oldId = RenderSystem.getShaderTexture(0);
         // RenderSystem.setShaderTexture(0, ClientRenderUtils.getSkinTextureLocation(player));
 

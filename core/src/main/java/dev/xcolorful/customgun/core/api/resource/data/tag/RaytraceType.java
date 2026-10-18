@@ -17,8 +17,8 @@ public enum RaytraceType {
         this.projectilePassthrough = TagKey.create(registryKey,
                 CustomGun.getMcRegistry().createResourceLocation(String.format("%s:%s/%s",
                         CustomGun.MOD_ID,
-                        dev.xcolorful.customgun.core.api.resource.data.tag.RaytraceTag.RAYTRACE,
-                        dev.xcolorful.customgun.core.api.resource.data.tag.RaytraceTag.PROJECTILE_PASSTHROUGH)));
+                        RaytraceTag.RAYTRACE,
+                        RaytraceTag.PROJECTILE_PASSTHROUGH)));
     }
 
     @SuppressWarnings("unchecked")

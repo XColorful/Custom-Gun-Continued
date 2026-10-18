@@ -4,6 +4,7 @@ import dev.xcolorful.customgun.core.api.event.CustomEventType;
 import dev.xcolorful.customgun.core.api.event.ICustomEvent;
 import dev.xcolorful.customgun.core.api.event.ICustomEventHandler;
 import dev.xcolorful.customgun.core.api.event.projectile.ProjectileHitBlockEvent;
+import dev.xcolorful.customgun.core.api.resource.data.tag.BlockType;
 import dev.xcolorful.customgun.core.config.AmmoConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
@@ -44,7 +45,7 @@ public class _WorldImpactHandler implements ICustomEventHandler {
             // 破坏玻璃
             BlockPos blockPos = event.getBlockHitResult().getBlockPos();
             if (this.isGlass(level, blockPos, victimBlock)) {
-                this.onHitGlass(level, event.getBlockHitResult().getBlockPos());
+                this.onHitGlass(level, blockPos);
             }
         }
     }
@@ -56,6 +57,10 @@ public class _WorldImpactHandler implements ICustomEventHandler {
      * @see net.minecraft.world.level.block.Blocks#GLASS_PANE
      */
     private boolean isGlass(Level level, BlockPos blockPos, Block block) {
+        if (true) {
+            return level.getBlockState(blockPos).is(BlockType.GLASS_BLOCK.getTagKey());
+        }
+
         // TODO 改成 stength + collision 或 tag匹配
         NoteBlockInstrument instrument = level.getBlockState(blockPos).instrument();
         return (block instanceof TransparentBlock && instrument == NoteBlockInstrument.HAT) // 玻璃块

@@ -25,7 +25,6 @@ import dev.xcolorful.customgun.core.api.item.IAttachment;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.attachment.IAttachmentGetter;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -62,7 +61,7 @@ public class BeamRender {
         @Nullable Object collector = ClientRenderHelper.FirstPersonArmHelper.getFirstPersonArmCollector();
         if (collector == null) return;
 
-        MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
+        MultiBufferSource.BufferSource bufferSource = ClientRenderHelper.GL.getModelBufferSource();
         VertexConsumer builder = bufferSource.getBuffer(ClientRenderRegistry.LaserBeamRenderState.getLaserBeam());
         poseStack.pushPose(); {
             for (int i = 0; i < path.size(); ++i) {

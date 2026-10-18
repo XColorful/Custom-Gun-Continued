@@ -1,7 +1,7 @@
 [English](#English)
 
 # 免疫子弹方块
-> wiki 版本：`26.10.26`.0
+> wiki 版本：`26.10.27`.0
 
 暂无功能
 
@@ -14,7 +14,7 @@
 ```
 
 # English
-> wiki version: `26.10.26`.0
+> wiki version: `26.10.27`.0
 
 No functionality available yet
 

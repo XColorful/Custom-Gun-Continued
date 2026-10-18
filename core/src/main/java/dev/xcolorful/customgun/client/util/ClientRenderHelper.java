@@ -275,7 +275,7 @@ public class ClientRenderHelper {
                 if (stencilBufferSource == null) {
                     // 尺寸与 vanilla RenderBuffers 的共享源一致
                     stencilBufferSource = MultiBufferSource.immediate(
-                            new BufferBuilder( // new ByteBufferBuilder(
+                            new ByteBufferBuilder(
                                     786432
                             ));
                 }

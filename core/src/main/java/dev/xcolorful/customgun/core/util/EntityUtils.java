@@ -75,10 +75,10 @@ public class EntityUtils {
 
     public static boolean is(@NotNull Entity entity, TagKey<EntityType<?>> tagKey) {
         // [1.20.1, 26.1.x)
-        return entity.getType().is(tagKey);
+//        return entity.getType().is(tagKey);
 
         // [26.1.x, )
-//        return entity.is(tagKey);
+        return entity.is(tagKey);
     }
 
     public static class Hitbox {

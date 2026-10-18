@@ -58,3 +58,56 @@
 2. 命令行构建需要 `JAVA_HOME` 指向 JDK 17 且注入 `-Dfile.encoding=UTF-8`，否则中文注释会触发编码编译错误（此问题为既有情况，未改动构建文件）。
 
 按项目规则未提交，改动留在工作区等你审查。
+
+# 
+
+```
+按照git暂存区现有wiki设计，继续按相同方式完成RaytraceType，植入到ProjectilePhysicsManager的调用里，并把已有的ModBlocks#BULLET_IGNORE_BLOCKS的所有调用处替换为RaytraceType
+```
+
+# 
+
+我先查看 `ModBlocks#BULLET_IGNORE_BLOCKS`、`ProjectilePhysicsManager` 及现有标签结构。
+
+看起来 `RaytraceType`/`RaytraceTypeTag` 已存在（可能是最近新建），我先读取它们的现状、相关调用点和设计文档。
+
+暂存区里已有 RaytraceType 骨架和 wiki/标签文件，我先读取这些设计内容。
+
+设计清晰：`RaytraceType` 提供 `BLOCK`/`ENTITY` 两类 `raytrace/projectile_passthrough` 标签。现在完成枚举与常量类，并接入方块/实体两条射线过滤。
+
+所有代码调用点已替换。现在编译验证。
+
+依赖解析出现 `net.minecraft:client:1.20.1` 缺失，像是缓存/仓库瞬时问题；重试一次并改用 forge-compat 编译链路。
+
+构建缓存目录消失了（上一轮还存在），先确认 Gradle 缓存位置与网络状态。
+
+Minecraft 版本缓存还在，缺少的是 ForgeGradle 的 bundled 仓库。我查一下 FG 的实现以确定正确的恢复任务。
+
+网络/缓存恢复后编译成功。再强制重编并打包确认。
+
+完成。`RaytraceType` 已按暂存区的 wiki 设计实现并接入两条射线过滤。
+
+## 改动
+
+**[RaytraceType.java](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/core/api/resource/data/tag/RaytraceType.java)** / **[RaytraceTypeTag.java](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/core/api/resource/data/tag/RaytraceTypeTag.java)**
+
+- 枚举 `BLOCK` / `ENTITY`，对应标签 `customgun:raytrace/projectile_passthrough`
+- 提供 `getProjectilePassthrough()`，写法与 `InteractKeyType`、`BypassBulletType` 一致
+
+**方块射线**（`RaytraceType.BLOCK`）
+
+- [ProjectilePhysicsManager.java:105](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/core/projectile/physics/ProjectilePhysicsManager.java:105)
+- [_TempExplode.java:357](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/core/projectile/impact/_TempExplode.java:357)
+- [BlockRayTrace.java:26](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/core/util/BlockRayTrace.java:26)
+
+**实体射线**（`RaytraceType.ENTITY`）
+
+- [ProjectilePhysicsManager.java:63](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/core/projectile/physics/ProjectilePhysicsManager.java:63) 的 `PROJECTILE_TARGETS` 排除标签内实体，`_EntityUtils` 复用该谓词时同样生效
+
+`ModBlocks#BULLET_IGNORE_BLOCKS` 的代码调用点已全部替换，当前工程内无剩余引用；`ModBlocks` 中的常量声明保留未动（已标记 `@Deprecated(forRemoval = true)`）。如果确认要删除该类和旧的 `bullet_ignore` 标签机制，我可以再处理。
+
+## 验证
+
+`:forge-compat:jarJar --rerun-tasks` 全量构建成功。期间遇到一次 ForgeGradle 的 `net.minecraft:client:1.20.1` 解析失败，是 `mcp_config` 缓存瞬时缺失/网络波动，重试后自动恢复，未改动任何项目或构建配置。
+
+改动未提交，等你审查。

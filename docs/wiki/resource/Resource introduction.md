@@ -1,7 +1,7 @@
 [English](#English)
 
 # 资源文件说明
-> wiki 版本：`26.10.27`.4
+> wiki 版本：`26.10.27`.5
 
 ## 📊数据包
 
@@ -55,15 +55,19 @@
                 │      *.json
                 └─tags
                    ├─blocks
-                   |  └─bypass_bullet
+                   |  ├─bypass_bullet
                    |  │      armor_enchantment.json
                    |  │      invulnerability_enchantment.json
                    |  │
-                   |  └─interact_key
-                   |         blacklist.json
-                   |         whitelist.json
+                   |  ├─interact_key
+                   |  │      blacklist.json
+                   |  │      whitelist.json
+                   |  │
+                   |  └─raytrace
+                   |         projectile_passthrough.json
+                   |
                    └─entity_types
-                      └─bypass_bullet
+                      ├─bypass_bullet
                       │      armor_enchantment.json
                       │      invulnerability_enchantment.json
                       │
@@ -106,11 +110,15 @@
 			    - [免疫子弹方块](https://github.com/XColorful/Custom-Gun-Continued/wiki/Bypass-bullet-block)
 		    - interact_key
 			    - [方块交互过滤](https://github.com/XColorful/Custom-Gun-Continued/wiki/Interact-key-block-filter)
+			- raytrace
+				- [枪射物穿透方块](https://github.com/XColorful/Custom-Gun-Continued/wiki/Projectile-pass-through-block)
 		- entity_types
 			- bypass_bullet
 			    - [免疫子弹实体](https://github.com/XColorful/Custom-Gun-Continued/wiki/Bypass-bullet-entity)
 			- interact_key
 			    - [实体交互过滤](https://github.com/XColorful/Custom-Gun-Continued/wiki/Interact-key-entity-filter)
+			- raytrace
+				- [枪射物穿透实体](https://github.com/XColorful/Custom-Gun-Continued/wiki/Projectile-pass-through-entity)
 
 ## 🖼️资源包
 
@@ -189,7 +197,7 @@
 		- [资源包材质](https://github.com/XColorful/Custom-Gun-Continued/wiki/Resourcepack-texture)
 
 # English
-> wiki version: `26.10.27`.4
+> wiki version: `26.10.27`.5
 
 ## 📊Datapack
 
@@ -243,15 +251,19 @@
                 │      *.json
                 └─tags
                    ├─blocks
-                   |  └─bypass_bullet
+                   |  ├─bypass_bullet
                    |  │      armor_enchantment.json
                    |  │      invulnerability_enchantment.json
                    |  │
-                   |  └─interact_key
-                   |         blacklist.json
-                   |         whitelist.json
+                   |  ├─interact_key
+                   |  │      blacklist.json
+                   |  │      whitelist.json
+                   |  │
+                   |  └─raytrace
+                   |         projectile_passthrough.json
+                   |
                    └─entity_types
-                      └─bypass_bullet
+                      ├─bypass_bullet
                       │      armor_enchantment.json
                       │      invulnerability_enchantment.json
                       │
@@ -294,11 +306,15 @@
 			    - [Bypass bullet block](https://github.com/XColorful/Custom-Gun-Continued/wiki/Bypass-bullet-block#English)
 		    - interact_key
 			    - [Block interaction filter](https://github.com/XColorful/Custom-Gun-Continued/wiki/Interact-key-block-filter#English)
+			- raytrace
+				- [Projectile pass through block](https://github.com/XColorful/Custom-Gun-Continued/wiki/Projectile-pass-through-block#English)
 		- entity_types
 			- bypass_bullet
 			    - [Bypass bullet entity](https://github.com/XColorful/Custom-Gun-Continued/wiki/Bypass-bullet-entity#English)
 			- interact_key
 			    - [Entity interaction filter](https://github.com/XColorful/Custom-Gun-Continued/wiki/Interact-key-entity-filter#English)
+			- raytrace
+				- [Projectile pass through entity](https://github.com/XColorful/Custom-Gun-Continued/wiki/Projectile-pass-through-entity#English)
 
 ## 🖼️Resourcepack
 

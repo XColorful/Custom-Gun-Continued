@@ -247,12 +247,18 @@ public class ClientRenderHelper {
         /**
          * 取当前该用的模型顶点缓冲源
          * <ul>
+         *     [1.20.1, 1.21.10)
          *     模板测试启用期间必须绕开 {@code RenderBuffers.bufferSource()}
          *     <li>1.21.6 上 NeoForge 的模板测试（{@code RenderSystem.STENCIL_TEST}）只有 {@code RenderType#draw} 会读它</li>
          *     <li>而装了 Iris 后bufferSource 被换成全缓冲源，其 flush 是自己建 {@code RenderPass} 再 {@code drawIndexed}，模板测试被整个丢掉（目镜遮罩、镜身、准心的 {@code GL_EQUAL} 一律退化成恒真）</li>
          *     <li>模板测试关闭时优先使用 RenderHandEvent 传入的缓冲源，没有时才回退共享源</li>
          * </ul>
-         * 注意这只解决「不开光影」那一种
+         * <ul>
+         *     [1.21.10, )
+         *     <li>事件改为只提供 {@code SubmitNodeCollector}，且 Iris 1.9.7 起删除批处理，共享源即普通 {@code BufferSource}</li>
+         *     <li>模板测试随 {@code RenderPipeline} 在 {@code RenderType#draw} 时应用，直接使用共享源即可</li>
+         * </ul>
+         * 注意 [1.20.1, 1.21.10) 的模板修复只解决「不开光影」那一种
          * <ul>
          *     <li>开光影时 Iris 会把命中材质映射的几何体重定向到它自己的framebuffer（实测无 stencil 附件），圆形模板孔又留在主 target，两边不在同一缓冲——那种情况</li>
          *     <li>换缓冲源救不了，得从 Iris 侧或改掉依赖 stencil 的遮罩实现</li>

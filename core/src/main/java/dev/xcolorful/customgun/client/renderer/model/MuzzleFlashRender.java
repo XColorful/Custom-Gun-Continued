@@ -28,7 +28,6 @@ import dev.xcolorful.customgun.core.api.resource.ResourceApi;
 import dev.xcolorful.customgun.core.resource.data.data.AttachmentData;
 import dev.xcolorful.customgun.core.resource.data.data.attachment._MuzzleModifierData;
 import dev.xcolorful.customgun.core.resource.instance.data.AttachmentIndexInstance;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -140,7 +139,7 @@ public class MuzzleFlashRender implements IModelComponentRenderer {
         float scaleTime = TIME_RANGE / 2.0f;
         scale = currentTimeMillis < scaleTime ? (scale * (currentTimeMillis / scaleTime)) : scale;
         State.muzzleFlashStartMark = false;
-        MultiBufferSource multiBufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
+        MultiBufferSource multiBufferSource = ClientRenderHelper.GL.getModelBufferSource();
 
         // 推送到指定位置
         PoseStack poseStack2 = new PoseStack();

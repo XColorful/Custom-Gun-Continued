@@ -79,7 +79,7 @@ public class ClientRenderHelper {
         {
             // [1.20.1, 1.21.10)
             // 模板窗口内使用独立即时源，窗口关闭前把残留几何体（枪口火焰等不会自行 flush 的委托渲染）绘制掉
-            GL._flushStencilBufferSource();
+//            GL._flushStencilBufferSource();
 
             // [1.21.10, )
         }
@@ -274,16 +274,16 @@ public class ClientRenderHelper {
             会延迟到 HandRenderer#renderSolid 结束才 flush；那时模板窗口已关闭、模板缓冲也已清空，ocular/准心遮罩会失效
             同时也不使用 RenderBuffers#bufferSource()，避免其 getBuffer 丢弃 separate entity draws 已挂起的 segment（TaCZ #755）
              */
-            if (stencilEnabled) {
-                if (stencilBufferSource == null) {
-                    // 尺寸与 vanilla RenderBuffers 的共享源一致
-                    stencilBufferSource = MultiBufferSource.immediate(
-                            new ByteBufferBuilder(
-                                    786432
-                            ));
-                }
-                return stencilBufferSource;
-            }
+//            if (stencilEnabled) {
+//                if (stencilBufferSource == null) {
+//                    // 尺寸与 vanilla RenderBuffers 的共享源一致
+//                    stencilBufferSource = MultiBufferSource.immediate(
+//                            new ByteBufferBuilder(
+//                                    786432
+//                            ));
+//                }
+//                return stencilBufferSource;
+//            }
 
             /*
             非模板窗口：优先使用 RenderHandEvent 传入的缓冲源
@@ -291,11 +291,11 @@ public class ClientRenderHelper {
             这样 CGC 不再在渲染枪械时触碰 RenderBuffers#bufferSource()，避免其 getBuffer 丢弃 separate entity draws 已挂起的 segment（TaCZ #755）
             非第一人称渲染没有传入源，保持共享源
              */
-            MultiBufferSource firstPersonBufferSource = FirstPersonArmHelper.getFirstPersonArmBufferSource();
-            if (firstPersonBufferSource instanceof MultiBufferSource.BufferSource bufferSource) {
-                return bufferSource;
-            }
-            if (true) return Minecraft.getInstance().renderBuffers().bufferSource(); // 让IDE保留下面的引用关系
+//            MultiBufferSource firstPersonBufferSource = FirstPersonArmHelper.getFirstPersonArmBufferSource();
+//            if (firstPersonBufferSource instanceof MultiBufferSource.BufferSource bufferSource) {
+//                return bufferSource;
+//            }
+//            if (true) return Minecraft.getInstance().renderBuffers().bufferSource(); // 让IDE保留下面的引用关系
 
             // [1.21.10, )
             // 1.21.10 起 RenderHandEvent 只提供 SubmitNodeCollector，且 Iris 1.9.7 已删除批处理，共享源重新变成即时提交
@@ -316,12 +316,12 @@ public class ClientRenderHelper {
         /**
          * 在模板窗口关闭前提交独立即时源里残留的几何体
          */
-//        @Deprecated(since = "1.21.10")
+        @Deprecated(since = "1.21.10")
         private static void _flushStencilBufferSource() {
             // [1.20.1, 1.21.10)
-            if (stencilBufferSource != null) {
-                stencilBufferSource.endBatch();
-            }
+//            if (stencilBufferSource != null) {
+//                stencilBufferSource.endBatch();
+//            }
 
             // [1.21.10, )
         }
@@ -514,14 +514,14 @@ public class ClientRenderHelper {
          * </ul>
          * 未处于第一人称渲染时为 {@code null}
          */
-//        @Deprecated(since = "1.21.10")
+        @Deprecated(since = "1.21.10")
         public static @Nullable MultiBufferSource getFirstPersonArmBufferSource() {
             // [1.20.1, 1.21.10)
-            Object collector = FIRST_PERSON_ARM_COLLECTOR.get();
-            return collector instanceof MultiBufferSource bufferSource ? bufferSource : null;
+//            Object collector = FIRST_PERSON_ARM_COLLECTOR.get();
+//            return collector instanceof MultiBufferSource bufferSource ? bufferSource : null;
 
             // [1.21.10, )
-//            return null;
+            return null;
         }
 
         /**

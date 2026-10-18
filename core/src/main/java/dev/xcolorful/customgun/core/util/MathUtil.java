@@ -630,6 +630,21 @@ public class MathUtil {
         private float target;
 
         /**
+         * <ul>
+         *     <li>TaCZ原实现: 由后台线程每 ~6ms 推进一次 0.05s 的固定步长，即模拟时间约以 8.33 倍真实时间前进，且与渲染帧率无关</li>
+         *     <li>CGC改为: 在渲染调用中推进，必须按真实流逝时间换算步数；固定“每次调用一步”会让高帧率环境（如 Embeddium/Sodium）的过渡被加速成线性运动</li>
+         * </ul>
+         */
+        private static final float FIXED_STEP_SECONDS = 0.05f;
+        private static final float SIM_SECONDS_PER_REAL_SECOND = FIXED_STEP_SECONDS / 0.006f;
+        /** 长卡顿时限制追帧量，避免一次 update 积分过多步 */
+        private static final float MAX_REAL_DELTA_SECONDS = 0.25f;
+        private static final int MAX_STEPS_PER_UPDATE = 32;
+
+        private float accumulatedSimSeconds;
+        private long lastUpdateNs;
+
+        /**
          * 创建一个二阶动态系统
          * @param f  自然频率，决定系统响应速度
          * @param z  阻尼系数，决定系统震荡程度
@@ -645,6 +660,8 @@ public class MathUtil {
             pyd = 0;
 
             target = x0;
+
+            lastUpdateNs = System.nanoTime();
         }
 
         /**
@@ -661,8 +678,7 @@ public class MathUtil {
         /**
          * 执行一次二阶动态计算
          * <p>
-         * 使用固定时间步长 0.05s，与原版 {@code SecondOrderDynamics} 的积分步长一致，
-         * 保证过渡动画的速度与原版一致。
+         * 按真实流逝时间累积，按 0.05s 固定步长推进，等效于 TaCZ 的后台积分线程，使过渡速度与渲染帧率无关
          */
         public void tick() {
             // 修正罕见的 NAN 错误
@@ -673,8 +689,31 @@ public class MathUtil {
                 pyd = 0;
             }
 
-            float t = 0.05f;
+            long currentTimeNs = System.nanoTime();
+            float realDelta = (currentTimeNs - lastUpdateNs) / 1_000_000_000.0f;
+            lastUpdateNs = currentTimeNs;
 
+            if (!(realDelta > 0)) {
+                realDelta = 0;
+            } else if (realDelta > MAX_REAL_DELTA_SECONDS) {
+                realDelta = MAX_REAL_DELTA_SECONDS;
+            }
+
+            accumulatedSimSeconds += realDelta * SIM_SECONDS_PER_REAL_SECOND;
+
+            int steps = 0;
+            while (accumulatedSimSeconds >= FIXED_STEP_SECONDS && steps < MAX_STEPS_PER_UPDATE) {
+                this.step(FIXED_STEP_SECONDS);
+                accumulatedSimSeconds -= FIXED_STEP_SECONDS;
+                steps++;
+            }
+            if (steps == MAX_STEPS_PER_UPDATE) {
+                // 丢弃积压，避免卡顿后出现长时间加速追赶
+                accumulatedSimSeconds = 0;
+            }
+        }
+
+        private void step(float t) {
             float xd = (target - px) / t;
             float y = py + t * pyd;
 

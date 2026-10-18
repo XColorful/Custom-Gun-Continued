@@ -5,6 +5,7 @@ import dev.xcolorful.customgun.client.renderer.model.MuzzleFlashRender;
 import dev.xcolorful.customgun.client.renderer.model.ShellRender;
 import dev.xcolorful.customgun.client.renderer.shooter.HumanoidOffhandRender;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
+import dev.xcolorful.customgun.core.util.EntityUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -54,7 +55,7 @@ public class ItemInHandLayerMixin {
         // 必须按主手判定而不是固定左手，否则左手模式下主手的枪会被当成副手取消掉
         if (livingEntity != null && arm != livingEntity.getMainArm()
                 && (IGunGetter.fromMainHand(livingEntity) != null
-                    || IGunGetter.fromItemStack(itemStack) != null)) {
+                    || IGunGetter.fromItemStack(EntityUtils.getItemHeldByArm(livingEntity, arm)) != null)) {
             ci.cancel();
         }
     }

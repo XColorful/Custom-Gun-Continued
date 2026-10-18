@@ -65,10 +65,10 @@ public class EntityUtils {
 
     public static ItemStack getItemHeldByArm(@NotNull LivingEntity livingEntity, HumanoidArm arm) {
         // [1.20.1, 1.21.4)
-        return livingEntity.getMainArm() == arm ? livingEntity.getMainHandItem() : livingEntity.getOffhandItem();
+//        return livingEntity.getMainArm() == arm ? livingEntity.getMainHandItem() : livingEntity.getOffhandItem();
 
         // [1.21.4, )
-//        return livingEntity.getItemHeldByArm(arm);
+        return livingEntity.getItemHeldByArm(arm);
     }
 
     public static class Hitbox {

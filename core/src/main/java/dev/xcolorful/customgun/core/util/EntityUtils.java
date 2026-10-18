@@ -5,8 +5,10 @@ import dev.xcolorful.customgun.core.api.entity.ILivingShooter;
 import dev.xcolorful.customgun.core.api.entity.hitbox.IEntityHitboxHistoryGetter;
 import dev.xcolorful.customgun.core.api.entity.shooter.ILivingShooterGetter;
 import dev.xcolorful.customgun.core.api.minecraft.entity.IEntityExtension;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -69,6 +71,14 @@ public class EntityUtils {
 
         // [1.21.4, )
 //        return livingEntity.getItemHeldByArm(arm);
+    }
+
+    public static boolean is(@NotNull Entity entity, TagKey<EntityType<?>> tagKey) {
+        // [1.20.1, 26.1.x)
+        return entity.getType().is(tagKey);
+
+        // [26.1.x, )
+//        return entity.is(tagKey);
     }
 
     public static class Hitbox {

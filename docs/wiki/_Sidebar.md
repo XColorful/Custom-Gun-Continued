@@ -56,9 +56,13 @@
 				- [配方数据](https://github.com/XColorful/Custom-Gun-Continued/wiki/Recipe-data)
 			- tags
 				- blocks
+				    - bypass_bullet
+					    - [免疫子弹方块](https://github.com/XColorful/Custom-Gun-Continued/wiki/Bypass-bullet-block)
 					- interact_key
 						- [方块交互过滤](https://github.com/XColorful/Custom-Gun-Continued/wiki/Interact-key-block-filter)
 				- entity_types
+					- bypass_bullet
+					    - [免疫子弹实体](https://github.com/XColorful/Custom-Gun-Continued/wiki/Bypass-bullet-entity)
 					- interact_key
 						- [实体交互过滤](https://github.com/XColorful/Custom-Gun-Continued/wiki/Interact-key-entity-filter)
 		- 🖼️assets
@@ -156,9 +160,13 @@
 				- [Recipe data](https://github.com/XColorful/Custom-Gun-Continued/wiki/Recipe-data#English)
 			- tags
 				- blocks
+				    - bypass_bullet
+					    - [Bypass bullet block](https://github.com/XColorful/Custom-Gun-Continued/wiki/Bypass-bullet-block#English)
 					- interact_key
 						- [Block interaction filter](https://github.com/XColorful/Custom-Gun-Continued/wiki/Interact-key-block-filter#English)
 				- entity_types
+					- bypass_bullet
+					    - [Bypass bullet entity](https://github.com/XColorful/Custom-Gun-Continued/wiki/Bypass-bullet-entity#English)
 					- interact_key
 						- [Entity interaction filter](https://github.com/XColorful/Custom-Gun-Continued/wiki/Interact-key-entity-filter#English)
 		- 🖼️assets

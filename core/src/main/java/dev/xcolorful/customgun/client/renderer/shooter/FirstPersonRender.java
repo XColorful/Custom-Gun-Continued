@@ -19,6 +19,7 @@ import dev.xcolorful.customgun.client.config.SoundConfig;
 import dev.xcolorful.customgun.client.renderer.item.AnimateGeoItemRenderer;
 import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
 import dev.xcolorful.customgun.client.sound.SoundPlayManager;
+import dev.xcolorful.customgun.client.util.ClientRenderHelper;
 import dev.xcolorful.customgun.core.api.event.EventType;
 import dev.xcolorful.customgun.core.api.event.IEvent;
 import dev.xcolorful.customgun.core.api.event.IEventHandler;
@@ -123,7 +124,7 @@ public class FirstPersonRender implements IEventHandler {
         }
 
         // 防止内存泄漏
-        IrisCompat.endBatch(mc.renderBuffers().bufferSource());
+        IrisCompat.endBatch(ClientRenderHelper.GL.getModelBufferSource());
 
         renderer.renderFirstPerson(event.getPoseStack(),
                 event,

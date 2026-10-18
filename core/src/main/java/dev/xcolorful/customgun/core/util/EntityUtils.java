@@ -7,8 +7,10 @@ import dev.xcolorful.customgun.core.api.entity.shooter.ILivingShooterGetter;
 import dev.xcolorful.customgun.core.api.minecraft.entity.IEntityExtension;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -59,6 +61,14 @@ public class EntityUtils {
 
         // [1.20.4, )
 //        itemEntity.setThrower(thrower);
+    }
+
+    public static ItemStack getItemHeldByArm(@NotNull LivingEntity livingEntity, HumanoidArm arm) {
+        // [1.20.1, 1.21.4)
+        return livingEntity.getMainArm() == arm ? livingEntity.getMainHandItem() : livingEntity.getOffhandItem();
+
+        // [1.21.4, )
+//        return livingEntity.getItemHeldByArm(arm);
     }
 
     public static class Hitbox {

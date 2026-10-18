@@ -12,10 +12,10 @@ import dev.xcolorful.customgun.core.api.entity.IGunProjectile;
 import dev.xcolorful.customgun.core.api.minecraft.IMcRegistry;
 import dev.xcolorful.customgun.core.api.projectile.physics.IProjectilePhysicsManager;
 import dev.xcolorful.customgun.core.api.projectile.process.IProjectileProcessRuntime;
+import dev.xcolorful.customgun.core.api.resource.data.tag.RaytraceType;
 import dev.xcolorful.customgun.core.config.AmmoConfig;
 import dev.xcolorful.customgun.core.config.sync.HeadAABBData;
 import dev.xcolorful.customgun.core.entity.projectile.GunProjectile;
-import dev.xcolorful.customgun.core.init.registry.ModBlocks;
 import dev.xcolorful.customgun.core.util.ClassUtils;
 import dev.xcolorful.customgun.core.util.RayTraceUtils;
 import net.minecraft.core.particles.ParticleTypes;
@@ -50,11 +50,17 @@ public class ProjectilePhysicsManager implements IProjectilePhysicsManager {
     @ApiStatus.Internal
     public static final float VANILLA_SPREAD_SCALE = 0.0172275F;
 
+    /**
+     * 仅限于 {@link ProjectilePhysicsManager} 内部逻辑
+     * 一般过滤则改用 {@link RaytraceType#getProjectilePassthrough}
+     */
+    @ApiStatus.Internal
     public static Predicate<Entity> PROJECTILE_TARGETS =
             input -> input != null
                     && input.isAlive()
                     && input.isPickable()
-                    && !input.isSpectator();
+                    && !input.isSpectator()
+                    && !input.getType().is(RaytraceType.ENTITY.getProjectilePassthrough());
 
     protected ProjectilePhysicsManager() {
     }
@@ -96,7 +102,7 @@ public class ProjectilePhysicsManager implements IProjectilePhysicsManager {
                         return true; // 返回 true 代表需要忽略该方块（即穿透）
                     }
                     // 检查是否包含忽略标签
-                    return blockState.is(ModBlocks.BULLET_IGNORE_BLOCKS);
+                    return blockState.is(RaytraceType.BLOCK.getProjectilePassthrough());
                 }
         );
         if (blockHitResult.getType() != HitResult.Type.MISS) {

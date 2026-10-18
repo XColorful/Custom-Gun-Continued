@@ -1,7 +1,7 @@
 [English](#English)
 
 # 枪射物穿透方块
-> wiki 版本：`26.10.26`.1
+> wiki 版本：`26.10.27`.1
 
 ```json
 {
@@ -18,7 +18,7 @@
 ```
 
 # English
-> wiki version: `26.10.26`.1
+> wiki version: `26.10.27`.1
 
 ```json
 {

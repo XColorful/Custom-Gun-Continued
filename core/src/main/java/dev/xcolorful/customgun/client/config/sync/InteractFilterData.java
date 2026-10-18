@@ -4,6 +4,7 @@ import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.core.api.minecraft.IMcRegistry;
 import dev.xcolorful.customgun.core.api.resource.data.tag.InteractKeyType;
 import dev.xcolorful.customgun.core.config.SyncConfig;
+import dev.xcolorful.customgun.core.util.EntityUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -80,8 +81,8 @@ public class InteractFilterData {
         Boolean allowed = ENTITY_FILTER.get(CustomGun.getMcRegistry().getEntityTypeRl(type));
         if (allowed != null) return allowed;
         // TagKey 过滤
-        if (type.is(InteractKeyType.ENTITY.getBlacklist())) return false;
-        if (type.is(InteractKeyType.ENTITY.getWhitelist())) return true;
+        if (EntityUtils.is(entity, InteractKeyType.ENTITY.getBlacklist())) return false;
+        if (EntityUtils.is(entity, InteractKeyType.ENTITY.getWhitelist())) return true;
         // 默认结果
         return DEFAULT_RESULT;
     }

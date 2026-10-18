@@ -1,6 +1,6 @@
 package dev.xcolorful.customgun.core.util;
 
-import dev.xcolorful.customgun.core.init.registry.ModBlocks;
+import dev.xcolorful.customgun.core.api.resource.data.tag.RaytraceType;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
@@ -23,7 +23,7 @@ public class BlockRayTrace {
                     if (blockState == null) {
                         return false;
                     }
-                    return blockState.is(ModBlocks.BULLET_IGNORE_BLOCKS);
+                    return blockState.is(RaytraceType.BLOCK.getProjectilePassthrough());
                 }
         );
     }

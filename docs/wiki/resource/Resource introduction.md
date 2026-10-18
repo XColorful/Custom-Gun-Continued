@@ -1,7 +1,7 @@
 [English](#English)
 
 # 资源文件说明
-> wiki 版本：`26.10.27`.5
+> wiki 版本：`26.10.27`.6
 
 ## 📊数据包
 
@@ -55,6 +55,8 @@
                 │      *.json
                 └─tags
                    ├─blocks
+                   |  |   glass_block.json
+                   |  |
                    |  ├─bypass_bullet
                    |  │      armor_enchantment.json
                    |  │      invulnerability_enchantment.json
@@ -106,6 +108,7 @@
 		- [配方数据](https://github.com/XColorful/Custom-Gun-Continued/wiki/Recipe-data)
     - tags
 	    - blocks
+		    - [玻璃方块](https://github.com/XColorful/Custom-Gun-Continued/wiki/Glass-block)
 		    - bypass_bullet
 			    - [免疫子弹方块](https://github.com/XColorful/Custom-Gun-Continued/wiki/Bypass-bullet-block)
 		    - interact_key
@@ -197,7 +200,7 @@
 		- [资源包材质](https://github.com/XColorful/Custom-Gun-Continued/wiki/Resourcepack-texture)
 
 # English
-> wiki version: `26.10.27`.5
+> wiki version: `26.10.27`.6
 
 ## 📊Datapack
 
@@ -251,6 +254,8 @@
                 │      *.json
                 └─tags
                    ├─blocks
+                   |  |   glass_block.json
+                   |  |
                    |  ├─bypass_bullet
                    |  │      armor_enchantment.json
                    |  │      invulnerability_enchantment.json
@@ -302,6 +307,7 @@
 		- [Recipe data](https://github.com/XColorful/Custom-Gun-Continued/wiki/Recipe-data#English)
     - tags
 	    - blocks
+		    - [Glass block](https://github.com/XColorful/Custom-Gun-Continued/wiki/Glass-block#English)
 		    - bypass_bullet
 			    - [Bypass bullet block](https://github.com/XColorful/Custom-Gun-Continued/wiki/Bypass-bullet-block#English)
 		    - interact_key

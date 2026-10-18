@@ -265,6 +265,7 @@ public class ClientRenderHelper {
          *     <li>换缓冲源救不了，得从 Iris 侧或改掉依赖 stencil 的遮罩实现</li>
          * </ul>
          */
+//        @Deprecated(since = "26.2")
         @ApiStatus.AvailableSince("1.21.6")
         public static MultiBufferSource.BufferSource getModelBufferSource() {
             /*
@@ -300,7 +301,7 @@ public class ClientRenderHelper {
             }
             if (true) return Minecraft.getInstance().renderBuffers().bufferSource(); // 让IDE保留下面的引用关系
 
-            // [1.21.10, )
+            // [1.21.10, 26.2)
             // 1.21.10 起 RenderHandEvent 只提供 SubmitNodeCollector，且 Iris 1.9.7 已删除批处理，共享源重新变成即时提交
             return Minecraft.getInstance().renderBuffers().bufferSource(); // 让IDE保留下面的引用关系
 
@@ -313,6 +314,9 @@ public class ClientRenderHelper {
 //                stencilBufferSource = MultiBufferSource.immediate(new ByteBufferBuilder(786432));
 //            }
 //            return stencilBufferSource;
+
+            // [26.2, )
+//            return null;
         }
 
         /**

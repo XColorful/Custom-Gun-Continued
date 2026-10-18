@@ -11,9 +11,9 @@ import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.core.api.entity.IGunProjectile;
 import dev.xcolorful.customgun.core.api.minecraft.IMcRegistry;
 import dev.xcolorful.customgun.core.api.projectile.process.IProjectileProcessRuntime;
+import dev.xcolorful.customgun.core.api.resource.data.tag.RaytraceType;
 import dev.xcolorful.customgun.core.config.AmmoConfig;
 import dev.xcolorful.customgun.core.config.SyncConfig;
-import dev.xcolorful.customgun.core.init.registry.ModBlocks;
 import dev.xcolorful.customgun.core.resource.data.data.gun.bullet._ExplosionData;
 import dev.xcolorful.customgun.core.util.ClassUtils;
 import dev.xcolorful.customgun.core.util.EntityUtils;
@@ -450,7 +450,7 @@ public class _TempExplode {
                         return true;
                     }
                     // 检查是否包含忽略标签
-                    return blockState.is(ModBlocks.BULLET_IGNORE_BLOCKS);
+                    return blockState.is(RaytraceType.BLOCK.getProjectilePassthrough());
                 }
         );
     }

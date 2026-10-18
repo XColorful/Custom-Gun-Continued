@@ -1,7 +1,7 @@
 [English](#English)
 
 # 免疫子弹实体
-> wiki 版本：`26.10.26`.1
+> wiki 版本：`26.10.26`.2
 
 ## 护甲附魔
 > _armor_enchantment.json_
@@ -26,7 +26,6 @@
 	"replace": false,
 	"values": [
 		"minecraft:glow_item_frame",
-		"minecraft:interaction",
 		"minecraft:item_frame",
 		"minecraft:painting"
 	]
@@ -34,7 +33,7 @@
 ```
 
 # English
-> wiki version: `26.10.26`.1
+> wiki version: `26.10.26`.2
 
 ## Armor enchantment
 > _armor_enchantment.json_
@@ -59,7 +58,6 @@ Entities are immune to `bullet_damage` damage unless it is `bypass_damage`.
 	"replace": false,
 	"values": [
 		"minecraft:glow_item_frame",
-		"minecraft:interaction",
 		"minecraft:item_frame",
 		"minecraft:painting"
 	]

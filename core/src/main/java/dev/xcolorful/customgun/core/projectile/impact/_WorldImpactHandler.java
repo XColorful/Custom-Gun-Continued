@@ -4,6 +4,7 @@ import dev.xcolorful.customgun.core.api.event.CustomEventType;
 import dev.xcolorful.customgun.core.api.event.ICustomEvent;
 import dev.xcolorful.customgun.core.api.event.ICustomEventHandler;
 import dev.xcolorful.customgun.core.api.event.projectile.ProjectileHitBlockEvent;
+import dev.xcolorful.customgun.core.api.resource.data.tag.BlockType;
 import dev.xcolorful.customgun.core.config.AmmoConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
@@ -59,6 +60,10 @@ public class _WorldImpactHandler implements ICustomEventHandler {
      * @see net.minecraft.world.level.block.Blocks#GLASS_PANE
      */
     private boolean isGlass(Level level, BlockPos blockPos, Block block) {
+        if (true) {
+            return level.getBlockState(blockPos).is(BlockType.GLASS_BLOCK.getTagKey());
+        }
+
         // TODO 改成 stength + collision 或 tag匹配
         return (block instanceof AbstractGlassBlock) // 玻璃块
 //                || block instanceof StainedGlassBlock // 染色玻璃块

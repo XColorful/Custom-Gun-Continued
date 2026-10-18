@@ -311,6 +311,7 @@ public class ClientRenderHelper {
         /**
          * 在模板窗口关闭前提交独立即时源里残留的几何体
          */
+//        @Deprecated(since = "1.21.10")
         private static void _flushStencilBufferSource() {
             // [1.20.1, 1.21.10)
             if (stencilBufferSource != null) {

@@ -18,6 +18,7 @@ import dev.xcolorful.customgun.core.config.sync.HeadAABBData;
 import dev.xcolorful.customgun.core.entity.projectile.GunProjectile;
 import dev.xcolorful.customgun.core.util.ClassUtils;
 import dev.xcolorful.customgun.core.util.RayTraceUtils;
+import dev.xcolorful.customgun.core.util.EntityUtils;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
@@ -60,7 +61,7 @@ public class ProjectilePhysicsManager implements IProjectilePhysicsManager {
                     && input.isAlive()
                     && input.isPickable()
                     && !input.isSpectator()
-                    && !input.getType().is(RaytraceType.ENTITY.getProjectilePassthrough());
+                    && !EntityUtils.is(input, RaytraceType.ENTITY.getProjectilePassthrough());
 
     protected ProjectilePhysicsManager() {
     }

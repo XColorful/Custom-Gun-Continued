@@ -3,6 +3,7 @@ package dev.xcolorful.customgun.core.mixin.entity;
 import dev.xcolorful.customgun.core.api.minecraft.entity.IEntityExtension;
 import dev.xcolorful.customgun.core.api.resource.data.tag.BypassBulletType;
 import dev.xcolorful.customgun.core.init.registry.ModDamageTypes;
+import dev.xcolorful.customgun.core.util.EntityUtils;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -20,6 +21,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @ApiStatus.Internal
 @Mixin(Entity.class)
 public abstract class EntityMixin implements IEntityExtension {
+
+    @Unique
+    private final Entity cgc$entity = (Entity) (Object) this;
 
     @Shadow
     public boolean noPhysics;
@@ -68,12 +72,11 @@ public abstract class EntityMixin implements IEntityExtension {
     private void cgc$projectileInvulnerability(DamageSource source, CallbackInfoReturnable<Boolean> cir) {
         if (cir.getReturnValueZ() || !source.is(ModDamageTypes.BULLET_DAMAGE)) return;
 
-        EntityType<?> type = this.getType();
         if (!source.is(ModDamageTypes.PIERCE_DAMAGE)
-                && type.is(BypassBulletType.ENTITY.getArmorEnchantment())) {
+                && EntityUtils.is(cgc$entity, BypassBulletType.ENTITY.getArmorEnchantment())) {
             cir.setReturnValue(true);
         } else if (!source.is(ModDamageTypes.BYPASS_DAMAGE)
-                && type.is(BypassBulletType.ENTITY.getInvulnerabilityEnchantment())) {
+                && EntityUtils.is(cgc$entity, BypassBulletType.ENTITY.getInvulnerabilityEnchantment())) {
             cir.setReturnValue(true);
         }
     }

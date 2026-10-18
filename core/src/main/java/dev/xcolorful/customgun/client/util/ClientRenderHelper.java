@@ -306,7 +306,7 @@ public class ClientRenderHelper {
 
             // [1.21.10, 26.2)
             // 1.21.10 起 RenderHandEvent 只提供 SubmitNodeCollector，且 Iris 1.9.7 已删除批处理，共享源重新变成即时提交
-            return Minecraft.getInstance().renderBuffers().bufferSource(); // 让IDE保留下面的引用关系
+//            return Minecraft.getInstance().renderBuffers().bufferSource(); // 让IDE保留下面的引用关系
 
             // [1.21.6, 1.21.10) 旧方案（已被上方取代，保留供参考/revert）
 //            if (!stencilEnabled) {

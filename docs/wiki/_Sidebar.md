@@ -56,11 +56,19 @@
 				- [配方数据](https://github.com/XColorful/Custom-Gun-Continued/wiki/Recipe-data)
 			- tags
 				- blocks
+				    - bypass_bullet
+					    - [免疫子弹方块](https://github.com/XColorful/Custom-Gun-Continued/wiki/Bypass-bullet-block)
 					- interact_key
 						- [方块交互过滤](https://github.com/XColorful/Custom-Gun-Continued/wiki/Interact-key-block-filter)
+					- raytrace
+						- [枪射物穿透方块](https://github.com/XColorful/Custom-Gun-Continued/wiki/Projectile-pass-through-block)
 				- entity_types
+					- bypass_bullet
+					    - [免疫子弹实体](https://github.com/XColorful/Custom-Gun-Continued/wiki/Bypass-bullet-entity)
 					- interact_key
 						- [实体交互过滤](https://github.com/XColorful/Custom-Gun-Continued/wiki/Interact-key-entity-filter)
+					- raytrace
+						- [枪射物穿透实体](https://github.com/XColorful/Custom-Gun-Continued/wiki/Projectile-pass-through-entity)
 		- 🖼️assets
 			- cgc_animations
 				- [基岩版动画](https://github.com/XColorful/Custom-Gun-Continued/wiki/Bedrock-animation)
@@ -156,11 +164,19 @@
 				- [Recipe data](https://github.com/XColorful/Custom-Gun-Continued/wiki/Recipe-data#English)
 			- tags
 				- blocks
+				    - bypass_bullet
+					    - [Bypass bullet block](https://github.com/XColorful/Custom-Gun-Continued/wiki/Bypass-bullet-block#English)
 					- interact_key
 						- [Block interaction filter](https://github.com/XColorful/Custom-Gun-Continued/wiki/Interact-key-block-filter#English)
+					- raytrace
+						- [Projectile pass through block](https://github.com/XColorful/Custom-Gun-Continued/wiki/Projectile-pass-through-block#English)
 				- entity_types
+					- bypass_bullet
+					    - [Bypass bullet entity](https://github.com/XColorful/Custom-Gun-Continued/wiki/Bypass-bullet-entity#English)
 					- interact_key
 						- [Entity interaction filter](https://github.com/XColorful/Custom-Gun-Continued/wiki/Interact-key-entity-filter#English)
+					- raytrace
+						- [Projectile pass through entity](https://github.com/XColorful/Custom-Gun-Continued/wiki/Projectile-pass-through-entity#English)
 		- 🖼️assets
 			- cgc_animations
 				- [Bedrock animation](https://github.com/XColorful/Custom-Gun-Continued/wiki/Bedrock-animation#English)

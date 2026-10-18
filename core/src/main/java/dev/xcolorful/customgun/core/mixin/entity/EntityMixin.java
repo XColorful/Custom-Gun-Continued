@@ -1,7 +1,11 @@
 package dev.xcolorful.customgun.core.mixin.entity;
 
 import dev.xcolorful.customgun.core.api.minecraft.entity.IEntityExtension;
+import dev.xcolorful.customgun.core.api.resource.data.tag.BypassBulletType;
+import dev.xcolorful.customgun.core.init.registry.ModDamageTypes;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.ApiStatus;
@@ -11,6 +15,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @ApiStatus.Internal
 @Mixin(Entity.class)
@@ -22,6 +27,8 @@ public abstract class EntityMixin implements IEntityExtension {
     public abstract Vec3 position();
     @Shadow
     public abstract boolean isPassenger();
+    @Shadow
+    public abstract EntityType<?> getType();
     @Shadow
     protected abstract Entity.MovementEmission getMovementEmission();
 
@@ -55,6 +62,20 @@ public abstract class EntityMixin implements IEntityExtension {
 
         Vec3 actualMovement = this.position().subtract(this.cgc$moveStartPosition);
         this.cgc$horizontalMoveDist += (float) actualMovement.horizontalDistance() * 0.6F;
+    }
+
+    @Inject(method = "isInvulnerableTo", at = @At("RETURN"), cancellable = true)
+    private void cgc$projectileInvulnerability(DamageSource source, CallbackInfoReturnable<Boolean> cir) {
+        if (cir.getReturnValueZ() || !source.is(ModDamageTypes.BULLET_DAMAGE)) return;
+
+        EntityType<?> type = this.getType();
+        if (!source.is(ModDamageTypes.PIERCE_DAMAGE)
+                && type.is(BypassBulletType.ENTITY.getArmorEnchantment())) {
+            cir.setReturnValue(true);
+        } else if (!source.is(ModDamageTypes.BYPASS_DAMAGE)
+                && type.is(BypassBulletType.ENTITY.getInvulnerabilityEnchantment())) {
+            cir.setReturnValue(true);
+        }
     }
 
     // --------IEntityExtension--------

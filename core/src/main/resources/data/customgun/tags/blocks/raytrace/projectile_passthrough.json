@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "#minecraft:leaves",
+    "minecraft:chain",
+    "minecraft:iron_bars",
+    "minecraft:ladder",
+    "minecraft:mangrove_roots",
+    "minecraft:scaffolding"
+  ]
+}

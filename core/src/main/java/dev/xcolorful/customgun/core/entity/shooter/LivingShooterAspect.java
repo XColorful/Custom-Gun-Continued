@@ -1,6 +1,7 @@
 package dev.xcolorful.customgun.core.entity.shooter;
 
 import dev.xcolorful.customgun.core.api.entity.ShooterProperty;
+import dev.xcolorful.customgun.core.config.SyncConfig;
 import net.minecraft.world.entity.LivingEntity;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -35,11 +36,15 @@ public abstract class LivingShooterAspect {
     @ApiStatus.Internal public static final int PRONE_ANIMATION_TICKS = 18;
     /**
      * 持枪时的最大俯仰角，非持枪时不使用
+     * @deprecated 改用 {@link SyncConfig#MAX_PRONE_PITCH}
      */
+    @Deprecated(forRemoval = true)
     @ApiStatus.Internal public static final float PRONE_PITCH_MAX = 25.0F;
     /**
      * 持枪时的最小俯仰角，非持枪时不使用
+     * @deprecated 改用 {@link SyncConfig#MIN_PRONE_PITCH}
      */
+    @Deprecated(forRemoval = true)
     @ApiStatus.Internal public static final float PRONE_PITCH_MIN = -20.0F;
     /**
      * 上界给大后坐全自动留5°的容差

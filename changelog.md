@@ -1,5 +1,36 @@
 ### 26.10
 
+#### 26.10.28
+Mechanics:
+- Gun projectile can only break vanilla glass blocks by default
+- Gun projectile will pass through leaves, chains, iron bars, ladder, mangrove roots and scaffolding by default
+- Gun projectile cannot damage item frame, painting by default
+- Hide guns on the local player's back in first-person view
+- Client key bindings now support modifier keys
+- Add zoom config `EnableScrollingZoom`, `ScrollingZoomCycle`, `InvertScrollingZoom`
+- Enable mouse wheel zoom by default
+- Add sync config `EnablePronePitch`, `MaxPronePitch`, `MinPronePitch`
+
+Optimize:
+- Remove unnecessary shooter tick overhead for non-player entities
+
+Fix:
+- Fixed a memory leak caused by gun entities when using certain shaders
+- Fixed scope-in speed affected by frame rate
+- Fixed right-click interaction while holding a gun
+
+Resource file:
+- Add block tag `glass_block.json`
+- Add `bypass_bullet`, `raytrace` tags
+
+Network:
+- Update network protocol version to `28`, which prevents connections between new and older versions
+
+For developer:
+- Update `ILivingShooter#zoom`
+- `InputKey` no longer requires manual modifier key checks, as `InputKeyManager` handles them automatically
+- Align the semantics of the server-side GunFireEvent with those of the client-side event
+
 #### 26.10.27
 - Disable gun HUD triggers in spectator mode
 - Fixed third-person gun rendering when left hand is set to main hand

@@ -129,16 +129,14 @@ public final class LivingShooterAim extends LivingShooterAspect {
         @Nullable AttachmentIndexInstance attachmentIndexInstance = ResourceApi.getAttachmentIndexInstance(scopeLocation);
         if (attachmentIndexInstance == null) return;
 
-        if (false) { // ↓旧实现，让IDE保留下面的引用关系
-        int scopeViewIndex = AttachmentNBTAccessor.INSTANCE.getScopeViewIndex(scopeCustomDataTag);
-        scopeViewIndex++;
+//        // ↓旧实现
+//        int scopeViewIndex = AttachmentNBTAccessor.INSTANCE.getScopeViewIndex(scopeCustomDataTag);
+//        scopeViewIndex++;
 //        zoomNumber = zoomNumber % (Integer.MAX_VALUE - 1); // 取模不能避免变负，原模组的注释有误
-        if (scopeViewIndex < 0) {
-            if (PlannedRefactor.MOVE_SCOPE_VIEW_INDEX_TO_CORE) {}
-            scopeViewIndex = 0;
-        }
-        }
-        // ----旧实现结束----
+//        if (scopeViewIndex < 0) {
+//            if (PlannedRefactor.MOVE_SCOPE_VIEW_INDEX_TO_CORE) {}
+//            scopeViewIndex = 0;
+//        }
 
         if (toScopeViewIndex < 0) {
             if (PlannedRefactor.MOVE_SCOPE_VIEW_INDEX_TO_CORE) {}

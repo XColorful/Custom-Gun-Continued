@@ -123,6 +123,15 @@ public class ModConfigTag {
     public static final String enableProne_path = "EnableProne"; public static final String enableProne_path_OLD1 = "EnableCrawl";
     public static final String enableProne_comment = "Whether or not players are allowed to use the prone feature";
 
+    public static final String enablePronePitch_path = "EnablePronePitch";
+    public static final String enablePronePitch_comment = "Whether to enable pitch angle limits while prone";
+
+    public static final String maxPronePitch_path = "MaxPronePitch";
+    public static final String maxPronePitch_comment = "The maximum allowed pitch angle while prone";
+
+    public static final String minPronePitch_path = "MinPronePitch";
+    public static final String minPronePitch_comment = "The minimum allowed pitch angle while prone";
+
     public static final String enableTableFilter_path = "EnableDefaultGunSmithTableFilter";
     public static final String enableTableFilter_comment = "Enable the recipe limit of default gunsmith table or not";
 

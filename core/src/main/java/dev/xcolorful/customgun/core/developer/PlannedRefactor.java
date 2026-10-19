@@ -47,5 +47,5 @@ public class PlannedRefactor {
     // 添加机制来在开火时/手动输入按键时才拉栓
     public static final boolean AUTO_BOLT = true;
     // 是否启用内置的tick，用于自定义实体及减少不必要的一大堆entity tick (不会改成Capability的方式）
-    public static final boolean ENABLE_DEFAULT_SHOOTER_TICK = true;
+    @Deprecated(forRemoval = true) public static final boolean ENABLE_DEFAULT_SHOOTER_TICK = true;
 }

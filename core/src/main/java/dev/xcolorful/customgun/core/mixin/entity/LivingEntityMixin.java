@@ -3,7 +3,6 @@ package dev.xcolorful.customgun.core.mixin.entity;
 import dev.xcolorful.customgun.core.api.entity.*;
 import dev.xcolorful.customgun.core.api.entity.shooter.modifier.ShooterGunModifierCache;
 import dev.xcolorful.customgun.core.api.projectile.physics.IProjectilePhysicsRuntime;
-import dev.xcolorful.customgun.core.developer.PlannedRefactor;
 import dev.xcolorful.customgun.core.entity.LivingShooterSyncKey;
 import dev.xcolorful.customgun.core.entity.shooter.*;
 import dev.xcolorful.customgun.core.entity.shooter.modifier.ShooterGunModifierManager;
@@ -56,10 +55,15 @@ public abstract class LivingEntityMixin extends Entity implements ILivingShooter
 
     @Inject(method = "tick", at = @At(value = "RETURN"))
     private void cgc$onLivingTick(CallbackInfo ci) {
+        if (this.cgc$enableDefaultLivingShooterTick()) {
+            this.cgc$defaultLivingShooterTick();
+        }
+    }
+
+    private void cgc$defaultLivingShooterTick() {
         if (level().isClientSide()) {
             return;
         }
-        if (!PlannedRefactor.ENABLE_DEFAULT_SHOOTER_TICK) return;
 
         // 完成各种 tick 任务
         ReloadState reloadState = this.cgc$reload.tickReloadState();

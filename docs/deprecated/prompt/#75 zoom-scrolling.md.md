@@ -156,3 +156,32 @@ tag 2 -> zoom 6.0, fov 70, view 1
 - `tag 0 ↔ display[0]` 的语义不变。
 
 需要注意的是这会改变旧资源包的原始书写顺序（TaCZ 原版按数组原序循环），属于行为兼容性取舍。如果确认要这样做，我再实现；如果希望保留资源包原序，那当前行为就是符合“tag 0 = display 首项”的，不需要改代码。
+
+# 
+
+```
+排查一下tacz官包所有倍镜配件里，降序的数量，单个倍率的数量，低高低/高低高的数量，升序的数量
+```
+
+# 
+
+扫描官方包里的倍镜 display，按 `zoom` 序列分类统计。
+
+扫描结果（`tacz_default_gun`，按 `data/tacz/index/attachments/*.json` 的 `type: "scope"` 统计）：
+
+## 实际游戏内倍镜配件（display 为 `scope: true`，共 13 个）
+
+|类别|数量|明细|
+|---|---|---|
+|单个倍率|7|1873_6x `[6]`、98k `[4.25]`、acog_ta31 `[2.5]`、aug_default `[4.25]`、contender `[4.25]`、qmk152 `[3]`、retro_2x `[3.25]`|
+|降序|4|elcan_4x `[4.25,1.25]`、hamr `[3.25,1.25]`、lpvo_1_6 `[6.25,1.25]`、vudu `[6.5,1.35]`|
+|升序|1|standard_8x `[4.5,10]`（其 index 指向 `scope_scout_display`）|
+|低高低|1|mk5hd `[5,25,1.25]`|
+|高低高|0|—|
+
+## 其他口径
+
+- **按 display 资源文件统计**：`scope: true` 的 display 共 14 个，即上表基础上多一个 `scope_standard_8x_display.json`（`[5,10]`，升序）。但这个文件**没有被任何 attachment index 引用**，`scope_standard_8x` 配件实际指向 `scope_scout_display`。
+- **若把红点/全息（`sight: true`，倍率 1.35~2.5）也算作瞄具**：共 32 个 `type: "scope"` 配件，其中单一倍率 26 个（7 个倍镜 + 19 个红点/全息），降序 4、升序 1、低高低 1。
+
+补充：多倍率倍镜中只有 `mk5hd` 不是单调排序；其余非单倍率的 5 个里 4 个降序、1 个升序。

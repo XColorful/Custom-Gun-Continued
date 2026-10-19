@@ -1,4 +1,4 @@
-package dev.xcolorful.customgun.client.api.config;
+package dev.xcolorful.customgun.core.api.config;
 
 public class ClientModConfigTag {
 
@@ -19,7 +19,7 @@ public class ClientModConfigTag {
     public static final String render_path = "render";
 
     public static final String enableLaserFadeOut_path = "EnableLaserFadeOut";
-    public static final String enableLaserFadeOut_comment = "Whether or not apply fadeout effect on the laser beam. Close this may improve laser performance under some shaders.";
+    public static final String enableLaserFadeOut_comment = "Whether or not apply fadeout effect on the laser beam. Close this may improve laser performance under some shaders";
 
     public static final String gunLodRenderDistance_path = "GunLodRenderDistance";
     public static final String gunLodRenderDistance_comment = "How far to display the lod model, 0 means always display";
@@ -88,7 +88,7 @@ public class ClientModConfigTag {
     public static final String appendResourceLocationInTooltip_comment = "Whether to append resource location after gunpack information in tooltips";
 
     public static final String blockEntityTranslucent_path = "EnableBlockEntityTranslucent";
-    public static final String blockEntityTranslucent_comment = "Enable translucent while render block entity or not. Enable this option will result in ADDITIONAL PERFORMANCE OVERHEAD.";
+    public static final String blockEntityTranslucent_comment = "Enable translucent while render block entity or not. Enable this option will result in ADDITIONAL PERFORMANCE OVERHEAD";
 
 
     // ResourceConfig
@@ -105,16 +105,16 @@ public class ClientModConfigTag {
     public static final String sound_path = "sound";
 
     public static final String hitSoundConcurrencyLimit_path = "HitSoundConcurrencyLimit";
-    public static final String hitSoundConcurrencyLimit_comment = "Max active hit marker sounds for the same entity and sound id. 0 disables this limit.";
+    public static final String hitSoundConcurrencyLimit_comment = "Max active hit marker sounds for the same entity and sound id. 0 disables this limit";
 
     public static final String defaultSoundConcurrencyLimit_path = "DefaultSoundConcurrencyLimit";
-    public static final String defaultSoundConcurrencyLimit_comment = "Max active normal gun sounds for the same entity and sound id. 0 disables this limit.";
+    public static final String defaultSoundConcurrencyLimit_comment = "Max active normal gun sounds for the same entity and sound id. 0 disables this limit";
 
     public static final String highFrequencySoundConcurrencyLimit_path = "HighFrequencySoundConcurrencyLimit";
-    public static final String highFrequencySoundConcurrencyLimit_comment = "Max active high-frequency gun sounds, such as shooting and animation keyframe sounds, for the same entity and sound id. 0 disables this limit.";
+    public static final String highFrequencySoundConcurrencyLimit_comment = "Max active high-frequency gun sounds, such as shooting and animation keyframe sounds, for the same entity and sound id. 0 disables this limit";
 
     public static final String firstPersonAnimationSoundTracking_path = "FirstPersonAnimationSoundTracking";
-    public static final String firstPersonAnimationSoundTracking_comment = "Use a non-relative entity-tracking world sound source for first-person animation keyframe sounds. This can improve compatibility with physical sound mods, but may introduce slight stereo drift while moving.";
+    public static final String firstPersonAnimationSoundTracking_comment = "Use a non-relative entity-tracking world sound source for first-person animation keyframe sounds. This can improve compatibility with physical sound mods, but may introduce slight stereo drift while moving";
 
     // ZoomConfig
     public static final String zoom_path = "Zoom";

@@ -81,3 +81,78 @@ Shell 下 ForgeGradle 解析不到 Minecraft 依赖，改用 IDEA MCP 检查该�
 验证：IDEA 单文件检查无错误。Gradle 编译仍因环境无法解析 `net.minecraft:client:1.20.1` 而无法运行，且无法在此做游戏内测试。
 
 一个需要游戏内确认的点：你在 `LivingShooterAim` 里加的“服务端索引与客户端 `from` 不一致时忽略本次切换”会在网络往返期间丢弃后续滚轮的步进；每 tick 只发一条消息时，快速滚动仍可能因该守卫丢掉到达前的若干格。如果实测仍有到不了 0 的现象，问题大概率在这里而不是客户端累计逻辑。
+
+# 
+
+```
+找到问题了，不是缩放有问题
+
+现在需要整个项目把tag里scopeViewIndex为0的时候对应display里第一个，目前gun item tag里viewIndex为0的时候对应的是display列表最后一项（以从小到大排列的为例，就是缩放倍率最大的一个）
+```
+
+# 
+
+问题在索引语义。我先把项目里所有用 NBT `scopeViewIndex` 去索引 display 列表的地方找出来。
+
+我核对了当前代码：三处使用 NBT 索引的地方（[GunDataAccessor.java:138](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/core/api/item/gun/GunDataAccessor.java:138) 的 `zoom`、[GunCameraHelper.java:241](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/client/renderer/item/gun/GunCameraHelper.java:241) 的 `views_fov`、[GunRendererAddon.java:311](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/client/renderer/item/gun/GunRendererAddon.java:311) 的 `views`）都是直接 `list[nbtIndex]`，没有找到 `0 → 最后一项` 的反转。而实际资源包里 `zoom` 多数是降序书写的（如 lpvo `[6.25, 1.25]`），所以 tag 0 会取到"最大倍率"——这与你描述的现象一致，但它是**数组书写顺序**导致的，不是索引反转。
+
+在项目级改动前需要确认目标语义，避免改错方向。
+
+明白：索引语义保持 `tag 0 = display 第一项`，只加 `INVERT_SCROLLING_ZOOM` 控制滚轮方向（默认 true = 滚轮向上放大）。我来接线，并顺手补上 `ClientModConfigTag` 里漏掉的分号。
+
+完成。
+
+改动：
+
+- [ZoomKey.java:191](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/client/input/shooter/ZoomKey.java:191)：在算出每 tick 的 `offset` 后，若 `INVERT_SCROLLING_ZOOM` 为 true 则取反，再传给 `_doZoom`。默认 true 时滚轮向上（正 delta）对应 `offset = -1`，即 `scopeViewIndex` 减小；配合 `tag 0 = display 第一项`（多数包第一项是最大倍率），滚轮向上即为放大。
+- [ClientModConfigTag.java:128](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/core/api/config/ClientModConfigTag.java:128)：补上了 `invertScrollingZoom_comment` 行尾缺失的分号（否则无法编译）。
+- 索引语义保持原样，未改动 `GunDataAccessor` / `GunCameraHelper` / `GunRendererAddon`。
+
+验证：三个文件 IDEA 检查均无错误；Gradle 构建仍受环境依赖解析限制，未做游戏内验证。
+
+一个已知边界：像 `scope_scout`（`zoom: [4.5, 10]`，升序书写）这类 display，反转后滚轮向上的效果会相反。如果希望方向按“倍率”而不是“数组位置”来判断，就需要按 `scope_zoom_scale` 实际值决定方向，而不是单纯取反。
+
+# 
+
+```
+现在还是有问题
+以cbrg:8x_scope（\tacz\classic_battleroyale_gun\assets\cbrg\display\attachments\8x_scope_display.json）为例，在当前InvertScrollingZoom = true，鼠标往上滚到底的tag index是0，往下滚到底的tag index是2，但是tag为1的时候才是缩放倍率最小的
+- tag index为0的时候，要对应display列表里索引0，即首个
+
+排查是tag有问题还是渲染使用的有问题
+```
+
+# 
+
+我先把 display 数组从加载到消费的整条链路再核一遍，确认 tag 和渲染各自用的是哪个索引。
+
+## 排查结论
+
+tag 和渲染端**都没有做索引变换**，两者用的是同一个 0-based 索引，`tag n` 就取 `display[n]`：
+
+|环节|代码|取值|
+|---|---|---|
+|写入 tag|[LivingShooterAim.java:155](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/core/entity/shooter/LivingShooterAim.java:155)|直接写入客户端算好的 `toScopeViewIndex`，无变换|
+|世界缩放|[GunDataAccessor.java:138](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/core/api/item/gun/GunDataAccessor.java:138)|`scopeZoomScale[n % len]`|
+|手部 FOV|[GunCameraHelper.java:241](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/client/renderer/item/gun/GunCameraHelper.java:241)|`scopeViewFov[n % len]`|
+|瞄准视角节点|[GunRendererAddon.java:311](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/client/renderer/item/gun/GunRendererAddon.java:311)|`views[n % len] - 1`|
+
+把 `8x_scope_display.json` 的实际数据代入：
+
+```
+tag 0 -> zoom 8.0, fov 70, view 1
+tag 1 -> zoom 4.0, fov 70, view 1
+tag 2 -> zoom 6.0, fov 70, view 1
+```
+
+所以你的观测（两端 0 / 2、最小倍率在 1）**正好证明 tag 0 对应的是 display 索引 0（8x）**，不存在 tag 或渲染的索引错误。真正的问题是资源包里 `zoom: [8.0, 4.0, 6.0]` 本身不按倍率排序——最小倍率 4x 落在中间，所以滚到两端都不会停在最小/最大倍率上。
+
+## 可选的修法
+
+如果目标是“滚轮方向与倍率单调、两端分别是最大/最小”，需要改的是 display 数据的顺序，而不是索引逻辑。推荐在 `AttachmentDisplay.applyScopeBackCompatibility` 里把 `scopeZoomScale` / `scopeViewFov` / `scopeViewIndex` 三个平行数组按倍率**降序**重排：
+
+- `[8, 4, 6]` → `[8, 6, 4]`，tag 0 = 8x（最大），tag 2 = 4x（最小）；
+- 配合 `InvertScrollingZoom = true`：滚轮向上 index 减小 = 倍率增大 = 放大，向下到底 = 最小倍率；
+- `tag 0 ↔ display[0]` 的语义不变。
+
+需要注意的是这会改变旧资源包的原始书写顺序（TaCZ 原版按数组原序循环），属于行为兼容性取舍。如果确认要这样做，我再实现；如果希望保留资源包原序，那当前行为就是符合“tag 0 = display 首项”的，不需要改代码。

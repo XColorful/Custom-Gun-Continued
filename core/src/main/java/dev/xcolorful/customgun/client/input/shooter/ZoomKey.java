@@ -188,6 +188,7 @@ public final class ZoomKey extends InputKey implements IEventHandler {
 
         int offset = (int) (this.stackedScroll / threshold);
         this.stackedScroll -= offset * threshold;
+        if (ZoomConfig.INVERT_SCROLLING_ZOOM.get()) offset = -offset;
         _doZoom(iGun, gunItem, offset, ZoomConfig.SCROLLING_ZOOM_CYCLE.get());
     }
     private static double threshold = 1; // 临时用

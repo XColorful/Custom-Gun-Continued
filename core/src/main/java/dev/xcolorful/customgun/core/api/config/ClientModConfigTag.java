@@ -125,6 +125,9 @@ public class ClientModConfigTag {
     public static final String scrollingZoomCycle_path = "ScrollingZoomCycle";
     public static final String scrollingZoomCycle_comment = "Whether mouse scroll wheel zooming cycles";
 
+    public static final String invertScrollingZoom_path = "InvertScrollingZoom";
+    public static final String invertScrollingZoom_comment = "Whether to invert the mouse scroll wheel zoom direction";
+
     public static final String screenDistanceCoefficient_path = "ScreenDistanceCoefficient";
     public static final String screenDistanceCoefficient_comment = "Screen distance coefficient for zoom, using MDV standard, default is MDV133";
 

@@ -96,7 +96,7 @@ public class HumanoidOffhandRender {
                         ItemStack gunItem,
                         _SurroundDisplay surroundDisplay) {
         Minecraft mc = Minecraft.getInstance();
-        if (entity.equals(mc.player) && mc.options.getCameraType().isFirstPerson()) {
+        if (mc.player != null && entity.equals(mc.player) && mc.options.getCameraType().isFirstPerson()) {
             // 第一人称不渲染自身背后枪械
             return;
         }

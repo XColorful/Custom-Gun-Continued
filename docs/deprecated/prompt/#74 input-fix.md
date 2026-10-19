@@ -32,6 +32,11 @@
 
 # 
 
+[fork1](#fork1)
+[fork2](#fork2)
+
+# fork1
+
 ```
 需要检查26.3改了scancode后该改动是否仍然生效，以及对于依赖release的键，正确使用方式是否是先松开key再松开modifier key？MC原版按键绑定的处理逻辑是怎样的？是否所有按键都支持键鼠/modifier？
 ```
@@ -182,3 +187,42 @@ ClientInputUtils.KeyType.keyboard().getOrCreate(keyEvent.key()是否可以简化
 - 表的填充仍发生在构造期（`KeyMapping` 构造函数 + `resetMapping`），并没有比现在更「随时」。
 
 所以：现在这层的接口化 subManager 列表恰恰是更方便替换的部分；真正阻碍热替换的是 `KeyMapping` 的启动期注册和控制页硬编码，换不换 lookup 都一样。如果想把替换做扎实，值得动的是另外三处（需要的话我可以做）：按 `CustomInputKey` 做 replace 语义、给分发加 consume/优先级、把 `ClientKeyMappingRegistry` 变成可扩展注册表。
+
+# fork2
+
+```
+现在的代码状态，CGC本体的按键如调整倍镜倍率，趴下这两个键，在MC设置界面改成Ctrl+或者Alt+之后，仍然能只按按键就触发，没有触发modifier key拦截
+- 目前推测是否modifier key在注册时就绑定写死了
+
+排查该问题并修复
+```
+
+# 
+
+我怀疑确实是缓存了注册时的 modifier。先确认 Forge 选项界面改键时写的是底层 `KeyMapping`，而不是我们的包装字段。
+
+根因基本确认了，先看下 26.3 worktree 的对应实现（只读），确认是否同一模式。
+
+根因确认：Forge 的 `KeyBindsScreen` 改键时只写底层 `KeyMapping` 的 `keyModifier`，而 `ForgeKeyMapping` 缓存了构造时传入的 modifier（永远 `NONE`），所以分发层的检查一直是放行的。现在改为实时读取底层值。
+
+## 排查结果
+
+是**两层问题叠加**，前一层是上一轮刚加的拦截，后一层才是这次没生效的原因：
+
+1. **Forge 改键写的是底层 `KeyMapping`**：`KeyBindsScreen.keyPressed()` 调用 `selectedKey.setKeyModifierAndCode(null, key)`（Forge 1.20.1 `KeyBindsScreen.java:61`），Modifier 由「上一次按下的修饰键」推导并写入底层对象。
+2. **我们的包装类缓存了注册时的 Modifier**：`ForgeKeyMapping` 在构造时把 `IKeyModifier` 存进 final 字段，`getKeyModifier()` 永远返回构造时的值（CGC 键全是 `NONE`）。所以上一轮在 `_InputEventHandler` 里加的 `getKeyModifier().isActive(...)` 对 `NONE` 永远为真，即使玩家在设置里改成了 Ctrl+。
+
+## 修复
+
+- [ForgeKeyMapping.java:49](forge-compat/src/main/java/dev/xcolorful/customgun/forgeclient/input/ForgeKeyMapping.java:49)：`getKeyModifier()` 改为实时读取底层 `keyMapping.getKeyModifier()`，不再缓存；构造参数只用于创建底层 `KeyMapping`。
+- [ForgeKeyModifier.java:20](forge-compat/src/main/java/dev/xcolorful/customgun/forgeclient/input/ForgeKeyModifier.java:20)：新增 `convert(KeyModifier)` 重载，把实时读到的 Forge 枚举转回项目封装（复用原有单例）。
+
+两处调用链都覆盖到了：
+- 事件分发：`_InputEventHandler` → `isModifierActive()` → 实时 modifier；
+- 按住状态轮询：`ProneKey`/`AimKey`/`ShootKey` 用的 `keyMapping.get().isDown()`，Forge 原生就是 `isConflictContextAndModifierActive()`，改键后自动生效。
+
+验证：`:forge-compat:compileJava` 编译通过（仅既有 deprecation 警告）；未启动游戏实测。
+
+## 需要你决定的
+
+26.3 worktree 里存在同样的问题，且更彻底：`NeoKeyMapping`/`ForgeKeyMapping` 同样缓存 modifier，而 `_InputEventHandler` 连上一轮的拦截都还没有。按项目规则我没有动那个分支——需要我把这两处同步修到 `26.3neoforge` 吗？

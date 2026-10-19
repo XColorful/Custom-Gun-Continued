@@ -173,15 +173,6 @@ public class _DefaultGunFire {
             ) return IGunAttackRuntime.GunFireResult.ERROR;
         }
 
-        { // 事件跳过
-            if (CustomGun.getEventPoster().postCustomEvent(new GunFireEvent(McLogicalSide.SERVER,
-                    iGun, gunItem, iLivingShooter, livingShooter))) {
-                return IGunAttackRuntime.GunFireResult.SUCCESS;
-            } else {
-                SendUtils.sendMessageToNearbyPlayers(livingShooter, new S2CMessageGunFire(livingShooter.getId(), gunItem));
-            }
-        }
-
         { // 1. 过热锁 + 过热处理
             @Nullable _HeatData heatData = gunData.getHeatData();
             if (heatData != null) {
@@ -212,7 +203,16 @@ public class _DefaultGunFire {
             }
         }
 
-        { // 生成子弹
+        { // 事件跳过
+            if (CustomGun.getEventPoster().postCustomEvent(new GunFireEvent(McLogicalSide.SERVER,
+                    iGun, gunItem, iLivingShooter, livingShooter))) {
+                return IGunAttackRuntime.GunFireResult.SUCCESS;
+            } else {
+                SendUtils.sendMessageToNearbyPlayers(livingShooter, new S2CMessageGunFire(livingShooter.getId(), gunItem));
+            }
+        }
+
+        { // 3. 生成子弹
             // 获取射击方向（pitch 和 yaw）
             float currentPitch = pitch != null ? pitch.get() : livingShooter.getXRot();
             float currentYaw = yaw != null ? yaw.get() : livingShooter.getYRot();

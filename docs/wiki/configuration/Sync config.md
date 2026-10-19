@@ -1,7 +1,7 @@
 [English](#English)
 
 # 同步配置
-> wiki 版本：`0.0.15`.5
+> wiki 版本：`26.10.27`.6
 
 ## 交互键
 
@@ -40,6 +40,9 @@
 - `HideEntityHitbox`（bool）：是否隐藏有碰撞箱历史的实体的碰撞箱
 - `AmmoBoxStackSize`（整数，≥1）：子弹盒可容纳的子弹最大堆叠数
 - `EnableProne`（bool）：是否允许玩家使用趴下功能
+- `EnablePronePitch`（bool）：是否启用趴姿俯仰角限制
+- `MaxPronePitch`（浮点，≤90.0）：趴姿时允许的最大俯仰角
+- `MinPronePitch`（浮点，≥-90.0）：趴姿时允许的最小俯仰角
 - `ServerShootNetworkCheck`（bool）：[调试] 是否在服务端执行射击时的网络校验
 - `ServerShootCooldownCheck`（bool）：[调试] 是否在服务端执行射击冷却校验
 ```toml
@@ -48,12 +51,15 @@
     HideEntityHitbox = false
 	AmmoBoxStackSize = 3
 	EnableProne = true
+	EnablePronePitch = true
+	MaxPronePitch = 25.0
+	MinPronePitch = -20.0
 	ServerShootNetworkCheck = true
 	ServerShootCooldownCheck = true
 ```
 
 # English
-> wiki version: `0.0.15`.5
+> wiki version: `26.10.27`.6
 
 ## Sync Config
 
@@ -94,6 +100,9 @@ Path: `misc`
 - `HideEntityHitbox` (bool): Whether to hide the collision box of entities with hitbox history
 - `AmmoBoxStackSize` (integer, ≥1): The maximum stack size of ammo that the ammo box can hold
 - `EnableProne` (bool): Whether players are allowed to use the prone feature
+- `EnablePronePitch` (bool): Whether to enable pitch angle limits while prone
+- `MaxPronePitch` (float, ≤90.0): The maximum allowed pitch angle while prone
+- `MinPronePitch` (float, ≥-90.0): The minimum allowed pitch angle while prone
 - `ServerShootNetworkCheck` (bool): [Debug] Do server-side network check while shooting
 - `ServerShootCooldownCheck` (bool): [Debug] Do server-side shoot cooldown check
 ```toml
@@ -102,6 +111,9 @@ Path: `misc`
     HideEntityHitbox = false
 	AmmoBoxStackSize = 3
 	EnableProne = true
+	EnablePronePitch = true
+	MaxPronePitch = 25.0
+	MinPronePitch = -20.0
 	ServerShootNetworkCheck = true
 	ServerShootCooldownCheck = true
 ```

@@ -17,6 +17,15 @@ public abstract class NeoKeyModifier implements IKeyModifier {
         };
     }
 
+    public static NeoKeyModifier convert(KeyModifier keyModifier) {
+        return switch (keyModifier) {
+            case CONTROL -> Control.INSTANCE;
+            case SHIFT -> Shift.INSTANCE;
+            case ALT -> Alt.INSTANCE;
+            case NONE -> None.INSTANCE;
+        };
+    }
+
     private final KeyModifier keyModifier;
 
     private NeoKeyModifier(KeyModifier keyModifier) {

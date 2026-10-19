@@ -24,6 +24,10 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * 枪械{@link IGun} 射击一次 的事件
+ * <ul>
+ *     <li>该事件为通过模组内置的枪械检测后，已经准许射击的情况下的最后拦截</li>
+ *     <li>若因过热、没子弹等提前拦截，则不会触发本事件</li>
+ * </ul>
  */
 public final class GunFireEvent extends GunEvent implements ILivingShooterEvent, ILogicalSideOnly {
 

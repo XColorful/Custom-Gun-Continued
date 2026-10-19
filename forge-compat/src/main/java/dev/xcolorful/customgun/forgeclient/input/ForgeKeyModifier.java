@@ -17,6 +17,15 @@ public abstract class ForgeKeyModifier implements IKeyModifier {
         };
     }
 
+    public static ForgeKeyModifier convert(KeyModifier keyModifier) {
+        return switch (keyModifier) {
+            case CONTROL -> Control.INSTANCE;
+            case SHIFT -> Shift.INSTANCE;
+            case ALT -> Alt.INSTANCE;
+            case NONE -> None.INSTANCE;
+        };
+    }
+
     private final KeyModifier keyModifier;
 
     private ForgeKeyModifier(KeyModifier keyModifier) {

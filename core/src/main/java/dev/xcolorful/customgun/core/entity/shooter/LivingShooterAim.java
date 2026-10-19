@@ -110,16 +110,17 @@ public final class LivingShooterAim extends LivingShooterAspect {
         this.shooterProperty.aimingTimestamp = currentTimeMillis;
     }
 
-    public void zoom() {
+    public void zoom(int fromScopeViewIndex, int toScopeViewIndex) {
         // 1. 手持枪械检查
         if (this.shooterProperty.currentGunItem == null) return;
         ItemStack gunItem = this.shooterProperty.currentGunItem.get();
         @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return;
 
-        _doZoom(iGun, gunItem);
+        _doZoom(iGun, gunItem, fromScopeViewIndex, toScopeViewIndex);
     }
-    private void _doZoom(IGun iGun, ItemStack gunItem) {
+    private void _doZoom(IGun iGun, ItemStack gunItem,
+                         int fromScopeViewIndex, int toScopeViewIndex) {
         final var SCOPE = AttachmentCategory.SCOPE;
         @Nullable CompoundTag scopeCustomDataTag = iGun.getAttachmentCustomDataTag(gunItem, SCOPE);
         if (scopeCustomDataTag == null) return;
@@ -128,16 +129,31 @@ public final class LivingShooterAim extends LivingShooterAspect {
         @Nullable AttachmentIndexInstance attachmentIndexInstance = ResourceApi.getAttachmentIndexInstance(scopeLocation);
         if (attachmentIndexInstance == null) return;
 
-        int scopeViewIndex = AttachmentNBTAccessor.INSTANCE.getScopeViewIndex(scopeCustomDataTag);
-        scopeViewIndex++;
+//        // ↓旧实现
+//        int scopeViewIndex = AttachmentNBTAccessor.INSTANCE.getScopeViewIndex(scopeCustomDataTag);
+//        scopeViewIndex++;
 //        zoomNumber = zoomNumber % (Integer.MAX_VALUE - 1); // 取模不能避免变负，原模组的注释有误
-        if (scopeViewIndex < 0) {
+//        if (scopeViewIndex < 0) {
+//            if (PlannedRefactor.MOVE_SCOPE_VIEW_INDEX_TO_CORE) {}
+//            scopeViewIndex = 0;
+//        }
+
+        int scopeViewIndex = AttachmentNBTAccessor.INSTANCE.getScopeViewIndex(scopeCustomDataTag);
+        if (scopeViewIndex != fromScopeViewIndex) { // 客户端还没收到更新就又缩放
+            // 允许客户端快速滚轮，只是开镜散布判定跟客户端有点延迟
+//            if (scopeViewIndex >= 0) {
+//                // 服务端数据合法，强行再写入一次 (不提前return)
+//                toScopeViewIndex = scopeViewIndex;
+//            }
+        }
+
+        if (toScopeViewIndex < 0) {
             if (PlannedRefactor.MOVE_SCOPE_VIEW_INDEX_TO_CORE) {}
-            scopeViewIndex = 0;
+            toScopeViewIndex = 0;
         }
 
         { // 写入操作需要保存
-            AttachmentNBTAccessor.INSTANCE.setScopeViewIndex(scopeCustomDataTag, scopeViewIndex);
+            AttachmentNBTAccessor.INSTANCE.setScopeViewIndex(scopeCustomDataTag, toScopeViewIndex);
         }
         iGun.setAttachmentCustomDataTag(gunItem, SCOPE, scopeCustomDataTag);
 

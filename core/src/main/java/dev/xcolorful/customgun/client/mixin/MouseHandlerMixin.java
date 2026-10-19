@@ -6,6 +6,7 @@ import dev.xcolorful.customgun.client.config.ZoomConfig;
 import dev.xcolorful.customgun.core.api.entity.shooter.ILivingShooterGetter;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
+import dev.xcolorful.customgun.core.config.SyncConfig;
 import dev.xcolorful.customgun.core.entity.shooter.LivingShooterAspect;
 import dev.xcolorful.customgun.core.entity.shooter.LivingShooterProne;
 import dev.xcolorful.customgun.core.util.MathUtil;
@@ -86,7 +87,7 @@ public class MouseHandlerMixin {
             // 仰角正负是反的
             float upPitch = -player.getXRot();
             float upDelta = (float) -finalPitch * TURN_DEGREES_PER_UNIT;
-            float upClamped = Mth.clamp(upPitch + upDelta, LivingShooterAspect.PRONE_PITCH_MIN, LivingShooterAspect.PRONE_PITCH_MAX);
+            float upClamped = (float) Mth.clamp(upPitch + upDelta, SyncConfig.MIN_PRONE_PITCH.get(), SyncConfig.MAX_PRONE_PITCH.get());
             // 夹取在角度空间做，结果再换算回 turn() 的入参单位
             // 走 turn() 而不是 setXRot()，是为了让 xRotO 与 xRot 一起被更新，否则相机插值会一直偏
             finalPitch = -(upClamped - upPitch) / TURN_DEGREES_PER_UNIT;

@@ -116,6 +116,10 @@ public final class InteractKey extends InputKey implements IEventHandler {
         }
     }
 
+    /**
+     * 持枪时拦截所有直接交互，白名单只决定交互键能否触发
+     * 与 {@link dev.xcolorful.customgun.client.gui.overlay.shooteroperation._PlayerInteract} 的显示条件保持一致
+     */
     private void onInteractionMapping(IInteractionMappingEvent event) {
         Minecraft mc = Minecraft.getInstance();
         LocalPlayer player = mc.player;
@@ -131,21 +135,21 @@ public final class InteractKey extends InputKey implements IEventHandler {
                 || IGunGetter.fromMainHand(player) == null
         ) return;
 
-        // 方块交互
-        if (hitResult instanceof BlockHitResult blockHitResult) {
-            BlockPos blockPos = blockHitResult.getBlockPos();
-            BlockState blockState = player.level().getBlockState(blockPos);
-            if (InteractFilterData.canInteract(blockState)) {
-                return;
-            }
-        }
-        // 实体交互
-        else if (hitResult instanceof EntityHitResult entityHitResult) {
-            Entity entity = entityHitResult.getEntity();
-            if (InteractFilterData.canInteract(entity)) {
-                return;
-            }
-        }
+//        // 方块交互
+//        if (hitResult instanceof BlockHitResult blockHitResult) {
+//            BlockPos blockPos = blockHitResult.getBlockPos();
+//            BlockState blockState = player.level().getBlockState(blockPos);
+//            if (InteractFilterData.canInteract(blockState)) {
+//                return;
+//            }
+//        }
+//        // 实体交互
+//        else if (hitResult instanceof EntityHitResult entityHitResult) {
+//            Entity entity = entityHitResult.getEntity();
+//            if (InteractFilterData.canInteract(entity)) {
+//                return;
+//            }
+//        }
 
         event.setSwingHand(false); // 阻止客户端粒子生成
         event.setCanceled(true);

@@ -14,7 +14,6 @@ public class ForgeKeyMapping implements IKeyMapping {
 
     private final String name;
     private final IKeyConflictContext keyConflictContext;
-    private final IKeyModifier keyModifier;
     private final InputConstants.Type inputType;
     private final int keyCode;
     private final String category;
@@ -27,12 +26,11 @@ public class ForgeKeyMapping implements IKeyMapping {
                            String category) {
         this.name = name;
         this.keyConflictContext = keyConflictContext;
-        this.keyModifier = keyModifier;
         this.inputType = inputType;
         this.keyCode = keyCode;
         this.category = category;
         this.keyMapping = new KeyMapping(this.name,
-                (KeyConflictContext) this.keyConflictContext.getKeyConflictContext(), (KeyModifier) this.keyModifier.getKeyModifier(),
+                (KeyConflictContext) this.keyConflictContext.getKeyConflictContext(), (KeyModifier) keyModifier.getKeyModifier(),
                 this.inputType, this.keyCode,
                 this.category);
     }
@@ -48,7 +46,7 @@ public class ForgeKeyMapping implements IKeyMapping {
         return this.keyConflictContext;
     }
     @Override public IKeyModifier getKeyModifier() {
-        return this.keyModifier;
+        return ForgeKeyModifier.convert(this.keyMapping.getKeyModifier());
     }
     @Override public InputConstants.Type getInputType() {
         return this.inputType;

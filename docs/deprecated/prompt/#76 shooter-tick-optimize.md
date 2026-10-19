@@ -142,3 +142,42 @@ Aspect 类和静态常量只加载一次，与实体数量无关。
 - 代价是每次访问多一层 null 判断/分支，以及要保证线程不相关（实体 tick 单线程，问题不大）。
 
 这属于上一轮提到的“较大的重构”，收益是每实体约 0.5 KB 堆和 12 次分配，换来的复杂度需要你判断是否值得。就当前这次改动而言，不动它是对的。
+
+# 
+
+```
+再加一个default boolean false，然后把初始化放在构造函数里，是否可行？
+```
+
+# 
+
+我需要先确认两点：`cgc$getShooterProperty()` 的调用面，以及是否存在对任意 LivingEntity 调用枪械 API 的路径（决定字段置 null 后会不会 NPE）。
+
+可行，但我不建议。技术上在这个分支确实能做：1.20.1 的 `LivingEntity` 只有一个构造器 `LivingEntity(EntityType, Level)`，所以 `@Inject(method = "<init>", at = @At("RETURN"))` 没有歧义，`this.cgc$xxx()` 也能正常虚分派到 `PlayerMixin` 的 `true`（flag 是常量方法，不依赖子类字段）。问题出在“字段变成可能为 null”之后。
+
+## 三个具体问题
+
+**1. 公开 API 会立刻出现 NPE 路径**
+
+现在的约定是这些字段永远存在。加 gate 后：
+
+- [GunProjectile.java:83](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/core/entity/projectile/GunProjectile.java:83) 对任意传入的 `livingShooter` 调 `cgc$getGunModifierCache()`，而实现 [LivingEntityMixin.java:226](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/core/mixin/entity/LivingEntityMixin.java:226) 直接解引用 `cgc$shooterProperty`。
+- `ILivingShooter.cgc$shoot()` 的默认重载读 `cgc$getShooterProperty().serverBaseTimestamp`（[ILivingShooter.java:34](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/core/api/entity/ILivingShooter.java:34)）。
+- 脚本兼容层 `IGunScriptBackCompat` 有十几处只判空 shooter、不判空 property。
+- 最现实的一条：[_WorldShooterHandler.java:39](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/core/entity/shooter/world/_WorldShooterHandler.java:39) 对**任何手持枪的 LivingEntity**（包括捡到枪的僵尸）在跨维度时调用 `cgc$initLivingShooter()`，它会直接解引用 `cgc$shooterProperty`。
+
+要堵住这些，就得在所有访问点加空判断，或者在 getter 里按需创建——但后者就是懒初始化，第二个 flag 和构造器注入就失去意义了。
+
+**2. 两个 flag 是漏配陷阱**
+
+tick 开关和初始化开关是正交的：一个实体可能不 tick 但仍通过 API 被射击/换弹/脚本访问。扩展方只要忘配其中一个，就是运行时 NPE，而且是静默的配置错误。这比现在多一个 flag 更糟，和 Rule 10 也不符。
+
+**3. 构造器注入跨版本更脆弱**
+
+本分支只有一个构造器没问题；但 `core1.20.5+`/`1.21` 的 `LivingEntity` 增加了委托构造器 `(EntityType, Level, BlockPos, BlockState)`，它内部调用 `this(type, level)`。此时注入不带描述符的 `<init>` 会在两个构造器的 RETURN 各执行一次，造成重复分配并把已初始化状态覆盖掉。因此每个分支都必须显式固定描述符——而字段初始化器没有这个问题。
+
+## 结论
+
+如果目标是减少非玩家实体的分配，**懒初始化是唯一自洽的方案**：在 `cgc$getShooterProperty()` / `cgc$getGunModifierCache()` 内部按需创建，保持 API 永远非空，不需要第二个 flag，也不需要构造器注入。代价是字段不能是 `final`，以及每次访问多一个分支。
+
+如果不想承担这个复杂度，就保持现状：tick 开销已经没有了，剩下的只是每实体约 0.5 KB 的常驻分配，且只影响已加载实体。第二个 default false 加构造器初始化，属于“为了省 0.5 KB 引入一类新的空指针风险”，不值得。

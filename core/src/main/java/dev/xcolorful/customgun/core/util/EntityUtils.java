@@ -86,7 +86,7 @@ public class EntityUtils {
         /**
          * @param entity 获取碰撞箱的实体
          * @param livingShooter (可选) 射手生物
-         * @return 延迟补偿后的碰撞想
+         * @return 延迟补偿后的碰撞箱
          */
         public static @NotNull AABB getTracedHitbox(@NotNull Entity entity, @Nullable Entity livingShooter) {
             @Nullable ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromEntity(livingShooter);

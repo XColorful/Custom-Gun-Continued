@@ -11,7 +11,7 @@ import java.util.function.Consumer;
 
 /**
  * 客户端本地不能连续切换，必须先等服务端收到信息（会有延迟）；
- * 会影响丝滑度，但未来需要加开镜散步判定 // TODO
+ * 会影响丝滑度，但未来需要加开镜散布判定 // TODO
  * @param fromScopeViewIndex 客户端本地数据，可能是垃圾信息或非法数据
  * @param toScopeViewIndex 客户端本地期望的合法数据，目前服务端暂无校验方式 ({@link PlannedRefactor#MOVE_SCOPE_VIEW_INDEX_TO_CORE})
  */

@@ -119,6 +119,12 @@ public class ClientModConfigTag {
     // ZoomConfig
     public static final String zoom_path = "Zoom";
 
+    public static final String enableScrollingZoom_path = "EnableScrollingZoom";
+    public static final String enableScrollingZoom_comment = "Whether to enable zoom switching with the mouse scroll wheel";
+
+    public static final String scrollingZoomCycle_path = "ScrollingZoomCycle";
+    public static final String scrollingZoomCycle_comment = "Whether mouse scroll wheel zooming cycles";
+
     public static final String screenDistanceCoefficient_path = "ScreenDistanceCoefficient";
     public static final String screenDistanceCoefficient_comment = "Screen distance coefficient for zoom, using MDV standard, default is MDV133";
 

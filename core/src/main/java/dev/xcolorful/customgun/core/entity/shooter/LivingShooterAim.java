@@ -138,6 +138,15 @@ public final class LivingShooterAim extends LivingShooterAspect {
 //            scopeViewIndex = 0;
 //        }
 
+        int scopeViewIndex = AttachmentNBTAccessor.INSTANCE.getScopeViewIndex(scopeCustomDataTag);
+        if (scopeViewIndex != fromScopeViewIndex) { // 客户端还没收到更新就又缩放
+            // 允许客户端快速滚轮，只是开镜散布判定跟客户端有点延迟
+//            if (scopeViewIndex >= 0) {
+//                // 服务端数据合法，强行再写入一次 (不提前return)
+//                toScopeViewIndex = scopeViewIndex;
+//            }
+        }
+
         if (toScopeViewIndex < 0) {
             if (PlannedRefactor.MOVE_SCOPE_VIEW_INDEX_TO_CORE) {}
             toScopeViewIndex = 0;

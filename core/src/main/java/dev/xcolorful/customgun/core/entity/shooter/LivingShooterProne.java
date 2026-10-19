@@ -116,7 +116,7 @@ public final class LivingShooterProne extends LivingShooterAspect {
     }
 
     /**
-     * 是否受趴姿俯仰角限制（{@link LivingShooterAspect#PRONE_PITCH_MAX} / {@link LivingShooterAspect#PRONE_PITCH_MIN}）
+     * 是否受趴姿俯仰角限制（{@link SyncConfig#MAX_PRONE_PITCH} / {@link SyncConfig#MIN_PRONE_PITCH}）
      * <ul>
      *     只判趴姿，游泳与鞘翅飞行都不算
      *     <li>游泳时原版姿态同样是 {@link #PRONE_POSE}</li>
@@ -125,6 +125,8 @@ public final class LivingShooterProne extends LivingShooterAspect {
      */
     @ApiStatus.Internal
     public static boolean isPronePitchLimited(LivingEntity livingShooter) {
+        if (!SyncConfig.ENABLE_PRONE_PITCH_LIMIT.get()) return false;
+
         // 非持枪时不管
         if (IGunGetter.fromMainHand(livingShooter) == null) return false;
 

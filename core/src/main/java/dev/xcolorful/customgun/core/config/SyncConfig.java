@@ -67,6 +67,9 @@ public class SyncConfig {
     public static IModConfigSpec<Boolean> HIDE_ENTITY_HITBOX;
     public static IModConfigSpec<Integer> AMMO_BOX_STACK_SIZE; // 子弹盒存储上限需要客户端显示支持
     public static IModConfigSpec<Boolean> ENABLE_PRONE; // 禁用趴下战术动作
+    public static IModConfigSpec<Boolean> ENABLE_PRONE_PITCH_LIMIT;
+    public static IModConfigSpec<Double> MAX_PRONE_PITCH;
+    public static IModConfigSpec<Double> MIN_PRONE_PITCH;
     public static IModConfigSpec<Boolean> SERVER_SHOOT_NETWORK_V;
     public static IModConfigSpec<Boolean> SERVER_SHOOT_COOLDOWN_V;
 
@@ -87,6 +90,15 @@ public class SyncConfig {
 
         builder.addComment(ModConfigTag.enableProne_comment);
         ENABLE_PRONE = builder.addConfig(ModConfigTag.enableProne_path, true);
+
+        builder.addComment(ModConfigTag.enablePronePitch_comment);
+        ENABLE_PRONE_PITCH_LIMIT = builder.addConfig(ModConfigTag.enablePronePitch_path, true);
+
+        builder.addComment(ModConfigTag.maxPronePitch_comment);
+        MAX_PRONE_PITCH = builder.addConfig(ModConfigTag.maxPronePitch_path, 25.0f, 0f, 90);
+
+        builder.addComment(ModConfigTag.minPronePitch_comment);
+        MIN_PRONE_PITCH = builder.addConfig(ModConfigTag.minPronePitch_path, -20.0f, -90, 0);
 
         builder.addComment(ModConfigTag.enableTableFilter_comment);
         ENABLE_TABLE_FILTER = builder.addConfig(ModConfigTag.enableTableFilter_path, true);

@@ -1,16 +1,17 @@
 package dev.xcolorful.customgun.core.api.entity;
 
-import dev.xcolorful.customgun.core.api.entity.shooter.IGunOperator;
-import dev.xcolorful.customgun.core.api.entity.shooter.IShooterModifierCacheHolder;
-import dev.xcolorful.customgun.core.api.entity.shooter.IShooterState;
-import dev.xcolorful.customgun.core.api.entity.shooter.ISynGunState;
+import dev.xcolorful.customgun.core.api.entity.shooter.*;
 
 import java.util.function.Supplier;
 
 /*
 文档译名: 射手生物 (XiaoColorful译); 否决译名: 射击生物(跟动词混淆), 射击者(范围超出了接口默认的LivingEntity)
  */
-public interface ILivingShooter extends IGunOperator, IShooterState, ISynGunState, IShooterModifierCacheHolder {
+public interface ILivingShooter extends ILivingShooterConfig,
+        IGunOperator,
+        IShooterState,
+        ISynGunState,
+        IShooterModifierCacheHolder {
 
     /**
      * 初始化枪械操作的各个数据，如换弹冷却、开火冷却等。

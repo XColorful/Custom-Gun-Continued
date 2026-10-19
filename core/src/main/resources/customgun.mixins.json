@@ -6,6 +6,7 @@
   "mixins": [
     "entity.EntityMixin",
     "entity.LivingEntityMixin",
+    "entity.PlayerMixin",
     "entity.ServerPlayerMixin",
     "network.ServerGamePacketListenerImplMixin"
   ],

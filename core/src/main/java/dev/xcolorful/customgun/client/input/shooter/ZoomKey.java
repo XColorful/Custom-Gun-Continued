@@ -94,7 +94,7 @@ public final class ZoomKey extends InputKey {
     }
 
     /**
-     * 对应 {@link LivingShooterAim#zoom()}
+     * 对应 {@link LivingShooterAim#zoom}
      * @param offset scopeViewIndex偏移量，{@code +1}则切换到下一个
      * @param cycle 是否循环切换
      */

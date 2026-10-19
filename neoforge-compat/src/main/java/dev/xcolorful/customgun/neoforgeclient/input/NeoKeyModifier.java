@@ -21,7 +21,7 @@ public abstract class NeoKeyModifier implements IKeyModifier {
     public static NeoKeyModifier convert(KeyModifier keyModifier) {
         return switch (keyModifier) {
             case CONTROL -> Control.INSTANCE;
-//            case CONTROL_OR_COMMAND -> ControlOrCommand.INSTANCE; // [1.21.11, )
+            case CONTROL_OR_COMMAND -> ControlOrCommand.INSTANCE; // [1.21.11, )
             case SHIFT -> Shift.INSTANCE;
             case ALT -> Alt.INSTANCE;
             case NONE -> None.INSTANCE;
@@ -55,7 +55,7 @@ public abstract class NeoKeyModifier implements IKeyModifier {
         public static final ControlOrCommand INSTANCE = new ControlOrCommand();
         public ControlOrCommand() {
             super(
-                    KeyModifier.CONTROL // KeyModifier.CONTROL_OR_COMMAND
+                    KeyModifier.CONTROL_OR_COMMAND
             );
         }
     }

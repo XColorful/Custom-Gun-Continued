@@ -103,6 +103,12 @@ public class HumanoidOffhandRender {
                         LivingEntity entity,
                         ItemStack gunItem,
                         _SurroundDisplay surroundDisplay) {
+        Minecraft mc = Minecraft.getInstance();
+        if (entity.equals(mc.player) && mc.options.getCameraType().isFirstPerson()) {
+            // 第一人称不渲染自身背后枪械
+            return;
+        }
+
         float[] pos = surroundDisplay.getPos();
         float[] rotate = surroundDisplay.getRotate();
         float[] scale = surroundDisplay.getScale();
@@ -115,14 +121,14 @@ public class HumanoidOffhandRender {
             ClientRenderHelper.rotate(matrixStack, rotation);
 
             // [1.20.1, 1.21.10)
-//            ItemRenderer renderer = Minecraft.getInstance().getItemRenderer();
+//            ItemRenderer renderer = mc.getItemRenderer();
 //            renderer.renderStatic(gunItem, ItemDisplayContext.FIXED, lightCoords, OverlayTexture.NO_OVERLAY, matrixStack, buffer, entity.level(), entity.getId());
 
             // [1.21.10, )
             // 原版删除了 ItemRenderer#renderStatic，改为 ItemModelResolver + ItemStackRenderState#submit
             // xiao.battleroyale.client.renderer.block.LootContainerRenderer#renderItems的ItemDisplayContext.GROUND是用来模拟掉在地上的物品的
             // 上下文仍继续用 FIXED：包围显示的 pos/rotate/scale 是按展示框定位组的姿态编排的
-            ItemModelResolver itemModelResolver = Minecraft.getInstance().getItemModelResolver();
+            ItemModelResolver itemModelResolver = mc.getItemModelResolver();
             ItemStackRenderState itemStackRenderState = new ItemStackRenderState();
             itemModelResolver.updateForTopItem(itemStackRenderState,
                     gunItem,

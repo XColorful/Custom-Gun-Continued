@@ -1,6 +1,6 @@
 package dev.xcolorful.customgun.client.config;
 
-import dev.xcolorful.customgun.client.api.config.ClientModConfigTag;
+import dev.xcolorful.customgun.core.api.config.ClientModConfigTag;
 import dev.xcolorful.customgun.client.api.gui.GuiSize;
 import dev.xcolorful.customgun.client.api.textures.crosshair.CrosshairType;
 import dev.xcolorful.customgun.core.api.config.IModConfigSpec;

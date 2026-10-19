@@ -260,6 +260,9 @@ public final class LocalShooterShoot extends LocalShooterAspect {
         }
     }
 
+    /**
+     * 对应{@link _DefaultGunFire#doGunFire}
+     */
     private void _doShoot(GunDisplayInstance gunDisplayInstance, IGun iGun, ItemStack gunItem,
                           GunData gunData, long delay, float chargeProgress) {
         FireModeType fireModeType = iGun.getFireModeType(gunItem);
@@ -271,6 +274,7 @@ public final class LocalShooterShoot extends LocalShooterAspect {
              * 跟{@link _DefaultGunFire#doGunFire}对齐
              * 客户端提前算好gun一共能fire多少次，默认射击期间不会在消耗子弹的时候被其他机制多扣子弹
              */
+            // 2. 消耗子弹 (客户端仅提前计算可消耗子弹，不写入本地枪械数据)
             int consumableAmmoCount;
             if (ILivingShooterGetter.cgc$fromLivingEntity(this.localShooter).cgc$bypassGunFireConsumption()) {
                 consumableAmmoCount = Integer.MAX_VALUE;
@@ -289,19 +293,21 @@ public final class LocalShooterShoot extends LocalShooterAspect {
                 this.localShooterProperty.isShootRecorded = true;
             }
 
-            // 处理过热数据
+            // 0. 枪械数据异常
+            if (firedCount.get() >= maxFireCount || this.localShooter.isDeadOrDying()) {
+                // 如果达到最大连发次数，或者玩家已经死亡，取消任务
+                ScheduledFuture<?> future = (ScheduledFuture<?>) Thread.currentThread();
+                future.cancel(false); // 取消当前任务
+                return;
+            }
+
+            // 1. 过热锁 + 过热处理
             if (gunData.getHeatData() != null) {
                 if (iGun.hasOverheatLock(gunItem)) {
                     ScheduledFuture<?> future = (ScheduledFuture<?>) Thread.currentThread();
                     future.cancel(false); // 取消当前任务
                     return;
                 }
-            }
-            // 如果达到最大连发次数，或者玩家已经死亡，取消任务
-            if (firedCount.get() >= maxFireCount || this.localShooter.isDeadOrDying()) {
-                ScheduledFuture<?> future = (ScheduledFuture<?>) Thread.currentThread();
-                future.cancel(false); // 取消当前任务
-                return;
             }
 
             // 以下逻辑只需要执行一次
@@ -317,7 +323,7 @@ public final class LocalShooterShoot extends LocalShooterAspect {
                 this.localShooterProperty.clientLastShootTimestamp = this.localShooterProperty.clientShootTimestamp;
                 this.localShooterProperty.clientShootTimestamp = System.currentTimeMillis();
 
-                // 仅第一发才发包给服务端，表示点击了一次射击
+                // 3. 生成子弹 (客户端为发包，且第一发才发包给服务端，表示点击了一次射击)
                 SendUtils.sendMessageToServer(new C2SMessageShooterShoot(
                         this.localShooterProperty.clientShootTimestamp - LocalShooterProperty.clientBaseTimestamp,
                         chargeProgress)

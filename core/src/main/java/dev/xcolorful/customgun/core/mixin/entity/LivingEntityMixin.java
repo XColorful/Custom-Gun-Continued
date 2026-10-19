@@ -134,8 +134,8 @@ public abstract class LivingEntityMixin extends Entity implements ILivingShooter
     public void cgc$aim(boolean isAim) {
         this.cgc$aim.aim(isAim);
     }
-    @Override public void cgc$zoom() {
-        this.cgc$aim.zoom();
+    @Override public void cgc$zoom(int fromScopeViewIndex, int toScopeViewIndex) {
+        this.cgc$aim.zoom(fromScopeViewIndex, toScopeViewIndex);
     }
 
     @Override

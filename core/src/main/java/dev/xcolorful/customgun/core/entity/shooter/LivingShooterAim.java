@@ -110,16 +110,17 @@ public final class LivingShooterAim extends LivingShooterAspect {
         this.shooterProperty.aimingTimestamp = currentTimeMillis;
     }
 
-    public void zoom() {
+    public void zoom(int fromScopeViewIndex, int toScopeViewIndex) {
         // 1. 手持枪械检查
         if (this.shooterProperty.currentGunItem == null) return;
         ItemStack gunItem = this.shooterProperty.currentGunItem.get();
         @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return;
 
-        _doZoom(iGun, gunItem);
+        _doZoom(iGun, gunItem, fromScopeViewIndex, toScopeViewIndex);
     }
-    private void _doZoom(IGun iGun, ItemStack gunItem) {
+    private void _doZoom(IGun iGun, ItemStack gunItem,
+                         int fromScopeViewIndex, int toScopeViewIndex) {
         final var SCOPE = AttachmentCategory.SCOPE;
         @Nullable CompoundTag scopeCustomDataTag = iGun.getAttachmentCustomDataTag(gunItem, SCOPE);
         if (scopeCustomDataTag == null) return;
@@ -128,6 +129,7 @@ public final class LivingShooterAim extends LivingShooterAspect {
         @Nullable AttachmentIndexInstance attachmentIndexInstance = ResourceApi.getAttachmentIndexInstance(scopeLocation);
         if (attachmentIndexInstance == null) return;
 
+        if (false) { // ↓旧实现，让IDE保留下面的引用关系
         int scopeViewIndex = AttachmentNBTAccessor.INSTANCE.getScopeViewIndex(scopeCustomDataTag);
         scopeViewIndex++;
 //        zoomNumber = zoomNumber % (Integer.MAX_VALUE - 1); // 取模不能避免变负，原模组的注释有误
@@ -135,9 +137,16 @@ public final class LivingShooterAim extends LivingShooterAspect {
             if (PlannedRefactor.MOVE_SCOPE_VIEW_INDEX_TO_CORE) {}
             scopeViewIndex = 0;
         }
+        }
+        // ----旧实现结束----
+
+        if (toScopeViewIndex < 0) {
+            if (PlannedRefactor.MOVE_SCOPE_VIEW_INDEX_TO_CORE) {}
+            toScopeViewIndex = 0;
+        }
 
         { // 写入操作需要保存
-            AttachmentNBTAccessor.INSTANCE.setScopeViewIndex(scopeCustomDataTag, scopeViewIndex);
+            AttachmentNBTAccessor.INSTANCE.setScopeViewIndex(scopeCustomDataTag, toScopeViewIndex);
         }
         iGun.setAttachmentCustomDataTag(gunItem, SCOPE, scopeCustomDataTag);
 

@@ -1,6 +1,7 @@
 package dev.xcolorful.customgun.core.api.entity.shooter;
 
 import dev.xcolorful.customgun.core.api.entity.ShootResult;
+import dev.xcolorful.customgun.core.developer.PlannedRefactor;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -33,8 +34,10 @@ public interface IGunOperator extends ICommonGunOperator {
     @Override void cgc$aim(boolean isAim);
     /**
      * 倍镜缩放 (服务端)
+     * @param fromScopeViewIndex 客户端本地数据，可能是垃圾信息或非法数据
+     * @param toScopeViewIndex 客户端本地期望的合法数据，目前服务端暂无校验方式 ({@link PlannedRefactor#MOVE_SCOPE_VIEW_INDEX_TO_CORE})
      */
-    void cgc$zoom();
+    void cgc$zoom(int fromScopeViewIndex, int toScopeViewIndex);
 
     /**
      * 刺刀/近战 (服务端)

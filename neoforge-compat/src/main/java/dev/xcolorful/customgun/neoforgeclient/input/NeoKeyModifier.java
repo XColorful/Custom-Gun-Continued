@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import dev.xcolorful.customgun.client.api.input.IKeyConflictContext;
 import dev.xcolorful.customgun.client.api.input.IKeyModifier;
 import net.neoforged.neoforge.client.settings.KeyModifier;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class NeoKeyModifier implements IKeyModifier {
@@ -20,6 +21,7 @@ public abstract class NeoKeyModifier implements IKeyModifier {
     public static NeoKeyModifier convert(KeyModifier keyModifier) {
         return switch (keyModifier) {
             case CONTROL -> Control.INSTANCE;
+//            case CONTROL_OR_COMMAND -> ControlOrCommand.INSTANCE; // [1.21.11, )
             case SHIFT -> Shift.INSTANCE;
             case ALT -> Alt.INSTANCE;
             case NONE -> None.INSTANCE;
@@ -46,6 +48,15 @@ public abstract class NeoKeyModifier implements IKeyModifier {
         public static final Control INSTANCE = new Control();
         public Control() {
             super(KeyModifier.CONTROL);
+        }
+    }
+    @ApiStatus.AvailableSince("1.21.11")
+    private static class ControlOrCommand extends NeoKeyModifier {
+        public static final ControlOrCommand INSTANCE = new ControlOrCommand();
+        public ControlOrCommand() {
+            super(
+                    KeyModifier.CONTROL // KeyModifier.CONTROL_OR_COMMAND
+            );
         }
     }
     private static class Shift extends NeoKeyModifier {

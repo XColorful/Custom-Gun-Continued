@@ -5,7 +5,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import com.google.gson.stream.MalformedJsonException;
 import dev.xcolorful.customgun.CustomGun;
-import dev.xcolorful.customgun.core.api.resource.INetworkCacheReloadListener;
+import dev.xcolorful.customgun.core.api.resource.INetworkCacheManager;
 import dev.xcolorful.customgun.core.util.JsonUtils;
 import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.ResourceLocation;
@@ -198,7 +198,7 @@ public abstract class ResourcePojoManager<T extends ResourcePojo<T>>
     }
 
     protected void onWriteNetworkCache() {
-        if (this instanceof INetworkCacheReloadListener) this.writeStringMap();
+        if (this instanceof INetworkCacheManager) this.writeStringMap();
     }
     protected void writeStringMap() {
         Map<ResourceLocation, String> newStringMap = new HashMap<>();

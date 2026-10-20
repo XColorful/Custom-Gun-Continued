@@ -1,6 +1,6 @@
 package dev.xcolorful.customgun.core.network.message.player;
 
-import dev.xcolorful.customgun.CustomGun;
+import dev.xcolorful.customgun.core.api.network.MessageDirection;
 import dev.xcolorful.customgun.core.api.network.message.IMessage;
 import dev.xcolorful.customgun.core.util.NetworkUtils;
 import net.minecraft.network.FriendlyByteBuf;
@@ -27,7 +27,7 @@ public record C2SMessagePlayerCraft(
 
     @Override
     public void handle(Consumer<Runnable> handler, NetworkContext context) {
-        if (CustomGun.getSideExecutor().getLogicalSide().isServer()) {
+        if (context.direction() == MessageDirection.CLIENT_TO_SERVER) {
             handler.accept(() -> {
                 if (!(context.sender() instanceof ServerPlayer player)) {
                     return;

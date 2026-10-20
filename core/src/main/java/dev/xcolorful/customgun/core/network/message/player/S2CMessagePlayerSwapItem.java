@@ -1,7 +1,7 @@
 package dev.xcolorful.customgun.core.network.message.player;
 
-import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.network.message.player._S2CMessagePlayerSwapItem;
+import dev.xcolorful.customgun.core.api.network.MessageDirection;
 import dev.xcolorful.customgun.core.api.network.message.IMessage;
 import net.minecraft.network.FriendlyByteBuf;
 
@@ -23,7 +23,7 @@ public class S2CMessagePlayerSwapItem implements IMessage<S2CMessagePlayerSwapIt
     @Override
     public void handle(Consumer<Runnable> handler, NetworkContext context) {
         var message = this;
-        if (CustomGun.getSideExecutor().getLogicalSide().isClient()) {
+        if (context.direction() == MessageDirection.SERVER_TO_CLIENT) {
             handler.accept(() -> _S2CMessagePlayerSwapItem.doClientEvent(message));
         }
     }

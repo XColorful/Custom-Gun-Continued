@@ -1,7 +1,7 @@
 package dev.xcolorful.customgun.core.network.message.shooter;
 
-import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.network.message.shooter._S2CMessageShooterBaseTimestamp;
+import dev.xcolorful.customgun.core.api.network.MessageDirection;
 import dev.xcolorful.customgun.core.api.network.message.IMessage;
 import net.minecraft.network.FriendlyByteBuf;
 
@@ -22,7 +22,7 @@ public class S2CMessageShooterBaseTimestamp implements IMessage<S2CMessageShoote
 
     @Override
     public void handle(Consumer<Runnable> handler, NetworkContext context) {
-        if (CustomGun.getSideExecutor().getLogicalSide().isClient()) {
+        if (context.direction() == MessageDirection.SERVER_TO_CLIENT) {
             long timestamp = System.currentTimeMillis();
             handler.accept(() -> {
                 _S2CMessageShooterBaseTimestamp.updateBaseTimestamp(timestamp);

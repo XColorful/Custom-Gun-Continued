@@ -1,11 +1,11 @@
 package dev.xcolorful.customgun.core.network.message.shooter;
 
-import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.core.api.item.IAttachment;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.attachment.AttachmentCategory;
 import dev.xcolorful.customgun.core.api.item.attachment.IAttachmentGetter;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
+import dev.xcolorful.customgun.core.api.network.MessageDirection;
 import dev.xcolorful.customgun.core.api.network.message.IMessage;
 import dev.xcolorful.customgun.core.util.NetworkUtils;
 import net.minecraft.network.FriendlyByteBuf;
@@ -70,7 +70,7 @@ public class C2SMessageShooterRefit_laserColor implements IMessage<C2SMessageSho
     @Override
     public void handle(Consumer<Runnable> handler, NetworkContext context) {
         var message = this;
-        if (CustomGun.getSideExecutor().getLogicalSide().isServer()) {
+        if (context.direction() == MessageDirection.CLIENT_TO_SERVER) {
             handler.accept(() -> {
                 if (!(context.sender() instanceof ServerPlayer player) || message.gunSlotIndex == -1) {
                     return;

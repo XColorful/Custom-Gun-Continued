@@ -6,6 +6,7 @@ import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.attachment.AttachmentCategory;
 import dev.xcolorful.customgun.core.api.item.attachment.IAttachmentGetter;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
+import dev.xcolorful.customgun.core.api.network.MessageDirection;
 import dev.xcolorful.customgun.core.api.network.message.IMessage;
 import dev.xcolorful.customgun.core.developer.PlannedRefactor;
 import dev.xcolorful.customgun.core.entity.shooter.modifier.ShooterGunModifierManager;
@@ -38,7 +39,7 @@ public record C2SMessageShooterRefit_install(int attachmentSlotIndex,
     @Override
     public void handle(Consumer<Runnable> handler, NetworkContext context) {
         var message = this;
-        if (CustomGun.getSideExecutor().getLogicalSide().isServer()) {
+        if (context.direction() == MessageDirection.CLIENT_TO_SERVER) {
             handler.accept(() -> {
                 if (!(context.sender() instanceof ServerPlayer player)) {
                     return;

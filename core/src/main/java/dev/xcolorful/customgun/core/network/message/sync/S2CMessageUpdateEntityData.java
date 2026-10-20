@@ -1,7 +1,7 @@
 package dev.xcolorful.customgun.core.network.message.sync;
 
-import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.network.message.sync._S2CMessageUpdateEntityData;
+import dev.xcolorful.customgun.core.api.network.MessageDirection;
 import dev.xcolorful.customgun.core.api.network.message.IMessage;
 import dev.xcolorful.customgun.core.entity.sync.DataEntry;
 import net.minecraft.network.FriendlyByteBuf;
@@ -35,7 +35,7 @@ public record S2CMessageUpdateEntityData(int entityId,
     @Override
     public void handle(Consumer<Runnable> handler, NetworkContext context) {
         var message = this;
-        if (CustomGun.getSideExecutor().getLogicalSide().isClient()) {
+        if (context.direction() == MessageDirection.SERVER_TO_CLIENT) {
             handler.accept(() -> _S2CMessageUpdateEntityData.onHandle(message));
         }
     }

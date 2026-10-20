@@ -1,7 +1,7 @@
 package dev.xcolorful.customgun.core.network.message.shooter;
 
-import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.core.api.entity.shooter.ILivingShooterGetter;
+import dev.xcolorful.customgun.core.api.network.MessageDirection;
 import dev.xcolorful.customgun.core.api.network.message.IMessage;
 import dev.xcolorful.customgun.core.util.InventoryUtils;
 import net.minecraft.network.FriendlyByteBuf;
@@ -25,7 +25,7 @@ public class C2SMessageShooterDraw implements IMessage<C2SMessageShooterDraw> {
 
     @Override
     public void handle(Consumer<Runnable> handler, NetworkContext context) {
-        if (CustomGun.getSideExecutor().getLogicalSide().isServer()) {
+        if (context.direction() == MessageDirection.CLIENT_TO_SERVER) {
             handler.accept(() -> {
                 if (!(context.sender() instanceof ServerPlayer player)) {
                     return;

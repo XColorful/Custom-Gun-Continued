@@ -2,6 +2,7 @@ package dev.xcolorful.customgun.core.network.message.resource;
 
 import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.network.message.resource._S2CMessageSyncDataPack;
+import dev.xcolorful.customgun.core.api.network.MessageDirection;
 import dev.xcolorful.customgun.core.api.network.message.IMessage;
 import dev.xcolorful.customgun.core.resource.network.SyncDataType;
 import dev.xcolorful.customgun.core.util.NetworkUtils;
@@ -29,7 +30,7 @@ public record S2CMessageSyncDataPack(Map<SyncDataType, Map<Identifier, String>> 
     @Override
     public void handle(Consumer<Runnable> handler, NetworkContext context) {
         var message = this;
-        if (CustomGun.getSideExecutor().getLogicalSide().isClient()) {
+        if (context.direction() == MessageDirection.SERVER_TO_CLIENT) {
             CustomGun.LOGGER.debug("ServerMessageSyncGunPack: Received sync pack message from server");
             Connection connection = context.connection();
             boolean remoteConnection = connection != null && !connection.isMemoryConnection();

@@ -3,6 +3,7 @@ package dev.xcolorful.customgun.core.network.message.resource;
 import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.network.message.resource._S2CMessageResourceSound;
 import dev.xcolorful.customgun.core.api.common.McSide;
+import dev.xcolorful.customgun.core.api.network.MessageDirection;
 import dev.xcolorful.customgun.core.api.network.message.IMessage;
 import dev.xcolorful.customgun.core.util.NetworkUtils;
 import net.minecraft.network.FriendlyByteBuf;
@@ -41,7 +42,7 @@ public record S2CMessageResourceSound(int entityId,
     @Override
     public void handle(Consumer<Runnable> handler, NetworkContext context) {
         var message = this;
-        if (CustomGun.getSideExecutor().getLogicalSide().isClient()) {
+        if (context.direction() == MessageDirection.SERVER_TO_CLIENT) {
             handler.accept(() -> {
                 CustomGun.getSideExecutor().executeOn(McSide.CLIENT, () -> () ->
                         _S2CMessageResourceSound.playSound(message)

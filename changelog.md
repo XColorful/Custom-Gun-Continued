@@ -1,5 +1,10 @@
 ### 26.10
 
+#### 26.10.28.1
+For Developer:
+- Add `INetworkCacheManager`
+- Replace `IMcLogicalSide` with `NetworkContext.direction()` in network messages
+
 #### 26.10.28
 Mechanics:
 - Gun projectile can only break vanilla glass blocks by default

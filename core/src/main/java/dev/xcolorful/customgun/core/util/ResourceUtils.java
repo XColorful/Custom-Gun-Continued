@@ -10,19 +10,19 @@ public class ResourceUtils {
     public static PreparableReloadListener asyncReloadListener(Runnable action) {
         // [1.20.1, 1.21.4)
         // reload(PreparationBarrier, ResourceManager, ProfilerFiller, ProfilerFiller, Executor, Executor)
-        return (barrier, resourceManager, preparationProfiler, reloadProfiler, backgroundExecutor, gameExecutor) -> {
-            return barrier
-                    .wait(Void.TYPE)
-                    .thenRunAsync(action, gameExecutor);
-        };
-
-        // [1.21.4, 1.21.10)
-        // reload(PreparationBarrier, ResourceManager, Executor, Executor)
-//        return (barrier, resourceManager, backgroundExecutor, gameExecutor) -> {
+//        return (barrier, resourceManager, preparationProfiler, reloadProfiler, backgroundExecutor, gameExecutor) -> {
 //            return barrier
 //                    .wait(Void.TYPE)
 //                    .thenRunAsync(action, gameExecutor);
 //        };
+
+        // [1.21.4, 1.21.10)
+        // reload(PreparationBarrier, ResourceManager, Executor, Executor)
+        return (barrier, resourceManager, backgroundExecutor, gameExecutor) -> {
+            return barrier
+                    .wait(Void.TYPE)
+                    .thenRunAsync(action, gameExecutor);
+        };
 
         // [1.21.10, )
         // reload(SharedState, Executor, PreparationBarrier, Executor)

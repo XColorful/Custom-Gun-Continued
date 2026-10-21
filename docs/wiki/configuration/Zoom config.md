@@ -19,9 +19,7 @@
 ```
 
 # English
-> wiki version: `26.10.27`.3
-
-## Zoom Config
+> wiki version: `26.10.28.1`.4
 
 Path: `Zoom`
 - `EnableScrollingZoom` (bool): Whether to enable zoom switching with the mouse scroll wheel

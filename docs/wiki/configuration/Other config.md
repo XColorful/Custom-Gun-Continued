@@ -15,9 +15,7 @@
 ```
 
 # English
-> wiki version: `0.0.15`.1
-
-## Other Config
+> wiki version: `26.10.28.1`.2
 
 Path: `other`
 - `ServerHitboxOffset` (float): Server hitbox offset (If the hitbox is ahead, fill in a negative number)

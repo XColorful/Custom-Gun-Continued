@@ -50,9 +50,7 @@
 ```
 
 # English
-> wiki version: `26.9.26`.16
-
-## Render Config
+> wiki version: `26.10.28.1`.17
 
 Path: `render`
 - `GunLodRenderDistance` (integer): How far to display the LOD model, 0 means always display

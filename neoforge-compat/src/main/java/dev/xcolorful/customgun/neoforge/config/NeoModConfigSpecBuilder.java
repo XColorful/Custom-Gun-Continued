@@ -3,7 +3,7 @@ package dev.xcolorful.customgun.neoforge.config;
 import dev.xcolorful.customgun.core.api.config.IModConfigSpec;
 import dev.xcolorful.customgun.core.api.config.IModConfigSpecBuilder;
 import dev.xcolorful.customgun.core.api.config.ModConfigType;
-import dev.xcolorful.customgun.neoforge.CustomGunNeoforge;
+import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
@@ -53,6 +53,10 @@ public class NeoModConfigSpecBuilder implements IModConfigSpecBuilder {
     public void buildAndRegister(ModConfigType type) {
         ModConfig.Type neoType = ModConfigTypeHelper.convert(type);
         ModConfigSpec spec = builder.build();
-        CustomGunNeoforge.modContainer.registerConfig(neoType, spec);
+        /*
+        必须注册到当前正在构造的 ModContainer，否则 addon 的配置会落到 customgun 的容器上
+        与 core 的 customgun-common.toml 冲突并抛出 “Detected config file conflict”
+         */
+        ModLoadingContext.get().getActiveContainer().registerConfig(neoType, spec);
     }
 }

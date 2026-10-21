@@ -2,18 +2,18 @@ package dev.xcolorful.customgun.client.resource;
 
 import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.api.event.IAddClientReloadListenerEvent;
+import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
 import dev.xcolorful.customgun.client.api.resource.assets.AssetsFolderType;
-import dev.xcolorful.customgun.client.compat.playeranimator.PlayerAnimator;
 import dev.xcolorful.customgun.client.compat.playeranimator.PlayerAnimatorCompat;
 import dev.xcolorful.customgun.client.resource.assets.*;
 import dev.xcolorful.customgun.core.api.common.McSide;
 import dev.xcolorful.customgun.core.api.event.EventType;
 import dev.xcolorful.customgun.core.api.event.IEvent;
 import dev.xcolorful.customgun.core.api.event.IEventHandler;
-import dev.xcolorful.customgun.core.api.resource.ResourceApi;
 import dev.xcolorful.customgun.core.resource.ResourceFileManager;
 import dev.xcolorful.customgun.core.resource.ResourcePojoManager;
 import dev.xcolorful.customgun.core.resource._AllDataManager;
+import dev.xcolorful.customgun.core.util.ResourceUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import org.jetbrains.annotations.ApiStatus;
@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Go to {@link ResourceApi}
+ * Go to {@link ClientResourceApi}
  */
 @ApiStatus.Internal
 public class _AllAssetsManager implements IEventHandler {
@@ -91,11 +91,7 @@ public class _AllAssetsManager implements IEventHandler {
         this.reloadListeners.forEach((pojoManager) -> event.addListener(pojoManager.getRegistryName(), pojoManager));
         event.addListener(
                 CustomGun.getMcRegistry().createResourceLocation(CustomGun.MOD_ID + ":all_assets_manager"),
-                (barrier, resourceManager, preparationProfiler, reloadProfiler, backgroundExecutor, gameExecutor) -> {
-                    return barrier
-                            .wait(Void.TYPE)
-                            .thenRunAsync(_AssetsInstanceManager::reload, gameExecutor);
-                }
+                ResourceUtils.asyncReloadListener(_AssetsInstanceManager::reload)
         );
     }
     private <T extends ResourceFileManager<?>> T _registerListener(IAddClientReloadListenerEvent event, T listener) {

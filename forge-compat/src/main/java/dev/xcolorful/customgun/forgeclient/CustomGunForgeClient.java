@@ -15,19 +15,19 @@ import dev.xcolorful.customgun.forgeclient.minecraft.stencil.ForgeStencilOperato
 public class CustomGunForgeClient {
 
     protected static boolean initialized;
-    public static IEventRegister eventRegister;
-    public static IKeyMapping.Creator keyMappingCreator;
-    public static IClientAccessTransformer accessTransformer;
-    public static IClientItemExtensionProvider clientItemExtensionProvider;
-    public static IStencilOperator stencilOperator;
+    public static IEventRegister eventRegister = ForgeClientEventRegister.INSTANCE;
+    public static IKeyMapping.Creator keyMappingCreator = ForgeKeyMapping.Creator.INSTANCE;
+    public static IClientAccessTransformer accessTransformer = ForgeClientAccessTransformer.INSTANCE;
+    public static IClientItemExtensionProvider clientItemExtensionProvider = ForgeClientItemExtensionProvider.INSTANCE;
+    public static IStencilOperator stencilOperator = ForgeStencilOperator.INSTANCE;
 
     public static void init() {
         if (initialized) return;
-        CustomGunForgeClient.eventRegister = new ForgeClientEventRegister();
-        CustomGunForgeClient.keyMappingCreator = new ForgeKeyMapping.Creator();
-        CustomGunForgeClient.accessTransformer = new ForgeClientAccessTransformer();
-        CustomGunForgeClient.clientItemExtensionProvider = new ForgeClientItemExtensionProvider();
-        CustomGunForgeClient.stencilOperator = new ForgeStencilOperator();
+//        CustomGunForgeClient.eventRegister = ForgeClientEventRegister.INSTANCE;
+//        CustomGunForgeClient.keyMappingCreator = ForgeKeyMapping.Creator.INSTANCE;
+//        CustomGunForgeClient.accessTransformer = ForgeClientAccessTransformer.INSTANCE;
+//        CustomGunForgeClient.clientItemExtensionProvider = ForgeClientItemExtensionProvider.INSTANCE;
+//        CustomGunForgeClient.stencilOperator = ForgeStencilOperator.INSTANCE;
 
         CustomGunClient.init(CustomGunForgeClient.keyMappingCreator,
                 CustomGunForgeClient.accessTransformer,

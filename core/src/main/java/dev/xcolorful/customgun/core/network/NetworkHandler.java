@@ -28,8 +28,8 @@ public class NetworkHandler {
     private static NetworkHandler INSTANCE;
 
     protected final INetworkAdapter adapter;
-    protected final AtomicInteger ID_COUNT = new AtomicInteger(0);
-    protected final AtomicInteger HANDSHAKE_ID_COUNT = new AtomicInteger(0);
+    private final AtomicInteger ID_COUNT = new AtomicInteger(0);
+    private final AtomicInteger HANDSHAKE_ID_COUNT = new AtomicInteger(0);
 
     public static final int protocol_version = 28;
     @Deprecated(forRemoval = true)

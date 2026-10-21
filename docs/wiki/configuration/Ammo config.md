@@ -27,9 +27,7 @@
 ```
 
 # English
-> wiki version: `26.10.27`.5
-
-## Ammo Config
+> wiki version: `26.10.28.1`.6
 
 Path: `ammo`
 - `PassThroughBlocks` (string list): Blocks that the ammo can pass through

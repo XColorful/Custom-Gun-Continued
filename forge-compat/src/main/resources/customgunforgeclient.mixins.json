@@ -4,6 +4,7 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "customgun.refmap.json",
   "client": [
+    "CustomGunClientMixin",
     "entity.GunProjectileMixin",
     "gui.GuiMixin",
     "gui.LayeredDrawMixin",

@@ -12,6 +12,15 @@ import java.util.concurrent.Executor;
 import java.util.function.Supplier;
 
 public class ForgeSideExecutor implements ISideExecutor {
+    public static final ForgeSideExecutor INSTANCE = new ForgeSideExecutor();
+
+    /**
+     * 手动传Forge类为旧实现方式，现直接调用 {@link CustomGun#getSideExecutor()} 即可
+     */
+    @SuppressWarnings("DeprecatedIsStillUsed")
+    @Deprecated(forRemoval = false)
+    public ForgeSideExecutor() {
+    }
 
     @Override
     public void executeOn(McSide dist, Supplier<Runnable> toRun) {

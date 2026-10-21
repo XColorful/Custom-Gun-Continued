@@ -5,15 +5,24 @@ import dev.xcolorful.customgun.core.api.event.EventPriority;
 import dev.xcolorful.customgun.core.api.event.EventType;
 import dev.xcolorful.customgun.core.api.event.IEventHandler;
 import dev.xcolorful.customgun.core.api.event.IEventRegister;
+import dev.xcolorful.customgun.neoforge.CustomGunNeoforge;
 import dev.xcolorful.customgun.neoforge.event.events.*;
 import dev.xcolorful.customgun.neoforgeclient.CustomGunNeoforgeClient;
-import net.neoforged.fml.loading.FMLLoader;
 
 public class NeoEventRegister implements IEventRegister {
+    public static final NeoEventRegister INSTANCE = new NeoEventRegister();
+
+    /**
+     * 手动传NeoForge类为旧实现方式，现直接调用 {@link CustomGun#getEventRegister()} 即可
+     */
+    @SuppressWarnings("DeprecatedIsStillUsed")
+    @Deprecated(forRemoval = false)
+    public NeoEventRegister() {
+    }
 
     @Override
     public boolean register(IEventHandler eventHandler, EventType eventType, EventPriority priority, boolean receiveCanceled) {
-        if (eventType.isClientSideOnly() && FMLLoader.getCurrent().getDist().isClient()) {
+        if (eventType.isClientSideOnly() && CustomGunNeoforge.getDist().isClient()) {
             return _NeoClientEventRegister.get().register(eventHandler, eventType, priority, receiveCanceled);
         }
 
@@ -57,7 +66,7 @@ public class NeoEventRegister implements IEventRegister {
 
     @Override
     public boolean unregister(IEventHandler eventHandler, EventType eventType, EventPriority priority, boolean receiveCanceled) {
-        if (eventType.isClientSideOnly() && FMLLoader.getCurrent().getDist().isClient()) {
+        if (eventType.isClientSideOnly() && CustomGunNeoforge.getDist().isClient()) {
             return _NeoClientEventRegister.get().unregister(eventHandler, eventType, priority, receiveCanceled);
         }
 

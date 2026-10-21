@@ -1,5 +1,6 @@
 package dev.xcolorful.customgun.neoforge.minecraft;
 
+import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.core.api.minecraft.ICapabilityProvider;
 import dev.xcolorful.customgun.core.api.minecraft.capability.IInventoryCapability;
 import dev.xcolorful.customgun.core.api.minecraft.capability.ISyncDataCapabilityProvider;
@@ -13,6 +14,15 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class NeoCapabilityProvider implements ICapabilityProvider {
+    public static final NeoCapabilityProvider INSTANCE = new NeoCapabilityProvider();
+
+    /**
+     * 手动传NeoForge类为旧实现方式，现直接调用 {@link CustomGun#getCapabilityProvider()} 即可
+     */
+    @SuppressWarnings("DeprecatedIsStillUsed")
+    @Deprecated(forRemoval = false)
+    public NeoCapabilityProvider() {
+    }
 
     @Override public @Nullable IInventoryCapability getItemHandler(LivingEntity livingEntity, @Nullable Direction facing) {
         return NeoInventoryCapability.fromLivingEntity(livingEntity, facing);

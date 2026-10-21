@@ -1138,7 +1138,6 @@ Notation:
 |pojo.`TransformScale`|assets.display.`_ModelTransformScale`|
 |serialize.`ItemStackSerializer`||
 |serialize.`SoundEffectKeyframesSerializer`.deserialize|assets.animation.bedrock.animation.`_SoundEffects`.fromJsonReader|
-|serialize.`Vector3fSerializer`|_Deprecated_|
 |`ClientAssetLoadDispatcher`|_Deprecated_|
 |`ClientAssetsManager`|`_AllAssetsManager`|
 |`ClientIndexManager`|`_AssetsInstanceManager`|
@@ -1153,6 +1152,10 @@ Notation:
 |com.tacz.guns.client.resource|dev.xcolorful.customgun.client.util|
 |---|---|
 |serialize.`AnimationKeyframesSerializer`.deserialize|`ClientJsonUtils`.readKeyFrames|
+
+|com.tacz.guns.client.resource|dev.xcolorful.customgun.core.util|
+|---|---|
+|serialize.`Vector3fSerializer`|`JsonUtils`.readFloatArrayFast|
 
 ### Sound (Client)
 > ```java

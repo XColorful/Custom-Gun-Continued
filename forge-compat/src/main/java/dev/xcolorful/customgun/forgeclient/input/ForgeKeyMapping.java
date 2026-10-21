@@ -1,6 +1,7 @@
 package dev.xcolorful.customgun.forgeclient.input;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import dev.xcolorful.customgun.client.CustomGunClient;
 import dev.xcolorful.customgun.client.api.input.IKeyConflictContext;
 import dev.xcolorful.customgun.client.api.input.IKeyMapping;
 import dev.xcolorful.customgun.client.api.input.IKeyModifier;
@@ -59,6 +60,15 @@ public class ForgeKeyMapping implements IKeyMapping {
     }
 
     public static class Creator implements IKeyMapping.Creator {
+        public static final Creator INSTANCE = new Creator();
+
+        /**
+         * 手动传Forge类为旧实现方式，现直接调用 {@link CustomGunClient#getKeyMappingCreator()} 即可
+         */
+        @SuppressWarnings("DeprecatedIsStillUsed")
+        @Deprecated(forRemoval = false)
+        public Creator() {
+        }
 
         @Override
         public ForgeKeyMapping create(String name,

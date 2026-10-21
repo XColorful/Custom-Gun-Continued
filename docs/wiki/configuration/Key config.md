@@ -15,9 +15,7 @@
 ```
 
 # English
-> wiki version: `0.0.15`.3
-
-## Key Config
+> wiki version: `26.10.28.1`.4
 
 Path: `key`
 - `HoldToAim` (bool): True if you want to hold the right mouse button to aim

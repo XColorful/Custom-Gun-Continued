@@ -1,5 +1,6 @@
 package dev.xcolorful.customgun.forge.minecraft;
 
+import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.core.api.minecraft.ICapabilityProvider;
 import dev.xcolorful.customgun.core.api.minecraft.capability.IInventoryCapability;
 import dev.xcolorful.customgun.core.api.minecraft.capability.ISyncDataCapabilityProvider;
@@ -13,6 +14,15 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class ForgeCapabilityProvider implements ICapabilityProvider {
+    public static final ForgeCapabilityProvider INSTANCE = new ForgeCapabilityProvider();
+
+    /**
+     * 手动传Forge类为旧实现方式，现直接调用 {@link CustomGun#getCapabilityProvider()} 即可
+     */
+    @SuppressWarnings("DeprecatedIsStillUsed")
+    @Deprecated(forRemoval = false)
+    public ForgeCapabilityProvider() {
+    }
 
     @Override public @Nullable IInventoryCapability getItemHandler(@Nullable LivingEntity livingEntity, @Nullable Direction facing) {
         return ForgeInventoryCapability.fromLivingEntity(livingEntity, facing);

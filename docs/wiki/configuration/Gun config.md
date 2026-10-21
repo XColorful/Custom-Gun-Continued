@@ -19,9 +19,7 @@
 ```
 
 # English
-> wiki version: `0.0.17`.3
-
-## Gun Config
+> wiki version: `26.10.28.1`.4
 
 Path: `gun`
 - `DefaultGunFireSoundDistance` (integer): The default fire sound range (blocks)

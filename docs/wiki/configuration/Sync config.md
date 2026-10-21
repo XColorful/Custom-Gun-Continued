@@ -59,11 +59,9 @@
 ```
 
 # English
-> wiki version: `26.10.27`.6
+> wiki version: `26.10.28.1`.7
 
-## Sync Config
-
-### Interact Key
+## Interact Key
 
 Path: `interact_key`
 - `InteractKeyWhitelistBlocks` (string list): Whitelist blocks that can be interacted with when the interact key is pressed
@@ -78,7 +76,7 @@ Path: `interact_key`
 	InteractKeyBlacklistEntities = []
 ```
 
-### Base Multiplier
+## Base Multiplier
 
 Path: `base_multiplier`
 - `DamageBaseMultiplier` (float, ≥0.0): All base damage numbers are multiplied by this factor
@@ -93,7 +91,7 @@ Path: `base_multiplier`
 	WeightSpeedMultiplier = 0.015
 ```
 
-### Misc
+## Misc
 
 Path: `misc`
 - `HeadShotAABB` (string list): The entity's head hitbox during the headshot

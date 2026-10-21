@@ -9,6 +9,15 @@ import dev.xcolorful.customgun.forgeclient.event.events.*;
 
 // ↓加个final只是为了在IDEA左边显眼一点, 枚举写死了也没啥好继承的
 public final class ForgeClientEventRegister implements IEventRegister {
+    public static final ForgeClientEventRegister INSTANCE = new ForgeClientEventRegister();
+
+    /**
+     * 手动传Forge类为旧实现方式，现直接调用 {@link dev.xcolorful.customgun.core.event.EventRegister#get()} 即可
+     */
+    @SuppressWarnings("DeprecatedIsStillUsed")
+    @Deprecated(forRemoval = false)
+    public ForgeClientEventRegister() {
+    }
 
     @Override
     public boolean register(IEventHandler eventHandler, EventType eventType, EventPriority priority, boolean receiveCanceled) {

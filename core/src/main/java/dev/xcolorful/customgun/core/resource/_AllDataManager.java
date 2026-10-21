@@ -12,6 +12,7 @@ import dev.xcolorful.customgun.core.recipe.TableRecipe;
 import dev.xcolorful.customgun.core.recipe._TableResultRaw;
 import dev.xcolorful.customgun.core.resource.data.*;
 import dev.xcolorful.customgun.core.resource.network.SyncDataType;
+import dev.xcolorful.customgun.core.util.ResourceUtils;
 import dev.xcolorful.customgun.core.util.SendUtils;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
@@ -134,11 +135,7 @@ public class _AllDataManager implements IEventHandler {
         );
         event.addListener(
                 CustomGun.getMcRegistry().createResourceLocation(CustomGun.MOD_ID + ":all_data_manager"),
-                (sharedState, backgroundExecutor, barrier, gameExecutor) -> {
-                    return barrier.wait("")
-                            .thenRunAsync(() -> {
-                            }, gameExecutor);
-                }
+                ResourceUtils.asyncReloadListener(() -> {})
         );
     }
     private <T extends ResourceFileManager<?>> T _registerListener(IAddServerReloadListenerEvent event, T listener) {

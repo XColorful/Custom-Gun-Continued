@@ -1,5 +1,6 @@
 package dev.xcolorful.customgun.neoforge.common;
 
+import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.core.api.common.ISideExecutor;
 import dev.xcolorful.customgun.core.api.common.McLogicalSide;
 import dev.xcolorful.customgun.core.api.common.McSide;
@@ -10,6 +11,15 @@ import java.util.concurrent.Executor;
 import java.util.function.Supplier;
 
 public class NeoSideExecutor implements ISideExecutor {
+    public static final NeoSideExecutor INSTANCE = new NeoSideExecutor();
+
+    /**
+     * 手动传NeoForge类为旧实现方式，现直接调用 {@link CustomGun#getSideExecutor()} 即可
+     */
+    @SuppressWarnings("DeprecatedIsStillUsed")
+    @Deprecated(forRemoval = false)
+    public NeoSideExecutor() {
+    }
 
     @Override
     public void executeOn(McSide dist, Supplier<Runnable> toRun) {

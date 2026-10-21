@@ -4,6 +4,8 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "customgun.refmap.json",
   "mixins": [
+    "CustomGunMixin",
+    "EventRegisterMixin",
     "entity.GunProjectileMixin",
     "item.AmmoItemMixin",
     "item.ItemStackMixin"

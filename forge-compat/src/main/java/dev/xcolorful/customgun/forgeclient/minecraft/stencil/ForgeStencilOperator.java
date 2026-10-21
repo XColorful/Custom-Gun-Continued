@@ -1,6 +1,7 @@
 package dev.xcolorful.customgun.forgeclient.minecraft.stencil;
 
 import com.mojang.blaze3d.pipeline.RenderPipeline;
+import dev.xcolorful.customgun.client.CustomGunClient;
 import dev.xcolorful.customgun.client.api.minecraft.pipeline.PipelineModifier;
 import dev.xcolorful.customgun.client.api.minecraft.stencil.IStencilOperator;
 import dev.xcolorful.customgun.client.api.minecraft.stencil.StencilState;
@@ -14,6 +15,15 @@ import java.util.Map;
  */
 @ApiStatus.AvailableSince("1.21.6")
 public class ForgeStencilOperator implements IStencilOperator {
+    public static final ForgeStencilOperator INSTANCE = new ForgeStencilOperator();
+
+    /**
+     * 手动传Forge类为旧实现方式，现直接调用 {@link CustomGunClient#getStencilOperator()} 即可
+     */
+    @SuppressWarnings("DeprecatedIsStillUsed")
+    @Deprecated(forRemoval = false)
+    public ForgeStencilOperator() {
+    }
 
     @Override
     public void applyStencil(StencilState state) {

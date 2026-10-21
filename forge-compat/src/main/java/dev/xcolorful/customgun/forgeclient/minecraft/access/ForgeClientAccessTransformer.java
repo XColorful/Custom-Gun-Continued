@@ -1,6 +1,7 @@
 package dev.xcolorful.customgun.forgeclient.minecraft.access;
 
 import com.mojang.blaze3d.pipeline.RenderPipeline;
+import dev.xcolorful.customgun.client.CustomGunClient;
 import dev.xcolorful.customgun.client.api.minecraft.access.IClientAccessTransformer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -10,6 +11,15 @@ import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 
 public class ForgeClientAccessTransformer implements IClientAccessTransformer {
+    public static final ForgeClientAccessTransformer INSTANCE = new ForgeClientAccessTransformer();
+
+    /**
+     * 手动传Forge类为旧实现方式，现直接调用 {@link CustomGunClient#getAccessTransformer()} 即可
+     */
+    @SuppressWarnings("DeprecatedIsStillUsed")
+    @Deprecated(forRemoval = false)
+    public ForgeClientAccessTransformer() {
+    }
 
     @Override public void
     startUseItem(

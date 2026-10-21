@@ -33,26 +33,26 @@ import java.util.function.Supplier;
 @Mod(CustomGun.MOD_ID)
 public class CustomGunForge {
 
-    public static ISideExecutor sideExecutor;
-    public static IRegistrarFactory registrarFactory;
-    public static IMcRegistry mcRegistry;
-    public static ICapabilityProvider capabilityProvider;
+    public static ISideExecutor sideExecutor = ForgeSideExecutor.INSTANCE;
+    public static IRegistrarFactory registrarFactory = ForgeRegistrarFactory.INSTANCE;
+    public static IMcRegistry mcRegistry = ForgeRegistry.INSTANCE;
+    public static ICapabilityProvider capabilityProvider = ForgeCapabilityProvider.INSTANCE;
     public static INetworkAdapter networkAdapter;
-    public static INetworkHook networkHook;
-    public static IEventRegister eventRegister;
-    public static Supplier<IModConfigSpecBuilder> modConfigSpecBuilderSupplier;
-    public static ForgeAccessTransformer accessTransformer;
+    public static INetworkHook networkHook = ForgeNetworkHook.INSTANCE;
+    public static IEventRegister eventRegister = ForgeEventRegister.INSTANCE;
+    public static Supplier<IModConfigSpecBuilder> modConfigSpecBuilderSupplier = ForgeModConfigSpecBuilder::new;
+    public static ForgeAccessTransformer accessTransformer = ForgeAccessTransformer.INSTANCE;
 
     public CustomGunForge() {
-        CustomGunForge.sideExecutor = new ForgeSideExecutor();
-        CustomGunForge.registrarFactory = new ForgeRegistrarFactory();
-        CustomGunForge.mcRegistry = new ForgeRegistry();
-        CustomGunForge.capabilityProvider = new ForgeCapabilityProvider();
+//        CustomGunForge.sideExecutor = ForgeSideExecutor.INSTANCE;
+//        CustomGunForge.registrarFactory = ForgeRegistrarFactory.INSTANCE;
+//        CustomGunForge.mcRegistry = ForgeRegistry.INSTANCE;
+//        CustomGunForge.capabilityProvider = ForgeCapabilityProvider.INSTANCE;
         CustomGunForge.networkAdapter = new ForgeNetworkAdapter(CustomGunForge.mcRegistry, CustomGun.MOD_ID, NetworkHandler.protocol_version);
-        CustomGunForge.networkHook = new ForgeNetworkHook();
-        CustomGunForge.eventRegister = new ForgeEventRegister();
-        CustomGunForge.modConfigSpecBuilderSupplier = ForgeModConfigSpecBuilder::new;
-        CustomGunForge.accessTransformer = new ForgeAccessTransformer();
+//        CustomGunForge.networkHook = ForgeNetworkHook.INSTANCE;
+//        CustomGunForge.eventRegister = ForgeEventRegister.INSTANCE;
+//        CustomGunForge.modConfigSpecBuilderSupplier = ForgeModConfigSpecBuilder::new;
+//        CustomGunForge.accessTransformer = ForgeAccessTransformer.INSTANCE;
         Dist dist = FMLLoader.getDist();
         McSide mcSide = dist.isClient() ? McSide.CLIENT : McSide.DEDICATED_SERVER;
 

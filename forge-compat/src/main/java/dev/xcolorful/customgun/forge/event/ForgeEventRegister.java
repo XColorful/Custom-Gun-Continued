@@ -11,6 +11,15 @@ import net.minecraftforge.fml.loading.FMLLoader;
 
 // ↓加个final只是为了在IDEA左边显眼一点, 枚举写死了也没啥好继承的
 public final class ForgeEventRegister implements IEventRegister {
+    public static final ForgeEventRegister INSTANCE = new ForgeEventRegister();
+
+    /**
+     * 手动传Forge类为旧实现方式，现直接调用 {@link CustomGun#getEventRegister()} 即可
+     */
+    @SuppressWarnings("DeprecatedIsStillUsed")
+    @Deprecated(forRemoval = false)
+    public ForgeEventRegister() {
+    }
 
     @Override
     public boolean register(IEventHandler eventHandler, EventType eventType, EventPriority priority, boolean receiveCanceled) {

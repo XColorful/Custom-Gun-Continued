@@ -5,9 +5,9 @@ import dev.xcolorful.customgun.core.api.event.EventPriority;
 import dev.xcolorful.customgun.core.api.event.EventType;
 import dev.xcolorful.customgun.core.api.event.IEventHandler;
 import dev.xcolorful.customgun.core.api.event.IEventRegister;
+import dev.xcolorful.customgun.forge.CustomGunForge;
 import dev.xcolorful.customgun.forge.event.events.*;
 import dev.xcolorful.customgun.forgeclient.CustomGunForgeClient;
-import net.minecraftforge.fml.loading.FMLLoader;
 
 // ↓加个final只是为了在IDEA左边显眼一点, 枚举写死了也没啥好继承的
 public final class ForgeEventRegister implements IEventRegister {
@@ -23,7 +23,7 @@ public final class ForgeEventRegister implements IEventRegister {
 
     @Override
     public boolean register(IEventHandler eventHandler, EventType eventType, EventPriority priority, boolean receiveCanceled) {
-        if (eventType.isClientSideOnly() && FMLLoader.getDist().isClient()) {
+        if (eventType.isClientSideOnly() && CustomGunForge.getDist().isClient()) {
             return _ForgeClientEventRegister.get().register(eventHandler, eventType, priority, receiveCanceled);
         }
 
@@ -67,7 +67,7 @@ public final class ForgeEventRegister implements IEventRegister {
 
     @Override
     public boolean unregister(IEventHandler eventHandler, EventType eventType, EventPriority priority, boolean receiveCanceled) {
-        if (eventType.isClientSideOnly() && FMLLoader.getDist().isClient()) {
+        if (eventType.isClientSideOnly() && CustomGunForge.getDist().isClient()) {
             return _ForgeClientEventRegister.get().unregister(eventHandler, eventType, priority, receiveCanceled);
         }
 

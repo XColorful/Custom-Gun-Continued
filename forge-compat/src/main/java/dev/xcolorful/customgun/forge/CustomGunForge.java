@@ -53,7 +53,7 @@ public class CustomGunForge {
 //        CustomGunForge.eventRegister = ForgeEventRegister.INSTANCE;
 //        CustomGunForge.modConfigSpecBuilderSupplier = ForgeModConfigSpecBuilder::new;
 //        CustomGunForge.accessTransformer = ForgeAccessTransformer.INSTANCE;
-        Dist dist = FMLLoader.getDist();
+        Dist dist = CustomGunForge.getDist();
         McSide mcSide = dist.isClient() ? McSide.CLIENT : McSide.DEDICATED_SERVER;
 
         CustomGun.init(mcSide, CustomGunForge.sideExecutor,
@@ -78,6 +78,14 @@ public class CustomGunForge {
         if (mcSide == McSide.CLIENT) {
             _CustomGunForgeClient.init();
         }
+    }
+
+    public static Dist getDist() {
+        // [1.20.1, 1.21.10)
+        return FMLLoader.getDist();
+
+        // [1.21.10neoforge, )
+//        return FMLLoader.getCurrent().getDist();
     }
 
     private static class _CustomGunForgeClient {

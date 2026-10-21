@@ -15,19 +15,19 @@ import dev.xcolorful.customgun.neoforgeclient.minecraft.stencil.NeoStencilOperat
 public class CustomGunNeoforgeClient {
 
     protected static boolean initialized;
-    public static IEventRegister eventRegister;
-    public static IKeyMapping.Creator keyMappingCreator;
-    public static IClientAccessTransformer accessTransformer;
-    public static IClientItemExtensionProvider clientItemExtensionProvider;
-    public static IStencilOperator stencilOperator;
+    public static IEventRegister eventRegister = NeoClientEventRegister.INSTANCE;
+    public static IKeyMapping.Creator keyMappingCreator = NeoKeyMapping.Creator.INSTANCE;
+    public static IClientAccessTransformer accessTransformer = NeoClientAccessTransformer.INSTANCE;
+    public static IClientItemExtensionProvider clientItemExtensionProvider = NeoClientItemExtensionProvider.INSTANCE;
+    public static IStencilOperator stencilOperator = NeoStencilOperator.INSTANCE;
 
     public static void init() {
         if (initialized) return;
-        CustomGunNeoforgeClient.eventRegister = new NeoClientEventRegister();
-        CustomGunNeoforgeClient.keyMappingCreator = new NeoKeyMapping.Creator();
-        CustomGunNeoforgeClient.accessTransformer = new NeoClientAccessTransformer();
-        CustomGunNeoforgeClient.clientItemExtensionProvider = new NeoClientItemExtensionProvider();
-        CustomGunNeoforgeClient.stencilOperator = new NeoStencilOperator();
+//        CustomGunNeoforgeClient.eventRegister = NeoClientEventRegister.INSTANCE;
+//        CustomGunNeoforgeClient.keyMappingCreator = NeoKeyMapping.Creator.INSTANCE;
+//        CustomGunNeoforgeClient.accessTransformer = NeoClientAccessTransformer.INSTANCE;
+//        CustomGunNeoforgeClient.clientItemExtensionProvider = NeoClientItemExtensionProvider.INSTANCE;
+//        CustomGunNeoforgeClient.stencilOperator = NeoStencilOperator.INSTANCE;
 
         CustomGunClient.init(CustomGunNeoforgeClient.keyMappingCreator,
                 CustomGunNeoforgeClient.accessTransformer,

@@ -2,6 +2,7 @@ package dev.xcolorful.customgun.neoforgeclient.minecraft.stencil;
 
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.systems.RenderSystem;
+import dev.xcolorful.customgun.client.CustomGunClient;
 import dev.xcolorful.customgun.client.api.minecraft.pipeline.PipelineModifier;
 import dev.xcolorful.customgun.client.api.minecraft.stencil.IStencilOperator;
 import dev.xcolorful.customgun.client.api.minecraft.stencil.StencilState;
@@ -18,6 +19,15 @@ import java.util.Map;
  */
 @ApiStatus.AvailableSince("1.21.6")
 public class NeoStencilOperator implements IStencilOperator {
+    public static final NeoStencilOperator INSTANCE = new NeoStencilOperator();
+
+    /**
+     * 手动传NeoForge类为旧实现方式，现直接调用 {@link CustomGunClient#getStencilOperator()} 即可
+     */
+    @SuppressWarnings("DeprecatedIsStillUsed")
+    @Deprecated(forRemoval = false)
+    public NeoStencilOperator() {
+    }
 
     @Override
     public void applyStencil(StencilState state) {

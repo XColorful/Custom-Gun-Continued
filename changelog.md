@@ -1,5 +1,12 @@
 ### 26.10
 
+#### 26.10.28.2
+If the game starts normally, it is not affected:
+- Fixed a `NullPointerException` in CGC addon mods triggered by Forge's parallel loading mechanism
+
+For Developers:
+- Use `CustomGun#getXXX` directly without manually passing the platform compatibility layer interface
+
 #### 26.10.28.1
 For Developer:
 - Add `INetworkCacheManager`

@@ -230,6 +230,7 @@
 	- 对于已封装的 `FriendlyByteBuf`操作，必须使用此处
 	- 未封装的方法直接调用 `FriendlyByteBuf`即可
 - RayTraceUtils：射线追踪工具
+- ResourceUtils：资源相关兼容封装
 - ScriptUtils：LuaJ工具
 - SendUtils：网络消息统一发送入口
 	- 所有消息发送均通过此处，与网络实现（`NetworkHandler`）解耦
@@ -465,6 +466,7 @@ Module division based on the `dev.xcolorful.customgun.core` top-level package
 	- Wrapped `FriendlyByteBuf` operations must use this utility
 	- Operations without wrappers should call `FriendlyByteBuf` directly
 - RayTraceUtils: Ray trace utilities
+- ResourceUtils: Compatibility wrappers for resource
 - ScriptUtils: LuaJ utilities
 - SendUtils: Unified entry point for sending network messages
 	- All network messages must be sent through this utility, decoupling callers from the underlying `NetworkHandler`

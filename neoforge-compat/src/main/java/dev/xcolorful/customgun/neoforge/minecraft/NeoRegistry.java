@@ -1,5 +1,6 @@
 package dev.xcolorful.customgun.neoforge.minecraft;
 
+import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.core.api.minecraft.IMcRegistry;
 import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleType;
@@ -16,6 +17,15 @@ import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.Nullable;
 
 public class NeoRegistry implements IMcRegistry {
+    public static final NeoRegistry INSTANCE = new NeoRegistry();
+
+    /**
+     * 手动传NeoForge类为旧实现方式，现直接调用 {@link CustomGun#getMcRegistry()} 即可
+     */
+    @SuppressWarnings("DeprecatedIsStillUsed")
+    @Deprecated(forRemoval = false)
+    public NeoRegistry() {
+    }
 
     @Override public @Nullable ResourceLocation createResourceLocation(String rlString) {
         return ResourceLocation.tryParse(rlString);

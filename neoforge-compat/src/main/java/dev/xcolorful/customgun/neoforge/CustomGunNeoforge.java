@@ -32,27 +32,27 @@ import java.util.function.Supplier;
 @Mod(CustomGun.MOD_ID)
 public class CustomGunNeoforge {
 
-    public static ISideExecutor sideExecutor;
-    public static IRegistrarFactory registrarFactory;
-    public static IMcRegistry mcRegistry;
-    public static ICapabilityProvider capabilityProvider;
+    public static ISideExecutor sideExecutor = NeoSideExecutor.INSTANCE;
+    public static IRegistrarFactory registrarFactory = NeoRegistrarFactory.INSTANCE;
+    public static IMcRegistry mcRegistry = NeoRegistry.INSTANCE;
+    public static ICapabilityProvider capabilityProvider = NeoCapabilityProvider.INSTANCE;
     public static INetworkAdapter networkAdapter;
-    public static INetworkHook networkHook;
-    public static IEventRegister eventRegister;
-    public static Supplier<IModConfigSpecBuilder> modConfigSpecBuilderSupplier;
-    public static NeoAccessTransformer accessTransformer;
+    public static INetworkHook networkHook = NeoNetworkHook.INSTANCE;
+    public static IEventRegister eventRegister = NeoEventRegister.INSTANCE;
+    public static Supplier<IModConfigSpecBuilder> modConfigSpecBuilderSupplier = NeoModConfigSpecBuilder::new;
+    public static NeoAccessTransformer accessTransformer = NeoAccessTransformer.INSTANCE;
 
     public CustomGunNeoforge(IEventBus modEventBus) {
-        CustomGunNeoforge.sideExecutor = new NeoSideExecutor();
-        CustomGunNeoforge.registrarFactory = new NeoRegistrarFactory();
-        CustomGunNeoforge.mcRegistry = new NeoRegistry();
-        CustomGunNeoforge.capabilityProvider = new NeoCapabilityProvider();
+//        CustomGunNeoforge.sideExecutor = NeoSideExecutor.INSTANCE;
+//        CustomGunNeoforge.registrarFactory = NeoRegistrarFactory.INSTANCE;
+//        CustomGunNeoforge.mcRegistry = NeoRegistry.INSTANCE;
+//        CustomGunNeoforge.capabilityProvider = NeoCapabilityProvider.INSTANCE;
         CustomGunNeoforge.networkAdapter = new NeoNetworkAdapter(modEventBus, CustomGunNeoforge.mcRegistry, CustomGun.MOD_ID, NetworkHandler.protocol_version);
-        CustomGunNeoforge.networkHook = new NeoNetworkHook();
-        CustomGunNeoforge.eventRegister = new NeoEventRegister();
-        CustomGunNeoforge.modConfigSpecBuilderSupplier = NeoModConfigSpecBuilder::new;
-        CustomGunNeoforge.accessTransformer = new NeoAccessTransformer();
-        Dist dist = FMLLoader.getDist();
+//        CustomGunNeoforge.networkHook = NeoNetworkHook.INSTANCE;
+//        CustomGunNeoforge.eventRegister = NeoEventRegister.INSTANCE;
+//        CustomGunNeoforge.modConfigSpecBuilderSupplier = NeoModConfigSpecBuilder::new;
+//        CustomGunNeoforge.accessTransformer = NeoAccessTransformer.INSTANCE;
+        Dist dist = CustomGunNeoforge.getDist();
         McSide mcSide = dist.isClient() ? McSide.CLIENT : McSide.DEDICATED_SERVER;
 
         CustomGun.init(mcSide, CustomGunNeoforge.sideExecutor,
@@ -75,6 +75,14 @@ public class CustomGunNeoforge {
         if (mcSide == McSide.CLIENT) {
             _CustomGunNeoforgeClient.init();
         }
+    }
+
+    public static Dist getDist() {
+        // [1.20.2, 1.21.10)
+        return FMLLoader.getDist();
+
+        // [1.21.10neoforge, )
+//        return FMLLoader.getCurrent().getDist();
     }
 
     private static class _CustomGunNeoforgeClient {

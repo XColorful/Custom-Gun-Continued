@@ -1,5 +1,6 @@
 package dev.xcolorful.customgun.neoforge.init.registry;
 
+import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.core.api.init.registry.IMenuTypeFactory;
 import dev.xcolorful.customgun.core.api.init.registry.IRegistrar;
 import dev.xcolorful.customgun.core.api.init.registry.IRegistrarFactory;
@@ -21,6 +22,15 @@ import net.neoforged.neoforge.registries.DeferredRegister;
  * IRegistrarFactory 的 NeoForge 实现，负责创建基于 NeoForge API 的注册器。
  */
 public class NeoRegistrarFactory implements IRegistrarFactory {
+    public static final NeoRegistrarFactory INSTANCE = new NeoRegistrarFactory();
+
+    /**
+     * 手动传NeoForge类为旧实现方式，现直接调用 {@link CustomGun#getRegistrarFactory()} 即可
+     */
+    @SuppressWarnings("DeprecatedIsStillUsed")
+    @Deprecated(forRemoval = false)
+    public NeoRegistrarFactory() {
+    }
 
     private final IMenuTypeFactory menuTypeFactory = new NeoMenuTypeFactory();
 

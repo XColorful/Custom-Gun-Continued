@@ -65,7 +65,7 @@
 除非另有明确说明，代码、图片及其他材料也不属于本许可证的适用范围
 
 # English
-> wiki version: `0.0.15`.11
+> wiki version: `26.10.28.1`.12
 
 > Recommend installing the [Stylus](https://chromewebstore.google.com/detail/stylus/clngdbkpkpeebahjckkjfobafhncgmne) extension and using the configuration [Stylus-Obsidian-Topaz-Nord.json](https://github.com/XColorful/XColorful.github.io/blob/main/stylus/Stylus-Obsidian-Topaz-Nord.json)
 
@@ -103,8 +103,8 @@
 ## 📦Resource
 
 [Resource introduction](https://github.com/XColorful/Custom-Gun-Continued/wiki/Resource-introduction#English)
-- [Datapack](https://github.com/XColorful/Custom-Gun-Continued/wiki/Resource-introduction#Datapack)
-- [Resourcepack](https://github.com/XColorful/Custom-Gun-Continued/wiki/Resource-introduction#Resourcepack)
+- 📊[Datapack](https://github.com/XColorful/Custom-Gun-Continued/wiki/Resource-introduction#Datapack)
+- 🖼️[Resourcepack](https://github.com/XColorful/Custom-Gun-Continued/wiki/Resource-introduction#Resourcepack)
 
 ## ℹ️About
 

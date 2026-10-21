@@ -17,9 +17,7 @@
 ```
 
 # English
-> wiki version: `0.0.15`.1
-
-## Sound Config
+> wiki version: `26.10.28.1`.2
 
 Path: `sound`
 - `HitSoundConcurrencyLimit` (integer, 0~128): Max active hit marker sounds for the same entity and sound id; 0 disables this limit

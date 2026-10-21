@@ -9,9 +9,7 @@
 ```
 
 # English
-> wiki version: `0.0.15`.2
-
-## Resource Config
+> wiki version: `26.10.28.1`.3
 
 Path: `resource`
 ```toml

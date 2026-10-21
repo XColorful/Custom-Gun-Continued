@@ -18,17 +18,17 @@ public class ResourceUtils {
 
         // [1.21.4, 1.21.10)
         // reload(PreparationBarrier, ResourceManager, Executor, Executor)
-        return (barrier, resourceManager, backgroundExecutor, gameExecutor) -> {
-            return barrier
-                    .wait(Void.TYPE)
-                    .thenRunAsync(action, gameExecutor);
-        };
+//        return (barrier, resourceManager, backgroundExecutor, gameExecutor) -> {
+//            return barrier
+//                    .wait(Void.TYPE)
+//                    .thenRunAsync(action, gameExecutor);
+//        };
 
         // [1.21.10, )
         // reload(SharedState, Executor, PreparationBarrier, Executor)
-//        return (sharedState, backgroundExecutor, barrier, gameExecutor) -> {
-//            return barrier.wait("")
-//                    .thenRunAsync(action, gameExecutor);
-//        };
+        return (sharedState, backgroundExecutor, barrier, gameExecutor) -> {
+            return barrier.wait("")
+                    .thenRunAsync(action, gameExecutor);
+        };
     }
 }

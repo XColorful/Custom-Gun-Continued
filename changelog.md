@@ -1,5 +1,9 @@
 ### 26.10
 
+#### 26.10.29
+1.21.4+:
+- Fixed `bypass_bullet` tag not work
+
 #### 26.10.28.2
 If the game starts normally, it is not affected:
 - Fixed a `NullPointerException` in CGC addon mods triggered by Forge's parallel loading mechanism

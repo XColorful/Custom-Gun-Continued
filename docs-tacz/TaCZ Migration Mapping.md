@@ -234,15 +234,6 @@ Notation:
 > package com.tacz.guns.config;
 > ```
 
-|com.tacz.guns.config|dev.xcolorful.customgun.core.config|
-|---|---|
-|common.`AmmoConfig`|`AmmoConfig`|
-|common.`GunConfig`|`GunConfig`|
-|common.`OtherConfig`|`OtherConfig`|
-|sync.`SyncConfig`|`SyncConfig`|
-|util.`HeadShotAABBConfigRead`|sync.`HeadAABBData`|
-|`PreLoadConfig`|_Deprecated_|
-
 |com.tacz.guns.config|dev.xcolorful.customgun.client.config|
 |---|---|
 |client.`KeyConfig`|`KeyConfig`|
@@ -251,6 +242,15 @@ Notation:
 |client.`SoundConfig`|`SoundConfig`|
 |client.`ZoomConfig`|`ZoomConfig`|
 |util.`InteractKeyConfigRead`|sync.`InteractFilterData`|
+
+|com.tacz.guns.config|dev.xcolorful.customgun.core.config|
+|---|---|
+|common.`AmmoConfig`|`AmmoConfig`|
+|common.`GunConfig`|`GunConfig`|
+|common.`OtherConfig`|`OtherConfig`|
+|sync.`SyncConfig`|`SyncConfig`|
+|util.`HeadShotAABBConfigRead`|sync.`HeadAABBData`|
+|`PreLoadConfig`|_Deprecated_|
 
 ### Craft
 > ```java

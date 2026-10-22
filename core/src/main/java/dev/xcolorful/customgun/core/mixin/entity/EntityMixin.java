@@ -68,7 +68,11 @@ public abstract class EntityMixin implements IEntityExtension {
         this.cgc$horizontalMoveDist += (float) actualMovement.horizontalDistance() * 0.6F;
     }
 
-    @Inject(method = "isInvulnerableTo", at = @At("RETURN"), cancellable = true)
+    /*
+    1.21.4 起 Entity.isInvulnerableTo 下沉为 isInvulnerableToBase
+    由 LivingEntity.isInvulnerableTo(ServerLevel, DamageSource) 调用
+     */
+    @Inject(method = "isInvulnerableToBase", at = @At("RETURN"), cancellable = true)
     private void cgc$projectileInvulnerability(DamageSource source, CallbackInfoReturnable<Boolean> cir) {
         if (cir.getReturnValueZ() || !source.is(ModDamageTypes.BULLET_DAMAGE)) return;
 

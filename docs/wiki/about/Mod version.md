@@ -1,7 +1,7 @@
 [English](#English)
 
 # 模组版本
-> wiki 版本：`0.0.8`.1
+> wiki 版本：`26.10.29`.3
 
 ## 版本号命名
 
@@ -48,8 +48,36 @@ wiki 版本号格式为：`模组版本`.`wiki版本数`
 - 当 wiki 更新随代码一并提交时，更新说明为对应的 commit 概要
 - 否则，单独描述更新说明
 
+## 时间观念
+
+### 隆重大公开
+
+- 更多准备，更多设想
+- 更大蓄势，更大步伐
+- 正式举行隆重大公开事件
+- 
+- 更大宣传，更大排面
+- 更久停留，更久回荡
+- 每一次珍贵的回忆都那般天长地久
+
+### 廉价版本号
+
+- 更早崩溃，更早发现
+- 更快修复，更快前进
+- 充分发挥廉价版本号优势
+- 
+- 即时编译，即时更新
+- 不再等待，Java Just-In-Time
+- 怎样的速度才能追上“她”流逝的那一刻？
+
+```java
+if (supplier.get()) {
+  throw new World();
+}
+```
+
 # English
-> wiki version: `0.0.8`.2
+> wiki version: `26.10.29`.3
 
 ## Version naming
 
@@ -95,3 +123,31 @@ The wiki version format is: `Mod version`.`wiki version number`
 
 - When a wiki update is submitted together with code, the update description should use the corresponding commit summary
 - Otherwise, describe the update separately
+
+## A Mindset Toward Time
+
+### The Grand Public Release
+
+- More preparation, more imagining
+- Greater buildup, greater strides
+- The grand public release, formally staged
+- 
+- More publicity, more spectacle
+- Longer presence, longer echoes
+- Every precious memory, everlasting as time itself
+
+### The Cheap Version Number
+
+- Crash sooner, discover sooner
+- Fix faster, move forward faster
+- Make the most of cheap version numbers
+- 
+- Just in time compilation, just in time updates
+- No more waiting, Java Just-In-Time
+- What speed would it take to catch up with the moment she slipped away?
+
+```java
+if (supplier.get()) {
+  throw new World();
+}
+```

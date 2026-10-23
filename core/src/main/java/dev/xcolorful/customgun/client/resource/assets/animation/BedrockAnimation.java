@@ -8,6 +8,7 @@ import dev.xcolorful.customgun.core.resource.ResourcePojo;
 import dev.xcolorful.customgun.core.util.JsonUtils;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 public final class BedrockAnimation extends ResourcePojo<BedrockAnimation> {
@@ -28,12 +29,16 @@ public final class BedrockAnimation extends ResourcePojo<BedrockAnimation> {
                 switch (key) {
                     case BedrockAnimationTag.FORMAT_VERSION -> pojo.formatVersion = JsonUtils.readString(reader);
                     case BedrockAnimationTag.ANIMATIONS -> pojo.animations = JsonUtils.readString2ObjectMap(reader, _Animation::fromJson);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, BedrockAnimation pojo) throws IOException {
@@ -44,13 +49,36 @@ public final class BedrockAnimation extends ResourcePojo<BedrockAnimation> {
         writer.beginObject(); {
             JsonUtils.writeString(writer, BedrockAnimationTag.FORMAT_VERSION, this.formatVersion);
             JsonUtils.writeString2ObjectMap(writer, BedrockAnimationTag.ANIMATIONS, this.animations, _Animation::toJson);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
     protected void validatePojo() {
         this.setValid(true);
+    }
+
+    @Override
+    protected BedrockAnimation copyTo(final BedrockAnimation pojo) {
+        pojo.setFormatVersion(this.formatVersion);
+        Map<String, _Animation> animations = new HashMap<>(); {
+            for (var entry : this.animations.entrySet()) {
+                animations.put(entry.getKey(), entry.getValue().copy());
+            }
+        } pojo.setAnimations(animations);
+        return pojo;
+    }
+
+    @Override
+    public BedrockAnimation copy() {
+        BedrockAnimation pojo = copyTo(new BedrockAnimation());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

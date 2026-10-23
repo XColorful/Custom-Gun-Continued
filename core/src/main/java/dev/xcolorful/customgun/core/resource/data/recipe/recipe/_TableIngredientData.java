@@ -27,12 +27,16 @@ public final class _TableIngredientData extends ResourcePojo<_TableIngredientDat
                 switch (key) {
                     case _TableIngredientDataTag.INGREDIENT_FILTER_DATA, _TableIngredientDataTag.INGREDIENT_FILTER_DATA_OLD1 -> pojo.ingredientFilter = JsonUtils.read(reader, _IngredientFilterData::fromJson);
                     case _TableIngredientDataTag.INGREDIENT_COUNT, _TableIngredientDataTag.INGREDIENT_COUNT_OLD1 -> pojo.ingredientCount = JsonUtils.readInt(reader);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _TableIngredientData pojo) throws IOException {
@@ -43,8 +47,13 @@ public final class _TableIngredientData extends ResourcePojo<_TableIngredientDat
         writer.beginObject(); {
             JsonUtils.write(writer, _TableIngredientDataTag.INGREDIENT_FILTER_DATA, this.ingredientFilter, _IngredientFilterData::toJson);
             JsonUtils.writeInt(writer, _TableIngredientDataTag.INGREDIENT_COUNT, this.ingredientCount);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
@@ -68,6 +77,20 @@ public final class _TableIngredientData extends ResourcePojo<_TableIngredientDat
             return;
         }
         this.setValid(true);
+    }
+
+    @Override
+    protected _TableIngredientData copyTo(final _TableIngredientData pojo) {
+        pojo.setIngredientFilter(this.ingredientFilter.copy());
+        pojo.setIngredientCount(this.ingredientCount);
+        return pojo;
+    }
+
+    @Override
+    public _TableIngredientData copy() {
+        _TableIngredientData pojo = copyTo(new _TableIngredientData());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

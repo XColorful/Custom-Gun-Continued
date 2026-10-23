@@ -36,12 +36,16 @@ public final class _InaccuracyData extends ResourcePojo<_InaccuracyData> {
                     case _InaccuracyDataTag.PRONE, _InaccuracyDataTag.PRONE_OLD1 -> pojo.prone = JsonUtils.readFloat(reader);
                     case _InaccuracyDataTag.AIM -> pojo.aim = JsonUtils.readFloat(reader);
                     case _InaccuracyDataTag.LEVITATE -> pojo.levitate = JsonUtils.readFloat(reader);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _InaccuracyData pojo) throws IOException {
@@ -57,13 +61,37 @@ public final class _InaccuracyData extends ResourcePojo<_InaccuracyData> {
             JsonUtils.writeFloat(writer, _InaccuracyDataTag.PRONE, this.prone);
             JsonUtils.writeFloat(writer, _InaccuracyDataTag.AIM, this.aim);
             JsonUtils.writeFloat(writer, _InaccuracyDataTag.LEVITATE, this.levitate);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
     protected void validatePojo() {
         this.setValid(true);
+    }
+
+    @Override
+    protected _InaccuracyData copyTo(final _InaccuracyData pojo) {
+        pojo.setStand(this.stand);
+        pojo.setMove(this.move);
+        pojo.setRide(this.ride);
+        pojo.setSneak(this.sneak);
+        pojo.setProne(this.prone);
+        pojo.setAim(this.aim);
+        pojo.setLevitate(this.levitate);
+        return pojo;
+    }
+
+    @Override
+    public _InaccuracyData copy() {
+        _InaccuracyData pojo = copyTo(new _InaccuracyData());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

@@ -40,12 +40,16 @@ public final class _TableResultData extends ResourcePojo<_TableResultData> {
                     case _TableResultDataTag.RESULT_ITEM, _TableResultDataTag.RESULT_ITEM_OLD1 -> pojo.resultItem = JsonUtils.read(reader, _ResultItemData::fromJson);
                     case _TableResultDataTag.TAB_GROUP_LOCATION, _TableResultDataTag.TAB_GROUP_LOCATION_OLD1 -> pojo.tabGroupLocation = JsonUtils.readResourceLocation(reader);
                     case _TableResultDataTag.POJO_LOCATION, _TableResultDataTag.POJO_LOCATION_OLD1 -> pojo.pojoLocation = JsonUtils.readResourceLocation(reader);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _TableResultData pojo) throws IOException {
@@ -59,8 +63,13 @@ public final class _TableResultData extends ResourcePojo<_TableResultData> {
             JsonUtils.write(writer, _TableResultDataTag.RESULT_ITEM, resultItem, _ResultItemData::toJson);
             JsonUtils.writeResourceLocation(writer, _TableResultDataTag.TAB_GROUP_LOCATION, tabGroupLocation);
             JsonUtils.writeResourceLocation(writer, _TableResultDataTag.POJO_LOCATION, pojoLocation);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
@@ -80,6 +89,26 @@ public final class _TableResultData extends ResourcePojo<_TableResultData> {
         }
 
         this.setValid(true);
+    }
+
+    @Override
+    protected _TableResultData copyTo(final _TableResultData pojo) {
+        pojo.setResultType(this.resultType);
+        pojo.setResultCount(this.resultCount);
+        @Nullable _ResultItemData resultItem = null; {
+            if (this.resultItem != null) resultItem = this.resultItem.copy();
+        } pojo.setResultItem(resultItem);
+        pojo.setTabGroupLocation(this.tabGroupLocation);
+
+        pojo.setPojoLocation(this.pojoLocation);
+        return pojo;
+    }
+
+    @Override
+    public _TableResultData copy() {
+        _TableResultData pojo = copyTo(new _TableResultData());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

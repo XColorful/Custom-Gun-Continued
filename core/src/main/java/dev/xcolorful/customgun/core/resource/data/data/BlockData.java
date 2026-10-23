@@ -31,12 +31,16 @@ public final class BlockData extends ResourcePojo<BlockData> {
                 switch (key) {
                     case BlockDataTag.RECIPE_FILTER_LOCATION -> pojo.recipeFilterLocation = JsonUtils.readResourceLocation(reader);
                     case BlockDataTag.RECIPE_GROUP_LIST -> pojo.recipeGroupList = JsonUtils.readList(reader, _RecipeGroupData::fromJson);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, BlockData pojo) throws IOException {
@@ -47,8 +51,13 @@ public final class BlockData extends ResourcePojo<BlockData> {
         writer.beginObject(); {
             JsonUtils.writeResourceLocation(writer, BlockDataTag.RECIPE_FILTER_LOCATION, this.recipeFilterLocation);
             JsonUtils.writeList(writer, BlockDataTag.RECIPE_GROUP_LIST, this.recipeGroupList, _RecipeGroupData::toJson);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
@@ -72,6 +81,24 @@ public final class BlockData extends ResourcePojo<BlockData> {
         }
 
         this.setValid(true);
+    }
+
+    @Override
+    protected BlockData copyTo(final BlockData pojo) {
+        pojo.setRecipeFilterLocation(this.recipeFilterLocation);
+        List<_RecipeGroupData> recipeGroupList = new ArrayList<>(this.recipeGroupList.size()); {
+            for (int i = 0; i < this.recipeGroupList.size(); i++) {
+                recipeGroupList.add(this.recipeGroupList.get(i).copy());
+            }
+        } pojo.setRecipeGroupList(recipeGroupList);
+        return pojo;
+    }
+
+    @Override
+    public BlockData copy() {
+        BlockData pojo = copyTo(new BlockData());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

@@ -26,12 +26,16 @@ public final class _RecoilEntryData extends ResourcePojo<_RecoilEntryData> {
                 switch (key) {
                     case _RecoilEntryDataTag.TIME -> pojo.time = JsonUtils.readFloat(reader);
                     case _RecoilEntryDataTag.RANGE, _RecoilEntryDataTag.RANGE_OLD1 -> pojo.range = JsonUtils.readFloatArrayFast(reader, 2);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _RecoilEntryData pojo) throws IOException {
@@ -42,8 +46,13 @@ public final class _RecoilEntryData extends ResourcePojo<_RecoilEntryData> {
         writer.beginObject(); {
             JsonUtils.writeFloat(writer, _RecoilEntryDataTag.TIME, this.time);
             JsonUtils.writeFloatArray(writer, _RecoilEntryDataTag.RANGE, this.range);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
@@ -55,6 +64,22 @@ public final class _RecoilEntryData extends ResourcePojo<_RecoilEntryData> {
         }
 
         this.setValid(true);
+    }
+
+    @Override
+    protected _RecoilEntryData copyTo(final _RecoilEntryData pojo) {
+        pojo.setTime(this.time);
+        float[] range; {
+            range = this.range != null ? this.range.clone() : null;
+        } pojo.setRange(range);
+        return pojo;
+    }
+
+    @Override
+    public _RecoilEntryData copy() {
+        _RecoilEntryData pojo = copyTo(new _RecoilEntryData());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

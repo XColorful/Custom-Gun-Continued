@@ -36,12 +36,16 @@ public final class AttachmentIndex extends _DataIndex<AttachmentIndex> {
 
                     case AttachmentIndexTag.ATTACHMENT_CATEGORY, AttachmentIndexTag.ATTACHMENT_CATEGORY_OLD1 -> pojo.attachmentCategory = JsonUtils.readFromString(reader, AttachmentCategory::fromString);
                     case AttachmentIndexTag.HIDE_IN_GAME, AttachmentIndexTag.HIDE_IN_GAME_OLD1 -> pojo.hideInGame = JsonUtils.readBoolean(reader);
-                    default -> reader.skipValue();
+                    default -> readUnknownKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
+        return super.readUnknownKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, AttachmentIndex pojo) throws IOException {

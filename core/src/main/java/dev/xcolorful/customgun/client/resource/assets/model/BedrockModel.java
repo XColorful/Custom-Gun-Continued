@@ -30,12 +30,16 @@ public class BedrockModel extends ResourcePojo<BedrockModel> {
                 switch (key) {
                     case BedrockModelTag.FORMAT_VERSION -> pojo.formatVersion = JsonUtils.readString(reader);
                     case BedrockModelTag.GEOMETRY_MODEL -> pojo.geometryModels = JsonUtils.readList(reader, _GeometryModel::fromJson);
-                    default -> reader.skipValue();
+                    default -> readUnknownKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
+        return super.readUnknownKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, BedrockModel pojo) throws IOException {

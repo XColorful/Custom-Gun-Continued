@@ -29,12 +29,16 @@ public final class _IngredientFilterData extends ResourcePojo<_IngredientFilterD
                 switch (key) {
                     case _IngredientFilterDataTag.ITEM_FILTER_LOCATION, _IngredientFilterDataTag.ITEM_FILTER_LOCATION_OLD1 -> pojo.itemFilterLocation = JsonUtils.readResourceLocation(reader);
                     case _IngredientFilterDataTag.TAG_FILTER_LOCATION, _IngredientFilterDataTag.TAG_FILTER_LOCATION_OLD1 -> pojo.tagFilterLocation = JsonUtils.readResourceLocation(reader);
-                    default -> reader.skipValue();
+                    default -> readUnknownKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
+        return super.readUnknownKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _IngredientFilterData pojo) throws IOException {

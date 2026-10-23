@@ -31,6 +31,14 @@ public abstract class ResourcePojo<T extends ResourcePojo<T>> {
     protected abstract T fromJsonReader(JsonReader reader) throws IOException;
 
     /**
+     * @return 是否已消费 next value
+     */
+    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
+        reader.skipValue();
+        return true;
+    }
+
+    /**
      * 流式序列化
      */
     public abstract void toJson(JsonWriter writer) throws IOException;

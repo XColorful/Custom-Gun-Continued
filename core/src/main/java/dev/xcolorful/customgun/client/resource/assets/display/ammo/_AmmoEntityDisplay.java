@@ -23,12 +23,16 @@ public final class _AmmoEntityDisplay extends _AssetsDisplay<_AmmoEntityDisplay>
                 switch (key) {
                     case _AmmoEntityDisplayTag.MODEL_LOCATION, _AmmoEntityDisplayTag.MODEL_LOCATION_OLD1 -> pojo.setModelLocation(JsonUtils.readResourceLocation(reader));
                     case _AmmoEntityDisplayTag.TEXTURE_LOCATION, _AmmoEntityDisplayTag.TEXTURE_LOCATION_OLD1 -> pojo.setTextureLocation(JsonUtils.readResourceLocation(reader));
-                    default -> reader.skipValue();
+                    default -> readUnknownKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
+        return super.readUnknownKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _AmmoEntityDisplay pojo) throws IOException {

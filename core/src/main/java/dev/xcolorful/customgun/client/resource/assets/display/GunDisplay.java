@@ -114,12 +114,16 @@ public final class GunDisplay extends _AssetsDisplay<GunDisplay> {
 
                     case GunDisplayTag.USE_DEFAULT_ANIMATION -> pojo.useDefaultAnimation = JsonUtils.readString(reader);
                     case GunDisplayTag.DEFAULT_ANIMATION -> pojo.default_animation = JsonUtils.readString(reader);
-                    default -> reader.skipValue();
+                    default -> readUnknownKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
+        return super.readUnknownKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, GunDisplay pojo) throws IOException {

@@ -31,12 +31,16 @@ public final class BlockData extends ResourcePojo<BlockData> {
                 switch (key) {
                     case BlockDataTag.RECIPE_FILTER_LOCATION -> pojo.recipeFilterLocation = JsonUtils.readResourceLocation(reader);
                     case BlockDataTag.RECIPE_GROUP_LIST -> pojo.recipeGroupList = JsonUtils.readList(reader, _RecipeGroupData::fromJson);
-                    default -> reader.skipValue();
+                    default -> readUnknownKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
+        return super.readUnknownKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, BlockData pojo) throws IOException {

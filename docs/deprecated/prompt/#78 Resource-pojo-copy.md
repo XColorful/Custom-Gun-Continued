@@ -148,3 +148,36 @@ int[] extendedMagAmmoSize; {
 **行为变化提示**
 - `MeleeModifier` 原代码重复 `setMeleeDamage` 且从未设置 `meleeDistance`；改为 `copy()` 后会复制真实的 `meleeDistance`，并且 `targetEffect` 由共享引用变为深拷贝。
 - `IRecoilDataModifier.copy()` 会带上源对象的 `valid` 标志（原手写结果默认 false）。
+
+# 
+
+```
+所有ResourcePojo都补一个readUnknownKey，default改成调用该方法
+```
+
+# 
+
+用户已在 `ResourcePojo` / `_DataIndex` / `GunIndex` 里给出参考实现，我先读一下。
+
+参考实现已明确：`readUnknownKey(reader, key)` 返回 boolean，`default` 调用它，并在每个 Pojo 类中加一个转发 override。现在批量应用。
+
+构建失败是网络拉取 Minecraft 工件失败，不是代码错误。改用离线模式重试。
+
+已完成，`:core:compileJava --offline` 通过（exit 0，仅原有警告；首次失败是联网拉取 Minecraft 工件超时，与代码无关）。
+
+**改动内容**
+- 67 处 `default -> reader.skipValue();` 全部改为 `default -> readUnknownKey(reader, key);`；`GunpackMeta` 用的是 `name`，所以是 `readUnknownKey(reader, name)`。
+- 为 75 个 Pojo 类补上转发 override（`_DataIndex`、`GunIndex`、`ResourcePojo` 已有，未重复添加）：
+```java
+    @Override
+    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
+        return super.readUnknownKey(reader, key);
+    }
+```
+- 给原本没有解析 import 的 3 个抽象类补了 `com.google.gson.stream.JsonReader` 和 `java.io.IOException`：`__ModifierData`、`_SimpleTagData`、`_AssetsDisplay`。
+
+**校验结果**
+- `readUnknownKey` 声明 78 处 = 1 个基类实现 + 77 个 Pojo override。
+- 残留 `default -> reader.skipValue();`：0。
+- `default -> readUnknownKey(...)` 调用：68 处（67 处新改 + GunIndex 原有 1 处）。
+- 无 switch 的类（`GltfAnimation`、`_ControllableData`、`_SoundEffects`、`AttachmentTagData`、`GunAttachmentData`）也按“所有 ResourcePojo”补了 override。

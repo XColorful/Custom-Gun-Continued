@@ -30,12 +30,16 @@ public final class _RecoilData extends ResourcePojo<_RecoilData> {
                 switch (key) {
                     case _RecoilDataTag.PITCH_RECOIL, _RecoilDataTag.PITCH_RECOIL_OLD1 -> pojo.pitchRecoils = JsonUtils.readList(reader, _RecoilEntryData::fromJson);
                     case _RecoilDataTag.YAW_RECOIL, _RecoilDataTag.YAW_RECOIL_OLD1 -> pojo.yawRecoils = JsonUtils.readList(reader, _RecoilEntryData::fromJson);
-                    default -> reader.skipValue();
+                    default -> readUnknownKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
+        return super.readUnknownKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _RecoilData pojo) throws IOException {

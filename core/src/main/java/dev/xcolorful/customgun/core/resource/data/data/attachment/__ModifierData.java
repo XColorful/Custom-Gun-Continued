@@ -1,7 +1,10 @@
 package dev.xcolorful.customgun.core.resource.data.data.attachment;
 
+import com.google.gson.stream.JsonReader;
 import dev.xcolorful.customgun.core.resource.ResourcePojo;
 import org.jetbrains.annotations.Nullable;
+
+import java.io.IOException;
 
 public abstract class __ModifierData<T extends __ModifierData<T>> extends ResourcePojo<T> {
 
@@ -17,6 +20,11 @@ public abstract class __ModifierData<T extends __ModifierData<T>> extends Resour
         pojo.setUniqueMultiplier(this.uniqueMultiplier);
         pojo.setScriptFunction(this.scriptFunction);
         return pojo;
+    }
+
+    @Override
+    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
+        return super.readUnknownKey(reader, key);
     }
 
     // --------Getter & Setter--------

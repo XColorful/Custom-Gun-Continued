@@ -35,12 +35,16 @@ public final class _ModelNodeTextDisplay extends ResourcePojo<_ModelNodeTextDisp
                     case _ModelNodeTextDisplayTag.TEXT_LIGHT, _ModelNodeTextDisplayTag.TEXT_LIGHT_OLD1 -> pojo.textLight = JsonUtils.readInt(reader);
                     case _ModelNodeTextDisplayTag.ENABLE_TEXT_SHADOW, _ModelNodeTextDisplayTag.ENABLE_TEXT_SHADOW_OLD1 -> pojo.enableTextShadow = JsonUtils.readBoolean(reader);
                     case _ModelNodeTextDisplayTag.X_OFFSET_SCALE -> pojo.xOffsetScale = JsonUtils.readFloat(reader); case _ModelNodeTextDisplayTag.X_OFFSET_SCALE_OLD1 -> {String s = JsonUtils.readString(reader); pojo.xOffsetScale = s != null ? switch (s) {case "left" -> 0; case "right" -> 1; default -> 0.5f;} : 0.5f;}
-                    default -> reader.skipValue();
+                    default -> readUnknownKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
+        return super.readUnknownKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _ModelNodeTextDisplay pojo) throws IOException {

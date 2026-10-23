@@ -30,12 +30,16 @@ public final class _Bone extends ResourcePojo<_Bone> {
                     case _BoneTag.ROTATION -> pojo.rotation = ClientJsonUtils.readKeyFrames(reader);
                     case _BoneTag.POSITION -> pojo.position = ClientJsonUtils.readKeyFrames(reader);
                     case _BoneTag.SCALE -> pojo.scale = ClientJsonUtils.readKeyFrames(reader);
-                    default -> reader.skipValue();
+                    default -> readUnknownKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
+        return super.readUnknownKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _Bone pojo) throws IOException {

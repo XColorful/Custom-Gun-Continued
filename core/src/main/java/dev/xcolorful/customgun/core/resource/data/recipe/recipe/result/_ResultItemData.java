@@ -33,12 +33,16 @@ public class _ResultItemData extends ResourcePojo<_ResultItemData> {
                 switch (key) {
                     case _ResultItemDataTag.ITEM_LOCATION, _ResultItemDataTag.ITEM_LOCATION_OLD1 -> pojo.itemLocation = JsonUtils.readResourceLocation(reader);
                     case _ResultItemDataTag.ITEM_NBT, _ResultItemDataTag.ITEM_NBT_OLD1 -> pojo.itemNbt = JsonUtils.readNbt(reader);
-                    default -> reader.skipValue();
+                    default -> readUnknownKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
+        return super.readUnknownKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _ResultItemData pojo) throws IOException {

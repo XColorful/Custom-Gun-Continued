@@ -1,5 +1,6 @@
 package dev.xcolorful.customgun.client.resource.assets.display;
 
+import com.google.gson.stream.JsonReader;
 import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.api.resource.assets.AssetsFolderType;
 import dev.xcolorful.customgun.core.api.minecraft.IMcRegistry;
@@ -7,6 +8,8 @@ import dev.xcolorful.customgun.core.api.resource.FileExtensionType;
 import dev.xcolorful.customgun.core.resource.ResourcePojo;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
+
+import java.io.IOException;
 
 public abstract class _AssetsDisplay<T extends _AssetsDisplay<T>> extends ResourcePojo<T> {
 
@@ -30,6 +33,11 @@ public abstract class _AssetsDisplay<T extends _AssetsDisplay<T>> extends Resour
         pojo.setTextureLocation(this.textureLocation);
         pojo.setSlotTextureLocation(this.slotTextureLocation);
         return pojo;
+    }
+
+    @Override
+    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
+        return super.readUnknownKey(reader, key);
     }
 
     // --------Getter & Setter--------

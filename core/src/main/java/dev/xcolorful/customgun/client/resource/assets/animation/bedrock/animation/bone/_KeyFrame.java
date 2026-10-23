@@ -42,7 +42,7 @@ public final class _KeyFrame extends ResourcePojo<_KeyFrame> {
                     case _KeyFrameTag.POST -> pojo.post = ClientJsonUtils.readFloatArrayWithMolangTolerance(reader, 3);
                     case _KeyFrameTag.DATA -> pojo.data = ClientJsonUtils.readFloatArrayWithMolangTolerance(reader, 3);
                     case _KeyFrameTag.LERP_MODE -> pojo.lerpMode = JsonUtils.readFromString(reader, LerpMode::fromString);
-                    default -> reader.skipValue();
+                    default -> readUnknownKey(reader, key);
                 }
             }
             reader.endObject();
@@ -50,6 +50,10 @@ public final class _KeyFrame extends ResourcePojo<_KeyFrame> {
             reader.skipValue();
         }
         return pojo;
+    }
+    @Override
+    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
+        return super.readUnknownKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _KeyFrame pojo) throws IOException {

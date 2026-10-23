@@ -41,12 +41,16 @@ public final class _ExplosionData extends ResourcePojo<_ExplosionData> {
 
                     case _ExplosionDataTag.ENABLE_KNOCKBACK, _ExplosionDataTag.ENABLE_KNOCKBACK_OLD1 -> pojo.enableKnockback = JsonUtils.readBoolean(reader);
                     case _ExplosionDataTag.ENABLE_WORLD_DESTRUCTION, _ExplosionDataTag.ENABLE_WORLD_DESTRUCTION_OLD1 -> pojo.enableWorldDestruction = JsonUtils.readBoolean(reader);
-                    default -> reader.skipValue();
+                    default -> readUnknownKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
+        return super.readUnknownKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _ExplosionData pojo) throws IOException {

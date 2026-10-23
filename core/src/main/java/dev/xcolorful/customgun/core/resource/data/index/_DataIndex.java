@@ -1,9 +1,12 @@
 package dev.xcolorful.customgun.core.resource.data.index;
 
+import com.google.gson.stream.JsonReader;
 import dev.xcolorful.customgun.core.api.resource.ResourceTag;
 import dev.xcolorful.customgun.core.resource.ResourcePojo;
 import dev.xcolorful.customgun.core.util.ComponentUtils;
 import net.minecraft.resources.ResourceLocation;
+
+import java.io.IOException;
 
 public abstract class _DataIndex<T extends _DataIndex<T>> extends ResourcePojo<T> {
 
@@ -14,6 +17,11 @@ public abstract class _DataIndex<T extends _DataIndex<T>> extends ResourcePojo<T
     private ResourceLocation displayIndexLocation;
 
     private int slotSort = 0;
+
+    @Override
+    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
+        return super.readUnknownKey(reader, key);
+    }
 
     @Override
     protected void validatePojo() {

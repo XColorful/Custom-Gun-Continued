@@ -32,12 +32,16 @@ public final class _TargetEffectData extends ResourcePojo<_TargetEffectData> {
                     case _TargetEffectDataTag.SECONDS, _TargetEffectDataTag.SECONDS_OLD1 -> pojo.seconds = JsonUtils.readInt(reader);
                     case _TargetEffectDataTag.AMPLIFIER -> pojo.amplifier = JsonUtils.readInt(reader);
                     case _TargetEffectDataTag.HIDE_PARTICLES -> pojo.hideParticles = JsonUtils.readBoolean(reader);
-                    default -> reader.skipValue();
+                    default -> readUnknownKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
+        return super.readUnknownKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _TargetEffectData pojo) throws IOException {

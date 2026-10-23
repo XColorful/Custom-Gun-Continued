@@ -34,12 +34,16 @@ public final class _AmmoParticle extends ResourcePojo<_AmmoParticle> {
                     case _AmmoParticleTag.SPEED -> pojo.speed = JsonUtils.readFloat(reader);
                     case _AmmoParticleTag.COUNT -> pojo.count = JsonUtils.readInt(reader);
                     case _AmmoParticleTag.LIFETIME_TICKS, _AmmoParticleTag.LIFETIME_TICKS_OLD1 -> pojo.lifetimeTicks = JsonUtils.readInt(reader);
-                    default -> reader.skipValue();
+                    default -> readUnknownKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
+        return super.readUnknownKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _AmmoParticle pojo) throws IOException {

@@ -32,12 +32,16 @@ public final class _ShellEjectionParam extends ResourcePojo<_ShellEjectionParam>
                     case _ShellEjectionParamTag.ACCELERATION -> pojo.acceleration = JsonUtils.readFloatArrayFast(reader, 3);
                     case _ShellEjectionParamTag.ANGULAR_VELOCITY -> pojo.angularVelocity = JsonUtils.readFloatArrayFast(reader, 3);
                     case _ShellEjectionParamTag.LIFETIME_SECONDS, _ShellEjectionParamTag.LIFETIME_SECONDS_OLD1 -> pojo.lifetimeSeconds = JsonUtils.readFloat(reader);
-                    default -> reader.skipValue();
+                    default -> readUnknownKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
+        return super.readUnknownKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _ShellEjectionParam pojo) throws IOException {

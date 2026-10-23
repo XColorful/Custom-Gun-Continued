@@ -23,12 +23,16 @@ public final class _ShellDisplay extends _AssetsDisplay<_ShellDisplay> {
                 switch (key) {
                     case _ShellDisplayTag.MODEL_LOCATION, _ShellDisplayTag.MODEL_LOCATION_OLD1 -> pojo.setModelLocation(JsonUtils.readResourceLocation(reader));
                     case _ShellDisplayTag.TEXTURE_LOCATION, _ShellDisplayTag.TEXTURE_LOCATION_OLD1 -> pojo.setTextureLocation(JsonUtils.readResourceLocation(reader));
-                    default -> reader.skipValue();
+                    default -> readUnknownKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
+        return super.readUnknownKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _ShellDisplay pojo) throws IOException {

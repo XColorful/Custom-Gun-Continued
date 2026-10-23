@@ -27,12 +27,16 @@ public final class _TableIngredientData extends ResourcePojo<_TableIngredientDat
                 switch (key) {
                     case _TableIngredientDataTag.INGREDIENT_FILTER_DATA, _TableIngredientDataTag.INGREDIENT_FILTER_DATA_OLD1 -> pojo.ingredientFilter = JsonUtils.read(reader, _IngredientFilterData::fromJson);
                     case _TableIngredientDataTag.INGREDIENT_COUNT, _TableIngredientDataTag.INGREDIENT_COUNT_OLD1 -> pojo.ingredientCount = JsonUtils.readInt(reader);
-                    default -> reader.skipValue();
+                    default -> readUnknownKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
+        return super.readUnknownKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _TableIngredientData pojo) throws IOException {

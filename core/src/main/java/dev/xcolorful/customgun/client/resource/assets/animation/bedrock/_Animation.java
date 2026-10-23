@@ -33,12 +33,16 @@ public final class _Animation extends ResourcePojo<_Animation> {
                     case _AnimationTag.ANIMATION_LENGTH -> pojo.animationLength = JsonUtils.readFloat(reader);
                     case _AnimationTag.BONES -> pojo.bones = JsonUtils.readString2ObjectMap(reader, _Bone::fromJson);
                     case _AnimationTag.SOUND_EFFECTS -> pojo.soundEffects = JsonUtils.read(reader, _SoundEffects::fromJson);
-                    default -> reader.skipValue();
+                    default -> readUnknownKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
+        return super.readUnknownKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _Animation pojo) throws IOException {

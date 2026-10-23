@@ -23,6 +23,10 @@ public final class GunAttachmentData extends _SimpleTagData<GunAttachmentData> {
         pojo.setTags(JsonUtils.readList(reader, JsonUtils::readString));
         return pojo;
     }
+    @Override
+    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
+        return super.readUnknownKey(reader, key);
+    }
 
     public static void toJson(JsonWriter writer, GunAttachmentData pojo) throws IOException {
         if (pojo != null) pojo.toJson(writer);

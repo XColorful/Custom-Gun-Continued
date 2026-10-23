@@ -42,12 +42,16 @@ public final class _BulletExplosionModifierData extends ResourcePojo<_BulletExpl
 
                     case _BulletExplosionModifierDataTag.ENABLE_KNOCKBACK, _BulletExplosionModifierDataTag.ENABLE_KNOCKBACK_OLD1 -> pojo.enableKnockback = JsonUtils.readBoolean(reader);
                     case _BulletExplosionModifierDataTag.ENABLE_WORLD_DESTRUCTION, _BulletExplosionModifierDataTag.ENABLE_WORLD_DESTRUCTION_OLD1 -> pojo.enableWorldDestruction = JsonUtils.readBoolean(reader);
-                    default -> reader.skipValue();
+                    default -> readUnknownKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
+        return super.readUnknownKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _BulletExplosionModifierData pojo) throws IOException {

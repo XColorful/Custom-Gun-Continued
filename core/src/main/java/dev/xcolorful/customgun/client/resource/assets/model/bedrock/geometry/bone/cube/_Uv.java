@@ -45,12 +45,16 @@ public class _Uv extends ResourcePojo<_Uv> {
                     case _UvTag.WEST -> pojo.west = JsonUtils.read(reader, _FaceUv::fromJson);
                     case _UvTag.UP -> pojo.up = JsonUtils.read(reader, _FaceUv::fromJson);
                     case _UvTag.DOWN -> pojo.down = JsonUtils.read(reader, _FaceUv::fromJson);
-                    default -> reader.skipValue();
+                    default -> readUnknownKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
+        return super.readUnknownKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _Uv pojo) throws IOException {

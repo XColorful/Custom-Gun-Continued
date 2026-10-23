@@ -38,12 +38,16 @@ public final class _Cube extends ResourcePojo<_Cube> {
                     case _CubeTag.ROTATION -> pojo.rotation = JsonUtils.readFloatArrayFast(reader, 3);
                     case _CubeTag.UV -> pojo.uv = JsonUtils.read(reader, _Uv::fromJson);
                     case _CubeTag.MIRROR -> { pojo.mirror = JsonUtils.readBoolean(reader); pojo.hasMirror = true; }
-                    default -> reader.skipValue();
+                    default -> readUnknownKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
+        return super.readUnknownKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _Cube pojo) throws IOException {

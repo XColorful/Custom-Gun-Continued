@@ -26,12 +26,16 @@ public final class _FireAspectModifierData extends ResourcePojo<_FireAspectModif
                 switch (key) {
                     case _FireAspectModifierDataTag.IGNITE_ENTITY, _FireAspectModifierDataTag.IGNITE_ENTITY_OLD1 -> pojo.igniteEntity = JsonUtils.readBoolean(reader);
                     case _FireAspectModifierDataTag.IGNITE_BLOCK, _FireAspectModifierDataTag.IGNITE_BLOCK_OLD1 -> pojo.igniteBlock = JsonUtils.readBoolean(reader);
-                    default -> reader.skipValue();
+                    default -> readUnknownKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
+        return super.readUnknownKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _FireAspectModifierData pojo) throws IOException {

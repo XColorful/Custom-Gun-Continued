@@ -40,12 +40,16 @@ public final class _TableResultData extends ResourcePojo<_TableResultData> {
                     case _TableResultDataTag.RESULT_ITEM, _TableResultDataTag.RESULT_ITEM_OLD1 -> pojo.resultItem = JsonUtils.read(reader, _ResultItemData::fromJson);
                     case _TableResultDataTag.TAB_GROUP_LOCATION, _TableResultDataTag.TAB_GROUP_LOCATION_OLD1 -> pojo.tabGroupLocation = JsonUtils.readResourceLocation(reader);
                     case _TableResultDataTag.POJO_LOCATION, _TableResultDataTag.POJO_LOCATION_OLD1 -> pojo.pojoLocation = JsonUtils.readResourceLocation(reader);
-                    default -> reader.skipValue();
+                    default -> readUnknownKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
+        return super.readUnknownKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _TableResultData pojo) throws IOException {

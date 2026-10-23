@@ -24,6 +24,10 @@ public final class GltfAnimation extends ResourcePojo<GltfAnimation> {
         reader.endObject();
         return pojo;
     }
+    @Override
+    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
+        return super.readUnknownKey(reader, key);
+    }
 
     public static void toJson(JsonWriter writer, GltfAnimation pojo) throws IOException {
         if (pojo != null) pojo.toJson(writer);

@@ -36,12 +36,16 @@ public final class _InaccuracyData extends ResourcePojo<_InaccuracyData> {
                     case _InaccuracyDataTag.PRONE, _InaccuracyDataTag.PRONE_OLD1 -> pojo.prone = JsonUtils.readFloat(reader);
                     case _InaccuracyDataTag.AIM -> pojo.aim = JsonUtils.readFloat(reader);
                     case _InaccuracyDataTag.LEVITATE -> pojo.levitate = JsonUtils.readFloat(reader);
-                    default -> reader.skipValue();
+                    default -> readUnknownKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
+        return super.readUnknownKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _InaccuracyData pojo) throws IOException {

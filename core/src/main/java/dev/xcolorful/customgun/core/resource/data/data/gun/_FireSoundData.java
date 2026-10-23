@@ -31,12 +31,16 @@ public final class _FireSoundData extends ResourcePojo<_FireSoundData> {
                 switch (key) {
                     case _FireSoundDataTag.NORMAL_MULTIPLIER, _FireSoundDataTag.NORMAL_MULTIPLIER_OLD1 -> pojo.normalMultiplier = JsonUtils.readFloat(reader);
                     case _FireSoundDataTag.SILENCED_MULTIPLIER, _FireSoundDataTag.SILENCED_MULTIPLIER_OLD1 -> pojo.silencedMultiplier = JsonUtils.readFloat(reader);
-                    default -> reader.skipValue();
+                    default -> readUnknownKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
+        return super.readUnknownKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _FireSoundData pojo) throws IOException {

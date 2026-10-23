@@ -28,12 +28,16 @@ public final class _MeleeData extends ResourcePojo<_MeleeData> {
                 switch (key) {
                     case _MeleeDataTag.GUN_BASE_LENGTH, _MeleeDataTag.GUN_BASE_LENGTH_OLD1 -> pojo.gunBaseLength = JsonUtils.readFloat(reader);
                     case _MeleeDataTag.DEFAULT_MELEE_DATA, _MeleeDataTag.DEFAULT_MELEE_DATA_OLD1 -> pojo.defaultMeleeData = JsonUtils.read(reader, _DefaultMeleeData::fromJson);
-                    default -> reader.skipValue();
+                    default -> readUnknownKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
+        return super.readUnknownKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _MeleeData pojo) throws IOException {

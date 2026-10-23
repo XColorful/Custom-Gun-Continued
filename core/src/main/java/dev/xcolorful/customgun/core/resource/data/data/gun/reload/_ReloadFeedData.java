@@ -26,12 +26,16 @@ public final class _ReloadFeedData extends ResourcePojo<_ReloadFeedData> {
                 switch (key) {
                     case _ReloadFeedDataTag.EMPTY -> pojo.empty = JsonUtils.readFloat(reader);
                     case _ReloadFeedDataTag.TACTICAL -> pojo.tactical = JsonUtils.readFloat(reader);
-                    default -> reader.skipValue();
+                    default -> readUnknownKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
+        return super.readUnknownKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _ReloadFeedData pojo) throws IOException {

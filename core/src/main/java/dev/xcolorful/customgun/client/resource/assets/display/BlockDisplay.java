@@ -29,12 +29,16 @@ public final class BlockDisplay extends _AssetsDisplay<BlockDisplay> {
                     case BlockDisplayTag.TEXTURE_LOCATION, BlockDisplayTag.TEXTURE_LOCATION_OLD1 -> pojo.setTextureLocation(JsonUtils.readResourceLocation(reader));
 
                     case BlockDisplayTag.ITEM_TRANSFORMS, BlockDisplayTag.ITEM_TRANSFORMS_OLD1 -> pojo.itemTransforms = ClientJsonUtils.readItemTransforms(reader);
-                    default -> reader.skipValue();
+                    default -> readUnknownKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
+        return super.readUnknownKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, BlockDisplay pojo) throws IOException {

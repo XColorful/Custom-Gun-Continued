@@ -60,12 +60,16 @@ public final class AttachmentDisplay extends _AssetsDisplay<AttachmentDisplay> {
                     case AttachmentDisplayTag.MODEL_NODE_TEXT_DISPLAY, AttachmentDisplayTag.MODEL_NODE_TEXT_DISPLAY_OLD1 -> pojo.modelNodeTextDisplay = JsonUtils.readString2ObjectMap(reader, _ModelNodeTextDisplay::fromJson);
                     case AttachmentDisplayTag.LASER_DISPLAY, AttachmentDisplayTag.LASER_DISPLAY_OLD1 -> pojo.laserDisplay = JsonUtils.read(reader, _LaserDisplay::fromJson);
                     case AttachmentDisplayTag.ATTACHMENT_SOUNDS, AttachmentDisplayTag.ATTACHMENT_SOUNDS_OLD1 -> pojo.attachmentSounds = JsonUtils.readObject2ObjectMap(reader, AttachmentSoundType::fromString, JsonUtils::readResourceLocation);
-                    default -> reader.skipValue();
+                    default -> readUnknownKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
+        return super.readUnknownKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, AttachmentDisplay pojo) throws IOException {

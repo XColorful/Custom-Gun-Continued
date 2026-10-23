@@ -24,6 +24,10 @@ public final class _ControllableData extends ResourcePojo<_ControllableData> {
         reader.endObject();
         return pojo;
     }
+    @Override
+    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
+        return super.readUnknownKey(reader, key);
+    }
 
     public static void toJson(JsonWriter writer, _ControllableData pojo) throws IOException {
         if (pojo != null) pojo.toJson(writer);

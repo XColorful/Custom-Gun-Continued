@@ -26,12 +26,16 @@ public class _FaceUv extends ResourcePojo<_FaceUv> {
                 switch (key) {
                     case _FaceUvTag.UV -> pojo.uv = JsonUtils.readFloatArrayFast(reader, 2);
                     case _FaceUvTag.UV_SIZE -> pojo.uvSize = JsonUtils.readFloatArrayFast(reader,  2);
-                    default -> reader.skipValue();
+                    default -> readUnknownKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
+        return super.readUnknownKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _FaceUv pojo) throws IOException {

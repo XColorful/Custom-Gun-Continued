@@ -34,12 +34,16 @@ public final class _Description extends ResourcePojo<_Description> {
                     case _DescriptionTag.VISIBLE_BOUNDS_WIDTH -> pojo.visibleBoundsWidth = JsonUtils.readFloat(reader);
                     case _DescriptionTag.VISIBLE_BOUNDS_HEIGHT -> pojo.visibleBoundsHeight = JsonUtils.readFloat(reader);
                     case _DescriptionTag.VISIBLE_BOUNDS_OFFSET -> pojo.visibleBoundsOffset = JsonUtils.readFloatArrayFast(reader, 3);
-                    default -> reader.skipValue();
+                    default -> readUnknownKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
+        return super.readUnknownKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _Description pojo) throws IOException {

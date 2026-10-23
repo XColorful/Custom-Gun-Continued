@@ -35,12 +35,16 @@ public final class AmmoIndex extends _DataIndex<AmmoIndex> {
 
                     case AmmoIndexTag.AMMO_CATEGORY -> pojo.ammoCategory = JsonUtils.readFromString(reader, AmmoCategory::fromString);
                     case AmmoIndexTag.MAX_STACK_SIZE, AmmoIndexTag.MAX_STACK_SIZE_OLD1 -> pojo.maxStackSize = JsonUtils.readInt(reader);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, AmmoIndex pojo) throws IOException {
@@ -57,8 +61,13 @@ public final class AmmoIndex extends _DataIndex<AmmoIndex> {
 
             JsonUtils.writeToString(writer, AmmoIndexTag.AMMO_CATEGORY, this.ammoCategory);
             JsonUtils.writeInt(writer, AmmoIndexTag.MAX_STACK_SIZE, this.maxStackSize);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
@@ -69,6 +78,23 @@ public final class AmmoIndex extends _DataIndex<AmmoIndex> {
         if (this.ammoCategory == null) this.ammoCategory = AmmoCategory.AMMO;
         if (this.maxStackSize < 1) this.maxStackSize = 1;
         this.setValid(true);
+    }
+
+    @Override
+    protected AmmoIndex copyTo(final AmmoIndex pojo) {
+        super.copyTo(pojo);
+
+        pojo.setAmmoCategory(this.ammoCategory);
+
+        pojo.setMaxStackSize(this.maxStackSize);
+        return pojo;
+    }
+
+    @Override
+    public AmmoIndex copy() {
+        AmmoIndex pojo = copyTo(new AmmoIndex());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

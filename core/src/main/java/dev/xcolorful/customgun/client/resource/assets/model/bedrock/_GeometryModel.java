@@ -12,6 +12,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class _GeometryModel extends ResourcePojo<_GeometryModel> {
@@ -32,12 +33,16 @@ public class _GeometryModel extends ResourcePojo<_GeometryModel> {
                 switch (key) {
                     case _GeometryModelTag.DESCRIPTION -> pojo.description = JsonUtils.read(reader, _Description::fromJson);
                     case _GeometryModelTag.BONES -> pojo.bones = JsonUtils.readList(reader, _Bone::fromJson);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _GeometryModel pojo) throws IOException {
@@ -48,13 +53,39 @@ public class _GeometryModel extends ResourcePojo<_GeometryModel> {
         writer.beginObject(); {
             JsonUtils.write(writer, _GeometryModelTag.DESCRIPTION, this.description, _Description::toJson);
             JsonUtils.writeList(writer, _GeometryModelTag.BONES, this.bones, _Bone::toJson);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
     protected void validatePojo() {
         this.setValid(true);
+    }
+
+    @Override
+    protected _GeometryModel copyTo(final _GeometryModel pojo) {
+        pojo.setDescription(this.description.copy());
+        @Nullable List<_Bone> bones = null; {
+            if (this.bones != null) {
+                bones = new ArrayList<>(this.bones.size());
+                for (int i = 0; i < this.bones.size(); i++) {
+                    bones.add(this.bones.get(i).copy());
+                }
+            }
+        } pojo.setBones(bones);
+        return pojo;
+    }
+
+    @Override
+    public _GeometryModel copy() {
+        _GeometryModel pojo = copyTo(new _GeometryModel());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

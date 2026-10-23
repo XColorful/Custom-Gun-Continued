@@ -41,12 +41,16 @@ public final class _ExplosionData extends ResourcePojo<_ExplosionData> {
 
                     case _ExplosionDataTag.ENABLE_KNOCKBACK, _ExplosionDataTag.ENABLE_KNOCKBACK_OLD1 -> pojo.enableKnockback = JsonUtils.readBoolean(reader);
                     case _ExplosionDataTag.ENABLE_WORLD_DESTRUCTION, _ExplosionDataTag.ENABLE_WORLD_DESTRUCTION_OLD1 -> pojo.enableWorldDestruction = JsonUtils.readBoolean(reader);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _ExplosionData pojo) throws IOException {
@@ -63,13 +67,38 @@ public final class _ExplosionData extends ResourcePojo<_ExplosionData> {
 
             JsonUtils.writeBoolean(writer, _ExplosionDataTag.ENABLE_KNOCKBACK, this.enableKnockback);
             JsonUtils.writeBoolean(writer, _ExplosionDataTag.ENABLE_WORLD_DESTRUCTION, this.enableWorldDestruction);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
     protected void validatePojo() {
         this.setValid(true);
+    }
+
+    @Override
+    protected _ExplosionData copyTo(final _ExplosionData pojo) {
+        pojo.setEnableExplode(this.enableExplode);
+
+        pojo.setExplodeDamage(this.explodeDamage);
+        pojo.setExplodeScale(this.explodeScale);
+        pojo.setMaxDelaySeconds(this.maxDelaySeconds);
+
+        pojo.setEnableKnockback(this.enableKnockback);
+        pojo.setEnableWorldDestruction(this.enableWorldDestruction);
+        return pojo;
+    }
+
+    @Override
+    public _ExplosionData copy() {
+        _ExplosionData pojo = copyTo(new _ExplosionData());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

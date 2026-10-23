@@ -32,12 +32,16 @@ public final class _TargetEffectData extends ResourcePojo<_TargetEffectData> {
                     case _TargetEffectDataTag.SECONDS, _TargetEffectDataTag.SECONDS_OLD1 -> pojo.seconds = JsonUtils.readInt(reader);
                     case _TargetEffectDataTag.AMPLIFIER -> pojo.amplifier = JsonUtils.readInt(reader);
                     case _TargetEffectDataTag.HIDE_PARTICLES -> pojo.hideParticles = JsonUtils.readBoolean(reader);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _TargetEffectData pojo) throws IOException {
@@ -50,8 +54,13 @@ public final class _TargetEffectData extends ResourcePojo<_TargetEffectData> {
             JsonUtils.writeInt(writer, _TargetEffectDataTag.SECONDS, this.seconds);
             JsonUtils.writeInt(writer, _TargetEffectDataTag.AMPLIFIER, this.amplifier);
             JsonUtils.writeBoolean(writer, _TargetEffectDataTag.HIDE_PARTICLES, this.hideParticles);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
@@ -65,6 +74,22 @@ public final class _TargetEffectData extends ResourcePojo<_TargetEffectData> {
         }
 
         this.setValid(true);
+    }
+
+    @Override
+    protected _TargetEffectData copyTo(final _TargetEffectData pojo) {
+        pojo.setEffectLocation(this.effectLocation);
+        pojo.setSeconds(this.seconds);
+        pojo.setAmplifier(this.amplifier);
+        pojo.setHideParticles(this.hideParticles);
+        return pojo;
+    }
+
+    @Override
+    public _TargetEffectData copy() {
+        _TargetEffectData pojo = copyTo(new _TargetEffectData());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

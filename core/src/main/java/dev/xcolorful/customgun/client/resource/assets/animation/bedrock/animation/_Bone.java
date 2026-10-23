@@ -30,12 +30,16 @@ public final class _Bone extends ResourcePojo<_Bone> {
                     case _BoneTag.ROTATION -> pojo.rotation = ClientJsonUtils.readKeyFrames(reader);
                     case _BoneTag.POSITION -> pojo.position = ClientJsonUtils.readKeyFrames(reader);
                     case _BoneTag.SCALE -> pojo.scale = ClientJsonUtils.readKeyFrames(reader);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _Bone pojo) throws IOException {
@@ -47,13 +51,45 @@ public final class _Bone extends ResourcePojo<_Bone> {
             ClientJsonUtils.writeKeyFrames(writer, _BoneTag.ROTATION, this.rotation);
             ClientJsonUtils.writeKeyFrames(writer, _BoneTag.POSITION, this.position);
             ClientJsonUtils.writeKeyFrames(writer, _BoneTag.SCALE, this.scale);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
     protected void validatePojo() {
         this.setValid(true);
+    }
+
+    @Override
+    protected _Bone copyTo(final _Bone pojo) {
+        Double2ObjectRBTreeMap<_KeyFrame> rotation = new Double2ObjectRBTreeMap<>(); {
+            for (var entry : this.rotation.double2ObjectEntrySet()) {
+                rotation.put(entry.getDoubleKey(), entry.getValue().copy());
+            }
+        } pojo.setRotation(rotation);
+        Double2ObjectRBTreeMap<_KeyFrame> position = new Double2ObjectRBTreeMap<>(); {
+            for (var entry : this.position.double2ObjectEntrySet()) {
+                position.put(entry.getDoubleKey(), entry.getValue().copy());
+            }
+        } pojo.setPosition(position);
+        Double2ObjectRBTreeMap<_KeyFrame> scale = new Double2ObjectRBTreeMap<>(); {
+            for (var entry : this.scale.double2ObjectEntrySet()) {
+                scale.put(entry.getDoubleKey(), entry.getValue().copy());
+            }
+        } pojo.setScale(scale);
+        return pojo;
+    }
+
+    @Override
+    public _Bone copy() {
+        _Bone pojo = copyTo(new _Bone());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

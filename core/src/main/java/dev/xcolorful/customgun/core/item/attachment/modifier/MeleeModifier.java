@@ -23,7 +23,6 @@ public final class MeleeModifier extends AttachmentModifier<_MeleeModifierData, 
     public _MeleeModifierData eval(Collection<_MeleeModifierData> modifiers, _MeleeModifierData base) {
         if (modifiers.isEmpty()) return base;
 
-        _MeleeModifierData result = new _MeleeModifierData();
 //        List<_SimpleModifierData> meleeDamageModifiers = new ArrayList<>();
 //        List<_SimpleModifierData> meleeDistanceModifiers = new ArrayList<>();
 //        List<_SimpleModifierData> rangeAngleModifiers = new ArrayList<>();
@@ -34,16 +33,7 @@ public final class MeleeModifier extends AttachmentModifier<_MeleeModifierData, 
 //        List<_SimpleModifierData> knockbackStrengthModifiers = new ArrayList<>();
 
         for (_MeleeModifierData modifier : modifiers) {
-            result.setMeleeDamage(modifier.getMeleeDamage());
-            result.setMeleeDamage(modifier.getMeleeDamage());
-            result.setRangeAngle(modifier.getRangeAngle());
-
-            result.setDamageDelaySeconds(modifier.getDamageDelaySeconds());
-            result.setExtraCooldown(modifier.getExtraCooldown());
-
-            result.setKnockbackStrength(modifier.getKnockbackStrength());
-            result.setTargetEffect(modifier.getTargetEffect());
-            return result;
+            return modifier.copy();
         }
 
         return base;

@@ -26,12 +26,16 @@ public class _FaceUv extends ResourcePojo<_FaceUv> {
                 switch (key) {
                     case _FaceUvTag.UV -> pojo.uv = JsonUtils.readFloatArrayFast(reader, 2);
                     case _FaceUvTag.UV_SIZE -> pojo.uvSize = JsonUtils.readFloatArrayFast(reader,  2);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _FaceUv pojo) throws IOException {
@@ -42,13 +46,36 @@ public class _FaceUv extends ResourcePojo<_FaceUv> {
         writer.beginObject(); {
             JsonUtils.writeFloatArray(writer, _FaceUvTag.UV, this.uv);
             JsonUtils.writeFloatArray(writer, _FaceUvTag.UV_SIZE, this.uvSize);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
     protected void validatePojo() {
         this.setValid(true);
+    }
+
+    @Override
+    protected _FaceUv copyTo(final _FaceUv pojo) {
+        float[] uv; {
+            uv = this.uv != null ? this.uv.clone() : null;
+        } pojo.setUv(uv);
+        float[] uvSize; {
+            uvSize = this.uvSize != null ? this.uvSize.clone() : null;
+        } pojo.setUvSize(uvSize);
+        return pojo;
+    }
+
+    @Override
+    public _FaceUv copy() {
+        _FaceUv pojo = copyTo(new _FaceUv());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

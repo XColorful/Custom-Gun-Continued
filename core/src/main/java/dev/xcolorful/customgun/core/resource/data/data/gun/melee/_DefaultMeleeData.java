@@ -47,12 +47,16 @@ public final class _DefaultMeleeData extends ResourcePojo<_DefaultMeleeData> {
                     case _DefaultMeleeDataTag.BASE_COOLDOWN, _DefaultMeleeDataTag.BASE_COOLDOWN_OLD1 -> pojo.baseCooldown = JsonUtils.readFloat(reader);
 
                     case _DefaultMeleeDataTag.KNOCKBACK_STRENGTH, _DefaultMeleeDataTag.KNOCKBACK_STRENGTH_OLD1 -> pojo.knockbackStrength = JsonUtils.readFloat(reader);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _DefaultMeleeData pojo) throws IOException {
@@ -72,8 +76,13 @@ public final class _DefaultMeleeData extends ResourcePojo<_DefaultMeleeData> {
             JsonUtils.writeFloat(writer, _DefaultMeleeDataTag.BASE_COOLDOWN, this.baseCooldown);
 
             JsonUtils.writeFloat(writer, _DefaultMeleeDataTag.KNOCKBACK_STRENGTH, this.knockbackStrength);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
@@ -87,6 +96,28 @@ public final class _DefaultMeleeData extends ResourcePojo<_DefaultMeleeData> {
         }
 
         this.setValid(true);
+    }
+
+    @Override
+    protected _DefaultMeleeData copyTo(final _DefaultMeleeData pojo) {
+        pojo.setMeleeType(this.meleeType);
+
+        pojo.setMeleeDamage(this.meleeDamage);
+        pojo.setMeleeDistance(this.meleeDistance);
+        pojo.setRangeAngle(this.rangeAngle);
+
+        pojo.setDamageDelaySeconds(this.damageDelaySeconds);
+        pojo.setBaseCooldown(this.baseCooldown);
+
+        pojo.setKnockbackStrength(this.knockbackStrength);
+        return pojo;
+    }
+
+    @Override
+    public _DefaultMeleeData copy() {
+        _DefaultMeleeData pojo = copyTo(new _DefaultMeleeData());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

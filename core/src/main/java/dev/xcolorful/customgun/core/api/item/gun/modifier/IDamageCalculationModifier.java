@@ -39,8 +39,7 @@ public interface IDamageCalculationModifier<T extends ResourcePojo<T>> extends I
         }
 
         for (_DistanceDamageData entry : source) {
-            _DistanceDamageData copy = new _DistanceDamageData();
-            copy.setDistance(entry.getDistance());
+            _DistanceDamageData copy = entry.copy();
             copy.setDamage((entry.getDamage() + fireAdjustDamage) * multiplier);
             result.add(copy);
         }

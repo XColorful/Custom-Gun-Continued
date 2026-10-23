@@ -60,12 +60,16 @@ public final class AttachmentDisplay extends _AssetsDisplay<AttachmentDisplay> {
                     case AttachmentDisplayTag.MODEL_NODE_TEXT_DISPLAY, AttachmentDisplayTag.MODEL_NODE_TEXT_DISPLAY_OLD1 -> pojo.modelNodeTextDisplay = JsonUtils.readString2ObjectMap(reader, _ModelNodeTextDisplay::fromJson);
                     case AttachmentDisplayTag.LASER_DISPLAY, AttachmentDisplayTag.LASER_DISPLAY_OLD1 -> pojo.laserDisplay = JsonUtils.read(reader, _LaserDisplay::fromJson);
                     case AttachmentDisplayTag.ATTACHMENT_SOUNDS, AttachmentDisplayTag.ATTACHMENT_SOUNDS_OLD1 -> pojo.attachmentSounds = JsonUtils.readObject2ObjectMap(reader, AttachmentSoundType::fromString, JsonUtils::readResourceLocation);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, AttachmentDisplay pojo) throws IOException {
@@ -91,8 +95,13 @@ public final class AttachmentDisplay extends _AssetsDisplay<AttachmentDisplay> {
             JsonUtils.writeString2ObjectMap(writer, AttachmentDisplayTag.MODEL_NODE_TEXT_DISPLAY, this.modelNodeTextDisplay, _ModelNodeTextDisplay::toJson);
             JsonUtils.write(writer, AttachmentDisplayTag.LASER_DISPLAY, this.laserDisplay, _LaserDisplay::toJson);
             JsonUtils.writeObject2ObjectMap(writer, AttachmentDisplayTag.ATTACHMENT_SOUNDS, this.attachmentSounds, AttachmentSoundType::toString, JsonUtils::writeResourceLocationValue);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
@@ -124,6 +133,51 @@ public final class AttachmentDisplay extends _AssetsDisplay<AttachmentDisplay> {
         }
 
         this.setValid(true);
+    }
+
+    @Override
+    protected AttachmentDisplay copyTo(final AttachmentDisplay pojo) {
+        super.copyTo(pojo);
+
+        @Nullable _LodDisplay lodDisplay = null; {
+            if (this.lodDisplay != null) lodDisplay = this.lodDisplay.copy();
+        } pojo.setLodDisplay(lodDisplay);
+        pojo.setAdapterNodeName(this.adapterNodeName);
+
+        pojo.setEnableSight(this.enableSight);
+        pojo.setEnableScope(this.enableScope);
+        float @Nullable [] scopeZoomScale; {
+            scopeZoomScale = this.scopeZoomScale != null ? this.scopeZoomScale.clone() : null;
+        } pojo.setScopeZoomScale(scopeZoomScale);
+        int @Nullable [] scopeViewIndex; {
+            scopeViewIndex = this.scopeViewIndex != null ? this.scopeViewIndex.clone() : null;
+        } pojo.setScopeViewIndex(scopeViewIndex);
+        float @Nullable [] scopeViewFov; {
+            scopeViewFov = this.scopeViewFov != null ? this.scopeViewFov.clone() : null;
+        } pojo.setScopeViewFov(scopeViewFov);
+        pojo.setShowMuzzle(this.showMuzzle);
+        pojo.setShowMount(this.showMount);
+        Map<String, _ModelNodeTextDisplay> modelNodeTextDisplay = new HashMap<>(); {
+            for (var entry : this.modelNodeTextDisplay.entrySet()) {
+                modelNodeTextDisplay.put(entry.getKey(), entry.getValue().copy());
+            }
+        } pojo.setModelNodeTextDisplay(modelNodeTextDisplay);
+        @Nullable _LaserDisplay laserDisplay = null; {
+            if (this.laserDisplay != null) laserDisplay = this.laserDisplay.copy();
+        } pojo.setLaserDisplay(laserDisplay);
+        Map<AttachmentSoundType, ResourceLocation> attachmentSounds = new HashMap<>(); {
+            for (var entry : this.attachmentSounds.entrySet()) {
+                attachmentSounds.put(entry.getKey(), entry.getValue());
+            }
+        } pojo.setAttachmentSounds(attachmentSounds);
+        return pojo;
+    }
+
+    @Override
+    public AttachmentDisplay copy() {
+        AttachmentDisplay pojo = copyTo(new AttachmentDisplay());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

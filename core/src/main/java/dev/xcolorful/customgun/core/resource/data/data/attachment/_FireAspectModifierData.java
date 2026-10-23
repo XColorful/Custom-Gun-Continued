@@ -26,12 +26,16 @@ public final class _FireAspectModifierData extends ResourcePojo<_FireAspectModif
                 switch (key) {
                     case _FireAspectModifierDataTag.IGNITE_ENTITY, _FireAspectModifierDataTag.IGNITE_ENTITY_OLD1 -> pojo.igniteEntity = JsonUtils.readBoolean(reader);
                     case _FireAspectModifierDataTag.IGNITE_BLOCK, _FireAspectModifierDataTag.IGNITE_BLOCK_OLD1 -> pojo.igniteBlock = JsonUtils.readBoolean(reader);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _FireAspectModifierData pojo) throws IOException {
@@ -42,13 +46,32 @@ public final class _FireAspectModifierData extends ResourcePojo<_FireAspectModif
         writer.beginObject(); {
             JsonUtils.writeBoolean(writer, _FireAspectModifierDataTag.IGNITE_ENTITY, this.igniteEntity);
             JsonUtils.writeBoolean(writer, _FireAspectModifierDataTag.IGNITE_BLOCK, this.igniteBlock);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
     protected void validatePojo() {
         this.setValid(true);
+    }
+
+    @Override
+    protected _FireAspectModifierData copyTo(final _FireAspectModifierData pojo) {
+        pojo.setIgniteEntity(this.igniteEntity);
+        pojo.setIgniteBlock(this.igniteBlock);
+        return pojo;
+    }
+
+    @Override
+    public _FireAspectModifierData copy() {
+        _FireAspectModifierData pojo = copyTo(new _FireAspectModifierData());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

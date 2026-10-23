@@ -24,6 +24,10 @@ public final class GltfAnimation extends ResourcePojo<GltfAnimation> {
         reader.endObject();
         return pojo;
     }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
+    }
 
     public static void toJson(JsonWriter writer, GltfAnimation pojo) throws IOException {
         if (pojo != null) pojo.toJson(writer);
@@ -31,13 +35,30 @@ public final class GltfAnimation extends ResourcePojo<GltfAnimation> {
     @Override
     public void toJson(JsonWriter writer) throws IOException {
         writer.beginObject(); {
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
     protected void validatePojo() {
         this.setValid(true);
+    }
+
+    @Override
+    protected GltfAnimation copyTo(final GltfAnimation pojo) {
+        return pojo;
+    }
+
+    @Override
+    public GltfAnimation copy() {
+        GltfAnimation pojo = copyTo(new GltfAnimation());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

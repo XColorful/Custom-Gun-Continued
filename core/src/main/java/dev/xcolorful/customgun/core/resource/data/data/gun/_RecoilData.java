@@ -30,12 +30,16 @@ public final class _RecoilData extends ResourcePojo<_RecoilData> {
                 switch (key) {
                     case _RecoilDataTag.PITCH_RECOIL, _RecoilDataTag.PITCH_RECOIL_OLD1 -> pojo.pitchRecoils = JsonUtils.readList(reader, _RecoilEntryData::fromJson);
                     case _RecoilDataTag.YAW_RECOIL, _RecoilDataTag.YAW_RECOIL_OLD1 -> pojo.yawRecoils = JsonUtils.readList(reader, _RecoilEntryData::fromJson);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _RecoilData pojo) throws IOException {
@@ -47,8 +51,13 @@ public final class _RecoilData extends ResourcePojo<_RecoilData> {
         writer.beginObject(); {
             JsonUtils.writeList(writer, _RecoilDataTag.PITCH_RECOIL, this.pitchRecoils, _RecoilEntryData::toJson);
             JsonUtils.writeList(writer, _RecoilDataTag.YAW_RECOIL, this.yawRecoils, _RecoilEntryData::toJson);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
@@ -81,6 +90,28 @@ public final class _RecoilData extends ResourcePojo<_RecoilData> {
         }
 
         this.setValid(true);
+    }
+
+    @Override
+    protected _RecoilData copyTo(final _RecoilData pojo) {
+        List<_RecoilEntryData> pitchRecoils = new ArrayList<>(this.pitchRecoils.size()); {
+            for (int i = 0; i < this.pitchRecoils.size(); i++) {
+                pitchRecoils.add(this.pitchRecoils.get(i).copy());
+            }
+        } pojo.setPitchRecoils(pitchRecoils);
+        List<_RecoilEntryData> yawRecoils = new ArrayList<>(this.yawRecoils.size()); {
+            for (int i = 0; i < this.yawRecoils.size(); i++) {
+                yawRecoils.add(this.yawRecoils.get(i).copy());
+            }
+        } pojo.setYawRecoils(yawRecoils);
+        return pojo;
+    }
+
+    @Override
+    public _RecoilData copy() {
+        _RecoilData pojo = copyTo(new _RecoilData());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

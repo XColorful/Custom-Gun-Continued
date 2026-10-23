@@ -30,12 +30,16 @@ public final class _BurstData extends ResourcePojo<_BurstData> {
                     case _BurstDataTag.BURST_AMOUNT, _BurstDataTag.BURST_AMOUNT_OLD1 -> pojo.burstAmount = JsonUtils.readInt(reader);
                     case _BurstDataTag.SHOOT_INTERVAL_SECONDS, _BurstDataTag.SHOOT_INTERVAL_SECONDS_OLD1 -> pojo.shootIntervalSeconds = JsonUtils.readFloat(reader);
                     case _BurstDataTag.CONTINUOUS_SHOOT -> pojo.continuousShoot = JsonUtils.readBoolean(reader);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _BurstData pojo) throws IOException {
@@ -48,13 +52,34 @@ public final class _BurstData extends ResourcePojo<_BurstData> {
             JsonUtils.writeInt(writer, _BurstDataTag.BURST_AMOUNT, this.burstAmount);
             JsonUtils.writeFloat(writer, _BurstDataTag.SHOOT_INTERVAL_SECONDS, this.shootIntervalSeconds);
             JsonUtils.writeBoolean(writer, _BurstDataTag.CONTINUOUS_SHOOT, this.continuousShoot);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
     protected void validatePojo() {
         this.setValid(true);
+    }
+
+    @Override
+    protected _BurstData copyTo(final _BurstData pojo) {
+        pojo.setBpm(this.bpm);
+        pojo.setBurstAmount(this.burstAmount);
+        pojo.setShootIntervalSeconds(this.shootIntervalSeconds);
+        pojo.setContinuousShoot(this.continuousShoot);
+        return pojo;
+    }
+
+    @Override
+    public _BurstData copy() {
+        _BurstData pojo = copyTo(new _BurstData());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

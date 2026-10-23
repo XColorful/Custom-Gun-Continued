@@ -77,8 +77,13 @@ public class _Uv extends ResourcePojo<_Uv> {
             JsonUtils.write(writer, _UvTag.WEST, this.west, _FaceUv::toJson);
             JsonUtils.write(writer, _UvTag.UP, this.up, _FaceUv::toJson);
             JsonUtils.write(writer, _UvTag.DOWN, this.down, _FaceUv::toJson);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

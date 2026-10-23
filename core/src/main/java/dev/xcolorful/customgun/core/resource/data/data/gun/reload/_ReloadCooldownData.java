@@ -46,8 +46,13 @@ public final class _ReloadCooldownData extends ResourcePojo<_ReloadCooldownData>
         writer.beginObject(); {
             JsonUtils.writeFloat(writer, _ReloadCooldownDataTag.EMPTY, this.empty);
             JsonUtils.writeFloat(writer, _ReloadCooldownDataTag.TACTICAL, this.tactical);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

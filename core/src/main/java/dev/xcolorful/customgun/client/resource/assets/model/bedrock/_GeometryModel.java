@@ -53,8 +53,13 @@ public class _GeometryModel extends ResourcePojo<_GeometryModel> {
         writer.beginObject(); {
             JsonUtils.write(writer, _GeometryModelTag.DESCRIPTION, this.description, _Description::toJson);
             JsonUtils.writeList(writer, _GeometryModelTag.BONES, this.bones, _Bone::toJson);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

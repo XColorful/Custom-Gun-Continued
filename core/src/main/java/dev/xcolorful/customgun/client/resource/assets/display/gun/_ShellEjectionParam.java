@@ -55,8 +55,13 @@ public final class _ShellEjectionParam extends ResourcePojo<_ShellEjectionParam>
             JsonUtils.writeFloatArray(writer, _ShellEjectionParamTag.ACCELERATION, this.acceleration);
             JsonUtils.writeFloatArray(writer, _ShellEjectionParamTag.ANGULAR_VELOCITY, this.angularVelocity);
             JsonUtils.writeFloat(writer, _ShellEjectionParamTag.LIFETIME_SECONDS, this.lifetimeSeconds);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

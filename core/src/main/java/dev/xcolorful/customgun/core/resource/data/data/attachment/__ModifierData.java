@@ -1,6 +1,7 @@
 package dev.xcolorful.customgun.core.resource.data.data.attachment;
 
 import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import dev.xcolorful.customgun.core.resource.ResourcePojo;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,6 +26,11 @@ public abstract class __ModifierData<T extends __ModifierData<T>> extends Resour
     @Override
     protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
         return super.readCustomKey(reader, key);
+    }
+
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     // --------Getter & Setter--------

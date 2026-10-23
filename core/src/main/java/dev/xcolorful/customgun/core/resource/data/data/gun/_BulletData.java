@@ -99,8 +99,13 @@ public final class _BulletData extends ResourcePojo<_BulletData> {
             JsonUtils.writeInt(writer, _BulletDataTag.FIRE_ASPECT_SECONDS, fireAspectSeconds);
             JsonUtils.writeFloat(writer, _BulletDataTag.KNOCKBACK_STRENGTH, knockbackStrength);
             JsonUtils.write(writer, _BulletDataTag.BULLET_EXPLOSION, explosionData, _ExplosionData::toJson);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

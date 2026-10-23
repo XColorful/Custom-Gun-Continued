@@ -46,8 +46,13 @@ public final class _FireAspectModifierData extends ResourcePojo<_FireAspectModif
         writer.beginObject(); {
             JsonUtils.writeBoolean(writer, _FireAspectModifierDataTag.IGNITE_ENTITY, this.igniteEntity);
             JsonUtils.writeBoolean(writer, _FireAspectModifierDataTag.IGNITE_BLOCK, this.igniteBlock);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

@@ -49,8 +49,13 @@ public class _ModelTransformScale extends ResourcePojo<_ModelTransformScale> {
             JsonUtils.writeFloatArray(writer, _ModelTransformScaleTag.THIRD_PERSON_SCALE, this.thirdPersonScale);
             JsonUtils.writeFloatArray(writer, _ModelTransformScaleTag.GROUND_SCALE, this.groundScale);
             JsonUtils.writeFloatArray(writer, _ModelTransformScaleTag.FIXED_SCALE, this.fixedScale);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

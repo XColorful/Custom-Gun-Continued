@@ -55,8 +55,13 @@ public final class _Animation extends ResourcePojo<_Animation> {
             JsonUtils.writeFloat(writer, _AnimationTag.ANIMATION_LENGTH, this.animationLength);
             JsonUtils.writeString2ObjectMap(writer, _AnimationTag.BONES, this.bones, _Bone::toJson);
             JsonUtils.write(writer, _AnimationTag.SOUND_EFFECTS, this.soundEffects, _SoundEffects::toJson);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

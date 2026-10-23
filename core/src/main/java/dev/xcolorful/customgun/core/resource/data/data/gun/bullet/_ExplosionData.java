@@ -67,8 +67,13 @@ public final class _ExplosionData extends ResourcePojo<_ExplosionData> {
 
             JsonUtils.writeBoolean(writer, _ExplosionDataTag.ENABLE_KNOCKBACK, this.enableKnockback);
             JsonUtils.writeBoolean(writer, _ExplosionDataTag.ENABLE_WORLD_DESTRUCTION, this.enableWorldDestruction);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

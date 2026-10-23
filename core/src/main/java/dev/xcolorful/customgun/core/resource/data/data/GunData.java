@@ -184,8 +184,13 @@ public final class GunData extends ResourcePojo<GunData> {
             JsonUtils.writeFloat(writer, GunDataTag.AIM_TIME, aimTime);
             JsonUtils.writeFloat(writer, GunDataTag.BOLT_ACTION_TIME, boltActionTime);
             JsonUtils.writeFloat(writer, GunDataTag.BOLT_FEED_TIME, boltFeedTime);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

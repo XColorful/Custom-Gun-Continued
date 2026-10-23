@@ -64,8 +64,13 @@ public final class GunpackInfo extends ResourcePojo<GunpackInfo> {
             JsonUtils.writeStringList(writer, GunpackInfoTag.AUTHORS, this.authors);
             JsonUtils.writeString(writer, GunpackInfoTag.DATE, this.date);
             JsonUtils.writeString(writer, GunpackInfoTag.GUNPACK_URL, this.gunpackUrl);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

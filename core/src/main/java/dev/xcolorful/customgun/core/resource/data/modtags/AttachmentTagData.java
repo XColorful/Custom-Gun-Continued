@@ -42,6 +42,10 @@ public final class AttachmentTagData extends _SimpleTagData<AttachmentTagData> {
         }
         writer.endArray();
     }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
+    }
 
     @Override
     protected void validatePojo() {

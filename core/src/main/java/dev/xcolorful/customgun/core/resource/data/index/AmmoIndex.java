@@ -61,8 +61,13 @@ public final class AmmoIndex extends _DataIndex<AmmoIndex> {
 
             JsonUtils.writeToString(writer, AmmoIndexTag.AMMO_CATEGORY, this.ammoCategory);
             JsonUtils.writeInt(writer, AmmoIndexTag.MAX_STACK_SIZE, this.maxStackSize);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

@@ -57,8 +57,13 @@ public final class _AmmoParticle extends ResourcePojo<_AmmoParticle> {
             JsonUtils.writeFloat(writer, _AmmoParticleTag.SPEED, this.speed);
             JsonUtils.writeInt(writer, _AmmoParticleTag.COUNT, this.count);
             JsonUtils.writeInt(writer, _AmmoParticleTag.LIFETIME_TICKS, this.lifetimeTicks);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

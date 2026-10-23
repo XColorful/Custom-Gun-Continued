@@ -77,8 +77,13 @@ public final class _KeyFrame extends ResourcePojo<_KeyFrame> {
             JsonUtils.writeFloatArray(writer, _KeyFrameTag.POST, this.post);
             JsonUtils.writeFloatArray(writer, _KeyFrameTag.DATA, this.data);
             JsonUtils.writeToString(writer, _KeyFrameTag.LERP_MODE, this.lerpMode);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

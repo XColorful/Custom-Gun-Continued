@@ -1,6 +1,7 @@
 package dev.xcolorful.customgun.core.resource.data.modtags;
 
 import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import dev.xcolorful.customgun.core.api.resource.IResourcePojoExtension;
 import dev.xcolorful.customgun.core.resource.ResourcePojo;
 
@@ -26,6 +27,11 @@ public abstract class _SimpleTagData<T extends _SimpleTagData<T>> extends Resour
     @Override
     protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
         return super.readCustomKey(reader, key);
+    }
+
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     // --------Getter & Setter--------

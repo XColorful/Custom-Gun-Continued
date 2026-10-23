@@ -76,8 +76,13 @@ public final class _HeatData extends ResourcePojo<_HeatData> {
             JsonUtils.writeLong(writer, _HeatDataTag.OVERHEAT_LOCKTIME_MS, overheatLocktimeMs);
             JsonUtils.writeLong(writer, _HeatDataTag.COOLING_DELAY_MS, coolingDelayMs);
             JsonUtils.writeFloat(writer, _HeatDataTag.COOLING_SPEED_MULTIPLIER, coolingSpeedMultiplier);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

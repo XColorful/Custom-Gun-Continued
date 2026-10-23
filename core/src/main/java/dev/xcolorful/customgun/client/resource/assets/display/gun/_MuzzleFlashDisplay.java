@@ -49,8 +49,13 @@ public final class _MuzzleFlashDisplay extends ResourcePojo<_MuzzleFlashDisplay>
         writer.beginObject(); {
             JsonUtils.writeResourceLocation(writer, _MuzzleFlashDisplayTag.TEXTURE_LOCATION, this.textureLocation);
             JsonUtils.writeFloat(writer, _MuzzleFlashDisplayTag.TEXTURE_SCALE, this.textureScale);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

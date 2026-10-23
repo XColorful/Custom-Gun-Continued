@@ -50,8 +50,13 @@ public final class _AmmoDisplayOverride extends ResourcePojo<_AmmoDisplayOverrid
         writer.beginObject(); {
             JsonUtils.write(writer, _AmmoDisplayOverrideTag.AMMO_PARTICLE, this.ammoParticle, _AmmoParticle::toJson);
             JsonUtils.writeColor(writer, _AmmoDisplayOverrideTag.TRACER_COLOR, this.tracerColor);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

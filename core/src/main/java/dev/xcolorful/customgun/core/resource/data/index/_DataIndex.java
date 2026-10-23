@@ -1,6 +1,7 @@
 package dev.xcolorful.customgun.core.resource.data.index;
 
 import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import dev.xcolorful.customgun.core.api.resource.ResourceTag;
 import dev.xcolorful.customgun.core.resource.ResourcePojo;
 import dev.xcolorful.customgun.core.util.ComponentUtils;
@@ -21,6 +22,11 @@ public abstract class _DataIndex<T extends _DataIndex<T>> extends ResourcePojo<T
     @Override
     protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
         return super.readCustomKey(reader, key);
+    }
+
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

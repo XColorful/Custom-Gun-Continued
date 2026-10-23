@@ -35,8 +35,13 @@ public final class _ControllableData extends ResourcePojo<_ControllableData> {
     @Override
     public void toJson(JsonWriter writer) throws IOException {
         writer.beginObject(); {
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

@@ -58,8 +58,13 @@ public final class _Description extends ResourcePojo<_Description> {
             JsonUtils.writeFloat(writer, _DescriptionTag.VISIBLE_BOUNDS_WIDTH, this.visibleBoundsWidth);
             JsonUtils.writeFloat(writer, _DescriptionTag.VISIBLE_BOUNDS_HEIGHT, this.visibleBoundsHeight);
             JsonUtils.writeFloatArray(writer, _DescriptionTag.VISIBLE_BOUNDS_OFFSET, this.visibleBoundsOffset);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

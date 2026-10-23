@@ -43,8 +43,13 @@ public final class _AmmoEntityDisplay extends _AssetsDisplay<_AmmoEntityDisplay>
         writer.beginObject(); {
             JsonUtils.writeResourceLocation(writer, _AmmoEntityDisplayTag.MODEL_LOCATION, this.getModelLocation());
             JsonUtils.writeResourceLocation(writer, _AmmoEntityDisplayTag.TEXTURE_LOCATION, this.getTextureLocation());
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

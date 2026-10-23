@@ -51,8 +51,13 @@ public final class BlockData extends ResourcePojo<BlockData> {
         writer.beginObject(); {
             JsonUtils.writeResourceLocation(writer, BlockDataTag.RECIPE_FILTER_LOCATION, this.recipeFilterLocation);
             JsonUtils.writeList(writer, BlockDataTag.RECIPE_GROUP_LIST, this.recipeGroupList, _RecipeGroupData::toJson);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

@@ -62,8 +62,13 @@ public final class _Cube extends ResourcePojo<_Cube> {
             JsonUtils.writeFloatArray(writer, _CubeTag.PIVOT, this.pivot);
             JsonUtils.writeFloatArray(writer, _CubeTag.ROTATION, this.rotation);
             JsonUtils.write(writer, _CubeTag.UV, this.uv, _Uv::toJson);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

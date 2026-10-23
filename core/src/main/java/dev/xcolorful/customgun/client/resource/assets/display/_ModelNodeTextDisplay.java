@@ -59,8 +59,13 @@ public final class _ModelNodeTextDisplay extends ResourcePojo<_ModelNodeTextDisp
             JsonUtils.writeInt(writer, _ModelNodeTextDisplayTag.TEXT_LIGHT, this.textLight);
             JsonUtils.writeBoolean(writer, _ModelNodeTextDisplayTag.ENABLE_TEXT_SHADOW, this.enableTextShadow);
             JsonUtils.writeFloat(writer, _ModelNodeTextDisplayTag.X_OFFSET_SCALE, this.xOffsetScale);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

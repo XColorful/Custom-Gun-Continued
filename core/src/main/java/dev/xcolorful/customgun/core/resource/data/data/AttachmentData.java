@@ -123,8 +123,13 @@ public final class AttachmentData extends ResourcePojo<AttachmentData> {
             JsonUtils.write(writer, AttachmentDataTag.MELEE, this.meleeModifier, _MeleeModifierData::toJson);
 
             JsonUtils.writeToString(writer, AttachmentDataTag.MAGAZINE_CATEGORY, this.magazineCategory);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

@@ -72,8 +72,13 @@ public final class AmmoDisplay extends _AssetsDisplay<AmmoDisplay> {
 
             JsonUtils.write(writer, AmmoDisplayTag.AMMO_PARTICLE, this.ammoParticle, _AmmoParticle::toJson);
             JsonUtils.writeColor(writer, AmmoDisplayTag.TRACER_COLOR, this.tracerColor);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

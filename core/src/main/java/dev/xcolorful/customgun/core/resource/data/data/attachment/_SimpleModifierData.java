@@ -46,8 +46,13 @@ public final class _SimpleModifierData extends __ModifierData<_SimpleModifierDat
             JsonUtils.writeFloat(writer, __ModifierDataTag.SHARED_PERCENT_ADD, this.getSharedPercentAdd());
             JsonUtils.writeFloat(writer, __ModifierDataTag.UNIQUE_MULTIPLIER, this.getUniqueMultiplier());
             JsonUtils.writeString(writer, __ModifierDataTag.SCRIPT_FUNCTION, this.getScriptFunction());
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

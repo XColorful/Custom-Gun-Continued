@@ -60,8 +60,13 @@ public final class RecipeFilterData extends ResourcePojo<RecipeFilterData>
         writer.beginObject(); {
             JsonUtils.writeStringList(writer, RecipeFilterDataTag.WHITELIST, this.whitelistRaw);
             JsonUtils.writeStringList(writer, RecipeFilterDataTag.BLACKLIST, this.blacklistRaw);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

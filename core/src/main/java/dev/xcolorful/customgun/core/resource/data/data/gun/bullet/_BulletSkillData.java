@@ -52,8 +52,13 @@ public final class _BulletSkillData extends ResourcePojo<_BulletSkillData> {
             JsonUtils.writeFloat(writer, _BulletSkillDataTag.ARMOR_IGNORE_PERCENT, this.armorIgnorePercent);
             JsonUtils.writeFloat(writer, _BulletSkillDataTag.HEADSHOT_MULTIPLIER, this.headshotMultiplier);
             JsonUtils.writeList(writer, _BulletSkillDataTag.DAMAGE_CALCULATION, this.damageCalculation, _DistanceDamageData::toJson);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

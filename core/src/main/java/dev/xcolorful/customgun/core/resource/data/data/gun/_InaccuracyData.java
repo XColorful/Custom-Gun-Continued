@@ -61,8 +61,13 @@ public final class _InaccuracyData extends ResourcePojo<_InaccuracyData> {
             JsonUtils.writeFloat(writer, _InaccuracyDataTag.PRONE, this.prone);
             JsonUtils.writeFloat(writer, _InaccuracyDataTag.AIM, this.aim);
             JsonUtils.writeFloat(writer, _InaccuracyDataTag.LEVITATE, this.levitate);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

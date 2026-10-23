@@ -93,7 +93,12 @@ public final class _SoundEffects extends ResourcePojo<_SoundEffects> {
             }
             writer.endObject();
         }
+        writeCustomValue(writer);
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

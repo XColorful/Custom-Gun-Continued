@@ -49,8 +49,13 @@ public final class BedrockAnimation extends ResourcePojo<BedrockAnimation> {
         writer.beginObject(); {
             JsonUtils.writeString(writer, BedrockAnimationTag.FORMAT_VERSION, this.formatVersion);
             JsonUtils.writeString2ObjectMap(writer, BedrockAnimationTag.ANIMATIONS, this.animations, _Animation::toJson);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

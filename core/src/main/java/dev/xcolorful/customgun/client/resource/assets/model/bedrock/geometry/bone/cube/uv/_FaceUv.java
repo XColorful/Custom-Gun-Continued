@@ -46,8 +46,13 @@ public class _FaceUv extends ResourcePojo<_FaceUv> {
         writer.beginObject(); {
             JsonUtils.writeFloatArray(writer, _FaceUvTag.UV, this.uv);
             JsonUtils.writeFloatArray(writer, _FaceUvTag.UV_SIZE, this.uvSize);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

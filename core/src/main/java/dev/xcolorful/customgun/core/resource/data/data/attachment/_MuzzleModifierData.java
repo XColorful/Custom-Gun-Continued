@@ -44,8 +44,13 @@ public final class _MuzzleModifierData extends ResourcePojo<_MuzzleModifierData>
     public void toJson(JsonWriter writer) throws IOException {
         writer.beginObject(); {
             JsonUtils.writeToString(writer, _MuzzleModifierDataTag.FIRE_SOUND_TYPE, this.fireSoundType);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

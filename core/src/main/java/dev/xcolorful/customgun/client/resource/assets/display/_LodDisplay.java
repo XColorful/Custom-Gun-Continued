@@ -42,8 +42,13 @@ public final class _LodDisplay extends _AssetsDisplay<_LodDisplay> {
         writer.beginObject(); {
             JsonUtils.writeResourceLocation(writer, _AssetsDisplayTag.MODEL_LOCATION, this.getModelLocation());
             JsonUtils.writeResourceLocation(writer, _AssetsDisplayTag.TEXTURE_LOCATION, this.getTextureLocation());
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

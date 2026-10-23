@@ -62,8 +62,13 @@ public final class _Bone extends ResourcePojo<_Bone> {
             JsonUtils.writeFloatArray(writer, _BoneTag.ROTATION, this.rotation);
             JsonUtils.writeList(writer, _BoneTag.CUBES, this.cubes, _Cube::toJson);
             if (this.mirror) JsonUtils.writeBoolean(writer, _BoneTag.MIRROR, this.mirror);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

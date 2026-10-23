@@ -51,8 +51,13 @@ public final class _FireSoundData extends ResourcePojo<_FireSoundData> {
         writer.beginObject(); {
             JsonUtils.writeFloat(writer, _FireSoundDataTag.NORMAL_MULTIPLIER, this.normalMultiplier);
             JsonUtils.writeFloat(writer, _FireSoundDataTag.SILENCED_MULTIPLIER, this.silencedMultiplier);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

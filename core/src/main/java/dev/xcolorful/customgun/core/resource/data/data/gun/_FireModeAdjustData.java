@@ -77,8 +77,13 @@ public final class _FireModeAdjustData extends ResourcePojo<_FireModeAdjustData>
 
             JsonUtils.writeFloat(writer, _FireModeAdjustDataTag.AIM_INACCURACY, aimInaccuracy);
             JsonUtils.writeFloat(writer, _FireModeAdjustDataTag.OTHER_INACCURACY, otherInaccuracy);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

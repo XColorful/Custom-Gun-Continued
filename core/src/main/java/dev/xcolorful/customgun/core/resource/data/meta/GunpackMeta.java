@@ -48,8 +48,13 @@ public final class GunpackMeta extends ResourcePojo<GunpackMeta> {
         writer.beginObject(); {
             JsonUtils.writeString(writer, GunpackMetaTag.NAMESPACE, this.namespace);
             JsonUtils.writeString2StringMap(writer, GunpackMetaTag.DEPENDENCIES, this.dependencies);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

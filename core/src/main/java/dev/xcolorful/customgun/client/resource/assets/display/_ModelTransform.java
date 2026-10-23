@@ -44,8 +44,13 @@ public final class _ModelTransform extends ResourcePojo<_ModelTransform> {
     public void toJson(JsonWriter writer) throws IOException {
         writer.beginObject(); {
             JsonUtils.write(writer, _ModelTransformTag.SCALE, this.scale, _ModelTransformScale::toJson);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

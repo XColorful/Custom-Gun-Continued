@@ -46,8 +46,13 @@ public final class _DistanceDamageData extends ResourcePojo<_DistanceDamageData>
         writer.beginObject(); {
             JsonUtils.writeFloat(writer, _DistanceDamageDataTag.DISTANCE, this.distance);
             JsonUtils.writeFloat(writer, _DistanceDamageDataTag.DAMAGE, this.damage);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

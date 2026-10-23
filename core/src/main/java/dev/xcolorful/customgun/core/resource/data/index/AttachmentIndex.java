@@ -63,8 +63,13 @@ public final class AttachmentIndex extends _DataIndex<AttachmentIndex> {
 
             JsonUtils.writeToString(writer, AttachmentIndexTag.ATTACHMENT_CATEGORY, this.attachmentCategory);
             JsonUtils.writeBoolean(writer, AttachmentIndexTag.HIDE_IN_GAME, this.hideInGame);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

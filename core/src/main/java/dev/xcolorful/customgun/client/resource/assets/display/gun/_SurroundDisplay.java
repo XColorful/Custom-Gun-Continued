@@ -49,8 +49,13 @@ public final class _SurroundDisplay extends ResourcePojo<_SurroundDisplay> {
             JsonUtils.writeFloatArray(writer, _SurroundDisplayTag.POS, this.pos);
             JsonUtils.writeFloatArray(writer, _SurroundDisplayTag.ROTATE, this.rotate);
             JsonUtils.writeFloatArray(writer, _SurroundDisplayTag.SCALE, this.scale);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

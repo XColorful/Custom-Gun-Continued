@@ -51,8 +51,13 @@ public final class BlockDisplay extends _AssetsDisplay<BlockDisplay> {
             JsonUtils.writeResourceLocation(writer, BlockDisplayTag.TEXTURE_LOCATION, this.getTextureLocation());
 
             ClientJsonUtils.writeItemTransforms(writer, BlockDisplayTag.ITEM_TRANSFORMS, this.itemTransforms);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

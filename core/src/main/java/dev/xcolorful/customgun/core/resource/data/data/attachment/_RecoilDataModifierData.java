@@ -47,8 +47,13 @@ public final class _RecoilDataModifierData extends ResourcePojo<_RecoilDataModif
         writer.beginObject(); {
             JsonUtils.write(writer, _RecoilDataModifierDataTag.PITCH_RECOIL, this.pitchRecoilModifier, _SimpleModifierData::toJson);
             JsonUtils.write(writer, _RecoilDataModifierDataTag.YAW_RECOIL, this.yawRecoilModifier, _SimpleModifierData::toJson);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

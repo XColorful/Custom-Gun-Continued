@@ -53,8 +53,13 @@ public class _ResultItemData extends ResourcePojo<_ResultItemData> {
         writer.beginObject(); {
             JsonUtils.writeResourceLocation(writer, _ResultItemDataTag.ITEM_LOCATION, itemLocation);
             JsonUtils.writeNbt(writer, _ResultItemDataTag.ITEM_NBT, itemNbt);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

@@ -73,8 +73,13 @@ public final class _MeleeModifierData extends ResourcePojo<_MeleeModifierData> {
 
             JsonUtils.writeFloat(writer, _MeleeModifierDataTag.KNOCKBACK_STRENGTH, this.knockbackStrength);
             JsonUtils.writeList(writer, _MeleeModifierDataTag.TARGET_EFFECT, this.targetEffect, _TargetEffectData::toJson);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

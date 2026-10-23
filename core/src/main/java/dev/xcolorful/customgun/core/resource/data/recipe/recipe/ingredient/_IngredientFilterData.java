@@ -49,8 +49,13 @@ public final class _IngredientFilterData extends ResourcePojo<_IngredientFilterD
         writer.beginObject(); {
             JsonUtils.writeResourceLocation(writer, _IngredientFilterDataTag.ITEM_FILTER_LOCATION, this.itemFilterLocation);
             JsonUtils.writeResourceLocation(writer, _IngredientFilterDataTag.TAG_FILTER_LOCATION, this.tagFilterLocation);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

@@ -51,8 +51,13 @@ public final class _Bone extends ResourcePojo<_Bone> {
             ClientJsonUtils.writeKeyFrames(writer, _BoneTag.ROTATION, this.rotation);
             ClientJsonUtils.writeKeyFrames(writer, _BoneTag.POSITION, this.position);
             ClientJsonUtils.writeKeyFrames(writer, _BoneTag.SCALE, this.scale);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

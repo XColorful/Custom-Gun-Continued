@@ -95,8 +95,13 @@ public final class AttachmentDisplay extends _AssetsDisplay<AttachmentDisplay> {
             JsonUtils.writeString2ObjectMap(writer, AttachmentDisplayTag.MODEL_NODE_TEXT_DISPLAY, this.modelNodeTextDisplay, _ModelNodeTextDisplay::toJson);
             JsonUtils.write(writer, AttachmentDisplayTag.LASER_DISPLAY, this.laserDisplay, _LaserDisplay::toJson);
             JsonUtils.writeObject2ObjectMap(writer, AttachmentDisplayTag.ATTACHMENT_SOUNDS, this.attachmentSounds, AttachmentSoundType::toString, JsonUtils::writeResourceLocationValue);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

@@ -43,8 +43,13 @@ public final class _ShellDisplay extends _AssetsDisplay<_ShellDisplay> {
         writer.beginObject(); {
             JsonUtils.writeResourceLocation(writer, _ShellDisplayTag.MODEL_LOCATION, this.getModelLocation());
             JsonUtils.writeResourceLocation(writer, _ShellDisplayTag.TEXTURE_LOCATION, this.getTextureLocation());
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

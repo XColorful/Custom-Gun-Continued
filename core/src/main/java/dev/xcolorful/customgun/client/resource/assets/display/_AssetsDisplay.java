@@ -1,6 +1,7 @@
 package dev.xcolorful.customgun.client.resource.assets.display;
 
 import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.api.resource.assets.AssetsFolderType;
 import dev.xcolorful.customgun.core.api.minecraft.IMcRegistry;
@@ -38,6 +39,11 @@ public abstract class _AssetsDisplay<T extends _AssetsDisplay<T>> extends Resour
     @Override
     protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
         return super.readCustomKey(reader, key);
+    }
+
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     // --------Getter & Setter--------

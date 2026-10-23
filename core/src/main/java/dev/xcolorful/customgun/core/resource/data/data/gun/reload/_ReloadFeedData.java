@@ -46,8 +46,13 @@ public final class _ReloadFeedData extends ResourcePojo<_ReloadFeedData> {
         writer.beginObject(); {
             JsonUtils.writeFloat(writer, _ReloadFeedDataTag.EMPTY, this.empty);
             JsonUtils.writeFloat(writer, _ReloadFeedDataTag.TACTICAL, this.tactical);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

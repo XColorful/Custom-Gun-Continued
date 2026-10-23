@@ -66,8 +66,13 @@ public final class _ChargingData extends ResourcePojo<_ChargingData> {
             JsonUtils.writeFloat(writer, _ChargingDataTag.CHARGE_PER_TICK, chargePerTick);
             JsonUtils.writeFloat(writer, _ChargingDataTag.RECOVER_PER_TICK, recoverPerTick);
             JsonUtils.writeBoolean(writer, _ChargingDataTag.ENABLE_CHARGE_DURING_COOLDOWN, enableChargeDuringCooldown);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

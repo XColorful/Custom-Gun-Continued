@@ -54,8 +54,13 @@ public final class _TargetEffectData extends ResourcePojo<_TargetEffectData> {
             JsonUtils.writeInt(writer, _TargetEffectDataTag.SECONDS, this.seconds);
             JsonUtils.writeInt(writer, _TargetEffectDataTag.AMPLIFIER, this.amplifier);
             JsonUtils.writeBoolean(writer, _TargetEffectDataTag.HIDE_PARTICLES, this.hideParticles);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

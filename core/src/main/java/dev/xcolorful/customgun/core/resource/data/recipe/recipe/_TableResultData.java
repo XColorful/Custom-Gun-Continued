@@ -63,8 +63,13 @@ public final class _TableResultData extends ResourcePojo<_TableResultData> {
             JsonUtils.write(writer, _TableResultDataTag.RESULT_ITEM, resultItem, _ResultItemData::toJson);
             JsonUtils.writeResourceLocation(writer, _TableResultDataTag.TAB_GROUP_LOCATION, tabGroupLocation);
             JsonUtils.writeResourceLocation(writer, _TableResultDataTag.POJO_LOCATION, pojoLocation);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

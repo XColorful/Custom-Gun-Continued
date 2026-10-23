@@ -68,8 +68,13 @@ public final class _BulletExplosionModifierData extends ResourcePojo<_BulletExpl
 
             JsonUtils.writeBoolean(writer, _BulletExplosionModifierDataTag.ENABLE_KNOCKBACK, this.enableKnockback);
             JsonUtils.writeBoolean(writer, _BulletExplosionModifierDataTag.ENABLE_WORLD_DESTRUCTION, this.enableWorldDestruction);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

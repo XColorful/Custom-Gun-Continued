@@ -55,8 +55,13 @@ public final class _ReloadData extends ResourcePojo<_ReloadData> {
             JsonUtils.writeBoolean(writer, _ReloadDataTag.FREE_AMMO_FEED, this.freeAmmoFeed);
             JsonUtils.write(writer, _ReloadDataTag.RELOAD_FEED, this.reloadFeed, _ReloadFeedData::toJson);
             JsonUtils.write(writer, _ReloadDataTag.RELOAD_COOLDOWN, this.reloadCooldown, _ReloadCooldownData::toJson);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

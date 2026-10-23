@@ -52,8 +52,13 @@ public final class _MovementData extends ResourcePojo<_MovementData> {
             JsonUtils.writeFloat(writer, _MovementDataTag.BASE, this.base);
             JsonUtils.writeFloat(writer, _MovementDataTag.AIM, this.aim);
             JsonUtils.writeFloat(writer, _MovementDataTag.RELOAD, this.reload);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

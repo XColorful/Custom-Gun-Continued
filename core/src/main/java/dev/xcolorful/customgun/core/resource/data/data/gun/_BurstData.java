@@ -52,8 +52,13 @@ public final class _BurstData extends ResourcePojo<_BurstData> {
             JsonUtils.writeInt(writer, _BurstDataTag.BURST_AMOUNT, this.burstAmount);
             JsonUtils.writeFloat(writer, _BurstDataTag.SHOOT_INTERVAL_SECONDS, this.shootIntervalSeconds);
             JsonUtils.writeBoolean(writer, _BurstDataTag.CONTINUOUS_SHOOT, this.continuousShoot);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

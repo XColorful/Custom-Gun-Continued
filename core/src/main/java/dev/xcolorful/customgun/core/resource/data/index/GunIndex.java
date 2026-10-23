@@ -63,9 +63,13 @@ public final class GunIndex extends _DataIndex<GunIndex> {
 
             JsonUtils.writeToString(writer, GunIndexTag.GUN_CATEGORY, this.gunCategory);
             JsonUtils.writeToString(writer, GunIndexTag.ITEM_TYPE, this.itemType);
-            writeUnknownValue(writer);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

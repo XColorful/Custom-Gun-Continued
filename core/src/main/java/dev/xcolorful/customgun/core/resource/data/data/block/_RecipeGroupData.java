@@ -50,8 +50,13 @@ public final class _RecipeGroupData extends ResourcePojo<_RecipeGroupData> {
         writer.beginObject(); {
             JsonUtils.writeResourceLocation(writer, _RecipeGroupDataTag.GROUP_CATEGORY, this.groupCategory);
             JsonUtils.writeString(writer, _RecipeGroupDataTag.NAME_LANG, this.nameLang);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

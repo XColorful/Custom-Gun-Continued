@@ -181,3 +181,34 @@ int[] extendedMagAmmoSize; {
 - 残留 `default -> reader.skipValue();`：0。
 - `default -> readUnknownKey(...)` 调用：68 处（67 处新改 + GunIndex 原有 1 处）。
 - 无 switch 的类（`GltfAnimation`、`_ControllableData`、`_SoundEffects`、`AttachmentTagData`、`GunAttachmentData`）也按“所有 ResourcePojo”补了 override。
+
+# 
+
+```
+继续补writeCustomValue
+```
+
+# 
+
+现在的范式是：`toJson` 内调用 `writeCustomValue(writer)`，每个类加转发 override。先确认当前 `readCustomKey` 重命名是否已全部完成。
+
+已完成，`:core:compileJava --offline` 通过（exit 0）。
+
+**改动**
+- 在 70 个以对象为根的 `toJson` 的 `writer.endObject()` 之前插入 `writeCustomValue(writer);`（`GunIndex` 已有，未重复）。
+- 为 75 个 Pojo 补上转发 override（`GunIndex`、`_DataIndex` 已有）：
+```java
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
+    }
+```
+- 给缺少 `JsonWriter` import 的 3 个抽象类补充：`__ModifierData`、`_SimpleTagData`、`_AssetsDisplay`。
+
+**校验**
+- `writeCustomValue` 声明：78 = 1 个基类实现 + 77 个 Pojo override。
+- 调用点：71 处，覆盖所有对象型 `toJson`；脚本复核“有 `beginObject` 但没调用”的类为 0。
+- 特殊结构已正确处理：`_Uv` / `_KeyFrame` 的纯数组快路径不调用，只在对象分支调用；`_SoundEffects` 在循环结束后、`endObject` 前调用。
+
+**规则外情况**
+`GunAttachmentData` 和 `AttachmentTagData` 的 `toJson` 直接写根数组（`beginArray`），无法容纳 key-value 扩展值，因此只加了 override、未加调用。如果这两个也需要扩展输出，需要先确定数组格式下的表示方式。

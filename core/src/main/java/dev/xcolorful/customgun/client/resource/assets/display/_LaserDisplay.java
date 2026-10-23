@@ -59,8 +59,13 @@ public final class _LaserDisplay extends ResourcePojo<_LaserDisplay> {
             JsonUtils.writeFloat(writer, _LaserDisplayTag.LASER_WIDTH, this.laserWidth);
             JsonUtils.writeFloat(writer, _LaserDisplayTag.THIRD_PERSON_LASER_LENGTH, this.thirdPersonLaserLength);
             JsonUtils.writeFloat(writer, _LaserDisplayTag.THIRD_PERSON_LASER_WIDTH, this.thirdPersonLaserWidth);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

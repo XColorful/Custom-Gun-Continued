@@ -44,6 +44,12 @@ public abstract class ResourcePojo<T extends ResourcePojo<T>> {
     public abstract void toJson(JsonWriter writer) throws IOException;
 
     /**
+     * 写入扩展 value
+     */
+    protected void writeCustomValue(JsonWriter writer) {
+    }
+
+    /**
      * 子类需满足 {@link ResourcePojo#isValid} 的要求
      * <p>
      * 优化规范：Null检查用{@code |}每4-5个分一组，压缩分支预测开销并吃满单核ALU宽度；

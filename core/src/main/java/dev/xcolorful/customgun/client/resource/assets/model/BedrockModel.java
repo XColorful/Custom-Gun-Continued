@@ -50,8 +50,13 @@ public class BedrockModel extends ResourcePojo<BedrockModel> {
         writer.beginObject(); {
             JsonUtils.writeString(writer, BedrockModelTag.FORMAT_VERSION, this.formatVersion);
             JsonUtils.writeList(writer, BedrockModelTag.GEOMETRY_MODEL, this.geometryModels, _GeometryModel::toJson);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

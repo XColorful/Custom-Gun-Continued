@@ -49,8 +49,13 @@ public final class _MeleeData extends ResourcePojo<_MeleeData> {
         writer.beginObject(); {
             JsonUtils.writeFloat(writer, _MeleeDataTag.GUN_BASE_LENGTH, this.gunBaseLength);
             JsonUtils.write(writer, _MeleeDataTag.DEFAULT_MELEE_DATA, this.defaultMeleeData, _DefaultMeleeData::toJson);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

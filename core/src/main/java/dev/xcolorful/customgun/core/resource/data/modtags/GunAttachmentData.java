@@ -41,6 +41,10 @@ public final class GunAttachmentData extends _SimpleTagData<GunAttachmentData> {
         }
         writer.endArray();
     }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
+    }
 
     @Override
     protected void validatePojo() {

@@ -47,8 +47,13 @@ public final class _TableIngredientData extends ResourcePojo<_TableIngredientDat
         writer.beginObject(); {
             JsonUtils.write(writer, _TableIngredientDataTag.INGREDIENT_FILTER_DATA, this.ingredientFilter, _IngredientFilterData::toJson);
             JsonUtils.writeInt(writer, _TableIngredientDataTag.INGREDIENT_COUNT, this.ingredientCount);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

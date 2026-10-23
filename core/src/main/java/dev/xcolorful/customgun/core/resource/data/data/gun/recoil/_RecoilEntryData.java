@@ -46,8 +46,13 @@ public final class _RecoilEntryData extends ResourcePojo<_RecoilEntryData> {
         writer.beginObject(); {
             JsonUtils.writeFloat(writer, _RecoilEntryDataTag.TIME, this.time);
             JsonUtils.writeFloatArray(writer, _RecoilEntryDataTag.RANGE, this.range);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

@@ -167,8 +167,13 @@ public final class GunDisplay extends _AssetsDisplay<GunDisplay> {
             JsonUtils.writeList(writer, GunDisplayTag.PRELOAD_SOUND_LOCATION, this.preloadSoundLocation, JsonUtils::writeResourceLocationValue);
 
             JsonUtils.write(writer, GunDisplayTag.CONTROLLABLE_DATA, this.controllableData, _ControllableData::toJson);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

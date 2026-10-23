@@ -67,8 +67,13 @@ public final class BlockIndex extends _DataIndex<BlockIndex> {
 
             JsonUtils.writeResourceLocation(writer, BlockIndexTag.BLOCK_LOCATION, this.blockLocation);
             JsonUtils.writeInt(writer, BlockIndexTag.MAX_STACK_SIZE, this.maxStackSize);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

@@ -63,8 +63,13 @@ public final class RecipeData extends ResourcePojo<RecipeData> {
             JsonUtils.writeToString(writer, RecipeDataTag.RECIPE_REGISTRY_TYPE, recipeRegistryType);
             JsonUtils.writeList(writer, RecipeDataTag.TABLE_INGREDIENTS, tableIngredients, _TableIngredientData::toJson);
             JsonUtils.write(writer, RecipeDataTag.TABLE_RESULT, tableResult, _TableResultData::toJson);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override

@@ -30,7 +30,7 @@ public final class _AmmoDisplayOverride extends ResourcePojo<_AmmoDisplayOverrid
                 switch (key) {
                     case _AmmoDisplayOverrideTag.AMMO_PARTICLE, _AmmoDisplayOverrideTag.AMMO_PARTICLE_OLD1 -> pojo.ammoParticle = JsonUtils.read(reader, _AmmoParticle::fromJson);
                     case _AmmoDisplayOverrideTag.TRACER_COLOR -> pojo.tracerColor = JsonUtils.readColor(reader);
-                    default -> readUnknownKey(reader, key);
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
@@ -38,8 +38,8 @@ public final class _AmmoDisplayOverride extends ResourcePojo<_AmmoDisplayOverrid
         return pojo;
     }
     @Override
-    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
-        return super.readUnknownKey(reader, key);
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _AmmoDisplayOverride pojo) throws IOException {

@@ -33,7 +33,7 @@ public final class _ReloadData extends ResourcePojo<_ReloadData> {
                     case _ReloadDataTag.FREE_AMMO_FEED, _ReloadDataTag.FREE_AMMO_FEED_OLD1 -> pojo.freeAmmoFeed = JsonUtils.readBoolean(reader);
                     case _ReloadDataTag.RELOAD_FEED, _ReloadDataTag.RELOAD_FEED_OLD1 -> pojo.reloadFeed = JsonUtils.read(reader, _ReloadFeedData::fromJson);
                     case _ReloadDataTag.RELOAD_COOLDOWN, _ReloadDataTag.RELOAD_COOLDOWN_OLD1 -> pojo.reloadCooldown = JsonUtils.read(reader, _ReloadCooldownData::fromJson);
-                    default -> readUnknownKey(reader, key);
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
@@ -41,8 +41,8 @@ public final class _ReloadData extends ResourcePojo<_ReloadData> {
         return pojo;
     }
     @Override
-    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
-        return super.readUnknownKey(reader, key);
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _ReloadData pojo) throws IOException {

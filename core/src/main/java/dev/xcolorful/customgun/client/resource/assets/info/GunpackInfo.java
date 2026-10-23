@@ -6,7 +6,6 @@ import dev.xcolorful.customgun.core.api.resource.assets.info.GunpackInfoTag;
 import dev.xcolorful.customgun.core.resource.ResourcePojo;
 import dev.xcolorful.customgun.core.util.ComponentUtils;
 import dev.xcolorful.customgun.core.util.JsonUtils;
-import net.minecraft.network.chat.MutableComponent;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -40,7 +39,7 @@ public final class GunpackInfo extends ResourcePojo<GunpackInfo> {
                     case GunpackInfoTag.AUTHORS -> pojo.authors = JsonUtils.readStringList(reader);
                     case GunpackInfoTag.DATE -> pojo.date = JsonUtils.readString(reader);
                     case GunpackInfoTag.GUNPACK_URL, GunpackInfoTag.GUNPACK_URL_OLD1 -> pojo.gunpackUrl = JsonUtils.readString(reader);
-                    default -> readUnknownKey(reader, key);
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
@@ -48,8 +47,8 @@ public final class GunpackInfo extends ResourcePojo<GunpackInfo> {
         return pojo;
     }
     @Override
-    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
-        return super.readUnknownKey(reader, key);
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, GunpackInfo pojo) throws IOException {

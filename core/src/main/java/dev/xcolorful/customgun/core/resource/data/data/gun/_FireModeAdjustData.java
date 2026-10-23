@@ -48,7 +48,7 @@ public final class _FireModeAdjustData extends ResourcePojo<_FireModeAdjustData>
 
                     case _FireModeAdjustDataTag.AIM_INACCURACY -> pojo.aimInaccuracy = JsonUtils.readFloat(reader);
                     case _FireModeAdjustDataTag.OTHER_INACCURACY -> pojo.otherInaccuracy = JsonUtils.readFloat(reader);
-                    default -> readUnknownKey(reader, key);
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
@@ -56,8 +56,8 @@ public final class _FireModeAdjustData extends ResourcePojo<_FireModeAdjustData>
         return pojo;
     }
     @Override
-    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
-        return super.readUnknownKey(reader, key);
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _FireModeAdjustData pojo) throws IOException {

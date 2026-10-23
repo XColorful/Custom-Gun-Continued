@@ -81,7 +81,7 @@ public final class AttachmentData extends ResourcePojo<AttachmentData> {
                     case AttachmentDataTag.MELEE -> pojo.meleeModifier = JsonUtils.read(reader, _MeleeModifierData::fromJson);
 
                     case AttachmentDataTag.MAGAZINE_CATEGORY -> pojo.magazineCategory = JsonUtils.readFromString(reader, MagazineCategory::fromString); case AttachmentDataTag.MAGAZINE_CATEGORY_OLD1 -> pojo.magazineCategory = MagazineCategory.fromIndex(JsonUtils.readInt(reader));
-                    default -> readUnknownKey(reader, key);
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
@@ -89,8 +89,8 @@ public final class AttachmentData extends ResourcePojo<AttachmentData> {
         return pojo;
     }
     @Override
-    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
-        return super.readUnknownKey(reader, key);
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, AttachmentData pojo) throws IOException {

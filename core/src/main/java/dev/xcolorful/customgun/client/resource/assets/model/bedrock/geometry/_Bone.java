@@ -38,7 +38,7 @@ public final class _Bone extends ResourcePojo<_Bone> {
                     case _BoneTag.ROTATION -> pojo.rotation = JsonUtils.readFloatArrayFast(reader, 3);
                     case _BoneTag.CUBES -> pojo.cubes = JsonUtils.readList(reader, _Cube::fromJson);
                     case _BoneTag.MIRROR -> pojo.mirror = JsonUtils.readBoolean(reader);
-                    default -> readUnknownKey(reader, key);
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
@@ -46,8 +46,8 @@ public final class _Bone extends ResourcePojo<_Bone> {
         return pojo;
     }
     @Override
-    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
-        return super.readUnknownKey(reader, key);
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _Bone pojo) throws IOException {

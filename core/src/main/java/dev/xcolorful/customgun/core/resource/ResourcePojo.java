@@ -33,7 +33,7 @@ public abstract class ResourcePojo<T extends ResourcePojo<T>> {
     /**
      * @return 是否已消费 next value
      */
-    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
         reader.skipValue();
         return true;
     }

@@ -40,7 +40,7 @@ public final class BlockIndex extends _DataIndex<BlockIndex> {
 
                     case BlockIndexTag.BLOCK_LOCATION, BlockIndexTag.BLOCK_LOCATION_OLD1 -> pojo.blockLocation = JsonUtils.readResourceLocation(reader);
                     case BlockIndexTag.MAX_STACK_SIZE, BlockIndexTag.MAX_STACK_SIZE_OLD1 -> pojo.maxStackSize = JsonUtils.readInt(reader);
-                    default -> readUnknownKey(reader, key);
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
@@ -48,8 +48,8 @@ public final class BlockIndex extends _DataIndex<BlockIndex> {
         return pojo;
     }
     @Override
-    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
-        return super.readUnknownKey(reader, key);
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, BlockIndex pojo) throws IOException {

@@ -64,7 +64,7 @@ public final class _BulletData extends ResourcePojo<_BulletData> {
                     case _BulletDataTag.FIRE_ASPECT_SECONDS, _BulletDataTag.FIRE_ASPECT_SECONDS_OLD1 -> pojo.fireAspectSeconds = JsonUtils.readInt(reader);
                     case _BulletDataTag.KNOCKBACK_STRENGTH, _BulletDataTag.KNOCKBACK_STRENGTH_OLD1 -> pojo.knockbackStrength = JsonUtils.readFloat(reader);
                     case _BulletDataTag.BULLET_EXPLOSION, _BulletDataTag.BULLET_EXPLOSION_OLD1 -> pojo.explosionData = JsonUtils.read(reader, _ExplosionData::fromJson);
-                    default -> readUnknownKey(reader, key);
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
@@ -72,8 +72,8 @@ public final class _BulletData extends ResourcePojo<_BulletData> {
         return pojo;
     }
     @Override
-    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
-        return super.readUnknownKey(reader, key);
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _BulletData pojo) throws IOException {

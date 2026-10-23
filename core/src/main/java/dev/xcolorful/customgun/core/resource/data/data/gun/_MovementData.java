@@ -30,7 +30,7 @@ public final class _MovementData extends ResourcePojo<_MovementData> {
                     case _MovementDataTag.BASE -> pojo.base = JsonUtils.readFloat(reader);
                     case _MovementDataTag.AIM -> pojo.aim = JsonUtils.readFloat(reader);
                     case _MovementDataTag.RELOAD -> pojo.reload = JsonUtils.readFloat(reader);
-                    default -> readUnknownKey(reader, key);
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
@@ -38,8 +38,8 @@ public final class _MovementData extends ResourcePojo<_MovementData> {
         return pojo;
     }
     @Override
-    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
-        return super.readUnknownKey(reader, key);
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _MovementData pojo) throws IOException {

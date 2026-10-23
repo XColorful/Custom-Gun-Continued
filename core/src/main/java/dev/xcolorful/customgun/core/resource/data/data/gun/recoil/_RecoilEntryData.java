@@ -26,7 +26,7 @@ public final class _RecoilEntryData extends ResourcePojo<_RecoilEntryData> {
                 switch (key) {
                     case _RecoilEntryDataTag.TIME -> pojo.time = JsonUtils.readFloat(reader);
                     case _RecoilEntryDataTag.RANGE, _RecoilEntryDataTag.RANGE_OLD1 -> pojo.range = JsonUtils.readFloatArrayFast(reader, 2);
-                    default -> readUnknownKey(reader, key);
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
@@ -34,8 +34,8 @@ public final class _RecoilEntryData extends ResourcePojo<_RecoilEntryData> {
         return pojo;
     }
     @Override
-    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
-        return super.readUnknownKey(reader, key);
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _RecoilEntryData pojo) throws IOException {

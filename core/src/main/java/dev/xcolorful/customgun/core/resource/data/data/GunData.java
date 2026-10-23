@@ -125,7 +125,7 @@ public final class GunData extends ResourcePojo<GunData> {
                     case GunDataTag.AIM_TIME -> pojo.aimTime = JsonUtils.readFloat(reader);
                     case GunDataTag.BOLT_ACTION_TIME -> pojo.boltActionTime = JsonUtils.readFloat(reader);
                     case GunDataTag.BOLT_FEED_TIME -> pojo.boltFeedTime = JsonUtils.readFloat(reader);
-                    default -> readUnknownKey(reader, key);
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
@@ -133,8 +133,8 @@ public final class GunData extends ResourcePojo<GunData> {
         return pojo;
     }
     @Override
-    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
-        return super.readUnknownKey(reader, key);
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, GunData pojo) throws IOException {

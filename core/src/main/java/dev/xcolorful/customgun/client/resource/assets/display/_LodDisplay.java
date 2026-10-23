@@ -22,7 +22,7 @@ public final class _LodDisplay extends _AssetsDisplay<_LodDisplay> {
                 switch (key) {
                     case _AssetsDisplayTag.MODEL_LOCATION, _AssetsDisplayTag.MODEL_LOCATION_OLD1 -> pojo.setModelLocation(JsonUtils.readResourceLocation(reader));
                     case _AssetsDisplayTag.TEXTURE_LOCATION, _AssetsDisplayTag.TEXTURE_LOCATION_OLD1 -> pojo.setTextureLocation(JsonUtils.readResourceLocation(reader));
-                    default -> readUnknownKey(reader, key);
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
@@ -30,8 +30,8 @@ public final class _LodDisplay extends _AssetsDisplay<_LodDisplay> {
         return pojo;
     }
     @Override
-    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
-        return super.readUnknownKey(reader, key);
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _LodDisplay pojo) throws IOException {

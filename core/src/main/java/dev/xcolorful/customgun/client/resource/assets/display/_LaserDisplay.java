@@ -35,7 +35,7 @@ public final class _LaserDisplay extends ResourcePojo<_LaserDisplay> {
                     case _LaserDisplayTag.LASER_WIDTH, _LaserDisplayTag.LASER_WIDTH_OLD1 -> pojo.laserWidth = JsonUtils.readFloat(reader);
                     case _LaserDisplayTag.THIRD_PERSON_LASER_LENGTH, _LaserDisplayTag.THIRD_PERSON_LASER_LENGTH_OLD1 -> pojo.thirdPersonLaserLength = JsonUtils.readFloat(reader);
                     case _LaserDisplayTag.THIRD_PERSON_LASER_WIDTH, _LaserDisplayTag.THIRD_PERSON_LASER_WIDTH_OLD1 -> pojo.thirdPersonLaserWidth = JsonUtils.readFloat(reader);
-                    default -> readUnknownKey(reader, key);
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
@@ -43,8 +43,8 @@ public final class _LaserDisplay extends ResourcePojo<_LaserDisplay> {
         return pojo;
     }
     @Override
-    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
-        return super.readUnknownKey(reader, key);
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _LaserDisplay pojo) throws IOException {

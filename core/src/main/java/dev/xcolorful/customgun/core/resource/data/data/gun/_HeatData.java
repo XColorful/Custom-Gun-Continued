@@ -47,7 +47,7 @@ public final class _HeatData extends ResourcePojo<_HeatData> {
                     case _HeatDataTag.OVERHEAT_LOCKTIME_MS, _HeatDataTag.OVERHEAT_LOCKTIME_MS_OLD1 -> pojo.overheatLocktimeMs = JsonUtils.readLong(reader);
                     case _HeatDataTag.COOLING_DELAY_MS, _HeatDataTag.COOLING_DELAY_MS_OLD1 -> pojo.coolingDelayMs = JsonUtils.readLong(reader);
                     case _HeatDataTag.COOLING_SPEED_MULTIPLIER, _HeatDataTag.COOLING_SPEED_MULTIPLIER_OLD1 -> pojo.coolingSpeedMultiplier = JsonUtils.readFloat(reader);
-                    default -> readUnknownKey(reader, key);
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
@@ -55,8 +55,8 @@ public final class _HeatData extends ResourcePojo<_HeatData> {
         return pojo;
     }
     @Override
-    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
-        return super.readUnknownKey(reader, key);
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _HeatData pojo) throws IOException {

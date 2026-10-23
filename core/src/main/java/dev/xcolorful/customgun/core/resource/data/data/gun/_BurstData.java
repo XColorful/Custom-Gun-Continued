@@ -30,7 +30,7 @@ public final class _BurstData extends ResourcePojo<_BurstData> {
                     case _BurstDataTag.BURST_AMOUNT, _BurstDataTag.BURST_AMOUNT_OLD1 -> pojo.burstAmount = JsonUtils.readInt(reader);
                     case _BurstDataTag.SHOOT_INTERVAL_SECONDS, _BurstDataTag.SHOOT_INTERVAL_SECONDS_OLD1 -> pojo.shootIntervalSeconds = JsonUtils.readFloat(reader);
                     case _BurstDataTag.CONTINUOUS_SHOOT -> pojo.continuousShoot = JsonUtils.readBoolean(reader);
-                    default -> readUnknownKey(reader, key);
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
@@ -38,8 +38,8 @@ public final class _BurstData extends ResourcePojo<_BurstData> {
         return pojo;
     }
     @Override
-    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
-        return super.readUnknownKey(reader, key);
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _BurstData pojo) throws IOException {

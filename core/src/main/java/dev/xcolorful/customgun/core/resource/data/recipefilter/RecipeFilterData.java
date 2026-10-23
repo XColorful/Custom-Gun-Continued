@@ -40,7 +40,7 @@ public final class RecipeFilterData extends ResourcePojo<RecipeFilterData>
                 switch (key) {
                     case RecipeFilterDataTag.WHITELIST -> pojo.whitelistRaw = JsonUtils.readStringList(reader);
                     case RecipeFilterDataTag.BLACKLIST -> pojo.blacklistRaw = JsonUtils.readStringList(reader);
-                    default -> readUnknownKey(reader, key);
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
@@ -48,8 +48,8 @@ public final class RecipeFilterData extends ResourcePojo<RecipeFilterData>
         return pojo;
     }
     @Override
-    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
-        return super.readUnknownKey(reader, key);
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, RecipeFilterData pojo) throws IOException {

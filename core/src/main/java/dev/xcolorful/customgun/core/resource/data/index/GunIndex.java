@@ -37,7 +37,7 @@ public final class GunIndex extends _DataIndex<GunIndex> {
 
                     case GunIndexTag.GUN_CATEGORY, GunIndexTag.GUN_CATEGORY_OLD1 -> pojo.gunCategory = JsonUtils.readFromString(reader, GunCategory::fromString);
                     case GunIndexTag.ITEM_TYPE -> pojo.itemType = JsonUtils.readFromString(reader, ItemType::fromString);
-                    default -> readUnknownKey(reader, key);
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
@@ -45,8 +45,8 @@ public final class GunIndex extends _DataIndex<GunIndex> {
         return pojo;
     }
     @Override
-    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
-        return super.readUnknownKey(reader, key);
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, GunIndex pojo) throws IOException {
@@ -63,6 +63,7 @@ public final class GunIndex extends _DataIndex<GunIndex> {
 
             JsonUtils.writeToString(writer, GunIndexTag.GUN_CATEGORY, this.gunCategory);
             JsonUtils.writeToString(writer, GunIndexTag.ITEM_TYPE, this.itemType);
+            writeUnknownValue(writer);
         }
         writer.endObject();
     }

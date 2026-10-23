@@ -27,7 +27,7 @@ public final class _RecoilDataModifierData extends ResourcePojo<_RecoilDataModif
                 switch (key) {
                     case _RecoilDataModifierDataTag.PITCH_RECOIL, _RecoilDataModifierDataTag.PITCH_RECOIL_OLD1 -> pojo.pitchRecoilModifier = JsonUtils.read(reader, _SimpleModifierData::fromJson);
                     case _RecoilDataModifierDataTag.YAW_RECOIL, _RecoilDataModifierDataTag.YAW_RECOIL_OLD1 -> pojo.yawRecoilModifier = JsonUtils.read(reader, _SimpleModifierData::fromJson);
-                    default -> readUnknownKey(reader, key);
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
@@ -35,8 +35,8 @@ public final class _RecoilDataModifierData extends ResourcePojo<_RecoilDataModif
         return pojo;
     }
     @Override
-    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
-        return super.readUnknownKey(reader, key);
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _RecoilDataModifierData pojo) throws IOException {

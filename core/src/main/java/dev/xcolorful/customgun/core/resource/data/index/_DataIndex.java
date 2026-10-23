@@ -19,8 +19,8 @@ public abstract class _DataIndex<T extends _DataIndex<T>> extends ResourcePojo<T
     private int slotSort = 0;
 
     @Override
-    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
-        return super.readUnknownKey(reader, key);
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     @Override

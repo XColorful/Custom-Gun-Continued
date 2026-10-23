@@ -28,7 +28,7 @@ public final class GunpackMeta extends ResourcePojo<GunpackMeta> {
                 switch (name) {
                     case GunpackMetaTag.NAMESPACE -> pojo.namespace = JsonUtils.readString(reader);
                     case GunpackMetaTag.DEPENDENCIES -> pojo.dependencies = JsonUtils.readString2StringMap(reader);
-                    default -> readUnknownKey(reader, name);
+                    default -> this.readCustomKey(reader, name);
                 }
             }
         }
@@ -36,8 +36,8 @@ public final class GunpackMeta extends ResourcePojo<GunpackMeta> {
         return pojo;
     }
     @Override
-    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
-        return super.readUnknownKey(reader, key);
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, GunpackMeta pojo) throws IOException {

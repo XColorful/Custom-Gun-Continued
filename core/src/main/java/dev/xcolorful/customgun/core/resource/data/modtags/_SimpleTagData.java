@@ -3,7 +3,6 @@ package dev.xcolorful.customgun.core.resource.data.modtags;
 import com.google.gson.stream.JsonReader;
 import dev.xcolorful.customgun.core.api.resource.IResourcePojoExtension;
 import dev.xcolorful.customgun.core.resource.ResourcePojo;
-import org.jetbrains.annotations.ApiStatus;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,8 +24,8 @@ public abstract class _SimpleTagData<T extends _SimpleTagData<T>> extends Resour
     }
 
     @Override
-    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
-        return super.readUnknownKey(reader, key);
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     // --------Getter & Setter--------

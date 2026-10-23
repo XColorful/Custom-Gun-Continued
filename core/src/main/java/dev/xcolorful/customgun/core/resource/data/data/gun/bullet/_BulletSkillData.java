@@ -31,7 +31,7 @@ public final class _BulletSkillData extends ResourcePojo<_BulletSkillData> {
                     case _BulletSkillDataTag.ARMOR_IGNORE_PERCENT, _BulletSkillDataTag.ARMOR_IGNORE_PERCENT_OLD1 -> pojo.armorIgnorePercent = JsonUtils.readFloat(reader);
                     case _BulletSkillDataTag.HEADSHOT_MULTIPLIER, _BulletSkillDataTag.HEADSHOT_MULTIPLIER_OLD1 -> pojo.headshotMultiplier = JsonUtils.readFloat(reader);
                     case _BulletSkillDataTag.DAMAGE_CALCULATION, _BulletSkillDataTag.DAMAGE_CALCULATION_OLD1 -> pojo.damageCalculation = JsonUtils.readList(reader, _DistanceDamageData::fromJson);
-                    default -> readUnknownKey(reader, key);
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
@@ -39,8 +39,8 @@ public final class _BulletSkillData extends ResourcePojo<_BulletSkillData> {
         return pojo;
     }
     @Override
-    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
-        return super.readUnknownKey(reader, key);
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _BulletSkillData pojo) throws IOException {

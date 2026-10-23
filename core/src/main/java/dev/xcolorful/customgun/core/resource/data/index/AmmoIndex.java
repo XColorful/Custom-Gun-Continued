@@ -35,7 +35,7 @@ public final class AmmoIndex extends _DataIndex<AmmoIndex> {
 
                     case AmmoIndexTag.AMMO_CATEGORY -> pojo.ammoCategory = JsonUtils.readFromString(reader, AmmoCategory::fromString);
                     case AmmoIndexTag.MAX_STACK_SIZE, AmmoIndexTag.MAX_STACK_SIZE_OLD1 -> pojo.maxStackSize = JsonUtils.readInt(reader);
-                    default -> readUnknownKey(reader, key);
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
@@ -43,8 +43,8 @@ public final class AmmoIndex extends _DataIndex<AmmoIndex> {
         return pojo;
     }
     @Override
-    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
-        return super.readUnknownKey(reader, key);
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, AmmoIndex pojo) throws IOException {

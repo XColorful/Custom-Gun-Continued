@@ -28,7 +28,7 @@ public final class _SurroundDisplay extends ResourcePojo<_SurroundDisplay> {
                     case _SurroundDisplayTag.POS -> pojo.pos = JsonUtils.readFloatArrayFast(reader, 3);
                     case _SurroundDisplayTag.ROTATE -> pojo.rotate = JsonUtils.readFloatArrayFast(reader, 3);
                     case _SurroundDisplayTag.SCALE -> pojo.scale = JsonUtils.readFloatArrayFast(reader, 3);
-                    default -> readUnknownKey(reader, key);
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
@@ -36,8 +36,8 @@ public final class _SurroundDisplay extends ResourcePojo<_SurroundDisplay> {
         return pojo;
     }
     @Override
-    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
-        return super.readUnknownKey(reader, key);
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _SurroundDisplay pojo) throws IOException {

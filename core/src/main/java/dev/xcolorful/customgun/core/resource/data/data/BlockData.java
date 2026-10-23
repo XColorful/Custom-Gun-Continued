@@ -31,7 +31,7 @@ public final class BlockData extends ResourcePojo<BlockData> {
                 switch (key) {
                     case BlockDataTag.RECIPE_FILTER_LOCATION -> pojo.recipeFilterLocation = JsonUtils.readResourceLocation(reader);
                     case BlockDataTag.RECIPE_GROUP_LIST -> pojo.recipeGroupList = JsonUtils.readList(reader, _RecipeGroupData::fromJson);
-                    default -> readUnknownKey(reader, key);
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
@@ -39,8 +39,8 @@ public final class BlockData extends ResourcePojo<BlockData> {
         return pojo;
     }
     @Override
-    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
-        return super.readUnknownKey(reader, key);
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, BlockData pojo) throws IOException {

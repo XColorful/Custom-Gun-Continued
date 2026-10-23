@@ -36,8 +36,8 @@ public abstract class _AssetsDisplay<T extends _AssetsDisplay<T>> extends Resour
     }
 
     @Override
-    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
-        return super.readUnknownKey(reader, key);
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     // --------Getter & Setter--------

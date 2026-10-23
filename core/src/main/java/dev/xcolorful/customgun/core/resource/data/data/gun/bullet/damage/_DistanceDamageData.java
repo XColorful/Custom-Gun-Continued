@@ -26,7 +26,7 @@ public final class _DistanceDamageData extends ResourcePojo<_DistanceDamageData>
                 switch (key) {
                     case _DistanceDamageDataTag.DISTANCE -> pojo.distance = JsonUtils.readFloat(reader);
                     case _DistanceDamageDataTag.DAMAGE -> pojo.damage = JsonUtils.readFloat(reader);
-                    default -> readUnknownKey(reader, key);
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
@@ -34,8 +34,8 @@ public final class _DistanceDamageData extends ResourcePojo<_DistanceDamageData>
         return pojo;
     }
     @Override
-    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
-        return super.readUnknownKey(reader, key);
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _DistanceDamageData pojo) throws IOException {

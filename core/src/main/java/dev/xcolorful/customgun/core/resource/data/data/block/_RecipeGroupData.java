@@ -7,7 +7,6 @@ import dev.xcolorful.customgun.core.api.resource.data.data.block._RecipeGroupDat
 import dev.xcolorful.customgun.core.resource.ResourcePojo;
 import dev.xcolorful.customgun.core.util.ComponentUtils;
 import dev.xcolorful.customgun.core.util.JsonUtils;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 
 import java.io.IOException;
@@ -31,15 +30,15 @@ public final class _RecipeGroupData extends ResourcePojo<_RecipeGroupData> {
             switch (key) {
                 case _RecipeGroupDataTag.GROUP_CATEGORY -> pojo.groupCategory = JsonUtils.readResourceLocation(reader);
                 case _RecipeGroupDataTag.NAME_LANG -> pojo.nameLang = JsonUtils.readString(reader);
-                default -> readUnknownKey(reader, key);
+                default -> this.readCustomKey(reader, key);
             }
         }
         reader.endObject();
         return pojo;
     }
     @Override
-    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
-        return super.readUnknownKey(reader, key);
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _RecipeGroupData data) throws IOException {

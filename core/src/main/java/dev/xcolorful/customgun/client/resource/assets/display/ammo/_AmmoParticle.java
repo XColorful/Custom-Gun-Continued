@@ -34,7 +34,7 @@ public final class _AmmoParticle extends ResourcePojo<_AmmoParticle> {
                     case _AmmoParticleTag.SPEED -> pojo.speed = JsonUtils.readFloat(reader);
                     case _AmmoParticleTag.COUNT -> pojo.count = JsonUtils.readInt(reader);
                     case _AmmoParticleTag.LIFETIME_TICKS, _AmmoParticleTag.LIFETIME_TICKS_OLD1 -> pojo.lifetimeTicks = JsonUtils.readInt(reader);
-                    default -> readUnknownKey(reader, key);
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
@@ -42,8 +42,8 @@ public final class _AmmoParticle extends ResourcePojo<_AmmoParticle> {
         return pojo;
     }
     @Override
-    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
-        return super.readUnknownKey(reader, key);
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _AmmoParticle pojo) throws IOException {

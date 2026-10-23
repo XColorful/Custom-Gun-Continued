@@ -47,7 +47,7 @@ public final class _DefaultMeleeData extends ResourcePojo<_DefaultMeleeData> {
                     case _DefaultMeleeDataTag.BASE_COOLDOWN, _DefaultMeleeDataTag.BASE_COOLDOWN_OLD1 -> pojo.baseCooldown = JsonUtils.readFloat(reader);
 
                     case _DefaultMeleeDataTag.KNOCKBACK_STRENGTH, _DefaultMeleeDataTag.KNOCKBACK_STRENGTH_OLD1 -> pojo.knockbackStrength = JsonUtils.readFloat(reader);
-                    default -> readUnknownKey(reader, key);
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
@@ -55,8 +55,8 @@ public final class _DefaultMeleeData extends ResourcePojo<_DefaultMeleeData> {
         return pojo;
     }
     @Override
-    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
-        return super.readUnknownKey(reader, key);
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _DefaultMeleeData pojo) throws IOException {

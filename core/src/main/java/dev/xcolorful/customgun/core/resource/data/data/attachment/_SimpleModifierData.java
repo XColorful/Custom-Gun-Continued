@@ -24,7 +24,7 @@ public final class _SimpleModifierData extends __ModifierData<_SimpleModifierDat
                     case __ModifierDataTag.SHARED_PERCENT_ADD, __ModifierDataTag.SHARED_PERCENT_ADD_OLD1 -> pojo.setSharedPercentAdd(JsonUtils.readFloat(reader));
                     case __ModifierDataTag.UNIQUE_MULTIPLIER, __ModifierDataTag.UNIQUE_MULTIPLIER_OLD1 -> pojo.setUniqueMultiplier(JsonUtils.readFloat(reader));
                     case __ModifierDataTag.SCRIPT_FUNCTION, __ModifierDataTag.SCRIPT_FUNCTION_OLD1 -> pojo.setScriptFunction(JsonUtils.readString(reader));
-                    default -> readUnknownKey(reader, key);
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
@@ -32,8 +32,8 @@ public final class _SimpleModifierData extends __ModifierData<_SimpleModifierDat
         return pojo;
     }
     @Override
-    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
-        return super.readUnknownKey(reader, key);
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _SimpleModifierData pojo) throws IOException {

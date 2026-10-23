@@ -40,7 +40,7 @@ public final class _ChargingData extends ResourcePojo<_ChargingData> {
                     case _ChargingDataTag.CHARGE_PER_TICK, _ChargingDataTag.CHARGE_PER_TICK_OLD1 -> pojo.chargePerTick = JsonUtils.readFloat(reader);
                     case _ChargingDataTag.RECOVER_PER_TICK, _ChargingDataTag.RECOVER_PER_TICK_OLD1 -> pojo.recoverPerTick = JsonUtils.readFloat(reader);
                     case _ChargingDataTag.ENABLE_CHARGE_DURING_COOLDOWN, _ChargingDataTag.ENABLE_CHARGE_DURING_COOLDOWN_OLD1 -> pojo.enableChargeDuringCooldown = JsonUtils.readBoolean(reader);
-                    default -> readUnknownKey(reader, key);
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
@@ -48,8 +48,8 @@ public final class _ChargingData extends ResourcePojo<_ChargingData> {
         return pojo;
     }
     @Override
-    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
-        return super.readUnknownKey(reader, key);
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _ChargingData pojo) throws IOException {

@@ -28,7 +28,7 @@ public class _ModelTransformScale extends ResourcePojo<_ModelTransformScale> {
                     case _ModelTransformScaleTag.THIRD_PERSON_SCALE, _ModelTransformScaleTag.THIRD_PERSON_SCALE_OLD1 -> pojo.thirdPersonScale = JsonUtils.readFloatArrayFast(reader, 3);
                     case _ModelTransformScaleTag.GROUND_SCALE, _ModelTransformScaleTag.GROUND_SCALE_OLD1 -> pojo.groundScale = JsonUtils.readFloatArrayFast(reader, 3);
                     case _ModelTransformScaleTag.FIXED_SCALE, _ModelTransformScaleTag.FIXED_SCALE_OLD1 -> pojo.fixedScale = JsonUtils.readFloatArrayFast(reader, 3);
-                    default -> readUnknownKey(reader, key);
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
@@ -36,8 +36,8 @@ public class _ModelTransformScale extends ResourcePojo<_ModelTransformScale> {
         return pojo;
     }
     @Override
-    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
-        return super.readUnknownKey(reader, key);
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _ModelTransformScale pojo) throws IOException {

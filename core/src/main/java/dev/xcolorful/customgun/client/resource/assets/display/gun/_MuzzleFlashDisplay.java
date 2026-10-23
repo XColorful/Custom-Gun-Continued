@@ -29,7 +29,7 @@ public final class _MuzzleFlashDisplay extends ResourcePojo<_MuzzleFlashDisplay>
                 switch (key) {
                     case _MuzzleFlashDisplayTag.TEXTURE_LOCATION, _MuzzleFlashDisplayTag.TEXTURE_LOCATION_OLD1 -> pojo.textureLocation = JsonUtils.readResourceLocation(reader);
                     case _MuzzleFlashDisplayTag.TEXTURE_SCALE, _MuzzleFlashDisplayTag.TEXTURE_SCALE_OLD1 -> pojo.textureScale = JsonUtils.readFloat(reader);
-                    default -> readUnknownKey(reader, key);
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
@@ -37,8 +37,8 @@ public final class _MuzzleFlashDisplay extends ResourcePojo<_MuzzleFlashDisplay>
         return pojo;
     }
     @Override
-    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
-        return super.readUnknownKey(reader, key);
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _MuzzleFlashDisplay pojo) throws IOException {

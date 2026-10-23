@@ -33,7 +33,7 @@ public class _GeometryModel extends ResourcePojo<_GeometryModel> {
                 switch (key) {
                     case _GeometryModelTag.DESCRIPTION -> pojo.description = JsonUtils.read(reader, _Description::fromJson);
                     case _GeometryModelTag.BONES -> pojo.bones = JsonUtils.readList(reader, _Bone::fromJson);
-                    default -> readUnknownKey(reader, key);
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
@@ -41,8 +41,8 @@ public class _GeometryModel extends ResourcePojo<_GeometryModel> {
         return pojo;
     }
     @Override
-    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
-        return super.readUnknownKey(reader, key);
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _GeometryModel pojo) throws IOException {

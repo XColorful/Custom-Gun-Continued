@@ -25,7 +25,7 @@ public final class _MuzzleModifierData extends ResourcePojo<_MuzzleModifierData>
                 String key = reader.nextName();
                 switch (key) {
                     case _MuzzleModifierDataTag.FIRE_SOUND_TYPE -> pojo.fireSoundType = JsonUtils.readFromString(reader, FireSoundType::fromString); case _MuzzleModifierDataTag.FIRE_SOUND_TYPE_OLD1 -> pojo.fireSoundType = JsonUtils.readBoolean(reader) ? FireSoundType.SILENCED : FireSoundType.NORMAL;
-                    default -> readUnknownKey(reader, key);
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
@@ -33,8 +33,8 @@ public final class _MuzzleModifierData extends ResourcePojo<_MuzzleModifierData>
         return pojo;
     }
     @Override
-    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
-        return super.readUnknownKey(reader, key);
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _MuzzleModifierData pojo) throws IOException {

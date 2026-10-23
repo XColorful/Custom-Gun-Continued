@@ -29,7 +29,7 @@ public final class BedrockAnimation extends ResourcePojo<BedrockAnimation> {
                 switch (key) {
                     case BedrockAnimationTag.FORMAT_VERSION -> pojo.formatVersion = JsonUtils.readString(reader);
                     case BedrockAnimationTag.ANIMATIONS -> pojo.animations = JsonUtils.readString2ObjectMap(reader, _Animation::fromJson);
-                    default -> readUnknownKey(reader, key);
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
@@ -37,8 +37,8 @@ public final class BedrockAnimation extends ResourcePojo<BedrockAnimation> {
         return pojo;
     }
     @Override
-    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
-        return super.readUnknownKey(reader, key);
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, BedrockAnimation pojo) throws IOException {

@@ -24,8 +24,8 @@ public final class GunAttachmentData extends _SimpleTagData<GunAttachmentData> {
         return pojo;
     }
     @Override
-    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
-        return super.readUnknownKey(reader, key);
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, GunAttachmentData pojo) throws IOException {

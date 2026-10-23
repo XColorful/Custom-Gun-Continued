@@ -26,7 +26,7 @@ public class _FaceUv extends ResourcePojo<_FaceUv> {
                 switch (key) {
                     case _FaceUvTag.UV -> pojo.uv = JsonUtils.readFloatArrayFast(reader, 2);
                     case _FaceUvTag.UV_SIZE -> pojo.uvSize = JsonUtils.readFloatArrayFast(reader,  2);
-                    default -> readUnknownKey(reader, key);
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
@@ -34,8 +34,8 @@ public class _FaceUv extends ResourcePojo<_FaceUv> {
         return pojo;
     }
     @Override
-    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
-        return super.readUnknownKey(reader, key);
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _FaceUv pojo) throws IOException {

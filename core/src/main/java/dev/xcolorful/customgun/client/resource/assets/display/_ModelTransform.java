@@ -25,7 +25,7 @@ public final class _ModelTransform extends ResourcePojo<_ModelTransform> {
                 String key = reader.nextName();
                 switch (key) {
                     case _ModelTransformTag.SCALE -> pojo.scale = JsonUtils.read(reader, _ModelTransformScale::fromJson);
-                    default -> readUnknownKey(reader, key);
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
@@ -33,8 +33,8 @@ public final class _ModelTransform extends ResourcePojo<_ModelTransform> {
         return pojo;
     }
     @Override
-    protected boolean readUnknownKey(JsonReader reader, String key) throws IOException {
-        return super.readUnknownKey(reader, key);
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _ModelTransform pojo) throws IOException {

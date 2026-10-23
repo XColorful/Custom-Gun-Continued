@@ -30,12 +30,16 @@ public final class _MovementData extends ResourcePojo<_MovementData> {
                     case _MovementDataTag.BASE -> pojo.base = JsonUtils.readFloat(reader);
                     case _MovementDataTag.AIM -> pojo.aim = JsonUtils.readFloat(reader);
                     case _MovementDataTag.RELOAD -> pojo.reload = JsonUtils.readFloat(reader);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _MovementData pojo) throws IOException {
@@ -48,13 +52,33 @@ public final class _MovementData extends ResourcePojo<_MovementData> {
             JsonUtils.writeFloat(writer, _MovementDataTag.BASE, this.base);
             JsonUtils.writeFloat(writer, _MovementDataTag.AIM, this.aim);
             JsonUtils.writeFloat(writer, _MovementDataTag.RELOAD, this.reload);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
     protected void validatePojo() {
         this.setValid(true);
+    }
+
+    @Override
+    protected _MovementData copyTo(final _MovementData pojo) {
+        pojo.setBase(this.base);
+        pojo.setAim(this.aim);
+        pojo.setReload(this.reload);
+        return pojo;
+    }
+
+    @Override
+    public _MovementData copy() {
+        _MovementData pojo = copyTo(new _MovementData());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

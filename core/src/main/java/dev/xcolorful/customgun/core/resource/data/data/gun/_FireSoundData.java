@@ -31,12 +31,16 @@ public final class _FireSoundData extends ResourcePojo<_FireSoundData> {
                 switch (key) {
                     case _FireSoundDataTag.NORMAL_MULTIPLIER, _FireSoundDataTag.NORMAL_MULTIPLIER_OLD1 -> pojo.normalMultiplier = JsonUtils.readFloat(reader);
                     case _FireSoundDataTag.SILENCED_MULTIPLIER, _FireSoundDataTag.SILENCED_MULTIPLIER_OLD1 -> pojo.silencedMultiplier = JsonUtils.readFloat(reader);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _FireSoundData pojo) throws IOException {
@@ -47,13 +51,32 @@ public final class _FireSoundData extends ResourcePojo<_FireSoundData> {
         writer.beginObject(); {
             JsonUtils.writeFloat(writer, _FireSoundDataTag.NORMAL_MULTIPLIER, this.normalMultiplier);
             JsonUtils.writeFloat(writer, _FireSoundDataTag.SILENCED_MULTIPLIER, this.silencedMultiplier);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
     protected void validatePojo() {
         this.setValid(true);
+    }
+
+    @Override
+    protected _FireSoundData copyTo(final _FireSoundData pojo) {
+        pojo.setNormalMultiplier(this.normalMultiplier);
+        pojo.setSilencedMultiplier(this.silencedMultiplier);
+        return pojo;
+    }
+
+    @Override
+    public _FireSoundData copy() {
+        _FireSoundData pojo = copyTo(new _FireSoundData());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

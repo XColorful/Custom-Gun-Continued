@@ -29,12 +29,16 @@ public final class _MuzzleFlashDisplay extends ResourcePojo<_MuzzleFlashDisplay>
                 switch (key) {
                     case _MuzzleFlashDisplayTag.TEXTURE_LOCATION, _MuzzleFlashDisplayTag.TEXTURE_LOCATION_OLD1 -> pojo.textureLocation = JsonUtils.readResourceLocation(reader);
                     case _MuzzleFlashDisplayTag.TEXTURE_SCALE, _MuzzleFlashDisplayTag.TEXTURE_SCALE_OLD1 -> pojo.textureScale = JsonUtils.readFloat(reader);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _MuzzleFlashDisplay pojo) throws IOException {
@@ -45,8 +49,13 @@ public final class _MuzzleFlashDisplay extends ResourcePojo<_MuzzleFlashDisplay>
         writer.beginObject(); {
             JsonUtils.writeResourceLocation(writer, _MuzzleFlashDisplayTag.TEXTURE_LOCATION, this.textureLocation);
             JsonUtils.writeFloat(writer, _MuzzleFlashDisplayTag.TEXTURE_SCALE, this.textureScale);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
@@ -60,6 +69,20 @@ public final class _MuzzleFlashDisplay extends ResourcePojo<_MuzzleFlashDisplay>
         }
 
         this.setValid(true);
+    }
+
+    @Override
+    protected _MuzzleFlashDisplay copyTo(final _MuzzleFlashDisplay pojo) {
+        pojo.setTextureLocation(this.textureLocation);
+        pojo.setTextureScale(this.textureScale);
+        return pojo;
+    }
+
+    @Override
+    public _MuzzleFlashDisplay copy() {
+        _MuzzleFlashDisplay pojo = copyTo(new _MuzzleFlashDisplay());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

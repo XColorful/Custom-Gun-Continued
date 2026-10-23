@@ -125,12 +125,16 @@ public final class GunData extends ResourcePojo<GunData> {
                     case GunDataTag.AIM_TIME -> pojo.aimTime = JsonUtils.readFloat(reader);
                     case GunDataTag.BOLT_ACTION_TIME -> pojo.boltActionTime = JsonUtils.readFloat(reader);
                     case GunDataTag.BOLT_FEED_TIME -> pojo.boltFeedTime = JsonUtils.readFloat(reader);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, GunData pojo) throws IOException {
@@ -180,8 +184,13 @@ public final class GunData extends ResourcePojo<GunData> {
             JsonUtils.writeFloat(writer, GunDataTag.AIM_TIME, aimTime);
             JsonUtils.writeFloat(writer, GunDataTag.BOLT_ACTION_TIME, boltActionTime);
             JsonUtils.writeFloat(writer, GunDataTag.BOLT_FEED_TIME, boltFeedTime);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
@@ -235,6 +244,99 @@ public final class GunData extends ResourcePojo<GunData> {
         }
 
         this.setValid(true);
+    }
+
+    @Override
+    protected GunData copyTo(final GunData pojo) {
+        pojo.setBulletData(this.bulletData.copy());
+        pojo.setAmmoLocation(this.ammoLocation);
+        pojo.setBoltType(this.boltType);
+
+        pojo.setRpm(this.rpm);
+        pojo.setInaccuracyData(this.inaccuracyData.copy());
+        pojo.setRecoilData(this.recoilData.copy());
+        pojo.setProneRecoilMultiplier(this.proneRecoilMultiplier);
+
+        pojo.setWeight(this.weight);
+        @Nullable _MovementData movementData = null; {
+            if (this.movementData != null) movementData = this.movementData.copy();
+        } pojo.setMovementData(movementData);
+
+        pojo.setFireSoundData(this.fireSoundData.copy());
+        pojo.setHurtBobTweakMultiplier(this.hurtBobTweakMultiplier);
+
+        pojo.setReloadData(this.reloadData.copy());
+
+        pojo.setScriptLocation(this.scriptLocation);
+        @Nullable Map<String, Object> scriptParam = null; {
+            if (this.scriptParam != null) {
+                scriptParam = new HashMap<>();
+                for (var entry : this.scriptParam.entrySet()) {
+                    scriptParam.put(entry.getKey(), entry.getValue());
+                }
+            }
+        } pojo.setScriptParam(scriptParam);
+
+        pojo.setDefaultFireModeType(this.defaultFireModeType);
+        List<FireModeType> fireModeTypes = new ArrayList<>(this.fireModeTypes.size()); {
+            for (int i = 0; i < this.fireModeTypes.size(); i++) {
+                fireModeTypes.add(this.fireModeTypes.get(i));
+            }
+        } pojo.setFireModeTypes(fireModeTypes);
+        Map<FireModeType, _FireModeAdjustData> fireModeAdjustData = new HashMap<>(); {
+            for (var entry : this.fireModeAdjustData.entrySet()) {
+                fireModeAdjustData.put(entry.getKey(), entry.getValue().copy());
+            }
+        } pojo.setFireModeAdjustData(fireModeAdjustData);
+        pojo.setBurstData(this.burstData.copy());
+
+        pojo.setMeleeData(this.meleeData.copy());
+        @Nullable _HeatData heatData = null; {
+            if (this.heatData != null) heatData = this.heatData.copy();
+        } pojo.setHeatData(heatData);
+        Map<FireModeType, _ChargingData> chargingData = new HashMap<>(); {
+            for (var entry : this.chargingData.entrySet()) {
+                chargingData.put(entry.getKey(), entry.getValue().copy());
+            }
+        } pojo.setChargingData(chargingData);
+
+        List<AttachmentCategory> allowAttachmentTypes = new ArrayList<>(this.allowAttachmentTypes.size()); {
+            for (int i = 0; i < this.allowAttachmentTypes.size(); i++) {
+                allowAttachmentTypes.add(this.allowAttachmentTypes.get(i));
+            }
+        } pojo.setAllowAttachmentTypes(allowAttachmentTypes);
+        Map<ResourceLocation, AttachmentData> exclusiveAttachments = new HashMap<>(); {
+            for (var entry : this.exclusiveAttachments.entrySet()) {
+                exclusiveAttachments.put(entry.getKey(), entry.getValue().copy());
+            }
+        } pojo.setExclusiveAttachments(exclusiveAttachments);
+        pojo.setDefaultMagSize(this.defaultMagSize);
+        int[] extendedMagAmmoSize; {
+            extendedMagAmmoSize = this.extendedMagAmmoSize != null ? this.extendedMagAmmoSize.clone() : null;
+        } pojo.setExtendedMagAmmoSize(extendedMagAmmoSize);
+        Map<AttachmentCategory, ResourceLocation> builtinAttachments = new HashMap<>(); {
+            for (var entry : this.builtinAttachments.entrySet()) {
+                builtinAttachments.put(entry.getKey(), entry.getValue());
+            }
+        } pojo.setBuiltinAttachments(builtinAttachments);
+
+        pojo.setEnableProne(this.enableProne);
+        pojo.setEnableTilting(this.enableTilting);
+
+        pojo.setDrawTime(this.drawTime);
+        pojo.setPutAwayTime(this.putAwayTime);
+        pojo.setSprintSwitchTime(this.sprintSwitchTime);
+        pojo.setAimTime(this.aimTime);
+        pojo.setBoltActionTime(this.boltActionTime);
+        pojo.setBoltFeedTime(this.boltFeedTime);
+        return pojo;
+    }
+
+    @Override
+    public GunData copy() {
+        GunData pojo = copyTo(new GunData());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

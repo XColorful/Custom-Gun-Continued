@@ -24,12 +24,16 @@ public final class _SimpleModifierData extends __ModifierData<_SimpleModifierDat
                     case __ModifierDataTag.SHARED_PERCENT_ADD, __ModifierDataTag.SHARED_PERCENT_ADD_OLD1 -> pojo.setSharedPercentAdd(JsonUtils.readFloat(reader));
                     case __ModifierDataTag.UNIQUE_MULTIPLIER, __ModifierDataTag.UNIQUE_MULTIPLIER_OLD1 -> pojo.setUniqueMultiplier(JsonUtils.readFloat(reader));
                     case __ModifierDataTag.SCRIPT_FUNCTION, __ModifierDataTag.SCRIPT_FUNCTION_OLD1 -> pojo.setScriptFunction(JsonUtils.readString(reader));
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _SimpleModifierData pojo) throws IOException {
@@ -42,13 +46,32 @@ public final class _SimpleModifierData extends __ModifierData<_SimpleModifierDat
             JsonUtils.writeFloat(writer, __ModifierDataTag.SHARED_PERCENT_ADD, this.getSharedPercentAdd());
             JsonUtils.writeFloat(writer, __ModifierDataTag.UNIQUE_MULTIPLIER, this.getUniqueMultiplier());
             JsonUtils.writeString(writer, __ModifierDataTag.SCRIPT_FUNCTION, this.getScriptFunction());
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
     protected void validatePojo() {
         this.setValid(true);
+    }
+
+    @Override
+    protected _SimpleModifierData copyTo(final _SimpleModifierData pojo) {
+        super.copyTo(pojo);
+
+        return pojo;
+    }
+
+    @Override
+    public _SimpleModifierData copy() {
+        _SimpleModifierData pojo = copyTo(new _SimpleModifierData());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Back compatibility--------

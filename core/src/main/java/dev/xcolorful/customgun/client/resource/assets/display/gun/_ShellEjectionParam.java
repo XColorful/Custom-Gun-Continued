@@ -32,12 +32,16 @@ public final class _ShellEjectionParam extends ResourcePojo<_ShellEjectionParam>
                     case _ShellEjectionParamTag.ACCELERATION -> pojo.acceleration = JsonUtils.readFloatArrayFast(reader, 3);
                     case _ShellEjectionParamTag.ANGULAR_VELOCITY -> pojo.angularVelocity = JsonUtils.readFloatArrayFast(reader, 3);
                     case _ShellEjectionParamTag.LIFETIME_SECONDS, _ShellEjectionParamTag.LIFETIME_SECONDS_OLD1 -> pojo.lifetimeSeconds = JsonUtils.readFloat(reader);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _ShellEjectionParam pojo) throws IOException {
@@ -51,8 +55,13 @@ public final class _ShellEjectionParam extends ResourcePojo<_ShellEjectionParam>
             JsonUtils.writeFloatArray(writer, _ShellEjectionParamTag.ACCELERATION, this.acceleration);
             JsonUtils.writeFloatArray(writer, _ShellEjectionParamTag.ANGULAR_VELOCITY, this.angularVelocity);
             JsonUtils.writeFloat(writer, _ShellEjectionParamTag.LIFETIME_SECONDS, this.lifetimeSeconds);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
@@ -66,6 +75,31 @@ public final class _ShellEjectionParam extends ResourcePojo<_ShellEjectionParam>
         }
 
         this.setValid(true);
+    }
+
+    @Override
+    protected _ShellEjectionParam copyTo(final _ShellEjectionParam pojo) {
+        float[] baseVelocity; {
+            baseVelocity = this.baseVelocity != null ? this.baseVelocity.clone() : null;
+        } pojo.setBaseVelocity(baseVelocity);
+        float[] randomizeVelocity; {
+            randomizeVelocity = this.randomizeVelocity != null ? this.randomizeVelocity.clone() : null;
+        } pojo.setRandomizeVelocity(randomizeVelocity);
+        float[] acceleration; {
+            acceleration = this.acceleration != null ? this.acceleration.clone() : null;
+        } pojo.setAcceleration(acceleration);
+        float[] angularVelocity; {
+            angularVelocity = this.angularVelocity != null ? this.angularVelocity.clone() : null;
+        } pojo.setAngularVelocity(angularVelocity);
+        pojo.setLifetimeSeconds(this.lifetimeSeconds);
+        return pojo;
+    }
+
+    @Override
+    public _ShellEjectionParam copy() {
+        _ShellEjectionParam pojo = copyTo(new _ShellEjectionParam());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

@@ -25,12 +25,16 @@ public final class _ModelTransform extends ResourcePojo<_ModelTransform> {
                 String key = reader.nextName();
                 switch (key) {
                     case _ModelTransformTag.SCALE -> pojo.scale = JsonUtils.read(reader, _ModelTransformScale::fromJson);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _ModelTransform pojo) throws IOException {
@@ -40,8 +44,13 @@ public final class _ModelTransform extends ResourcePojo<_ModelTransform> {
     public void toJson(JsonWriter writer) throws IOException {
         writer.beginObject(); {
             JsonUtils.write(writer, _ModelTransformTag.SCALE, this.scale, _ModelTransformScale::toJson);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
@@ -54,6 +63,21 @@ public final class _ModelTransform extends ResourcePojo<_ModelTransform> {
         }
 
         this.setValid(true);
+    }
+
+    @Override
+    protected _ModelTransform copyTo(final _ModelTransform pojo) {
+        @Nullable _ModelTransformScale scale = null; {
+            if (this.scale != null) scale = this.scale.copy();
+        } pojo.setScale(scale);
+        return pojo;
+    }
+
+    @Override
+    public _ModelTransform copy() {
+        _ModelTransform pojo = copyTo(new _ModelTransform());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

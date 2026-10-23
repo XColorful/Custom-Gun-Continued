@@ -35,12 +35,16 @@ public final class _ModelNodeTextDisplay extends ResourcePojo<_ModelNodeTextDisp
                     case _ModelNodeTextDisplayTag.TEXT_LIGHT, _ModelNodeTextDisplayTag.TEXT_LIGHT_OLD1 -> pojo.textLight = JsonUtils.readInt(reader);
                     case _ModelNodeTextDisplayTag.ENABLE_TEXT_SHADOW, _ModelNodeTextDisplayTag.ENABLE_TEXT_SHADOW_OLD1 -> pojo.enableTextShadow = JsonUtils.readBoolean(reader);
                     case _ModelNodeTextDisplayTag.X_OFFSET_SCALE -> pojo.xOffsetScale = JsonUtils.readFloat(reader); case _ModelNodeTextDisplayTag.X_OFFSET_SCALE_OLD1 -> {String s = JsonUtils.readString(reader); pojo.xOffsetScale = s != null ? switch (s) {case "left" -> 0; case "right" -> 1; default -> 0.5f;} : 0.5f;}
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _ModelNodeTextDisplay pojo) throws IOException {
@@ -55,8 +59,13 @@ public final class _ModelNodeTextDisplay extends ResourcePojo<_ModelNodeTextDisp
             JsonUtils.writeInt(writer, _ModelNodeTextDisplayTag.TEXT_LIGHT, this.textLight);
             JsonUtils.writeBoolean(writer, _ModelNodeTextDisplayTag.ENABLE_TEXT_SHADOW, this.enableTextShadow);
             JsonUtils.writeFloat(writer, _ModelNodeTextDisplayTag.X_OFFSET_SCALE, this.xOffsetScale);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
@@ -70,6 +79,24 @@ public final class _ModelNodeTextDisplay extends ResourcePojo<_ModelNodeTextDisp
         }
 
         this.setValid(true);
+    }
+
+    @Override
+    protected _ModelNodeTextDisplay copyTo(final _ModelNodeTextDisplay pojo) {
+        pojo.setTextLang(this.textLang);
+        pojo.setTextScale(this.textScale);
+        pojo.setTextColor(this.textColor);
+        pojo.setTextLight(this.textLight);
+        pojo.setEnableTextShadow(this.enableTextShadow);
+        pojo.setXOffsetScale(this.xOffsetScale);
+        return pojo;
+    }
+
+    @Override
+    public _ModelNodeTextDisplay copy() {
+        _ModelNodeTextDisplay pojo = copyTo(new _ModelNodeTextDisplay());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

@@ -40,12 +40,16 @@ public final class BlockIndex extends _DataIndex<BlockIndex> {
 
                     case BlockIndexTag.BLOCK_LOCATION, BlockIndexTag.BLOCK_LOCATION_OLD1 -> pojo.blockLocation = JsonUtils.readResourceLocation(reader);
                     case BlockIndexTag.MAX_STACK_SIZE, BlockIndexTag.MAX_STACK_SIZE_OLD1 -> pojo.maxStackSize = JsonUtils.readInt(reader);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, BlockIndex pojo) throws IOException {
@@ -63,8 +67,13 @@ public final class BlockIndex extends _DataIndex<BlockIndex> {
 
             JsonUtils.writeResourceLocation(writer, BlockIndexTag.BLOCK_LOCATION, this.blockLocation);
             JsonUtils.writeInt(writer, BlockIndexTag.MAX_STACK_SIZE, this.maxStackSize);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
@@ -79,6 +88,23 @@ public final class BlockIndex extends _DataIndex<BlockIndex> {
         }
 
         this.setValid(true);
+    }
+
+    @Override
+    protected BlockIndex copyTo(final BlockIndex pojo) {
+        super.copyTo(pojo);
+
+        pojo.setBlockLocation(this.blockLocation);
+
+        pojo.setMaxStackSize(this.maxStackSize);
+        return pojo;
+    }
+
+    @Override
+    public BlockIndex copy() {
+        BlockIndex pojo = copyTo(new BlockIndex());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

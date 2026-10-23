@@ -36,12 +36,16 @@ public final class AttachmentIndex extends _DataIndex<AttachmentIndex> {
 
                     case AttachmentIndexTag.ATTACHMENT_CATEGORY, AttachmentIndexTag.ATTACHMENT_CATEGORY_OLD1 -> pojo.attachmentCategory = JsonUtils.readFromString(reader, AttachmentCategory::fromString);
                     case AttachmentIndexTag.HIDE_IN_GAME, AttachmentIndexTag.HIDE_IN_GAME_OLD1 -> pojo.hideInGame = JsonUtils.readBoolean(reader);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, AttachmentIndex pojo) throws IOException {
@@ -59,8 +63,13 @@ public final class AttachmentIndex extends _DataIndex<AttachmentIndex> {
 
             JsonUtils.writeToString(writer, AttachmentIndexTag.ATTACHMENT_CATEGORY, this.attachmentCategory);
             JsonUtils.writeBoolean(writer, AttachmentIndexTag.HIDE_IN_GAME, this.hideInGame);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
@@ -75,6 +84,23 @@ public final class AttachmentIndex extends _DataIndex<AttachmentIndex> {
         }
 
         this.setValid(true);
+    }
+
+    @Override
+    protected AttachmentIndex copyTo(final AttachmentIndex pojo) {
+        super.copyTo(pojo);
+
+        pojo.setAttachmentCategory(this.attachmentCategory);
+
+        pojo.setHideInGame(this.hideInGame);
+        return pojo;
+    }
+
+    @Override
+    public AttachmentIndex copy() {
+        AttachmentIndex pojo = copyTo(new AttachmentIndex());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

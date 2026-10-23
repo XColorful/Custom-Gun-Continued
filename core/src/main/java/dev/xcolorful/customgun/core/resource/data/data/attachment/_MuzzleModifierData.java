@@ -25,12 +25,16 @@ public final class _MuzzleModifierData extends ResourcePojo<_MuzzleModifierData>
                 String key = reader.nextName();
                 switch (key) {
                     case _MuzzleModifierDataTag.FIRE_SOUND_TYPE -> pojo.fireSoundType = JsonUtils.readFromString(reader, FireSoundType::fromString); case _MuzzleModifierDataTag.FIRE_SOUND_TYPE_OLD1 -> pojo.fireSoundType = JsonUtils.readBoolean(reader) ? FireSoundType.SILENCED : FireSoundType.NORMAL;
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _MuzzleModifierData pojo) throws IOException {
@@ -40,8 +44,13 @@ public final class _MuzzleModifierData extends ResourcePojo<_MuzzleModifierData>
     public void toJson(JsonWriter writer) throws IOException {
         writer.beginObject(); {
             JsonUtils.writeToString(writer, _MuzzleModifierDataTag.FIRE_SOUND_TYPE, this.fireSoundType);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
@@ -53,6 +62,19 @@ public final class _MuzzleModifierData extends ResourcePojo<_MuzzleModifierData>
         }
 
         this.setValid(true);
+    }
+
+    @Override
+    protected _MuzzleModifierData copyTo(final _MuzzleModifierData pojo) {
+        pojo.setFireSoundType(this.fireSoundType);
+        return pojo;
+    }
+
+    @Override
+    public _MuzzleModifierData copy() {
+        _MuzzleModifierData pojo = copyTo(new _MuzzleModifierData());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

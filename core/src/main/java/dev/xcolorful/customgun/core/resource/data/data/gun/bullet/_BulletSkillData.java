@@ -31,12 +31,16 @@ public final class _BulletSkillData extends ResourcePojo<_BulletSkillData> {
                     case _BulletSkillDataTag.ARMOR_IGNORE_PERCENT, _BulletSkillDataTag.ARMOR_IGNORE_PERCENT_OLD1 -> pojo.armorIgnorePercent = JsonUtils.readFloat(reader);
                     case _BulletSkillDataTag.HEADSHOT_MULTIPLIER, _BulletSkillDataTag.HEADSHOT_MULTIPLIER_OLD1 -> pojo.headshotMultiplier = JsonUtils.readFloat(reader);
                     case _BulletSkillDataTag.DAMAGE_CALCULATION, _BulletSkillDataTag.DAMAGE_CALCULATION_OLD1 -> pojo.damageCalculation = JsonUtils.readList(reader, _DistanceDamageData::fromJson);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _BulletSkillData pojo) throws IOException {
@@ -48,8 +52,13 @@ public final class _BulletSkillData extends ResourcePojo<_BulletSkillData> {
             JsonUtils.writeFloat(writer, _BulletSkillDataTag.ARMOR_IGNORE_PERCENT, this.armorIgnorePercent);
             JsonUtils.writeFloat(writer, _BulletSkillDataTag.HEADSHOT_MULTIPLIER, this.headshotMultiplier);
             JsonUtils.writeList(writer, _BulletSkillDataTag.DAMAGE_CALCULATION, this.damageCalculation, _DistanceDamageData::toJson);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
@@ -73,6 +82,25 @@ public final class _BulletSkillData extends ResourcePojo<_BulletSkillData> {
         }
 
         this.setValid(true);
+    }
+
+    @Override
+    protected _BulletSkillData copyTo(final _BulletSkillData pojo) {
+        pojo.setArmorIgnorePercent(this.armorIgnorePercent);
+        pojo.setHeadshotMultiplier(this.headshotMultiplier);
+        List<_DistanceDamageData> damageCalculation = new ArrayList<>(this.damageCalculation.size()); {
+            for (int i = 0; i < this.damageCalculation.size(); i++) {
+                damageCalculation.add(this.damageCalculation.get(i).copy());
+            }
+        } pojo.setDamageCalculation(damageCalculation);
+        return pojo;
+    }
+
+    @Override
+    public _BulletSkillData copy() {
+        _BulletSkillData pojo = copyTo(new _BulletSkillData());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

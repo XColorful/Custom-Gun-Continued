@@ -81,12 +81,16 @@ public final class AttachmentData extends ResourcePojo<AttachmentData> {
                     case AttachmentDataTag.MELEE -> pojo.meleeModifier = JsonUtils.read(reader, _MeleeModifierData::fromJson);
 
                     case AttachmentDataTag.MAGAZINE_CATEGORY -> pojo.magazineCategory = JsonUtils.readFromString(reader, MagazineCategory::fromString); case AttachmentDataTag.MAGAZINE_CATEGORY_OLD1 -> pojo.magazineCategory = MagazineCategory.fromIndex(JsonUtils.readInt(reader));
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, AttachmentData pojo) throws IOException {
@@ -119,8 +123,13 @@ public final class AttachmentData extends ResourcePojo<AttachmentData> {
             JsonUtils.write(writer, AttachmentDataTag.MELEE, this.meleeModifier, _MeleeModifierData::toJson);
 
             JsonUtils.writeToString(writer, AttachmentDataTag.MAGAZINE_CATEGORY, this.magazineCategory);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
@@ -140,6 +149,80 @@ public final class AttachmentData extends ResourcePojo<AttachmentData> {
         }
 
         this.setValid(true);
+    }
+
+    @Override
+    protected AttachmentData copyTo(final AttachmentData pojo) {
+        @Nullable _SimpleModifierData adsModifier = null; {
+            if (this.adsModifier != null) adsModifier = this.adsModifier.copy();
+        } pojo.setAdsModifier(adsModifier);
+
+        @Nullable _SimpleModifierData armorIgnorePercentModifier = null; {
+            if (this.armorIgnorePercentModifier != null) armorIgnorePercentModifier = this.armorIgnorePercentModifier.copy();
+        } pojo.setArmorIgnorePercentModifier(armorIgnorePercentModifier);
+        @Nullable _SimpleModifierData headshotMultiplierModifier = null; {
+            if (this.headshotMultiplierModifier != null) headshotMultiplierModifier = this.headshotMultiplierModifier.copy();
+        } pojo.setHeadshotMultiplierModifier(headshotMultiplierModifier);
+        @Nullable _SimpleModifierData damageCalculationModifier = null; {
+            if (this.damageCalculationModifier != null) damageCalculationModifier = this.damageCalculationModifier.copy();
+        } pojo.setDamageCalculationModifier(damageCalculationModifier);
+        @Nullable _SimpleModifierData bulletSpeedModifier = null; {
+            if (this.bulletSpeedModifier != null) bulletSpeedModifier = this.bulletSpeedModifier.copy();
+        } pojo.setBulletSpeedModifier(bulletSpeedModifier);
+        @Nullable _SimpleModifierData pierceCountModifier = null; {
+            if (this.pierceCountModifier != null) pierceCountModifier = this.pierceCountModifier.copy();
+        } pojo.setPierceCountModifier(pierceCountModifier);
+        @Nullable _FireAspectModifierData fireAspectModifier = null; {
+            if (this.fireAspectModifier != null) fireAspectModifier = this.fireAspectModifier.copy();
+        } pojo.setFireAspectModifier(fireAspectModifier);
+        @Nullable _SimpleModifierData knockbackStrengthModifier = null; {
+            if (this.knockbackStrengthModifier != null) knockbackStrengthModifier = this.knockbackStrengthModifier.copy();
+        } pojo.setKnockbackStrengthModifier(knockbackStrengthModifier);
+        @Nullable _BulletExplosionModifierData bulletExplosionModifier = null; {
+            if (this.bulletExplosionModifier != null) bulletExplosionModifier = this.bulletExplosionModifier.copy();
+        } pojo.setBulletExplosionModifier(bulletExplosionModifier);
+
+        @Nullable _SimpleModifierData rpmModifier = null; {
+            if (this.rpmModifier != null) rpmModifier = this.rpmModifier.copy();
+        } pojo.setRpmModifier(rpmModifier);
+        @Nullable _RecoilDataModifierData recoilDataModifier = null; {
+            if (this.recoilDataModifier != null) recoilDataModifier = this.recoilDataModifier.copy();
+        } pojo.setRecoilDataModifier(recoilDataModifier);
+        @Nullable _SimpleModifierData effectiveRangeModifier = null; {
+            if (this.effectiveRangeModifier != null) effectiveRangeModifier = this.effectiveRangeModifier.copy();
+        } pojo.setEffectiveRangeModifier(effectiveRangeModifier);
+        @Nullable _SimpleModifierData weightModifier = null; {
+            if (this.weightModifier != null) weightModifier = this.weightModifier.copy();
+        } pojo.setWeightModifier(weightModifier);
+        @Nullable _MuzzleModifierData muzzleModifier = null; {
+            if (this.muzzleModifier != null) muzzleModifier = this.muzzleModifier.copy();
+        } pojo.setMuzzleModifier(muzzleModifier);
+
+        @Nullable _SimpleModifierData aimInaccuracyModifier = null; {
+            if (this.aimInaccuracyModifier != null) aimInaccuracyModifier = this.aimInaccuracyModifier.copy();
+        } pojo.setAimInaccuracyModifier(aimInaccuracyModifier);
+        @Nullable _SimpleModifierData sneakInaccuracyModifier = null; {
+            if (this.sneakInaccuracyModifier != null) sneakInaccuracyModifier = this.sneakInaccuracyModifier.copy();
+        } pojo.setSneakInaccuracyModifier(sneakInaccuracyModifier);
+        @Nullable _SimpleModifierData proneInaccuracyModifier = null; {
+            if (this.proneInaccuracyModifier != null) proneInaccuracyModifier = this.proneInaccuracyModifier.copy();
+        } pojo.setProneInaccuracyModifier(proneInaccuracyModifier);
+        @Nullable _SimpleModifierData otherInaccuracyModifier = null; {
+            if (this.otherInaccuracyModifier != null) otherInaccuracyModifier = this.otherInaccuracyModifier.copy();
+        } pojo.setOtherInaccuracyModifier(otherInaccuracyModifier);
+        @Nullable _MeleeModifierData meleeModifier = null; {
+            if (this.meleeModifier != null) meleeModifier = this.meleeModifier.copy();
+        } pojo.setMeleeModifier(meleeModifier);
+
+        pojo.setMagazineCategory(this.magazineCategory);
+        return pojo;
+    }
+
+    @Override
+    public AttachmentData copy() {
+        AttachmentData pojo = copyTo(new AttachmentData());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

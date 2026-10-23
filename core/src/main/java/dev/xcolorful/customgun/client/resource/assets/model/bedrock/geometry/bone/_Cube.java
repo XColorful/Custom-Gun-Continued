@@ -38,12 +38,16 @@ public final class _Cube extends ResourcePojo<_Cube> {
                     case _CubeTag.ROTATION -> pojo.rotation = JsonUtils.readFloatArrayFast(reader, 3);
                     case _CubeTag.UV -> pojo.uv = JsonUtils.read(reader, _Uv::fromJson);
                     case _CubeTag.MIRROR -> { pojo.mirror = JsonUtils.readBoolean(reader); pojo.hasMirror = true; }
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _Cube pojo) throws IOException {
@@ -58,13 +62,47 @@ public final class _Cube extends ResourcePojo<_Cube> {
             JsonUtils.writeFloatArray(writer, _CubeTag.PIVOT, this.pivot);
             JsonUtils.writeFloatArray(writer, _CubeTag.ROTATION, this.rotation);
             JsonUtils.write(writer, _CubeTag.UV, this.uv, _Uv::toJson);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
     protected void validatePojo() {
         this.setValid(true);
+    }
+
+    @Override
+    protected _Cube copyTo(final _Cube pojo) {
+        float[] origin; {
+            origin = this.origin != null ? this.origin.clone() : null;
+        } pojo.setOrigin(origin);
+        float[] size; {
+            size = this.size != null ? this.size.clone() : null;
+        } pojo.setSize(size);
+        pojo.setInflate(this.inflate);
+        float[] pivot; {
+            pivot = this.pivot != null ? this.pivot.clone() : null;
+        } pojo.setPivot(pivot);
+        float[] rotation; {
+            rotation = this.rotation != null ? this.rotation.clone() : null;
+        } pojo.setRotation(rotation);
+        pojo.setUv(this.uv.copy());
+        pojo.setMirror(this.mirror);
+
+        pojo.hasMirror = this.hasMirror;
+        return pojo;
+    }
+
+    @Override
+    public _Cube copy() {
+        _Cube pojo = copyTo(new _Cube());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

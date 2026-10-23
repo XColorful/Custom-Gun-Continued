@@ -44,12 +44,16 @@ public final class AmmoDisplay extends _AssetsDisplay<AmmoDisplay> {
 
                     case AmmoDisplayTag.AMMO_PARTICLE, AmmoDisplayTag.AMMO_PARTICLE_OLD1 -> pojo.ammoParticle = JsonUtils.read(reader, _AmmoParticle::fromJson);
                     case AmmoDisplayTag.TRACER_COLOR -> pojo.tracerColor = JsonUtils.readColor(reader);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, AmmoDisplay pojo) throws IOException {
@@ -68,8 +72,13 @@ public final class AmmoDisplay extends _AssetsDisplay<AmmoDisplay> {
 
             JsonUtils.write(writer, AmmoDisplayTag.AMMO_PARTICLE, this.ammoParticle, _AmmoParticle::toJson);
             JsonUtils.writeColor(writer, AmmoDisplayTag.TRACER_COLOR, this.tracerColor);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
@@ -96,6 +105,29 @@ public final class AmmoDisplay extends _AssetsDisplay<AmmoDisplay> {
         }
 
         this.setValid(true);
+    }
+
+    @Override
+    protected AmmoDisplay copyTo(final AmmoDisplay pojo) {
+        super.copyTo(pojo);
+
+        @Nullable _AmmoEntityDisplay ammoEntityDisplay = null; {
+            if (this.ammoEntityDisplay != null) ammoEntityDisplay = this.ammoEntityDisplay.copy();
+        } pojo.setAmmoEntityDisplay(ammoEntityDisplay);
+        @Nullable _ShellDisplay shellDisplay = null; {
+            if (this.shellDisplay != null) shellDisplay = this.shellDisplay.copy();
+        } pojo.setShellDisplay(shellDisplay);
+
+        pojo.setAmmoParticle(this.ammoParticle.copy());
+        pojo.setTracerColor(this.tracerColor);
+        return pojo;
+    }
+
+    @Override
+    public AmmoDisplay copy() {
+        AmmoDisplay pojo = copyTo(new AmmoDisplay());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

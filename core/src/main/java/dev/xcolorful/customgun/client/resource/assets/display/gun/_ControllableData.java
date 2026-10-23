@@ -24,6 +24,10 @@ public final class _ControllableData extends ResourcePojo<_ControllableData> {
         reader.endObject();
         return pojo;
     }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
+    }
 
     public static void toJson(JsonWriter writer, _ControllableData pojo) throws IOException {
         if (pojo != null) pojo.toJson(writer);
@@ -31,13 +35,30 @@ public final class _ControllableData extends ResourcePojo<_ControllableData> {
     @Override
     public void toJson(JsonWriter writer) throws IOException {
         writer.beginObject(); {
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
     protected void validatePojo() {
         this.setValid(true);
+    }
+
+    @Override
+    protected _ControllableData copyTo(final _ControllableData pojo) {
+        return pojo;
+    }
+
+    @Override
+    public _ControllableData copy() {
+        _ControllableData pojo = copyTo(new _ControllableData());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

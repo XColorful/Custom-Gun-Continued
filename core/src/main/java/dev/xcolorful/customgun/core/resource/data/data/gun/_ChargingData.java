@@ -40,12 +40,16 @@ public final class _ChargingData extends ResourcePojo<_ChargingData> {
                     case _ChargingDataTag.CHARGE_PER_TICK, _ChargingDataTag.CHARGE_PER_TICK_OLD1 -> pojo.chargePerTick = JsonUtils.readFloat(reader);
                     case _ChargingDataTag.RECOVER_PER_TICK, _ChargingDataTag.RECOVER_PER_TICK_OLD1 -> pojo.recoverPerTick = JsonUtils.readFloat(reader);
                     case _ChargingDataTag.ENABLE_CHARGE_DURING_COOLDOWN, _ChargingDataTag.ENABLE_CHARGE_DURING_COOLDOWN_OLD1 -> pojo.enableChargeDuringCooldown = JsonUtils.readBoolean(reader);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _ChargingData pojo) throws IOException {
@@ -62,8 +66,13 @@ public final class _ChargingData extends ResourcePojo<_ChargingData> {
             JsonUtils.writeFloat(writer, _ChargingDataTag.CHARGE_PER_TICK, chargePerTick);
             JsonUtils.writeFloat(writer, _ChargingDataTag.RECOVER_PER_TICK, recoverPerTick);
             JsonUtils.writeBoolean(writer, _ChargingDataTag.ENABLE_CHARGE_DURING_COOLDOWN, enableChargeDuringCooldown);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
@@ -75,6 +84,26 @@ public final class _ChargingData extends ResourcePojo<_ChargingData> {
         }
 
         this.setValid(true);
+    }
+
+    @Override
+    protected _ChargingData copyTo(final _ChargingData pojo) {
+        pojo.setChargeType(this.chargeType);
+        pojo.setMaxCharge(this.maxCharge);
+        pojo.setFireThreshold(this.fireThreshold);
+        pojo.setRecoverByFire(this.recoverByFire);
+
+        pojo.setChargePerTick(this.chargePerTick);
+        pojo.setRecoverPerTick(this.recoverPerTick);
+        pojo.setEnableChargeDuringCooldown(this.enableChargeDuringCooldown);
+        return pojo;
+    }
+
+    @Override
+    public _ChargingData copy() {
+        _ChargingData pojo = copyTo(new _ChargingData());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // -------- Getter & Setter --------

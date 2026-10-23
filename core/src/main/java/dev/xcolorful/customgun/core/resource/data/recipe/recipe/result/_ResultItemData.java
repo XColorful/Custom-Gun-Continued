@@ -33,12 +33,16 @@ public class _ResultItemData extends ResourcePojo<_ResultItemData> {
                 switch (key) {
                     case _ResultItemDataTag.ITEM_LOCATION, _ResultItemDataTag.ITEM_LOCATION_OLD1 -> pojo.itemLocation = JsonUtils.readResourceLocation(reader);
                     case _ResultItemDataTag.ITEM_NBT, _ResultItemDataTag.ITEM_NBT_OLD1 -> pojo.itemNbt = JsonUtils.readNbt(reader);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _ResultItemData pojo) throws IOException {
@@ -49,8 +53,13 @@ public class _ResultItemData extends ResourcePojo<_ResultItemData> {
         writer.beginObject(); {
             JsonUtils.writeResourceLocation(writer, _ResultItemDataTag.ITEM_LOCATION, itemLocation);
             JsonUtils.writeNbt(writer, _ResultItemDataTag.ITEM_NBT, itemNbt);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
@@ -64,6 +73,20 @@ public class _ResultItemData extends ResourcePojo<_ResultItemData> {
         }
 
         this.setValid(true);
+    }
+
+    @Override
+    protected _ResultItemData copyTo(final _ResultItemData pojo) {
+        pojo.setItemLocation(this.itemLocation);
+        pojo.setItemNbt(this.itemNbt == null ? null : this.itemNbt.copy());
+        return pojo;
+    }
+
+    @Override
+    public _ResultItemData copy() {
+        _ResultItemData pojo = copyTo(new _ResultItemData());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

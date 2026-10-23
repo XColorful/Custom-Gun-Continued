@@ -34,12 +34,16 @@ public final class _AmmoParticle extends ResourcePojo<_AmmoParticle> {
                     case _AmmoParticleTag.SPEED -> pojo.speed = JsonUtils.readFloat(reader);
                     case _AmmoParticleTag.COUNT -> pojo.count = JsonUtils.readInt(reader);
                     case _AmmoParticleTag.LIFETIME_TICKS, _AmmoParticleTag.LIFETIME_TICKS_OLD1 -> pojo.lifetimeTicks = JsonUtils.readInt(reader);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _AmmoParticle pojo) throws IOException {
@@ -53,8 +57,13 @@ public final class _AmmoParticle extends ResourcePojo<_AmmoParticle> {
             JsonUtils.writeFloat(writer, _AmmoParticleTag.SPEED, this.speed);
             JsonUtils.writeInt(writer, _AmmoParticleTag.COUNT, this.count);
             JsonUtils.writeInt(writer, _AmmoParticleTag.LIFETIME_TICKS, this.lifetimeTicks);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
@@ -68,6 +77,25 @@ public final class _AmmoParticle extends ResourcePojo<_AmmoParticle> {
         }
 
         this.setValid(true);
+    }
+
+    @Override
+    protected _AmmoParticle copyTo(final _AmmoParticle pojo) {
+        pojo.setParticleLocation(this.particleLocation);
+        float[] delta; {
+            delta = this.delta != null ? this.delta.clone() : null;
+        } pojo.setDelta(delta);
+        pojo.setSpeed(this.speed);
+        pojo.setCount(this.count);
+        pojo.setLifetimeTicks(this.lifetimeTicks);
+        return pojo;
+    }
+
+    @Override
+    public _AmmoParticle copy() {
+        _AmmoParticle pojo = copyTo(new _AmmoParticle());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

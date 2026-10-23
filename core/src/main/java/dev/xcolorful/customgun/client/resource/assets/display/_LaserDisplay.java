@@ -35,12 +35,16 @@ public final class _LaserDisplay extends ResourcePojo<_LaserDisplay> {
                     case _LaserDisplayTag.LASER_WIDTH, _LaserDisplayTag.LASER_WIDTH_OLD1 -> pojo.laserWidth = JsonUtils.readFloat(reader);
                     case _LaserDisplayTag.THIRD_PERSON_LASER_LENGTH, _LaserDisplayTag.THIRD_PERSON_LASER_LENGTH_OLD1 -> pojo.thirdPersonLaserLength = JsonUtils.readFloat(reader);
                     case _LaserDisplayTag.THIRD_PERSON_LASER_WIDTH, _LaserDisplayTag.THIRD_PERSON_LASER_WIDTH_OLD1 -> pojo.thirdPersonLaserWidth = JsonUtils.readFloat(reader);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _LaserDisplay pojo) throws IOException {
@@ -55,8 +59,13 @@ public final class _LaserDisplay extends ResourcePojo<_LaserDisplay> {
             JsonUtils.writeFloat(writer, _LaserDisplayTag.LASER_WIDTH, this.laserWidth);
             JsonUtils.writeFloat(writer, _LaserDisplayTag.THIRD_PERSON_LASER_LENGTH, this.thirdPersonLaserLength);
             JsonUtils.writeFloat(writer, _LaserDisplayTag.THIRD_PERSON_LASER_WIDTH, this.thirdPersonLaserWidth);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
@@ -70,6 +79,24 @@ public final class _LaserDisplay extends ResourcePojo<_LaserDisplay> {
         }
 
         this.setValid(true);
+    }
+
+    @Override
+    protected _LaserDisplay copyTo(final _LaserDisplay pojo) {
+        pojo.setDefaultColor(this.defaultColor);
+        pojo.setEnableCustomizedColor(this.enableCustomizedColor);
+        pojo.setLaserLength(this.laserLength);
+        pojo.setLaserWidth(this.laserWidth);
+        pojo.setThirdPersonLaserLength(this.thirdPersonLaserLength);
+        pojo.setThirdPersonLaserWidth(this.thirdPersonLaserWidth);
+        return pojo;
+    }
+
+    @Override
+    public _LaserDisplay copy() {
+        _LaserDisplay pojo = copyTo(new _LaserDisplay());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

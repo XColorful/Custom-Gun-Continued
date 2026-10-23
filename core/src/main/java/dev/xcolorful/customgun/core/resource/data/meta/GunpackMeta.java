@@ -28,12 +28,16 @@ public final class GunpackMeta extends ResourcePojo<GunpackMeta> {
                 switch (name) {
                     case GunpackMetaTag.NAMESPACE -> pojo.namespace = JsonUtils.readString(reader);
                     case GunpackMetaTag.DEPENDENCIES -> pojo.dependencies = JsonUtils.readString2StringMap(reader);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, name);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, GunpackMeta pojo) throws IOException {
@@ -44,8 +48,13 @@ public final class GunpackMeta extends ResourcePojo<GunpackMeta> {
         writer.beginObject(); {
             JsonUtils.writeString(writer, GunpackMetaTag.NAMESPACE, this.namespace);
             JsonUtils.writeString2StringMap(writer, GunpackMetaTag.DEPENDENCIES, this.dependencies);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
@@ -59,6 +68,24 @@ public final class GunpackMeta extends ResourcePojo<GunpackMeta> {
         }
 
         this.setValid(true);
+    }
+
+    @Override
+    protected GunpackMeta copyTo(final GunpackMeta pojo) {
+        pojo.setNamespace(this.namespace);
+        Map<String, String> dependencies = new HashMap<>(); {
+            for (var entry : this.dependencies.entrySet()) {
+                dependencies.put(entry.getKey(), entry.getValue());
+            }
+        } pojo.setDependencies(dependencies);
+        return pojo;
+    }
+
+    @Override
+    public GunpackMeta copy() {
+        GunpackMeta pojo = copyTo(new GunpackMeta());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

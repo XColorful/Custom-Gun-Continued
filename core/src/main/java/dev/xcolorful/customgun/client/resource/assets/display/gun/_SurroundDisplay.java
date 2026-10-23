@@ -28,12 +28,16 @@ public final class _SurroundDisplay extends ResourcePojo<_SurroundDisplay> {
                     case _SurroundDisplayTag.POS -> pojo.pos = JsonUtils.readFloatArrayFast(reader, 3);
                     case _SurroundDisplayTag.ROTATE -> pojo.rotate = JsonUtils.readFloatArrayFast(reader, 3);
                     case _SurroundDisplayTag.SCALE -> pojo.scale = JsonUtils.readFloatArrayFast(reader, 3);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _SurroundDisplay pojo) throws IOException {
@@ -45,8 +49,13 @@ public final class _SurroundDisplay extends ResourcePojo<_SurroundDisplay> {
             JsonUtils.writeFloatArray(writer, _SurroundDisplayTag.POS, this.pos);
             JsonUtils.writeFloatArray(writer, _SurroundDisplayTag.ROTATE, this.rotate);
             JsonUtils.writeFloatArray(writer, _SurroundDisplayTag.SCALE, this.scale);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
@@ -60,6 +69,27 @@ public final class _SurroundDisplay extends ResourcePojo<_SurroundDisplay> {
         }
 
         this.setValid(true);
+    }
+
+    @Override
+    protected _SurroundDisplay copyTo(final _SurroundDisplay pojo) {
+        float[] pos; {
+            pos = this.pos != null ? this.pos.clone() : null;
+        } pojo.setPos(pos);
+        float[] rotate; {
+            rotate = this.rotate != null ? this.rotate.clone() : null;
+        } pojo.setRotate(rotate);
+        float[] scale; {
+            scale = this.scale != null ? this.scale.clone() : null;
+        } pojo.setScale(scale);
+        return pojo;
+    }
+
+    @Override
+    public _SurroundDisplay copy() {
+        _SurroundDisplay pojo = copyTo(new _SurroundDisplay());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

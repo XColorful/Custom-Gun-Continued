@@ -117,3 +117,34 @@ int[] extendedMagAmmoSize; {
 ```
 
 - 已精确校验：不存在仍留在下一行的 `pojo.setX(...)`；CRLF 换行保持不变；编译通过。
+
+# 
+
+```
+现在把IGunModifier，IAttachmentModifier及其子类里手动copy的部分改成统一调用ResourcePojo.copy
+```
+
+# 
+
+我先定位 `IGunModifier`、`IAttachmentModifier` 及其实现，找出其中手动 copy 的代码。
+
+找到 5 处手动 copy。现在统一改为调用 `copy()`。
+
+已完成，`:core:compileJava` 通过（exit 0）。
+
+**改为调用 `ResourcePojo.copy()` 的 6 处**
+- [IDamageCalculationModifier.java](core/src/main/java/dev/xcolorful/customgun/core/api/item/gun/modifier/IDamageCalculationModifier.java)：`entry.copy()` 后覆盖 damage。
+- [IRecoilDataModifier.java](core/src/main/java/dev/xcolorful/customgun/core/api/item/gun/modifier/IRecoilDataModifier.java)：`getBase` 整体改为 `gunData.getRecoilData().copy()`，删除 `_copyRecoilEntries` 及 3 个已无用 import。
+- [IBulletExplosionModifier.java](core/src/main/java/dev/xcolorful/customgun/core/api/item/gun/modifier/IBulletExplosionModifier.java)：`return explosion.copy();`。
+- [DamageCalculationModifier.java](core/src/main/java/dev/xcolorful/customgun/core/item/attachment/modifier/DamageCalculationModifier.java)：`entry.copy()`。
+- [RecoilDataModifier.java](core/src/main/java/dev/xcolorful/customgun/core/item/attachment/modifier/RecoilDataModifier.java)：`entry.copy()`，仍用缩放后的 range 覆盖。
+- [MeleeModifier.java](core/src/main/java/dev/xcolorful/customgun/core/item/attachment/modifier/MeleeModifier.java)：`return modifier.copy();`。
+
+**保留未改的 3 处（不是单纯 copy，需你确认）**
+1. `IDamageCalculationModifier.getBase` 的 `_DistanceDamageData flat`：源列表为空时合成的默认单段伤害，没有源对象可复制。
+2. `RecoilDataModifier.eval` 的 `new _RecoilData()`：构造的是按倍率缩放后的新结果，两个列表都会被覆盖，用 `base.copy()` 反而先复制再丢弃。
+3. `IMeleeModifier.getBase`：跨类型映射（`_MeleeData` + `_DefaultMeleeData` → `_MeleeModifierData`），字段并非一一对应：`meleeDistance ← gunBaseLength`、`extraCooldown ← baseCooldown`、`targetEffect` 重置为空，无法用单次 `copy()` 替代。
+
+**行为变化提示**
+- `MeleeModifier` 原代码重复 `setMeleeDamage` 且从未设置 `meleeDistance`；改为 `copy()` 后会复制真实的 `meleeDistance`，并且 `targetEffect` 由共享引用变为深拷贝。
+- `IRecoilDataModifier.copy()` 会带上源对象的 `valid` 标志（原手写结果默认 false）。

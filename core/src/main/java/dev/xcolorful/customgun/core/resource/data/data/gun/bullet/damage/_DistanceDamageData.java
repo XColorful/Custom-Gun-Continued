@@ -26,12 +26,16 @@ public final class _DistanceDamageData extends ResourcePojo<_DistanceDamageData>
                 switch (key) {
                     case _DistanceDamageDataTag.DISTANCE -> pojo.distance = JsonUtils.readFloat(reader);
                     case _DistanceDamageDataTag.DAMAGE -> pojo.damage = JsonUtils.readFloat(reader);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _DistanceDamageData pojo) throws IOException {
@@ -42,13 +46,32 @@ public final class _DistanceDamageData extends ResourcePojo<_DistanceDamageData>
         writer.beginObject(); {
             JsonUtils.writeFloat(writer, _DistanceDamageDataTag.DISTANCE, this.distance);
             JsonUtils.writeFloat(writer, _DistanceDamageDataTag.DAMAGE, this.damage);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
     protected void validatePojo() {
         this.setValid(true);
+    }
+
+    @Override
+    protected _DistanceDamageData copyTo(final _DistanceDamageData pojo) {
+        pojo.setDistance(this.distance);
+        pojo.setDamage(this.damage);
+        return pojo;
+    }
+
+    @Override
+    public _DistanceDamageData copy() {
+        _DistanceDamageData pojo = copyTo(new _DistanceDamageData());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

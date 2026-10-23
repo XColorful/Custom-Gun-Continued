@@ -48,12 +48,16 @@ public final class _FireModeAdjustData extends ResourcePojo<_FireModeAdjustData>
 
                     case _FireModeAdjustDataTag.AIM_INACCURACY -> pojo.aimInaccuracy = JsonUtils.readFloat(reader);
                     case _FireModeAdjustDataTag.OTHER_INACCURACY -> pojo.otherInaccuracy = JsonUtils.readFloat(reader);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _FireModeAdjustData pojo) throws IOException {
@@ -73,13 +77,41 @@ public final class _FireModeAdjustData extends ResourcePojo<_FireModeAdjustData>
 
             JsonUtils.writeFloat(writer, _FireModeAdjustDataTag.AIM_INACCURACY, aimInaccuracy);
             JsonUtils.writeFloat(writer, _FireModeAdjustDataTag.OTHER_INACCURACY, otherInaccuracy);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
     protected void validatePojo() {
         this.setValid(true);
+    }
+
+    @Override
+    protected _FireModeAdjustData copyTo(final _FireModeAdjustData pojo) {
+        pojo.setRpm(this.rpm);
+
+        pojo.setDamage(this.damage);
+        pojo.setBulletSpeed(this.bulletSpeed);
+        pojo.setKnockbackStrength(this.knockbackStrength);
+
+        pojo.setArmorIgnorePercent(this.armorIgnorePercent);
+        pojo.setHeadshotMultiplier(this.headshotMultiplier);
+
+        pojo.setAimInaccuracy(this.aimInaccuracy);
+        pojo.setOtherInaccuracy(this.otherInaccuracy);
+        return pojo;
+    }
+
+    @Override
+    public _FireModeAdjustData copy() {
+        _FireModeAdjustData pojo = copyTo(new _FireModeAdjustData());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

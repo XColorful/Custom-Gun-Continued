@@ -41,12 +41,16 @@ public final class RecipeData extends ResourcePojo<RecipeData> {
                     case RecipeDataTag.RECIPE_REGISTRY_TYPE -> pojo.recipeRegistryType = JsonUtils.readString(reader);
                     case RecipeDataTag.TABLE_INGREDIENTS, RecipeDataTag.TABLE_INGREDIENTS_OLD1 -> pojo.tableIngredients = JsonUtils.readList(reader, _TableIngredientData::fromJson);
                     case RecipeDataTag.TABLE_RESULT, RecipeDataTag.TABLE_RESULT_OLD1 -> pojo.tableResult = JsonUtils.read(reader, _TableResultData::fromJson);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, RecipeData pojo) throws IOException {
@@ -59,8 +63,13 @@ public final class RecipeData extends ResourcePojo<RecipeData> {
             JsonUtils.writeToString(writer, RecipeDataTag.RECIPE_REGISTRY_TYPE, recipeRegistryType);
             JsonUtils.writeList(writer, RecipeDataTag.TABLE_INGREDIENTS, tableIngredients, _TableIngredientData::toJson);
             JsonUtils.write(writer, RecipeDataTag.TABLE_RESULT, tableResult, _TableResultData::toJson);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
@@ -90,6 +99,25 @@ public final class RecipeData extends ResourcePojo<RecipeData> {
         }
 
         this.setValid(true);
+    }
+
+    @Override
+    protected RecipeData copyTo(final RecipeData pojo) {
+        pojo.setRecipeRegistryType(this.recipeRegistryType);
+        List<_TableIngredientData> tableIngredients = new ArrayList<>(this.tableIngredients.size()); {
+            for (int i = 0; i < this.tableIngredients.size(); i++) {
+                tableIngredients.add(this.tableIngredients.get(i).copy());
+            }
+        } pojo.setTableIngredients(tableIngredients);
+        pojo.setTableResult(this.tableResult.copy());
+        return pojo;
+    }
+
+    @Override
+    public RecipeData copy() {
+        RecipeData pojo = copyTo(new RecipeData());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

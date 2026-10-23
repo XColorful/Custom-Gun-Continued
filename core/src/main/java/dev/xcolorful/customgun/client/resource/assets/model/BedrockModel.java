@@ -9,6 +9,7 @@ import dev.xcolorful.customgun.core.util.JsonUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class BedrockModel extends ResourcePojo<BedrockModel> {
@@ -29,12 +30,16 @@ public class BedrockModel extends ResourcePojo<BedrockModel> {
                 switch (key) {
                     case BedrockModelTag.FORMAT_VERSION -> pojo.formatVersion = JsonUtils.readString(reader);
                     case BedrockModelTag.GEOMETRY_MODEL -> pojo.geometryModels = JsonUtils.readList(reader, _GeometryModel::fromJson);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, BedrockModel pojo) throws IOException {
@@ -45,13 +50,36 @@ public class BedrockModel extends ResourcePojo<BedrockModel> {
         writer.beginObject(); {
             JsonUtils.writeString(writer, BedrockModelTag.FORMAT_VERSION, this.formatVersion);
             JsonUtils.writeList(writer, BedrockModelTag.GEOMETRY_MODEL, this.geometryModels, _GeometryModel::toJson);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
     protected void validatePojo() {
         this.setValid(true);
+    }
+
+    @Override
+    protected BedrockModel copyTo(final BedrockModel pojo) {
+        pojo.setFormatVersion(this.formatVersion);
+        List<_GeometryModel> geometryModels = new ArrayList<>(this.geometryModels.size()); {
+            for (int i = 0; i < this.geometryModels.size(); i++) {
+                geometryModels.add(this.geometryModels.get(i).copy());
+            }
+        } pojo.setGeometryModels(geometryModels);
+        return pojo;
+    }
+
+    @Override
+    public BedrockModel copy() {
+        BedrockModel pojo = copyTo(new BedrockModel());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

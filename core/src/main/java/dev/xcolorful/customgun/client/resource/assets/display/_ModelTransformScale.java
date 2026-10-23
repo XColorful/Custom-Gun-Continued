@@ -28,12 +28,16 @@ public class _ModelTransformScale extends ResourcePojo<_ModelTransformScale> {
                     case _ModelTransformScaleTag.THIRD_PERSON_SCALE, _ModelTransformScaleTag.THIRD_PERSON_SCALE_OLD1 -> pojo.thirdPersonScale = JsonUtils.readFloatArrayFast(reader, 3);
                     case _ModelTransformScaleTag.GROUND_SCALE, _ModelTransformScaleTag.GROUND_SCALE_OLD1 -> pojo.groundScale = JsonUtils.readFloatArrayFast(reader, 3);
                     case _ModelTransformScaleTag.FIXED_SCALE, _ModelTransformScaleTag.FIXED_SCALE_OLD1 -> pojo.fixedScale = JsonUtils.readFloatArrayFast(reader, 3);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _ModelTransformScale pojo) throws IOException {
@@ -45,8 +49,13 @@ public class _ModelTransformScale extends ResourcePojo<_ModelTransformScale> {
             JsonUtils.writeFloatArray(writer, _ModelTransformScaleTag.THIRD_PERSON_SCALE, this.thirdPersonScale);
             JsonUtils.writeFloatArray(writer, _ModelTransformScaleTag.GROUND_SCALE, this.groundScale);
             JsonUtils.writeFloatArray(writer, _ModelTransformScaleTag.FIXED_SCALE, this.fixedScale);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
@@ -60,6 +69,27 @@ public class _ModelTransformScale extends ResourcePojo<_ModelTransformScale> {
         }
 
         this.setValid(true);
+    }
+
+    @Override
+    protected _ModelTransformScale copyTo(final _ModelTransformScale pojo) {
+        float[] thirdPersonScale; {
+            thirdPersonScale = this.thirdPersonScale != null ? this.thirdPersonScale.clone() : null;
+        } pojo.setThirdPersonScale(thirdPersonScale);
+        float[] groundScale; {
+            groundScale = this.groundScale != null ? this.groundScale.clone() : null;
+        } pojo.setGroundScale(groundScale);
+        float[] fixedScale; {
+            fixedScale = this.fixedScale != null ? this.fixedScale.clone() : null;
+        } pojo.setFixedScale(fixedScale);
+        return pojo;
+    }
+
+    @Override
+    public _ModelTransformScale copy() {
+        _ModelTransformScale pojo = copyTo(new _ModelTransformScale());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

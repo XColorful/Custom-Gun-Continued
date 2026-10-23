@@ -281,12 +281,12 @@ public final class GunDisplay extends _AssetsDisplay<GunDisplay> {
         pojo.setShooterAnimationCategory(this.shooterAnimationCategory);
         pojo.setPlayerAnimatorLocation(this.playerAnimatorLocation);
         pojo.setPlayerAnimatorFixedHand(this.playerAnimatorFixedHand);
-        Map<GunSoundType, ResourceLocation> gunSounds = new HashMap<>(); {
+        Map<GunSoundType, Identifier> gunSounds = new HashMap<>(); {
             for (var entry : this.gunSounds.entrySet()) {
                 gunSounds.put(entry.getKey(), entry.getValue());
             }
         } pojo.setGunSounds(gunSounds);
-        @Nullable List<ResourceLocation> preloadSoundLocation = null; {
+        @Nullable List<Identifier> preloadSoundLocation = null; {
             if (this.preloadSoundLocation != null) {
                 preloadSoundLocation = new ArrayList<>(this.preloadSoundLocation.size());
                 for (int i = 0; i < this.preloadSoundLocation.size(); i++) {

@@ -42,7 +42,7 @@ public final class _KeyFrame extends ResourcePojo<_KeyFrame> {
                     case _KeyFrameTag.POST -> pojo.post = ClientJsonUtils.readFloatArrayWithMolangTolerance(reader, 3);
                     case _KeyFrameTag.DATA -> pojo.data = ClientJsonUtils.readFloatArrayWithMolangTolerance(reader, 3);
                     case _KeyFrameTag.LERP_MODE -> pojo.lerpMode = JsonUtils.readFromString(reader, LerpMode::fromString);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
             reader.endObject();
@@ -50,6 +50,10 @@ public final class _KeyFrame extends ResourcePojo<_KeyFrame> {
             reader.skipValue();
         }
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _KeyFrame pojo) throws IOException {
@@ -73,13 +77,40 @@ public final class _KeyFrame extends ResourcePojo<_KeyFrame> {
             JsonUtils.writeFloatArray(writer, _KeyFrameTag.POST, this.post);
             JsonUtils.writeFloatArray(writer, _KeyFrameTag.DATA, this.data);
             JsonUtils.writeToString(writer, _KeyFrameTag.LERP_MODE, this.lerpMode);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
     protected void validatePojo() {
         this.setValid(true);
+    }
+
+    @Override
+    protected _KeyFrame copyTo(final _KeyFrame pojo) {
+        float[] pre; {
+            pre = this.pre != null ? this.pre.clone() : null;
+        } pojo.setPre(pre);
+        float[] post; {
+            post = this.post != null ? this.post.clone() : null;
+        } pojo.setPost(post);
+        float[] data; {
+            data = this.data != null ? this.data.clone() : null;
+        } pojo.setData(data);
+        pojo.setLerpMode(this.lerpMode);
+        return pojo;
+    }
+
+    @Override
+    public _KeyFrame copy() {
+        _KeyFrame pojo = copyTo(new _KeyFrame());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

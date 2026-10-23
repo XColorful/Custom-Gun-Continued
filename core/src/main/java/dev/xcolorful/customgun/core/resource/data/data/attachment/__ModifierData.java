@@ -1,7 +1,11 @@
 package dev.xcolorful.customgun.core.resource.data.data.attachment;
 
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import dev.xcolorful.customgun.core.resource.ResourcePojo;
 import org.jetbrains.annotations.Nullable;
+
+import java.io.IOException;
 
 public abstract class __ModifierData<T extends __ModifierData<T>> extends ResourcePojo<T> {
 
@@ -9,6 +13,25 @@ public abstract class __ModifierData<T extends __ModifierData<T>> extends Resour
     private float sharedPercentAdd = 0;
     private float uniqueMultiplier = 1;
     private @Nullable String scriptFunction;
+
+    @Override
+    protected T copyTo(final T pojo) {
+        pojo.setSharedBaseAdd(this.sharedBaseAdd);
+        pojo.setSharedPercentAdd(this.sharedPercentAdd);
+        pojo.setUniqueMultiplier(this.uniqueMultiplier);
+        pojo.setScriptFunction(this.scriptFunction);
+        return pojo;
+    }
+
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
+    }
+
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
+    }
 
     // --------Getter & Setter--------
 

@@ -42,12 +42,16 @@ public final class _BulletExplosionModifierData extends ResourcePojo<_BulletExpl
 
                     case _BulletExplosionModifierDataTag.ENABLE_KNOCKBACK, _BulletExplosionModifierDataTag.ENABLE_KNOCKBACK_OLD1 -> pojo.enableKnockback = JsonUtils.readBoolean(reader);
                     case _BulletExplosionModifierDataTag.ENABLE_WORLD_DESTRUCTION, _BulletExplosionModifierDataTag.ENABLE_WORLD_DESTRUCTION_OLD1 -> pojo.enableWorldDestruction = JsonUtils.readBoolean(reader);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _BulletExplosionModifierData pojo) throws IOException {
@@ -64,8 +68,13 @@ public final class _BulletExplosionModifierData extends ResourcePojo<_BulletExpl
 
             JsonUtils.writeBoolean(writer, _BulletExplosionModifierDataTag.ENABLE_KNOCKBACK, this.enableKnockback);
             JsonUtils.writeBoolean(writer, _BulletExplosionModifierDataTag.ENABLE_WORLD_DESTRUCTION, this.enableWorldDestruction);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
@@ -80,6 +89,32 @@ public final class _BulletExplosionModifierData extends ResourcePojo<_BulletExpl
         }
 
         this.setValid(true);
+    }
+
+    @Override
+    protected _BulletExplosionModifierData copyTo(final _BulletExplosionModifierData pojo) {
+        pojo.setEnableExplode(this.enableExplode);
+
+        @Nullable _SimpleModifierData explodeDamageModifier = null; {
+            if (this.explodeDamageModifier != null) explodeDamageModifier = this.explodeDamageModifier.copy();
+        } pojo.setExplodeDamageModifier(explodeDamageModifier);
+        @Nullable _SimpleModifierData explodeScaleModifier = null; {
+            if (this.explodeScaleModifier != null) explodeScaleModifier = this.explodeScaleModifier.copy();
+        } pojo.setExplodeScaleModifier(explodeScaleModifier);
+        @Nullable _SimpleModifierData maxDelaySecondsModifier = null; {
+            if (this.maxDelaySecondsModifier != null) maxDelaySecondsModifier = this.maxDelaySecondsModifier.copy();
+        } pojo.setMaxDelaySecondsModifier(maxDelaySecondsModifier);
+
+        pojo.setEnableKnockback(this.enableKnockback);
+        pojo.setEnableWorldDestruction(this.enableWorldDestruction);
+        return pojo;
+    }
+
+    @Override
+    public _BulletExplosionModifierData copy() {
+        _BulletExplosionModifierData pojo = copyTo(new _BulletExplosionModifierData());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

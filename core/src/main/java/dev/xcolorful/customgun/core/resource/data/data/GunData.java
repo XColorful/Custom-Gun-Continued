@@ -305,7 +305,7 @@ public final class GunData extends ResourcePojo<GunData> {
                 allowAttachmentTypes.add(this.allowAttachmentTypes.get(i));
             }
         } pojo.setAllowAttachmentTypes(allowAttachmentTypes);
-        Map<ResourceLocation, AttachmentData> exclusiveAttachments = new HashMap<>(); {
+        Map<Identifier, AttachmentData> exclusiveAttachments = new HashMap<>(); {
             for (var entry : this.exclusiveAttachments.entrySet()) {
                 exclusiveAttachments.put(entry.getKey(), entry.getValue().copy());
             }
@@ -314,7 +314,7 @@ public final class GunData extends ResourcePojo<GunData> {
         int[] extendedMagAmmoSize; {
             extendedMagAmmoSize = this.extendedMagAmmoSize != null ? this.extendedMagAmmoSize.clone() : null;
         } pojo.setExtendedMagAmmoSize(extendedMagAmmoSize);
-        Map<AttachmentCategory, ResourceLocation> builtinAttachments = new HashMap<>(); {
+        Map<AttachmentCategory, Identifier> builtinAttachments = new HashMap<>(); {
             for (var entry : this.builtinAttachments.entrySet()) {
                 builtinAttachments.put(entry.getKey(), entry.getValue());
             }

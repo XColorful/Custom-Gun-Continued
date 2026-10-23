@@ -33,12 +33,16 @@ public final class _Animation extends ResourcePojo<_Animation> {
                     case _AnimationTag.ANIMATION_LENGTH -> pojo.animationLength = JsonUtils.readFloat(reader);
                     case _AnimationTag.BONES -> pojo.bones = JsonUtils.readString2ObjectMap(reader, _Bone::fromJson);
                     case _AnimationTag.SOUND_EFFECTS -> pojo.soundEffects = JsonUtils.read(reader, _SoundEffects::fromJson);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _Animation pojo) throws IOException {
@@ -51,13 +55,38 @@ public final class _Animation extends ResourcePojo<_Animation> {
             JsonUtils.writeFloat(writer, _AnimationTag.ANIMATION_LENGTH, this.animationLength);
             JsonUtils.writeString2ObjectMap(writer, _AnimationTag.BONES, this.bones, _Bone::toJson);
             JsonUtils.write(writer, _AnimationTag.SOUND_EFFECTS, this.soundEffects, _SoundEffects::toJson);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
     protected void validatePojo() {
         this.setValid(true);
+    }
+
+    @Override
+    protected _Animation copyTo(final _Animation pojo) {
+        pojo.setLoop(this.loop);
+        pojo.setAnimationLength(this.animationLength);
+        HashMap<String, _Bone> bones = new HashMap<>(); {
+            for (var entry : this.bones.entrySet()) {
+                bones.put(entry.getKey(), entry.getValue().copy());
+            }
+        } pojo.setBones(bones);
+        pojo.setSoundEffects(this.soundEffects.copy());
+        return pojo;
+    }
+
+    @Override
+    public _Animation copy() {
+        _Animation pojo = copyTo(new _Animation());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

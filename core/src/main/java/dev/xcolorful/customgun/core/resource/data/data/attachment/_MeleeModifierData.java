@@ -46,12 +46,16 @@ public final class _MeleeModifierData extends ResourcePojo<_MeleeModifierData> {
 
                     case _MeleeModifierDataTag.KNOCKBACK_STRENGTH, _MeleeModifierDataTag.KNOCKBACK_STRENGTH_OLD1 -> pojo.knockbackStrength = JsonUtils.readFloat(reader);
                     case _MeleeModifierDataTag.TARGET_EFFECT, _MeleeModifierDataTag.TARGET_EFFECT_OLD1 -> pojo.targetEffect = JsonUtils.readList(reader, _TargetEffectData::fromJson);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _MeleeModifierData pojo) throws IOException {
@@ -69,8 +73,13 @@ public final class _MeleeModifierData extends ResourcePojo<_MeleeModifierData> {
 
             JsonUtils.writeFloat(writer, _MeleeModifierDataTag.KNOCKBACK_STRENGTH, this.knockbackStrength);
             JsonUtils.writeList(writer, _MeleeModifierDataTag.TARGET_EFFECT, this.targetEffect, _TargetEffectData::toJson);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
@@ -92,6 +101,31 @@ public final class _MeleeModifierData extends ResourcePojo<_MeleeModifierData> {
         }
 
         this.setValid(true);
+    }
+
+    @Override
+    protected _MeleeModifierData copyTo(final _MeleeModifierData pojo) {
+        pojo.setMeleeDamage(this.meleeDamage);
+        pojo.setMeleeDistance(this.meleeDistance);
+        pojo.setRangeAngle(this.rangeAngle);
+
+        pojo.setDamageDelaySeconds(this.damageDelaySeconds);
+        pojo.setExtraCooldown(this.extraCooldown);
+
+        pojo.setKnockbackStrength(this.knockbackStrength);
+        List<_TargetEffectData> targetEffect = new ArrayList<>(this.targetEffect.size()); {
+            for (int i = 0; i < this.targetEffect.size(); i++) {
+                targetEffect.add(this.targetEffect.get(i).copy());
+            }
+        } pojo.setTargetEffect(targetEffect);
+        return pojo;
+    }
+
+    @Override
+    public _MeleeModifierData copy() {
+        _MeleeModifierData pojo = copyTo(new _MeleeModifierData());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

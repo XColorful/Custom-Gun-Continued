@@ -40,12 +40,16 @@ public final class RecipeFilterData extends ResourcePojo<RecipeFilterData>
                 switch (key) {
                     case RecipeFilterDataTag.WHITELIST -> pojo.whitelistRaw = JsonUtils.readStringList(reader);
                     case RecipeFilterDataTag.BLACKLIST -> pojo.blacklistRaw = JsonUtils.readStringList(reader);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, RecipeFilterData pojo) throws IOException {
@@ -56,8 +60,13 @@ public final class RecipeFilterData extends ResourcePojo<RecipeFilterData>
         writer.beginObject(); {
             JsonUtils.writeStringList(writer, RecipeFilterDataTag.WHITELIST, this.whitelistRaw);
             JsonUtils.writeStringList(writer, RecipeFilterDataTag.BLACKLIST, this.blacklistRaw);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
@@ -102,6 +111,49 @@ public final class RecipeFilterData extends ResourcePojo<RecipeFilterData>
             }
         }
         return result;
+    }
+
+    @Override
+    protected RecipeFilterData copyTo(final RecipeFilterData pojo) {
+        List<String> whitelistRaw = new ArrayList<>(this.whitelistRaw.size()); {
+            for (int i = 0; i < this.whitelistRaw.size(); i++) {
+                whitelistRaw.add(this.whitelistRaw.get(i));
+            }
+        } pojo.setWhitelistRaw(whitelistRaw);
+        List<ResourceLocation> _whitelistLiteral = new ArrayList<>(this._whitelistLiteral.size()); {
+            for (int i = 0; i < this._whitelistLiteral.size(); i++) {
+                _whitelistLiteral.add(this._whitelistLiteral.get(i));
+            }
+        } pojo.setWhitelistLiteral(_whitelistLiteral);
+        List<Pattern> _whitelistPattern = new ArrayList<>(this._whitelistPattern.size()); {
+            for (int i = 0; i < this._whitelistPattern.size(); i++) {
+                _whitelistPattern.add(this._whitelistPattern.get(i));
+            }
+        } pojo.setWhitelistPattern(_whitelistPattern);
+
+        List<String> blacklistRaw = new ArrayList<>(this.blacklistRaw.size()); {
+            for (int i = 0; i < this.blacklistRaw.size(); i++) {
+                blacklistRaw.add(this.blacklistRaw.get(i));
+            }
+        } pojo.setBlacklistRaw(blacklistRaw);
+        List<ResourceLocation> _blacklistLiteral = new ArrayList<>(this._blacklistLiteral.size()); {
+            for (int i = 0; i < this._blacklistLiteral.size(); i++) {
+                _blacklistLiteral.add(this._blacklistLiteral.get(i));
+            }
+        } pojo.setBlacklistLiteral(_blacklistLiteral);
+        List<Pattern> _blacklistPattern = new ArrayList<>(this._blacklistPattern.size()); {
+            for (int i = 0; i < this._blacklistPattern.size(); i++) {
+                _blacklistPattern.add(this._blacklistPattern.get(i));
+            }
+        } pojo.setBlacklistPattern(_blacklistPattern);
+        return pojo;
+    }
+
+    @Override
+    public RecipeFilterData copy() {
+        RecipeFilterData pojo = copyTo(new RecipeFilterData());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

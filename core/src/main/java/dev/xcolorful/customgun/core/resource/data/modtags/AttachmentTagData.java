@@ -23,6 +23,10 @@ public final class AttachmentTagData extends _SimpleTagData<AttachmentTagData> {
         pojo.setTags(JsonUtils.readList(reader, JsonUtils::readString));
         return pojo;
     }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
+    }
 
     public static void toJson(JsonWriter writer, AttachmentTagData pojo) throws IOException {
         if (pojo != null) pojo.toJson(writer);
@@ -38,6 +42,10 @@ public final class AttachmentTagData extends _SimpleTagData<AttachmentTagData> {
         }
         writer.endArray();
     }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
+    }
 
     @Override
     protected void validatePojo() {
@@ -50,6 +58,20 @@ public final class AttachmentTagData extends _SimpleTagData<AttachmentTagData> {
         }
 
         this.setValid(true);
+    }
+
+    @Override
+    protected AttachmentTagData copyTo(final AttachmentTagData pojo) {
+        super.copyTo(pojo);
+
+        return pojo;
+    }
+
+    @Override
+    public AttachmentTagData copy() {
+        AttachmentTagData pojo = copyTo(new AttachmentTagData());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------IResourcePojoExtension--------

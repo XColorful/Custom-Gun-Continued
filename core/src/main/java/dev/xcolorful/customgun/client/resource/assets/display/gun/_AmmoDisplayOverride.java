@@ -30,12 +30,16 @@ public final class _AmmoDisplayOverride extends ResourcePojo<_AmmoDisplayOverrid
                 switch (key) {
                     case _AmmoDisplayOverrideTag.AMMO_PARTICLE, _AmmoDisplayOverrideTag.AMMO_PARTICLE_OLD1 -> pojo.ammoParticle = JsonUtils.read(reader, _AmmoParticle::fromJson);
                     case _AmmoDisplayOverrideTag.TRACER_COLOR -> pojo.tracerColor = JsonUtils.readColor(reader);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _AmmoDisplayOverride pojo) throws IOException {
@@ -46,8 +50,13 @@ public final class _AmmoDisplayOverride extends ResourcePojo<_AmmoDisplayOverrid
         writer.beginObject(); {
             JsonUtils.write(writer, _AmmoDisplayOverrideTag.AMMO_PARTICLE, this.ammoParticle, _AmmoParticle::toJson);
             JsonUtils.writeColor(writer, _AmmoDisplayOverrideTag.TRACER_COLOR, this.tracerColor);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
@@ -67,6 +76,22 @@ public final class _AmmoDisplayOverride extends ResourcePojo<_AmmoDisplayOverrid
         }
 
         this.setValid(true);
+    }
+
+    @Override
+    protected _AmmoDisplayOverride copyTo(final _AmmoDisplayOverride pojo) {
+        @Nullable _AmmoParticle ammoParticle = null; {
+            if (this.ammoParticle != null) ammoParticle = this.ammoParticle.copy();
+        } pojo.setAmmoParticle(ammoParticle);
+        pojo.setTracerColor(this.tracerColor);
+        return pojo;
+    }
+
+    @Override
+    public _AmmoDisplayOverride copy() {
+        _AmmoDisplayOverride pojo = copyTo(new _AmmoDisplayOverride());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

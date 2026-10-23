@@ -64,12 +64,16 @@ public final class _BulletData extends ResourcePojo<_BulletData> {
                     case _BulletDataTag.FIRE_ASPECT_SECONDS, _BulletDataTag.FIRE_ASPECT_SECONDS_OLD1 -> pojo.fireAspectSeconds = JsonUtils.readInt(reader);
                     case _BulletDataTag.KNOCKBACK_STRENGTH, _BulletDataTag.KNOCKBACK_STRENGTH_OLD1 -> pojo.knockbackStrength = JsonUtils.readFloat(reader);
                     case _BulletDataTag.BULLET_EXPLOSION, _BulletDataTag.BULLET_EXPLOSION_OLD1 -> pojo.explosionData = JsonUtils.read(reader, _ExplosionData::fromJson);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _BulletData pojo) throws IOException {
@@ -95,8 +99,13 @@ public final class _BulletData extends ResourcePojo<_BulletData> {
             JsonUtils.writeInt(writer, _BulletDataTag.FIRE_ASPECT_SECONDS, fireAspectSeconds);
             JsonUtils.writeFloat(writer, _BulletDataTag.KNOCKBACK_STRENGTH, knockbackStrength);
             JsonUtils.write(writer, _BulletDataTag.BULLET_EXPLOSION, explosionData, _ExplosionData::toJson);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
@@ -117,6 +126,36 @@ public final class _BulletData extends ResourcePojo<_BulletData> {
         }
 
         this.setValid(true);
+    }
+
+    @Override
+    protected _BulletData copyTo(final _BulletData pojo) {
+        pojo.setDisplayDamage(this.displayDamage);
+        pojo.setBulletSkillData(this.bulletSkillData.copy());
+
+        pojo.setLifetimeSeconds(this.lifetimeSeconds);
+        pojo.setBulletSpeed(this.bulletSpeed);
+        pojo.setGravity(this.gravity);
+        pojo.setFriction(this.friction);
+
+        pojo.setBulletSplitAmount(this.bulletSplitAmount);
+        pojo.setPierceCount(this.pierceCount);
+        pojo.setTracerInterval(this.tracerInterval);
+
+        pojo.setFireAspect(this.fireAspect);
+        pojo.setFireAspectSeconds(this.fireAspectSeconds);
+        pojo.setKnockbackStrength(this.knockbackStrength);
+        pojo.setExplosionData(this.explosionData.copy());
+
+        pojo.bulletSkillDataOld = this.bulletSkillDataOld == null ? null : this.bulletSkillDataOld.copy();
+        return pojo;
+    }
+
+    @Override
+    public _BulletData copy() {
+        _BulletData pojo = copyTo(new _BulletData());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

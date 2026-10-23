@@ -45,12 +45,16 @@ public class _Uv extends ResourcePojo<_Uv> {
                     case _UvTag.WEST -> pojo.west = JsonUtils.read(reader, _FaceUv::fromJson);
                     case _UvTag.UP -> pojo.up = JsonUtils.read(reader, _FaceUv::fromJson);
                     case _UvTag.DOWN -> pojo.down = JsonUtils.read(reader, _FaceUv::fromJson);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _Uv pojo) throws IOException {
@@ -73,13 +77,51 @@ public class _Uv extends ResourcePojo<_Uv> {
             JsonUtils.write(writer, _UvTag.WEST, this.west, _FaceUv::toJson);
             JsonUtils.write(writer, _UvTag.UP, this.up, _FaceUv::toJson);
             JsonUtils.write(writer, _UvTag.DOWN, this.down, _FaceUv::toJson);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
     protected void validatePojo() {
         this.setValid(true);
+    }
+
+    @Override
+    protected _Uv copyTo(final _Uv pojo) {
+        float @Nullable [] uv; {
+            uv = this.uv != null ? this.uv.clone() : null;
+        } pojo.setUv(uv);
+        @Nullable _FaceUv north = null; {
+            if (this.north != null) north = this.north.copy();
+        } pojo.setNorth(north);
+        @Nullable _FaceUv south = null; {
+            if (this.south != null) south = this.south.copy();
+        } pojo.setSouth(south);
+        @Nullable _FaceUv east = null; {
+            if (this.east != null) east = this.east.copy();
+        } pojo.setEast(east);
+        @Nullable _FaceUv west = null; {
+            if (this.west != null) west = this.west.copy();
+        } pojo.setWest(west);
+        @Nullable _FaceUv up = null; {
+            if (this.up != null) up = this.up.copy();
+        } pojo.setUp(up);
+        @Nullable _FaceUv down = null; {
+            if (this.down != null) down = this.down.copy();
+        } pojo.setDown(down);
+        return pojo;
+    }
+
+    @Override
+    public _Uv copy() {
+        _Uv pojo = copyTo(new _Uv());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

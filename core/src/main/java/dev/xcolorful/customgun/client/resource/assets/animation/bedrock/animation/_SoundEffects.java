@@ -70,6 +70,10 @@ public final class _SoundEffects extends ResourcePojo<_SoundEffects> {
 
         return pojo;
     }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
+    }
 
     public static void toJson(JsonWriter writer, _SoundEffects pojo) throws IOException {
         if (pojo != null) pojo.toJson(writer);
@@ -89,12 +93,32 @@ public final class _SoundEffects extends ResourcePojo<_SoundEffects> {
             }
             writer.endObject();
         }
+        writeCustomValue(writer);
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
     protected void validatePojo() {
         this.setValid(true);
+    }
+
+    @Override
+    protected _SoundEffects copyTo(final _SoundEffects pojo) {
+        for (var entry : this.keyframes.double2ObjectEntrySet()) {
+            pojo.keyframes.put(entry.getDoubleKey(), entry.getValue());
+        }
+        return pojo;
+    }
+
+    @Override
+    public _SoundEffects copy() {
+        _SoundEffects pojo = copyTo(new _SoundEffects());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

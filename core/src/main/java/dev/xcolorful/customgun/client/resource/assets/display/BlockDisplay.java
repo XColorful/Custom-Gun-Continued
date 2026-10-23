@@ -29,12 +29,16 @@ public final class BlockDisplay extends _AssetsDisplay<BlockDisplay> {
                     case BlockDisplayTag.TEXTURE_LOCATION, BlockDisplayTag.TEXTURE_LOCATION_OLD1 -> pojo.setTextureLocation(JsonUtils.readResourceLocation(reader));
 
                     case BlockDisplayTag.ITEM_TRANSFORMS, BlockDisplayTag.ITEM_TRANSFORMS_OLD1 -> pojo.itemTransforms = ClientJsonUtils.readItemTransforms(reader);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, BlockDisplay pojo) throws IOException {
@@ -47,8 +51,13 @@ public final class BlockDisplay extends _AssetsDisplay<BlockDisplay> {
             JsonUtils.writeResourceLocation(writer, BlockDisplayTag.TEXTURE_LOCATION, this.getTextureLocation());
 
             ClientJsonUtils.writeItemTransforms(writer, BlockDisplayTag.ITEM_TRANSFORMS, this.itemTransforms);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
@@ -63,6 +72,21 @@ public final class BlockDisplay extends _AssetsDisplay<BlockDisplay> {
         }
 
         this.setValid(true);
+    }
+
+    @Override
+    protected BlockDisplay copyTo(final BlockDisplay pojo) {
+        super.copyTo(pojo);
+
+        pojo.setItemTransforms(this.itemTransforms);
+        return pojo;
+    }
+
+    @Override
+    public BlockDisplay copy() {
+        BlockDisplay pojo = copyTo(new BlockDisplay());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

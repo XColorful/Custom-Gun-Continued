@@ -34,12 +34,16 @@ public final class _Description extends ResourcePojo<_Description> {
                     case _DescriptionTag.VISIBLE_BOUNDS_WIDTH -> pojo.visibleBoundsWidth = JsonUtils.readFloat(reader);
                     case _DescriptionTag.VISIBLE_BOUNDS_HEIGHT -> pojo.visibleBoundsHeight = JsonUtils.readFloat(reader);
                     case _DescriptionTag.VISIBLE_BOUNDS_OFFSET -> pojo.visibleBoundsOffset = JsonUtils.readFloatArrayFast(reader, 3);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _Description pojo) throws IOException {
@@ -54,13 +58,38 @@ public final class _Description extends ResourcePojo<_Description> {
             JsonUtils.writeFloat(writer, _DescriptionTag.VISIBLE_BOUNDS_WIDTH, this.visibleBoundsWidth);
             JsonUtils.writeFloat(writer, _DescriptionTag.VISIBLE_BOUNDS_HEIGHT, this.visibleBoundsHeight);
             JsonUtils.writeFloatArray(writer, _DescriptionTag.VISIBLE_BOUNDS_OFFSET, this.visibleBoundsOffset);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
     protected void validatePojo() {
         this.setValid(true);
+    }
+
+    @Override
+    protected _Description copyTo(final _Description pojo) {
+        pojo.setIdentifier(this.identifier);
+        pojo.setTextureWidth(this.textureWidth);
+        pojo.setTextureHeight(this.textureHeight);
+        pojo.setVisibleBoundsWidth(this.visibleBoundsWidth);
+        pojo.setVisibleBoundsHeight(this.visibleBoundsHeight);
+        float[] visibleBoundsOffset; {
+            visibleBoundsOffset = this.visibleBoundsOffset != null ? this.visibleBoundsOffset.clone() : null;
+        } pojo.setVisibleBoundsOffset(visibleBoundsOffset);
+        return pojo;
+    }
+
+    @Override
+    public _Description copy() {
+        _Description pojo = copyTo(new _Description());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

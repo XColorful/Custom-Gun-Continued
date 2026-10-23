@@ -31,9 +31,23 @@ public abstract class ResourcePojo<T extends ResourcePojo<T>> {
     protected abstract T fromJsonReader(JsonReader reader) throws IOException;
 
     /**
+     * @return 是否已消费 next value
+     */
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        reader.skipValue();
+        return true;
+    }
+
+    /**
      * 流式序列化
      */
     public abstract void toJson(JsonWriter writer) throws IOException;
+
+    /**
+     * 写入扩展 value
+     */
+    protected void writeCustomValue(JsonWriter writer) {
+    }
 
     /**
      * 子类需满足 {@link ResourcePojo#isValid} 的要求
@@ -44,6 +58,19 @@ public abstract class ResourcePojo<T extends ResourcePojo<T>> {
      * 预期是面对全数据合法的情况，否则短路{@code ||}可能更快
      */
     protected abstract void validatePojo();
+
+    /**
+     * 将{@code this}复制到{@code pojo}
+     * @param pojo new {@link T}
+     * @return 输入的 pojo
+     */
+    protected abstract T copyTo(final T pojo);
+
+    /**
+     * (由最终{@link T}类型实现该方法) 对 {@code this} 深拷贝
+     * @return 不影响 {@code this} pojo 的拷贝
+     */
+    public abstract T copy();
 
     // --------Getter & Setter--------
 

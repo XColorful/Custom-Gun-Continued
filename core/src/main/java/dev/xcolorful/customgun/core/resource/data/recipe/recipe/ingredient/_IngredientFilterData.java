@@ -29,12 +29,16 @@ public final class _IngredientFilterData extends ResourcePojo<_IngredientFilterD
                 switch (key) {
                     case _IngredientFilterDataTag.ITEM_FILTER_LOCATION, _IngredientFilterDataTag.ITEM_FILTER_LOCATION_OLD1 -> pojo.itemFilterLocation = JsonUtils.readResourceLocation(reader);
                     case _IngredientFilterDataTag.TAG_FILTER_LOCATION, _IngredientFilterDataTag.TAG_FILTER_LOCATION_OLD1 -> pojo.tagFilterLocation = JsonUtils.readResourceLocation(reader);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _IngredientFilterData pojo) throws IOException {
@@ -45,8 +49,13 @@ public final class _IngredientFilterData extends ResourcePojo<_IngredientFilterD
         writer.beginObject(); {
             JsonUtils.writeResourceLocation(writer, _IngredientFilterDataTag.ITEM_FILTER_LOCATION, this.itemFilterLocation);
             JsonUtils.writeResourceLocation(writer, _IngredientFilterDataTag.TAG_FILTER_LOCATION, this.tagFilterLocation);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
@@ -59,6 +68,20 @@ public final class _IngredientFilterData extends ResourcePojo<_IngredientFilterD
         }
 
         this.setValid(true);
+    }
+
+    @Override
+    protected _IngredientFilterData copyTo(final _IngredientFilterData pojo) {
+        pojo.setItemFilterLocation(this.itemFilterLocation);
+        pojo.setTagFilterLocation(this.tagFilterLocation);
+        return pojo;
+    }
+
+    @Override
+    public _IngredientFilterData copy() {
+        _IngredientFilterData pojo = copyTo(new _IngredientFilterData());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

@@ -26,8 +26,7 @@ public final class DamageCalculationModifier extends AttachmentModifier<_SimpleM
     public List<_DistanceDamageData> eval(Collection<_SimpleModifierData> modifiers, List<_DistanceDamageData> base) {
         List<_DistanceDamageData> result = new ArrayList<>(base.size());
         for (_DistanceDamageData entry : base) {
-            _DistanceDamageData copy = new _DistanceDamageData();
-            copy.setDistance(entry.getDistance());
+            _DistanceDamageData copy = entry.copy();
             copy.setDamage(evalSimpleModifierData(modifiers, entry.getDamage()));
             result.add(copy);
         }

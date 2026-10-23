@@ -6,7 +6,6 @@ import dev.xcolorful.customgun.core.api.resource.assets.info.GunpackInfoTag;
 import dev.xcolorful.customgun.core.resource.ResourcePojo;
 import dev.xcolorful.customgun.core.util.ComponentUtils;
 import dev.xcolorful.customgun.core.util.JsonUtils;
-import net.minecraft.network.chat.MutableComponent;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -40,12 +39,16 @@ public final class GunpackInfo extends ResourcePojo<GunpackInfo> {
                     case GunpackInfoTag.AUTHORS -> pojo.authors = JsonUtils.readStringList(reader);
                     case GunpackInfoTag.DATE -> pojo.date = JsonUtils.readString(reader);
                     case GunpackInfoTag.GUNPACK_URL, GunpackInfoTag.GUNPACK_URL_OLD1 -> pojo.gunpackUrl = JsonUtils.readString(reader);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, GunpackInfo pojo) throws IOException {
@@ -61,8 +64,13 @@ public final class GunpackInfo extends ResourcePojo<GunpackInfo> {
             JsonUtils.writeStringList(writer, GunpackInfoTag.AUTHORS, this.authors);
             JsonUtils.writeString(writer, GunpackInfoTag.DATE, this.date);
             JsonUtils.writeString(writer, GunpackInfoTag.GUNPACK_URL, this.gunpackUrl);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
@@ -78,6 +86,29 @@ public final class GunpackInfo extends ResourcePojo<GunpackInfo> {
         if (this.nameLang == null) this.nameLang = ComponentUtils.UNKNOWN_TRANSLATABLE_KEY;
         if (this.tooltipLang == null) this.tooltipLang = ComponentUtils.UNKNOWN_TRANSLATABLE_KEY;
         this.setValid(true);
+    }
+
+    @Override
+    protected GunpackInfo copyTo(final GunpackInfo pojo) {
+        pojo.setGunpackVersion(this.gunpackVersion);
+        pojo.setNameLang(this.nameLang);
+        pojo.setTooltipLang(this.tooltipLang);
+        pojo.setLicense(this.license);
+        List<String> authors = new ArrayList<>(this.authors.size()); {
+            for (int i = 0; i < this.authors.size(); i++) {
+                authors.add(this.authors.get(i));
+            }
+        } pojo.setAuthors(authors);
+        pojo.setDate(this.date);
+        pojo.setGunpackUrl(this.gunpackUrl);
+        return pojo;
+    }
+
+    @Override
+    public GunpackInfo copy() {
+        GunpackInfo pojo = copyTo(new GunpackInfo());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

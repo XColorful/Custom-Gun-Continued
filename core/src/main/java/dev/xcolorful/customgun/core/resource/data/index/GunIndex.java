@@ -37,12 +37,16 @@ public final class GunIndex extends _DataIndex<GunIndex> {
 
                     case GunIndexTag.GUN_CATEGORY, GunIndexTag.GUN_CATEGORY_OLD1 -> pojo.gunCategory = JsonUtils.readFromString(reader, GunCategory::fromString);
                     case GunIndexTag.ITEM_TYPE -> pojo.itemType = JsonUtils.readFromString(reader, ItemType::fromString);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, GunIndex pojo) throws IOException {
@@ -59,8 +63,13 @@ public final class GunIndex extends _DataIndex<GunIndex> {
 
             JsonUtils.writeToString(writer, GunIndexTag.GUN_CATEGORY, this.gunCategory);
             JsonUtils.writeToString(writer, GunIndexTag.ITEM_TYPE, this.itemType);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
@@ -76,6 +85,23 @@ public final class GunIndex extends _DataIndex<GunIndex> {
 
         if (this.itemType == null) this.itemType = ItemType.GUN;
         this.setValid(true);
+    }
+
+    @Override
+    protected GunIndex copyTo(final GunIndex pojo) {
+        super.copyTo(pojo);
+
+        pojo.setGunCategory(this.gunCategory);
+
+        pojo.setItemType(this.itemType);
+        return pojo;
+    }
+
+    @Override
+    public GunIndex copy() {
+        GunIndex pojo = copyTo(new GunIndex());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

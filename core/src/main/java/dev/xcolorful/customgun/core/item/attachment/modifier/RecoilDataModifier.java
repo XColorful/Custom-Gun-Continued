@@ -50,8 +50,7 @@ public final class RecoilDataModifier extends AttachmentModifier<_RecoilDataModi
     private static List<_RecoilEntryData> _scaleRecoilEntries(List<_RecoilEntryData> source, float scale) {
         List<_RecoilEntryData> result = new ArrayList<>(source.size());
         for (_RecoilEntryData entry : source) {
-            _RecoilEntryData copy = new _RecoilEntryData();
-            copy.setTime(entry.getTime());
+            _RecoilEntryData copy = entry.copy();
             float[] range = entry.getRange();
             copy.setRange(new float[]{range[0] * scale, range[1] * scale});
             result.add(copy);

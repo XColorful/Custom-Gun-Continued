@@ -9,6 +9,7 @@ import dev.xcolorful.customgun.core.util.JsonUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public final class _Bone extends ResourcePojo<_Bone> {
@@ -37,12 +38,16 @@ public final class _Bone extends ResourcePojo<_Bone> {
                     case _BoneTag.ROTATION -> pojo.rotation = JsonUtils.readFloatArrayFast(reader, 3);
                     case _BoneTag.CUBES -> pojo.cubes = JsonUtils.readList(reader, _Cube::fromJson);
                     case _BoneTag.MIRROR -> pojo.mirror = JsonUtils.readBoolean(reader);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _Bone pojo) throws IOException {
@@ -57,13 +62,47 @@ public final class _Bone extends ResourcePojo<_Bone> {
             JsonUtils.writeFloatArray(writer, _BoneTag.ROTATION, this.rotation);
             JsonUtils.writeList(writer, _BoneTag.CUBES, this.cubes, _Cube::toJson);
             if (this.mirror) JsonUtils.writeBoolean(writer, _BoneTag.MIRROR, this.mirror);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
     protected void validatePojo() {
         this.setValid(true);
+    }
+
+    @Override
+    protected _Bone copyTo(final _Bone pojo) {
+        pojo.setName(this.name);
+        pojo.setParent(this.parent);
+        float[] pivot; {
+            pivot = this.pivot != null ? this.pivot.clone() : null;
+        } pojo.setPivot(pivot);
+        float[] rotation; {
+            rotation = this.rotation != null ? this.rotation.clone() : null;
+        } pojo.setRotation(rotation);
+        @Nullable List<_Cube> cubes = null; {
+            if (this.cubes != null) {
+                cubes = new ArrayList<>(this.cubes.size());
+                for (int i = 0; i < this.cubes.size(); i++) {
+                    cubes.add(this.cubes.get(i).copy());
+                }
+            }
+        } pojo.setCubes(cubes);
+        pojo.setMirror(this.mirror);
+        return pojo;
+    }
+
+    @Override
+    public _Bone copy() {
+        _Bone pojo = copyTo(new _Bone());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

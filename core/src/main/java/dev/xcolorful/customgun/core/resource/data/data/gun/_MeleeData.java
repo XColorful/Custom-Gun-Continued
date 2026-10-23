@@ -28,12 +28,16 @@ public final class _MeleeData extends ResourcePojo<_MeleeData> {
                 switch (key) {
                     case _MeleeDataTag.GUN_BASE_LENGTH, _MeleeDataTag.GUN_BASE_LENGTH_OLD1 -> pojo.gunBaseLength = JsonUtils.readFloat(reader);
                     case _MeleeDataTag.DEFAULT_MELEE_DATA, _MeleeDataTag.DEFAULT_MELEE_DATA_OLD1 -> pojo.defaultMeleeData = JsonUtils.read(reader, _DefaultMeleeData::fromJson);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _MeleeData pojo) throws IOException {
@@ -45,8 +49,13 @@ public final class _MeleeData extends ResourcePojo<_MeleeData> {
         writer.beginObject(); {
             JsonUtils.writeFloat(writer, _MeleeDataTag.GUN_BASE_LENGTH, this.gunBaseLength);
             JsonUtils.write(writer, _MeleeDataTag.DEFAULT_MELEE_DATA, this.defaultMeleeData, _DefaultMeleeData::toJson);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
@@ -66,6 +75,20 @@ public final class _MeleeData extends ResourcePojo<_MeleeData> {
         }
 
         this.setValid(true);
+    }
+
+    @Override
+    protected _MeleeData copyTo(final _MeleeData pojo) {
+        pojo.setGunBaseLength(this.gunBaseLength);
+        pojo.setDefaultMeleeData(this.defaultMeleeData.copy());
+        return pojo;
+    }
+
+    @Override
+    public _MeleeData copy() {
+        _MeleeData pojo = copyTo(new _MeleeData());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

@@ -22,12 +22,16 @@ public final class _LodDisplay extends _AssetsDisplay<_LodDisplay> {
                 switch (key) {
                     case _AssetsDisplayTag.MODEL_LOCATION, _AssetsDisplayTag.MODEL_LOCATION_OLD1 -> pojo.setModelLocation(JsonUtils.readResourceLocation(reader));
                     case _AssetsDisplayTag.TEXTURE_LOCATION, _AssetsDisplayTag.TEXTURE_LOCATION_OLD1 -> pojo.setTextureLocation(JsonUtils.readResourceLocation(reader));
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _LodDisplay pojo) throws IOException {
@@ -38,8 +42,27 @@ public final class _LodDisplay extends _AssetsDisplay<_LodDisplay> {
         writer.beginObject(); {
             JsonUtils.writeResourceLocation(writer, _AssetsDisplayTag.MODEL_LOCATION, this.getModelLocation());
             JsonUtils.writeResourceLocation(writer, _AssetsDisplayTag.TEXTURE_LOCATION, this.getTextureLocation());
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
+    }
+
+    @Override
+    protected _LodDisplay copyTo(final _LodDisplay pojo) {
+        super.copyTo(pojo);
+
+        return pojo;
+    }
+
+    @Override
+    public _LodDisplay copy() {
+        _LodDisplay pojo = copyTo(new _LodDisplay());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

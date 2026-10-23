@@ -23,12 +23,16 @@ public final class _AmmoEntityDisplay extends _AssetsDisplay<_AmmoEntityDisplay>
                 switch (key) {
                     case _AmmoEntityDisplayTag.MODEL_LOCATION, _AmmoEntityDisplayTag.MODEL_LOCATION_OLD1 -> pojo.setModelLocation(JsonUtils.readResourceLocation(reader));
                     case _AmmoEntityDisplayTag.TEXTURE_LOCATION, _AmmoEntityDisplayTag.TEXTURE_LOCATION_OLD1 -> pojo.setTextureLocation(JsonUtils.readResourceLocation(reader));
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _AmmoEntityDisplay pojo) throws IOException {
@@ -39,8 +43,13 @@ public final class _AmmoEntityDisplay extends _AssetsDisplay<_AmmoEntityDisplay>
         writer.beginObject(); {
             JsonUtils.writeResourceLocation(writer, _AmmoEntityDisplayTag.MODEL_LOCATION, this.getModelLocation());
             JsonUtils.writeResourceLocation(writer, _AmmoEntityDisplayTag.TEXTURE_LOCATION, this.getTextureLocation());
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
@@ -49,6 +58,20 @@ public final class _AmmoEntityDisplay extends _AssetsDisplay<_AmmoEntityDisplay>
         if (!this.isValid()) return;
 
         this.setValid(true);
+    }
+
+    @Override
+    protected _AmmoEntityDisplay copyTo(final _AmmoEntityDisplay pojo) {
+        super.copyTo(pojo);
+
+        return pojo;
+    }
+
+    @Override
+    public _AmmoEntityDisplay copy() {
+        _AmmoEntityDisplay pojo = copyTo(new _AmmoEntityDisplay());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

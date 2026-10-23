@@ -80,6 +80,29 @@ public final class GunpackInfo extends ResourcePojo<GunpackInfo> {
         this.setValid(true);
     }
 
+    @Override
+    protected GunpackInfo copyTo(final GunpackInfo pojo) {
+        pojo.setGunpackVersion(this.gunpackVersion);
+        pojo.setNameLang(this.nameLang);
+        pojo.setTooltipLang(this.tooltipLang);
+        pojo.setLicense(this.license);
+        List<String> authors = new ArrayList<>(this.authors.size()); {
+            for (int i = 0; i < this.authors.size(); i++) {
+                authors.add(this.authors.get(i));
+            }
+        } pojo.setAuthors(authors);
+        pojo.setDate(this.date);
+        pojo.setGunpackUrl(this.gunpackUrl);
+        return pojo;
+    }
+
+    @Override
+    public GunpackInfo copy() {
+        GunpackInfo pojo = copyTo(new GunpackInfo());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     public String getGunpackVersion() {

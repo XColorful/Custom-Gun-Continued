@@ -31,6 +31,18 @@ public abstract class _DataIndex<T extends _DataIndex<T>> extends ResourcePojo<T
         this.setValid(true);
     }
 
+    @Override
+    protected T copyTo(final T pojo) {
+        pojo.setNameLang(this.nameLang);
+        pojo.setTooltipLang(this.tooltipLang);
+
+        pojo.setDataLocation(this.dataLocation);
+        pojo.setDisplayIndexLocation(this.displayIndexLocation);
+
+        pojo.setSlotSort(this.slotSort);
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     public final String getNameLang() {

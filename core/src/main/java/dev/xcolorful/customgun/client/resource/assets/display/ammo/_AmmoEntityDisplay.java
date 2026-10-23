@@ -51,6 +51,20 @@ public final class _AmmoEntityDisplay extends _AssetsDisplay<_AmmoEntityDisplay>
         this.setValid(true);
     }
 
+    @Override
+    protected _AmmoEntityDisplay copyTo(final _AmmoEntityDisplay pojo) {
+        super.copyTo(pojo);
+
+        return pojo;
+    }
+
+    @Override
+    public _AmmoEntityDisplay copy() {
+        _AmmoEntityDisplay pojo = copyTo(new _AmmoEntityDisplay());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     // --------Back compatibility--------

@@ -77,6 +77,23 @@ public final class AttachmentIndex extends _DataIndex<AttachmentIndex> {
         this.setValid(true);
     }
 
+    @Override
+    protected AttachmentIndex copyTo(final AttachmentIndex pojo) {
+        super.copyTo(pojo);
+
+        pojo.setAttachmentCategory(this.attachmentCategory);
+
+        pojo.setHideInGame(this.hideInGame);
+        return pojo;
+    }
+
+    @Override
+    public AttachmentIndex copy() {
+        AttachmentIndex pojo = copyTo(new AttachmentIndex());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     public AttachmentCategory getAttachmentCategory() {

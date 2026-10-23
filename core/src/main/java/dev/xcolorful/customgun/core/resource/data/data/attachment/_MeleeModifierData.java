@@ -94,6 +94,31 @@ public final class _MeleeModifierData extends ResourcePojo<_MeleeModifierData> {
         this.setValid(true);
     }
 
+    @Override
+    protected _MeleeModifierData copyTo(final _MeleeModifierData pojo) {
+        pojo.setMeleeDamage(this.meleeDamage);
+        pojo.setMeleeDistance(this.meleeDistance);
+        pojo.setRangeAngle(this.rangeAngle);
+
+        pojo.setDamageDelaySeconds(this.damageDelaySeconds);
+        pojo.setExtraCooldown(this.extraCooldown);
+
+        pojo.setKnockbackStrength(this.knockbackStrength);
+        List<_TargetEffectData> targetEffect = new ArrayList<>(this.targetEffect.size()); {
+            for (int i = 0; i < this.targetEffect.size(); i++) {
+                targetEffect.add(this.targetEffect.get(i).copy());
+            }
+        } pojo.setTargetEffect(targetEffect);
+        return pojo;
+    }
+
+    @Override
+    public _MeleeModifierData copy() {
+        _MeleeModifierData pojo = copyTo(new _MeleeModifierData());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     public float getMeleeDamage() {

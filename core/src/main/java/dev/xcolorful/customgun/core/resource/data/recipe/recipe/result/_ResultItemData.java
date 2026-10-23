@@ -66,6 +66,20 @@ public class _ResultItemData extends ResourcePojo<_ResultItemData> {
         this.setValid(true);
     }
 
+    @Override
+    protected _ResultItemData copyTo(final _ResultItemData pojo) {
+        pojo.setItemLocation(this.itemLocation);
+        pojo.setItemNbt(this.itemNbt == null ? null : this.itemNbt.copy());
+        return pojo;
+    }
+
+    @Override
+    public _ResultItemData copy() {
+        _ResultItemData pojo = copyTo(new _ResultItemData());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     public ResourceLocation getItemLocation() {

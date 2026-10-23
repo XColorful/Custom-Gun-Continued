@@ -97,6 +97,21 @@ public final class _SoundEffects extends ResourcePojo<_SoundEffects> {
         this.setValid(true);
     }
 
+    @Override
+    protected _SoundEffects copyTo(final _SoundEffects pojo) {
+        for (var entry : this.keyframes.double2ObjectEntrySet()) {
+            pojo.keyframes.put(entry.getDoubleKey(), entry.getValue());
+        }
+        return pojo;
+    }
+
+    @Override
+    public _SoundEffects copy() {
+        _SoundEffects pojo = copyTo(new _SoundEffects());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     public Double2ObjectRBTreeMap<ResourceLocation> getKeyframes() {

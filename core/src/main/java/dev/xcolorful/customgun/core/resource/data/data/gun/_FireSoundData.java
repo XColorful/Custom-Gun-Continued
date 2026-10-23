@@ -56,6 +56,20 @@ public final class _FireSoundData extends ResourcePojo<_FireSoundData> {
         this.setValid(true);
     }
 
+    @Override
+    protected _FireSoundData copyTo(final _FireSoundData pojo) {
+        pojo.setNormalMultiplier(this.normalMultiplier);
+        pojo.setSilencedMultiplier(this.silencedMultiplier);
+        return pojo;
+    }
+
+    @Override
+    public _FireSoundData copy() {
+        _FireSoundData pojo = copyTo(new _FireSoundData());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     public float getNormalMultiplier() {

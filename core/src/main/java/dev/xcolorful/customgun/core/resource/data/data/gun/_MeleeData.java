@@ -68,6 +68,20 @@ public final class _MeleeData extends ResourcePojo<_MeleeData> {
         this.setValid(true);
     }
 
+    @Override
+    protected _MeleeData copyTo(final _MeleeData pojo) {
+        pojo.setGunBaseLength(this.gunBaseLength);
+        pojo.setDefaultMeleeData(this.defaultMeleeData.copy());
+        return pojo;
+    }
+
+    @Override
+    public _MeleeData copy() {
+        _MeleeData pojo = copyTo(new _MeleeData());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     public float getGunBaseLength() {

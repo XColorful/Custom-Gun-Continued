@@ -40,6 +40,18 @@ public final class _ControllableData extends ResourcePojo<_ControllableData> {
         this.setValid(true);
     }
 
+    @Override
+    protected _ControllableData copyTo(final _ControllableData pojo) {
+        return pojo;
+    }
+
+    @Override
+    public _ControllableData copy() {
+        _ControllableData pojo = copyTo(new _ControllableData());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     // --------Back compatibility--------

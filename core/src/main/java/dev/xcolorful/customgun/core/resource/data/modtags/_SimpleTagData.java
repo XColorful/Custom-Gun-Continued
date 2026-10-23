@@ -4,12 +4,23 @@ import dev.xcolorful.customgun.core.api.resource.IResourcePojoExtension;
 import dev.xcolorful.customgun.core.resource.ResourcePojo;
 import org.jetbrains.annotations.ApiStatus;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class _SimpleTagData<T extends _SimpleTagData<T>> extends ResourcePojo<T>
         implements IResourcePojoExtension.Appendable<T> {
 
     private List<String> tags;
+
+    @Override
+    protected T copyTo(final T pojo) {
+        List<String> tags = new ArrayList<>(this.tags.size()); {
+            for (int i = 0; i < this.tags.size(); i++) {
+                tags.add(this.tags.get(i));
+            }
+        } pojo.setTags(tags);
+        return pojo;
+    }
 
     // --------Getter & Setter--------
 

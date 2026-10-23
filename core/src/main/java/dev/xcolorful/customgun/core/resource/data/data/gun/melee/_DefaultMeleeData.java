@@ -89,6 +89,28 @@ public final class _DefaultMeleeData extends ResourcePojo<_DefaultMeleeData> {
         this.setValid(true);
     }
 
+    @Override
+    protected _DefaultMeleeData copyTo(final _DefaultMeleeData pojo) {
+        pojo.setMeleeType(this.meleeType);
+
+        pojo.setMeleeDamage(this.meleeDamage);
+        pojo.setMeleeDistance(this.meleeDistance);
+        pojo.setRangeAngle(this.rangeAngle);
+
+        pojo.setDamageDelaySeconds(this.damageDelaySeconds);
+        pojo.setBaseCooldown(this.baseCooldown);
+
+        pojo.setKnockbackStrength(this.knockbackStrength);
+        return pojo;
+    }
+
+    @Override
+    public _DefaultMeleeData copy() {
+        _DefaultMeleeData pojo = copyTo(new _DefaultMeleeData());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     public MeleeType getMeleeType() {

@@ -64,6 +64,20 @@ public final class _RecipeGroupData extends ResourcePojo<_RecipeGroupData> {
         this.setValid(true);
     }
 
+    @Override
+    protected _RecipeGroupData copyTo(final _RecipeGroupData pojo) {
+        pojo.setGroupCategory(this.groupCategory);
+        pojo.setNameLang(this.nameLang);
+        return pojo;
+    }
+
+    @Override
+    public _RecipeGroupData copy() {
+        _RecipeGroupData pojo = copyTo(new _RecipeGroupData());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     public ResourceLocation getGroupCategory() {

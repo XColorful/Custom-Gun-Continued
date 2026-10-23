@@ -75,6 +75,25 @@ public final class _BulletSkillData extends ResourcePojo<_BulletSkillData> {
         this.setValid(true);
     }
 
+    @Override
+    protected _BulletSkillData copyTo(final _BulletSkillData pojo) {
+        pojo.setArmorIgnorePercent(this.armorIgnorePercent);
+        pojo.setHeadshotMultiplier(this.headshotMultiplier);
+        List<_DistanceDamageData> damageCalculation = new ArrayList<>(this.damageCalculation.size()); {
+            for (int i = 0; i < this.damageCalculation.size(); i++) {
+                damageCalculation.add(this.damageCalculation.get(i).copy());
+            }
+        } pojo.setDamageCalculation(damageCalculation);
+        return pojo;
+    }
+
+    @Override
+    public _BulletSkillData copy() {
+        _BulletSkillData pojo = copyTo(new _BulletSkillData());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     public float getArmorIgnorePercent() {

@@ -51,6 +51,20 @@ public final class _ShellDisplay extends _AssetsDisplay<_ShellDisplay> {
         this.setValid(true);
     }
 
+    @Override
+    protected _ShellDisplay copyTo(final _ShellDisplay pojo) {
+        super.copyTo(pojo);
+
+        return pojo;
+    }
+
+    @Override
+    public _ShellDisplay copy() {
+        _ShellDisplay pojo = copyTo(new _ShellDisplay());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     // --------Back compatibility--------

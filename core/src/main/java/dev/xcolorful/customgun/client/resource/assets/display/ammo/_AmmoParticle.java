@@ -70,6 +70,25 @@ public final class _AmmoParticle extends ResourcePojo<_AmmoParticle> {
         this.setValid(true);
     }
 
+    @Override
+    protected _AmmoParticle copyTo(final _AmmoParticle pojo) {
+        pojo.setParticleLocation(this.particleLocation);
+        float[] delta; {
+            delta = this.delta != null ? this.delta.clone() : null;
+        } pojo.setDelta(delta);
+        pojo.setSpeed(this.speed);
+        pojo.setCount(this.count);
+        pojo.setLifetimeTicks(this.lifetimeTicks);
+        return pojo;
+    }
+
+    @Override
+    public _AmmoParticle copy() {
+        _AmmoParticle pojo = copyTo(new _AmmoParticle());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     public ResourceLocation getParticleLocation() {

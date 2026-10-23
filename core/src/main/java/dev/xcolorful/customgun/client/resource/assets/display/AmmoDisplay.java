@@ -98,6 +98,29 @@ public final class AmmoDisplay extends _AssetsDisplay<AmmoDisplay> {
         this.setValid(true);
     }
 
+    @Override
+    protected AmmoDisplay copyTo(final AmmoDisplay pojo) {
+        super.copyTo(pojo);
+
+        @Nullable _AmmoEntityDisplay ammoEntityDisplay = null; {
+            if (this.ammoEntityDisplay != null) ammoEntityDisplay = this.ammoEntityDisplay.copy();
+        } pojo.setAmmoEntityDisplay(ammoEntityDisplay);
+        @Nullable _ShellDisplay shellDisplay = null; {
+            if (this.shellDisplay != null) shellDisplay = this.shellDisplay.copy();
+        } pojo.setShellDisplay(shellDisplay);
+
+        pojo.setAmmoParticle(this.ammoParticle.copy());
+        pojo.setTracerColor(this.tracerColor);
+        return pojo;
+    }
+
+    @Override
+    public AmmoDisplay copy() {
+        AmmoDisplay pojo = copyTo(new AmmoDisplay());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     public @Nullable _AmmoEntityDisplay getAmmoEntityDisplay() {

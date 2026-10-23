@@ -72,6 +72,24 @@ public final class _LaserDisplay extends ResourcePojo<_LaserDisplay> {
         this.setValid(true);
     }
 
+    @Override
+    protected _LaserDisplay copyTo(final _LaserDisplay pojo) {
+        pojo.setDefaultColor(this.defaultColor);
+        pojo.setEnableCustomizedColor(this.enableCustomizedColor);
+        pojo.setLaserLength(this.laserLength);
+        pojo.setLaserWidth(this.laserWidth);
+        pojo.setThirdPersonLaserLength(this.thirdPersonLaserLength);
+        pojo.setThirdPersonLaserWidth(this.thirdPersonLaserWidth);
+        return pojo;
+    }
+
+    @Override
+    public _LaserDisplay copy() {
+        _LaserDisplay pojo = copyTo(new _LaserDisplay());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     public Color getDefaultColor() {

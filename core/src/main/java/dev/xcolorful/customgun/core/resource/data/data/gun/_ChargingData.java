@@ -77,6 +77,26 @@ public final class _ChargingData extends ResourcePojo<_ChargingData> {
         this.setValid(true);
     }
 
+    @Override
+    protected _ChargingData copyTo(final _ChargingData pojo) {
+        pojo.setChargeType(this.chargeType);
+        pojo.setMaxCharge(this.maxCharge);
+        pojo.setFireThreshold(this.fireThreshold);
+        pojo.setRecoverByFire(this.recoverByFire);
+
+        pojo.setChargePerTick(this.chargePerTick);
+        pojo.setRecoverPerTick(this.recoverPerTick);
+        pojo.setEnableChargeDuringCooldown(this.enableChargeDuringCooldown);
+        return pojo;
+    }
+
+    @Override
+    public _ChargingData copy() {
+        _ChargingData pojo = copyTo(new _ChargingData());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // -------- Getter & Setter --------
 
     public ChargeType getChargeType() {

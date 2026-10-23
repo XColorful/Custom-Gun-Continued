@@ -70,6 +70,20 @@ public final class _TableIngredientData extends ResourcePojo<_TableIngredientDat
         this.setValid(true);
     }
 
+    @Override
+    protected _TableIngredientData copyTo(final _TableIngredientData pojo) {
+        pojo.setIngredientFilter(this.ingredientFilter.copy());
+        pojo.setIngredientCount(this.ingredientCount);
+        return pojo;
+    }
+
+    @Override
+    public _TableIngredientData copy() {
+        _TableIngredientData pojo = copyTo(new _TableIngredientData());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     public _IngredientFilterData getIngredientFilter() {

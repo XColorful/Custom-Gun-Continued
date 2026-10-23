@@ -8,6 +8,7 @@ import dev.xcolorful.customgun.core.resource.ResourcePojo;
 import dev.xcolorful.customgun.core.util.JsonUtils;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 public final class BedrockAnimation extends ResourcePojo<BedrockAnimation> {
@@ -51,6 +52,24 @@ public final class BedrockAnimation extends ResourcePojo<BedrockAnimation> {
     @Override
     protected void validatePojo() {
         this.setValid(true);
+    }
+
+    @Override
+    protected BedrockAnimation copyTo(final BedrockAnimation pojo) {
+        pojo.setFormatVersion(this.formatVersion);
+        Map<String, _Animation> animations = new HashMap<>(); {
+            for (var entry : this.animations.entrySet()) {
+                animations.put(entry.getKey(), entry.getValue().copy());
+            }
+        } pojo.setAnimations(animations);
+        return pojo;
+    }
+
+    @Override
+    public BedrockAnimation copy() {
+        BedrockAnimation pojo = copyTo(new BedrockAnimation());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

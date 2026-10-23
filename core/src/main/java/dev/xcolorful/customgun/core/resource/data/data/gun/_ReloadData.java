@@ -75,6 +75,22 @@ public final class _ReloadData extends ResourcePojo<_ReloadData> {
         this.setValid(true);
     }
 
+    @Override
+    protected _ReloadData copyTo(final _ReloadData pojo) {
+        pojo.setAmmoFeedType(this.ammoFeedType);
+        pojo.setFreeAmmoFeed(this.freeAmmoFeed);
+        pojo.setReloadFeed(this.reloadFeed.copy());
+        pojo.setReloadCooldown(this.reloadCooldown.copy());
+        return pojo;
+    }
+
+    @Override
+    public _ReloadData copy() {
+        _ReloadData pojo = copyTo(new _ReloadData());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     public AmmoFeedType getAmmoFeedType() {

@@ -83,6 +83,28 @@ public final class _RecoilData extends ResourcePojo<_RecoilData> {
         this.setValid(true);
     }
 
+    @Override
+    protected _RecoilData copyTo(final _RecoilData pojo) {
+        List<_RecoilEntryData> pitchRecoils = new ArrayList<>(this.pitchRecoils.size()); {
+            for (int i = 0; i < this.pitchRecoils.size(); i++) {
+                pitchRecoils.add(this.pitchRecoils.get(i).copy());
+            }
+        } pojo.setPitchRecoils(pitchRecoils);
+        List<_RecoilEntryData> yawRecoils = new ArrayList<>(this.yawRecoils.size()); {
+            for (int i = 0; i < this.yawRecoils.size(); i++) {
+                yawRecoils.add(this.yawRecoils.get(i).copy());
+            }
+        } pojo.setYawRecoils(yawRecoils);
+        return pojo;
+    }
+
+    @Override
+    public _RecoilData copy() {
+        _RecoilData pojo = copyTo(new _RecoilData());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     public List<_RecoilEntryData> getPitchRecoils() {

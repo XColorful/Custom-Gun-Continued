@@ -81,6 +81,23 @@ public final class BlockIndex extends _DataIndex<BlockIndex> {
         this.setValid(true);
     }
 
+    @Override
+    protected BlockIndex copyTo(final BlockIndex pojo) {
+        super.copyTo(pojo);
+
+        pojo.setBlockLocation(this.blockLocation);
+
+        pojo.setMaxStackSize(this.maxStackSize);
+        return pojo;
+    }
+
+    @Override
+    public BlockIndex copy() {
+        BlockIndex pojo = copyTo(new BlockIndex());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     public ResourceLocation getBlockLocation() {

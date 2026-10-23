@@ -62,6 +62,27 @@ public final class _SurroundDisplay extends ResourcePojo<_SurroundDisplay> {
         this.setValid(true);
     }
 
+    @Override
+    protected _SurroundDisplay copyTo(final _SurroundDisplay pojo) {
+        float[] pos; {
+            pos = this.pos != null ? this.pos.clone() : null;
+        } pojo.setPos(pos);
+        float[] rotate; {
+            rotate = this.rotate != null ? this.rotate.clone() : null;
+        } pojo.setRotate(rotate);
+        float[] scale; {
+            scale = this.scale != null ? this.scale.clone() : null;
+        } pojo.setScale(scale);
+        return pojo;
+    }
+
+    @Override
+    public _SurroundDisplay copy() {
+        _SurroundDisplay pojo = copyTo(new _SurroundDisplay());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     public float[] getPos() {

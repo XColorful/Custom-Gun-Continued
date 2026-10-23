@@ -67,6 +67,22 @@ public final class _TargetEffectData extends ResourcePojo<_TargetEffectData> {
         this.setValid(true);
     }
 
+    @Override
+    protected _TargetEffectData copyTo(final _TargetEffectData pojo) {
+        pojo.setEffectLocation(this.effectLocation);
+        pojo.setSeconds(this.seconds);
+        pojo.setAmplifier(this.amplifier);
+        pojo.setHideParticles(this.hideParticles);
+        return pojo;
+    }
+
+    @Override
+    public _TargetEffectData copy() {
+        _TargetEffectData pojo = copyTo(new _TargetEffectData());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     public ResourceLocation getEffectLocation() {

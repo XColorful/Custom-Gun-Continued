@@ -68,6 +68,31 @@ public final class _ShellEjectionParam extends ResourcePojo<_ShellEjectionParam>
         this.setValid(true);
     }
 
+    @Override
+    protected _ShellEjectionParam copyTo(final _ShellEjectionParam pojo) {
+        float[] baseVelocity; {
+            baseVelocity = this.baseVelocity != null ? this.baseVelocity.clone() : null;
+        } pojo.setBaseVelocity(baseVelocity);
+        float[] randomizeVelocity; {
+            randomizeVelocity = this.randomizeVelocity != null ? this.randomizeVelocity.clone() : null;
+        } pojo.setRandomizeVelocity(randomizeVelocity);
+        float[] acceleration; {
+            acceleration = this.acceleration != null ? this.acceleration.clone() : null;
+        } pojo.setAcceleration(acceleration);
+        float[] angularVelocity; {
+            angularVelocity = this.angularVelocity != null ? this.angularVelocity.clone() : null;
+        } pojo.setAngularVelocity(angularVelocity);
+        pojo.setLifetimeSeconds(this.lifetimeSeconds);
+        return pojo;
+    }
+
+    @Override
+    public _ShellEjectionParam copy() {
+        _ShellEjectionParam pojo = copyTo(new _ShellEjectionParam());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     public float[] getBaseVelocity() {

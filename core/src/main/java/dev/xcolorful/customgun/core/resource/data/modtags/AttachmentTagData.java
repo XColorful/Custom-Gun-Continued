@@ -52,6 +52,20 @@ public final class AttachmentTagData extends _SimpleTagData<AttachmentTagData> {
         this.setValid(true);
     }
 
+    @Override
+    protected AttachmentTagData copyTo(final AttachmentTagData pojo) {
+        super.copyTo(pojo);
+
+        return pojo;
+    }
+
+    @Override
+    public AttachmentTagData copy() {
+        AttachmentTagData pojo = copyTo(new AttachmentTagData());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------IResourcePojoExtension--------
 
     @Override

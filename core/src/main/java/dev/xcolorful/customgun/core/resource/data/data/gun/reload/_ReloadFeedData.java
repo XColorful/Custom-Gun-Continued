@@ -51,6 +51,20 @@ public final class _ReloadFeedData extends ResourcePojo<_ReloadFeedData> {
         this.setValid(true);
     }
 
+    @Override
+    protected _ReloadFeedData copyTo(final _ReloadFeedData pojo) {
+        pojo.setEmpty(this.empty);
+        pojo.setTactical(this.tactical);
+        return pojo;
+    }
+
+    @Override
+    public _ReloadFeedData copy() {
+        _ReloadFeedData pojo = copyTo(new _ReloadFeedData());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     public float getEmpty() {

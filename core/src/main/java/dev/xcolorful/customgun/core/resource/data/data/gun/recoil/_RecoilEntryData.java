@@ -57,6 +57,22 @@ public final class _RecoilEntryData extends ResourcePojo<_RecoilEntryData> {
         this.setValid(true);
     }
 
+    @Override
+    protected _RecoilEntryData copyTo(final _RecoilEntryData pojo) {
+        pojo.setTime(this.time);
+        float[] range; {
+            range = this.range != null ? this.range.clone() : null;
+        } pojo.setRange(range);
+        return pojo;
+    }
+
+    @Override
+    public _RecoilEntryData copy() {
+        _RecoilEntryData pojo = copyTo(new _RecoilEntryData());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     public float getTime() {

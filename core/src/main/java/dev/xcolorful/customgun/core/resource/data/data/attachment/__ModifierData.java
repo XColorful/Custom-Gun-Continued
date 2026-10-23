@@ -10,6 +10,15 @@ public abstract class __ModifierData<T extends __ModifierData<T>> extends Resour
     private float uniqueMultiplier = 1;
     private @Nullable String scriptFunction;
 
+    @Override
+    protected T copyTo(final T pojo) {
+        pojo.setSharedBaseAdd(this.sharedBaseAdd);
+        pojo.setSharedPercentAdd(this.sharedPercentAdd);
+        pojo.setUniqueMultiplier(this.uniqueMultiplier);
+        pojo.setScriptFunction(this.scriptFunction);
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     public final float getSharedBaseAdd() {

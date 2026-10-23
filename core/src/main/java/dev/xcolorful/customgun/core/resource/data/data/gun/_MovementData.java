@@ -57,6 +57,21 @@ public final class _MovementData extends ResourcePojo<_MovementData> {
         this.setValid(true);
     }
 
+    @Override
+    protected _MovementData copyTo(final _MovementData pojo) {
+        pojo.setBase(this.base);
+        pojo.setAim(this.aim);
+        pojo.setReload(this.reload);
+        return pojo;
+    }
+
+    @Override
+    public _MovementData copy() {
+        _MovementData pojo = copyTo(new _MovementData());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     public float getBase() {

@@ -81,6 +81,29 @@ public final class _HeatData extends ResourcePojo<_HeatData> {
         this.setValid(true);
     }
 
+    @Override
+    protected _HeatData copyTo(final _HeatData pojo) {
+        pojo.setMaxHeat(this.maxHeat);
+        pojo.setHeatPerShot(this.heatPerShot);
+
+        pojo.setMinRpmByHeat(this.minRpmByHeat);
+        pojo.setMaxRpmByHeat(this.maxRpmByHeat);
+        pojo.setMinInaccuracyByHeat(this.minInaccuracyByHeat);
+        pojo.setMaxInaccuracyByHeat(this.maxInaccuracyByHeat);
+
+        pojo.setOverheatLocktimeMs(this.overheatLocktimeMs);
+        pojo.setCoolingDelayMs(this.coolingDelayMs);
+        pojo.setCoolingSpeedMultiplier(this.coolingSpeedMultiplier);
+        return pojo;
+    }
+
+    @Override
+    public _HeatData copy() {
+        _HeatData pojo = copyTo(new _HeatData());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // -------- Getter & Setter --------
 
     public float getMaxHeat() {

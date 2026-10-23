@@ -60,6 +60,24 @@ public final class _RecoilDataModifierData extends ResourcePojo<_RecoilDataModif
         this.setValid(true);
     }
 
+    @Override
+    protected _RecoilDataModifierData copyTo(final _RecoilDataModifierData pojo) {
+        @Nullable _SimpleModifierData pitchRecoilModifier = null; {
+            if (this.pitchRecoilModifier != null) pitchRecoilModifier = this.pitchRecoilModifier.copy();
+        } pojo.setPitchRecoilModifier(pitchRecoilModifier);
+        @Nullable _SimpleModifierData yawRecoilModifier = null; {
+            if (this.yawRecoilModifier != null) yawRecoilModifier = this.yawRecoilModifier.copy();
+        } pojo.setYawRecoilModifier(yawRecoilModifier);
+        return pojo;
+    }
+
+    @Override
+    public _RecoilDataModifierData copy() {
+        _RecoilDataModifierData pojo = copyTo(new _RecoilDataModifierData());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     public @Nullable _SimpleModifierData getPitchRecoilModifier() {

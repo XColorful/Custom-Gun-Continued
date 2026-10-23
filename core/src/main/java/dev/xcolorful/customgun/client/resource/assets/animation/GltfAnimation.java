@@ -40,5 +40,17 @@ public final class GltfAnimation extends ResourcePojo<GltfAnimation> {
         this.setValid(true);
     }
 
+    @Override
+    protected GltfAnimation copyTo(final GltfAnimation pojo) {
+        return pojo;
+    }
+
+    @Override
+    public GltfAnimation copy() {
+        GltfAnimation pojo = copyTo(new GltfAnimation());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 }

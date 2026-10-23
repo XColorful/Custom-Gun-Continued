@@ -51,6 +51,20 @@ public final class _FireAspectModifierData extends ResourcePojo<_FireAspectModif
         this.setValid(true);
     }
 
+    @Override
+    protected _FireAspectModifierData copyTo(final _FireAspectModifierData pojo) {
+        pojo.setIgniteEntity(this.igniteEntity);
+        pojo.setIgniteBlock(this.igniteBlock);
+        return pojo;
+    }
+
+    @Override
+    public _FireAspectModifierData copy() {
+        _FireAspectModifierData pojo = copyTo(new _FireAspectModifierData());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     public boolean getIgniteEntity() {

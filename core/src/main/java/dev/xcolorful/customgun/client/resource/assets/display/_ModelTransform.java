@@ -56,6 +56,21 @@ public final class _ModelTransform extends ResourcePojo<_ModelTransform> {
         this.setValid(true);
     }
 
+    @Override
+    protected _ModelTransform copyTo(final _ModelTransform pojo) {
+        @Nullable _ModelTransformScale scale = null; {
+            if (this.scale != null) scale = this.scale.copy();
+        } pojo.setScale(scale);
+        return pojo;
+    }
+
+    @Override
+    public _ModelTransform copy() {
+        _ModelTransform pojo = copyTo(new _ModelTransform());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     public @Nullable _ModelTransformScale getScale() {

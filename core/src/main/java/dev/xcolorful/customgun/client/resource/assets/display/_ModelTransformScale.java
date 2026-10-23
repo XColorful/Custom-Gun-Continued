@@ -62,6 +62,27 @@ public class _ModelTransformScale extends ResourcePojo<_ModelTransformScale> {
         this.setValid(true);
     }
 
+    @Override
+    protected _ModelTransformScale copyTo(final _ModelTransformScale pojo) {
+        float[] thirdPersonScale; {
+            thirdPersonScale = this.thirdPersonScale != null ? this.thirdPersonScale.clone() : null;
+        } pojo.setThirdPersonScale(thirdPersonScale);
+        float[] groundScale; {
+            groundScale = this.groundScale != null ? this.groundScale.clone() : null;
+        } pojo.setGroundScale(groundScale);
+        float[] fixedScale; {
+            fixedScale = this.fixedScale != null ? this.fixedScale.clone() : null;
+        } pojo.setFixedScale(fixedScale);
+        return pojo;
+    }
+
+    @Override
+    public _ModelTransformScale copy() {
+        _ModelTransformScale pojo = copyTo(new _ModelTransformScale());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     public float[] getThirdPersonScale() {

@@ -20,6 +20,18 @@ public abstract class _AssetsDisplay<T extends _AssetsDisplay<T>> extends Resour
         this.setValid(true);
     }
 
+    @Override
+    protected T copyTo(final T pojo) {
+        pojo.setModelLocation(this.modelLocation);
+
+        @Nullable _ModelTransform modelTransform = null; {
+            if (this.modelTransform != null) modelTransform = this.modelTransform.copy();
+        } pojo.setModelTransform(modelTransform);
+        pojo.setTextureLocation(this.textureLocation);
+        pojo.setSlotTextureLocation(this.slotTextureLocation);
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     public final @Nullable ResourceLocation getModelLocation() {

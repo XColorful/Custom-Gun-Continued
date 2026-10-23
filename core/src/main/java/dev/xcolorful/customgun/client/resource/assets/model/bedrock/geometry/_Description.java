@@ -63,6 +63,26 @@ public final class _Description extends ResourcePojo<_Description> {
         this.setValid(true);
     }
 
+    @Override
+    protected _Description copyTo(final _Description pojo) {
+        pojo.setIdentifier(this.identifier);
+        pojo.setTextureWidth(this.textureWidth);
+        pojo.setTextureHeight(this.textureHeight);
+        pojo.setVisibleBoundsWidth(this.visibleBoundsWidth);
+        pojo.setVisibleBoundsHeight(this.visibleBoundsHeight);
+        float[] visibleBoundsOffset; {
+            visibleBoundsOffset = this.visibleBoundsOffset != null ? this.visibleBoundsOffset.clone() : null;
+        } pojo.setVisibleBoundsOffset(visibleBoundsOffset);
+        return pojo;
+    }
+
+    @Override
+    public _Description copy() {
+        _Description pojo = copyTo(new _Description());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     public String getIdentifier() {

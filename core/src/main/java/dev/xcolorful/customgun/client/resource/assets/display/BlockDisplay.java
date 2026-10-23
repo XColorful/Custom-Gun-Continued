@@ -65,6 +65,21 @@ public final class BlockDisplay extends _AssetsDisplay<BlockDisplay> {
         this.setValid(true);
     }
 
+    @Override
+    protected BlockDisplay copyTo(final BlockDisplay pojo) {
+        super.copyTo(pojo);
+
+        pojo.setItemTransforms(this.itemTransforms);
+        return pojo;
+    }
+
+    @Override
+    public BlockDisplay copy() {
+        BlockDisplay pojo = copyTo(new BlockDisplay());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     public Transformation getItemTransforms() {

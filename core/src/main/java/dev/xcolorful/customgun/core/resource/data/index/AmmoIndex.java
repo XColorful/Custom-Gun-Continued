@@ -71,6 +71,23 @@ public final class AmmoIndex extends _DataIndex<AmmoIndex> {
         this.setValid(true);
     }
 
+    @Override
+    protected AmmoIndex copyTo(final AmmoIndex pojo) {
+        super.copyTo(pojo);
+
+        pojo.setAmmoCategory(this.ammoCategory);
+
+        pojo.setMaxStackSize(this.maxStackSize);
+        return pojo;
+    }
+
+    @Override
+    public AmmoIndex copy() {
+        AmmoIndex pojo = copyTo(new AmmoIndex());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     public AmmoCategory getAmmoCategory() {

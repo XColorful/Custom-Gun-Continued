@@ -62,6 +62,20 @@ public final class _MuzzleFlashDisplay extends ResourcePojo<_MuzzleFlashDisplay>
         this.setValid(true);
     }
 
+    @Override
+    protected _MuzzleFlashDisplay copyTo(final _MuzzleFlashDisplay pojo) {
+        pojo.setTextureLocation(this.textureLocation);
+        pojo.setTextureScale(this.textureScale);
+        return pojo;
+    }
+
+    @Override
+    public _MuzzleFlashDisplay copy() {
+        _MuzzleFlashDisplay pojo = copyTo(new _MuzzleFlashDisplay());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     public ResourceLocation getTextureLocation() {

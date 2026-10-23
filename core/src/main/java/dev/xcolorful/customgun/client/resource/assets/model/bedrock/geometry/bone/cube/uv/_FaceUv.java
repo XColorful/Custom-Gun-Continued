@@ -51,6 +51,24 @@ public class _FaceUv extends ResourcePojo<_FaceUv> {
         this.setValid(true);
     }
 
+    @Override
+    protected _FaceUv copyTo(final _FaceUv pojo) {
+        float[] uv; {
+            uv = this.uv != null ? this.uv.clone() : null;
+        } pojo.setUv(uv);
+        float[] uvSize; {
+            uvSize = this.uvSize != null ? this.uvSize.clone() : null;
+        } pojo.setUvSize(uvSize);
+        return pojo;
+    }
+
+    @Override
+    public _FaceUv copy() {
+        _FaceUv pojo = copyTo(new _FaceUv());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     public float[] getUv() {

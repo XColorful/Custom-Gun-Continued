@@ -82,6 +82,39 @@ public class _Uv extends ResourcePojo<_Uv> {
         this.setValid(true);
     }
 
+    @Override
+    protected _Uv copyTo(final _Uv pojo) {
+        float @Nullable [] uv; {
+            uv = this.uv != null ? this.uv.clone() : null;
+        } pojo.setUv(uv);
+        @Nullable _FaceUv north = null; {
+            if (this.north != null) north = this.north.copy();
+        } pojo.setNorth(north);
+        @Nullable _FaceUv south = null; {
+            if (this.south != null) south = this.south.copy();
+        } pojo.setSouth(south);
+        @Nullable _FaceUv east = null; {
+            if (this.east != null) east = this.east.copy();
+        } pojo.setEast(east);
+        @Nullable _FaceUv west = null; {
+            if (this.west != null) west = this.west.copy();
+        } pojo.setWest(west);
+        @Nullable _FaceUv up = null; {
+            if (this.up != null) up = this.up.copy();
+        } pojo.setUp(up);
+        @Nullable _FaceUv down = null; {
+            if (this.down != null) down = this.down.copy();
+        } pojo.setDown(down);
+        return pojo;
+    }
+
+    @Override
+    public _Uv copy() {
+        _Uv pojo = copyTo(new _Uv());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     public float @Nullable [] getUv() {

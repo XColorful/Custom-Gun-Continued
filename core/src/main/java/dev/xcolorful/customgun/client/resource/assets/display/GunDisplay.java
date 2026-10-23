@@ -23,6 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -211,6 +212,94 @@ public final class GunDisplay extends _AssetsDisplay<GunDisplay> {
         }
 
         this.setValid(true);
+    }
+
+    @Override
+    protected GunDisplay copyTo(final GunDisplay pojo) {
+        super.copyTo(pojo);
+
+        pojo.setHudTextureLocation(this.hudTextureLocation);
+        pojo.setHudEmptyTextureLocation(this.hudEmptyTextureLocation);
+
+        pojo.setGunModelType(this.gunModelType);
+        @Nullable _LodDisplay lodDisplay = null; {
+            if (this.lodDisplay != null) lodDisplay = this.lodDisplay.copy();
+        } pojo.setLodDisplay(lodDisplay);
+        pojo.setEnableTransparency(this.enableTransparency);
+
+        pojo.setIronZoomScale(this.ironZoomScale);
+        pojo.setIronViewFov(this.ironViewFov);
+        pojo.setEnableCrosshair(this.enableCrosshair);
+        @Nullable _MuzzleFlashDisplay muzzleFlashDisplay = null; {
+            if (this.muzzleFlashDisplay != null) muzzleFlashDisplay = this.muzzleFlashDisplay.copy();
+        } pojo.setMuzzleFlashDisplay(muzzleFlashDisplay);
+        Map<String, _ModelNodeTextDisplay> modelNodeTextDisplay = new HashMap<>(); {
+            for (var entry : this.modelNodeTextDisplay.entrySet()) {
+                modelNodeTextDisplay.put(entry.getKey(), entry.getValue().copy());
+            }
+        } pojo.setModelNodeTextDisplay(modelNodeTextDisplay);
+        @Nullable _LaserDisplay laserDisplay = null; {
+            if (this.laserDisplay != null) laserDisplay = this.laserDisplay.copy();
+        } pojo.setLaserDisplay(laserDisplay);
+        @Nullable Map<String, _SurroundDisplay> surroundDisplayByHotbar = null; {
+            if (this.surroundDisplayByHotbar != null) {
+                surroundDisplayByHotbar = new HashMap<>();
+                for (var entry : this.surroundDisplayByHotbar.entrySet()) {
+                    surroundDisplayByHotbar.put(entry.getKey(), entry.getValue().copy());
+                }
+            }
+        } pojo.setSurroundDisplayByHotbar(surroundDisplayByHotbar);
+        pojo.setSurroundDisplayByOffhand(this.surroundDisplayByOffhand.copy());
+        pojo.setDamageDisplayType(this.damageDisplayType);
+        pojo.setAmmoCountType(this.ammoCountType);
+        @Nullable _AmmoDisplayOverride ammoDisplayOverride = null; {
+            if (this.ammoDisplayOverride != null) ammoDisplayOverride = this.ammoDisplayOverride.copy();
+        } pojo.setAmmoDisplayOverride(ammoDisplayOverride);
+
+        pojo.setGunAnimationLocation(this.gunAnimationLocation);
+        pojo.setScriptLocation(this.scriptLocation);
+        @Nullable Map<String, Object> scriptParam = null; {
+            if (this.scriptParam != null) {
+                scriptParam = new HashMap<>();
+                for (var entry : this.scriptParam.entrySet()) {
+                    scriptParam.put(entry.getKey(), entry.getValue());
+                }
+            }
+        } pojo.setScriptParam(scriptParam);
+        @Nullable _ShellEjectionParam shellEjectionParam = null; {
+            if (this.shellEjectionParam != null) shellEjectionParam = this.shellEjectionParam.copy();
+        } pojo.setShellEjectionParam(shellEjectionParam);
+        pojo.setShooterAnimationCategory(this.shooterAnimationCategory);
+        pojo.setPlayerAnimatorLocation(this.playerAnimatorLocation);
+        pojo.setPlayerAnimatorFixedHand(this.playerAnimatorFixedHand);
+        Map<GunSoundType, ResourceLocation> gunSounds = new HashMap<>(); {
+            for (var entry : this.gunSounds.entrySet()) {
+                gunSounds.put(entry.getKey(), entry.getValue());
+            }
+        } pojo.setGunSounds(gunSounds);
+        @Nullable List<ResourceLocation> preloadSoundLocation = null; {
+            if (this.preloadSoundLocation != null) {
+                preloadSoundLocation = new ArrayList<>(this.preloadSoundLocation.size());
+                for (int i = 0; i < this.preloadSoundLocation.size(); i++) {
+                    preloadSoundLocation.add(this.preloadSoundLocation.get(i));
+                }
+            }
+        } pojo.setPreloadSoundLocation(preloadSoundLocation);
+
+        @Nullable _ControllableData controllableData = null; {
+            if (this.controllableData != null) controllableData = this.controllableData.copy();
+        } pojo.setControllableData(controllableData);
+
+        pojo.useDefaultAnimation = this.useDefaultAnimation;
+        pojo.default_animation = this.default_animation;
+        return pojo;
+    }
+
+    @Override
+    public GunDisplay copy() {
+        GunDisplay pojo = copyTo(new GunDisplay());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

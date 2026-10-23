@@ -42,6 +42,20 @@ public final class _LodDisplay extends _AssetsDisplay<_LodDisplay> {
         writer.endObject();
     }
 
+    @Override
+    protected _LodDisplay copyTo(final _LodDisplay pojo) {
+        super.copyTo(pojo);
+
+        return pojo;
+    }
+
+    @Override
+    public _LodDisplay copy() {
+        _LodDisplay pojo = copyTo(new _LodDisplay());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     // --------Back compatibility--------

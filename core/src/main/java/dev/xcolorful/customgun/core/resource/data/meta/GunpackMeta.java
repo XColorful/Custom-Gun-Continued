@@ -61,6 +61,24 @@ public final class GunpackMeta extends ResourcePojo<GunpackMeta> {
         this.setValid(true);
     }
 
+    @Override
+    protected GunpackMeta copyTo(final GunpackMeta pojo) {
+        pojo.setNamespace(this.namespace);
+        Map<String, String> dependencies = new HashMap<>(); {
+            for (var entry : this.dependencies.entrySet()) {
+                dependencies.put(entry.getKey(), entry.getValue());
+            }
+        } pojo.setDependencies(dependencies);
+        return pojo;
+    }
+
+    @Override
+    public GunpackMeta copy() {
+        GunpackMeta pojo = copyTo(new GunpackMeta());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     public String getNamespace() {

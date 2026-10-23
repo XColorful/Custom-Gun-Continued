@@ -57,6 +57,22 @@ public final class _BurstData extends ResourcePojo<_BurstData> {
         this.setValid(true);
     }
 
+    @Override
+    protected _BurstData copyTo(final _BurstData pojo) {
+        pojo.setBpm(this.bpm);
+        pojo.setBurstAmount(this.burstAmount);
+        pojo.setShootIntervalSeconds(this.shootIntervalSeconds);
+        pojo.setContinuousShoot(this.continuousShoot);
+        return pojo;
+    }
+
+    @Override
+    public _BurstData copy() {
+        _BurstData pojo = copyTo(new _BurstData());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     public int getBpm() {

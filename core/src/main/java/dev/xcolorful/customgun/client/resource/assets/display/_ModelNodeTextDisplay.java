@@ -72,6 +72,24 @@ public final class _ModelNodeTextDisplay extends ResourcePojo<_ModelNodeTextDisp
         this.setValid(true);
     }
 
+    @Override
+    protected _ModelNodeTextDisplay copyTo(final _ModelNodeTextDisplay pojo) {
+        pojo.setTextLang(this.textLang);
+        pojo.setTextScale(this.textScale);
+        pojo.setTextColor(this.textColor);
+        pojo.setTextLight(this.textLight);
+        pojo.setEnableTextShadow(this.enableTextShadow);
+        pojo.setXOffsetScale(this.xOffsetScale);
+        return pojo;
+    }
+
+    @Override
+    public _ModelNodeTextDisplay copy() {
+        _ModelNodeTextDisplay pojo = copyTo(new _ModelNodeTextDisplay());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     public String getTextLang() {

@@ -56,6 +56,33 @@ public final class _Bone extends ResourcePojo<_Bone> {
         this.setValid(true);
     }
 
+    @Override
+    protected _Bone copyTo(final _Bone pojo) {
+        Double2ObjectRBTreeMap<_KeyFrame> rotation = new Double2ObjectRBTreeMap<>(); {
+            for (var entry : this.rotation.double2ObjectEntrySet()) {
+                rotation.put(entry.getDoubleKey(), entry.getValue().copy());
+            }
+        } pojo.setRotation(rotation);
+        Double2ObjectRBTreeMap<_KeyFrame> position = new Double2ObjectRBTreeMap<>(); {
+            for (var entry : this.position.double2ObjectEntrySet()) {
+                position.put(entry.getDoubleKey(), entry.getValue().copy());
+            }
+        } pojo.setPosition(position);
+        Double2ObjectRBTreeMap<_KeyFrame> scale = new Double2ObjectRBTreeMap<>(); {
+            for (var entry : this.scale.double2ObjectEntrySet()) {
+                scale.put(entry.getDoubleKey(), entry.getValue().copy());
+            }
+        } pojo.setScale(scale);
+        return pojo;
+    }
+
+    @Override
+    public _Bone copy() {
+        _Bone pojo = copyTo(new _Bone());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     public Double2ObjectRBTreeMap<_KeyFrame> getRotation() {

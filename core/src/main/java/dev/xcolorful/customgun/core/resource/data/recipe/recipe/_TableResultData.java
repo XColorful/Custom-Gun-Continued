@@ -82,6 +82,26 @@ public final class _TableResultData extends ResourcePojo<_TableResultData> {
         this.setValid(true);
     }
 
+    @Override
+    protected _TableResultData copyTo(final _TableResultData pojo) {
+        pojo.setResultType(this.resultType);
+        pojo.setResultCount(this.resultCount);
+        @Nullable _ResultItemData resultItem = null; {
+            if (this.resultItem != null) resultItem = this.resultItem.copy();
+        } pojo.setResultItem(resultItem);
+        pojo.setTabGroupLocation(this.tabGroupLocation);
+
+        pojo.setPojoLocation(this.pojoLocation);
+        return pojo;
+    }
+
+    @Override
+    public _TableResultData copy() {
+        _TableResultData pojo = copyTo(new _TableResultData());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     public RecipeResultType getResultType() {

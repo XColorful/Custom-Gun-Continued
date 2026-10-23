@@ -51,5 +51,19 @@ public final class _SimpleModifierData extends __ModifierData<_SimpleModifierDat
         this.setValid(true);
     }
 
+    @Override
+    protected _SimpleModifierData copyTo(final _SimpleModifierData pojo) {
+        super.copyTo(pojo);
+
+        return pojo;
+    }
+
+    @Override
+    public _SimpleModifierData copy() {
+        _SimpleModifierData pojo = copyTo(new _SimpleModifierData());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Back compatibility--------
 }

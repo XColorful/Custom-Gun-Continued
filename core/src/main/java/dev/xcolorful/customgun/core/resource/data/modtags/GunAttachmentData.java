@@ -51,6 +51,20 @@ public final class GunAttachmentData extends _SimpleTagData<GunAttachmentData> {
         this.setValid(true);
     }
 
+    @Override
+    protected GunAttachmentData copyTo(final GunAttachmentData pojo) {
+        super.copyTo(pojo);
+
+        return pojo;
+    }
+
+    @Override
+    public GunAttachmentData copy() {
+        GunAttachmentData pojo = copyTo(new GunAttachmentData());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------IResourcePojoExtension--------
 
     @Override

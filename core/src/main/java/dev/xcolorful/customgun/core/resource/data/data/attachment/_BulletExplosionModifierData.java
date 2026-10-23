@@ -82,6 +82,32 @@ public final class _BulletExplosionModifierData extends ResourcePojo<_BulletExpl
         this.setValid(true);
     }
 
+    @Override
+    protected _BulletExplosionModifierData copyTo(final _BulletExplosionModifierData pojo) {
+        pojo.setEnableExplode(this.enableExplode);
+
+        @Nullable _SimpleModifierData explodeDamageModifier = null; {
+            if (this.explodeDamageModifier != null) explodeDamageModifier = this.explodeDamageModifier.copy();
+        } pojo.setExplodeDamageModifier(explodeDamageModifier);
+        @Nullable _SimpleModifierData explodeScaleModifier = null; {
+            if (this.explodeScaleModifier != null) explodeScaleModifier = this.explodeScaleModifier.copy();
+        } pojo.setExplodeScaleModifier(explodeScaleModifier);
+        @Nullable _SimpleModifierData maxDelaySecondsModifier = null; {
+            if (this.maxDelaySecondsModifier != null) maxDelaySecondsModifier = this.maxDelaySecondsModifier.copy();
+        } pojo.setMaxDelaySecondsModifier(maxDelaySecondsModifier);
+
+        pojo.setEnableKnockback(this.enableKnockback);
+        pojo.setEnableWorldDestruction(this.enableWorldDestruction);
+        return pojo;
+    }
+
+    @Override
+    public _BulletExplosionModifierData copy() {
+        _BulletExplosionModifierData pojo = copyTo(new _BulletExplosionModifierData());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     public boolean getEnableExplode() {

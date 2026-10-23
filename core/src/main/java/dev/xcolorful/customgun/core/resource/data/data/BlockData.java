@@ -74,6 +74,24 @@ public final class BlockData extends ResourcePojo<BlockData> {
         this.setValid(true);
     }
 
+    @Override
+    protected BlockData copyTo(final BlockData pojo) {
+        pojo.setRecipeFilterLocation(this.recipeFilterLocation);
+        List<_RecipeGroupData> recipeGroupList = new ArrayList<>(this.recipeGroupList.size()); {
+            for (int i = 0; i < this.recipeGroupList.size(); i++) {
+                recipeGroupList.add(this.recipeGroupList.get(i).copy());
+            }
+        } pojo.setRecipeGroupList(recipeGroupList);
+        return pojo;
+    }
+
+    @Override
+    public BlockData copy() {
+        BlockData pojo = copyTo(new BlockData());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     public ResourceLocation getRecipeFilterLocation() {

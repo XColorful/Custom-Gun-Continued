@@ -12,6 +12,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class _GeometryModel extends ResourcePojo<_GeometryModel> {
@@ -55,6 +56,27 @@ public class _GeometryModel extends ResourcePojo<_GeometryModel> {
     @Override
     protected void validatePojo() {
         this.setValid(true);
+    }
+
+    @Override
+    protected _GeometryModel copyTo(final _GeometryModel pojo) {
+        pojo.setDescription(this.description.copy());
+        @Nullable List<_Bone> bones = null; {
+            if (this.bones != null) {
+                bones = new ArrayList<>(this.bones.size());
+                for (int i = 0; i < this.bones.size(); i++) {
+                    bones.add(this.bones.get(i).copy());
+                }
+            }
+        } pojo.setBones(bones);
+        return pojo;
+    }
+
+    @Override
+    public _GeometryModel copy() {
+        _GeometryModel pojo = copyTo(new _GeometryModel());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

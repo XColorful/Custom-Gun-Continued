@@ -9,6 +9,7 @@ import dev.xcolorful.customgun.core.util.JsonUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public final class _Bone extends ResourcePojo<_Bone> {
@@ -64,6 +65,35 @@ public final class _Bone extends ResourcePojo<_Bone> {
     @Override
     protected void validatePojo() {
         this.setValid(true);
+    }
+
+    @Override
+    protected _Bone copyTo(final _Bone pojo) {
+        pojo.setName(this.name);
+        pojo.setParent(this.parent);
+        float[] pivot; {
+            pivot = this.pivot != null ? this.pivot.clone() : null;
+        } pojo.setPivot(pivot);
+        float[] rotation; {
+            rotation = this.rotation != null ? this.rotation.clone() : null;
+        } pojo.setRotation(rotation);
+        @Nullable List<_Cube> cubes = null; {
+            if (this.cubes != null) {
+                cubes = new ArrayList<>(this.cubes.size());
+                for (int i = 0; i < this.cubes.size(); i++) {
+                    cubes.add(this.cubes.get(i).copy());
+                }
+            }
+        } pojo.setCubes(cubes);
+        pojo.setMirror(this.mirror);
+        return pojo;
+    }
+
+    @Override
+    public _Bone copy() {
+        _Bone pojo = copyTo(new _Bone());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

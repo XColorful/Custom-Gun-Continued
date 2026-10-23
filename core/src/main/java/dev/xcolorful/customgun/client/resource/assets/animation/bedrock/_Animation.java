@@ -60,6 +60,26 @@ public final class _Animation extends ResourcePojo<_Animation> {
         this.setValid(true);
     }
 
+    @Override
+    protected _Animation copyTo(final _Animation pojo) {
+        pojo.setLoop(this.loop);
+        pojo.setAnimationLength(this.animationLength);
+        HashMap<String, _Bone> bones = new HashMap<>(); {
+            for (var entry : this.bones.entrySet()) {
+                bones.put(entry.getKey(), entry.getValue().copy());
+            }
+        } pojo.setBones(bones);
+        pojo.setSoundEffects(this.soundEffects.copy());
+        return pojo;
+    }
+
+    @Override
+    public _Animation copy() {
+        _Animation pojo = copyTo(new _Animation());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     public boolean getLoop() {

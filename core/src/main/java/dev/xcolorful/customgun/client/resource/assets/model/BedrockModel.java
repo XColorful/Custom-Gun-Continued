@@ -9,6 +9,7 @@ import dev.xcolorful.customgun.core.util.JsonUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class BedrockModel extends ResourcePojo<BedrockModel> {
@@ -52,6 +53,24 @@ public class BedrockModel extends ResourcePojo<BedrockModel> {
     @Override
     protected void validatePojo() {
         this.setValid(true);
+    }
+
+    @Override
+    protected BedrockModel copyTo(final BedrockModel pojo) {
+        pojo.setFormatVersion(this.formatVersion);
+        List<_GeometryModel> geometryModels = new ArrayList<>(this.geometryModels.size()); {
+            for (int i = 0; i < this.geometryModels.size(); i++) {
+                geometryModels.add(this.geometryModels.get(i).copy());
+            }
+        } pojo.setGeometryModels(geometryModels);
+        return pojo;
+    }
+
+    @Override
+    public BedrockModel copy() {
+        BedrockModel pojo = copyTo(new BedrockModel());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

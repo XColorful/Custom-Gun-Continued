@@ -55,6 +55,19 @@ public final class _MuzzleModifierData extends ResourcePojo<_MuzzleModifierData>
         this.setValid(true);
     }
 
+    @Override
+    protected _MuzzleModifierData copyTo(final _MuzzleModifierData pojo) {
+        pojo.setFireSoundType(this.fireSoundType);
+        return pojo;
+    }
+
+    @Override
+    public _MuzzleModifierData copy() {
+        _MuzzleModifierData pojo = copyTo(new _MuzzleModifierData());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     public FireSoundType getFireSoundType() {

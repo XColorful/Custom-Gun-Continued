@@ -82,6 +82,29 @@ public final class _FireModeAdjustData extends ResourcePojo<_FireModeAdjustData>
         this.setValid(true);
     }
 
+    @Override
+    protected _FireModeAdjustData copyTo(final _FireModeAdjustData pojo) {
+        pojo.setRpm(this.rpm);
+
+        pojo.setDamage(this.damage);
+        pojo.setBulletSpeed(this.bulletSpeed);
+        pojo.setKnockbackStrength(this.knockbackStrength);
+
+        pojo.setArmorIgnorePercent(this.armorIgnorePercent);
+        pojo.setHeadshotMultiplier(this.headshotMultiplier);
+
+        pojo.setAimInaccuracy(this.aimInaccuracy);
+        pojo.setOtherInaccuracy(this.otherInaccuracy);
+        return pojo;
+    }
+
+    @Override
+    public _FireModeAdjustData copy() {
+        _FireModeAdjustData pojo = copyTo(new _FireModeAdjustData());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     public int getRpm() {

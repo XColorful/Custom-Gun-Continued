@@ -82,6 +82,28 @@ public final class _KeyFrame extends ResourcePojo<_KeyFrame> {
         this.setValid(true);
     }
 
+    @Override
+    protected _KeyFrame copyTo(final _KeyFrame pojo) {
+        float[] pre; {
+            pre = this.pre != null ? this.pre.clone() : null;
+        } pojo.setPre(pre);
+        float[] post; {
+            post = this.post != null ? this.post.clone() : null;
+        } pojo.setPost(post);
+        float[] data; {
+            data = this.data != null ? this.data.clone() : null;
+        } pojo.setData(data);
+        pojo.setLerpMode(this.lerpMode);
+        return pojo;
+    }
+
+    @Override
+    public _KeyFrame copy() {
+        _KeyFrame pojo = copyTo(new _KeyFrame());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     public float[] getPre() {

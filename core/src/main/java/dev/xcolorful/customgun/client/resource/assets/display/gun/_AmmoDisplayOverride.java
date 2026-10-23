@@ -69,6 +69,22 @@ public final class _AmmoDisplayOverride extends ResourcePojo<_AmmoDisplayOverrid
         this.setValid(true);
     }
 
+    @Override
+    protected _AmmoDisplayOverride copyTo(final _AmmoDisplayOverride pojo) {
+        @Nullable _AmmoParticle ammoParticle = null; {
+            if (this.ammoParticle != null) ammoParticle = this.ammoParticle.copy();
+        } pojo.setAmmoParticle(ammoParticle);
+        pojo.setTracerColor(this.tracerColor);
+        return pojo;
+    }
+
+    @Override
+    public _AmmoDisplayOverride copy() {
+        _AmmoDisplayOverride pojo = copyTo(new _AmmoDisplayOverride());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     public @Nullable _AmmoParticle getAmmoParticle() {

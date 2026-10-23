@@ -45,6 +45,19 @@ public abstract class ResourcePojo<T extends ResourcePojo<T>> {
      */
     protected abstract void validatePojo();
 
+    /**
+     * 将{@code this}复制到{@code pojo}
+     * @param pojo new {@link T}
+     * @return 输入的 pojo
+     */
+    protected abstract T copyTo(final T pojo);
+
+    /**
+     * (由最终{@link T}类型实现该方法) 对 {@code this} 深拷贝
+     * @return 不影响 {@code this} pojo 的拷贝
+     */
+    public abstract T copy();
+
     // --------Getter & Setter--------
 
     public final boolean isValidated() {

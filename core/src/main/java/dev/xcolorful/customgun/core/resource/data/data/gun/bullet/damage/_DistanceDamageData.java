@@ -51,6 +51,20 @@ public final class _DistanceDamageData extends ResourcePojo<_DistanceDamageData>
         this.setValid(true);
     }
 
+    @Override
+    protected _DistanceDamageData copyTo(final _DistanceDamageData pojo) {
+        pojo.setDistance(this.distance);
+        pojo.setDamage(this.damage);
+        return pojo;
+    }
+
+    @Override
+    public _DistanceDamageData copy() {
+        _DistanceDamageData pojo = copyTo(new _DistanceDamageData());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     public float getDistance() {

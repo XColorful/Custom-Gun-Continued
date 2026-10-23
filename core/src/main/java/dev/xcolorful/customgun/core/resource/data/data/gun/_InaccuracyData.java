@@ -66,6 +66,25 @@ public final class _InaccuracyData extends ResourcePojo<_InaccuracyData> {
         this.setValid(true);
     }
 
+    @Override
+    protected _InaccuracyData copyTo(final _InaccuracyData pojo) {
+        pojo.setStand(this.stand);
+        pojo.setMove(this.move);
+        pojo.setRide(this.ride);
+        pojo.setSneak(this.sneak);
+        pojo.setProne(this.prone);
+        pojo.setAim(this.aim);
+        pojo.setLevitate(this.levitate);
+        return pojo;
+    }
+
+    @Override
+    public _InaccuracyData copy() {
+        _InaccuracyData pojo = copyTo(new _InaccuracyData());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     public float getStand() {

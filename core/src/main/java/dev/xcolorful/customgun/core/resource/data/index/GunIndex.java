@@ -78,6 +78,23 @@ public final class GunIndex extends _DataIndex<GunIndex> {
         this.setValid(true);
     }
 
+    @Override
+    protected GunIndex copyTo(final GunIndex pojo) {
+        super.copyTo(pojo);
+
+        pojo.setGunCategory(this.gunCategory);
+
+        pojo.setItemType(this.itemType);
+        return pojo;
+    }
+
+    @Override
+    public GunIndex copy() {
+        GunIndex pojo = copyTo(new GunIndex());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     public GunCategory getGunCategory() {

@@ -51,6 +51,20 @@ public final class _ReloadCooldownData extends ResourcePojo<_ReloadCooldownData>
         this.setValid(true);
     }
 
+    @Override
+    protected _ReloadCooldownData copyTo(final _ReloadCooldownData pojo) {
+        pojo.setEmpty(this.empty);
+        pojo.setTactical(this.tactical);
+        return pojo;
+    }
+
+    @Override
+    public _ReloadCooldownData copy() {
+        _ReloadCooldownData pojo = copyTo(new _ReloadCooldownData());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     public float getEmpty() {

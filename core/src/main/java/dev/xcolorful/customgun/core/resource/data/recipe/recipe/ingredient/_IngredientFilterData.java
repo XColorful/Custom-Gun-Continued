@@ -61,6 +61,20 @@ public final class _IngredientFilterData extends ResourcePojo<_IngredientFilterD
         this.setValid(true);
     }
 
+    @Override
+    protected _IngredientFilterData copyTo(final _IngredientFilterData pojo) {
+        pojo.setItemFilterLocation(this.itemFilterLocation);
+        pojo.setTagFilterLocation(this.tagFilterLocation);
+        return pojo;
+    }
+
+    @Override
+    public _IngredientFilterData copy() {
+        _IngredientFilterData pojo = copyTo(new _IngredientFilterData());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     public @Nullable ResourceLocation getItemFilterLocation() {

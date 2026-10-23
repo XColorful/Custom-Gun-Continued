@@ -92,6 +92,25 @@ public final class RecipeData extends ResourcePojo<RecipeData> {
         this.setValid(true);
     }
 
+    @Override
+    protected RecipeData copyTo(final RecipeData pojo) {
+        pojo.setRecipeRegistryType(this.recipeRegistryType);
+        List<_TableIngredientData> tableIngredients = new ArrayList<>(this.tableIngredients.size()); {
+            for (int i = 0; i < this.tableIngredients.size(); i++) {
+                tableIngredients.add(this.tableIngredients.get(i).copy());
+            }
+        } pojo.setTableIngredients(tableIngredients);
+        pojo.setTableResult(this.tableResult.copy());
+        return pojo;
+    }
+
+    @Override
+    public RecipeData copy() {
+        RecipeData pojo = copyTo(new RecipeData());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     @ApiStatus.Internal

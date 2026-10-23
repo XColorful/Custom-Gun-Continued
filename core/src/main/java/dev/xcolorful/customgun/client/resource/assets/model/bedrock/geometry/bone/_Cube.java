@@ -67,6 +67,35 @@ public final class _Cube extends ResourcePojo<_Cube> {
         this.setValid(true);
     }
 
+    @Override
+    protected _Cube copyTo(final _Cube pojo) {
+        float[] origin; {
+            origin = this.origin != null ? this.origin.clone() : null;
+        } pojo.setOrigin(origin);
+        float[] size; {
+            size = this.size != null ? this.size.clone() : null;
+        } pojo.setSize(size);
+        pojo.setInflate(this.inflate);
+        float[] pivot; {
+            pivot = this.pivot != null ? this.pivot.clone() : null;
+        } pojo.setPivot(pivot);
+        float[] rotation; {
+            rotation = this.rotation != null ? this.rotation.clone() : null;
+        } pojo.setRotation(rotation);
+        pojo.setUv(this.uv.copy());
+        pojo.setMirror(this.mirror);
+
+        pojo.hasMirror = this.hasMirror;
+        return pojo;
+    }
+
+    @Override
+    public _Cube copy() {
+        _Cube pojo = copyTo(new _Cube());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     public float[] getOrigin() {

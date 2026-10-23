@@ -119,6 +119,36 @@ public final class _BulletData extends ResourcePojo<_BulletData> {
         this.setValid(true);
     }
 
+    @Override
+    protected _BulletData copyTo(final _BulletData pojo) {
+        pojo.setDisplayDamage(this.displayDamage);
+        pojo.setBulletSkillData(this.bulletSkillData.copy());
+
+        pojo.setLifetimeSeconds(this.lifetimeSeconds);
+        pojo.setBulletSpeed(this.bulletSpeed);
+        pojo.setGravity(this.gravity);
+        pojo.setFriction(this.friction);
+
+        pojo.setBulletSplitAmount(this.bulletSplitAmount);
+        pojo.setPierceCount(this.pierceCount);
+        pojo.setTracerInterval(this.tracerInterval);
+
+        pojo.setFireAspect(this.fireAspect);
+        pojo.setFireAspectSeconds(this.fireAspectSeconds);
+        pojo.setKnockbackStrength(this.knockbackStrength);
+        pojo.setExplosionData(this.explosionData.copy());
+
+        pojo.bulletSkillDataOld = this.bulletSkillDataOld == null ? null : this.bulletSkillDataOld.copy();
+        return pojo;
+    }
+
+    @Override
+    public _BulletData copy() {
+        _BulletData pojo = copyTo(new _BulletData());
+        pojo.setValid(this.isValid());
+        return pojo;
+    }
+
     // --------Getter & Setter--------
 
     public float getDisplayDamage() {

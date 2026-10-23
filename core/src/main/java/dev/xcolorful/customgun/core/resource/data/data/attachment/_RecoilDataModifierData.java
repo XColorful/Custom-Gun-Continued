@@ -27,12 +27,16 @@ public final class _RecoilDataModifierData extends ResourcePojo<_RecoilDataModif
                 switch (key) {
                     case _RecoilDataModifierDataTag.PITCH_RECOIL, _RecoilDataModifierDataTag.PITCH_RECOIL_OLD1 -> pojo.pitchRecoilModifier = JsonUtils.read(reader, _SimpleModifierData::fromJson);
                     case _RecoilDataModifierDataTag.YAW_RECOIL, _RecoilDataModifierDataTag.YAW_RECOIL_OLD1 -> pojo.yawRecoilModifier = JsonUtils.read(reader, _SimpleModifierData::fromJson);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _RecoilDataModifierData pojo) throws IOException {
@@ -43,8 +47,13 @@ public final class _RecoilDataModifierData extends ResourcePojo<_RecoilDataModif
         writer.beginObject(); {
             JsonUtils.write(writer, _RecoilDataModifierDataTag.PITCH_RECOIL, this.pitchRecoilModifier, _SimpleModifierData::toJson);
             JsonUtils.write(writer, _RecoilDataModifierDataTag.YAW_RECOIL, this.yawRecoilModifier, _SimpleModifierData::toJson);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
@@ -58,6 +67,24 @@ public final class _RecoilDataModifierData extends ResourcePojo<_RecoilDataModif
         }
 
         this.setValid(true);
+    }
+
+    @Override
+    protected _RecoilDataModifierData copyTo(final _RecoilDataModifierData pojo) {
+        @Nullable _SimpleModifierData pitchRecoilModifier = null; {
+            if (this.pitchRecoilModifier != null) pitchRecoilModifier = this.pitchRecoilModifier.copy();
+        } pojo.setPitchRecoilModifier(pitchRecoilModifier);
+        @Nullable _SimpleModifierData yawRecoilModifier = null; {
+            if (this.yawRecoilModifier != null) yawRecoilModifier = this.yawRecoilModifier.copy();
+        } pojo.setYawRecoilModifier(yawRecoilModifier);
+        return pojo;
+    }
+
+    @Override
+    public _RecoilDataModifierData copy() {
+        _RecoilDataModifierData pojo = copyTo(new _RecoilDataModifierData());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

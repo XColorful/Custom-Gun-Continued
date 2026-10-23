@@ -7,7 +7,6 @@ import dev.xcolorful.customgun.core.api.resource.data.data.block._RecipeGroupDat
 import dev.xcolorful.customgun.core.resource.ResourcePojo;
 import dev.xcolorful.customgun.core.util.ComponentUtils;
 import dev.xcolorful.customgun.core.util.JsonUtils;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 
 import java.io.IOException;
@@ -31,11 +30,15 @@ public final class _RecipeGroupData extends ResourcePojo<_RecipeGroupData> {
             switch (key) {
                 case _RecipeGroupDataTag.GROUP_CATEGORY -> pojo.groupCategory = JsonUtils.readResourceLocation(reader);
                 case _RecipeGroupDataTag.NAME_LANG -> pojo.nameLang = JsonUtils.readString(reader);
-                default -> reader.skipValue();
+                default -> this.readCustomKey(reader, key);
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _RecipeGroupData data) throws IOException {
@@ -47,8 +50,13 @@ public final class _RecipeGroupData extends ResourcePojo<_RecipeGroupData> {
         writer.beginObject(); {
             JsonUtils.writeResourceLocation(writer, _RecipeGroupDataTag.GROUP_CATEGORY, this.groupCategory);
             JsonUtils.writeString(writer, _RecipeGroupDataTag.NAME_LANG, this.nameLang);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
@@ -62,6 +70,20 @@ public final class _RecipeGroupData extends ResourcePojo<_RecipeGroupData> {
         }
 
         this.setValid(true);
+    }
+
+    @Override
+    protected _RecipeGroupData copyTo(final _RecipeGroupData pojo) {
+        pojo.setGroupCategory(this.groupCategory);
+        pojo.setNameLang(this.nameLang);
+        return pojo;
+    }
+
+    @Override
+    public _RecipeGroupData copy() {
+        _RecipeGroupData pojo = copyTo(new _RecipeGroupData());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

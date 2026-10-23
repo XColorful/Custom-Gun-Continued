@@ -26,12 +26,16 @@ public final class _ReloadFeedData extends ResourcePojo<_ReloadFeedData> {
                 switch (key) {
                     case _ReloadFeedDataTag.EMPTY -> pojo.empty = JsonUtils.readFloat(reader);
                     case _ReloadFeedDataTag.TACTICAL -> pojo.tactical = JsonUtils.readFloat(reader);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _ReloadFeedData pojo) throws IOException {
@@ -42,13 +46,32 @@ public final class _ReloadFeedData extends ResourcePojo<_ReloadFeedData> {
         writer.beginObject(); {
             JsonUtils.writeFloat(writer, _ReloadFeedDataTag.EMPTY, this.empty);
             JsonUtils.writeFloat(writer, _ReloadFeedDataTag.TACTICAL, this.tactical);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
     protected void validatePojo() {
         this.setValid(true);
+    }
+
+    @Override
+    protected _ReloadFeedData copyTo(final _ReloadFeedData pojo) {
+        pojo.setEmpty(this.empty);
+        pojo.setTactical(this.tactical);
+        return pojo;
+    }
+
+    @Override
+    public _ReloadFeedData copy() {
+        _ReloadFeedData pojo = copyTo(new _ReloadFeedData());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

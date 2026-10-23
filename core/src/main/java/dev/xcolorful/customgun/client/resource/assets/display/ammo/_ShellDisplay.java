@@ -23,12 +23,16 @@ public final class _ShellDisplay extends _AssetsDisplay<_ShellDisplay> {
                 switch (key) {
                     case _ShellDisplayTag.MODEL_LOCATION, _ShellDisplayTag.MODEL_LOCATION_OLD1 -> pojo.setModelLocation(JsonUtils.readResourceLocation(reader));
                     case _ShellDisplayTag.TEXTURE_LOCATION, _ShellDisplayTag.TEXTURE_LOCATION_OLD1 -> pojo.setTextureLocation(JsonUtils.readResourceLocation(reader));
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _ShellDisplay pojo) throws IOException {
@@ -39,8 +43,13 @@ public final class _ShellDisplay extends _AssetsDisplay<_ShellDisplay> {
         writer.beginObject(); {
             JsonUtils.writeResourceLocation(writer, _ShellDisplayTag.MODEL_LOCATION, this.getModelLocation());
             JsonUtils.writeResourceLocation(writer, _ShellDisplayTag.TEXTURE_LOCATION, this.getTextureLocation());
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
@@ -49,6 +58,20 @@ public final class _ShellDisplay extends _AssetsDisplay<_ShellDisplay> {
         if (!this.isValid()) return;
 
         this.setValid(true);
+    }
+
+    @Override
+    protected _ShellDisplay copyTo(final _ShellDisplay pojo) {
+        super.copyTo(pojo);
+
+        return pojo;
+    }
+
+    @Override
+    public _ShellDisplay copy() {
+        _ShellDisplay pojo = copyTo(new _ShellDisplay());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

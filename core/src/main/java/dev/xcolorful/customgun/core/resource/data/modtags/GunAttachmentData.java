@@ -23,6 +23,10 @@ public final class GunAttachmentData extends _SimpleTagData<GunAttachmentData> {
         pojo.setTags(JsonUtils.readList(reader, JsonUtils::readString));
         return pojo;
     }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
+    }
 
     public static void toJson(JsonWriter writer, GunAttachmentData pojo) throws IOException {
         if (pojo != null) pojo.toJson(writer);
@@ -37,6 +41,10 @@ public final class GunAttachmentData extends _SimpleTagData<GunAttachmentData> {
         }
         writer.endArray();
     }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
+    }
 
     @Override
     protected void validatePojo() {
@@ -49,6 +57,20 @@ public final class GunAttachmentData extends _SimpleTagData<GunAttachmentData> {
         }
 
         this.setValid(true);
+    }
+
+    @Override
+    protected GunAttachmentData copyTo(final GunAttachmentData pojo) {
+        super.copyTo(pojo);
+
+        return pojo;
+    }
+
+    @Override
+    public GunAttachmentData copy() {
+        GunAttachmentData pojo = copyTo(new GunAttachmentData());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------IResourcePojoExtension--------

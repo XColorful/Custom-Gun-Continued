@@ -47,12 +47,16 @@ public final class _HeatData extends ResourcePojo<_HeatData> {
                     case _HeatDataTag.OVERHEAT_LOCKTIME_MS, _HeatDataTag.OVERHEAT_LOCKTIME_MS_OLD1 -> pojo.overheatLocktimeMs = JsonUtils.readLong(reader);
                     case _HeatDataTag.COOLING_DELAY_MS, _HeatDataTag.COOLING_DELAY_MS_OLD1 -> pojo.coolingDelayMs = JsonUtils.readLong(reader);
                     case _HeatDataTag.COOLING_SPEED_MULTIPLIER, _HeatDataTag.COOLING_SPEED_MULTIPLIER_OLD1 -> pojo.coolingSpeedMultiplier = JsonUtils.readFloat(reader);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _HeatData pojo) throws IOException {
@@ -72,13 +76,41 @@ public final class _HeatData extends ResourcePojo<_HeatData> {
             JsonUtils.writeLong(writer, _HeatDataTag.OVERHEAT_LOCKTIME_MS, overheatLocktimeMs);
             JsonUtils.writeLong(writer, _HeatDataTag.COOLING_DELAY_MS, coolingDelayMs);
             JsonUtils.writeFloat(writer, _HeatDataTag.COOLING_SPEED_MULTIPLIER, coolingSpeedMultiplier);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
     protected void validatePojo() {
         this.setValid(true);
+    }
+
+    @Override
+    protected _HeatData copyTo(final _HeatData pojo) {
+        pojo.setMaxHeat(this.maxHeat);
+        pojo.setHeatPerShot(this.heatPerShot);
+
+        pojo.setMinRpmByHeat(this.minRpmByHeat);
+        pojo.setMaxRpmByHeat(this.maxRpmByHeat);
+        pojo.setMinInaccuracyByHeat(this.minInaccuracyByHeat);
+        pojo.setMaxInaccuracyByHeat(this.maxInaccuracyByHeat);
+
+        pojo.setOverheatLocktimeMs(this.overheatLocktimeMs);
+        pojo.setCoolingDelayMs(this.coolingDelayMs);
+        pojo.setCoolingSpeedMultiplier(this.coolingSpeedMultiplier);
+        return pojo;
+    }
+
+    @Override
+    public _HeatData copy() {
+        _HeatData pojo = copyTo(new _HeatData());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // -------- Getter & Setter --------

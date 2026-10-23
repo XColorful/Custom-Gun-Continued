@@ -33,12 +33,16 @@ public final class _ReloadData extends ResourcePojo<_ReloadData> {
                     case _ReloadDataTag.FREE_AMMO_FEED, _ReloadDataTag.FREE_AMMO_FEED_OLD1 -> pojo.freeAmmoFeed = JsonUtils.readBoolean(reader);
                     case _ReloadDataTag.RELOAD_FEED, _ReloadDataTag.RELOAD_FEED_OLD1 -> pojo.reloadFeed = JsonUtils.read(reader, _ReloadFeedData::fromJson);
                     case _ReloadDataTag.RELOAD_COOLDOWN, _ReloadDataTag.RELOAD_COOLDOWN_OLD1 -> pojo.reloadCooldown = JsonUtils.read(reader, _ReloadCooldownData::fromJson);
-                    default -> reader.skipValue();
+                    default -> this.readCustomKey(reader, key);
                 }
             }
         }
         reader.endObject();
         return pojo;
+    }
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
     }
 
     public static void toJson(JsonWriter writer, _ReloadData pojo) throws IOException {
@@ -51,8 +55,13 @@ public final class _ReloadData extends ResourcePojo<_ReloadData> {
             JsonUtils.writeBoolean(writer, _ReloadDataTag.FREE_AMMO_FEED, this.freeAmmoFeed);
             JsonUtils.write(writer, _ReloadDataTag.RELOAD_FEED, this.reloadFeed, _ReloadFeedData::toJson);
             JsonUtils.write(writer, _ReloadDataTag.RELOAD_COOLDOWN, this.reloadCooldown, _ReloadCooldownData::toJson);
+            writeCustomValue(writer);
         }
         writer.endObject();
+    }
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
     }
 
     @Override
@@ -73,6 +82,22 @@ public final class _ReloadData extends ResourcePojo<_ReloadData> {
         }
 
         this.setValid(true);
+    }
+
+    @Override
+    protected _ReloadData copyTo(final _ReloadData pojo) {
+        pojo.setAmmoFeedType(this.ammoFeedType);
+        pojo.setFreeAmmoFeed(this.freeAmmoFeed);
+        pojo.setReloadFeed(this.reloadFeed.copy());
+        pojo.setReloadCooldown(this.reloadCooldown.copy());
+        return pojo;
+    }
+
+    @Override
+    public _ReloadData copy() {
+        _ReloadData pojo = copyTo(new _ReloadData());
+        pojo.setValid(this.isValid());
+        return pojo;
     }
 
     // --------Getter & Setter--------

@@ -1,9 +1,13 @@
 package dev.xcolorful.customgun.core.resource.data.index;
 
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import dev.xcolorful.customgun.core.api.resource.ResourceTag;
 import dev.xcolorful.customgun.core.resource.ResourcePojo;
 import dev.xcolorful.customgun.core.util.ComponentUtils;
 import net.minecraft.resources.ResourceLocation;
+
+import java.io.IOException;
 
 public abstract class _DataIndex<T extends _DataIndex<T>> extends ResourcePojo<T> {
 
@@ -14,6 +18,16 @@ public abstract class _DataIndex<T extends _DataIndex<T>> extends ResourcePojo<T
     private ResourceLocation displayIndexLocation;
 
     private int slotSort = 0;
+
+    @Override
+    protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
+        return super.readCustomKey(reader, key);
+    }
+
+    @Override
+    protected void writeCustomValue(JsonWriter writer) {
+        super.writeCustomValue(writer);
+    }
 
     @Override
     protected void validatePojo() {
@@ -29,6 +43,18 @@ public abstract class _DataIndex<T extends _DataIndex<T>> extends ResourcePojo<T
         if (this.tooltipLang == null) this.tooltipLang = ComponentUtils.UNKNOWN_TRANSLATABLE_KEY;
         if (this.slotSort < 0) this.slotSort = 0;
         this.setValid(true);
+    }
+
+    @Override
+    protected T copyTo(final T pojo) {
+        pojo.setNameLang(this.nameLang);
+        pojo.setTooltipLang(this.tooltipLang);
+
+        pojo.setDataLocation(this.dataLocation);
+        pojo.setDisplayIndexLocation(this.displayIndexLocation);
+
+        pojo.setSlotSort(this.slotSort);
+        return pojo;
     }
 
     // --------Getter & Setter--------

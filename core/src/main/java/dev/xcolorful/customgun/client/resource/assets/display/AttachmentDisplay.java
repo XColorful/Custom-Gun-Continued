@@ -165,7 +165,7 @@ public final class AttachmentDisplay extends _AssetsDisplay<AttachmentDisplay> {
         @Nullable _LaserDisplay laserDisplay = null; {
             if (this.laserDisplay != null) laserDisplay = this.laserDisplay.copy();
         } pojo.setLaserDisplay(laserDisplay);
-        Map<AttachmentSoundType, ResourceLocation> attachmentSounds = new HashMap<>(); {
+        Map<AttachmentSoundType, Identifier> attachmentSounds = new HashMap<>(); {
             for (var entry : this.attachmentSounds.entrySet()) {
                 attachmentSounds.put(entry.getKey(), entry.getValue());
             }

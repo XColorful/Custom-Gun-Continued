@@ -120,7 +120,7 @@ public final class RecipeFilterData extends ResourcePojo<RecipeFilterData>
                 whitelistRaw.add(this.whitelistRaw.get(i));
             }
         } pojo.setWhitelistRaw(whitelistRaw);
-        List<ResourceLocation> _whitelistLiteral = new ArrayList<>(this._whitelistLiteral.size()); {
+        List<Identifier> _whitelistLiteral = new ArrayList<>(this._whitelistLiteral.size()); {
             for (int i = 0; i < this._whitelistLiteral.size(); i++) {
                 _whitelistLiteral.add(this._whitelistLiteral.get(i));
             }
@@ -136,7 +136,7 @@ public final class RecipeFilterData extends ResourcePojo<RecipeFilterData>
                 blacklistRaw.add(this.blacklistRaw.get(i));
             }
         } pojo.setBlacklistRaw(blacklistRaw);
-        List<ResourceLocation> _blacklistLiteral = new ArrayList<>(this._blacklistLiteral.size()); {
+        List<Identifier> _blacklistLiteral = new ArrayList<>(this._blacklistLiteral.size()); {
             for (int i = 0; i < this._blacklistLiteral.size(); i++) {
                 _blacklistLiteral.add(this._blacklistLiteral.get(i));
             }

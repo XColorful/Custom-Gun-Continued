@@ -1,7 +1,7 @@
 [English](#English)
 
 # 同步配置
-> wiki 版本：`26.10.29`.8
+> wiki 版本：`26.10.29`.9
 
 ## 交互键
 
@@ -44,6 +44,7 @@
 - `MaxPronePitch`（浮点，≤90.0）：趴姿时允许的最大俯仰角
 - `MinPronePitch`（浮点，≥-90.0）：趴姿时允许的最小俯仰角
 - `EnableSprintWhileAiming`（bool）：是否允许瞄准时冲刺
+- `EnableSprintWhileReloading`（bool）：是否允许装弹时冲刺
 - `ServerShootNetworkCheck`（bool）：[调试] 是否在服务端执行射击时的网络校验
 - `ServerShootCooldownCheck`（bool）：[调试] 是否在服务端执行射击冷却校验
 ```toml
@@ -56,12 +57,13 @@
 	MaxPronePitch = 25.0
 	MinPronePitch = -20.0
 	EnableSprintWhileAiming = false
+	EnableSprintWhileReloading = false
 	ServerShootNetworkCheck = true
 	ServerShootCooldownCheck = true
 ```
 
 # English
-> wiki version: `26.10.29`.8
+> wiki version: `26.10.29`.9
 
 ## Interact Key
 
@@ -104,6 +106,7 @@ Path: `misc`
 - `MaxPronePitch` (float, ≤90.0): The maximum allowed pitch angle while prone
 - `MinPronePitch` (float, ≥-90.0): The minimum allowed pitch angle while prone
 - `EnableSprintWhileAiming` (bool): Whether to allow sprinting while aiming
+- `EnableSprintWhileReloading` (bool): Whether to allow sprinting while reloading
 - `ServerShootNetworkCheck` (bool): [Debug] Do server-side network check while shooting
 - `ServerShootCooldownCheck` (bool): [Debug] Do server-side shoot cooldown check
 ```toml
@@ -116,6 +119,7 @@ Path: `misc`
 	MaxPronePitch = 25.0
 	MinPronePitch = -20.0
 	EnableSprintWhileAiming = false
+	EnableSprintWhileReloading = false
 	ServerShootNetworkCheck = true
 	ServerShootCooldownCheck = true
 ```

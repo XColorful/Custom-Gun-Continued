@@ -45,8 +45,10 @@ public final class LivingShooterSprint extends LivingShooterAspect {
             if (iLivingShooter.cgc$getSynIsAiming()) return true;
         }
 
-        ReloadState.StateType reloadStateType = iLivingShooter.cgc$getSynReloadState().getStateType();
-        if (!PlannedRefactor.SPRINT_ON_RELOADING && reloadStateType.isReloading() && !reloadStateType.isReloadFinishing()) return true;
+        if (!SyncConfig.ENABLE_SPRINT_WHILE_RELOADING.get()) {
+            ReloadState.StateType reloadStateType = iLivingShooter.cgc$getSynReloadState().getStateType();
+            if (reloadStateType.isReloading() && !reloadStateType.isReloadFinishing()) return true;
+        }
 
         return false;
     }

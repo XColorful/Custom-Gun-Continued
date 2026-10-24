@@ -141,6 +141,9 @@ public class ModConfigTag {
     public static final String enableSprintWhileAiming_path = "EnableSprintWhileAiming";
     public static final String enableSprintWhileAiming_comment = "Whether to allow sprinting while aiming";
 
+    public static final String enableSprintWhileReloading_path = "EnableSprintWhileReloading";
+    public static final String enableSprintWhileReloading_comment = "Whether to allow sprinting while reloading";
+
     public static final String enableTableFilter_path = "EnableDefaultGunSmithTableFilter";
     public static final String enableTableFilter_comment = "Enable the recipe limit of default gunsmith table or not";
 

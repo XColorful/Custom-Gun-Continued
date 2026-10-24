@@ -71,6 +71,7 @@ public class SyncConfig {
     public static IModConfigSpec<Double> MAX_PRONE_PITCH;
     public static IModConfigSpec<Double> MIN_PRONE_PITCH;
     public static IModConfigSpec<Boolean> ENABLE_SPRINT_WHILE_AIMING;
+    public static IModConfigSpec<Boolean> ENABLE_SPRINT_WHILE_RELOADING;
     public static IModConfigSpec<Boolean> SERVER_SHOOT_NETWORK_V;
     public static IModConfigSpec<Boolean> SERVER_SHOOT_COOLDOWN_V;
 
@@ -103,6 +104,9 @@ public class SyncConfig {
 
         builder.addComment(ModConfigTag.enableSprintWhileAiming_comment);
         ENABLE_SPRINT_WHILE_AIMING = builder.addConfig(ModConfigTag.enableSprintWhileAiming_path, false);
+
+        builder.addComment(ModConfigTag.enableSprintWhileReloading_comment);
+        ENABLE_SPRINT_WHILE_RELOADING = builder.addConfig(ModConfigTag.enableSprintWhileReloading_path, false);
 
         builder.addComment(ModConfigTag.enableTableFilter_comment);
         ENABLE_TABLE_FILTER = builder.addConfig(ModConfigTag.enableTableFilter_path, true);

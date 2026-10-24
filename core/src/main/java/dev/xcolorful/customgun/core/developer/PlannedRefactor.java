@@ -15,7 +15,7 @@ public class PlannedRefactor {
     // 瞄准时是否允许冲刺
     @Deprecated(forRemoval = true) public static final boolean SPRINT_ON_AIMING = false;
     // 装弹时是否允许冲刺
-    public static final boolean SPRINT_ON_RELOADING = false;
+    @Deprecated(forRemoval = true) public static final boolean SPRINT_ON_RELOADING = false;
     // 是否启用向后兼容 (之后移到Forge config里)
     public static final boolean ENABLE_BACK_COMPATIBILITY = true;
     // Screen解耦 (Manager管理/post事件)

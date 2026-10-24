@@ -45,3 +45,21 @@
 默认 `false` 与迁移前 `SPRINT_ON_AIMING == false` 的行为一致。`:core:compileJava` 编译通过。
 
 另外注意：源仓库的 [Sync config.md](docs/wiki/configuration/Sync%20config.md) 已有该条目，但 `.wiki` 仓库的 `Sync-config.md` 尚未同步。需要我一并同步过去吗？未提交、未推送。
+
+# 
+
+```
+继续补ENABLE_SPRINT_WHILE_RELOADING
+```
+
+# 
+
+`EnableSprintWhileReloading` 已补全：
+
+- [ModConfigTag.java:144](core/src/main/java/dev/xcolorful/customgun/core/api/config/ModConfigTag.java:144) 新增 `EnableSprintWhileReloading` 的路径与注释常量
+- [SyncConfig.java:108](core/src/main/java/dev/xcolorful/customgun/core/config/SyncConfig.java:108) 在 `misc` 段注册，默认 `false`，紧跟在 `EnableSprintWhileAiming` 之后
+- [Sync config.md](docs/wiki/configuration/Sync%20config.md) 修正了复制粘贴导致的重复 `EnableSprintWhileAiming` 条目，中英文清单和 TOML 示例均已补上 `EnableSprintWhileReloading`
+
+默认 `false` 保持迁移前 `SPRINT_ON_RELOADING == false` 的行为。`:core:compileJava` 编译通过。
+
+`.wiki` 仓库的 `Sync-config.md` 仍未同步这两个新增项（之前的询问未得到指示），需要的话我可以一并处理。改动未提交、未推送。

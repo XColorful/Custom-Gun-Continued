@@ -70,6 +70,12 @@ public class ModConfigTag {
     public static final String serverHitboxLatencyMaxSaveMs_path = "ServerHitboxLatencyMaxSaveMs";
     public static final String serverHitboxLatencyMaxSaveMs_comment = "The maximum latency (in milliseconds) for the server hitbox latency fix saved";
 
+    // ShooterConfig
+    public static final String shooter_path = "shooter";
+
+    public static final String creativeModeInfiniteFeed_path = "CreativeModeInfiniteFeed";
+    public static final String creativeModeInfiniteFeed_comment = "Whether to enable infinite ammo supply in Creative Mode";
+
     // SyncConfig
 
     // interact_key
@@ -131,6 +137,15 @@ public class ModConfigTag {
 
     public static final String minPronePitch_path = "MinPronePitch";
     public static final String minPronePitch_comment = "The minimum allowed pitch angle while prone";
+
+    public static final String enableSprintWhileShooting_path = "EnableSprintWhileShooting";
+    public static final String enableSprintWhileShooting_comment = "Whether to allow sprinting while shooting";
+
+    public static final String enableSprintWhileAiming_path = "EnableSprintWhileAiming";
+    public static final String enableSprintWhileAiming_comment = "Whether to allow sprinting while aiming";
+
+    public static final String enableSprintWhileReloading_path = "EnableSprintWhileReloading";
+    public static final String enableSprintWhileReloading_comment = "Whether to allow sprinting while reloading";
 
     public static final String enableTableFilter_path = "EnableDefaultGunSmithTableFilter";
     public static final String enableTableFilter_comment = "Enable the recipe limit of default gunsmith table or not";

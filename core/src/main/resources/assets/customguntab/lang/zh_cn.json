@@ -2,11 +2,6 @@
   "customguntab.name": "自定义枪械永续图标",
   "customguntab.desc": "",
 
-  "customguntab.ammo.ammo_icon.name": "子弹图标",
-  "customguntab.ammo.ammo_icon.desc": "",
-  "customguntab.ammo.explosive_icon.name": "爆弹图标",
-  "customguntab.ammo.explosive_icon.desc": "",
-
   "customguntab.attachment.muzzle_icon.name": "枪口图标",
   "customguntab.attachment.muzzle_icon.desc": "",
   "customguntab.attachment.laser_icon.name": "激光指示器图标",
@@ -18,5 +13,10 @@
   "customguntab.attachment.scope_icon.name": "瞄具图标",
   "customguntab.attachment.scope_icon.desc": "",
   "customguntab.attachment.stock_icon.name": "枪托图标",
-  "customguntab.attachment.stock_icon.desc": ""
+  "customguntab.attachment.stock_icon.desc": "",
+
+  "customguntab.ammo.ammo_icon.name": "子弹图标",
+  "customguntab.ammo.ammo_icon.desc": "",
+  "customguntab.ammo.explosive_icon.name": "爆弹图标",
+  "customguntab.ammo.explosive_icon.desc": ""
 }

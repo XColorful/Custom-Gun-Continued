@@ -2,11 +2,6 @@
   "customguntab.name": "Custom Gun Continued Icon",
   "customguntab.desc": "",
 
-  "customguntab.ammo.ammo_icon.name": "Ammo icon",
-  "customguntab.ammo.ammo_icon.desc": "",
-  "customguntab.ammo.explosive_icon.name": "Explosive icon",
-  "customguntab.ammo.explosive_icon.desc": "",
-
   "customguntab.attachment.muzzle_icon.name": "Muzzle icon",
   "customguntab.attachment.muzzle_icon.desc": "",
   "customguntab.attachment.laser_icon.name": "Laser icon",
@@ -18,5 +13,10 @@
   "customguntab.attachment.scope_icon.name": "Scope icon",
   "customguntab.attachment.scope_icon.desc": "",
   "customguntab.attachment.stock_icon.name": "Stock icon",
-  "customguntab.attachment.stock_icon.desc": ""
+  "customguntab.attachment.stock_icon.desc": "",
+
+  "customguntab.ammo.ammo_icon.name": "Ammo icon",
+  "customguntab.ammo.ammo_icon.desc": "",
+  "customguntab.ammo.explosive_icon.name": "Explosive icon",
+  "customguntab.ammo.explosive_icon.desc": ""
 }

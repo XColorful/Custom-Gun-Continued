@@ -1,8 +1,10 @@
 package dev.xcolorful.customgun.core.api.minecraft.tab;
 
+import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.core.api.item.AmmoProperty;
 import dev.xcolorful.customgun.core.api.item.ammo.AmmoCategory;
 import dev.xcolorful.customgun.core.api.item.builder.AmmoBuilder;
+import dev.xcolorful.customgun.core.api.minecraft.IMcRegistry;
 import dev.xcolorful.customgun.core.api.resource.ResourceApi;
 import dev.xcolorful.customgun.core.init.registry.ModItems;
 import dev.xcolorful.customgun.core.resource.data.index.AmmoIndex;
@@ -46,9 +48,15 @@ public class AmmoTab {
                 .build();
     }
 
+    public static @NotNull ResourceLocation AMMO_ICON_LOCATION;
+    static {
+        IMcRegistry mcRegistry = CustomGun.getMcRegistry();
+        AMMO_ICON_LOCATION = mcRegistry.createResourceLocation(String.format("%s:%s", CustomGun.TAB_ID, "ammo_icon"));
+    }
+
     public static ItemStack buildAmmoTabItem() {
         // mixin注入点
-        return ItemStack.EMPTY;
+        return buildAmmoItem(AMMO_ICON_LOCATION);
     }
     public static ItemStack buildExplosiveTabItem() {
         // mixin注入点

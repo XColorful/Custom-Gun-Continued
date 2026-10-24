@@ -1,0 +1,40 @@
+{
+  "model_location": "customguntab:ammo/ammo_icon",
+  "model_transform": {
+    "scale": {
+      "third_person": [
+        0.75,
+        0.75,
+        0.75
+      ],
+      "ground_scale": [
+        0.75,
+        0.75,
+        0.75
+      ],
+      "fixed_scale": [
+        1.5,
+        1.5,
+        1.5
+      ]
+    }
+  },
+  "texture_location": "customguntab:textures/ammo/ammo_icon.png",
+  "slot_texture_location": "customguntab:textures/ammo/slot/ammo_icon.png",
+  "ammo_entity_display": {
+  },
+  "shell_display": {
+  },
+  "ammo_particle": {
+    "particle_location": "customgun:null",
+    "delta": [
+      0,
+      0,
+      0
+    ],
+    "speed": 0,
+    "count": 1,
+    "lifetime_ticks": 20
+  },
+  "tracer_color": "#FFFFFF"
+}

@@ -1,4 +1,7 @@
 {
   "customguntab.name": "Custom Gun Continued Icon",
   "customguntab.desc": "",
+
+  "customguntab.ammo.ammo_icon.name": "Ammo icon",
+  "customguntab.ammo.ammo_icon.desc": ""
 }

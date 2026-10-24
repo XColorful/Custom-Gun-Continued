@@ -104,7 +104,7 @@ public class SyncConfig {
         MIN_PRONE_PITCH = builder.addConfig(ModConfigTag.minPronePitch_path, -20.0f, -90, 0);
 
         builder.addComment(ModConfigTag.enableSprintWhileShooting_comment);
-        ENABLE_SPRINT_WHILE_SHOOTING = builder.addConfig(ModConfigTag.enableSprintWhileShooting_path, false);
+        ENABLE_SPRINT_WHILE_SHOOTING = builder.addConfig(ModConfigTag.enableSprintWhileShooting_path, true);
 
         builder.addComment(ModConfigTag.enableSprintWhileAiming_comment);
         ENABLE_SPRINT_WHILE_AIMING = builder.addConfig(ModConfigTag.enableSprintWhileAiming_path, false);

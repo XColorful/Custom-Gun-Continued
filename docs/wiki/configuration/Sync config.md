@@ -1,7 +1,7 @@
 [English](#English)
 
 # 同步配置
-> wiki 版本：`26.10.29`.10
+> wiki 版本：`26.10.29`.11
 
 ## 交互键
 
@@ -57,7 +57,7 @@
 	EnablePronePitch = true
 	MaxPronePitch = 25.0
 	MinPronePitch = -20.0
-	EnableSprintWhileShooting = false
+	EnableSprintWhileShooting = true
 	EnableSprintWhileAiming = false
 	EnableSprintWhileReloading = false
 	ServerShootNetworkCheck = true
@@ -65,7 +65,7 @@
 ```
 
 # English
-> wiki version: `26.10.29`.10
+> wiki version: `26.10.29`.11
 
 ## Interact Key
 
@@ -121,7 +121,7 @@ Path: `misc`
 	EnablePronePitch = true
 	MaxPronePitch = 25.0
 	MinPronePitch = -20.0
-	EnableSprintWhileShooting = false
+	EnableSprintWhileShooting = true
 	EnableSprintWhileAiming = false
 	EnableSprintWhileReloading = false
 	ServerShootNetworkCheck = true

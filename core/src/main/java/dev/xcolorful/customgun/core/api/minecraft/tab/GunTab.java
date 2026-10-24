@@ -67,27 +67,31 @@ public class GunTab {
                 .build();
     }
 
-    public static ItemStack buildShotgunTabItem() {
-        // mixin注入点
-        return ItemStack.EMPTY;
-    }
     public static ItemStack buildPistolTabItem() {
         // mixin注入点
         return ItemStack.EMPTY;
     }
-    public static ItemStack buildRifleTabItem() {
+    public static ItemStack buildArTabItem() {
         // mixin注入点
         return ItemStack.EMPTY;
     }
-    public static ItemStack buildSniperTabItem() {
+    public static ItemStack buildDmrTabItem() {
         // mixin注入点
         return ItemStack.EMPTY;
     }
-    public static ItemStack buildMgTabItem() {
+    public static ItemStack buildSrTabItem() {
+        // mixin注入点
+        return ItemStack.EMPTY;
+    }
+    public static ItemStack buildShotgunTabItem() {
         // mixin注入点
         return ItemStack.EMPTY;
     }
     public static ItemStack buildSmgTabItem() {
+        // mixin注入点
+        return ItemStack.EMPTY;
+    }
+    public static ItemStack buildMgTabItem() {
         // mixin注入点
         return ItemStack.EMPTY;
     }

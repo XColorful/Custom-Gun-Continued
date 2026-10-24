@@ -8,6 +8,7 @@ import dev.xcolorful.customgun.client.entity.shooter.*;
 import dev.xcolorful.customgun.core.api.entity.ShootResult;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
+import dev.xcolorful.customgun.core.config.SyncConfig;
 import dev.xcolorful.customgun.core.util.InventoryUtils;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.player.Inventory;
@@ -57,7 +58,9 @@ public class LocalPlayerMixin implements ILocalShooter {
     @WrapOperation(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;setSprinting(Z)V"))
     public void cgc$swapSprintStatus(LocalPlayer player, boolean sprinting, Operation<Void> original) {
         if (sprinting) {
-            this.cgc$localReload.cancelReload();
+            if (!SyncConfig.ENABLE_SPRINT_WHILE_RELOADING.get()) {
+                this.cgc$localReload.cancelReload();
+            }
         }
         original.call(player, this.cgc$localSprint.onSprint(sprinting));
     }

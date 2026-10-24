@@ -68,7 +68,7 @@ public abstract class LivingEntityMixin extends Entity implements ILivingShooter
         // 完成各种 tick 任务
         ReloadState reloadState = this.cgc$reload.tickReloadState();
         this.cgc$aim.tickAimingProgress();
-        this.cgc$aim.tickSprint();
+        this.cgc$sprint.tickSprint();
         this.cgc$prone.tickProne();
         this.cgc$bolt.tickBolt();
         this.cgc$melee.scheduleTickMelee();

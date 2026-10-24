@@ -283,6 +283,7 @@ Notation:
 |com.tacz.guns.entity|dev.xcolorful.customgun.core.entity|
 |---|---|
 |shooter.`LivingEntity*`|shooter.`LivingShooter*`|
+|shooter.`LivingEntityAim`.tickSprint|shooter.`LivingShooterSprint`.tickSprint|
 |shooter.`LivingEntityCrawl`|shooter.`LivingShooterProne`|
 |shooter.`LivingEntityDrawGun`|shooter.`LivingShooterDraw`|
 |shooter.`LivingEntityFireSelect`|shooter.`LivingShooterSwitchFireMode`|

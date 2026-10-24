@@ -33,19 +33,49 @@ public class AttachmentTab {
             }
 
             if (attachmentIndex.getAttachmentCategory() == attachmentCategory) {
-                ItemStack attachmentItem = AttachmentBuilder.create(ModItems.ATTACHMENT.get())
-                        // 配件ResourceLocation
-                        .setProperty(AttachmentProperty.ATTACHMENT_LOCATION,
-                                ResourceLocation.class,
-                                entry.getKey())
-                        // 配件类型
-                        .setProperty(AttachmentProperty.ATTACHMENT_CATEGORY,
-                                AttachmentCategory.class,
-                                attachmentCategory)
-                        .build();
+                ItemStack attachmentItem = buildAttachmentItem(entry.getKey(),
+                        attachmentCategory);
                 attachmentItems.add(attachmentItem);
             }
         });
         return attachmentItems;
+    }
+
+    public static ItemStack buildAttachmentItem(ResourceLocation attachmentLocation, AttachmentCategory attachmentCategory) {
+        return AttachmentBuilder.create(ModItems.ATTACHMENT.get())
+                // 配件ResourceLocation
+                .setProperty(AttachmentProperty.ATTACHMENT_LOCATION,
+                        ResourceLocation.class,
+                        attachmentLocation)
+                // 配件类型
+                .setProperty(AttachmentProperty.ATTACHMENT_CATEGORY,
+                        AttachmentCategory.class,
+                        attachmentCategory)
+                .build();
+    }
+
+    public static ItemStack buildMuzzleTabItem() {
+        // mixin注入点
+        return ItemStack.EMPTY;
+    }
+    public static ItemStack buildLaserTabItem() {
+        // mixin注入点
+        return ItemStack.EMPTY;
+    }
+    public static ItemStack buildGripTabItem() {
+        // mixin注入点
+        return ItemStack.EMPTY;
+    }
+    public static ItemStack buildMagazineTabItem() {
+        // mixin注入点
+        return ItemStack.EMPTY;
+    }
+    public static ItemStack buildScopeTabItem() {
+        // mixin注入点
+        return ItemStack.EMPTY;
+    }
+    public static ItemStack buildStockTabItem() {
+        // mixin注入点
+        return ItemStack.EMPTY;
     }
 }

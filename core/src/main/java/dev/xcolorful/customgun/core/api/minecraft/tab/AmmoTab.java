@@ -30,15 +30,28 @@ public class AmmoTab {
             AmmoIndex ammoIndex = ammoIndexInstance.getPojo();
 
             if (ammoIndex.getAmmoCategory() == ammoCategory) {
-                ItemStack ammoItem = AmmoBuilder.create(ModItems.AMMO.get())
-                        // 子弹ResourceLocation
-                        .setProperty(AmmoProperty.AMMO_LOCATION,
-                                ResourceLocation.class,
-                                entry.getKey())
-                        .build();
+                ItemStack ammoItem = buildAmmoItem(entry.getKey());
                 ammoItems.add(ammoItem);
             }
         });
         return ammoItems;
+    }
+
+    public static ItemStack buildAmmoItem(ResourceLocation ammoLocation) {
+        return AmmoBuilder.create(ModItems.AMMO.get())
+                // 子弹ResourceLocation
+                .setProperty(AmmoProperty.AMMO_LOCATION,
+                        ResourceLocation.class,
+                        ammoLocation)
+                .build();
+    }
+
+    public static ItemStack buildAmmoTabItem() {
+        // mixin注入点
+        return ItemStack.EMPTY;
+    }
+    public static ItemStack buildExplosiveTabItem() {
+        // mixin注入点
+        return ItemStack.EMPTY;
     }
 }

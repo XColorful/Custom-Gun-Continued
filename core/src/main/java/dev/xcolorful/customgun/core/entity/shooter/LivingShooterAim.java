@@ -1,7 +1,6 @@
 package dev.xcolorful.customgun.core.entity.shooter;
 
 import dev.xcolorful.customgun.core.api.entity.ILivingShooter;
-import dev.xcolorful.customgun.core.api.entity.ReloadState;
 import dev.xcolorful.customgun.core.api.entity.ShooterProperty;
 import dev.xcolorful.customgun.core.api.entity.shooter.ILivingShooterGetter;
 import dev.xcolorful.customgun.core.api.entity.shooter.modifier.ShooterGunModifierCache;
@@ -158,54 +157,5 @@ public final class LivingShooterAim extends LivingShooterAspect {
         iGun.setAttachmentCustomDataTag(gunItem, SCOPE, scopeCustomDataTag);
 
         return;
-    }
-
-    /**
-     * 上次执行{@link #tickSprint()}的时间戳，用于计算疾跑时间变化量
-     */
-    private long lastSprintTickTimestamp = -1;
-    public void tickSprint() {
-        long currentTimeMillis = System.currentTimeMillis();
-
-        // 初始化时间戳
-        if (this.lastSprintTickTimestamp < 0) this.lastSprintTickTimestamp = currentTimeMillis;
-
-        _doTickSprint(currentTimeMillis);
-
-        // 设置sprint时间戳
-        this.lastSprintTickTimestamp = currentTimeMillis;
-    }
-    private void _doTickSprint(long currentTimeMillis) {
-        // 1. 手持枪械检查
-        if (this.shooterProperty.currentGunItem == null) return;
-        ItemStack currentGunItem = this.shooterProperty.currentGunItem.get();
-        @Nullable IGun iGun = IGunGetter.fromItemStack(currentGunItem);
-        if (iGun == null) return;
-
-        ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(this.livingShooter);
-        ReloadState reloadState = iLivingShooter.cgc$getSynReloadState();
-        if ( // 2.2 禁止疾跑
-            // 瞄准状态
-                this.shooterProperty.aimingProgress > 0
-                        // 换弹中
-                        || (reloadState.getStateType().isReloading() && !reloadState.getStateType().isReloadFinishing())
-        ) {
-            this.livingShooter.setSprinting(false);
-        }
-
-        @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(iGun.getGunLocation(currentGunItem));
-        if (gunIndexInstance == null) {
-            this.shooterProperty.sprintTimeS = 0;
-            return;
-        }
-
-        // 当前tick时间戳-上次tick时间戳
-        float alphaGunSprintTime = (currentTimeMillis - this.lastSprintTickTimestamp) / 1000f;
-        boolean isSprinting = this.livingShooter.isSprinting() && !this.livingShooter.isCrouching();
-        float sprintTimeS = this.shooterProperty.sprintTimeS + (isSprinting ? alphaGunSprintTime : -alphaGunSprintTime);
-
-        GunData gunData = gunIndexInstance.getGunData();
-        float gunSprintSwitchTime = gunData.getSprintSwitchTime();
-        this.shooterProperty.sprintTimeS = Mth.clamp(sprintTimeS, 0, gunSprintSwitchTime);
     }
 }

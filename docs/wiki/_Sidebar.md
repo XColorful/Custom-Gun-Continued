@@ -8,6 +8,7 @@
 			- [子弹配置](https://github.com/XColorful/Custom-Gun-Continued/wiki/Ammo-config)
 			- [枪械配置](https://github.com/XColorful/Custom-Gun-Continued/wiki/Gun-config)
 			- [杂项配置](https://github.com/XColorful/Custom-Gun-Continued/wiki/Other-config)
+			- [射手配置](https://github.com/XColorful/Custom-Gun-Continued/wiki/Shooter-config)
 		- ⚙️客户端配置
 			- [按键配置](https://github.com/XColorful/Custom-Gun-Continued/wiki/Key-config)
 			- [渲染配置](https://github.com/XColorful/Custom-Gun-Continued/wiki/Render-config)
@@ -117,6 +118,7 @@
 			- [Ammo config](https://github.com/XColorful/Custom-Gun-Continued/wiki/Ammo-config#English)
 			- [Gun config](https://github.com/XColorful/Custom-Gun-Continued/wiki/Gun-config#English)
 			- [Other config](https://github.com/XColorful/Custom-Gun-Continued/wiki/Other-config#English)
+			- [Shooter config](https://github.com/XColorful/Custom-Gun-Continued/wiki/Shooter-config#English)
 		- ⚙️Client configuration
 			- [Key config](https://github.com/XColorful/Custom-Gun-Continued/wiki/Key-config#English)
 			- [Render config](https://github.com/XColorful/Custom-Gun-Continued/wiki/Render-config#English)

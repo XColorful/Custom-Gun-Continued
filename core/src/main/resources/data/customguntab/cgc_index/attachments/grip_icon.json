@@ -1,0 +1,9 @@
+{
+	"name_lang": "customguntab.attachment.grip_icon.name",
+	"tooltip_lang": "customguntab.attachment.grip_icon.desc",
+	"data_location": "customguntab:grip_icon",
+	"display_index_location": "customguntab:grip_icon",
+	"slot_sort": 0,
+	"attachment_category": "grip",
+	"hide_in_game": true
+}

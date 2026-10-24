@@ -30,6 +30,10 @@ public class GunTab {
             @NotNull GunIndexInstance gunIndexInstance = entry.getValue();
 
             GunIndex gunIndex = gunIndexInstance.getPojo();
+            if (gunIndex.getHideInGame()) {
+                return;
+            }
+
             if (gunIndex.getGunCategory() == gunCategory) {
                 GunData gunData = gunIndexInstance.getGunData();
                 ItemStack gunItem = buildGunItem(entry.getKey(),

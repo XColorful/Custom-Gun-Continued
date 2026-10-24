@@ -30,7 +30,7 @@ public class AttachmentTab {
             @NotNull AttachmentIndexInstance attachmentIndexInstance = entry.getValue();
 
             AttachmentIndex attachmentIndex = attachmentIndexInstance.getPojo();
-            if (attachmentIndex.isHideInGame()) {
+            if (attachmentIndex.getHideInGame()) {
                 return;
             }
 

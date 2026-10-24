@@ -4,6 +4,6 @@
 	"data_location": "customguntab:laser_icon",
 	"display_index_location": "customguntab:laser_icon",
 	"slot_sort": 0,
-	"attachment_category": "laser",
-	"hide_in_game": true
+	"hide_in_game": true,
+	"attachment_category": "laser"
 }

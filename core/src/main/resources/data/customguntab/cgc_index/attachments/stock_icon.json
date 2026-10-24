@@ -4,6 +4,6 @@
 	"data_location": "customguntab:stock_icon",
 	"display_index_location": "customguntab:stock_icon",
 	"slot_sort": 0,
-	"attachment_category": "stock",
-	"hide_in_game": true
+	"hide_in_game": true,
+	"attachment_category": "stock"
 }

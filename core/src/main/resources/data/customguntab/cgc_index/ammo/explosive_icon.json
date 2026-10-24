@@ -4,6 +4,7 @@
 	"data_location": "customguntab:explosive_icon",
 	"display_index_location": "customguntab:explosive_icon",
 	"slot_sort": 0,
+	"hide_in_game": true,
 	"ammo_category": "explosive",
 	"max_stack_size": 1
 }

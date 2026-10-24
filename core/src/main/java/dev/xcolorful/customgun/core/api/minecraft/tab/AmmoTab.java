@@ -30,6 +30,9 @@ public class AmmoTab {
             @NotNull AmmoIndexInstance ammoIndexInstance = entry.getValue();
 
             AmmoIndex ammoIndex = ammoIndexInstance.getPojo();
+            if (ammoIndex.getHideInGame()) {
+                return;
+            }
 
             if (ammoIndex.getAmmoCategory() == ammoCategory) {
                 ItemStack ammoItem = buildAmmoItem(entry.getKey());

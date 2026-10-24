@@ -4,6 +4,6 @@
 	"data_location": "customguntab:muzzle_icon",
 	"display_index_location": "customguntab:muzzle_icon",
 	"slot_sort": 0,
-	"attachment_category": "muzzle",
-	"hide_in_game": true
+	"hide_in_game": true,
+	"attachment_category": "muzzle"
 }

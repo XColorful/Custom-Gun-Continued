@@ -37,6 +37,7 @@ public final class BlockIndex extends _DataIndex<BlockIndex> {
                     case BlockIndexTag.DATA_LOCATION, BlockIndexTag.DATA_LOCATION_OLD1 -> pojo.setDataLocation(JsonUtils.readResourceLocation(reader));
                     case BlockIndexTag.DISPLAY_INDEX_LOCATION, BlockIndexTag.DISPLAY_INDEX_LOCATION_OLD1 -> pojo.setDisplayIndexLocation(JsonUtils.readResourceLocation(reader));
                     case BlockIndexTag.SLOT_SORT, BlockIndexTag.SLOT_SORT_OLD1 -> pojo.setSlotSort(JsonUtils.readInt(reader));
+                    case BlockIndexTag.HIDE_IN_GAME, BlockIndexTag.HIDE_IN_GAME_OLD1 -> pojo.setHideInGame(JsonUtils.readBoolean(reader));
 
                     case BlockIndexTag.BLOCK_LOCATION, BlockIndexTag.BLOCK_LOCATION_OLD1 -> pojo.blockLocation = JsonUtils.readResourceLocation(reader);
                     case BlockIndexTag.MAX_STACK_SIZE, BlockIndexTag.MAX_STACK_SIZE_OLD1 -> pojo.maxStackSize = JsonUtils.readInt(reader);
@@ -64,6 +65,7 @@ public final class BlockIndex extends _DataIndex<BlockIndex> {
             JsonUtils.writeResourceLocation(writer, BlockIndexTag.DATA_LOCATION, this.getDataLocation());
             JsonUtils.writeResourceLocation(writer, BlockIndexTag.DISPLAY_INDEX_LOCATION, this.getDisplayIndexLocation());
             JsonUtils.writeInt(writer, BlockIndexTag.SLOT_SORT, this.getSlotSort());
+            JsonUtils.writeBoolean(writer, BlockIndexTag.HIDE_IN_GAME, this.getHideInGame());
 
             JsonUtils.writeResourceLocation(writer, BlockIndexTag.BLOCK_LOCATION, this.blockLocation);
             JsonUtils.writeInt(writer, BlockIndexTag.MAX_STACK_SIZE, this.maxStackSize);

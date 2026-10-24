@@ -11,7 +11,7 @@ public class PlannedRefactor {
     // 子弹消耗
     public static final boolean ON_CONSUME_AMMO = false;
     // 创造模式子弹限制
-    public static final boolean ON_CREATIVE_NO_AMMO_CHECK = false;
+    @Deprecated(forRemoval = true) public static final boolean ON_CREATIVE_NO_AMMO_CHECK = false;
     // 瞄准时是否允许冲刺
     public static final boolean SPRINT_ON_AIMING = false;
     // 装弹时是否允许冲刺

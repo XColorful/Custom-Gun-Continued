@@ -70,6 +70,12 @@ public class ModConfigTag {
     public static final String serverHitboxLatencyMaxSaveMs_path = "ServerHitboxLatencyMaxSaveMs";
     public static final String serverHitboxLatencyMaxSaveMs_comment = "The maximum latency (in milliseconds) for the server hitbox latency fix saved";
 
+    // ShooterConfig
+    public static final String shooter_path = "shooter";
+
+    public static final String creativeModeInfiniteFeed_path = "CreativeModeInfiniteFeed";
+    public static final String creativeModeInfiniteFeed_comment = "Whether to enable infinite ammo supply in Creative Mode";
+
     // SyncConfig
 
     // interact_key

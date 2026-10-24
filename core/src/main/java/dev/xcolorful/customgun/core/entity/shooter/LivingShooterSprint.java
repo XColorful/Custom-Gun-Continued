@@ -4,6 +4,7 @@ import dev.xcolorful.customgun.core.api.entity.ILivingShooter;
 import dev.xcolorful.customgun.core.api.entity.ReloadState;
 import dev.xcolorful.customgun.core.api.entity.ShooterProperty;
 import dev.xcolorful.customgun.core.api.entity.shooter.ILivingShooterGetter;
+import dev.xcolorful.customgun.core.config.SyncConfig;
 import dev.xcolorful.customgun.core.developer.PlannedRefactor;
 import net.minecraft.world.entity.LivingEntity;
 import org.jetbrains.annotations.ApiStatus;
@@ -40,8 +41,9 @@ public final class LivingShooterSprint extends LivingShooterAspect {
      */
     @ApiStatus.Internal
     public static boolean isIllegalSprintState(ILivingShooter iLivingShooter) {
-        boolean isAiming = iLivingShooter.cgc$getSynIsAiming();
-        if (isAiming && !PlannedRefactor.SPRINT_ON_AIMING) return true;
+        if (!SyncConfig.ENABLE_SPRINT_WHILE_AIMING.get()) {
+            if (iLivingShooter.cgc$getSynIsAiming()) return true;
+        }
 
         ReloadState.StateType reloadStateType = iLivingShooter.cgc$getSynReloadState().getStateType();
         if (!PlannedRefactor.SPRINT_ON_RELOADING && reloadStateType.isReloading() && !reloadStateType.isReloadFinishing()) return true;

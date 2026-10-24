@@ -21,3 +21,27 @@
 - [Shooter-config.md](../Custom-Gun-Continued.wiki/Shooter-config.md)：新建，文件名按要求使用横杠（源文件为 `Shooter config.md`）
 
 校验结果：`Home.md` 和 `_Sidebar.md` 的 diff 与源码提交完全一致；新页面内容与源码相同，仅补了一个文件末尾换行（与原仓库其他配置文档一致）。当前 `.wiki` 仓库改动未提交、未推送，待你审阅。
+
+# 
+
+```
+补全EnableSprintWhileAiming
+```
+
+# 
+
+我先查 `SPRINT_ON_AIMING` 的使用位置和当前语义。
+
+`SyncConfig` 里还缺字段声明和构建项，我来补上；同时移除 `LivingShooterSprint` 中未使用的 `ShooterConfig` 导入。
+
+编译通过。再确认 `/customgun config` 指令是否需要同步暴露这个选项。
+
+`EnableSprintWhileAiming` 已补全：
+
+- [SyncConfig.java:73](core/src/main/java/dev/xcolorful/customgun/core/config/SyncConfig.java:73) 新增 `ENABLE_SPRINT_WHILE_AIMING` 字段
+- [SyncConfig.java:104](core/src/main/java/dev/xcolorful/customgun/core/config/SyncConfig.java:104) 在 `misc` 段注册，默认值 `false`，位置与 `ModConfigTag` 及 wiki 文档顺序一致（`MinPronePitch` 之后、`EnableDefaultGunSmithTableFilter` 之前）
+- [LivingShooterSprint.java:7](core/src/main/java/dev/xcolorful/customgun/core/entity/shooter/LivingShooterSprint.java:7) 移除了未使用的 `ShooterConfig` 导入
+
+默认 `false` 与迁移前 `SPRINT_ON_AIMING == false` 的行为一致。`:core:compileJava` 编译通过。
+
+另外注意：源仓库的 [Sync config.md](docs/wiki/configuration/Sync%20config.md) 已有该条目，但 `.wiki` 仓库的 `Sync-config.md` 尚未同步。需要我一并同步过去吗？未提交、未推送。

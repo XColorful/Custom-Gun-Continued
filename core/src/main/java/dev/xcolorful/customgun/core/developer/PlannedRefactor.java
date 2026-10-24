@@ -13,7 +13,7 @@ public class PlannedRefactor {
     // 创造模式子弹限制
     @Deprecated(forRemoval = true) public static final boolean ON_CREATIVE_NO_AMMO_CHECK = false;
     // 瞄准时是否允许冲刺
-    public static final boolean SPRINT_ON_AIMING = false;
+    @Deprecated(forRemoval = true) public static final boolean SPRINT_ON_AIMING = false;
     // 装弹时是否允许冲刺
     public static final boolean SPRINT_ON_RELOADING = false;
     // 是否启用向后兼容 (之后移到Forge config里)

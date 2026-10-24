@@ -138,6 +138,9 @@ public class ModConfigTag {
     public static final String minPronePitch_path = "MinPronePitch";
     public static final String minPronePitch_comment = "The minimum allowed pitch angle while prone";
 
+    public static final String enableSprintWhileAiming_path = "EnableSprintWhileAiming";
+    public static final String enableSprintWhileAiming_comment = "Whether to allow sprinting while aiming";
+
     public static final String enableTableFilter_path = "EnableDefaultGunSmithTableFilter";
     public static final String enableTableFilter_comment = "Enable the recipe limit of default gunsmith table or not";
 

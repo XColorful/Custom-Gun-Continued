@@ -3,5 +3,7 @@
   "customguntab.desc": "",
 
   "customguntab.ammo.ammo_icon.name": "Ammo icon",
-  "customguntab.ammo.ammo_icon.desc": ""
+  "customguntab.ammo.ammo_icon.desc": "",
+  "customguntab.ammo.explosive_icon.name": "Explosive icon",
+  "customguntab.ammo.explosive_icon.desc": ""
 }

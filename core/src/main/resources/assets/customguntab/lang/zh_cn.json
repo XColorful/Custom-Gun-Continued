@@ -3,5 +3,7 @@
   "customguntab.desc": "",
 
   "customguntab.ammo.ammo_icon.name": "子弹图标",
-  "customguntab.ammo.ammo_icon.desc": ""
+  "customguntab.ammo.ammo_icon.desc": "",
+  "customguntab.ammo.explosive_icon.name": "爆弹图标",
+  "customguntab.ammo.explosive_icon.desc": ""
 }

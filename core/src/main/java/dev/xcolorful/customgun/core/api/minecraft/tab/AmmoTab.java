@@ -49,9 +49,11 @@ public class AmmoTab {
     }
 
     public static @NotNull ResourceLocation AMMO_ICON_LOCATION;
+    public static @NotNull ResourceLocation EXPLOSIVE_ICON_LOCATION;
     static {
         IMcRegistry mcRegistry = CustomGun.getMcRegistry();
         AMMO_ICON_LOCATION = mcRegistry.createResourceLocation(String.format("%s:%s", CustomGun.TAB_ID, "ammo_icon"));
+        EXPLOSIVE_ICON_LOCATION = mcRegistry.createResourceLocation(String.format("%s:%s", CustomGun.TAB_ID, "explosive_icon"));
     }
 
     public static ItemStack buildAmmoTabItem() {
@@ -60,6 +62,6 @@ public class AmmoTab {
     }
     public static ItemStack buildExplosiveTabItem() {
         // mixin注入点
-        return ItemStack.EMPTY;
+        return buildAmmoItem(EXPLOSIVE_ICON_LOCATION);
     }
 }

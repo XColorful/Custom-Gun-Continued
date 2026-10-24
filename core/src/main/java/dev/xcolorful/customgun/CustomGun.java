@@ -35,6 +35,7 @@ public class CustomGun {
     public static final String MOD_ID = "customgun";
     public static final String MOD_ID_SHORT = "cgc";
     public static final String MOD_ID_OLD1 = "tacz";
+    public static final String TAB_ID = MOD_ID + "tab";
     public static final Logger LOGGER = LogUtils.getLogger();
 
     protected static boolean initialized;

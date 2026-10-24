@@ -1,12 +1,12 @@
 {
-  "gunpack_version": "26.10.29",
-  "name_lang": "customguntab.name",
-  "tooltip_lang": "customguntab.desc",
-  "license": "CC-BY-SA-4.0",
-  "authors": [
-    "XiaoColorful",
-    "Endesga 64"
-  ],
-  "date": "2026-10-24",
-  "gunpack_url": "https://github.com/XColorful/Custom-Gun-Continued"
+	"gunpack_version": "26.10.29",
+	"name_lang": "customguntab.name",
+	"tooltip_lang": "customguntab.desc",
+	"license": "CC-BY-SA-4.0",
+	"authors": [
+		"XiaoColorful",
+		"Endesga 64"
+	],
+	"date": "2026-10-24",
+	"gunpack_url": "https://github.com/XColorful/Custom-Gun-Continued"
 }

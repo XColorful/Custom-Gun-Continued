@@ -1,9 +1,9 @@
 {
-  "name_lang": "customguntab.ammo.explosive_icon.name",
-  "tooltip_lang": "customguntab.ammo.explosive_icon.desc",
-  "data_location": "customguntab:explosive_icon",
-  "display_index_location": "customguntab:explosive_icon",
-  "slot_sort": 0,
-  "ammo_category": "explosive",
-  "max_stack_size": 1
+	"name_lang": "customguntab.ammo.explosive_icon.name",
+	"tooltip_lang": "customguntab.ammo.explosive_icon.desc",
+	"data_location": "customguntab:explosive_icon",
+	"display_index_location": "customguntab:explosive_icon",
+	"slot_sort": 0,
+	"ammo_category": "explosive",
+	"max_stack_size": 1
 }

@@ -1,9 +1,9 @@
 {
-  "name_lang": "customguntab.ammo.ammo_icon.name",
-  "tooltip_lang": "customguntab.ammo.ammo_icon.desc",
-  "data_location": "customguntab:ammo_icon",
-  "display_index_location": "customguntab:ammo_icon",
-  "slot_sort": 0,
-  "ammo_category": "ammo",
-  "max_stack_size": 1
+	"name_lang": "customguntab.ammo.ammo_icon.name",
+	"tooltip_lang": "customguntab.ammo.ammo_icon.desc",
+	"data_location": "customguntab:ammo_icon",
+	"display_index_location": "customguntab:ammo_icon",
+	"slot_sort": 0,
+	"ammo_category": "ammo",
+	"max_stack_size": 1
 }

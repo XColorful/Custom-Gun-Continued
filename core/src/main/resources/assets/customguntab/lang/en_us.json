@@ -2,6 +2,9 @@
   "customguntab.name": "Custom Gun Continued Icon",
   "customguntab.desc": "",
 
+  "customguntab.gun.pistol_icon.name": "Pistol icon",
+  "customguntab.gun.pistol_icon.desc": "M1911",
+
   "customguntab.attachment.muzzle_icon.name": "Muzzle icon",
   "customguntab.attachment.muzzle_icon.desc": "",
   "customguntab.attachment.laser_icon.name": "Laser icon",

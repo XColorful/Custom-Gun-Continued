@@ -1,9 +1,11 @@
 package dev.xcolorful.customgun.core.api.minecraft.tab;
 
+import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.core.api.item.GunProperty;
 import dev.xcolorful.customgun.core.api.item.builder.GunBuilder;
 import dev.xcolorful.customgun.core.api.item.gun.FireModeType;
 import dev.xcolorful.customgun.core.api.item.gun.GunCategory;
+import dev.xcolorful.customgun.core.api.minecraft.IMcRegistry;
 import dev.xcolorful.customgun.core.api.resource.ResourceApi;
 import dev.xcolorful.customgun.core.init.registry.ModItems;
 import dev.xcolorful.customgun.core.resource.data.data.GunData;
@@ -67,9 +69,17 @@ public class GunTab {
                 .build();
     }
 
+    public static @NotNull ResourceLocation PISTOL_ICON_LOCATION;
+    static {
+        IMcRegistry mcRegistry = CustomGun.getMcRegistry();
+        PISTOL_ICON_LOCATION = mcRegistry.createResourceLocation(String.format("%s:%s", CustomGun.TAB_ID, "pistol_icon"));
+    }
+
     public static ItemStack buildPistolTabItem() {
         // mixin注入点
-        return ItemStack.EMPTY;
+        return buildGunItem(PISTOL_ICON_LOCATION,
+                FireModeType.SEMI,
+                0);
     }
     public static ItemStack buildArTabItem() {
         // mixin注入点

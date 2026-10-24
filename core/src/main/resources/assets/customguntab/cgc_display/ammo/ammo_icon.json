@@ -24,7 +24,7 @@
 	"ammo_entity_display": {},
 	"shell_display": {},
 	"ammo_particle": {
-		"particle_location": "customgun:null",
+		"particle_location": "minecraft:ash",
 		"delta": [
 			0,
 			0,

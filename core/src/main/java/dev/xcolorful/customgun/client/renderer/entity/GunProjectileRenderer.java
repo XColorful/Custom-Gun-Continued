@@ -196,10 +196,8 @@ public class GunProjectileRenderer extends EntityRenderer<GunProjectile> {
 
         Vec3 bulletPosition = gunProjectile.getPosition(partialTicks);
         if (
-                // 前2tick(100ms)要是飞不出两格，就强制渲染
-                gunProjectile.tickCount > 2
-                // 距离两格内
-                || bulletPosition.distanceTo(livingShooter.getEyePosition()) < 2
+                // 前2tick(100ms)要是飞不出1.5格，就强制渲染
+                gunProjectile.tickCount < 2 && bulletPosition.distanceTo(livingShooter.getEyePosition()) < 1.5
         ) return;
 
         boolean isFirstPerson = livingShooter instanceof LocalPlayer

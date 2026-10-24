@@ -3,6 +3,7 @@ package dev.xcolorful.customgun.client.entity.shooter;
 import dev.xcolorful.customgun.client.api.entity.LocalShooterProperty;
 import dev.xcolorful.customgun.core.api.entity.ILivingShooter;
 import dev.xcolorful.customgun.core.api.entity.shooter.ILivingShooterGetter;
+import dev.xcolorful.customgun.core.config.SyncConfig;
 import dev.xcolorful.customgun.core.entity.shooter.LivingShooterSprint;
 import net.minecraft.client.player.LocalPlayer;
 
@@ -32,7 +33,7 @@ public final class LocalShooterSprint extends LocalShooterAspect {
     private boolean _shouldForceDisableSprint(ILivingShooter iLivingShooter, boolean isSprint) {
         if (LivingShooterSprint.isIllegalSprintState(iLivingShooter)) return true;
 
-        if (forceDisableSprint) return true;
+        if (forceDisableSprint && !SyncConfig.ENABLE_SPRINT_WHILE_SHOOTING.get()) return true;
 
         return false;
     }

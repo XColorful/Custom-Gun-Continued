@@ -31,6 +31,7 @@ import dev.xcolorful.customgun.core.api.item.gun.*;
 import dev.xcolorful.customgun.core.api.item.gun.modifier.IMuzzleModifier;
 import dev.xcolorful.customgun.core.api.resource.ResourceApi;
 import dev.xcolorful.customgun.core.config.GunConfig;
+import dev.xcolorful.customgun.core.config.SyncConfig;
 import dev.xcolorful.customgun.core.entity.shooter.LivingShooterShoot;
 import dev.xcolorful.customgun.core.gun.attack._DefaultGunFire;
 import dev.xcolorful.customgun.core.network.message.shooter.C2SMessageShooterShoot;
@@ -238,7 +239,7 @@ public final class LocalShooterShoot extends LocalShooterAspect {
                 // 正在拉栓
                 || iLivingShooter.cgc$getSynIsBolting()
                 // 正在疾跑
-                || iLivingShooter.cgc$getSynSprintTime() > 0
+                || (iLivingShooter.cgc$getSynSprintTime() > 0 && !SyncConfig.ENABLE_SPRINT_WHILE_SHOOTING.get())
                 // 倒地禁枪
                 || PlayerReviveClientCompat.isBleeding(this.localShooter) && PlayerReviveClientCompat.shouldDisableShoot()
         ) return true;

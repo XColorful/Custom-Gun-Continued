@@ -142,3 +142,42 @@ if (disableSprintByAiming || disableSprintByReloading) this.livingShooter.setSpr
 2. 该处的瞄准判断用 `shooterProperty.aimingProgress > 0`，而 `isIllegalSprintState` 用 `cgc$getSynIsAiming()`，两处语义略有差异（后者是目标状态，前者包含收镜过渡）。这是迁移前就存在的双源判断，本次未改变行为；若以后要统一，需单独确认收镜过渡期是否仍应禁止疾跑。
 
 未提交、未推送。
+
+# 
+
+```
+补全ENABLE_SPRINT_WHILE_SHOOTING
+```
+
+# 
+
+我先看工作区新增了哪些相关内容。
+
+补充完整实现：注册配置，并在“按射击键禁疾跑”和“疾跑中禁射击”两条路径上按配置放行。
+
+`EnableSprintWhileShooting` 已补全。这个配置需要同时放行两个方向的拦截，否则开了也打不出子弹：
+
+## 改动
+
+1. **配置注册**
+    - [ModConfigTag.java:141](core/src/main/java/dev/xcolorful/customgun/core/api/config/ModConfigTag.java:141) 新增 `EnableSprintWhileShooting` 路径/注释
+    - [SyncConfig.java:106](core/src/main/java/dev/xcolorful/customgun/core/config/SyncConfig.java:106) 在 `misc` 注册，默认 `false`（保持原行为）
+
+2. **疾跑方向**（按射击键不再强制取消疾跑）
+    - [LocalShooterSprint.java:36](core/src/main/java/dev/xcolorful/customgun/client/entity/shooter/LocalShooterSprint.java:36) 给 `forceDisableSprint` 加配置判断
+
+3. **射击方向**（疾跑中允许开火）
+    - [LivingShooterShoot.java:136](core/src/main/java/dev/xcolorful/customgun/core/entity/shooter/LivingShooterShoot.java:136)
+    - [LocalShooterShoot.java:242](core/src/main/java/dev/xcolorful/customgun/client/entity/shooter/LocalShooterShoot.java:242)
+    - 这两处原本在 `sprintTimeS > 0`（疾跑中）时禁止射击。只改疾跑侧的话，玩家能边跑边按开火键，但枪仍然不会响。
+
+4. **wiki**：修正了你手动添加时重复的 `EnableSprintWhileAiming` 条目，中英文清单与 TOML 示例均补上 `EnableSprintWhileShooting = false`
+
+## 验证
+
+`:core:compileJava` 与 `:forge-compat:compileJava` 均 `BUILD SUCCESSFUL`。默认 `false` 时三条路径行为与改动前完全一致。
+
+注意：
+- `sprintTimeS` 是枪械数据里的 `sprint_switch_time`，现在该配置为 `true` 时会整体绕过它；未改任何枪械数据。
+- `.wiki` 仓库的 `Sync-config.md` 尚未同步这一项。
+- 改动未提交、未推送。

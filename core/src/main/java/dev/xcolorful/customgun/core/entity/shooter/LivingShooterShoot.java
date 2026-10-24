@@ -133,7 +133,7 @@ public final class LivingShooterShoot extends LivingShooterAspect {
                 // 正在拉栓
                 || this.shooterProperty.isBolting
                 // 正在疾跑
-                || this.shooterProperty.sprintTimeS > 0
+                || (this.shooterProperty.sprintTimeS > 0 && !SyncConfig.ENABLE_SPRINT_WHILE_SHOOTING.get())
                 // 倒地禁枪
                 || PlayerReviveCompat.isBleeding(this.livingShooter) && PlayerReviveCompat.shouldDisableShoot()
         ) return true;

@@ -138,6 +138,9 @@ public class ModConfigTag {
     public static final String minPronePitch_path = "MinPronePitch";
     public static final String minPronePitch_comment = "The minimum allowed pitch angle while prone";
 
+    public static final String enableSprintWhileShooting_path = "EnableSprintWhileShooting";
+    public static final String enableSprintWhileShooting_comment = "Whether to allow sprinting while shooting";
+
     public static final String enableSprintWhileAiming_path = "EnableSprintWhileAiming";
     public static final String enableSprintWhileAiming_comment = "Whether to allow sprinting while aiming";
 

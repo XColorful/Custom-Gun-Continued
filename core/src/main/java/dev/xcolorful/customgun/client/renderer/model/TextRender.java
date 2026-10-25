@@ -63,10 +63,10 @@ public class TextRender implements IModelComponentRenderer {
      * 提交文字
      * <ul>
      *     <li>26.2 起文字必须在 submit 阶段提交</li>
-     *     <li>低版本 {@link ModelObject#render} 用不到它</li>
+     *     <li>[1.20.1, 26.2) {@link ModelObject#render} 提交时机不同</li>
      * </ul>
      */
-    public void submit(Object collector, // SubmitNodeCollector collector
+    public void submit(Object collector, // SubmitNodeCollector collector,
                        PoseStack poseStack,
                        ItemDisplayContext transformType) {
         if (!transformType.firstPerson()) return;

@@ -84,6 +84,13 @@ public class BeamRender {
             float z = transformType.firstPerson() ? -finalLaserDisplay.getLaserLength() : -finalLaserDisplay.getThirdPersonLaserLength();
             float width = transformType.firstPerson() ? finalLaserDisplay.getLaserWidth() : finalLaserDisplay.getThirdPersonLaserWidth();
 
+            /*
+            [1.20.1, 26.2) RenderTypePipelineBake 直接返回原类型，本行等价于原来的直接提交
+            [26.2, ) 延迟渲染下模板测试不再来自即时 GL 状态，而是提交时按累积状态烘焙进 RenderType
+            枪体/配件模型/手臂都走了这层，光束不走就永远不受瞄具模板剔除（镜内仍可见）
+             */
+//            RenderType bakedRenderType = ClientRenderHelper.bakePipelineState(
+//                    ClientRenderRegistry.LaserBeamRenderState.getLaserBeam());
             {
                 _stringVertex(builder, poseStack.last(), z, width, r, g, b, RenderConfig.ENABLE_LASER_FADE_OUT.get());
             }

@@ -1,5 +1,21 @@
 ### 26.10
 
+#### 26.10.30
+- Add shooter config `CreativeModeInfiniteFeed`
+- Add sync config `EnableSprintWhileShooting`, `EnableSprintWhileAiming`, `EnableSprintWhileReloading`
+- Enable sprint while shooting by default
+- Fixed terrain reducing scope division brightness
+
+1.21.6+:
+- Fixed automatic opacity filling for gun model text
+
+26.2+:
+- Fixed laser not being culled inside the scope
+- Fixed scope division not illuminated
+
+For Developer:
+- Implement `ResourcePojo#copy` and replace manually copying with it
+
 #### 26.10.29
 1.21.4+:
 - Fixed `bypass_bullet` tag not work

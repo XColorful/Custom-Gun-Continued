@@ -76,6 +76,13 @@ public class ColorUtils {
             return argb32 & 255;
         }
 
+        /**
+         * 强制补成不透明 ARGB (1.21.6起 {@code Font#drawInBatch} 不会自动补上 {@code Font#adjustColor})
+         */
+        public static int opaque(int argb32) {
+            return argb32 | 0xFF000000;
+        }
+
         public static int of(float alpha, float red, float green, float blue) {
             return of(as8BitChannel(alpha), as8BitChannel(red), as8BitChannel(green), as8BitChannel(blue));
         }

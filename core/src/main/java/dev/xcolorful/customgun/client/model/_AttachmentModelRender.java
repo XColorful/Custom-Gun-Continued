@@ -372,7 +372,29 @@ public class _AttachmentModelRender {
                 // 渲染准心 (划分?)
                 int b = ~(i+1) & 0xFF;
                 ClientRenderHelper.GL._stencilFunc(GL11.GL_EQUAL, b, 0xFF);
-                renderModelPart(_this, matrixStack, transformType, renderType, light, overlay, divisionNodePath);
+                /*
+                准心是光学元件，绘制时一律关闭深度测试（与下面 renderDivisionOnly 的 sight 路径保持一致）
+
+                为什么需要：
+                光影下 Iris 会把第一人称几何重放到不透明地形之后（1.20.1-26.1.x 是 HandRenderer#renderSolid 里对私有缓冲的
+                flush，26.2 起是 SubmitNodeCollector 提交后由 Iris 在 beginTranslucents 重放，同样是 renderAllFeatures），
+                此时深度缓冲里已经有世界几何。而倍镜准心在模型里位于 z≈-180（约 11 格远），会被近处地面/墙体按深度剔除，
+                表现为准心、尤其 _illuminated 的发光点不显示，或只在视角晃动时从准心边缘露出一部分；
+                sight 准心只有约 1.75 格，所以一直不受影响。
+
+                版本差异：
+                [1.20.1, 26.2) 即时绘制，直接关闭深度测试即可
+                [26.2, 26.3) 模板测试被烘焙进运行时新建的 RenderPipeline，不影响这里的深度语义
+                [26.3, ) 模板测试挪进了 DepthStencilState：NO_DEPTH_TEST 是 withDepthStencilState(Optional.empty())，会连模板一起移除，
+                          但 NeoStencilOperator#applyStencilToPipeline 会给「没有深度状态」的管线补
+                          DepthStencilState(ALWAYS_PASS, writeDepth=false, …, stencil)，模板因此仍然保留。
+                          不要为此去改 NO_DEPTH_TEST 本身：GUI（AttachmentCategorySlot / RefitTurnPageButton）也在用它，
+                          而 26.3 的 GUI 渲染通道没有深度附件，带深度状态的管线会被 FrontendRenderPass 抛 IllegalStateException
+                 */
+                ClientRenderHelper.GL._disableDepthTest(); {
+                    renderModelPart(_this, matrixStack, transformType, renderType, light, overlay, divisionNodePath);
+                }
+                ClientRenderHelper.GL._enableDepthTest();
             }
         }
     }

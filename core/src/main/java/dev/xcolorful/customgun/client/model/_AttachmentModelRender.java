@@ -375,7 +375,10 @@ public class _AttachmentModelRender {
                 // 渲染准心 (划分?)
                 int b = ~(i+1) & 0xFF;
                 ClientRenderHelper.GL._stencilFunc(GL11.GL_EQUAL, b, 0xFF);
-                renderModelPart(_this, matrixStack, transformType, renderType, light, overlay, divisionNodePath);
+                ClientRenderHelper.GL._disableDepthTest(); {
+                    renderModelPart(_this, matrixStack, transformType, renderType, light, overlay, divisionNodePath);
+                }
+                ClientRenderHelper.GL._enableDepthTest();
             }
         }
     }

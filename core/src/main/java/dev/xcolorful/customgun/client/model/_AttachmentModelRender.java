@@ -126,7 +126,10 @@ public class _AttachmentModelRender {
         ClientRenderHelper.disableItemEntityStencilTest();
 
         // 渲染其他部分
-        _this.super_render(matrixStack, transformType, renderType, light, overlay);
+        /**
+         * 其他部分统一由 {@link _AttachmentModelRender#render} 的「先渲染模型，再渲染激光」处理，这里不要再 super_render 一次
+         */
+//        _this.super_render(matrixStack, transformType, renderType, light, overlay);
     }
     /**
      * 只渲染scope遮罩
@@ -167,7 +170,10 @@ public class _AttachmentModelRender {
         ClientRenderHelper.disableItemEntityStencilTest();
 
         // 渲染其他部分
-        _this.super_render(matrixStack, transformType, renderType, light, overlay);
+        /**
+         * 其他部分统一由 {@link _AttachmentModelRender#render} 的「先渲染模型，再渲染激光」处理，这里不要再 super_render 一次
+         */
+//        _this.super_render(matrixStack, transformType, renderType, light, overlay);
     }
     /**
      * 只渲染sight遮罩
@@ -198,7 +204,10 @@ public class _AttachmentModelRender {
         if (_this.scopeBodyPath != null) {
             renderModelPart(_this, matrixStack, transformType, renderType, light, overlay, _this.scopeBodyPath);
         }
-        _this.super_render(matrixStack, transformType, renderType, light, overlay);
+        /**
+         * 其他部分统一由 {@link _AttachmentModelRender#render} 的「先渲染模型，再渲染激光」处理，这里不要再 super_render 一次
+         */
+//        _this.super_render(matrixStack, transformType, renderType, light, overlay);
     }
 
     /**

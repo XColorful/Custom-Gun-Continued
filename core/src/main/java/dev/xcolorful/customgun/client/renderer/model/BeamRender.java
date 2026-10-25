@@ -90,7 +90,7 @@ public class BeamRender {
              */
             RenderType bakedRenderType = ClientRenderHelper.bakePipelineState(
                     ClientRenderRegistry.LaserBeamRenderState.getLaserBeam());
-            collector.submitCustomGeometry(poseStack, ClientRenderRegistry.LaserBeamRenderState.getLaserBeam(), (pose, builder) ->
+            collector.submitCustomGeometry(poseStack, bakedRenderType, (pose, builder) ->
                     _stringVertex(builder, pose, z, width, r, g, b, RenderConfig.ENABLE_LASER_FADE_OUT.get()));
         }
         poseStack.popPose();

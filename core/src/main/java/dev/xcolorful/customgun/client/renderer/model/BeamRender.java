@@ -26,6 +26,7 @@ import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.attachment.IAttachmentGetter;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
 import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
@@ -82,6 +83,13 @@ public class BeamRender {
             float z = transformType.firstPerson() ? -finalLaserDisplay.getLaserLength() : -finalLaserDisplay.getThirdPersonLaserLength();
             float width = transformType.firstPerson() ? finalLaserDisplay.getLaserWidth() : finalLaserDisplay.getThirdPersonLaserWidth();
 
+            /*
+            [1.20.1, 26.2) RenderTypePipelineBake 直接返回原类型，本行等价于原来的直接提交
+            [26.2, ) 延迟渲染下模板测试不再来自即时 GL 状态，而是提交时按累积状态烘焙进 RenderType
+            枪体/配件模型/手臂都走了这层，光束不走就永远不受瞄具模板剔除（镜内仍可见）
+             */
+            RenderType bakedRenderType = ClientRenderHelper.bakePipelineState(
+                    ClientRenderRegistry.LaserBeamRenderState.getLaserBeam());
             collector.submitCustomGeometry(poseStack, ClientRenderRegistry.LaserBeamRenderState.getLaserBeam(), (pose, builder) ->
                     _stringVertex(builder, pose, z, width, r, g, b, RenderConfig.ENABLE_LASER_FADE_OUT.get()));
         }

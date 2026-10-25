@@ -255,10 +255,6 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
                     }
 
                     // [26.2, )
-                    /**
-                     * 26.2 26.2 移到 submit 阶段 {@link TextRender#submit}
-                     * flush 阶段第一人称 collector 已被清空
-                     */
                 }
             } finally {
                 for (int i = 0; i < cleanedTransforms.size(); i++) { // [26.2, )
@@ -266,6 +262,19 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
                     transform.apply();
                 }
             }
+        }
+
+        { // 文字提交
+            // [1.20.1, 26.2)
+
+            // [26.2, )
+            /**
+             * 26.2 移到 submit 阶段 {@link TextRender#submit}
+             * flush 阶段第一人称 collector 已被清空
+             */
+//            for (int i = 0; i < this.textRenderers.size(); i++) {
+//                this.textRenderers.get(i).submit(collector, matrixStack, transformType);
+//            }
         }
     }
 

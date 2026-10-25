@@ -13,6 +13,7 @@ import com.mojang.math.Axis;
 import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.api.renderer.model.IModelComponentRenderer;
 import dev.xcolorful.customgun.client.model.ModelObject;
+import dev.xcolorful.customgun.client.model.bedrock.BedrockPart;
 import dev.xcolorful.customgun.client.resource.assets.display._ModelNodeTextDisplay;
 import dev.xcolorful.customgun.client.util.ClientRenderHelper;
 import dev.xcolorful.customgun.client.util.ClientRenderUtils;
@@ -22,47 +23,69 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.locale.Language;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 
+import java.util.List;
+import java.util.function.Supplier;
+
 public class TextRender implements IModelComponentRenderer {
 
-    private final ModelObject modelObject;
     private final _ModelNodeTextDisplay modelNodeTextDisplay;
-    private final ItemStack gunItem;
+    /**
+     * 文字节点从模型根节点开始的完整路径
+     */
+    private final List<BedrockPart> path;
+    private final Supplier<@Nullable ItemStack> gunItem;
 
-    public TextRender(ModelObject modelObject, _ModelNodeTextDisplay modelNodeTextDisplay, ItemStack gunItem) {
-        this.modelObject = modelObject;
+    public TextRender(_ModelNodeTextDisplay modelNodeTextDisplay, List<BedrockPart> path, Supplier<@Nullable ItemStack> gunItem) {
         this.modelNodeTextDisplay = modelNodeTextDisplay;
+        this.path = path;
         this.gunItem = gunItem;
     }
 
+    /**
+     * 文字改由 {@link #submit} 提交
+     * <br>
+     * 这里保留功能渲染器占位，沿用原语义：文字节点自身的方块与子节点不渲染
+     */
     @Override
     public void render(PoseStack poseStack,
                        VertexConsumer vertexBuffer,
                        ItemDisplayContext transformType,
                        int light, int overlay) {
+    }
+
+    /**
+     * 提交文字
+     * <ul>
+     *     <li>26.2 起文字必须在 submit 阶段提交</li>
+     *     <li>低版本 {@link ModelObject#render} 用不到它</li>
+     * </ul>
+     */
+    public void submit(Object collector, // SubmitNodeCollector collector
+                       PoseStack poseStack,
+                       ItemDisplayContext transformType) {
         if (!transformType.firstPerson()) return;
 
         String textLang = this.modelNodeTextDisplay.getTextLang();
         IPlaceholderManager placeholderManager = CustomGun.getPlaceholderManager();
 
         String text = Language.getInstance().getOrDefault(textLang);
-        String parsed = placeholderManager.parse(text, this.gunItem);
+        String parsed = placeholderManager.parse(text, this.gunItem.get());
         if (parsed.isEmpty()) return;
 
-        ClientRenderHelper.rotate(poseStack, Axis.ZP.rotationDegrees(180f));
-        Matrix3f normal = new Matrix3f(poseStack.last().normal());
-        Matrix4f pose = new Matrix4f(poseStack.last().pose());
+        poseStack.pushPose(); {
+            for (int i = 0; i < this.path.size(); i++) {
+                this.path.get(i).translate_rotate_scale(poseStack);
+            }
 
-        // 和枪械模型共用顶点缓冲的都需要代理到渲染结束后渲染
-        this.modelObject.delegateRender((_poseStack, _vertexBuffer, _transformType, _light, _overlay) -> {
-            @Nullable Object collector = ClientRenderHelper.FirstPersonArmHelper.getFirstPersonArmCollector();
-            if (collector == null) return;
+            ClientRenderHelper.rotate(poseStack, Axis.ZP.rotationDegrees(180f));
+            Matrix3f normal = new Matrix3f(poseStack.last().normal());
+            Matrix4f pose = new Matrix4f(poseStack.last().pose());
 
             Font font = Minecraft.getInstance().font;
             boolean shadow = this.modelNodeTextDisplay.getEnableTextShadow();
@@ -77,18 +100,33 @@ public class TextRender implements IModelComponentRenderer {
             poseStack2.last().pose().mul(pose);
             poseStack2.scale(2 / 300f * scale, -2 / 300f * scale, -2 / 300f);
 
-            MultiBufferSource.BufferSource bufferSource = ClientRenderHelper.GL.getModelBufferSource();
-            font.drawInBatch(parsed,
-                    -xOffset,
-                    -font.lineHeight / 2f,
-                    color,
-                    shadow,
-                    poseStack2.last().pose(),
-                    bufferSource,
-                    Font.DisplayMode.NORMAL,
-                    0,
-                    packLight);
-            bufferSource.endBatch();
-        });
+            {
+                // [1.20.1, 26.2)
+                MultiBufferSource.BufferSource bufferSource = ClientRenderHelper.GL.getModelBufferSource();
+                font.drawInBatch(parsed,
+                        -xOffset,
+                        -font.lineHeight / 2f,
+                        color,
+                        shadow,
+                        poseStack2.last().pose(),
+                        bufferSource,
+                        Font.DisplayMode.NORMAL,
+                        0,
+                        packLight);
+                bufferSource.endBatch();
+
+                // [26.2, )
+//                collector.submitText(poseStack2,
+//                        -xOffset,
+//                        -font.lineHeight / 2f,
+//                        Component.literal(parsed).getVisualOrderText(),
+//                        shadow,
+//                        Font.DisplayMode.NORMAL,
+//                        packLight,
+//                        color,
+//                        0,
+//                        0);
+            }
+        } poseStack.popPose();
     }
 }

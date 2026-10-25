@@ -2,6 +2,7 @@ package dev.xcolorful.customgun.client.util;
 
 import dev.xcolorful.customgun.client.CustomGunClient;
 import dev.xcolorful.customgun.client.api.minecraft.texture.CustomTexture;
+import dev.xcolorful.customgun.core.util.ColorUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -112,7 +113,7 @@ public class ClientGuiUtils {
             guiGraphics.text(font,
                     component,
                     startX, startY,
-                    rgb | 0xFF000000);
+                    ColorUtils.ARGB32.opaque(rgb));
         }
         public static void drawText(GuiGraphicsExtractor guiGraphics,
                                     Font font,
@@ -122,7 +123,7 @@ public class ClientGuiUtils {
             guiGraphics.text(font,
                     sequence,
                     startX, startY,
-                    rgb | 0xFF000000);
+                    ColorUtils.ARGB32.opaque(rgb));
         }
 
         public static void drawCenteredText(GuiGraphicsExtractor guiGraphics,
@@ -134,7 +135,7 @@ public class ClientGuiUtils {
                     font,
                     component,
                     startX, startY,
-                    rgb | 0xFF000000);
+                    ColorUtils.ARGB32.opaque(rgb));
         }
         public static void drawCenteredText(GuiGraphicsExtractor guiGraphics,
                                             Font font,
@@ -145,7 +146,7 @@ public class ClientGuiUtils {
                     font,
                     sequence,
                     startX, startY,
-                    rgb | 0xFF000000);
+                    ColorUtils.ARGB32.opaque(rgb));
         }
 
         public static void drawTooltip(GuiGraphicsExtractor guiGraphics,

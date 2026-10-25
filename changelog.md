@@ -1,5 +1,13 @@
 ### 26.10
 
+#### 26.10.31
+Performance:
+- Fixed attachment model being rendered twice
+
+26.2+:
+- Fixed gun model text not rendering
+- Known issue: Gun model text renders black when shaders are enabled (Issue #84)
+
 #### 26.10.30
 - Add shooter config `CreativeModeInfiniteFeed`
 - Add sync config `EnableSprintWhileShooting`, `EnableSprintWhileAiming`, `EnableSprintWhileReloading`

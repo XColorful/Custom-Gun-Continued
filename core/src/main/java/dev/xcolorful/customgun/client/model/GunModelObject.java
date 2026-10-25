@@ -6,6 +6,7 @@ import dev.xcolorful.customgun.client.api.animation.AnimationChannelType;
 import dev.xcolorful.customgun.client.api.animation.listener.IAnimationListener;
 import dev.xcolorful.customgun.client.api.model.IGunModelObjectRenderer;
 import dev.xcolorful.customgun.client.api.model.IModelTextConsumer;
+import dev.xcolorful.customgun.client.api.model.bedrock.IBedrockRenderer;
 import dev.xcolorful.customgun.client.api.model.gun.GunModelType;
 import dev.xcolorful.customgun.client.api.renderer.model.IModelComponentRenderer;
 import dev.xcolorful.customgun.client.model.bedrock.BedrockPart;
@@ -274,8 +275,15 @@ public class GunModelObject extends AnimatedModelObject implements IGunModelObje
 
     @Override
     public void setTextShowList(Map<String, _ModelNodeTextDisplay> modelNodeTextDisplay) {
+        this.textRenderers.clear();
         modelNodeTextDisplay.forEach((name, _pojo) -> {
-            this.setFunctionalRenderer(name, bedrockPart -> new TextRender(this, _pojo, this.currentGunItem));
+            @Nullable IBedrockRenderer renderer = this.modelMap_get(name);
+            if (renderer == null) return;
+
+            TextRender textRender = new TextRender(_pojo, this.getPath(renderer), () -> this.currentGunItem);
+            // 保留功能渲染器占位，沿用原语义：文字节点自身的方块与子节点不渲染
+            this.setFunctionalRenderer(name, bedrockPart -> textRender);
+            this.textRenderers.add(textRender);
         });
     }
 

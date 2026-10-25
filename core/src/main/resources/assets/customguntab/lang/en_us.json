@@ -4,6 +4,8 @@
 
   "customguntab.gun.pistol_icon.name": "Pistol icon",
   "customguntab.gun.pistol_icon.desc": "M1911",
+  "customguntab.gun.ar_icon.name": "Assault Rifle icon",
+  "customguntab.gun.ar_icon.desc": "AKM",
 
   "customguntab.attachment.muzzle_icon.name": "Muzzle icon",
   "customguntab.attachment.muzzle_icon.desc": "",

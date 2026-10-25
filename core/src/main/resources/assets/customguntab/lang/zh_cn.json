@@ -4,6 +4,8 @@
 
   "customguntab.gun.pistol_icon.name": "手枪图标",
   "customguntab.gun.pistol_icon.desc": "M1911",
+  "customguntab.gun.ar_icon.name": "突击步枪图标",
+  "customguntab.gun.ar_icon.desc": "AKM",
 
   "customguntab.attachment.muzzle_icon.name": "枪口图标",
   "customguntab.attachment.muzzle_icon.desc": "",

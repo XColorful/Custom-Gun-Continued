@@ -111,7 +111,7 @@ public class _GunModelRender {
          */
         { // 渲染激光
             // [1.20.1, 26.2)
-            if (_this.laserBeamPaths != null) BeamRender.render(matrixStack, transformType, _this.laserBeamPaths, gunItem);
+//            if (_this.laserBeamPaths != null) BeamRender.render(matrixStack, transformType, _this.laserBeamPaths, gunItem);
 
             // [26.2)
         }
@@ -122,7 +122,7 @@ public class _GunModelRender {
 
                 // [26.2, )
                 // 被其他渲染器接管时没有瞄具模板可用，保持接管前的行为
-//                if (_this.laserBeamPaths != null) BeamRender.render(matrixStack, transformType, _this.laserBeamPaths, gunItem);
+                if (_this.laserBeamPaths != null) BeamRender.render(matrixStack, transformType, _this.laserBeamPaths, gunItem);
             }
             return;
         }
@@ -134,7 +134,7 @@ public class _GunModelRender {
                 // [1.20.1, 26.2)
 
                 // [26.2, )
-//                if (_this.laserBeamPaths != null) BeamRender.render(matrixStack, transformType, _this.laserBeamPaths, gunItem);
+                if (_this.laserBeamPaths != null) BeamRender.render(matrixStack, transformType, _this.laserBeamPaths, gunItem);
             }
 
             ClientRenderHelper.GL._stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);

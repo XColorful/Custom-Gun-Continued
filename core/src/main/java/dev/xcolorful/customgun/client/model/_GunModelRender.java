@@ -105,18 +105,37 @@ public class _GunModelRender {
             }
         }
 
+        /*
+        [1.20.1, 26.2) 即时模式下光束先于镜内遮罩绘制、由遮罩覆盖；移到遮罩之后改由模板测试剔除，结果一致
+        [26.2, ) 光束必须在 _renderScope 开启模板测试之后提交，否则烘焙出的 RenderType 不带模板测试，瞄具镜内仍可见
+         */
         { // 渲染激光
-            if (_this.laserBeamPaths != null) {
-                BeamRender.render(matrixStack, transformType, _this.laserBeamPaths, gunItem);
-            }
+            // [1.20.1, 26.2)
+            if (_this.laserBeamPaths != null) BeamRender.render(matrixStack, transformType, _this.laserBeamPaths, gunItem);
+
+            // [26.2)
         }
 
         if (GunModelAR.render(matrixStack, transformType, renderType, light, overlay, gunItem)) {
+            { // 渲染激光
+                // [1.20.1, 26.2)
+
+                // [26.2, )
+                // 被其他渲染器接管时没有瞄具模板可用，保持接管前的行为
+//                if (_this.laserBeamPaths != null) BeamRender.render(matrixStack, transformType, _this.laserBeamPaths, gunItem);
+            }
             return;
         }
 
         { // 渲染
             _renderScope(_this, matrixStack, transformType, renderType, light, overlay, gunItem);
+
+            { // 渲染激光
+                // [1.20.1, 26.2)
+
+                // [26.2, )
+//                if (_this.laserBeamPaths != null) BeamRender.render(matrixStack, transformType, _this.laserBeamPaths, gunItem);
+            }
 
             ClientRenderHelper.GL._stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
             _this.super_render(matrixStack, transformType, renderType, light, overlay);

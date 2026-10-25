@@ -113,7 +113,7 @@ public class _GunModelRender {
             // [1.20.1, 26.2)
 //            if (_this.laserBeamPaths != null) BeamRender.render(matrixStack, transformType, _this.laserBeamPaths, gunItem);
 
-            // [26.2)
+            // [26.2, )
         }
 
         if (GunModelAR.render(matrixStack, transformType, renderType, light, overlay, gunItem)) {

@@ -8,6 +8,7 @@ import dev.xcolorful.customgun.client.api.renderer.model.IModelComponentRenderer
 import dev.xcolorful.customgun.client.compat.iris.IrisCompat;
 import dev.xcolorful.customgun.client.model.bedrock.BedrockPart;
 import dev.xcolorful.customgun.client.model.bedrock.NodeTransform;
+import dev.xcolorful.customgun.client.renderer.model.TextRender;
 import dev.xcolorful.customgun.client.resource.assets.model.BedrockModel;
 import dev.xcolorful.customgun.client.resource.assets.model.bedrock.geometry._Bone;
 import dev.xcolorful.customgun.client.util.ClientModelUtils;
@@ -49,6 +50,10 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
      * 委托到渲染结束时执行的渲染器，用于特殊部分的渲染，如手臂
      */
     protected ArrayList<IModelComponentRenderer> delegateRenderers = new ArrayList<>();
+    /**
+     * 文字渲染器，在模型渲染结束后提交
+     */
+    protected final List<TextRender> textRenderers = new ArrayList<>();
 
     /**
      * 模型的中心点
@@ -242,6 +247,19 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
                             light, overlay);
                 }
                 this.delegateRenderers = new ArrayList<>();
+
+                { // 文字提交
+                    // [1.20.1, 26.2)
+                    for (int i = 0; i < this.textRenderers.size(); i++) {
+                        this.textRenderers.get(i).submit(collector, matrixStack, transformType);
+                    }
+
+                    // [26.2, )
+                    /**
+                     * 26.2 26.2 移到 submit 阶段 {@link TextRender#submit}
+                     * flush 阶段第一人称 collector 已被清空
+                     */
+                }
             } finally {
                 for (int i = 0; i < cleanedTransforms.size(); i++) { // [26.2, )
                     NodeTransform transform = cleanedTransforms.get(i);

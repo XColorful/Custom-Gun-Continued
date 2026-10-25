@@ -67,7 +67,7 @@ public class TextRender implements IModelComponentRenderer {
      *     <li>[1.20.1, 26.2) {@link ModelObject#render} 提交时机不同</li>
      * </ul>
      */
-    public void submit(Object collector, // SubmitNodeCollector collector,
+    public void submit(SubmitNodeCollector collector,
                        PoseStack poseStack,
                        ItemDisplayContext transformType) {
         if (!transformType.firstPerson()) return;
@@ -117,7 +117,7 @@ public class TextRender implements IModelComponentRenderer {
 //                bufferSource.endBatch();
 
                 // [26.2, )
-                ((SubmitNodeCollector) collector).submitText(poseStack2,
+                collector.submitText(poseStack2,
                         -xOffset,
                         -font.lineHeight / 2f,
                         Component.literal(parsed).getVisualOrderText(),

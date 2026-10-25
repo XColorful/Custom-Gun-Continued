@@ -17,6 +17,7 @@ import dev.xcolorful.customgun.client.resource.assets.display._ModelNodeTextDisp
 import dev.xcolorful.customgun.client.util.ClientRenderHelper;
 import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import dev.xcolorful.customgun.core.api.text.placeholder.IPlaceholderManager;
+import dev.xcolorful.customgun.core.util.ColorUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.SubmitNodeCollector;
@@ -65,7 +66,7 @@ public class TextRender implements IModelComponentRenderer {
 
             Font font = Minecraft.getInstance().font;
             boolean shadow = this.modelNodeTextDisplay.getEnableTextShadow();
-            int color = this.modelNodeTextDisplay.getTextColor();
+            int color = ColorUtils.ARGB32.opaque(this.modelNodeTextDisplay.getTextColor());
             float scale = this.modelNodeTextDisplay.getTextScale();
             int packLight = ClientRenderUtils.LightTexture_.pack(this.modelNodeTextDisplay.getTextLight(), this.modelNodeTextDisplay.getTextLight());
             int width = font.width(parsed);

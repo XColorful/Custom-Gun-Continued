@@ -6,6 +6,8 @@
   "customguntab.gun.pistol_icon.desc": "M1911",
   "customguntab.gun.ar_icon.name": "突击步枪图标",
   "customguntab.gun.ar_icon.desc": "AKM",
+  "customguntab.gun.dmr_icon.name": "精确射手步枪图标",
+  "customguntab.gun.dmr_icon.desc": "M14 EBR",
 
   "customguntab.attachment.muzzle_icon.name": "枪口图标",
   "customguntab.attachment.muzzle_icon.desc": "",

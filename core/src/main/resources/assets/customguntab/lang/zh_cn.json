@@ -10,6 +10,8 @@
   "customguntab.gun.dmr_icon.desc": "M14 EBR",
   "customguntab.gun.sr_icon.name": "狙击步枪图标",
   "customguntab.gun.sr_icon.desc": "AWM",
+  "customguntab.gun.shotgun_icon.name": "霰弹枪图标",
+  "customguntab.gun.shotgun_icon.desc": "M870",
 
   "customguntab.attachment.muzzle_icon.name": "枪口图标",
   "customguntab.attachment.muzzle_icon.desc": "",

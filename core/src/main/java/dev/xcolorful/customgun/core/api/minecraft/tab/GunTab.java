@@ -94,7 +94,7 @@ public class GunTab {
     public static ItemStack buildDmrTabItem() {
         // mixin注入点
         return buildGunItem(DMR_ICON_LOCATION,
-                FireModeType.AUTO,
+                FireModeType.SEMI,
                 0);
     }
     public static ItemStack buildSrTabItem() {

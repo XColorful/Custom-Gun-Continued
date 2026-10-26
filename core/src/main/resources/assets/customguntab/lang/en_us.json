@@ -12,6 +12,8 @@
   "customguntab.gun.sr_icon.desc": "AWM",
   "customguntab.gun.shotgun_icon.name": "Shotgun icon",
   "customguntab.gun.shotgun_icon.desc": "M870",
+  "customguntab.gun.smg_icon.name": "Submachine Gun icon",
+  "customguntab.gun.smg_icon.desc": "MP5",
 
   "customguntab.attachment.muzzle_icon.name": "Muzzle icon",
   "customguntab.attachment.muzzle_icon.desc": "",

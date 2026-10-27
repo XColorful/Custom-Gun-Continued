@@ -83,9 +83,13 @@ public class AttachmentItemRenderer extends BlockEntityWithoutLevelRenderer {
             // 渲染 GUI
             poseStack.translate(0, 0.5, 0);
 
-            // 展示框里显示正常
             if (transformType == ItemDisplayContext.FIXED) {
-                ClientRenderHelper.rotate(poseStack, Axis.YP.rotationDegrees(90));
+                /*
+                调用方已经为 FIXED 应用了 -90° 的 Y 旋转（供模型使用）
+                这里再转 -90°，合计 180°，让 slot 贴图正对展示框的观察者
+                若抵消为 0° 会从背面看到贴图，表现为水平镜像
+                 */
+                ClientRenderHelper.rotate(poseStack, Axis.YN.rotationDegrees(90));
             }
 
             @Nullable var slotTexture = attachmentDisplay.getSlotTextureLocation();

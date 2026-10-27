@@ -117,3 +117,26 @@ GUI 分支与 `GROUND`/手持等其它上下文的行为保持不变。
 **验证状态**
 
 `./gradlew :core:compileJava` 通过（使用 JDK 17；日志里的中文注释编码提示是当前 shell 非 UTF-8 的既有环境噪声，不影响构建）。未启动游戏做物品展示框的视觉确认，也未提交任何改动。
+
+# 
+
+```
+把枪械的 slot 贴图镜像问题也一起修掉
+```
+
+# 
+
+枪械的 slot 贴图镜像问题已一并修复。
+
+**改动**（[GunItemRenderer.java:531](core/src/main/java/dev/xcolorful/customgun/client/renderer/item/GunItemRenderer.java:531)）
+
+`_renderSlotTexture` 增加了 `ItemDisplayContext transformType` 参数，在 `FIXED` 上下文下于原有位移和 180° Z 旋转之后补一次 180° Y 旋转，与子弹、配件的做法一致。两个调用点都已传入上下文：
+
+- 有枪械资源但无 3D 模型/贴图时的 slot 渲染（[GunItemRenderer.java:429](core/src/main/java/dev/xcolorful/customgun/client/renderer/item/GunItemRenderer.java:429)）
+- `gunLocation` 不存在时的错误贴图回退（[GunItemRenderer.java:472](core/src/main/java/dev/xcolorful/customgun/client/renderer/item/GunItemRenderer.java:472)）
+
+GUI、掉落物、手持等上下文行为不变；带模型的枪械仍走原来的模型渲染路径。
+
+**状态**
+
+`:core:compileJava` 编译通过，未启动游戏做展示框的视觉确认。本次枪械改动尚未提交；子弹与配件的修复已在 `25ae7e23d` 提交。

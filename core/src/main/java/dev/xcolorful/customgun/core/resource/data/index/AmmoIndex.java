@@ -32,6 +32,7 @@ public final class AmmoIndex extends _DataIndex<AmmoIndex> {
                     case AmmoIndexTag.TOOLTIP_LANG, AmmoIndexTag.TOOLTIP_LANG_OLD1 -> pojo.setTooltipLang(JsonUtils.readString(reader));
                     case AmmoIndexTag.DISPLAY_INDEX_LOCATION, AmmoIndexTag.DISPLAY_INDEX_LOCATION_OLD1 -> pojo.setDisplayIndexLocation(JsonUtils.readResourceLocation(reader));
                     case AmmoIndexTag.SLOT_SORT, AmmoIndexTag.SLOT_SORT_OLD1 -> pojo.setSlotSort(JsonUtils.readInt(reader));
+                    case AmmoIndexTag.HIDE_IN_GAME, AmmoIndexTag.HIDE_IN_GAME_OLD1 -> pojo.setHideInGame(JsonUtils.readBoolean(reader));
 
                     case AmmoIndexTag.AMMO_CATEGORY -> pojo.ammoCategory = JsonUtils.readFromString(reader, AmmoCategory::fromString);
                     case AmmoIndexTag.MAX_STACK_SIZE, AmmoIndexTag.MAX_STACK_SIZE_OLD1 -> pojo.maxStackSize = JsonUtils.readInt(reader);
@@ -58,6 +59,7 @@ public final class AmmoIndex extends _DataIndex<AmmoIndex> {
             JsonUtils.writeString(writer, AmmoIndexTag.TOOLTIP_LANG, this.getTooltipLang());
             JsonUtils.writeResourceLocation(writer, AmmoIndexTag.DISPLAY_INDEX_LOCATION, this.getDisplayIndexLocation());
             JsonUtils.writeInt(writer, AmmoIndexTag.SLOT_SORT, this.getSlotSort());
+            JsonUtils.writeBoolean(writer, AmmoIndexTag.HIDE_IN_GAME, this.getHideInGame());
 
             JsonUtils.writeToString(writer, AmmoIndexTag.AMMO_CATEGORY, this.ammoCategory);
             JsonUtils.writeInt(writer, AmmoIndexTag.MAX_STACK_SIZE, this.maxStackSize);

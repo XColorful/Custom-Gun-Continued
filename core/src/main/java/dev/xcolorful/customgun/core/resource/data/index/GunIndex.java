@@ -34,6 +34,7 @@ public final class GunIndex extends _DataIndex<GunIndex> {
                     case GunIndexTag.DATA_LOCATION, GunIndexTag.DATA_LOCATION_OLD1 -> pojo.setDataLocation(JsonUtils.readResourceLocation(reader));
                     case GunIndexTag.DISPLAY_INDEX_LOCATION, GunIndexTag.DISPLAY_INDEX_LOCATION_OLD1 -> pojo.setDisplayIndexLocation(JsonUtils.readResourceLocation(reader));
                     case GunIndexTag.SLOT_SORT, GunIndexTag.SLOT_SORT_OLD1 -> pojo.setSlotSort(JsonUtils.readInt(reader));
+                    case GunIndexTag.HIDE_IN_GAME, GunIndexTag.HIDE_IN_GAME_OLD1 -> pojo.setHideInGame(JsonUtils.readBoolean(reader));
 
                     case GunIndexTag.GUN_CATEGORY, GunIndexTag.GUN_CATEGORY_OLD1 -> pojo.gunCategory = JsonUtils.readFromString(reader, GunCategory::fromString);
                     case GunIndexTag.ITEM_TYPE -> pojo.itemType = JsonUtils.readFromString(reader, ItemType::fromString);
@@ -60,6 +61,7 @@ public final class GunIndex extends _DataIndex<GunIndex> {
             JsonUtils.writeResourceLocation(writer, GunIndexTag.DATA_LOCATION, this.getDataLocation());
             JsonUtils.writeResourceLocation(writer, GunIndexTag.DISPLAY_INDEX_LOCATION, this.getDisplayIndexLocation());
             JsonUtils.writeInt(writer, GunIndexTag.SLOT_SORT, this.getSlotSort());
+            JsonUtils.writeBoolean(writer, GunIndexTag.HIDE_IN_GAME, this.getHideInGame());
 
             JsonUtils.writeToString(writer, GunIndexTag.GUN_CATEGORY, this.gunCategory);
             JsonUtils.writeToString(writer, GunIndexTag.ITEM_TYPE, this.itemType);

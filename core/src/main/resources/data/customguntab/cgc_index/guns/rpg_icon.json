@@ -1,0 +1,10 @@
+{
+	"name_lang": "customguntab.gun.rpg_icon.name",
+	"tooltip_lang": "customguntab.gun.rpg_icon.desc",
+	"data_location": "customguntab:rpg_icon",
+	"display_index_location": "customguntab:rpg_icon",
+	"slot_sort": 0,
+	"hide_in_game": true,
+	"gun_category": "rpg",
+	"item_type": "gun"
+}

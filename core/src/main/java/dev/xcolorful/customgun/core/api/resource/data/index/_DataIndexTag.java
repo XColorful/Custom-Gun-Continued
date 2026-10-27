@@ -12,6 +12,7 @@ public abstract class _DataIndexTag {
 
     // 创造模式物品栏索引 (排序)
     public static final String SLOT_SORT = "slot_sort"; public static final String SLOT_SORT_OLD1 = "sort";
+    public static final String HIDE_IN_GAME = "hide_in_game"; public static final String HIDE_IN_GAME_OLD1 = "hidden";
 
     protected _DataIndexTag() {}
 }

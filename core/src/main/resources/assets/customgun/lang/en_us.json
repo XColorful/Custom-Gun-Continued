@@ -16,12 +16,13 @@
 
   "customgun.unknown": "Unknown",
 
-  "customgun.guncategory.shotgun": "Shotgun",
   "customgun.guncategory.pistol": "Pistol",
-  "customgun.guncategory.rifle": "Rifle",
-  "customgun.guncategory.sniper": "Sniper",
+  "customgun.guncategory.ar": "Assault Rifle",
+  "customgun.guncategory.dmr": "Designated Marksman Rifle",
+  "customgun.guncategory.sr": "Sniper Rifle",
+  "customgun.guncategory.shotgun": "Shotgun",
+  "customgun.guncategory.smg": "Submachine Gun",
   "customgun.guncategory.mg": "Machine Gun",
-  "customgun.guncategory.smg": "SMG",
   "customgun.guncategory.rpg": "RPG",
   "customgun.guncategory.custom": "Custom",
 

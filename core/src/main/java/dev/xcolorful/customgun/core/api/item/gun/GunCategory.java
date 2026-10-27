@@ -7,39 +7,45 @@ import net.minecraft.network.chat.MutableComponent;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public enum GunCategory implements ResourceTag.CategoryTag {
-    /**
-     * 霰弹枪
-     */
-    SHOTGUN(GunCategoryTag.SHOTGUN,
-            Component.translatable("customgun.guncategory.shotgun")),
     /**
      * 手枪
      */
     PISTOL(GunCategoryTag.PISTOL,
             Component.translatable("customgun.guncategory.pistol")),
     /**
-     * 步枪
+     * 突击步枪
      */
-    RIFLE(GunCategoryTag.RIFLE,
-            Component.translatable("customgun.guncategory.rifle")),
+    AR(GunCategoryTag.AR, GunCategoryTag.AR_OLD1,
+            Component.translatable("customgun.guncategory.ar")),
     /**
-     * 狙击枪
+     * 精确射手步枪
      */
-    SNIPER(GunCategoryTag.SNIPER,
-            Component.translatable("customgun.guncategory.sniper")),
+    DMR(GunCategoryTag.DMR,
+            Component.translatable("customgun.guncategory.dmr")),
     /**
-     * 机枪
+     * 狙击步枪
      */
-    MG(GunCategoryTag.MG,
-            Component.translatable("customgun.guncategory.mg")),
+    SR(GunCategoryTag.SR, GunCategoryTag.SR_OLD1,
+            Component.translatable("customgun.guncategory.sr")),
+    /**
+     * 霰弹枪
+     */
+    SHOTGUN(GunCategoryTag.SHOTGUN,
+            Component.translatable("customgun.guncategory.shotgun")),
     /**
      * 冲锋枪
      */
     SMG(GunCategoryTag.SMG,
             Component.translatable("customgun.guncategory.smg")),
+    /**
+     * 机枪
+     */
+    MG(GunCategoryTag.MG,
+            Component.translatable("customgun.guncategory.mg")),
     /**
      * 火箭筒
      */
@@ -52,9 +58,14 @@ public enum GunCategory implements ResourceTag.CategoryTag {
             Component.translatable("customgun.guncategory.custom"));
 
     public final String categoryName;
+    public final String categoryNameOld;
     public final MutableComponent categoryLang;
     GunCategory(String name, MutableComponent lang) {
+        this(name, null, lang);
+    }
+    GunCategory(String name, String nameOld, MutableComponent lang) {
         this.categoryName = name;
+        this.categoryNameOld = nameOld;
         this.categoryLang = lang;
     }
 
@@ -77,6 +88,10 @@ public enum GunCategory implements ResourceTag.CategoryTag {
     static {
         for (GunCategory type : values()) {
             GUN_CATEGORIES.put(type.categoryName, type);
+            GUN_CATEGORIES.put(type.categoryName.toUpperCase(Locale.ENGLISH), type);
+            if (type.categoryNameOld != null) {
+                GUN_CATEGORIES.put(type.categoryNameOld, type);
+            }
         }
     }
 

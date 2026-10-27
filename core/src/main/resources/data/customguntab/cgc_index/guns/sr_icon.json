@@ -1,0 +1,10 @@
+{
+	"name_lang": "customguntab.gun.sr_icon.name",
+	"tooltip_lang": "customguntab.gun.sr_icon.desc",
+	"data_location": "customguntab:sr_icon",
+	"display_index_location": "customguntab:sr_icon",
+	"slot_sort": 0,
+	"hide_in_game": true,
+	"gun_category": "sr",
+	"item_type": "gun"
+}

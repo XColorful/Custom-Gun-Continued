@@ -77,6 +77,7 @@ public class GunTab {
     public static @NotNull ResourceLocation SMG_ICON_LOCATION;
     public static @NotNull ResourceLocation MG_ICON_LOCATION;
     public static @NotNull ResourceLocation RPG_ICON_LOCATION;
+    public static @NotNull ResourceLocation CUSTOM_ICON_LOCATION;
     static {
         IMcRegistry mcRegistry = CustomGun.getMcRegistry();
         PISTOL_ICON_LOCATION = mcRegistry.createResourceLocation(String.format("%s:%s", CustomGun.TAB_ID, "pistol_icon"));
@@ -87,6 +88,7 @@ public class GunTab {
         SMG_ICON_LOCATION = mcRegistry.createResourceLocation(String.format("%s:%s", CustomGun.TAB_ID, "smg_icon"));
         MG_ICON_LOCATION = mcRegistry.createResourceLocation(String.format("%s:%s", CustomGun.TAB_ID, "mg_icon"));
         RPG_ICON_LOCATION = mcRegistry.createResourceLocation(String.format("%s:%s", CustomGun.TAB_ID, "rpg_icon"));
+        CUSTOM_ICON_LOCATION = mcRegistry.createResourceLocation(String.format("%s:%s", CustomGun.TAB_ID, "custom_icon"));
     }
 
     public static ItemStack buildPistolTabItem() {
@@ -139,6 +141,8 @@ public class GunTab {
     }
     public static ItemStack buildCustomTabItem() {
         // mixin注入点
-        return ItemStack.EMPTY;
+        return buildGunItem(CUSTOM_ICON_LOCATION,
+                FireModeType.AUTO,
+                0);
     }
 }

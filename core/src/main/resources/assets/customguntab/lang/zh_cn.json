@@ -18,6 +18,8 @@
   "customguntab.gun.mg_icon.desc": "M249",
   "customguntab.gun.rpg_icon.name": "RPG图标",
   "customguntab.gun.rpg_icon.desc": "RPG-7",
+  "customguntab.gun.custom_icon.name": "自定义图标",
+  "customguntab.gun.custom_icon.desc": "自定义枪械",
 
   "customguntab.attachment.muzzle_icon.name": "枪口图标",
   "customguntab.attachment.muzzle_icon.desc": "",

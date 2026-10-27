@@ -18,6 +18,10 @@ public abstract class _DataIndex<T extends _DataIndex<T>> extends ResourcePojo<T
     private Identifier displayIndexLocation;
 
     private int slotSort = 0;
+    /**
+     * 从创造模式物品栏和 JEI 中隐藏
+     */
+    private boolean hideInGame = false;
 
     @Override
     protected boolean readCustomKey(JsonReader reader, String key) throws IOException {
@@ -54,6 +58,7 @@ public abstract class _DataIndex<T extends _DataIndex<T>> extends ResourcePojo<T
         pojo.setDisplayIndexLocation(this.displayIndexLocation);
 
         pojo.setSlotSort(this.slotSort);
+        pojo.setHideInGame(this.hideInGame);
         return pojo;
     }
 
@@ -74,6 +79,9 @@ public abstract class _DataIndex<T extends _DataIndex<T>> extends ResourcePojo<T
     public final int getSlotSort() {
         return slotSort;
     }
+    public final boolean getHideInGame() {
+        return hideInGame;
+    }
 
     public final void setNameLang(String nameLang) {
         this.nameLang = nameLang;
@@ -89,6 +97,9 @@ public abstract class _DataIndex<T extends _DataIndex<T>> extends ResourcePojo<T
     }
     public final void setSlotSort(int slotSort) {
         this.slotSort = slotSort;
+    }
+    public final void setHideInGame(boolean hideInGame) {
+        this.hideInGame = hideInGame;
     }
 
     // --------Back compatibility--------

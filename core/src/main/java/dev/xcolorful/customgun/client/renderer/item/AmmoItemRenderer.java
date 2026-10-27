@@ -126,6 +126,14 @@ public class AmmoItemRenderer extends BlockEntityWithoutLevelRenderer {
                     poseStack.translate(0.5, 1.5, 0.5);
                     ClientRenderHelper.rotate(poseStack, Axis.ZN.rotationDegrees(180));
 
+                    if (transformType == ItemDisplayContext.FIXED) {
+                        /*
+                        slot 贴图在 GUI 下正面朝向 +Z
+                        展示框的 FIXED 姿态相对 GUI 多转了 180° 的 Y，不补偿的话会从背面看到贴图，表现为水平镜像
+                         */
+                        ClientRenderHelper.rotate(poseStack, Axis.YP.rotationDegrees(180));
+                    }
+
                     @Nullable var slotTextureLocation = ammoDisplay.getSlotTextureLocation();
                     if (slotTextureLocation == null) slotTextureLocation = ClientRenderUtils.getMissingTextureLocation();
 

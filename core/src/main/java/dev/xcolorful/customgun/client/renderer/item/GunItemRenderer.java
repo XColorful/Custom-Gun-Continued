@@ -426,7 +426,7 @@ public class GunItemRenderer extends AnimateGeoItemRenderer<GunModelObject, GunA
                     @Nullable var slotTextureLocation = gunDisplay.getSlotTextureLocation();
                     if (slotTextureLocation == null) slotTextureLocation = ClientRenderUtils.getMissingTextureLocation();
 
-                    _renderSlotTexture(poseStack, bufferSource, light, overlay, slotTextureLocation);
+                    _renderSlotTexture(poseStack, transformType, bufferSource, light, overlay, slotTextureLocation);
                 } else {
                     { // 低模替换
                         @Nullable GunModelObject gunModelLod = gunDisplayInstance.getGunModelLod();
@@ -469,7 +469,7 @@ public class GunItemRenderer extends AnimateGeoItemRenderer<GunModelObject, GunA
         } else {
             poseStack.pushPose(); {
                 // 没有这个 gunLocation，渲染个错误材质提醒别人
-                _renderSlotTexture(poseStack, bufferSource, light, overlay, ClientRenderUtils.getMissingTextureLocation());
+                _renderSlotTexture(poseStack, transformType, bufferSource, light, overlay, ClientRenderUtils.getMissingTextureLocation());
             }
             poseStack.popPose();
         }
@@ -529,11 +529,20 @@ public class GunItemRenderer extends AnimateGeoItemRenderer<GunModelObject, GunA
     }
 
     private static void _renderSlotTexture(PoseStack poseStack,
+                                           ItemDisplayContext transformType,
                                            MultiBufferSource bufferSource,
                                            int packedLight, int packedOverlay,
                                            Identifier texture) {
         poseStack.translate(0.5, 1.5, 0.5);
         ClientRenderHelper.rotate(poseStack, Axis.ZN.rotationDegrees(180));
+
+        if (transformType == FIXED) {
+            /*
+            slot 贴图在 GUI 下正面朝向 +Z
+            展示框的 FIXED 姿态相对 GUI 多转了 180° 的 Y，不补偿的话会从背面看到贴图，表现为水平镜像
+             */
+            ClientRenderHelper.rotate(poseStack, Axis.YP.rotationDegrees(180));
+        }
 
         {
             VertexConsumer buffer = bufferSource.getBuffer(ClientRenderUtils.RenderType_.entityTranslucent(texture));

@@ -1,9 +1,11 @@
 package dev.xcolorful.customgun.core.api.minecraft.tab;
 
+import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.core.api.item.GunProperty;
 import dev.xcolorful.customgun.core.api.item.builder.GunBuilder;
 import dev.xcolorful.customgun.core.api.item.gun.FireModeType;
 import dev.xcolorful.customgun.core.api.item.gun.GunCategory;
+import dev.xcolorful.customgun.core.api.minecraft.IMcRegistry;
 import dev.xcolorful.customgun.core.api.resource.ResourceApi;
 import dev.xcolorful.customgun.core.init.registry.ModItems;
 import dev.xcolorful.customgun.core.resource.data.data.GunData;
@@ -30,28 +32,117 @@ public class GunTab {
             @NotNull GunIndexInstance gunIndexInstance = entry.getValue();
 
             GunIndex gunIndex = gunIndexInstance.getPojo();
+            if (gunIndex.getHideInGame()) {
+                return;
+            }
+
             if (gunIndex.getGunCategory() == gunCategory) {
                 GunData gunData = gunIndexInstance.getGunData();
-                ItemStack gunItem = GunBuilder.create(ModItems.GUN.get())
-                        // 枪械ResourceLocation
-                        .setProperty(GunProperty.GUN_LOCATION,
-                                Identifier.class,
-                                entry.getKey())
-                        // 开火模式
-                        .setProperty(GunProperty.FIRE_MODE_TYPE,
-                                FireModeType.class,
-                                /**
-                                 * {@link GunIndexInstance#isPojoValid}保证列表不为空
-                                 */
-                                gunData.getFireModeTypes().get(0))
-                        // 装满弹匣
-                        .setProperty(GunProperty.MAG_AMMO,
-                                Integer.class,
-                                gunData.getDefaultMagSize())
-                        .build();
+                ItemStack gunItem = buildGunItem(entry.getKey(),
+                        gunData.getFireModeTypes().get(0),
+                        gunData.getDefaultMagSize());
                 gunItems.add(gunItem);
             }
         });
         return gunItems;
+    }
+
+    public static ItemStack buildGunItem(ResourceLocation gunLocation,
+                                         FireModeType fireModeType,
+                                         int magSize) {
+        return GunBuilder.create(ModItems.GUN.get())
+                // 枪械ResourceLocation
+                .setProperty(GunProperty.GUN_LOCATION,
+                        ResourceLocation.class,
+                        gunLocation)
+                // 开火模式
+                .setProperty(GunProperty.FIRE_MODE_TYPE,
+                        FireModeType.class,
+                        /**
+                         * {@link GunIndexInstance#isPojoValid}保证列表不为空
+                         */
+                        fireModeType)
+                // 装满弹匣
+                .setProperty(GunProperty.MAG_AMMO,
+                        Integer.class,
+                        magSize)
+                .build();
+    }
+
+    public static @NotNull ResourceLocation PISTOL_ICON_LOCATION;
+    public static @NotNull ResourceLocation AR_ICON_LOCATION;
+    public static @NotNull ResourceLocation DMR_ICON_LOCATION;
+    public static @NotNull ResourceLocation SR_ICON_LOCATION;
+    public static @NotNull ResourceLocation SHOTGUN_ICON_LOCATION;
+    public static @NotNull ResourceLocation SMG_ICON_LOCATION;
+    public static @NotNull ResourceLocation MG_ICON_LOCATION;
+    public static @NotNull ResourceLocation RPG_ICON_LOCATION;
+    public static @NotNull ResourceLocation CUSTOM_ICON_LOCATION;
+    static {
+        IMcRegistry mcRegistry = CustomGun.getMcRegistry();
+        PISTOL_ICON_LOCATION = mcRegistry.createResourceLocation(String.format("%s:%s", CustomGun.TAB_ID, "pistol_icon"));
+        AR_ICON_LOCATION = mcRegistry.createResourceLocation(String.format("%s:%s", CustomGun.TAB_ID, "ar_icon"));
+        DMR_ICON_LOCATION = mcRegistry.createResourceLocation(String.format("%s:%s", CustomGun.TAB_ID, "dmr_icon"));
+        SR_ICON_LOCATION = mcRegistry.createResourceLocation(String.format("%s:%s", CustomGun.TAB_ID, "sr_icon"));
+        SHOTGUN_ICON_LOCATION = mcRegistry.createResourceLocation(String.format("%s:%s", CustomGun.TAB_ID, "shotgun_icon"));
+        SMG_ICON_LOCATION = mcRegistry.createResourceLocation(String.format("%s:%s", CustomGun.TAB_ID, "smg_icon"));
+        MG_ICON_LOCATION = mcRegistry.createResourceLocation(String.format("%s:%s", CustomGun.TAB_ID, "mg_icon"));
+        RPG_ICON_LOCATION = mcRegistry.createResourceLocation(String.format("%s:%s", CustomGun.TAB_ID, "rpg_icon"));
+        CUSTOM_ICON_LOCATION = mcRegistry.createResourceLocation(String.format("%s:%s", CustomGun.TAB_ID, "custom_icon"));
+    }
+
+    public static ItemStack buildPistolTabItem() {
+        // mixin注入点
+        return buildGunItem(PISTOL_ICON_LOCATION,
+                FireModeType.SEMI,
+                0);
+    }
+    public static ItemStack buildArTabItem() {
+        // mixin注入点
+        return buildGunItem(AR_ICON_LOCATION,
+                FireModeType.AUTO,
+                0);
+    }
+    public static ItemStack buildDmrTabItem() {
+        // mixin注入点
+        return buildGunItem(DMR_ICON_LOCATION,
+                FireModeType.SEMI,
+                0);
+    }
+    public static ItemStack buildSrTabItem() {
+        // mixin注入点
+        return buildGunItem(SR_ICON_LOCATION,
+                FireModeType.SEMI,
+                0);
+    }
+    public static ItemStack buildShotgunTabItem() {
+        // mixin注入点
+        return buildGunItem(SHOTGUN_ICON_LOCATION,
+                FireModeType.SEMI,
+                0);
+    }
+    public static ItemStack buildSmgTabItem() {
+        // mixin注入点
+        return buildGunItem(SMG_ICON_LOCATION,
+                FireModeType.AUTO,
+                0);
+    }
+    public static ItemStack buildMgTabItem() {
+        // mixin注入点
+        return buildGunItem(MG_ICON_LOCATION,
+                FireModeType.AUTO,
+                0);
+    }
+    public static ItemStack buildRpgTabItem() {
+        // mixin注入点
+        return buildGunItem(RPG_ICON_LOCATION,
+                FireModeType.SEMI,
+                0);
+    }
+    public static ItemStack buildCustomTabItem() {
+        // mixin注入点
+        return buildGunItem(CUSTOM_ICON_LOCATION,
+                FireModeType.AUTO,
+                0);
     }
 }

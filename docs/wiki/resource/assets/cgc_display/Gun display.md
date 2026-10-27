@@ -1,7 +1,7 @@
 [English](#English)
 
 # 枪械显示
-> wiki 版本：`0.0.18`.5
+> wiki 版本：`26.10.29`.6
 
 - `model_location`/`model`（ResourceLocation）：
 - `model_transform`/`transform`（\_ModelTransform）：
@@ -73,7 +73,7 @@
 - `player_animator_location`/`player_animator`（ResourceLocation）：
 - `player_animator_fixed_hand`/`player_animator_fixed`（boolean）：
 - `gun_sounds`/`sounds`（Map\<GunSoundType, ResourceLocation>）：
-- `preload_sound_location`/`preload_sounds`（List\<ResourceLocation>）：
+- ~~`preload_sound_location`~~/~~`preload_sounds`~~
 ---
 - `controllable_data`/`controllable`（\_ControllableData）：
 ---
@@ -171,11 +171,8 @@
 	"player_animator_location": "namespace:location",
 	"player_animator_fixed_hand": false,
 	"gun_sounds": {
-		"FIRE": "namespace:location"
+		"": "namespace:location"
 	},
-	"preload_sound_location": [
-		"namespace:location"
-	],
 	
 	"controllable_data": {
 	},
@@ -186,7 +183,7 @@
 ```
 
 # English
-> wiki version: `0.0.18`.5
+> wiki version: `26.10.29`.6
 
 - `model_location`/`model`(ResourceLocation):
 - `model_transform`/`transform`(\_ModelTransform):
@@ -258,7 +255,7 @@
 - `player_animator_location`/`player_animator`(ResourceLocation):
 - `player_animator_fixed_hand`/`player_animator_fixed`(boolean):
 - `gun_sounds`/`sounds`(Map\<GunSoundType, ResourceLocation>):
-- `preload_sound_location`/`preload_sounds`(List\<ResourceLocation>):
+- ~~`preload_sound_location`~~/~~`preload_sounds`~~
 ---
 - `controllable_data`/`controllable`(\_ControllableData):
 ---
@@ -356,11 +353,8 @@
 	"player_animator_location": "namespace:location",
 	"player_animator_fixed_hand": false,
 	"gun_sounds": {
-		"FIRE": "namespace:location"
+		"": "namespace:location"
 	},
-	"preload_sound_location": [
-		"namespace:location"
-	],
 	
 	"controllable_data": {
 	},

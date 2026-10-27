@@ -1,8 +1,10 @@
 package dev.xcolorful.customgun.core.api.minecraft.tab;
 
+import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.core.api.item.AmmoProperty;
 import dev.xcolorful.customgun.core.api.item.ammo.AmmoCategory;
 import dev.xcolorful.customgun.core.api.item.builder.AmmoBuilder;
+import dev.xcolorful.customgun.core.api.minecraft.IMcRegistry;
 import dev.xcolorful.customgun.core.api.resource.ResourceApi;
 import dev.xcolorful.customgun.core.init.registry.ModItems;
 import dev.xcolorful.customgun.core.resource.data.index.AmmoIndex;
@@ -28,17 +30,41 @@ public class AmmoTab {
             @NotNull AmmoIndexInstance ammoIndexInstance = entry.getValue();
 
             AmmoIndex ammoIndex = ammoIndexInstance.getPojo();
+            if (ammoIndex.getHideInGame()) {
+                return;
+            }
 
             if (ammoIndex.getAmmoCategory() == ammoCategory) {
-                ItemStack ammoItem = AmmoBuilder.create(ModItems.AMMO.get())
-                        // 子弹ResourceLocation
-                        .setProperty(AmmoProperty.AMMO_LOCATION,
-                                ResourceLocation.class,
-                                entry.getKey())
-                        .build();
+                ItemStack ammoItem = buildAmmoItem(entry.getKey());
                 ammoItems.add(ammoItem);
             }
         });
         return ammoItems;
+    }
+
+    public static ItemStack buildAmmoItem(ResourceLocation ammoLocation) {
+        return AmmoBuilder.create(ModItems.AMMO.get())
+                // 子弹ResourceLocation
+                .setProperty(AmmoProperty.AMMO_LOCATION,
+                        ResourceLocation.class,
+                        ammoLocation)
+                .build();
+    }
+
+    public static @NotNull ResourceLocation AMMO_ICON_LOCATION;
+    public static @NotNull ResourceLocation EXPLOSIVE_ICON_LOCATION;
+    static {
+        IMcRegistry mcRegistry = CustomGun.getMcRegistry();
+        AMMO_ICON_LOCATION = mcRegistry.createResourceLocation(String.format("%s:%s", CustomGun.TAB_ID, "ammo_icon"));
+        EXPLOSIVE_ICON_LOCATION = mcRegistry.createResourceLocation(String.format("%s:%s", CustomGun.TAB_ID, "explosive_icon"));
+    }
+
+    public static ItemStack buildAmmoTabItem() {
+        // mixin注入点
+        return buildAmmoItem(AMMO_ICON_LOCATION);
+    }
+    public static ItemStack buildExplosiveTabItem() {
+        // mixin注入点
+        return buildAmmoItem(EXPLOSIVE_ICON_LOCATION);
     }
 }

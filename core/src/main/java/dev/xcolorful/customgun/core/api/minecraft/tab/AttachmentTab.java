@@ -43,11 +43,11 @@ public class AttachmentTab {
         return attachmentItems;
     }
 
-    public static ItemStack buildAttachmentItem(ResourceLocation attachmentLocation, AttachmentCategory attachmentCategory) {
+    public static ItemStack buildAttachmentItem(Identifier attachmentLocation, AttachmentCategory attachmentCategory) {
         return AttachmentBuilder.create(ModItems.ATTACHMENT.get())
                 // 配件ResourceLocation
                 .setProperty(AttachmentProperty.ATTACHMENT_LOCATION,
-                        ResourceLocation.class,
+                        Identifier.class,
                         attachmentLocation)
                 // 配件类型
                 .setProperty(AttachmentProperty.ATTACHMENT_CATEGORY,
@@ -56,12 +56,12 @@ public class AttachmentTab {
                 .build();
     }
 
-    public static @NotNull ResourceLocation MUZZLE_ICON_LOCATION;
-    public static @NotNull ResourceLocation LASER_ICON_LOCATION;
-    public static @NotNull ResourceLocation GRIP_ICON_LOCATION;
-    public static @NotNull ResourceLocation MAGAZINE_ICON_LOCATION;
-    public static @NotNull ResourceLocation SCOPE_ICON_LOCATION;
-    public static @NotNull ResourceLocation STOCK_ICON_LOCATION;
+    public static @NotNull Identifier MUZZLE_ICON_LOCATION;
+    public static @NotNull Identifier LASER_ICON_LOCATION;
+    public static @NotNull Identifier GRIP_ICON_LOCATION;
+    public static @NotNull Identifier MAGAZINE_ICON_LOCATION;
+    public static @NotNull Identifier SCOPE_ICON_LOCATION;
+    public static @NotNull Identifier STOCK_ICON_LOCATION;
     static {
         IMcRegistry mcRegistry = CustomGun.getMcRegistry();
         MUZZLE_ICON_LOCATION = mcRegistry.createResourceLocation(String.format("%s:%s", CustomGun.TAB_ID, "muzzle_icon"));

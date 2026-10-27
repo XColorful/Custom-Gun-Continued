@@ -47,13 +47,13 @@ public class GunTab {
         return gunItems;
     }
 
-    public static ItemStack buildGunItem(ResourceLocation gunLocation,
+    public static ItemStack buildGunItem(Identifier gunLocation,
                                          FireModeType fireModeType,
                                          int magSize) {
         return GunBuilder.create(ModItems.GUN.get())
                 // 枪械ResourceLocation
                 .setProperty(GunProperty.GUN_LOCATION,
-                        ResourceLocation.class,
+                        Identifier.class,
                         gunLocation)
                 // 开火模式
                 .setProperty(GunProperty.FIRE_MODE_TYPE,
@@ -69,15 +69,15 @@ public class GunTab {
                 .build();
     }
 
-    public static @NotNull ResourceLocation PISTOL_ICON_LOCATION;
-    public static @NotNull ResourceLocation AR_ICON_LOCATION;
-    public static @NotNull ResourceLocation DMR_ICON_LOCATION;
-    public static @NotNull ResourceLocation SR_ICON_LOCATION;
-    public static @NotNull ResourceLocation SHOTGUN_ICON_LOCATION;
-    public static @NotNull ResourceLocation SMG_ICON_LOCATION;
-    public static @NotNull ResourceLocation MG_ICON_LOCATION;
-    public static @NotNull ResourceLocation RPG_ICON_LOCATION;
-    public static @NotNull ResourceLocation CUSTOM_ICON_LOCATION;
+    public static @NotNull Identifier PISTOL_ICON_LOCATION;
+    public static @NotNull Identifier AR_ICON_LOCATION;
+    public static @NotNull Identifier DMR_ICON_LOCATION;
+    public static @NotNull Identifier SR_ICON_LOCATION;
+    public static @NotNull Identifier SHOTGUN_ICON_LOCATION;
+    public static @NotNull Identifier SMG_ICON_LOCATION;
+    public static @NotNull Identifier MG_ICON_LOCATION;
+    public static @NotNull Identifier RPG_ICON_LOCATION;
+    public static @NotNull Identifier CUSTOM_ICON_LOCATION;
     static {
         IMcRegistry mcRegistry = CustomGun.getMcRegistry();
         PISTOL_ICON_LOCATION = mcRegistry.createResourceLocation(String.format("%s:%s", CustomGun.TAB_ID, "pistol_icon"));

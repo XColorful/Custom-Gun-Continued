@@ -42,17 +42,17 @@ public class AmmoTab {
         return ammoItems;
     }
 
-    public static ItemStack buildAmmoItem(ResourceLocation ammoLocation) {
+    public static ItemStack buildAmmoItem(Identifier ammoLocation) {
         return AmmoBuilder.create(ModItems.AMMO.get())
                 // 子弹ResourceLocation
                 .setProperty(AmmoProperty.AMMO_LOCATION,
-                        ResourceLocation.class,
+                        Identifier.class,
                         ammoLocation)
                 .build();
     }
 
-    public static @NotNull ResourceLocation AMMO_ICON_LOCATION;
-    public static @NotNull ResourceLocation EXPLOSIVE_ICON_LOCATION;
+    public static @NotNull Identifier AMMO_ICON_LOCATION;
+    public static @NotNull Identifier EXPLOSIVE_ICON_LOCATION;
     static {
         IMcRegistry mcRegistry = CustomGun.getMcRegistry();
         AMMO_ICON_LOCATION = mcRegistry.createResourceLocation(String.format("%s:%s", CustomGun.TAB_ID, "ammo_icon"));

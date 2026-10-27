@@ -1,8 +1,10 @@
 package dev.xcolorful.customgun.core.api.minecraft.tab;
 
+import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.core.api.item.AttachmentProperty;
 import dev.xcolorful.customgun.core.api.item.attachment.AttachmentCategory;
 import dev.xcolorful.customgun.core.api.item.builder.AttachmentBuilder;
+import dev.xcolorful.customgun.core.api.minecraft.IMcRegistry;
 import dev.xcolorful.customgun.core.api.resource.ResourceApi;
 import dev.xcolorful.customgun.core.init.registry.ModItems;
 import dev.xcolorful.customgun.core.resource.data.index.AttachmentIndex;
@@ -28,24 +30,76 @@ public class AttachmentTab {
             @NotNull AttachmentIndexInstance attachmentIndexInstance = entry.getValue();
 
             AttachmentIndex attachmentIndex = attachmentIndexInstance.getPojo();
-            if (attachmentIndex.isHideInGame()) {
+            if (attachmentIndex.getHideInGame()) {
                 return;
             }
 
             if (attachmentIndex.getAttachmentCategory() == attachmentCategory) {
-                ItemStack attachmentItem = AttachmentBuilder.create(ModItems.ATTACHMENT.get())
-                        // 配件ResourceLocation
-                        .setProperty(AttachmentProperty.ATTACHMENT_LOCATION,
-                                ResourceLocation.class,
-                                entry.getKey())
-                        // 配件类型
-                        .setProperty(AttachmentProperty.ATTACHMENT_CATEGORY,
-                                AttachmentCategory.class,
-                                attachmentCategory)
-                        .build();
+                ItemStack attachmentItem = buildAttachmentItem(entry.getKey(),
+                        attachmentCategory);
                 attachmentItems.add(attachmentItem);
             }
         });
         return attachmentItems;
+    }
+
+    public static ItemStack buildAttachmentItem(ResourceLocation attachmentLocation, AttachmentCategory attachmentCategory) {
+        return AttachmentBuilder.create(ModItems.ATTACHMENT.get())
+                // 配件ResourceLocation
+                .setProperty(AttachmentProperty.ATTACHMENT_LOCATION,
+                        ResourceLocation.class,
+                        attachmentLocation)
+                // 配件类型
+                .setProperty(AttachmentProperty.ATTACHMENT_CATEGORY,
+                        AttachmentCategory.class,
+                        attachmentCategory)
+                .build();
+    }
+
+    public static @NotNull ResourceLocation MUZZLE_ICON_LOCATION;
+    public static @NotNull ResourceLocation LASER_ICON_LOCATION;
+    public static @NotNull ResourceLocation GRIP_ICON_LOCATION;
+    public static @NotNull ResourceLocation MAGAZINE_ICON_LOCATION;
+    public static @NotNull ResourceLocation SCOPE_ICON_LOCATION;
+    public static @NotNull ResourceLocation STOCK_ICON_LOCATION;
+    static {
+        IMcRegistry mcRegistry = CustomGun.getMcRegistry();
+        MUZZLE_ICON_LOCATION = mcRegistry.createResourceLocation(String.format("%s:%s", CustomGun.TAB_ID, "muzzle_icon"));
+        LASER_ICON_LOCATION = mcRegistry.createResourceLocation(String.format("%s:%s", CustomGun.TAB_ID, "laser_icon"));
+        GRIP_ICON_LOCATION = mcRegistry.createResourceLocation(String.format("%s:%s", CustomGun.TAB_ID, "grip_icon"));
+        MAGAZINE_ICON_LOCATION = mcRegistry.createResourceLocation(String.format("%s:%s", CustomGun.TAB_ID, "magazine_icon"));
+        SCOPE_ICON_LOCATION = mcRegistry.createResourceLocation(String.format("%s:%s", CustomGun.TAB_ID, "scope_icon"));
+        STOCK_ICON_LOCATION = mcRegistry.createResourceLocation(String.format("%s:%s", CustomGun.TAB_ID, "stock_icon"));
+    }
+
+    public static ItemStack buildMuzzleTabItem() {
+        // mixin注入点
+        return buildAttachmentItem(MUZZLE_ICON_LOCATION,
+                AttachmentCategory.MUZZLE);
+    }
+    public static ItemStack buildLaserTabItem() {
+        // mixin注入点
+        return buildAttachmentItem(LASER_ICON_LOCATION,
+                AttachmentCategory.LASER);
+    }
+    public static ItemStack buildGripTabItem() {
+        // mixin注入点
+        return buildAttachmentItem(GRIP_ICON_LOCATION,
+                AttachmentCategory.GRIP);
+    }
+    public static ItemStack buildMagazineTabItem() {
+        // mixin注入点
+        return buildAttachmentItem(MAGAZINE_ICON_LOCATION,
+                AttachmentCategory.MAGAZINE);
+    }
+    public static ItemStack buildScopeTabItem() {
+        // mixin注入点
+        return buildAttachmentItem(SCOPE_ICON_LOCATION,
+                AttachmentCategory.SCOPE);
+    }
+    public static ItemStack buildStockTabItem() {
+        // mixin注入点
+        return buildAttachmentItem(STOCK_ICON_LOCATION,
+                AttachmentCategory.STOCK);
     }
 }

@@ -16,6 +16,8 @@
   "customguntab.gun.smg_icon.desc": "MP5",
   "customguntab.gun.mg_icon.name": "Machine Gun icon",
   "customguntab.gun.mg_icon.desc": "M249",
+  "customguntab.gun.rpg_icon.name": "RPG icon",
+  "customguntab.gun.rpg_icon.desc": "RPG-7",
 
   "customguntab.attachment.muzzle_icon.name": "Muzzle icon",
   "customguntab.attachment.muzzle_icon.desc": "",

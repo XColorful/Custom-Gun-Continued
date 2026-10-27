@@ -61,7 +61,7 @@ public final class GunDisplay extends _AssetsDisplay<GunDisplay> {
     private @Nullable ResourceLocation playerAnimatorLocation;
     private boolean playerAnimatorFixedHand = false;
     private Map<GunSoundType, ResourceLocation> gunSounds;
-    private @Nullable List<ResourceLocation> preloadSoundLocation;
+    @Deprecated(forRemoval = true) private @Nullable List<ResourceLocation> preloadSoundLocation;
 
     private @Nullable _ControllableData controllableData;
 
@@ -108,7 +108,6 @@ public final class GunDisplay extends _AssetsDisplay<GunDisplay> {
                     case GunDisplayTag.PLAYER_ANIMATOR_LOCATION, GunDisplayTag.PLAYER_ANIMATOR_LOCATION_OLD1 -> pojo.playerAnimatorLocation = JsonUtils.readResourceLocation(reader);
                     case GunDisplayTag.PLAYER_ANIMATOR_FIXED_HAND, GunDisplayTag.PLAYER_ANIMATOR_FIXED_HAND_OLD1 -> pojo.playerAnimatorFixedHand = JsonUtils.readBoolean(reader);
                     case GunDisplayTag.GUN_SOUNDS, GunDisplayTag.GUN_SOUNDS_OLD1 -> pojo.gunSounds = JsonUtils.readObject2ObjectMap(reader, GunSoundType::fromString, JsonUtils::readResourceLocation);
-                    case GunDisplayTag.PRELOAD_SOUND_LOCATION, GunDisplayTag.PRELOAD_SOUND_LOCATION_OLD1 -> pojo.preloadSoundLocation = JsonUtils.readList(reader, JsonUtils::readResourceLocation);
 
                     case GunDisplayTag.CONTROLLABLE_DATA, GunDisplayTag.CONTROLLABLE_DATA_OLD1 -> pojo.controllableData = JsonUtils.read(reader, _ControllableData::fromJson);
 
@@ -164,7 +163,6 @@ public final class GunDisplay extends _AssetsDisplay<GunDisplay> {
             JsonUtils.writeResourceLocation(writer, GunDisplayTag.PLAYER_ANIMATOR_LOCATION, this.playerAnimatorLocation);
             JsonUtils.writeBoolean(writer, GunDisplayTag.PLAYER_ANIMATOR_FIXED_HAND, this.playerAnimatorFixedHand);
             JsonUtils.writeObject2ObjectMap(writer, GunDisplayTag.GUN_SOUNDS, this.gunSounds, GunSoundType::toString, JsonUtils::writeResourceLocationValue);
-            JsonUtils.writeList(writer, GunDisplayTag.PRELOAD_SOUND_LOCATION, this.preloadSoundLocation, JsonUtils::writeResourceLocationValue);
 
             JsonUtils.write(writer, GunDisplayTag.CONTROLLABLE_DATA, this.controllableData, _ControllableData::toJson);
             writeCustomValue(writer);

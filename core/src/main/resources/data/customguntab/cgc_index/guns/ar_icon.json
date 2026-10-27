@@ -1,0 +1,10 @@
+{
+	"name_lang": "customguntab.gun.ar_icon.name",
+	"tooltip_lang": "customguntab.gun.ar_icon.desc",
+	"data_location": "customguntab:ar_icon",
+	"display_index_location": "customguntab:ar_icon",
+	"slot_sort": 0,
+	"hide_in_game": true,
+	"gun_category": "ar",
+	"item_type": "gun"
+}

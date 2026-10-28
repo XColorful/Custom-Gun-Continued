@@ -1,9 +1,0 @@
-{
-	"name_lang": "customguntab.attachment.magazine_icon.name",
-	"tooltip_lang": "customguntab.attachment.magazine_icon.desc",
-	"data_location": "customguntab:magazine_icon",
-	"display_index_location": "customguntab:magazine_icon",
-	"slot_sort": 0,
-	"hide_in_game": true,
-	"attachment_category": "magazine"
-}

@@ -1,5 +1,16 @@
 ### 26.10
 
+#### 26.10.32
+- Add Designated Marksman Rifle (DMR) to gun category
+- Add creative tab items using resource location `customguntab:{tab_category}_icon` (e.g. `customguntab:ar_icon`)
+- Add `hide_in_game` to gun index, ammo index
+
+Fix:
+- Fixed horizontal mirroring when items are rendered as inventory slot textures in item frames
+
+For Developer:
+- Recompile any code that uses `GunCategory`
+
 #### 26.10.31
 Performance:
 - Fixed attachment model being rendered twice

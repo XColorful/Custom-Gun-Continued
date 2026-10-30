@@ -1,5 +1,9 @@
 ### 26.10
 
+#### 26.10.33
+26.2+:
+- Fixed gun projectiles damaging Sulfur Cubes with absorbed blocks
+
 #### 26.10.32
 - Add Designated Marksman Rifle (DMR) to gun category
 - Add creative tab items using resource location `customguntab:{tab_category}_icon` (e.g. `customguntab:ar_icon`)

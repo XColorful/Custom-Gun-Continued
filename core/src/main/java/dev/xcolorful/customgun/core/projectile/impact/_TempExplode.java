@@ -343,7 +343,7 @@ public class _TempExplode {
                 double damage = 1.0D - strength;
                 // 26.3 起原版新增同队免伤闸门（exploder 恒非空，省去原版的 null 判断）
                 if (this.exploder.doTeamsAllowDamage(entity)) {
-                    entity.hurtServer(this.level, this.getDamageSource(), (float) damage * this.explosionDamage);
+                    EntityUtils.hurt(entity, this.getDamageSource(), (float) damage * this.explosionDamage);
                 }
 
                 if (entity instanceof LivingEntity livingEntity) {

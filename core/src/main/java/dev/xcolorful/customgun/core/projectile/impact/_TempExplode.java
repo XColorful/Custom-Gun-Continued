@@ -319,7 +319,7 @@ public class _TempExplode {
                 }
 
                 double damage = 1.0D - strength;
-                entity.hurt(this.damageSource, (float) damage * this.explosionDamage);
+                EntityUtils.hurt(entity, this.damageSource, (float) damage * this.explosionDamage);
 
                 if (entity instanceof LivingEntity livingEntity) {
                     damage = ProtectionEnchantment.getExplosionKnockbackAfterDampener(livingEntity, damage);

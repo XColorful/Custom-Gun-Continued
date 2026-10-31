@@ -39,7 +39,7 @@
  * {@link dev.xcolorful.customgun.client.api.entity.IClientGunProjectile}
  */
 ```
-- Shooter Gun Modifier cache：射手枪械修饰
+- Shooter Gun Modifier cache：射手枪械修饰缓存
 ```java
 /**  
  * {@link dev.xcolorful.customgun.core.api.entity.shooter.modifier.ShooterGunModifierCache}  

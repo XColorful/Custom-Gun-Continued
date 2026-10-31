@@ -47,14 +47,23 @@ public class EntityUtils {
         return entity.invulnerableTime;
 
         // [26.3, )
-//        return entity.getInvulnerableTime();
+//        /**
+//         * 26.3 起拆分原 invulnerableTime
+//         * <ul>
+//         *     <li>临时无敌 {@link Entity#invulnerableTime}，参与 {@link Entity#isInvulnerable} 判定</li>
+//         *     <li>受击冷却 {@link LivingEntity#damageCooldownTime}，参与 {@link Entity#hurtServer} 判定</li>
+//         * </ul>
+//         */
+//        if (entity instanceof LivingEntity livingEntity) return livingEntity.damageCooldownTime;
+//        else return entity.getInvulnerableTime();
     }
     public static void setInvulnerableTime(Entity entity, int ticks) {
         // [1.20.1, 26.3)
         entity.invulnerableTime = ticks;
 
         // [26.3, )
-//        entity.setInvulnerableTime(ticks);
+//        if (entity instanceof LivingEntity livingEntity) livingEntity.damageCooldownTime = ticks;
+//        else entity.setInvulnerableTime(ticks);
     }
 
     public static void setThrower(ItemEntity itemEntity, Entity thrower) {

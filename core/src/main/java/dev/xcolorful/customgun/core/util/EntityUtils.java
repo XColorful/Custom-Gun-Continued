@@ -5,8 +5,10 @@ import dev.xcolorful.customgun.core.api.entity.ILivingShooter;
 import dev.xcolorful.customgun.core.api.entity.hitbox.IEntityHitboxHistoryGetter;
 import dev.xcolorful.customgun.core.api.entity.shooter.ILivingShooterGetter;
 import dev.xcolorful.customgun.core.api.minecraft.entity.IEntityExtension;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.HumanoidArm;
@@ -47,14 +49,33 @@ public class EntityUtils {
         return entity.invulnerableTime;
 
         // [26.3, )
-//        return entity.getInvulnerableTime();
+//        /**
+//         * 26.3 起拆分原 invulnerableTime
+//         * <ul>
+//         *     <li>临时无敌 {@link Entity#invulnerableTime}，参与 {@link Entity#isInvulnerable} 判定</li>
+//         *     <li>受击冷却 {@link LivingEntity#damageCooldownTime}，参与 {@link Entity#hurtServer} 判定</li>
+//         * </ul>
+//         */
+//        if (entity instanceof LivingEntity livingEntity) return livingEntity.damageCooldownTime;
+//        else return entity.getInvulnerableTime();
     }
     public static void setInvulnerableTime(Entity entity, int ticks) {
         // [1.20.1, 26.3)
         entity.invulnerableTime = ticks;
 
         // [26.3, )
-//        entity.setInvulnerableTime(ticks);
+//        if (entity instanceof LivingEntity livingEntity) livingEntity.damageCooldownTime = ticks;
+//        else entity.setInvulnerableTime(ticks);
+    }
+
+    public static boolean hurt(Entity entity, DamageSource damageSource, float amount) {
+        if (!(entity.level() instanceof ServerLevel serverLevel)) return false;
+
+        // [1.20.1, 1.21.4)
+        return entity.hurt(damageSource, amount);
+
+        // [1.21.4, )
+//        return entity.hurtServer(serverLevel, damageSource, amount);
     }
 
     public static void setThrower(ItemEntity itemEntity, Entity thrower) {

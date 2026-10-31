@@ -62,9 +62,10 @@ public class FirstPersonRender implements IEventHandler {
     private AnimStateMachine<?> lastStateMachine = null;
 
     private void onRenderHand(IRenderHandEvent event) {
-        Minecraft mc = Minecraft.getInstance();
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return;
+
+        if (IrisCompat.isTranslucentHandPass()) return;
 
         if (event.getHand() == InteractionHand.OFF_HAND) {
             ItemStack gunItem = KeepingItemRenderer.cgc$getRenderer().cgc$getCurrentItem();

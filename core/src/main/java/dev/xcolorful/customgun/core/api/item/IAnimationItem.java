@@ -18,8 +18,8 @@ public interface IAnimationItem extends IPojoItem {
         IPojoItem iPojoItem1 = IPojoItemGetter.fromItemStack(oldItem);
         IPojoItem iPojoItem2 = IPojoItemGetter.fromItemStack(newItem);
         if (iPojoItem1 != null && iPojoItem2 != null) {
-            return !iPojoItem1.getPojoLocation(oldItem).equals(iPojoItem2.getPojoLocation(oldItem))
-                    || !iPojoItem1.getPojoDisplayLocation(oldItem).equals(iPojoItem2.getPojoDisplayLocation(oldItem));
+            return !iPojoItem1.getPojoLocation(oldItem).equals(iPojoItem2.getPojoLocation(newItem))
+                    || !iPojoItem1.getPojoDisplayLocation(oldItem).equals(iPojoItem2.getPojoDisplayLocation(newItem));
         }
         return !ItemStack.matches(oldItem, newItem);
     }

@@ -72,10 +72,10 @@ public class EntityUtils {
         if (!(entity.level() instanceof ServerLevel serverLevel)) return false;
 
         // [1.20.1, 1.21.4)
-        return entity.hurt(damageSource, amount);
+//        return entity.hurt(damageSource, amount);
 
         // [1.21.4, )
-//        return entity.hurtServer(serverLevel, damageSource, amount);
+        return entity.hurtServer(serverLevel, damageSource, amount);
     }
 
     public static void setThrower(ItemEntity itemEntity, Entity thrower) {

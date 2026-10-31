@@ -1,5 +1,9 @@
 ### 26.10
 
+#### 26.10.34.1
+26.3:
+- Fixed gun projectile damage cooldown to living entities
+
 #### 26.10.34
 - Fixed attachment modifier cache not refreshing when switching items without using the scroll wheel
 

@@ -1,6 +1,7 @@
 package dev.xcolorful.customgun.core.api.script.context;
 
 import dev.xcolorful.customgun.core.util.ChatUtils;
+import dev.xcolorful.customgun.core.util.EntityUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -41,7 +42,7 @@ public class _LuaEntityAccessor {
         if (!(this.livingEntity.level() instanceof ServerLevel serverLevel)) return false;
 
         DamageSource damageSource = serverLevel.damageSources().generic();
-        return this.livingEntity.hurt(damageSource, amount); // this.livingEntity.hurtServer(serverLevel, damageSource, amount);
+        return EntityUtils.hurt(this.livingEntity, damageSource, amount);
     }
 
     public Component literal(String text) {

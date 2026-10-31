@@ -319,7 +319,7 @@ public class _TempExplode {
                 }
 
                 double damage = 1.0D - strength;
-                entity.hurt(this.damageSource, (float) damage * this.explosionDamage);
+                EntityUtils.hurt(entity, this.damageSource, (float) damage * this.explosionDamage);
 
                 if (entity instanceof LivingEntity livingEntity) {
                     // 1.21 起 ProtectionEnchantment 被移除，爆炸击退减伤改由 EXPLOSION_KNOCKBACK_RESISTANCE 属性表达

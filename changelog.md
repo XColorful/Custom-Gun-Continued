@@ -1,5 +1,11 @@
 ### 26.10
 
+#### 26.10.34
+- Fixed attachment modifier cache not refreshing when switching items without using the scroll wheel
+
+26.2+:
+- Added non-built-in Mixin injection points to fix first-person texture and shadow rendering issues
+
 #### 26.10.33
 26.2+:
 - Fixed gun projectiles damaging Sulfur Cubes with absorbed blocks

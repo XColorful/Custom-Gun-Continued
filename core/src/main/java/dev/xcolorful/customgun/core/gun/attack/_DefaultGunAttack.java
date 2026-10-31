@@ -31,6 +31,7 @@ import dev.xcolorful.customgun.core.resource.data.data.gun._ChargingData;
 import dev.xcolorful.customgun.core.resource.data.data.gun._MeleeData;
 import dev.xcolorful.customgun.core.resource.data.data.gun.melee._DefaultMeleeData;
 import dev.xcolorful.customgun.core.resource.instance.data.GunIndexInstance;
+import dev.xcolorful.customgun.core.util.EntityUtils;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -294,7 +295,7 @@ public class _DefaultGunAttack {
                 (float) Math.sin(Math.toRadians(livingShooter.getYRot())),
                 (float) -Math.cos(Math.toRadians(livingShooter.getYRot()))
         );
-        if (serverLevel != null) victimEntity.hurtServer(serverLevel, damageSource, damage);
+        if (serverLevel != null) EntityUtils.hurt(victimEntity, damageSource, damage);
 
         // 使近战枪械兼容神化词条/宝石
         if (serverLevel != null) {

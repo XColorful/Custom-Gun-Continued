@@ -64,4 +64,28 @@ public class IrisCompat {
     public static void registerRenderPipelines(Consumer<Object> registrar) {
         // mixin注入点
     }
+
+    /**
+     * 当前是否处于 Iris 手部通道的「半透明」那一遍
+     * <ul>
+     *     <li>光影开启时 Iris 把手部渲染搬进 {@code LevelRenderer}，一帧跑两遍：
+     *     {@code HandRenderer#renderSolid} 与 {@code HandRenderer#renderTranslucent}</li>
+     *     <li>两遍都会调 {@code ItemInHandRenderer#submitHandsWithItems}，于是 RenderHandEvent 每帧派发两次</li>
+     *     <li>vanilla 的物品由 Iris 在 {@code submitArmWithItem} 头部按「物品是否半透明」过滤掉其中一遍</li>
+     *     <li>CGC 取消 RenderHandEvent 会跳过 {@code submitArmWithItem}，也就绕过了那道过滤：
+     *     枪与手臂在两遍里各画一次，第二遍落到 hand_water 程序上，两遍深度相同时互相覆盖
+     *     （表现为手臂外层与枪械反射闪烁）</li>
+     * </ul>
+     * CGC 的动画物品（枪械/配件/弹药）都不是 {@code BlockItem}，Iris 一律按「不透明」处理，
+     * 所以半透明那一遍直接不渲染即可
+     * <ul>
+     *     <li>[1.20.1, 26.2) 无此问题：Iris 尚未把手部渲染搬进 LevelRenderer，手部只画一遍</li>
+     * </ul>
+     * @return 未安装光影兼容模组 / 未开光影 / 不在 Iris 手部通道时返回 false
+     */
+    @ApiStatus.AvailableSince("26.2")
+    public static boolean isTranslucentHandPass() {
+        // mixin注入点
+        return false;
+    }
 }

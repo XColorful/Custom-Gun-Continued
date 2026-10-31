@@ -125,7 +125,7 @@ public class _ProjectileHit {
                     && (bulletDamage = hitEvent.context.getBulletDamage()) != null && armorIgnorePercent < 1
             ) {
                 EntityUtils.setInvulnerableTime(victimEntity, 0); // 取消无敌时间
-                victimEntity.hurt(bulletDamage, damage * (1 - armorIgnorePercent));
+                EntityUtils.hurt(victimEntity, bulletDamage, damage * (1 - armorIgnorePercent));
             }
 
             if ( // 穿甲伤害
@@ -137,7 +137,7 @@ public class _ProjectileHit {
                     && (pierceDamage = hitEvent.context.getPiercerDamage()) != null && armorIgnorePercent > 0
             ) {
                 EntityUtils.setInvulnerableTime(victimEntity, 0); // 取消无敌时间
-                victimEntity.hurt(pierceDamage, damage * armorIgnorePercent);
+                EntityUtils.hurt(victimEntity, pierceDamage, damage * armorIgnorePercent);
             }
         }
 

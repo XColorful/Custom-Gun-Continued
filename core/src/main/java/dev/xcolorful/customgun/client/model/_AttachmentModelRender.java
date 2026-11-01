@@ -450,7 +450,6 @@ public class _AttachmentModelRender {
         ClientRenderHelper.GL._enableDepthTest();
 
         // [1.21.6, )
-        if (true) return; // 让IDE保留下面的引用关系
         ClientRenderHelper.GL._colorMask(false, false, false, false); {
             renderModelPart(_this, matrixStack, transformType, renderType, light, overlay, divisionNodePath);
         }

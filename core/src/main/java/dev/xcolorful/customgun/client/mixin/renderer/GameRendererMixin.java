@@ -5,6 +5,7 @@ import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.api.event.render.ItemInHandBobEvent;
 import dev.xcolorful.customgun.client.api.event.render.LevelBobEvent;
 import dev.xcolorful.customgun.client.renderer.item.gun.GunCameraHelper;
+import dev.xcolorful.customgun.client.renderer.model.TextRenderOverlay;
 import dev.xcolorful.customgun.client.renderer.victim.GunHurtBobTweak;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
@@ -114,13 +115,13 @@ public abstract class GameRendererMixin {
 //            )
 //    )
     private void cgc$flushTextOverlayAfterLevel(CallbackInfo ci) {
-//        TextRenderOverlay.flush();
+        TextRenderOverlay.flush();
     }
 
     @ApiStatus.AvailableSince("26.2")
 //    @Inject(method = "renderLevel", at = @At("RETURN"))
     private void cgc$flushTextOverlayAtEnd(CallbackInfo ci) {
-//        TextRenderOverlay.flush();
+        TextRenderOverlay.flush();
     }
 
 //    @Deprecated(since = "1.21.6")

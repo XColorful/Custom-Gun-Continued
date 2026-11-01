@@ -2,13 +2,16 @@ package dev.xcolorful.customgun.client.renderer.model;
 
 import com.mojang.blaze3d.ProjectionType;
 import com.mojang.blaze3d.buffers.GpuBufferSlice;
+import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.xcolorful.customgun.client.init.registry.ClientRenderRegistry;
+import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.font.TextRenderable;
 import net.minecraft.client.renderer.SubmitNodeStorage;
+import net.minecraft.client.renderer.feature.FeatureRenderDispatcher;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
@@ -16,10 +19,7 @@ import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 模型文字的最终覆盖层
@@ -110,7 +110,7 @@ public final class TextRenderOverlay {
                 prepared.visit(new Font.GlyphVisitor() {
                     @Override
                     public void acceptRenderable(TextRenderable renderable) {
-                        groups.computeIfAbsent(renderable.renderType(Font.DisplayMode.NORMAL, false),
+                        groups.computeIfAbsent(renderable.renderType(Font.DisplayMode.NORMAL),
                                 key -> new ArrayList<>()).add(renderable);
                     }
                 });
@@ -127,7 +127,33 @@ public final class TextRenderOverlay {
                 }
             }
 
-            Minecraft.getInstance().gameRenderer.featureRenderDispatcher().renderAllFeatures(storage);
+            Minecraft mc = Minecraft.getInstance();
+            {
+                // [26.2, 26.3)
+                mc.gameRenderer.featureRenderDispatcher().renderAllFeatures(storage);
+
+                // [26.3, )
+                /**
+                 * <ul>
+                 *     <li>26.3 的 FeatureRenderDispatcher 不再自开 pass</li>
+                 *     <li>renderAllFeatures 变成 static (RenderPass, PreparedFrame)，输出目标在 createRenderPass 时显式指定</li>
+                 *     <li>序列与 Iris 26.3 的 HandRenderer 一致：prepareFrame → createRenderPass → renderAllFeatures → frame.close</li>
+                 * </ul>
+                 */
+//                RenderTarget main = ClientRenderUtils.getMainRenderTarget(mc);
+//                if (main == null || main.getColorTextureView() == null) return;
+//
+//                FeatureRenderDispatcher dispatcher = mc.gameRenderer.featureRenderDispatcher();
+//                FeatureRenderDispatcher.PreparedFrame frame = dispatcher.prepareFrame(storage);
+//                try (RenderPass renderPass = RenderSystem.getDevice().createCommandEncoder().createRenderPass(
+//                        () -> "CustomGun model text overlay",
+//                        main.getColorTextureView(), Optional.empty(),
+//                        main.getDepthTextureView(), OptionalDouble.empty())) {
+//                    FeatureRenderDispatcher.renderAllFeatures(renderPass, frame);
+//                } finally {
+//                    frame.close();
+//                }
+            }
         } finally {
             modelViewStack.popMatrix();
             RenderSystem.setProjectionMatrix(previousProjection, previousProjectionType);

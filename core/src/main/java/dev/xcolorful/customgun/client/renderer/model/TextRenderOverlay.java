@@ -1,10 +1,11 @@
 package dev.xcolorful.customgun.client.renderer.model;
 
 import com.mojang.blaze3d.ProjectionType;
-import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.renderpearl.api.buffers.GpuBufferSlice;
+import com.mojang.renderpearl.api.commands.RenderPass;
 import dev.xcolorful.customgun.client.init.registry.ClientRenderRegistry;
 import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import net.minecraft.client.Minecraft;
@@ -19,7 +20,12 @@ import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.OptionalDouble;
 
 /**
  * 模型文字的最终覆盖层
@@ -130,7 +136,7 @@ public final class TextRenderOverlay {
             Minecraft mc = Minecraft.getInstance();
             {
                 // [26.2, 26.3)
-                mc.gameRenderer.featureRenderDispatcher().renderAllFeatures(storage);
+//                mc.gameRenderer.featureRenderDispatcher().renderAllFeatures(storage);
 
                 // [26.3, )
                 /**
@@ -140,19 +146,19 @@ public final class TextRenderOverlay {
                  *     <li>序列与 Iris 26.3 的 HandRenderer 一致：prepareFrame → createRenderPass → renderAllFeatures → frame.close</li>
                  * </ul>
                  */
-//                RenderTarget main = ClientRenderUtils.getMainRenderTarget(mc);
-//                if (main.getColorTextureView() == null) return;
-//
-//                FeatureRenderDispatcher dispatcher = mc.gameRenderer.featureRenderDispatcher();
-//                FeatureRenderDispatcher.PreparedFrame frame = dispatcher.prepareFrame(storage);
-//                try (RenderPass renderPass = RenderSystem.getDevice().createCommandEncoder().createRenderPass(
-//                        () -> "CustomGun model text overlay",
-//                        main.getColorTextureView(), Optional.empty(),
-//                        main.getDepthTextureView(), OptionalDouble.empty())) {
-//                    FeatureRenderDispatcher.renderAllFeatures(renderPass, frame);
-//                } finally {
-//                    frame.close();
-//                }
+                RenderTarget main = ClientRenderUtils.getMainRenderTarget(mc);
+                if (main.getColorTextureView() == null) return;
+
+                FeatureRenderDispatcher dispatcher = mc.gameRenderer.featureRenderDispatcher();
+                FeatureRenderDispatcher.PreparedFrame frame = dispatcher.prepareFrame(storage);
+                try (RenderPass renderPass = RenderSystem.getDevice().createCommandEncoder().createRenderPass(
+                        () -> "CustomGun model text overlay",
+                        main.getColorTextureView(), Optional.empty(),
+                        main.getDepthTextureView(), OptionalDouble.empty())) {
+                    FeatureRenderDispatcher.renderAllFeatures(renderPass, frame);
+                } finally {
+                    frame.close();
+                }
             }
         } finally {
             modelViewStack.popMatrix();

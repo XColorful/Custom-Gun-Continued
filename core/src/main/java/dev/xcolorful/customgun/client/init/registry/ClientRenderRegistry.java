@@ -108,6 +108,7 @@ public class ClientRenderRegistry {
                 .withLocation(CustomGun.getMcRegistry().createResourceLocation(String.format("%s:model_text", CustomGun.MOD_ID)))
                 .withVertexShader("core/text")
                 .withFragmentShader("core/text")
+                .withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
                 .build();
 
         /**

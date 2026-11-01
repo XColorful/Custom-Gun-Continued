@@ -1,9 +1,25 @@
 package dev.xcolorful.customgun.client.renderer.model;
 
+import com.mojang.blaze3d.ProjectionType;
+import com.mojang.blaze3d.buffers.GpuBufferSlice;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import dev.xcolorful.customgun.client.init.registry.ClientRenderRegistry;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.font.TextRenderable;
+import net.minecraft.client.renderer.SubmitNodeStorage;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
+import org.joml.Matrix4fStack;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 模型文字的最终覆盖层
@@ -18,6 +34,12 @@ import org.joml.Matrix4f;
  */
 @ApiStatus.AvailableSince("26.2")
 public final class TextRenderOverlay {
+
+    private static final List<QueuedText> QUEUE = new ArrayList<>();
+
+    private static @Nullable Matrix4f handModelView;
+    private static @Nullable GpuBufferSlice handProjection;
+    private static @Nullable ProjectionType handProjectionType;
 
     private TextRenderOverlay() {
     }
@@ -36,12 +58,80 @@ public final class TextRenderOverlay {
                              boolean shadow,
                              int packedLight,
                              int color) {
+        if (handModelView == null) {
+            handModelView = RenderSystem.getModelViewMatrixCopy();
+            handProjection = RenderSystem.getProjectionMatrixBuffer();
+            handProjectionType = RenderSystem.getProjectionType();
+        }
+        QUEUE.add(new QueuedText(new Matrix4f(pose), new Matrix3f(normal), x, y, text, shadow, packedLight, color));
     }
 
     /**
      * 把排队中的文字画到最终画面上
      */
     public static void flush() {
+        List<QueuedText> texts = List.copyOf(QUEUE);
+        QUEUE.clear();
+
+        Matrix4f modelView = handModelView;
+        GpuBufferSlice projection = handProjection;
+        ProjectionType projectionType = handProjectionType;
+        handModelView = null;
+        handProjection = null;
+        handProjectionType = null;
+
+        if (texts.isEmpty() || modelView == null) return;
+
+        GpuBufferSlice previousProjection = RenderSystem.getProjectionMatrixBuffer();
+        ProjectionType previousProjectionType = RenderSystem.getProjectionType();
+        Matrix4fStack modelViewStack = RenderSystem.getModelViewStack();
+        modelViewStack.pushMatrix();
+        modelViewStack.set(modelView);
+        RenderSystem.setProjectionMatrix(projection, projectionType);
+        try {
+            SubmitNodeStorage storage = new SubmitNodeStorage();
+            Font font = Minecraft.getInstance().font;
+
+            for (int i = 0; i < texts.size(); i++) {
+                QueuedText queued = texts.get(i);
+
+                PoseStack poseStack = new PoseStack();
+                poseStack.last().pose().set(queued.pose());
+                poseStack.last().normal().set(queued.normal());
+
+                Font.PreparedText prepared = font.prepareText(queued.text(),
+                        queued.x(),
+                        queued.y(),
+                        queued.color(),
+                        queued.shadow(),
+                        0);
+
+                Map<RenderType, List<TextRenderable>> groups = new LinkedHashMap<>();
+                prepared.visit(new Font.GlyphVisitor() {
+                    @Override
+                    public void acceptRenderable(TextRenderable renderable) {
+                        groups.computeIfAbsent(renderable.renderType(Font.DisplayMode.NORMAL, false),
+                                key -> new ArrayList<>()).add(renderable);
+                    }
+                });
+
+                for (Map.Entry<RenderType, List<TextRenderable>> entry : groups.entrySet()) {
+                    RenderType renderType = ClientRenderRegistry.ModelTextRenderState.getModelText(entry.getKey());
+                    List<TextRenderable> renderables = entry.getValue();
+
+                    storage.submitCustomGeometry(poseStack, renderType, (pose, consumer) -> {
+                        for (int j = 0; j < renderables.size(); j++) {
+                            renderables.get(j).render(pose.pose(), consumer, queued.packedLight(), false);
+                        }
+                    });
+                }
+            }
+
+            Minecraft.getInstance().gameRenderer.featureRenderDispatcher().renderAllFeatures(storage);
+        } finally {
+            modelViewStack.popMatrix();
+            RenderSystem.setProjectionMatrix(previousProjection, previousProjectionType);
+        }
     }
 
     private record QueuedText(Matrix4f pose,

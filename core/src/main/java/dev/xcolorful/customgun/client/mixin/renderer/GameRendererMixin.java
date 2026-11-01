@@ -106,20 +106,20 @@ public abstract class GameRendererMixin {
      * </ul>
      */
     @ApiStatus.AvailableSince("26.2")
-//    @Inject(
-//            method = "renderLevel",
-//            at = @At(
-//                    value = "INVOKE",
-//                    target = "Lnet/minecraft/client/renderer/LevelRenderer;render(Lcom/mojang/blaze3d/resource/GraphicsResourceAllocator;Lnet/minecraft/client/DeltaTracker;ZLnet/minecraft/client/renderer/state/level/CameraRenderState;Lorg/joml/Matrix4fc;Lcom/mojang/blaze3d/buffers/GpuBufferSlice;Lorg/joml/Vector4f;Z)V",
-//                    shift = At.Shift.AFTER
-//            )
-//    )
+    @Inject(
+            method = "renderLevel",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/renderer/LevelRenderer;render(Lcom/mojang/blaze3d/resource/GraphicsResourceAllocator;Lnet/minecraft/client/DeltaTracker;ZLnet/minecraft/client/renderer/state/level/CameraRenderState;Lorg/joml/Matrix4fc;Lcom/mojang/blaze3d/buffers/GpuBufferSlice;Lorg/joml/Vector4f;Z)V",
+                    shift = At.Shift.AFTER
+            )
+    )
     private void cgc$flushTextOverlayAfterLevel(CallbackInfo ci) {
         TextRenderOverlay.flush();
     }
 
     @ApiStatus.AvailableSince("26.2")
-//    @Inject(method = "renderLevel", at = @At("RETURN"))
+    @Inject(method = "renderLevel", at = @At("RETURN"))
     private void cgc$flushTextOverlayAtEnd(CallbackInfo ci) {
         TextRenderOverlay.flush();
     }

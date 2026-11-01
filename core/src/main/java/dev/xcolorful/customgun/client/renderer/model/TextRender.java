@@ -21,9 +21,7 @@ import dev.xcolorful.customgun.core.api.text.placeholder.IPlaceholderManager;
 import dev.xcolorful.customgun.core.util.ColorUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.locale.Language;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -79,18 +77,18 @@ public class TextRender implements IModelComponentRenderer {
 
             { // 提交文字
                 // [1.20.1, 26.2)
-                MultiBufferSource.BufferSource bufferSource = ClientRenderHelper.GL.getModelBufferSource();
-                font.drawInBatch(parsed,
-                        -xOffset,
-                        -font.lineHeight / 2f,
-                        color,
-                        shadow,
-                        poseStack2.last().pose(),
-                        bufferSource,
-                        Font.DisplayMode.NORMAL,
-                        0,
-                        packLight);
-                bufferSource.endBatch();
+//                MultiBufferSource.BufferSource bufferSource = ClientRenderHelper.GL.getModelBufferSource();
+//                font.drawInBatch(parsed,
+//                        -xOffset,
+//                        -font.lineHeight / 2f,
+//                        color,
+//                        shadow,
+//                        poseStack2.last().pose(),
+//                        bufferSource,
+//                        Font.DisplayMode.NORMAL,
+//                        0,
+//                        packLight);
+//                bufferSource.endBatch();
 
                 // [26.2, )
                 /**
@@ -101,14 +99,14 @@ public class TextRender implements IModelComponentRenderer {
                  *     <li>改为排队：由 {@link TextRenderOverlay} 在手部几何画完之后用 {@link ClientRenderRegistry} 的管线重画</li>
                  * </ul>
                  */
-//                TextRenderOverlay.queue(poseStack2.last().pose(),
-//                        poseStack2.last().normal(),
-//                        -xOffset,
-//                        -font.lineHeight / 2f,
-//                        parsed,
-//                        shadow,
-//                        packLight,
-//                        color);
+                TextRenderOverlay.queue(poseStack2.last().pose(),
+                        poseStack2.last().normal(),
+                        -xOffset,
+                        -font.lineHeight / 2f,
+                        parsed,
+                        shadow,
+                        packLight,
+                        color);
             }
         }
         );

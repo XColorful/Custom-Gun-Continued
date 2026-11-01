@@ -7,6 +7,8 @@ import com.mojang.blaze3d.pipeline.DepthStencilState;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import dev.xcolorful.customgun.CustomGun;
+import dev.xcolorful.customgun.client.CustomGunClient;
+import dev.xcolorful.customgun.client.api.minecraft.access.IClientAccessTransformer;
 import dev.xcolorful.customgun.client.api.minecraft.texture.CustomTexture;
 import dev.xcolorful.customgun.client.compat.iris.IrisCompat;
 import net.minecraft.client.renderer.BindGroupLayouts;
@@ -19,6 +21,8 @@ import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Consumer;
 
 public class ClientRenderRegistry {
@@ -94,25 +98,25 @@ public class ClientRenderRegistry {
         /**
          * [26.2, ) 文字管线刻意不交给 IrisCompat.registerRenderPipelines 去 assign
          */
-//        @ApiStatus.Internal
-//        public static final RenderPipeline MODEL_TEXT_PIPELINE = RenderPipeline.builder(RenderPipelines.WORLD_TEXT_SNIPPET)
-//                .withLocation(CustomGun.getMcRegistry().createResourceLocation(String.format("%s:model_text", CustomGun.MOD_ID)))
-//                .withVertexShader("core/text")
-//                .withFragmentShader("core/text")
-//                .build();
+        @ApiStatus.Internal
+        public static final RenderPipeline MODEL_TEXT_PIPELINE = RenderPipeline.builder(RenderPipelines.WORLD_TEXT_SNIPPET)
+                .withLocation(CustomGun.getMcRegistry().createResourceLocation(String.format("%s:model_text", CustomGun.MOD_ID)))
+                .withVertexShader("core/text")
+                .withFragmentShader("core/text")
+                .build();
 
         /**
          * 按 vanilla 文字 RenderType（每个字体图集页一条）缓存烘焙结果
          */
-//        private static final Map<RenderType, RenderType> CACHE = new HashMap<>();
+        private static final Map<RenderType, RenderType> CACHE = new HashMap<>();
 
-//        public static RenderType getModelText(RenderType vanillaTextRenderType) {
-//            return CACHE.computeIfAbsent(vanillaTextRenderType, renderType -> {
-//                IClientAccessTransformer accessTransformer = CustomGunClient.getAccessTransformer();
-//                return RenderType.create("cgc_model_text",
-//                        accessTransformer.new_RenderSetup(MODEL_TEXT_PIPELINE, accessTransformer.getState(renderType)));
-//            });
-//        }
+        public static RenderType getModelText(RenderType vanillaTextRenderType) {
+            return CACHE.computeIfAbsent(vanillaTextRenderType, renderType -> {
+                IClientAccessTransformer accessTransformer = CustomGunClient.getAccessTransformer();
+                return RenderType.create("cgc_model_text",
+                        accessTransformer.new_RenderSetup(MODEL_TEXT_PIPELINE, accessTransformer.getState(renderType)));
+            });
+        }
     }
 
     /**
@@ -129,7 +133,7 @@ public class ClientRenderRegistry {
         registrar.accept(LaserBeamRenderState.LASER_BEAM_ENTITY_PIPELINE);
 
         // [26.2)
-//        registrar.accept(ModelTextRenderState.MODEL_TEXT_PIPELINE);
+        registrar.accept(ModelTextRenderState.MODEL_TEXT_PIPELINE);
 
         IrisCompat.registerRenderPipelines(registrar);
     }

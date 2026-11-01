@@ -117,7 +117,7 @@ public class ClientModConfigTag {
     public static final String firstPersonAnimationSoundTracking_comment = "Use a non-relative entity-tracking world sound source for first-person animation keyframe sounds. This can improve compatibility with physical sound mods, but may introduce slight stereo drift while moving";
 
     // ZoomConfig
-    public static final String zoom_path = "Zoom";
+    public static final String zoom_path = "zoom";
 
     public static final String enableScrollingZoom_path = "EnableScrollingZoom";
     public static final String enableScrollingZoom_comment = "Whether to enable zoom switching with the mouse scroll wheel";

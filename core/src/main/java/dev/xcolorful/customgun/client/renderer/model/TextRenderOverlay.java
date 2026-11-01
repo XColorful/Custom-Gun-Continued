@@ -141,7 +141,7 @@ public final class TextRenderOverlay {
                  * </ul>
                  */
 //                RenderTarget main = ClientRenderUtils.getMainRenderTarget(mc);
-//                if (main == null || main.getColorTextureView() == null) return;
+//                if (main.getColorTextureView() == null) return;
 //
 //                FeatureRenderDispatcher dispatcher = mc.gameRenderer.featureRenderDispatcher();
 //                FeatureRenderDispatcher.PreparedFrame frame = dispatcher.prepareFrame(storage);

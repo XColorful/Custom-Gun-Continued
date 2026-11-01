@@ -137,8 +137,8 @@ public class LocalPlayerMixin implements ILocalShooter {
     }
 
     @Override
-    public void cgc$aim(boolean isAim) {
-        this.cgc$localAim.aim(isAim);
+    public void cgc$aim(boolean isAiming) {
+        this.cgc$localAim.aim(isAiming);
     }
 
     @Override

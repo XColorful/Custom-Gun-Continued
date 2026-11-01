@@ -21,7 +21,10 @@ public class ClientModConfigTag {
     public static final String holdShootPreventBolt_comment = "Whether to prevent auto-bolting while holding down the shoot key";
 
     public static final String autoReload_path = "AutoReload";
-    public static final String autoReload_comment = "Try to reload automatically when the gun is empty";
+    public static final String autoReload_comment = "Whether to reload automatically when the chamber is empty";
+
+    public static final String shootToReload_path = "ShootToReload";
+    public static final String shootToReload_comment = "Whether to trigger reloading when attempting to shoot with an empty chamber";
 
 
     // RenderConfig

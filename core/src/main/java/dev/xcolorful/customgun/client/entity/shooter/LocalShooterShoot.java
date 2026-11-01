@@ -16,6 +16,7 @@ import dev.xcolorful.customgun.client.api.entity.shooter.ILocalShooterGetter;
 import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
 import dev.xcolorful.customgun.client.api.sound.gun.GunSoundType;
 import dev.xcolorful.customgun.client.compat.playerrevive.PlayerReviveClientCompat;
+import dev.xcolorful.customgun.client.input.shooter.ReloadKey;
 import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
 import dev.xcolorful.customgun.client.sound.SoundPlayManager;
 import dev.xcolorful.customgun.core.api.common.McLogicalSide;
@@ -214,6 +215,8 @@ public final class LocalShooterShoot extends LocalShooterAspect {
                             GunConfig.DEFAULT_GUN_OTHER_SOUND_DISTANCE.get(),
                             false);
                     soundPlayManager.setEnableDryFireSound(false);
+
+                    ReloadKey.needReload = true;
                 }
             }
             case NO_BARREL_AMMO -> {

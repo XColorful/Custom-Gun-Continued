@@ -11,6 +11,7 @@ public class KeyConfig {
     public static IModConfigSpec<Boolean> HOLD_TO_PRONE;
     public static IModConfigSpec<Boolean> HOLD_SHOOT_PREVENT_BOLT;
     public static IModConfigSpec<Boolean> AUTO_RELOAD;
+    public static IModConfigSpec<Boolean> SHOOT_TO_RELOAD;
 
     public static void init(IModConfigSpecBuilder builder) {
         builder.startBuild(ClientModConfigTag.key_path);
@@ -32,6 +33,9 @@ public class KeyConfig {
 
         builder.addComment(ClientModConfigTag.autoReload_comment);
         AUTO_RELOAD = builder.addConfig(ClientModConfigTag.autoReload_path, false);
+
+        builder.addComment(ClientModConfigTag.shootToReload_comment);
+        SHOOT_TO_RELOAD = builder.addConfig(ClientModConfigTag.shootToReload_path, true);
 
         builder.finishBuild();
     }

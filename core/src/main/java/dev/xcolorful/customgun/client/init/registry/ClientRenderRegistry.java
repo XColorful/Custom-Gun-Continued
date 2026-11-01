@@ -4,9 +4,6 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import dev.xcolorful.customgun.CustomGun;
-import dev.xcolorful.customgun.client.CustomGunClient;
-import dev.xcolorful.customgun.client.api.minecraft.access.IClientAccessTransformer;
 import dev.xcolorful.customgun.client.api.minecraft.texture.CustomTexture;
 import dev.xcolorful.customgun.client.compat.iris.IrisCompat;
 import net.minecraft.client.renderer.RenderStateShard;
@@ -16,8 +13,6 @@ import net.minecraft.util.TriState;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Consumer;
 
 public class ClientRenderRegistry {
@@ -129,6 +124,8 @@ public class ClientRenderRegistry {
 
 //        registrar.accept(LaserBeamRenderState.LASER_BEAM_PIPELINE);
 //        registrar.accept(LaserBeamRenderState.LASER_BEAM_ENTITY_PIPELINE);
+
+        // [26.2)
 //        registrar.accept(ModelTextRenderState.MODEL_TEXT_PIPELINE);
 
         IrisCompat.registerRenderPipelines(registrar);

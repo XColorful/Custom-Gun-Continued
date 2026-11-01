@@ -11,6 +11,9 @@ public class ClientModConfigTag {
     public static final String holdToProne_path = "HoldToProne"; public static final String holdToProne_path_OLD1 = "HoldToCrawl";
     public static final String holdToProne_comment = "True if you want to hold the prone button to prone";
 
+    public static final String holdShootPreventBolt_path = "HoldShootPreventBolt";
+    public static final String holdShootPreventBolt_comment = "Whether to prevent auto-bolting while holding down the shoot key";
+
     public static final String autoReload_path = "AutoReload";
     public static final String autoReload_comment = "Try to reload automatically when the gun is empty";
 

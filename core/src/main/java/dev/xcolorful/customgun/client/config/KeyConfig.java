@@ -7,6 +7,7 @@ import dev.xcolorful.customgun.core.api.config.IModConfigSpecBuilder;
 public class KeyConfig {
     public static IModConfigSpec<Boolean> HOLD_TO_AIM;
     public static IModConfigSpec<Boolean> HOLD_TO_PRONE;
+    public static IModConfigSpec<Boolean> HOLD_SHOOT_PREVENT_BOLT;
     public static IModConfigSpec<Boolean> AUTO_RELOAD;
 
     public static void init(IModConfigSpecBuilder builder) {
@@ -17,6 +18,9 @@ public class KeyConfig {
 
         builder.addComment(ClientModConfigTag.holdToProne_comment);
         HOLD_TO_PRONE = builder.addConfig(ClientModConfigTag.holdToProne_path, false);
+
+        builder.addComment(ClientModConfigTag.holdShootPreventBolt_comment);
+        HOLD_SHOOT_PREVENT_BOLT = builder.addConfig(ClientModConfigTag.holdShootPreventBolt_path, true);
 
         builder.addComment(ClientModConfigTag.autoReload_comment);
         AUTO_RELOAD = builder.addConfig(ClientModConfigTag.autoReload_path, false);

@@ -31,6 +31,7 @@ public class ClientEventHandlers {
         CoreEventHandlers.register(customEventRegister, _LocalAnimHandler.get(), EventType.CLIENT_TICK_EVENT, EventPriority.NORMAL, false);
         CoreEventHandlers.register(customEventRegister, _LocalAnimHandler.get(), EventType.RENDER_FRAME_EVENT, EventPriority.NORMAL, false);
         CoreEventHandlers.register(customEventRegister, FirstPersonRender.get(), EventType.RENDER_HAND_EVENT, EventPriority.NORMAL, false);
+        CoreEventHandlers.register(customEventRegister, _LocalPerspectiveHandler.Helper.get(), EventType.PREPARE_CLIENT_TICK_EVENT, EventPriority.LOWEST, false);
 
         // ----custom event type----
         CoreEventHandlers.register(customEventRegister, _LocalMessageHandler.get(), CustomEventType.SWAP_ITEM_WITH_OFFHAND_EVENT, EventPriority.NORMAL, false);

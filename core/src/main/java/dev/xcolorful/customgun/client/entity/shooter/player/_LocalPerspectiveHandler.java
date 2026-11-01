@@ -8,6 +8,7 @@ import dev.xcolorful.customgun.core.api.event.shooter.ShooterSwitchAimEvent;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.Nullable;
 
 public class _LocalPerspectiveHandler implements ICustomEventHandler {
@@ -64,7 +65,24 @@ public class _LocalPerspectiveHandler implements ICustomEventHandler {
         this.lastPerspectiveBeforeAiming = mc.options.getCameraType();
 
         if (KeyConfig.AIM_SWITCH_TO_FIRST_PERSON.get()) {
-            mc.options.setCameraType(CameraType.FIRST_PERSON);
+            LocalPlayer localPlayer = mc.player;
+            Entity cameraEntity = mc.getCameraEntity();
+            if (localPlayer != null && cameraEntity == localPlayer && ShoulderSurfingCompat.isShoulderSurfing()) {
+                /*
+                 * 离开越肩视角时会强制把本体朝向对准准星命中点
+                 * 且相机在肩部，近距离目标会造成明显偏转
+                 * 切换期间摘掉相机实体可以让↓跳过这次对齐
+                 * if (wasLeaving && player != null && mc.getCameraEntity() == player) this.lookAtCrosshairTargetInternal();
+                 */
+                try {
+                    mc.options.setCameraType(CameraType.FIRST_PERSON);
+                } finally {
+                    mc.setCameraEntity(cameraEntity);
+                }
+            } else {
+                // 正常流程
+                mc.options.setCameraType(CameraType.FIRST_PERSON);
+            }
         }
 
         this.ticksAfterCancelAim = -1;

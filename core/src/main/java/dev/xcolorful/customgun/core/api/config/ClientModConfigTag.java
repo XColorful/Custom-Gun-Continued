@@ -8,6 +8,12 @@ public class ClientModConfigTag {
     public static final String holdToAim_path = "HoldToAim";
     public static final String holdToAim_comment = "True if you want to hold the right mouse button to aim";
 
+    public static final String aimSwitchToFirstPerson_path = "AimSwitchToFirstPerson";
+    public static final String aimSwitchToFirstPerson_comment = "Whether to switch to first-person view while aiming";
+
+    public static final String revertAimPerspective_path = "RevertAimPerspective";
+    public static final String revertAimPerspective_comment = "Whether to revert the perspective upon canceling aim";
+
     public static final String holdToProne_path = "HoldToProne"; public static final String holdToProne_path_OLD1 = "HoldToCrawl";
     public static final String holdToProne_comment = "True if you want to hold the prone button to prone";
 

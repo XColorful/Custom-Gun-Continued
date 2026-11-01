@@ -12,6 +12,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.api.renderer.model.IModelComponentRenderer;
+import dev.xcolorful.customgun.client.init.registry.ClientRenderRegistry;
 import dev.xcolorful.customgun.client.model.ModelObject;
 import dev.xcolorful.customgun.client.resource.assets.display._ModelNodeTextDisplay;
 import dev.xcolorful.customgun.client.util.ClientRenderHelper;
@@ -91,6 +92,14 @@ public class TextRender implements IModelComponentRenderer {
                 bufferSource.endBatch();
 
                 // [26.2, )
+                /**
+                 * 文字不再走 submitText
+                 * <ul>
+                 *     <li>提交进手部 pass 的文字会被 Iris 派到光影包的手部程序</li>
+                 *     <li>而文字顶点格式没有 Normal，表现为发黑与拖影</li>
+                 *     <li>改为排队：由 {@link TextRenderOverlay} 在手部几何画完之后用 {@link ClientRenderRegistry} 的管线重画</li>
+                 * </ul>
+                 */
 //                TextRenderOverlay.queue(poseStack2.last().pose(),
 //                        poseStack2.last().normal(),
 //                        -xOffset,

@@ -400,10 +400,7 @@ public class _AttachmentModelRender {
                           不要为此去改 NO_DEPTH_TEST 本身：GUI（AttachmentCategorySlot / RefitTurnPageButton）也在用它，
                           而 26.3 的 GUI 渲染通道没有深度附件，带深度状态的管线会被 FrontendRenderPass 抛 IllegalStateException
                  */
-                ClientRenderHelper.GL._disableDepthTest(); {
-                    renderModelPart(_this, matrixStack, transformType, renderType, light, overlay, divisionNodePath);
-                }
-                ClientRenderHelper.GL._enableDepthTest();
+                renderDivision(_this, matrixStack, transformType, renderType, light, overlay, divisionNodePath);
             }
         }
     }
@@ -414,16 +411,50 @@ public class _AttachmentModelRender {
                                            int light, int overlay) {
         if (_this.divisionOcularEntries.isEmpty() || _this.divisionOcularEntries.get(0).getDivisionNodePath() == null) return;
 
-        ClientRenderHelper.GL._disableDepthTest();
         for (int i = 0; i < _this.divisionOcularEntries.size(); i++) {
             AttachmentModelObject._Division_Ocular_Entry entry = _this.divisionOcularEntries.get(i);
             @Nullable List<BedrockPart> divisionNodePath = entry.getDivisionNodePath();
             if (divisionNodePath == null) break; // 正序遍历，所以直接结束
 
             ClientRenderHelper.GL._stencilFunc(GL11.GL_EQUAL, i + 1, 0xFF);
+            renderDivision(_this, matrixStack, transformType, renderType, light, overlay, divisionNodePath);
+        }
+    }
+
+    /**
+     * 画准心：先关深度测试画颜色，再只写深度重画一遍
+     * <ul>
+     *     <li>GL 关闭深度测试时深度写入也一并停止，准心像素因此没有自己的深度</li>
+     *     <li>光影下云和雾都在手部之后处理，且都吃这张深度图</li>
+     * </ul>
+     *
+     * 1.21.6起
+     * <ul>
+     *     <li>云在准心之后混合上来，准心没深度就挡不住，被云冲淡</li>
+     *     <li>延迟雾按 {@code depthtex0} 重建距离，准心像素拿到的是身后世界的深度，远处雾浓时准心被雾色整块吃掉</li>
+     *     <li>26.3 起地形雾提前，更明显</li>
+     *     <li>补一遍「开深度测试、关颜色写入」把准心自己的深度写回去即可挡住两者</li>
+     *     <li>颜色那一遍仍关深度测试，保证准心不被近处地面/墙体按深度裁掉</li>
+     * </ul>
+     */
+    private static void renderDivision(AttachmentModelObject _this,
+                                       PoseStack matrixStack,
+                                       ItemDisplayContext transformType,
+                                       RenderType renderType,
+                                       int light, int overlay,
+                                       @Nullable List<BedrockPart> divisionNodePath) {
+        // [1.20.1, )
+        ClientRenderHelper.GL._disableDepthTest(); {
             renderModelPart(_this, matrixStack, transformType, renderType, light, overlay, divisionNodePath);
         }
         ClientRenderHelper.GL._enableDepthTest();
+
+        // [1.21.6, )
+        if (true) return; // 让IDE保留下面的引用关系
+        ClientRenderHelper.GL._colorMask(false, false, false, false); {
+            renderModelPart(_this, matrixStack, transformType, renderType, light, overlay, divisionNodePath);
+        }
+        ClientRenderHelper.GL._colorMask(true, true, true, true);
     }
 
     // public仅用于链接

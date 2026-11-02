@@ -2,11 +2,15 @@ package dev.xcolorful.customgun.forge.mixin;
 
 import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.core.api.common.ISideExecutor;
+import dev.xcolorful.customgun.core.api.common.McSide;
+import dev.xcolorful.customgun.core.api.config.IModConfigSpecBuilder;
 import dev.xcolorful.customgun.core.api.init.registry.IRegistrarFactory;
 import dev.xcolorful.customgun.core.api.minecraft.ICapabilityProvider;
 import dev.xcolorful.customgun.core.api.minecraft.IMcRegistry;
 import dev.xcolorful.customgun.core.api.minecraft.access.ICoreAccessTransformer;
+import dev.xcolorful.customgun.forge.CustomGunForge;
 import dev.xcolorful.customgun.forge.common.ForgeSideExecutor;
+import dev.xcolorful.customgun.forge.config.ForgeModConfigSpecBuilder;
 import dev.xcolorful.customgun.forge.init.registry.ForgeRegistrarFactory;
 import dev.xcolorful.customgun.forge.minecraft.ForgeCapabilityProvider;
 import dev.xcolorful.customgun.forge.minecraft.ForgeRegistry;
@@ -18,6 +22,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(value = CustomGun.class, remap = false)
 public class CustomGunMixin {
+
+    @Inject(method = "getMcSide", at = @At("HEAD"), cancellable = true)
+    private static void customgunforge$getMcSide(CallbackInfoReturnable<McSide> cir) {
+        cir.setReturnValue(CustomGunForge.getDist().isClient() ? McSide.CLIENT : McSide.DEDICATED_SERVER);
+    }
 
     @Inject(method = "getSideExecutor", at = @At("HEAD"), cancellable = true) // cancellable会同时取消原方法执行
     private static void customgunforge$getSideExecutor(CallbackInfoReturnable<ISideExecutor> cir) {
@@ -37,6 +46,11 @@ public class CustomGunMixin {
     @Inject(method = "getCapabilityProvider", at = @At("HEAD"), cancellable = true)
     private static void customgunforge$getCapabilityProvider(CallbackInfoReturnable<ICapabilityProvider> cir) {
         cir.setReturnValue(ForgeCapabilityProvider.INSTANCE);
+    }
+
+    @Inject(method = "getModConfigSpecBuilder", at = @At("HEAD"), cancellable = true) // 有状态, 每次需新建
+    private static void customgunforge$getModConfigSpecBuilder(CallbackInfoReturnable<IModConfigSpecBuilder> cir) {
+        cir.setReturnValue(new ForgeModConfigSpecBuilder());
     }
 
     @Inject(method = "getAccessTransformer", at = @At("HEAD"), cancellable = true)

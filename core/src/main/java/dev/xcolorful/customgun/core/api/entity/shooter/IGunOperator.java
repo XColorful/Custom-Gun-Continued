@@ -31,7 +31,7 @@ public interface IGunOperator extends ICommonGunOperator {
     /**
      * 应用瞄准 (服务端)
      */
-    @Override void cgc$aim(boolean isAim);
+    @Override void cgc$aim(boolean isAiming);
     /**
      * 倍镜缩放 (服务端)
      * @param fromScopeViewIndex 客户端本地数据，可能是垃圾信息或非法数据

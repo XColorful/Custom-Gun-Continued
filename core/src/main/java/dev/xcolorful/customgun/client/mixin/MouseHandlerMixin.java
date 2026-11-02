@@ -87,7 +87,7 @@ public class MouseHandlerMixin {
             // 仰角正负是反的
             float upPitch = -player.getXRot();
             float upDelta = (float) -finalPitch * TURN_DEGREES_PER_UNIT;
-            float upClamped = (float) Mth.clamp(upPitch + upDelta, SyncConfig.MIN_PRONE_PITCH.get(), SyncConfig.MAX_PRONE_PITCH.get());
+            float upClamped = (float) Mth.clamp(upPitch + upDelta, SyncConfig.getMinPronePitch(), SyncConfig.getMaxPronePitch());
             // 夹取在角度空间做，结果再换算回 turn() 的入参单位
             // 走 turn() 而不是 setXRot()，是为了让 xRotO 与 xRot 一起被更新，否则相机插值会一直偏
             finalPitch = -(upClamped - upPitch) / TURN_DEGREES_PER_UNIT;

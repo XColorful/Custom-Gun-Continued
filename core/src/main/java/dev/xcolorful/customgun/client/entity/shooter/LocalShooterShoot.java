@@ -16,6 +16,7 @@ import dev.xcolorful.customgun.client.api.entity.shooter.ILocalShooterGetter;
 import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
 import dev.xcolorful.customgun.client.api.sound.gun.GunSoundType;
 import dev.xcolorful.customgun.client.compat.playerrevive.PlayerReviveClientCompat;
+import dev.xcolorful.customgun.client.input.shooter.ReloadKey;
 import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
 import dev.xcolorful.customgun.client.sound.SoundPlayManager;
 import dev.xcolorful.customgun.core.api.common.McLogicalSide;
@@ -214,6 +215,8 @@ public final class LocalShooterShoot extends LocalShooterAspect {
                             GunConfig.DEFAULT_GUN_OTHER_SOUND_DISTANCE.get(),
                             false);
                     soundPlayManager.setEnableDryFireSound(false);
+
+                    ReloadKey.needReload = true;
                 }
             }
             case NO_BARREL_AMMO -> {
@@ -284,6 +287,15 @@ public final class LocalShooterShoot extends LocalShooterAspect {
                 consumableAmmoCount = iGun.getConsumableAmmoCount(localShooter, gunItem, boltType);
             }
             maxFireCount = Math.min(consumableAmmoCount, fireModeType == FireModeType.BURST ? gunData.getBurstData().getBurstAmount() : 1);
+
+            // 对应 IGunAttackRuntime.GunFireResult.AMMO_CONSUME_FAILED
+            // 不太会在这里提前返回，因为前面 iGun.shooterFire 已经有子弹检查
+            // 但如果真的在这里挂了，下面 "0. 枪械数据异常" 也是秒退出，避免 isShootRecorded 被延迟重置
+            if (maxFireCount <= 0) {
+                // 转换 isRecord 状态，允许下一个tick的开火检测
+                this.localShooterProperty.isShootRecorded = true;
+                return;
+            }
         }
         // 连发计数器
         AtomicInteger firedCount = new AtomicInteger(0);

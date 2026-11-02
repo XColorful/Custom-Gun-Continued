@@ -35,5 +35,7 @@
   "customgun.attachmentcategory.none": "Unknown Attachments",
 
   "customgun.ammocategory.ammo": "Ammo",
-  "customgun.ammocategory.explosive": "Explosive"
+  "customgun.ammocategory.explosive": "Explosive",
+
+  "customgun.command.reload_all_pack": "Reloaded all gun pack (%s seconds)"
 }

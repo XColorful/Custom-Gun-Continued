@@ -1,9 +1,12 @@
 package dev.xcolorful.customgun.core.entity.shooter;
 
+import dev.xcolorful.customgun.CustomGun;
+import dev.xcolorful.customgun.core.api.common.McLogicalSide;
 import dev.xcolorful.customgun.core.api.entity.ILivingShooter;
 import dev.xcolorful.customgun.core.api.entity.ShooterProperty;
 import dev.xcolorful.customgun.core.api.entity.shooter.ILivingShooterGetter;
 import dev.xcolorful.customgun.core.api.entity.shooter.modifier.ShooterGunModifierCache;
+import dev.xcolorful.customgun.core.api.event.shooter.ShooterSwitchAimEvent;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.attachment.AttachmentCategory;
 import dev.xcolorful.customgun.core.api.item.attachment.AttachmentNBTAccessor;
@@ -28,7 +31,7 @@ public final class LivingShooterAim extends LivingShooterAspect {
         super(livingShooter, shooterProperty);
     }
 
-    public void aim(boolean isAim) {
+    public void aim(boolean isAiming) {
         // 1. 手持枪械检查
         if (this.shooterProperty.currentGunItem == null) return;
         ItemStack gunItem = this.shooterProperty.currentGunItem.get();
@@ -38,7 +41,17 @@ public final class LivingShooterAim extends LivingShooterAspect {
             return;
         }
 
-        this.shooterProperty.isAiming = isAim;
+        if (this.shooterProperty.isAiming == isAiming) return;
+
+        ShooterSwitchAimEvent event = new ShooterSwitchAimEvent(McLogicalSide.SERVER,
+                ILivingShooterGetter.cgc$fromLivingEntity(this.livingShooter), this.livingShooter,
+                iGun, gunItem,
+                isAiming);
+        if (CustomGun.getEventPoster().postCustomEvent(event)) {
+            return;
+        }
+
+        this.shooterProperty.isAiming = event.getIsAiming();
     }
 
     @ApiStatus.Internal private void _resetAiming() {

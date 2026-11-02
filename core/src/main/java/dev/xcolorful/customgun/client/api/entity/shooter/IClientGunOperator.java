@@ -30,7 +30,7 @@ public interface IClientGunOperator extends ICommonGunOperator {
     /**
      * 客户端瞄准
      */
-    @Override void cgc$aim(boolean isAim);
+    @Override void cgc$aim(boolean isAiming);
 
     /**
      * 客户端近战（刺刀）

@@ -1,3 +1,32 @@
+### 26.11
+
+#### 26.11.35
+- Gun projectile damage cooldown now uses vanilla tag `bypasses_cooldown`
+- Rename zoom config from "Zoom" to "zoom"
+- Disable mouse scrolling zoom for non multi-view scope
+- Cache several sync config on the client side
+- Add translation key for the reload command
+
+Config:
+- Add key config `AimSwitchToFirstPerson`, `RevertAimPerspective`, `HoldShootPreventBolt`, `ShootToReload`
+- Switch to first-person view while aiming by default
+- Revert the perspective upon canceling aim by default
+- Prevent auto-bolting while holding down the shoot key by default
+- Trigger reload when shooting with an empty chamber by default
+
+1.21.6+:
+- Fixed scope division blending with fog when shaders are enabled
+- Fixed scope division blocked by fog in 26.3 when shaders are enabled
+
+26.2+:
+- Fixed gun model text renders black when shaders are enabled (Issue #84)
+
+Network:
+- Update network protocol version to `35`, which prevents connections between new and older versions
+
+For Developer:
+- Add `ShooterSwitchAimEvent`, code using `CustomEventType` may need to be recompiled
+
 ### 26.10
 
 #### 26.10.34.1

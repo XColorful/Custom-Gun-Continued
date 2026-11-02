@@ -4,6 +4,7 @@ import dev.xcolorful.customgun.client.api.event._CustomEventType;
 import dev.xcolorful.customgun.client.entity.shooter.player._LocalAnimHandler;
 import dev.xcolorful.customgun.client.entity.shooter.player._LocalHitHandler;
 import dev.xcolorful.customgun.client.entity.shooter.player._LocalMessageHandler;
+import dev.xcolorful.customgun.client.entity.shooter.player._LocalPerspectiveHandler;
 import dev.xcolorful.customgun.client.renderer.item.gun.GunCameraHelper;
 import dev.xcolorful.customgun.client.renderer.item.gun.GunRendererAddon;
 import dev.xcolorful.customgun.client.renderer.shooter.FirstPersonRender;
@@ -30,6 +31,7 @@ public class ClientEventHandlers {
         CoreEventHandlers.register(customEventRegister, _LocalAnimHandler.get(), EventType.CLIENT_TICK_EVENT, EventPriority.NORMAL, false);
         CoreEventHandlers.register(customEventRegister, _LocalAnimHandler.get(), EventType.RENDER_FRAME_EVENT, EventPriority.NORMAL, false);
         CoreEventHandlers.register(customEventRegister, FirstPersonRender.get(), EventType.RENDER_HAND_EVENT, EventPriority.NORMAL, false);
+        CoreEventHandlers.register(customEventRegister, _LocalPerspectiveHandler.Helper.get(), EventType.PREPARE_CLIENT_TICK_EVENT, EventPriority.LOWEST, false);
 
         // ----custom event type----
         CoreEventHandlers.register(customEventRegister, _LocalMessageHandler.get(), CustomEventType.SWAP_ITEM_WITH_OFFHAND_EVENT, EventPriority.NORMAL, false);
@@ -41,5 +43,6 @@ public class ClientEventHandlers {
         CoreEventHandlers.register(customEventRegister, GunCameraHelper.Addon.get(), CustomEventType.BEFORE_RENDER_HAND_EVENT, EventPriority.NORMAL, false);
         CoreEventHandlers.register(customEventRegister, _LocalHitHandler.get(), CustomEventType.PROJECTILE_HIT_ENTITY_FINISH_EVENT, EventPriority.NORMAL, false);
         CoreEventHandlers.register(customEventRegister, _LocalHitHandler.get(), CustomEventType.PROJECTILE_KILL_ENTITY_EVENT, EventPriority.NORMAL, false);
+        CoreEventHandlers.register(customEventRegister, _LocalPerspectiveHandler.get(), CustomEventType.SHOOTER_SWITCH_AIM_EVENT, EventPriority.LOWEST, true);
     }
 }

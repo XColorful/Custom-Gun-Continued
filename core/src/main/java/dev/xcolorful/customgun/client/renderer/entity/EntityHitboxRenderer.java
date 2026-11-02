@@ -22,7 +22,7 @@ public class EntityHitboxRenderer {
     public static boolean shouldRenderHitbox(Entity entity) {
         if (
                 // 开启配置
-                SyncConfig.HIDE_ENTITY_HITBOX.get()
+                SyncConfig.getHideEntityHitbox()
                 // 实体碰撞箱史 或 玩家
                 && (IEntityHitboxHistoryGetter.cgc$fromEntity(entity) != null || entity instanceof AbstractClientPlayer)) {
             return false;

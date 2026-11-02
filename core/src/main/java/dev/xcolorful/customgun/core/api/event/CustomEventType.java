@@ -26,6 +26,7 @@ public enum CustomEventType {
     SHOOTER_RELOAD_EVENT(ShooterReloadEvent.class),
     SHOOTER_RELOAD_FEED_EVENT(ShooterReloadFeedEvent.class),
     SHOOTER_RELOAD_FINISH_EVENT(ShooterReloadFinishEvent.class),
+    SHOOTER_SWITCH_AIM_EVENT(ShooterSwitchAimEvent.class),
     SHOOTER_SWITCH_FIRE_MODE_EVENT(ShooterSwitchFireModeEvent.class),
 
     // ----client----

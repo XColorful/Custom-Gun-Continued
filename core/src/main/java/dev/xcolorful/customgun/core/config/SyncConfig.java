@@ -124,6 +124,33 @@ public class SyncConfig {
         builder.finishBuild();
     }
 
+    // --------Cache--------
+
+    private static boolean hideEntityHitbox = false;
+    private static double maxPronePitch = 25.0f;
+    private static double minPronePitch = -20.0f;
+    private static boolean enableSprintWhileReloading = false;
+
+    public static void reloadClientConfigCache() {
+        hideEntityHitbox = HIDE_ENTITY_HITBOX.get();
+        maxPronePitch = MAX_PRONE_PITCH.get();
+        minPronePitch = MIN_PRONE_PITCH.get();
+        enableSprintWhileReloading = ENABLE_SPRINT_WHILE_RELOADING.get();
+    }
+
+    public static boolean getHideEntityHitbox() {
+        return hideEntityHitbox;
+    }
+    public static double getMaxPronePitch() {
+        return maxPronePitch;
+    }
+    public static double getMinPronePitch() {
+        return minPronePitch;
+    }
+    public static boolean getEnableSprintWhileReloading() {
+        return enableSprintWhileReloading;
+    }
+
     // --------Deprecated--------
 
     @Deprecated(forRemoval = true) public static IModConfigSpec<List<List<String>>> CLIENT_GUN_PACK_DOWNLOAD_URLS; // 客户端需要下载的枪械包

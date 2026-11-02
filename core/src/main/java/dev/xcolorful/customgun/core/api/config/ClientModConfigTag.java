@@ -8,11 +8,23 @@ public class ClientModConfigTag {
     public static final String holdToAim_path = "HoldToAim";
     public static final String holdToAim_comment = "True if you want to hold the right mouse button to aim";
 
+    public static final String aimSwitchToFirstPerson_path = "AimSwitchToFirstPerson";
+    public static final String aimSwitchToFirstPerson_comment = "Whether to switch to first-person view while aiming";
+
+    public static final String revertAimPerspective_path = "RevertAimPerspective";
+    public static final String revertAimPerspective_comment = "Whether to revert the perspective upon canceling aim";
+
     public static final String holdToProne_path = "HoldToProne"; public static final String holdToProne_path_OLD1 = "HoldToCrawl";
     public static final String holdToProne_comment = "True if you want to hold the prone button to prone";
 
+    public static final String holdShootPreventBolt_path = "HoldShootPreventBolt";
+    public static final String holdShootPreventBolt_comment = "Whether to prevent auto-bolting while holding down the shoot key";
+
     public static final String autoReload_path = "AutoReload";
-    public static final String autoReload_comment = "Try to reload automatically when the gun is empty";
+    public static final String autoReload_comment = "Whether to reload automatically when the chamber is empty";
+
+    public static final String shootToReload_path = "ShootToReload";
+    public static final String shootToReload_comment = "Whether to trigger reloading when attempting to shoot with an empty chamber";
 
 
     // RenderConfig
@@ -117,7 +129,7 @@ public class ClientModConfigTag {
     public static final String firstPersonAnimationSoundTracking_comment = "Use a non-relative entity-tracking world sound source for first-person animation keyframe sounds. This can improve compatibility with physical sound mods, but may introduce slight stereo drift while moving";
 
     // ZoomConfig
-    public static final String zoom_path = "Zoom";
+    public static final String zoom_path = "zoom";
 
     public static final String enableScrollingZoom_path = "EnableScrollingZoom";
     public static final String enableScrollingZoom_comment = "Whether to enable zoom switching with the mouse scroll wheel";

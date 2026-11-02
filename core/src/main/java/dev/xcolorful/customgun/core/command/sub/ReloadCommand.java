@@ -32,8 +32,8 @@ public class ReloadCommand {
             sideExecutor.executeOnIsolated(McSide.DEDICATED_SERVER, () -> _AllDataManager::reloadAllPack);
         }
         watch.stop();
-        double time = watch.getTime(TimeUnit.MICROSECONDS) / 1000.0;
-        context.getSource().sendSystemMessage(Component.translatable("commands.tacz.reload.success", time));
+        double timeSeconds = watch.getTime(TimeUnit.MILLISECONDS) / 1000.0;
+        context.getSource().sendSystemMessage(Component.translatable("customgun.command.reload_all_pack", String.format("%.3f", timeSeconds)));
         return Command.SINGLE_SUCCESS;
     }
 

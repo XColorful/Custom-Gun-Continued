@@ -20,6 +20,8 @@ import dev.xcolorful.customgun.core.resource.instance.data.GunIndexInstance;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public final class ReloadKey extends InputKey implements IEventHandler {
@@ -68,7 +70,7 @@ public final class ReloadKey extends InputKey implements IEventHandler {
     @Override
     public void handleEvent(EventType eventType, IEvent event) {
         switch (eventType) {
-            case PREPARE_CLIENT_PLAYER_TICK_EVENT -> autoReload((IClientPlayerTickEvent) event);
+            case PREPARE_CLIENT_PLAYER_TICK_EVENT -> tickReload((IClientPlayerTickEvent) event);
             default -> onReceiveWrongEvent(eventType);
         }
     }
@@ -100,14 +102,31 @@ public final class ReloadKey extends InputKey implements IEventHandler {
         ILocalShooterGetter.fromLocalPlayer(player).cgc$reload();
     }
 
+    @ApiStatus.Internal
+    public static boolean needReload = false;
+    private void tickReload(IClientPlayerTickEvent event) {
+        LocalPlayer player = Minecraft.getInstance().player;
+
+        if (needReload) {
+            if (KeyConfig.SHOOT_TO_RELOAD.get() && player != null) this.reload(player);
+            needReload = false;
+            return;
+        }
+
+        this.autoReload(player);
+    }
+
     public static int AUTO_RELOAD_FREQUENCY = 5;
-    private void autoReload(IClientPlayerTickEvent event) {
+    private void autoReload(LocalPlayer player) {
         if (!KeyConfig.AUTO_RELOAD.get()) return;
 
-        LocalPlayer player = Minecraft.getInstance().player;
         if (player == null || player.isSpectator() // 旁观模式
                 || player.tickCount % AUTO_RELOAD_FREQUENCY != 0) return;
 
+        this.reload(player);
+    }
+
+    private void reload(@NotNull LocalPlayer player) {
         ItemStack gunItem = player.getMainHandItem();
         @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return; // 主手没枪

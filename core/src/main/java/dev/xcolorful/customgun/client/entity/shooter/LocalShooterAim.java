@@ -1,8 +1,11 @@
 package dev.xcolorful.customgun.client.entity.shooter;
 
+import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.api.entity.LocalShooterProperty;
+import dev.xcolorful.customgun.core.api.common.McLogicalSide;
 import dev.xcolorful.customgun.core.api.entity.ILivingShooter;
 import dev.xcolorful.customgun.core.api.entity.shooter.ILivingShooterGetter;
+import dev.xcolorful.customgun.core.api.event.shooter.ShooterSwitchAimEvent;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
 import dev.xcolorful.customgun.core.api.resource.ResourceApi;
@@ -23,15 +26,25 @@ public final class LocalShooterAim extends LocalShooterAspect {
         super(localShooter, localShooterProperty);
     }
 
-    public void aim(boolean isAim) {
+    public void aim(boolean isAiming) {
         // 1. 手持枪械检查
         ItemStack gunItem = this.localShooter.getMainHandItem();
         @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return;
 
-        this.localShooterProperty.clientIsAiming = isAim;
+        if (this.localShooterProperty.clientIsAiming == isAiming) return;
 
-        SendUtils.sendMessageToServer(new C2SMessageShooterAim(isAim));
+        ShooterSwitchAimEvent event = new ShooterSwitchAimEvent(McLogicalSide.CLIENT,
+                ILivingShooterGetter.cgc$fromLivingEntity(this.localShooter), this.localShooter,
+                iGun, gunItem,
+                isAiming);
+        if (CustomGun.getEventPoster().postCustomEvent(event)) {
+            return;
+        }
+
+        isAiming = event.getIsAiming();
+        this.localShooterProperty.clientIsAiming = isAiming;
+        SendUtils.sendMessageToServer(new C2SMessageShooterAim(isAiming));
     }
 
     public float getRenderAimingProgress(float partialTicks) {

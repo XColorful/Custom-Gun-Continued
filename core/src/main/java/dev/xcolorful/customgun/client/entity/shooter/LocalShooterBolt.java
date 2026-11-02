@@ -4,8 +4,11 @@ import dev.xcolorful.customgun.client.animation.statemachine.GunAnimStateContext
 import dev.xcolorful.customgun.client.animation.statemachine.LuaAnimStateMachine;
 import dev.xcolorful.customgun.client.api.animation.statemachine.GunAnimationState;
 import dev.xcolorful.customgun.client.api.entity.LocalShooterProperty;
+import dev.xcolorful.customgun.client.api.input.IKeyMapping;
 import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
 import dev.xcolorful.customgun.client.api.sound.gun.GunSoundType;
+import dev.xcolorful.customgun.client.config.KeyConfig;
+import dev.xcolorful.customgun.client.input.shooter.ShootKey;
 import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
 import dev.xcolorful.customgun.client.sound.SoundPlayManager;
 import dev.xcolorful.customgun.core.api.entity.ILivingShooter;
@@ -81,7 +84,7 @@ public final class LocalShooterBolt extends LocalShooterAspect {
             return;
         }
 
-        if (PlannedRefactor.AUTO_BOLT) {
+        if (this.canAutoBolt()) {
             this.bolt();
         }
 
@@ -91,5 +94,14 @@ public final class LocalShooterBolt extends LocalShooterAspect {
                 this.localShooterProperty.isBolting = false;
             }
         }
+    }
+
+    public boolean canAutoBolt() {
+        if (KeyConfig.HOLD_SHOOT_PREVENT_BOLT.get()) {
+            IKeyMapping keyMapping = ShootKey.get().getKeyMapping();
+            if (keyMapping.get().isDown()) return false;
+        }
+
+        return true;
     }
 }

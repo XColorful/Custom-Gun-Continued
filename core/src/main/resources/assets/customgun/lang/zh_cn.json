@@ -35,5 +35,7 @@
   "customgun.attachmentcategory.none": "未知配件",
 
   "customgun.ammocategory.ammo": "子弹",
-  "customgun.ammocategory.explosive": "爆弹"
+  "customgun.ammocategory.explosive": "爆弹",
+
+  "customgun.command.reload_all_pack": "已重载全部枪包 (%s 秒)"
 }

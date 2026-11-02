@@ -147,6 +147,30 @@ public final class ZoomKey extends InputKey implements IEventHandler {
         ILocalShooter localShooter = ILocalShooterGetter.fromLocalPlayer(player);
         if (!localShooter.cgc$isAim()) return false; // 不在瞄准
 
+        ItemStack gunItem = player.getMainHandItem();
+        @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
+        if (iGun == null) return false; // 主手没枪
+
+        { // 没啥必要做单独的config，但保留缩进
+            final var SCOPE = AttachmentCategory.SCOPE;
+            @Nullable CompoundTag scopeCustomDataTag = iGun.getAttachmentCustomDataTag(gunItem, SCOPE);
+            if (scopeCustomDataTag == null) return false;
+
+            var scopeLocation = iGun.getAttachmentLocation(gunItem, SCOPE);
+            @Nullable ClientAttachmentIndexInstance clientAttachmentIndexInstance = ClientResourceApi.getClientAttachmentIndexInstance(scopeLocation);
+            if (clientAttachmentIndexInstance == null) return false;
+
+            AttachmentDisplay attachmentDisplay = clientAttachmentIndexInstance.getAttachmentDisplay();
+
+            int @Nullable [] scopeViewIndexList = attachmentDisplay.getScopeViewIndex();
+            if (scopeViewIndexList == null) return false;
+
+            /**
+             * {@link ClientAttachmentIndexInstance#checkScopeViewIndex}不保证列表长度不为0
+             */
+            if (scopeViewIndexList.length == 0) return false;
+        }
+
         return true;
     }
     private void onMouseScrolling(IMouseScrollingEvent event) {

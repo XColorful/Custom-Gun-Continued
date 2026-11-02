@@ -58,7 +58,7 @@ public class LocalPlayerMixin implements ILocalShooter {
     @WrapOperation(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;setSprinting(Z)V"))
     public void cgc$swapSprintStatus(LocalPlayer player, boolean sprinting, Operation<Void> original) {
         if (sprinting) {
-            if (!SyncConfig.ENABLE_SPRINT_WHILE_RELOADING.get()) {
+            if (!SyncConfig.getEnableSprintWhileReloading()) {
                 this.cgc$localReload.cancelReload();
             }
         }
@@ -137,8 +137,8 @@ public class LocalPlayerMixin implements ILocalShooter {
     }
 
     @Override
-    public void cgc$aim(boolean isAim) {
-        this.cgc$localAim.aim(isAim);
+    public void cgc$aim(boolean isAiming) {
+        this.cgc$localAim.aim(isAiming);
     }
 
     @Override

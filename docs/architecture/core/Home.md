@@ -41,6 +41,7 @@
 - AmmoConfig：子弹配置
 - GunConfig：枪械配置
 - OtherConfig：杂项配置
+- ShooterConfig：射手配置
 - SyncConfig：同步配置
 
 ### 实体
@@ -279,6 +280,7 @@ Module division based on the `dev.xcolorful.customgun.core` top-level package
 - AmmoConfig: Ammo config
 - GunConfig: Gun config
 - OtherConfig: Miscellaneous config
+- ShooterConfig: Shooter config
 - SyncConfig: Sync config
 
 ### Entity

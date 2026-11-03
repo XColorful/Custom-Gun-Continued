@@ -150,7 +150,6 @@
 > _./core/network_
 
 - Message：网络消息
-	- event：事件消息
 	- handshake：握手消息
 	- 客户端->服务端消息
 	- 服务端->客户端消息
@@ -387,7 +386,6 @@ Module division based on the `dev.xcolorful.customgun.core` top-level package
 > _./core/network_
 
 - Message: Network messages
-	- event: Event message
 	- handshake: Handshake message
 	- Client -> Server message
 	- Server -> Client message

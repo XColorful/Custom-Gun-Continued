@@ -16,7 +16,7 @@ public interface IGunDataAccess extends IGunStateAccess,
     void setManagerGroupTag(ItemStack gunItem, String managerGroupTag);
 
     /**
-     * 获取枪械ID，如不存在则返回 {@link ResourceTag#NULL_LOCATION}
+     * 获取枪械资源位置，如不存在则返回 {@link ResourceTag#NULL_LOCATION}
      */
     @NotNull ResourceLocation getGunLocation(ItemStack gunItem);
     void setGunLocation(ItemStack gunItem, ResourceLocation gunLocation);

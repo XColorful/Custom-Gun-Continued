@@ -8,7 +8,7 @@ import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
-public record AttachmentTooltip(ItemStack attachmentItem, IAttachment iAttachment,
+public record AttachmentTooltip(IAttachment iAttachment, ItemStack attachmentItem,
                                 // --------Cache--------
                                 ResourceLocation attachmentLocation,
                                 AttachmentCategory attachmentCategory)
@@ -20,7 +20,7 @@ public record AttachmentTooltip(ItemStack attachmentItem, IAttachment iAttachmen
 
         var attachmentLocation = iAttachment.getAttachmentLocation(attachmentItem);
         AttachmentCategory attachmentCategory = iAttachment.getAttachmentCategory(attachmentItem);
-        return new AttachmentTooltip(attachmentItem, iAttachment,
+        return new AttachmentTooltip(iAttachment, attachmentItem,
                 attachmentLocation,
                 attachmentCategory);
     }

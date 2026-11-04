@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 public interface IBlockDataAccess {
 
     /**
-     * 获取配件ID，如不存在则返回 {@link ResourceTag#NULL_LOCATION}
+     * 获取配件资源位置，如不存在则返回 {@link ResourceTag#NULL_LOCATION}
      */
     @NotNull Identifier getBlockLocation(ItemStack blockItem);
     void setBlockLocation(ItemStack blockItem, Identifier blockLocation);

@@ -141,7 +141,6 @@
 > _./client/network_
 
 - Message：网络消息
-	- event：处理事件消息
 	- 处理服务端->客户端消息
 
 ### 粒子
@@ -332,7 +331,6 @@ Module division based on the `dev.xcolorful.customgun.client` top-level package
 > _./client/network_
 
 - Message: Network messages
-	- event: Handle event messages
 	- Handle Server → Client messages
 
 ### Particle

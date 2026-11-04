@@ -37,7 +37,7 @@ public interface IGunAttachmentDataAccess {
     void setAttachmentCustomDataTag(ItemStack gunItem, AttachmentCategory attachmentCategory, CompoundTag attachmentCustomDataTag);
 
     /**
-     * 获取枪械配件ID，如不存在则返回 {@link ResourceTag#NULL_LOCATION}
+     * 获取枪械配件资源位置，如不存在则返回 {@link ResourceTag#NULL_LOCATION}
      */
     @NotNull Identifier getAttachmentLocation(ItemStack gunItem, AttachmentCategory attachmentCategory);
     /**

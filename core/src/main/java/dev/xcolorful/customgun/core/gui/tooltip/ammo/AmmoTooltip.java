@@ -7,7 +7,7 @@ import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
-public record AmmoTooltip(ItemStack ammoItem, IAmmo iAmmo,
+public record AmmoTooltip(IAmmo iAmmo, ItemStack ammoItem,
                           // --------Cache--------
                           Identifier ammoLocation,
                           int ammoCount,
@@ -21,7 +21,7 @@ public record AmmoTooltip(ItemStack ammoItem, IAmmo iAmmo,
         var ammoLocation = iAmmo.getAmmoLocation(ammoItem);
         int ammoCount = iAmmo.getAmmoCount(ammoItem);
         int ammoLevel = iAmmo.getAmmoLevel(ammoItem);
-        return new AmmoTooltip(ammoItem, iAmmo,
+        return new AmmoTooltip(iAmmo, ammoItem,
                 ammoLocation,
                 ammoCount,
                 ammoLevel);

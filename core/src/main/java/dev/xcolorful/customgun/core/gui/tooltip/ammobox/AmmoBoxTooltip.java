@@ -10,7 +10,7 @@ import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
-public record AmmoBoxTooltip(ItemStack ammoBoxItem, IAmmoBox iAmmoBox,
+public record AmmoBoxTooltip(IAmmoBox iAmmoBox, ItemStack ammoBoxItem,
                              // --------Cache--------
                              ItemStack ammoItem,
                              ResourceLocation ammoLocation,
@@ -28,7 +28,7 @@ public record AmmoBoxTooltip(ItemStack ammoBoxItem, IAmmoBox iAmmoBox,
                         ResourceLocation.class,
                         ammoLocation)
                 .build();
-        return new AmmoBoxTooltip(ammoBoxItem, iAmmoBox,
+        return new AmmoBoxTooltip(iAmmoBox, ammoBoxItem,
                 ammoItem,
                 ammoLocation,
                 ammoCount);

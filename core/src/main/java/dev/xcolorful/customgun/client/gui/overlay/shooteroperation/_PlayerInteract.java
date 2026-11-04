@@ -7,7 +7,8 @@ import dev.xcolorful.customgun.client.input.InputKeyManager;
 import dev.xcolorful.customgun.client.input.player.InteractKey;
 import dev.xcolorful.customgun.client.util.ClientInputUtils;
 import dev.xcolorful.customgun.core.api.event.*;
-import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
+import dev.xcolorful.customgun.core.api.item.IAnimationItem;
+import dev.xcolorful.customgun.core.api.item.animation.IAnimationItemGetter;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -79,9 +80,10 @@ public class _PlayerInteract implements IEventHandler {
 
         Minecraft mc = Minecraft.getInstance();
         LocalPlayer player = mc.player;
-        if (IGunGetter.fromMainHand(player) == null // 主手没枪
-                || player.isSpectator() // 旁观模式
-        ) return false;
+        if (player == null || player.isSpectator()) return false; // 旁观模式
+
+        @Nullable IAnimationItem iAnimationItem = IAnimationItemGetter.fromMainHand(player);
+        if (iAnimationItem == null || !iAnimationItem.replaceVanillaUseItem()) return false; // 主手没枪
 
         HitResult hitResult = mc.hitResult;
         if (hitResult == null) return false;

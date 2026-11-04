@@ -18,7 +18,7 @@ public final class AttachmentBuilder extends ItemBuilder<AttachmentBuilder> {
     public static AttachmentBuilder create(ItemLike attachment) {
         ItemStack attachmentItem = new ItemStack(attachment);
         @Nullable IAttachment iAttachment = IAttachmentGetter.fromItemStack(attachmentItem);
-        if(iAttachment != null) return new AttachmentBuilder(iAttachment, attachmentItem);
+        if (iAttachment != null) return new AttachmentBuilder(iAttachment, attachmentItem);
         else throw new IllegalArgumentException("Item is not a IAttachment");
     }
 

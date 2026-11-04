@@ -14,7 +14,7 @@ public interface IAmmoDataAccess extends IAmmoStateAccess,
         _IAmmoPropertyAccess {
 
     /**
-     * 获取子弹ID，如不存在则返回 {@link ResourceTag#NULL_LOCATION}
+     * 获取子弹资源位置，如不存在则返回 {@link ResourceTag#NULL_LOCATION}
      */
     @NotNull Identifier getAmmoLocation(ItemStack ammoItem);
     void setAmmoLocation(ItemStack ammoItem, Identifier ammoLocation);

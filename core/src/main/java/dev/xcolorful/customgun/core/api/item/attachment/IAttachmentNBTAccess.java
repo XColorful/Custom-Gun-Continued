@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 public interface IAttachmentNBTAccess {
 
     /**
-     * 获取配件ID，如不存在则返回 {@link ResourceTag#NULL_LOCATION}
+     * 获取配件资源位置，如不存在则返回 {@link ResourceTag#NULL_LOCATION}
      */
     @NotNull Identifier getAttachmentLocation(CompoundTag attachmentCustomDataTag);
     void setAttachmentLocation(CompoundTag attachmentCustomDataTag, Identifier location);

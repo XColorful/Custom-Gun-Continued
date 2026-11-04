@@ -13,7 +13,7 @@ import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
-public record GunTooltip(ItemStack gunItem, IGun iGun,
+public record GunTooltip(IGun iGun, ItemStack gunItem,
                          // --------Cache--------
                          ItemStack ammoItem,
                          Identifier gunLocation)
@@ -35,7 +35,7 @@ public record GunTooltip(ItemStack gunItem, IGun iGun,
                         Identifier.class,
                         ammoLocation)
                 .build();
-        return new GunTooltip(gunItem, iGun,
+        return new GunTooltip(iGun, gunItem,
                 ammoItem,
                 gunLocation);
     }

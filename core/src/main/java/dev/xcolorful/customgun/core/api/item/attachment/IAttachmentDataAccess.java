@@ -13,7 +13,7 @@ public interface IAttachmentDataAccess extends IAttachmentStateAccess,
         _IAttachmentPropertyAccess {
 
     /**
-     * 获取配件ID，如不存在则返回 {@link ResourceTag#NULL_LOCATION}
+     * 获取配件资源位置，如不存在则返回 {@link ResourceTag#NULL_LOCATION}
      */
     @NotNull Identifier getAttachmentLocation(ItemStack attachmentItem);
     void setAttachmentLocation(ItemStack attachmentItem, Identifier attachmentLocation);

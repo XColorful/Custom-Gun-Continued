@@ -41,6 +41,7 @@
 - AmmoConfig：子弹配置
 - GunConfig：枪械配置
 - OtherConfig：杂项配置
+- ShooterConfig：射手配置
 - SyncConfig：同步配置
 
 ### 实体
@@ -69,8 +70,6 @@
 - Bullet Victim：受弹实体
 	- BulletVictimKnockback：击退处理
 - LivingShooterSyncHandler：同步射手生物数据
-
-
 
 ### 事件
 > _./core/event_
@@ -149,7 +148,6 @@
 > _./core/network_
 
 - Message：网络消息
-	- event：事件消息
 	- handshake：握手消息
 	- 客户端->服务端消息
 	- 服务端->客户端消息
@@ -279,6 +277,7 @@ Module division based on the `dev.xcolorful.customgun.core` top-level package
 - AmmoConfig: Ammo config
 - GunConfig: Gun config
 - OtherConfig: Miscellaneous config
+- ShooterConfig: Shooter config
 - SyncConfig: Sync config
 
 ### Entity
@@ -385,7 +384,6 @@ Module division based on the `dev.xcolorful.customgun.core` top-level package
 > _./core/network_
 
 - Message: Network messages
-	- event: Event message
 	- handshake: Handshake message
 	- Client -> Server message
 	- Server -> Client message

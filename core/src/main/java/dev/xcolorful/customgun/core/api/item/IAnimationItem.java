@@ -3,7 +3,23 @@ package dev.xcolorful.customgun.core.api.item;
 import dev.xcolorful.customgun.core.api.item.pojo.IPojoItemGetter;
 import net.minecraft.world.item.ItemStack;
 
+/**
+ * 动画物品
+ * <ul>
+ *     <li>默认取消原版攻击 {@link #replaceVanillaAttack} 和使用物品 {@link #replaceVanillaUseItem}</li>
+ * </ul>
+ */
 public interface IAnimationItem extends IPojoItem {
+
+    default boolean replaceVanillaAttack() {
+        return true;
+    }
+    default boolean replaceVanillaUseItem() {
+        return true;
+    }
+    default boolean replaceVanillaPickBlock() {
+        return false;
+    }
 
     /**
      * 返回物品是否需要重新初始化状态机或属性

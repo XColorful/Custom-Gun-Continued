@@ -12,7 +12,8 @@ import dev.xcolorful.customgun.client.init.registry.ClientInputCategory;
 import dev.xcolorful.customgun.client.input.InputKey;
 import dev.xcolorful.customgun.client.util.ClientInputUtils;
 import dev.xcolorful.customgun.core.api.event.*;
-import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
+import dev.xcolorful.customgun.core.api.item.IAnimationItem;
+import dev.xcolorful.customgun.core.api.item.animation.IAnimationItemGetter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
@@ -21,6 +22,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
+import org.jetbrains.annotations.Nullable;
 
 public final class InteractKey extends InputKey implements IEventHandler {
 
@@ -95,9 +97,10 @@ public final class InteractKey extends InputKey implements IEventHandler {
         if (hitResult == null) return;
 
         LocalPlayer player = mc.player;
-        if (IGunGetter.fromMainHand(player) == null // 主手没枪
-                || player.isSpectator() // 旁观模式
-        ) return;
+        if (player == null || player.isSpectator()) return; // 旁观模式
+
+        @Nullable IAnimationItem iAnimationItem = IAnimationItemGetter.fromMainHand(player);
+        if (iAnimationItem == null || !iAnimationItem.replaceVanillaUseItem()) return;  // 主手没枪
 
         // 方块交互
         if (hitResult instanceof BlockHitResult blockHitResult) {
@@ -128,12 +131,10 @@ public final class InteractKey extends InputKey implements IEventHandler {
         HitResult hitResult = mc.hitResult;
         if (hitResult == null) return;
 
-        if (
-                // 按了交互键
-                this.keyMapping.get().isDown()
-                // 主手没枪
-                || IGunGetter.fromMainHand(player) == null
-        ) return;
+        if (this.keyMapping.get().isDown()) return; // 按了交互键
+
+        @Nullable IAnimationItem iAnimationItem = IAnimationItemGetter.fromMainHand(player);
+        if (iAnimationItem == null || !iAnimationItem.replaceVanillaUseItem()) return;  // 主手没枪
 
 //        // 方块交互
 //        if (hitResult instanceof BlockHitResult blockHitResult) {

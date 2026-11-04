@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 public interface IAmmoNBTAccess {
 
     /**
-     * 获取子弹ID，如不存在则返回 {@link ResourceTag#NULL_LOCATION}
+     * 获取子弹资源位置，如不存在则返回 {@link ResourceTag#NULL_LOCATION}
      */
     @NotNull ResourceLocation getAmmoLocation(CompoundTag ammoItemCustomDataTag);
     void setAmmoLocation(CompoundTag ammoItemCustomDataTag, ResourceLocation ammoLocation);

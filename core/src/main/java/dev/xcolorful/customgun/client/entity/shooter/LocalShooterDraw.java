@@ -9,7 +9,9 @@ package dev.xcolorful.customgun.client.entity.shooter;
 
 import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.CustomGunClient;
+import dev.xcolorful.customgun.client.api.entity.ILocalShooter;
 import dev.xcolorful.customgun.client.api.entity.LocalShooterProperty;
+import dev.xcolorful.customgun.client.api.entity.shooter.ILocalShooterGetter;
 import dev.xcolorful.customgun.client.api.item.IAnimateGeoItem;
 import dev.xcolorful.customgun.client.api.renderer.item.IAnimateGeoItemRenderer;
 import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
@@ -26,15 +28,20 @@ import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
 import dev.xcolorful.customgun.core.config.GunConfig;
 import dev.xcolorful.customgun.core.entity.shooter.modifier.ShooterGunModifierManager;
 import dev.xcolorful.customgun.core.network.message.shooter.C2SMessageShooterDraw;
+import dev.xcolorful.customgun.core.util.InventoryUtils;
 import dev.xcolorful.customgun.core.util.SendUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 public final class LocalShooterDraw extends LocalShooterAspect {
+
+    private int previousHotbarIndex = -1;
+    private ItemStack previousHotbarItem = ItemStack.EMPTY;
 
     /**
      * 原模组这个字段就没true过
@@ -50,6 +57,46 @@ public final class LocalShooterDraw extends LocalShooterAspect {
     }
     public void setReadyToDraw(boolean readyToDraw) {
         this.readyToDraw = readyToDraw;
+    }
+
+    /**
+     * 放在客户端tick检查，比放服务端延迟低，同时出现数据不一致时优先保证客户端动画表现 (虽然会导致数值不对)
+     */
+    public void tickDraw() {
+        Inventory inventory = this.localShooter.getInventory();
+        int currentIndex = InventoryUtils.getSelectedSlot(inventory);
+        ILocalShooter iLocalShooter = ILocalShooterGetter.fromLocalPlayer(this.localShooter);
+
+        // 玩家切换选中物品
+        if (this.previousHotbarIndex != currentIndex) {
+            iLocalShooter.cgc$clientDraw(this.previousHotbarIndex != -1 ? this.previousHotbarItem : ItemStack.EMPTY);
+            this.previousHotbarIndex = currentIndex;
+            this.setPreviousHotbarItem(inventory.getItem(currentIndex));
+            return;
+        }
+
+        // 选中物品本身进行了NBT更新
+        ItemStack currentItem = inventory.getItem(currentIndex);
+        @Nullable IGun iGun = IGunGetter.fromItemStack(currentItem);
+        boolean tagMatch = ItemStack.matches(this.previousHotbarItem, currentItem);
+        if (
+                (iGun != null && iGun.switchItemNeedReset(this.previousHotbarItem, currentItem))
+                        || (iGun == null && !tagMatch)
+        ) {
+            iLocalShooter.cgc$clientDraw(this.previousHotbarItem);
+        }
+
+        if (!tagMatch) {
+            this.setPreviousHotbarItem(currentItem);
+        }
+    }
+
+    public void setPreviousHotbarItem(ItemStack itemStack) {
+        this.previousHotbarItem = itemStack.copy();
+    }
+    public void resetHotbarSelection() {
+        this.previousHotbarIndex = -1;
+        this.previousHotbarItem = ItemStack.EMPTY;
     }
 
     @ApiStatus.Internal public static final String DRAW_STATE = "LocalShooterDraw#draw";

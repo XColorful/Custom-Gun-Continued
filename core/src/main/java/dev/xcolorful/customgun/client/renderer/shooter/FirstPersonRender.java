@@ -69,8 +69,8 @@ public class FirstPersonRender implements IEventHandler {
         if (IrisCompat.isTranslucentHandPass()) return;
 
         if (event.getHand() == InteractionHand.OFF_HAND) {
-            ItemStack gunItem = KeepingItemRenderer.cgc$getRenderer().cgc$getCurrentItem();
-            if (IAnimationItemGetter.fromItemStack(gunItem) != null) {
+            ItemStack animationItem = KeepingItemRenderer.cgc$getRenderer().cgc$getCurrentItem();
+            if (IAnimationItemGetter.fromItemStack(animationItem) != null) {
                 event.setCanceled(true);
             }
             return;

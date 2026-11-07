@@ -16,7 +16,6 @@ import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
 import dev.xcolorful.customgun.client.api.sound.gun.GunSoundType;
 import dev.xcolorful.customgun.client.compat.iris.IrisCompat;
 import dev.xcolorful.customgun.client.config.SoundConfig;
-import dev.xcolorful.customgun.client.renderer.item.AnimateGeoItemRenderer;
 import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
 import dev.xcolorful.customgun.client.sound.SoundPlayManager;
 import dev.xcolorful.customgun.client.util.ClientRenderHelper;
@@ -78,28 +77,27 @@ public class FirstPersonRender implements IEventHandler {
         }
 
         // 事件给的是被延长渲染修改过后的物品，不是玩家实际手持的
-        ItemStack gunItem = event.getItemStack();
+        ItemStack animationItem = event.getItemStack();
 
         /**
-         * 原模组移除了对{@link IGun}的限制，本模组同样只要求「是动画物品」
-         * 见 #62 Arm-render-fix.md
+         * 原模组移除了对{@link IGun}的限制，见 #62 Arm-render-fix.md
+         * <br>
          * 目前默认有{@link IAnimateGeoItemRenderer}的物品一定实现IAnimationItem，也就是下面用到的{@link IAnimationItem#switchItemNeedReset}不写在{@link IAnimateGeoItemRenderer}
          * <br>
-         * 是否真的能渲染由下面的{@link IAnimateGeoItem#cgc$getCustomRenderer(ItemStack)}把关，
-         * 若{@link AnimateGeoItemRenderer}作为API给扩展模组用，应该让扩展模组自己监听
+         * 是否真的能渲染由下面的{@link IAnimateGeoItem#cgc$getCustomRenderer(ItemStack)}把关
          */
-        @Nullable IAnimationItem iAnimationItem = IAnimationItemGetter.fromItemStack(gunItem);
+        @Nullable IAnimationItem iAnimationItem = IAnimationItemGetter.fromItemStack(animationItem);
         if (iAnimationItem == null) return;
 
         // 获取 TransformType
         ItemDisplayContext transformType = event.getHand() == InteractionHand.MAIN_HAND ? ItemDisplayContext.FIRST_PERSON_RIGHT_HAND : ItemDisplayContext.FIRST_PERSON_LEFT_HAND;
 
         // 渲染相关内容整理到物品的IClientItemExtensions了，这个接口有待进一步抽象
-        @Nullable IAnimateGeoItemRenderer<?, ?> renderer = IAnimateGeoItem.cgc$getCustomRenderer(gunItem);
+        @Nullable IAnimateGeoItemRenderer<?, ?> renderer = IAnimateGeoItem.cgc$getCustomRenderer(animationItem);
         if (renderer == null) return;
 
         // 如果旧的状态机已经不再使用且未正常退出，使其静默退出
-        AnimStateMachine<?> stateMachine = renderer.getStateMachine(gunItem);
+        AnimStateMachine<?> stateMachine = renderer.getStateMachine(animationItem);
         if (stateMachine != this.lastStateMachine) {
             if (this.lastStateMachine != null && this.lastStateMachine.isInitialized()) {
                 this.lastStateMachine.exit();
@@ -109,10 +107,10 @@ public class FirstPersonRender implements IEventHandler {
         }
 
         // 物品处于后台时，阻止状态机初始化
-        if (!iAnimationItem.switchItemNeedReset(player.getMainHandItem(), gunItem) && renderer.needReInit(gunItem)) {
-            renderer.tryInit(gunItem, player, event.getPartialTick());
+        if (!iAnimationItem.switchItemNeedReset(player.getMainHandItem(), animationItem) && renderer.needReInit(animationItem)) {
+            renderer.tryInit(animationItem, player, event.getPartialTick());
 
-            @Nullable GunDisplayInstance gunDisplayInstance = ClientResourceApi.getGunDisplayInstance(gunItem);
+            @Nullable GunDisplayInstance gunDisplayInstance = ClientResourceApi.getGunDisplayInstance(animationItem);
             if (gunDisplayInstance != null) {
                 SoundPlayManager.get().stopMainTrackSound();
                 SoundPlayManager.get().playClientSound(gunDisplayInstance.getGunSound(GunSoundType.DRAW_SOUND),
@@ -132,7 +130,7 @@ public class FirstPersonRender implements IEventHandler {
                 transformType,
                 event.getPackedLight(),
                 event.getPartialTick(),
-                player, gunItem);
+                player, animationItem);
         event.setCanceled(true);
     }
 }

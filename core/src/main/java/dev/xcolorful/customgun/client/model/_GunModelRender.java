@@ -16,6 +16,7 @@ import dev.xcolorful.customgun.client.compat.ar.GunModelAR;
 import dev.xcolorful.customgun.client.model.bedrock.BedrockPart;
 import dev.xcolorful.customgun.client.renderer.model.AttachmentRender;
 import dev.xcolorful.customgun.client.renderer.model.BeamRender;
+import dev.xcolorful.customgun.client.renderer.model.HandRender;
 import dev.xcolorful.customgun.client.resource.assets.display.AttachmentDisplay;
 import dev.xcolorful.customgun.client.resource.instance.data.ClientAttachmentIndexInstance;
 import dev.xcolorful.customgun.client.util.ClientRenderHelper;
@@ -245,19 +246,7 @@ public class _GunModelRender {
                                             int light,
                                             HumanoidArm hand) {
         @Nullable List<BedrockPart> handPath = hand == HumanoidArm.LEFT ? _this.getLeftHandPosPath() : _this.getRightHandPosPath();
-        if (handPath == null) return;
-
-        Minecraft minecraft = Minecraft.getInstance();
-        if (minecraft.player == null) return;
-
-        matrixStack.pushPose(); {
-            for (int i = 0; i < handPath.size(); i++) {
-                handPath.get(i).translate_rotate_scale(matrixStack);
-            }
-            ClientRenderHelper.rotate(matrixStack, Axis.ZP.rotationDegrees(180f));
-            ClientRenderHelper.renderFirstPersonArm(minecraft.player, hand, matrixStack, light);
-        }
-        matrixStack.popPose();
+        HandRender.renderFirstPersonArm(matrixStack, handPath, hand, light);
     }
 
     // --------Compat--------

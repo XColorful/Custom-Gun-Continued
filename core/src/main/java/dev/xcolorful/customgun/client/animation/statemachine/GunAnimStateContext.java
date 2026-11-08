@@ -65,23 +65,10 @@ public class GunAnimStateContext extends ItemAnimStateContext implements IClient
     @Override public @Nullable GunIndexInstance getGunIndexInstance() {
         return this.gunIndexInstance;
     }
-    @Override public @Nullable GunDisplayInstance getGunDisplayInstance() {
-        return this.gunDisplayInstance;
-    }
-
-    @Deprecated(forRemoval = false)
-    @Override public float getWalkDistAnchor() {
-        return this.walkDistAnchor;
-    }
 
     @Deprecated(forRemoval = false)
     @Override public @Nullable _LuaNbtAccessor getNbt() {
         return this.nbtUtil;
-    }
-
-    @Deprecated(forRemoval = false)
-    @Override public void setWalkDistAnchor(float value) {
-        this.walkDistAnchor = value;
     }
 
     // --------IClientGunScriptContextAccess--------
@@ -96,5 +83,19 @@ public class GunAnimStateContext extends ItemAnimStateContext implements IClient
 
     @Override public @Nullable Entity getCameraShooter() {
         return Minecraft.getInstance().getCameraEntity();
+    }
+
+    @Override public @Nullable GunDisplayInstance getGunDisplayInstance() {
+        return this.gunDisplayInstance;
+    }
+
+    @Deprecated(forRemoval = false)
+    @Override public float getWalkDistAnchor() {
+        return this.walkDistAnchor;
+    }
+
+    @Deprecated(forRemoval = false)
+    @Override public void setWalkDistAnchor(float value) {
+        this.walkDistAnchor = value;
     }
 }

@@ -56,6 +56,7 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
     protected float width = 0;
     protected float height = 0;
 
+    protected
     ModelObject(@NotNull BedrockModel pojo) {
         super(pojo);
     }

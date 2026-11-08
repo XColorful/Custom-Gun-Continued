@@ -42,7 +42,6 @@ public class HandRender implements IModelComponentRenderer {
                                             HumanoidArm hand,
                                             int light) {
         // [26.2, )
-        if (true) return; // 让IDE保留下面的引用关系
         if (handPosPath == null) return;
 
         LocalPlayer player = Minecraft.getInstance().player;

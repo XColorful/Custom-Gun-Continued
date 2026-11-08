@@ -139,7 +139,6 @@ For developer:
 - Update `IMessage` interface
 
 #### 26.10.26
-
 Add built-in PlayerRevive compatibility:
 - Disable shoot, melee, reload, switch fire mode while bleeding
 
@@ -251,7 +250,6 @@ Network:
 - Update to NeoForge 26.2.0.88
 
 #### 0.0.15
-
 - Fix ammo stack size in dedicated server
 
 1.21.1+

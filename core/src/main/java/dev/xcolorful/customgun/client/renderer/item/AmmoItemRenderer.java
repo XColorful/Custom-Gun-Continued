@@ -141,7 +141,8 @@ public class AmmoItemRenderer extends BlockEntityWithoutLevelRenderer {
                         PoseStack _poseStack = new PoseStack();
                         _poseStack.last().set(pose);
                         SLOT_AMMO_MODEL.renderToBuffer(_poseStack, buffer, pPackedLight, pPackedOverlay, 1.0f, 1.0f, 1.0f, 1.0f);
-                    });
+                    }
+                    );
                 } else {
                     @Nullable _ModelTransform modelTransform = ammoDisplay.getModelTransform();
 
@@ -175,7 +176,8 @@ public class AmmoItemRenderer extends BlockEntityWithoutLevelRenderer {
                     PoseStack _poseStack = new PoseStack();
                     _poseStack.last().set(pose);
                     SLOT_AMMO_MODEL.renderToBuffer(_poseStack, buffer, pPackedLight, pPackedOverlay, 1.0f, 1.0f, 1.0f, 1.0f);
-                });
+                }
+                );
             }
             poseStack.popPose();
         }

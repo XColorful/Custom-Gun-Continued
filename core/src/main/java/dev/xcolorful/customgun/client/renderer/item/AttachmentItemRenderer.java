@@ -99,7 +99,8 @@ public class AttachmentItemRenderer extends BlockEntityWithoutLevelRenderer {
                 PoseStack _poseStack = new PoseStack();
                 _poseStack.last().set(pose);
                 SLOT_ATTACHMENT_MODEL.renderToBuffer(_poseStack, buffer, pPackedLight, pPackedOverlay, 1.0f, 1.0f, 1.0f, 1.0f);
-            });
+            }
+            );
         }
     }
 
@@ -131,7 +132,8 @@ public class AttachmentItemRenderer extends BlockEntityWithoutLevelRenderer {
                         PoseStack _poseStack = new PoseStack();
                         _poseStack.last().set(pose);
                         SLOT_ATTACHMENT_MODEL.renderToBuffer(_poseStack, buffer, pPackedLight, pPackedOverlay, 1.0f, 1.0f, 1.0f, 1.0f);
-                    });
+                    }
+                    );
                 } else {
                     poseStack.translate(0.5, 2, 0.5);
 
@@ -155,7 +157,8 @@ public class AttachmentItemRenderer extends BlockEntityWithoutLevelRenderer {
                     PoseStack _poseStack = new PoseStack();
                     _poseStack.last().set(pose);
                     SLOT_ATTACHMENT_MODEL.renderToBuffer(_poseStack, buffer, pPackedLight, pPackedOverlay, 1.0f, 1.0f, 1.0f, 1.0f);
-                });
+                }
+                );
             }
             poseStack.popPose();
         }

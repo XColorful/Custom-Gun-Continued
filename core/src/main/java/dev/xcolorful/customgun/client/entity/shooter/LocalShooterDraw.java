@@ -23,7 +23,9 @@ import dev.xcolorful.customgun.core.api.common.McLogicalSide;
 import dev.xcolorful.customgun.core.api.entity.ILivingShooter;
 import dev.xcolorful.customgun.core.api.entity.shooter.ILivingShooterGetter;
 import dev.xcolorful.customgun.core.api.event.shooter.ShooterDrawEvent;
+import dev.xcolorful.customgun.core.api.item.IAnimationItem;
 import dev.xcolorful.customgun.core.api.item.IGun;
+import dev.xcolorful.customgun.core.api.item.animation.IAnimationItemGetter;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
 import dev.xcolorful.customgun.core.config.GunConfig;
 import dev.xcolorful.customgun.core.entity.shooter.modifier.ShooterGunModifierManager;
@@ -77,11 +79,11 @@ public final class LocalShooterDraw extends LocalShooterAspect {
 
         // 选中物品本身进行了NBT更新
         ItemStack currentItem = inventory.getItem(currentIndex);
-        @Nullable IGun iGun = IGunGetter.fromItemStack(currentItem);
+        @Nullable IAnimationItem iAnimationItem = IAnimationItemGetter.fromItemStack(currentItem);
         boolean tagMatch = ItemStack.matches(this.previousHotbarItem, currentItem);
         if (
-                (iGun != null && iGun.switchItemNeedReset(this.previousHotbarItem, currentItem))
-                        || (iGun == null && !tagMatch)
+                (iAnimationItem != null && iAnimationItem.switchItemNeedReset(this.previousHotbarItem, currentItem))
+                        || (iAnimationItem == null && !tagMatch)
         ) {
             iLocalShooter.cgc$clientDraw(this.previousHotbarItem);
         }
@@ -110,14 +112,14 @@ public final class LocalShooterDraw extends LocalShooterAspect {
         // 锁上状态锁
         this.localShooterProperty.lockState(DRAW_STATE, operator -> operator.cgc$getSynDrawCooldown() > 0);
 
-        @Nullable IGun lastIGun = IGunGetter.fromItemStack(lastItem);
+        @Nullable IAnimationItem lastAnimationItem = IAnimationItemGetter.fromItemStack(lastItem);
         ItemStack currentItem = this.localShooter.getMainHandItem();
         @Nullable IGun currentIGun = IGunGetter.fromItemStack(currentItem);
 
         // 计算 draw 时长和 putAway 时长
         long fromLastDrawFinishedMs = currentTimeMillis - this.localShooterProperty.clientDrawFinishTimestamp;
         if (fromLastDrawFinishedMs >= 0) { // draw结束 在 当前时间 之前 -> 当前没有一个未来的drawFinishTime -> 当前不在draw
-            fromLastDrawFinishedMs = _updateDrawTime(currentTimeMillis, lastItem, lastIGun, fromLastDrawFinishedMs);
+            fromLastDrawFinishedMs = _updateDrawTime(currentTimeMillis, lastItem, fromLastDrawFinishedMs);
         }
         long putAwayTime = Math.abs(fromLastDrawFinishedMs);
 
@@ -136,7 +138,7 @@ public final class LocalShooterDraw extends LocalShooterAspect {
         SendUtils.sendMessageToServer(new C2SMessageShooterDraw());
 
         // 异步放映收枪动画（切出动画）
-        if (lastIGun != null) {
+        if (lastAnimationItem != null) {
             this._doPutAway(lastItem, putAwayTime);
         }
 
@@ -147,7 +149,7 @@ public final class LocalShooterDraw extends LocalShooterAspect {
             ShooterGunModifierManager.postChangeEvent(this.localShooter, currentItem);
         }
     }
-    private long _updateDrawTime(long currentTimeMillis, ItemStack lastItem, IGun lastGun, long drawTime) {
+    private long _updateDrawTime(long currentTimeMillis, ItemStack lastItem, long drawTime) {
         @Nullable IAnimateGeoItemRenderer<?, ?> renderer = IAnimateGeoItem.cgc$getCustomRenderer(lastItem);
         if (renderer != null) {
             long putAwayTime = renderer.getPutAwayTime(lastItem);

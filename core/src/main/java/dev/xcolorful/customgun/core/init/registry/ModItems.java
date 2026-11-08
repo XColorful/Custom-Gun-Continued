@@ -25,7 +25,7 @@ public class ModItems {
     public static final IRegistrar<Item> ITEMS = CustomGun.getRegistrarFactory().createItems(CustomGun.MOD_ID);
 
     public static final Function<Identifier, Item.Properties> CUSTOM_ITEM_PROPERTY = (registryLocation) -> new Item.Properties()
-            .setId(CustomGun.getMcRegistry().createResourceKey(Registries.ITEM, registryLocation))
+            .setId(CustomGun.getMcRegistry().createResourceKey(Registries.ITEM, registryLocation)) // [1.21.4, )
             .stacksTo(1); // 堆叠数会重载getter来修改
 
 

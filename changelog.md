@@ -1,5 +1,16 @@
 ### 26.11
 
+#### 26.11.35.1
+If the game starts normally, it is not affected:
+- Fixed remaining `NullPointerException` in CGC addon mods triggered by Forge's parallel loading mechanism
+
+For Developer:
+- Unified parameter order for `GunTooltip`, `AttachmentTooltip`, `AmmoTooltip`, and `AmmoBoxTooltip`
+- Relaxed item filtering for interaction key from `IGun` to `IAnimationItem`
+- Relaxed `LocalShooterDraw` from `IGun` to `IAnimationItem`
+- Opened `ModelObject` and `AnimatedModelObject` for inheritance
+- 26.2 First-person hand rendering now uses `HandRender#renderFirstPersonArm`
+
 #### 26.11.35
 - Gun projectile damage cooldown now uses vanilla tag `bypasses_cooldown`
 - Rename zoom config from "Zoom" to "zoom"
@@ -139,7 +150,6 @@ For developer:
 - Update `IMessage` interface
 
 #### 26.10.26
-
 Add built-in PlayerRevive compatibility:
 - Disable shoot, melee, reload, switch fire mode while bleeding
 
@@ -251,7 +261,6 @@ Network:
 - Update to NeoForge 26.2.0.88
 
 #### 0.0.15
-
 - Fix ammo stack size in dedicated server
 
 1.21.1+

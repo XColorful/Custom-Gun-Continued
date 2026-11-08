@@ -5,12 +5,18 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import dev.xcolorful.customgun.client.api.renderer.model.IModelComponentRenderer;
 import dev.xcolorful.customgun.client.model.AnimatedModelObject;
+import dev.xcolorful.customgun.client.model.bedrock.BedrockPart;
 import dev.xcolorful.customgun.client.util.ClientRenderHelper;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.item.ItemDisplayContext;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
+
+import java.util.List;
 
 public class HandRender implements IModelComponentRenderer {
 
@@ -20,6 +26,36 @@ public class HandRender implements IModelComponentRenderer {
     private HandRender(HumanoidArm humanoidArm, AnimatedModelObject animatedModelObject) {
         this.humanoidArm = humanoidArm;
         this.animatedModelObject = animatedModelObject;
+    }
+
+    /**
+     * 在 submit 阶段沿手部定位组路径提交第一人称手臂
+     * <ul>
+     *     <li>26.2 起模型几何由 {@code SubmitNodeCollector} 延迟渲染</li>
+     *     <li>{@link #render} 经委托在 flush 阶段执行，此时 {@code FirstPersonArmHelper} 的收集器已被清空，提交不出去</li>
+     *     <li>所以手臂必须像 {@link #render} 的调用方那样在 submit 阶段直接提交</li>
+     * </ul>
+     */
+    @ApiStatus.AvailableSince("26.2")
+    public static void renderFirstPersonArm(PoseStack poseStack,
+                                            @Nullable List<BedrockPart> handPosPath,
+                                            HumanoidArm hand,
+                                            int light) {
+        // [26.2, )
+        if (true) return; // 让IDE保留下面的引用关系
+        if (handPosPath == null) return;
+
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (player == null) return;
+
+        poseStack.pushPose(); {
+            for (int i = 0; i < handPosPath.size(); i++) {
+                handPosPath.get(i).translate_rotate_scale(poseStack);
+            }
+            ClientRenderHelper.rotate(poseStack, Axis.ZP.rotationDegrees(180f));
+            ClientRenderHelper.renderFirstPersonArm(player, hand, poseStack, light);
+        }
+        poseStack.popPose();
     }
 
     // --------IModelComponentRenderer--------

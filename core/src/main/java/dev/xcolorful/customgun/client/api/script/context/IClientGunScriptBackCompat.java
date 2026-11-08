@@ -70,15 +70,6 @@ public interface IClientGunScriptBackCompat extends IClientGunScriptContextAcces
             return Optional.empty();
         }
     }
-    @Deprecated(forRemoval = true)
-    default <T> Optional<T> processCameraEntity(Function<Entity, T> processor) {
-        @Nullable Entity cameraShooter = this.getCameraShooter();
-        if (cameraShooter != null) {
-            return Optional.ofNullable(processor.apply(cameraShooter));
-        } else {
-            return Optional.empty();
-        }
-    }
 
     // --------IGunScriptBackCompat--------
 
@@ -99,6 +90,18 @@ public interface IClientGunScriptBackCompat extends IClientGunScriptContextAcces
     default float getChargeProgress() {
         @Nullable ILocalShooter iLocalShooter = this.getILocalShooter();
         return iLocalShooter != null ? iLocalShooter.cgc$getChargeProgress() : 0;
+    }
+
+    // --------IClientGunScriptContextAccess--------
+
+    @Deprecated(forRemoval = true)
+    default <T> Optional<T> processCameraEntity(Function<Entity, T> processor) {
+        @Nullable Entity cameraShooter = this.getCameraShooter();
+        if (cameraShooter != null) {
+            return Optional.ofNullable(processor.apply(cameraShooter));
+        } else {
+            return Optional.empty();
+        }
     }
 
     // --------IClientGunScriptBackCompat--------

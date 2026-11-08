@@ -42,6 +42,7 @@ public class AnimatedModelObject extends ModelObject implements IAnimationListen
      */
     protected @Nullable List<BedrockPart> idleSightPath;
 
+    protected
     AnimatedModelObject(@NotNull BedrockModel pojo) {
         super(pojo);
     }

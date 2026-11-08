@@ -85,7 +85,7 @@ public class GunItemRenderer extends AnimateGeoItemRenderer<GunModelObject, GunA
         super();
     }
 
-    // --------AnimateGeoItemRenderer--------
+    // --------IAnimateGeoItemRenderer--------
 
     @Override public GunAnimStateContext initContext(ItemStack gunItem, Player player, float partialTick) {
         GunAnimStateContext context = new GunAnimStateContext();
@@ -119,7 +119,17 @@ public class GunItemRenderer extends AnimateGeoItemRenderer<GunModelObject, GunA
         GunDisplay gunDisplay = gunDisplayInstance.getPojo();
         return gunDisplay.getTextureLocation();
     }
+    @Override public long getPutAwayTime(ItemStack gunItem) {
+        @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
+        if (iGun == null) return 0;
 
+        var gunLocation = iGun.getGunLocation(gunItem);
+        @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(gunLocation);
+        if (gunIndexInstance == null) return 0;
+
+        GunData gunData = gunIndexInstance.getGunData();
+        return (long) (gunData.getPutAwayTime() * 1000);
+    }
 
     // --------IAnimateGeoItemRendererState--------
 
@@ -145,19 +155,6 @@ public class GunItemRenderer extends AnimateGeoItemRenderer<GunModelObject, GunA
             stateMachine.exit();
             stateMachine.setExitingTime(putAwayTime + 50);
         }
-    }
-
-    @Override
-    public long getPutAwayTime(ItemStack gunItem) {
-        @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
-        if (iGun == null) return 0;
-
-        var gunLocation = iGun.getGunLocation(gunItem);
-        @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(gunLocation);
-        if (gunIndexInstance == null) return 0;
-
-        GunData gunData = gunIndexInstance.getGunData();
-        return (long) (gunData.getPutAwayTime() * 1000);
     }
 
     // --------IAnimateGeoItemRendererOperator--------

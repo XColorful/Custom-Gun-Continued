@@ -545,6 +545,7 @@ public class GunItemRenderer extends AnimateGeoItemRenderer<GunModelObject, GunA
             PoseStack _poseStack = new PoseStack();
             _poseStack.last().set(pose);
             SLOT_GUN_MODEL.renderToBuffer(_poseStack, buffer, packedLight, packedOverlay, 1.0f, 1.0f, 1.0f, 1.0f);
-        });
+        }
+        );
     }
 }

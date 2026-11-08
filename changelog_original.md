@@ -1,5 +1,16 @@
 ### 26.11
 
+#### 26.11.35.1
+如果游戏能正常启动，则不在影响范围内：
+- 修复剩余的扩展模组在Forge并行加载机制下触发空指针异常
+
+开发者：
+- 统一`GunTooltip`、`AttachmentTooltip`、`AmmoTooltip`、`AmmoBoxTooltip`参数顺序
+- 交互键过滤物品从`IGun`放宽为`IAnimationItem`
+- `LocalShooterDraw`从`IGun`放宽为`IAnimationItem`
+- `ModelObject`、`AnimatedModelObject`开放继承
+- 26.2 第一人称手部渲染改用`HandRender#renderFirstPersonArm`
+
 #### 26.11.35
 - 枪射物伤害冷却改用原版标签`bypasses_cooldown`实现
 - 开镜配置"Zoom"更名为"zoom"

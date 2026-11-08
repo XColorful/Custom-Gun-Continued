@@ -55,7 +55,7 @@
 	- LivingShooterAmmoCheck：子弹检查
 	- LivingShooterBolt：拉栓
 	- LivingShooterProne：趴下
-	- LivingShooterDrawGun：拔枪
+	- LivingShooterDrawGun：切枪
 	- LivingShooterSwitchFireMode：切换开火模式
 	- LivingShooterHeat：热量
 	- LivingShooterMelee：近战

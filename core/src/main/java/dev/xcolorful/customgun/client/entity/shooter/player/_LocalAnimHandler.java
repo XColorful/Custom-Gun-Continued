@@ -33,6 +33,7 @@ import dev.xcolorful.customgun.core.config.GunConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 public class _LocalAnimHandler implements IEventHandler {
@@ -73,14 +74,15 @@ public class _LocalAnimHandler implements IEventHandler {
         if (gunDisplayInstance == null) return;
 
         LuaAnimStateMachine<GunAnimStateContext> animStateMachine = gunDisplayInstance.getAnimStateMachine();
-        this._tickAnimState(player, animStateMachine);
+        _tickAnimState(player, animStateMachine);
     }
 
     /**
      * 注：原模组没有检查phase，即在{@link IClientTickEvent}和{@link IPrepareClientTickEvent}都执行了tick
      */
-    private void _tickAnimState(LocalPlayer player,
-                                LuaAnimStateMachine<GunAnimStateContext> animStateMachine) {
+    @ApiStatus.Internal
+    public static void _tickAnimState(LocalPlayer player,
+                                      LuaAnimStateMachine<?> animStateMachine) {
         // 群组服切世界导致的特殊 BUG 处理，正常情况不会遇到此问题
         if (ClientInputUtils.Key.getInput(player) == null) {
             animStateMachine.trigger(GunAnimationState.INPUT_IDLE.getConstantName());

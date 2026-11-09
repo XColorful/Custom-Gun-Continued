@@ -117,17 +117,48 @@ graph TB
 
 ## 测量与数据登记
 
-具体耗时依赖埋点，统一用 `DebugKey`（F12，当前为空实现）作为开关，符合 PLAN 的约定。建议的测量顺序与字段：
+具体耗时依赖埋点，统一用 `DebugKey`（F12）作为开关，符合 PLAN 的约定。实现见 [`ClientRenderProfiler`](../../../../../core/src/main/java/dev/xcolorful/customgun/client/util/ClientRenderProfiler.java)：采集中为每个埋点付两次 `System.nanoTime()`，未采集时每个埋点只有一次 volatile 读 + 一次分支。
 
-|对象|埋点位置|需要回答的字段|填写|
-|---|---|---|---|
-|S1|事件处理器入口 / 渲染器入口|每帧调用次数、早退比例|待测|
-|S2|状态机 `update`、附件刷新段|单次耗时、每帧次数|待测|
-|S3|`ModelObject.render` 顶点循环|顶点数、单次耗时|待测|
-|S4|每次 `endBatch` 前后|flush 次数、每次耗时|待测|
-|S5|外部工具（Afterburner / GPU 计数器）|draw call、GPU 时间|待测|
+### 探针
 
-数据登记要求：每项测量必须记录「场景 + 枪数 + 是否第一人称 + 是否开光影」，否则无法与 benchmark 对齐。填入后回填本页表格，并同步更新各子文档的「待测项」。
+|探针|覆盖范围|文档对应项|
+|---|---|---|
+|`Hand event entry`|`FirstPersonRender.handleEvent` 整体（含早退判定）|P1|
+|`First-person submit`|第一人称整次提交（含状态更新、模型、枪口缓存、清理）|P1 后半段|
+|`World-item submit`|`renderByItem` 非 GUI 分支整次提交|P10|
+|`State update`|`AnimStateMachine.update()`|P2|
+|`State machine init`|`tryInit`（只在切枪 / 首帧）。窗口外也**始终累计**，写文件后重新开始|P2|
+|`Third-person visual update`|`_LocalAnimHandler` 每帧 `visualUpdate`|P2|
+|`Data refresh`|提交前的附件 / 枪械数据刷新|P3|
+|`Scope render`|`_renderScope`（瞄具模板准备）|P8 前半|
+|`Model render total`|`ModelObject.render` 整体，含嵌套的配件模型|S3–S4|
+|`Node snapshot`|节点变换快照的采集与还原|P4|
+|`Functional nodes`|功能性节点回调（显隐 / 替换渲染登记）|P4|
+|`Geometry traverse`|`shouldRender` 遍历与顶点生成|P5|
+|`endBatch flush`|所有 `endBatch` 的耗时合计|P6|
+|`Delegate render`|枪口火焰 / 抛壳 / 手臂 / 文字 / 配件|P9|
+|`Muzzle cache`|第一人称枪口位置缓存|—|
+|`Stencil clear`|瞄具模板缓冲清空|P8 后半|
+|`GUI slot icon`|槽位贴图（GUI / tooltip）|场景乘数|
+|`Camera angles`|`COMPUTE_CAMERA_ANGLES_EVENT`|渲染外开销|
+|`Hand camera`|`BeforeRenderHandEvent` 的手部相机动画|渲染外开销|
+|`FOV`|`COMPUTE_FOV_EVENT` 与 `COMPUTE_FOV_MODIFIER_EVENT`|渲染外开销|
+
+计数器：第一人称提交次数、世界提交次数、`endBatch` 次数、立方体数（×24 即顶点量）、节点快照数（`NodeTransform` 分配量约 2×）、几何批次数（`getBuffer` 次数）、模板窗口数、LOD 命中数。
+
+探针之间可以嵌套（提交包含模型渲染，模型渲染包含 flush），报告里各算各的，不能直接相加。
+
+### 输出
+
+- 采集周期：按 F12 开始，再按一次停止；停止瞬间统计并追加写入
+- 文件：游戏目录下的 `customgun-render-profile.txt`，格式与 Afterburner 的 `Benchmark.txt` 类似，一次采集一个区块
+- 每帧归属：帧边界取 `RENDER_FRAME_EVENT`（整帧渲染结束），因此一个样本完整覆盖世界、手部与 GUI 三个阶段
+- 统计量：帧时间的平均 / 最小 / 最大 / 1% high（p99）；每个探针的平均 / 最小 / 最大 / p99 以及命中帧占比
+- 存储上限：10 万帧，超出后丢弃并标注
+
+### 数据登记
+
+首次实测（CGC 1.20.1 单端，6 次重复）见 [基准报告](../benchmark/26.35.11.1-1/测试数据计算报告.md)：持枪单次提交 0.5565 ms，9 个展示框 4.73 ms/帧。每次测量必须记录「场景 + 枪数 + 是否第一人称 + 是否开光影」，否则无法与 benchmark 对齐。填入后回填本页与各子文档的「待测项」。
 
 ## 与重构计划的关系
 

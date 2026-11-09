@@ -125,13 +125,14 @@ multi 场景为 9 个物品展示框各挂一把 ak47，再加第一人称一把
 
 ## 待测项
 
-|项目|建议埋点|期望|现状|
+|项目|探针|期望|现状|
 |---|---|---|---|
-|单把展示框枪的提交耗时|`renderByItem` 非 GUI 分支首尾|≈0.5 ms|待测|
-|每帧 `endBatch` 次数|`ModelObject.render` 结尾计数|1 + 配件数|可由代码推导|
-|模板窗口开销|`enableItemEntityStencilTest` 前后 + `glClear` 前后|待测（驱动相关）|待测|
-|顶点数与 cube 数|`BedrockPart.compile` 累加|按枪型统计|待测|
-|LOD 命中率|`shouldRenderLod` 返回值统计|multi 内应为 0|可由配置推导|
+|单把展示框枪的提交耗时|`World-item submit`|≈0.5 ms|待测|
+|每帧 `endBatch` 次数|计数器 `endBatch calls`|1 + 配件数|可由代码推导|
+|模板窗口开销|`Scope render` / `Stencil clear` / 计数器 `Stencil windows`|待测（驱动相关）|待测|
+|顶点数与 cube 数|计数器 `Cubes submitted`|按枪型统计|待测|
+|LOD 命中率|计数器 `LOD hits`|multi 内应为 0|可由配置推导|
+|GUI 槽位图标耗时|`GUI slot icon`（切换槽位那一步）|≈0.04 ms|待测|
 
 埋点统一走 `DebugKey`（F12），目前 `onDebugKeyInput` 为空实现。
 

@@ -12,6 +12,7 @@ import dev.xcolorful.customgun.client.resource.assets.model.BedrockModel;
 import dev.xcolorful.customgun.client.resource.assets.model.bedrock.geometry._Bone;
 import dev.xcolorful.customgun.client.util.ClientModelUtils;
 import dev.xcolorful.customgun.client.util.ClientRenderHelper;
+import dev.xcolorful.customgun.client.util.ClientRenderProfiler;
 import dev.xcolorful.customgun.core.api.resource.assets.model.bedrock.geometry.NodeName;
 import dev.xcolorful.customgun.core.resource.instance.PojoInstance;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -189,14 +190,19 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
         @Nullable Object collector = ClientRenderHelper.FirstPersonArmHelper.getFirstPersonArmCollector();
         if (collector == null) return;
 
+        final long profModel = ClientRenderProfiler.begin();
+
         MultiBufferSource.BufferSource bufferSource = ClientRenderHelper.GL.getModelBufferSource();
         VertexConsumer builder = bufferSource.getBuffer(renderType);
+        ClientRenderProfiler.countBatch();
 
+        final long profSnapshot = ClientRenderProfiler.begin();
         List<BedrockPart> parts = new ArrayList<>(); { // [26.2, )
             for (IBedrockRenderer renderer : this.modelMap_values()) {
                 parts.add(renderer.getModelRenderer());
             }
         }
+        ClientRenderProfiler.countNodes(parts.size());
         List<NodeTransform> animatedTransforms = new ArrayList<>(parts.size()); { // [26.2, )
             for (BedrockPart part : parts) {
                 animatedTransforms.add(NodeTransform.capture(part));
@@ -217,8 +223,10 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
                     transform.apply();
                 }
             }
+            ClientRenderProfiler.end(ClientRenderProfiler.SNAPSHOT, profSnapshot);
 
             try {
+                final long profTraverse = ClientRenderProfiler.begin();
                 matrixStack.pushPose(); {
                     for (int i = 0; i < this.shouldRender.size(); i++) {
                         this.shouldRender.get(i)
@@ -230,11 +238,16 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
                     }
                 }
                 matrixStack.popPose();
+                ClientRenderProfiler.end(ClientRenderProfiler.TRAVERSE, profTraverse);
 
+                final long profFlush = ClientRenderProfiler.begin();
+                ClientRenderProfiler.countFlush();
                 if (!IrisCompat.endBatch(bufferSource)) {
                     bufferSource.endBatch();
                 }
+                ClientRenderProfiler.end(ClientRenderProfiler.FLUSH, profFlush);
 
+                final long profDelegate = ClientRenderProfiler.begin();
                 for (int i = 0; i < this.delegateRenderers.size(); i++) {
                     IModelComponentRenderer renderer = delegateRenderers.get(i);
                     renderer.render(matrixStack,
@@ -243,6 +256,7 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
                             light, overlay);
                 }
                 this.delegateRenderers = new ArrayList<>();
+                ClientRenderProfiler.end(ClientRenderProfiler.DELEGATE, profDelegate);
             } finally {
                 for (int i = 0; i < cleanedTransforms.size(); i++) { // [26.2, )
                     NodeTransform transform = cleanedTransforms.get(i);
@@ -250,6 +264,7 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
                 }
             }
         }
+        ClientRenderProfiler.end(ClientRenderProfiler.MODEL_TOTAL, profModel);
     }
 
     // --------Deprecated--------

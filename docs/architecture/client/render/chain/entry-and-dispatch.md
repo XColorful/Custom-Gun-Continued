@@ -87,11 +87,11 @@ Forge 的手部事件由 `ForgeHooksClient.renderSpecificFirstPersonHand` 在 `r
 
 ## 本节待测项
 
-|项目|埋点位置|期望量级|现状|
+|项目|探针|期望量级|现状|
 |---|---|---|---|
-|入口事件与判定的固定开销|`FirstPersonRender.onRenderHand` 首尾|微秒级|待测|
-|`tryInit` 单次代价|`AnimateGeoItemRenderer.tryInit`|毫秒级毛刺|待测|
-|第三人称 `visualUpdate` 每帧代价|`_LocalAnimHandler._tickAnimRender`|未知|待测|
-|展示框每帧进入 `renderByItem` 的次数|`GunItemRenderer.renderByItem` 计数|= 可见展示框数|待测（multi 场景可对照）|
+|入口事件与判定的固定开销|`Hand event entry`|微秒级|待测|
+|`tryInit` 单次代价|`State machine init`（窗口外也累计，写在报告末尾）|毫秒级毛刺|待测|
+|第三人称 `visualUpdate` 每帧代价|`Third-person visual update`|未知|待测|
+|展示框每帧进入 `renderByItem` 的次数|计数器 `World-item submissions`|= 可见展示框数|待测（multi 场景可对照）|
 
 埋点统一挂在 `DebugKey`（F12，当前为空实现，`DebugKey.java:37`）后面，遵循 [PLAN](../PLAN.md) 的「统一使用 DebugKey」约定。

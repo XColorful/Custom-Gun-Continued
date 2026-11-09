@@ -129,13 +129,13 @@ flush ≈ 1（枪体）
 
 ## 待测项
 
-| 项目 | 建议埋点位置 | 期望量级 | 现状 |
+| 项目 | 探针 | 期望量级 | 现状 |
 |---|---|---|---|
-| 单次提交顶点数与耗时 | `ModelObject.render` | 立方体数 × 24 | 未测 |
-| 每帧 flush 次数 | 各 `endBatch` 调用点计数 | 见上式 | 未测，可由结构直接统计 |
-| 模板清屏耗时 | `_clearStencilBuffer` | 单次数十微秒级？ | 未测，需 GPU 计时器 |
-| RenderType 实例数 / 帧 | `BufferSource.getBuffer` | = 纹理批数 | 未测 |
-| 顶点生成分配 | `BedrockCubeBox.compile` | 30 × C / 提交 | 未测，需 profiler |
-| 展示框每把枪成本 | `renderByItem(FIXED)` | 约 0.5 ms？ | 仅基准间接推算 |
+| 单次提交顶点数与耗时 | `Geometry traverse` + 计数器 `Cubes submitted` | 立方体数 × 24 | 未测 |
+| 每帧 flush 次数 | 计数器 `endBatch calls` | 见上式 | 未测，可由结构直接统计 |
+| 模板清屏耗时 | `Stencil clear` + 计数器 `Stencil windows` | 单次数十微秒级？ | 未测，需 GPU 计时器 |
+| 纹理批次数 / 帧（原 RenderType 实例数） | 计数器 `Geometry batches` | = 纹理批数 | 未测 |
+| 顶点生成分配 | 计数器 `Nodes captured` / `Cubes submitted` | 30 × C / 提交 | 未测，需 profiler |
+| 展示框每把枪成本 | `World-item submit` | 约 0.5 ms？ | 仅基准间接推算 |
 
 埋点统一用 `DebugKey`（F12，目前空实现，`core/.../client/input/player/DebugKey.java:32-68`），日志口径见 [渲染链路总览](./Home.md#测量与数据登记)。

@@ -92,12 +92,12 @@ graph LR
 
 基准锚点：同一场景下空手 1257.8 FPS（0.795 ms/帧）、第一人称持枪 699.0 FPS（1.431 ms/帧），净增 **0.636 ms/帧**。这一数值包含本节全部工作与 [几何生成与提交](./geometry-and-submission.md) 的成本，二者目前无法从外部测量中分离，必须在代码里埋点。
 
-|埋点|位置|关注量|现状|
+|埋点|探针|关注量|现状|
 |---|---|---|---|
-|状态更新|`AnimStateMachine.update()` 外层|ms/帧、活跃轨道数|待测|
-|配件刷新|`_GunModelRender.render` 刷新段|ms/次、类别数|待测|
-|功能节点登记|`FunctionalBedrockPart.render`|ms/次、节点数|待测|
-|分配计数|`ModelObject.render`|每次提交的对象数|待测|
+|状态更新|`State update`|ms/帧、活跃轨道数|待测|
+|配件刷新|`Data refresh`|ms/次、类别数|待测|
+|功能节点登记|`Functional nodes`|ms/次、节点数|待测|
+|分配计数|计数器 `Nodes captured` / `Cubes submitted`|每次提交的对象数|待测|
 
 埋点开关沿用 `DebugKey`（F12，目前 `onDebugKeyInput` 为空实现，见 `core/src/main/java/dev/xcolorful/customgun/client/input/player/DebugKey.java:60-68`）。
 

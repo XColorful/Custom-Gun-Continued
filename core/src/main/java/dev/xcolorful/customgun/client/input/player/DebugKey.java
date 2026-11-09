@@ -7,10 +7,12 @@ import dev.xcolorful.customgun.client.api.input.IInputKeyManager;
 import dev.xcolorful.customgun.client.api.input.IKeyConflictContext;
 import dev.xcolorful.customgun.client.api.input.IKeyMapping;
 import dev.xcolorful.customgun.client.api.input.IKeyModifier;
+import dev.xcolorful.customgun.client.api.input.InputAction;
 import dev.xcolorful.customgun.client.api.minecraft.input.CustomInputKey;
 import dev.xcolorful.customgun.client.init.registry.ClientInputCategory;
 import dev.xcolorful.customgun.client.input.InputKey;
 import dev.xcolorful.customgun.client.util.ClientInputUtils;
+import dev.xcolorful.customgun.client.util.ClientRenderProfiler;
 import dev.xcolorful.customgun.core.api.event.ICustomEventRegister;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -65,6 +67,13 @@ public final class DebugKey extends InputKey {
         this.onDebugKeyInput(event.getAction());
     }
     private void onDebugKeyInput(int action) {
+        if (InputAction.of(action) != InputAction.PRESS) return;
+
+        if (ClientRenderProfiler.enabled) {
+            ClientRenderProfiler.stopAndWrite();
+        } else {
+            ClientRenderProfiler.start();
+        }
     }
 
     /**

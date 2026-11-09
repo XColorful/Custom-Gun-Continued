@@ -117,3 +117,4 @@ graph TB
 |[功能性渲染器](./functional-renderers.md)|枪口火焰、抛壳、激光、配件、手臂、文字、瞄具模板、LOD 等|
 |[GUI 装配界面与提示框](./gui-and-tooltip.md)|枪械改装界面、tooltip 的渲染与变换|
 |[资源读取](./resource-reading.md)|从 ClientResourceApi 获取的 POJO / Instance 与美术资源的对应关系|
+|[渲染链路分析](./chain/Home.md)|技术链路与性能成本视角：一帧被调用几次、每次花在哪一层（重构依据）|

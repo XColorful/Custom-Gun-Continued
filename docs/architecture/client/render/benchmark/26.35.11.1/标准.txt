@@ -1,0 +1,63 @@
+测试环境：
+- 显示器1920x1080 165hz
+- 显卡GTX 1660 SUPER
+- CPU i5-9400F
+- 显卡驱动621.14 (2026-11-04)
+
+TaCZ端1（forge47.4.23）：
+- ./mods/embeddium-0.3.31+mc1.20.1.jar
+- ./mods/oculus-mc1.20.1-1.8.0.jar
+- ./mods/tacz-forge-1.20.1-1.2.0-all.jar
+- ./tacz/tacz_default_gun/
+
+CGC端1（forge47.4.23）：
+- ./mods/cgccpackloader-26.9.2-forge-1.20.1.jar
+- ./mods/cgccshader-26.10.28-forge-1.20.1.jar
+- ./mods/customgun-26.11.35.1-forge-1.20.1.jar
+- ./mods/embeddium-0.3.31+mc1.20.1.jar
+- ./mods/oculus-mc1.20.1-1.8.0.jar
+- ./tacz/tacz_default_gun/
+
+TaCZ端2（forge47.4.23）：
+- ./mods/acceleratedrendering-1.0.14-1.20.1-alpha.jar
+- ./mods/embeddium-0.3.31+mc1.20.1.jar
+- ./mods/oculus-mc1.20.1-1.8.0.jar
+- ./mods/tacz-forge-1.20.1-1.2.0-all.jar
+- ./tacz/tacz_default_gun/
+
+CGC端2（neoforge26.3.0.83）：
+- ./mods/cgccpackloader-26.9.2-neoforge-26.3.jar
+- ./mods/cgccshader-26.10.34-neoforge-26.3.jar
+- ./mods/customgun-26.11.35.1-neoforge-26.3.jar
+- ./mods/iris-neoforge-1.11.7+mc26.3.jar
+- ./mods/sodium-neoforge-0.9.3-beta.1+mc26.3.jar
+- ./tacz/tacz_default_gun/
+
+测试方式：
+- TaCZ端关闭枪械HUD（对齐CGC），CGC端tacz_default_gun补TaCZ内置第一人称animations动画（对齐TaCZ）
+- MSI Afterburner基准全局热键保存的Benckmark.txt
+- 超平坦虚空预设，和平，/tp @s 8.5 ~ 8.5 0 0
+- 禁用昼夜更替，禁用天气循环，/time set 5000
+- 渲染距离2，模拟距离5，全屏
+- 保持第一人称视角
+- 启动任意端，开F3等游戏内FPS从60到400~500到800~900（预热）
+- Sodium降低帧率-最小化时
+- Iris/Oculus最大阴影距离Disabled
+- 全称关游戏内F3
+- 1. 记录空快捷栏渲染帧数
+- 2. 记录第一人称tacz:ak47渲染帧数
+- 3. 切换到下一个快捷栏槽，记录渲染帧数
+- 4. 清空快捷栏（/clear），等文字消失后再记录渲染帧数
+- 单个Benckmark.txt保存以上四次记录，每个录10秒左右
+测试方式-multi：
+- 在之前的基础上往眼前第三格为中心，放9个石头、物品展示框、9把tacz:ak47
+- 低模渲染距离改成5
+- 1. 记录第一人称tacz:ak47渲染帧数（画面里应该有9把物品展示框+第一人称枪）
+- 2. 清空快捷栏（/clear），等文字消失后记录渲染帧数
+
+说明：
+- 不用F3的原因：开F3后裸渲染FPS在800~900，改用Afterburner能到1300左右；且F3会导致切换到下一个快捷栏槽，帧数需要很久才重新回升
+- 26.3会遇到切枪渲染锁165，按两下Esc即可恢复
+- 每种测试方式都是提前做好地图，保证启动游戏第一次进存档就是测试条件及角色朝向
+- 26.3在测试流程（其余默认设置）中能看见云，略微影响帧数
+- multi是模拟多人持枪动画，TaCZ1.2.0做了静态优化，不一定反映实际性能

@@ -8,9 +8,8 @@
 - `cgc1-multi-builtin (N).txt`  模组内置探针，multi 2 步
 
 注意：
-- `cgc1 (3).txt` 里混入了 Minecraft.exe 的基准块（启动器），解析时只取 javaw.exe。
-- multi 两段的实际内容与 `标准.txt` 描述的顺序相反：按「是否含第一人称枪」标注，
-  不按「持枪 / 清空」标注。
+- `cgc1 (3).txt` 残留 4 条 Minecraft.exe 的基准块（官方启动器，测试时未全部删除），解析时只取 javaw.exe。
+- multi 第 1 段无手持枪、第 2 段含手持枪；解析按内置探针的提交计数分组，不依赖文件顺序。
 """
 import os
 import re

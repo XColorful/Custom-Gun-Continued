@@ -259,3 +259,24 @@ State machine init (since last report) :    1.842 ms (last, 1 calls, max    1.84
 2. **发现一个共享模型状态泄漏**：「仅 9 个展示框」比「展示框 + 手持枪」每把多 **61 个立方体**、功能节点多 **0.4 ms/9 把**，而且方向是"没有手持枪时更慢"。逐块看，5/6 场的 FP=0 段都慢，唯一例外那场的立方体数正好等于快的那组。这与 `cleanAnimationTransform()` 只在第一人称渲染结束时把 `additionalMagazineNode.visible` 置 false 吻合——会话里没渲染过手持枪时，`mag_additional` 一直可见，每帧多编译一个弹匣。按 61 立方体 / 0.40 ms 算出 0.73 µs/立方体，和几何遍历的 0.70 对上。既有性能代价，也可能表现为展示框里多画一个弹匣；按你的要求没改代码，已写进报告的「4.1」。
 
 另外 multi 两段的实际顺序与 `标准.txt` 描述相反，报告里按「是否含第一人称枪」标注，没有沿用「持枪 / 清空」的名字。
+
+# 
+
+```
+看一下git工作区说明，报告说明加点补丁
+```
+
+# 
+
+看了工作区：之前那批内容已经提交（`beb59d28b`、`52b2b3a49`），现在只剩你对 [标准.txt](docs/architecture/client/render/benchmark/26.35.11.1-1/标准.txt) 的两条修改。已按它们给报告打补丁：
+
+**1. multi 顺序** —— 原文说「1 持枪 / 2 清空」，实际是「1 初始无手持枪 / 2 持枪」。报告 0 节改成直接引用更新后的 `标准.txt`，并说明脚本仍按内置探针的提交计数（0 / 1）分组，不依赖录制顺序；删掉了原来「与描述相反」的措辞。
+
+**2. 启动器影响** —— 新增说明：官方启动器后台未最小化会略微拉低帧数，测试时已手动删除大部分 `Minecraft.exe` 帧数块，`cgc1 (3).txt` 残留 4 条（约 26 FPS），解析时只保留 `javaw.exe`；受影响的场次在 4.2 单独标注。
+
+同步改动：
+- [analyze.py](docs/architecture/client/render/benchmark/26.35.11.1-1/analyze.py) 顶部注释（语法已校验）
+- [测试数据计算报告.md](docs/architecture/client/render/benchmark/26.35.11.1-1/测试数据计算报告.md) 的 0 节与 4.2
+- [benchmark/Home.md](docs/architecture/client/render/benchmark/Home.md) 的约定条目
+
+数值与结论未变；图未重新生成（内容不受影响）。

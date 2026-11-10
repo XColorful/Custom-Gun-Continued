@@ -262,6 +262,11 @@ State machine init (since last report) :    1.842 ms (last, 1 calls, max    1.84
 
 # 
 
+[fork1](#fork1)
+[fork2](#fork2)
+
+# fork1
+
 ```
 看一下git工作区说明，报告说明加点补丁
 ```
@@ -280,3 +285,79 @@ State machine init (since last report) :    1.842 ms (last, 1 calls, max    1.84
 - [benchmark/Home.md](docs/architecture/client/render/benchmark/Home.md) 的约定条目
 
 数值与结论未变；图未重新生成（内容不受影响）。
+
+# fork2
+
+```
+先不处理附加弹匣的状态泄漏问题
+在26.3分支复制一样的探针，可以根据26.2+延迟渲染修改一些探针（在相同泄露隐患的情况下进行测试）
+- 测试的条目可能跟1.20.1不一样
+- DebugKey等相同可复用的部分就尽量保持完全一致，使得1.20.1最终合并到26.3时无冲突
+- 预计测试同样是跑6+6次，相同方式测试
+```
+
+# 
+
+现在把分析脚本做成两个版本通用，并补齐文档说明。
+
+26.3 分支的埋点已复制完成，编译通过（`core` + `neoforge-compat`）。
+
+**保持不变的部分**（合并 1.20.1 → 26.3 时不会冲突）
+- `DebugKey.java` 与 1.20.1 逐字一致：F12、`InputAction.PRESS` 判定、`ClientRenderProfiler.start()/stopAndWrite()`。
+- `CustomInputKeyTag.DEBUG`、`CustomInputKey.DEBUG`、`ClientKeyMappingRegistry` 的注册行，与 1.20.1 的 diff 相同。
+- `ClientEventHandlers` 里 `RENDER_FRAME_EVENT` + `EventPriority.LOW` 的注册。
+- `ClientRenderProfiler` 的开关、统计、输出格式、窗口外累计的状态机初始化（`State machine init (since last report)`）完全一致。
+
+**随延迟渲染调整的部分**
+
+|1.20.1|26.3|说明|
+|---|---|---|
+|`Model render total`|`Model submit`|只测提交阶段（节点快照采集 + `submitCustomGeometry`）|
+|`endBatch flush`|`Model flush`|flush 回调整体，顶点生成发生在这里|
+|`endBatch calls`|`Geometry submits` / `Flush callbacks`|提交次数与回调执行次数分开计|
+|`CGC render per frame`|提交 + `Model flush`|否则只统计到提交阶段会大幅低估|
+|`Stencil clear`|保留|26.2 起为空实现，应测到 0，用来确认该成本消失|
+|`displayClientMessage`|`sendSystemMessage`|26.3 移除了前者|
+
+探针索引、计数索引、命名顺序与 1.20.1 一一对应，`Functional nodes` 仍在 flush 回调内、`Node snapshot` / `Geometry traverse` / `Delegate render` 的相对关系不变。附加弹匣状态泄漏按要求未修，测试时会一并带进 26.3 的展示框场景。
+
+**测试与出报告**
+- 采集方式与 1.20.1 完全相同：F12 开始 / 停止，标准 4 步 + multi 2 步各 6 次。
+- `analyze.py` 已改成同时识别两版字段名（`Model render total`/`Model submit`、`endBatch flush`/`Model flush`、`endBatch calls`/`Geometry submits`），26.3 的数据放到新目录后直接复用即可。
+
+两个工作区的改动都未提交：1.20.1 在 `Render-analysis`，26.3 在 `Render-refactor-26.3`。
+
+# 
+
+```
+测试数据好了，在1.20.1重新跑分析，更新报告
+```
+
+# 
+
+1.20.1 工作区里现在有两端数据：`cgc1`(1.20.1) 与 `cgc2`(26.3)。我把分析脚本改成双臂版本。
+
+报告已按双端重写（`cgc1` = 1.20.1，`cgc2` = 26.3），脚本、三张图和文字都更新了。
+
+**主要结果**
+
+|项|1.20.1|26.3|
+|---|---:|---:|
+|空手基线|0.8003 ms|0.9909 ms|
+|持枪增量|+0.6725 ms|**+0.5601 ms（−17%）**|
+|CGC 采样|0.5565 ms（覆盖 82.8%）|0.3017 ms（覆盖 53.9%）|
+|CPU 侧几何+提交|0.4288 ms（遍历 0.311 + flush 0.118）|**0.2303 ms（54%）**|
+|9 展示框帧时间|6.07 ms（165 FPS）|**3.72 ms（270 FPS）**|
+|单把展示框枪|0.526 ms|**0.199 ms（−62%）**|
+|165 Hz 余量（9 框）|0.999×（贴住）|1.63×|
+
+**两个注意点**
+
+1. **跨版本不能直接比 CGC 数值**：26.3 的 CGC 只含「提交 + flush 回调」，render pass 提交与手部/文字 overlay 不在探针内，所以覆盖率只有 53.9%（1.20.1 为 82.8%）。跨版本结论用的是 Afterburner 的帧时间增量与帧时间本身。
+2. **附加弹匣状态泄漏在两端都复现**：`cgc1` 1/6 场次无泄漏、5/6 有；`cgc2` 2/6 无、4/6 有。有泄漏时立方体 4005 → 4554、功能节点 0.02 → 0.23 ms（26.3）/ 0.03 → 0.44 ms（1.20.1），逐块完全同构。已写入报告 5.1，未改代码。
+
+**改动文件**（均未提交）
+- `26.35.11.1-1/analyze.py`：改为按端循环，兼容两版字段名，multi 按内容分组。
+- `26.35.11.1-1/测试数据计算报告.md`：双端表格、跨版本对照、探针口径说明。
+- 三张 `测试数据总览-*.png` 重新生成。
+- `benchmark/Home.md` 的批次描述改为「CGC 1.20.1 与 26.3 双端」；`chain/Home.md` 的数据登记补了 26.3 数值。

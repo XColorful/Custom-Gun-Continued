@@ -1,15 +1,18 @@
 # -*- coding: utf-8 -*-
-"""解析 CGC 单端基准数据（MSI Afterburner + 模组内置探针），输出统计并绘图。
+"""解析 CGC 双端基准数据（MSI Afterburner + 模组内置探针），输出统计并绘图。
 
-数据来源：
-- `cgc1 (N).txt`                Afterburner，标准测试 4 步
-- `cgc1-builtin (N).txt`        模组内置探针，标准测试 4 步
-- `cgc1-multi (N).txt`          Afterburner，multi 2 步
-- `cgc1-multi-builtin (N).txt`  模组内置探针，multi 2 步
+数据来源（每个端 6 次重复）：
+- `cgc1 (N).txt`                Afterburner，1.20.1 标准测试 4 步
+- `cgc1-builtin (N).txt`        内置探针，1.20.1 标准测试 4 步
+- `cgc1-multi (N).txt`          Afterburner，1.20.1 multi 2 步
+- `cgc1-multi-builtin (N).txt`  内置探针，1.20.1 multi 2 步
+- `cgc2*`                       同上，NeoForge 26.3
 
 注意：
-- `cgc1 (3).txt` 残留 4 条 Minecraft.exe 的基准块（官方启动器，测试时未全部删除），解析时只取 javaw.exe。
-- multi 第 1 段无手持枪、第 2 段含手持枪；解析按内置探针的提交计数分组，不依赖文件顺序。
+- 只取 `javaw.exe` 记录（Afterburner 会连启动器一起录制）。
+- multi 两段按「是否含第一人称枪」标注，不按文件顺序。
+- 26.3 的 CGC = 提交阶段 + flush 回调；render pass 的 GPU 提交不在探针内，
+  因此跨版本只能比「CGC 采样到的部分」，不能直接当整帧成本比较。
 """
 import os
 import re
@@ -28,7 +31,12 @@ BASE = os.path.dirname(os.path.abspath(__file__))
 REFRESH = 165.0
 BUDGET_MS = 1000.0 / REFRESH
 
+NODES = ["cgc1", "cgc2"]
+NODE_LABEL = {"cgc1": "1.20.1 (Forge)", "cgc2": "26.3 (NeoForge)"}
+NODE_COLOR = {"cgc1": "#b8442f", "cgc2": "#2f6db3"}
+NODE_LIGHT = {"cgc1": "#e8a090", "cgc2": "#7fb3e6"}
 STEPS = ["空快捷栏", "第一人称持枪", "切换槽位", "清空 /clear"]
+MULTI_LABEL = {"仅 9 个展示框": "仅 9 个展示框", "9 个展示框 + 手持枪": "9 个展示框 + 手持枪"}
 
 AF_REC = re.compile(
     r"(\d{2}-\d{2}-\d{4}, \d{2}:\d{2}:\d{2}) (\S+) benchmark completed, (\d+) frames rendered in ([\d.]+) s\s*\n"
@@ -49,41 +57,34 @@ PROBE_KEYS = [
     "Functional nodes", "Geometry traverse", "endBatch flush", "Delegate render",
     "Muzzle cache", "Stencil clear", "GUI slot icon", "Camera angles",
     "Hand camera", "FOV",
+    # 26.2+ 延迟渲染的对应项（解析后归一到上面的名字）
+    "Model submit", "Model flush",
 ]
 COUNTER_KEYS = [
     "First-person submissions", "World-item submissions", "endBatch calls",
     "Cubes submitted", "Nodes captured", "Geometry batches", "Stencil windows", "LOD hits",
+    # 26.2+ 延迟渲染的对应项
+    "Geometry submits", "Flush callbacks",
 ]
 PROBE_CN = {
-    "Hand event entry": "入口事件",
-    "First-person submit": "第一人称提交",
-    "World-item submit": "展示框提交",
-    "State update": "状态更新",
-    "Data refresh": "数据刷新",
-    "Scope render": "瞄具模板",
-    "Model render total": "模型渲染总计",
-    "Node snapshot": "节点快照",
-    "Functional nodes": "功能节点",
-    "Geometry traverse": "几何遍历",
-    "endBatch flush": "flush",
-    "Delegate render": "delegate",
-    "Muzzle cache": "枪口缓存",
-    "Stencil clear": "模板清空",
-    "GUI slot icon": "GUI 图标",
-    "Camera angles": "相机角度",
-    "Hand camera": "手部相机",
-    "FOV": "FOV",
+    "Hand event entry": "入口事件", "First-person submit": "第一人称提交",
+    "World-item submit": "展示框提交", "State update": "状态更新",
+    "Data refresh": "数据刷新", "Scope render": "瞄具模板",
+    "Model render total": "模型渲染总计", "Node snapshot": "节点快照",
+    "Functional nodes": "功能节点", "Geometry traverse": "几何遍历",
+    "endBatch flush": "模型 flush", "Delegate render": "delegate",
+    "Muzzle cache": "枪口缓存", "Stencil clear": "模板清空",
+    "GUI slot icon": "GUI 图标", "Camera angles": "相机角度",
+    "Hand camera": "手部相机", "FOV": "FOV",
 }
 COUNTER_CN = {
-    "First-person submissions": "第一人称提交",
-    "World-item submissions": "展示框提交",
-    "endBatch calls": "endBatch 次数",
-    "Cubes submitted": "立方体数",
-    "Nodes captured": "节点数",
-    "Geometry batches": "几何批次",
-    "Stencil windows": "模板窗口",
-    "LOD hits": "LOD 命中",
+    "First-person submissions": "第一人称提交", "World-item submissions": "展示框提交",
+    "endBatch calls": "几何提交/endBatch", "Cubes submitted": "立方体数",
+    "Nodes captured": "节点数", "Geometry batches": "几何批次",
+    "Stencil windows": "模板窗口", "LOD hits": "LOD 命中",
 }
+PROBE_SHOW = [k for k in PROBE_KEYS if k not in ("Model submit", "Model flush")]
+COUNTER_SHOW = [k for k in COUNTER_KEYS if k not in ("Geometry submits", "Flush callbacks")]
 
 
 def parse_afterburner(path):
@@ -93,12 +94,10 @@ def parse_afterburner(path):
         ts, proc, frames, secs, avg, mn, mx, low1, low01 = m.groups()
         if proc.lower() != "javaw.exe":
             continue
-        out.append(dict(
-            ts=ts, frames=int(frames), seconds=float(secs),
-            avg=float(avg), mn=float(mn), mx=float(mx),
-            low1=float(low1), low01=float(low01),
-            frame_ms=1000.0 / float(avg),
-        ))
+        out.append(dict(ts=ts, frames=int(frames), seconds=float(secs),
+                        avg=float(avg), mn=float(mn), mx=float(mx),
+                        low1=float(low1), low01=float(low01),
+                        frame_ms=1000.0 / float(avg)))
     return out
 
 
@@ -111,7 +110,7 @@ def parse_builtin(path):
         fields = {}
         for m in BT_LINE.finditer(txt[h.end():end]):
             fields[m.group(1).strip()] = m.group(2).strip()
-        blk = dict(ts=h.group(1), frames=int(h.group(2)), seconds=float(h.group(3)), raw=fields)
+        blk = dict(ts=h.group(1), frames=int(h.group(2)), seconds=float(h.group(3)))
 
         def ms(key):
             v = fields.get(key)
@@ -130,15 +129,19 @@ def parse_builtin(path):
         blk["avg_ms"] = ms("Average frame time")
         fps_m = re.search(rf"({NUM})\s*FPS", fields.get("Average frame time") or "")
         blk["avg_fps"] = float(fps_m.group(1)) if fps_m else None
-        blk["min_ms"] = ms("Minimum frame time")
-        blk["max_ms"] = ms("Maximum frame time")
         blk["p99_ms"] = ms("1% high frame time")
         blk["cgc_ms"] = ms("CGC render per frame")
         share = fields.get("CGC render per frame") or ""
         m3 = re.search(rf"({NUM})\s*%", share)
         blk["cgc_share"] = float(m3.group(1)) if m3 else None
         blk["counters"] = {k: per_frame(k) for k in COUNTER_KEYS}
+        if blk["counters"].get("endBatch calls") is None:
+            blk["counters"]["endBatch calls"] = blk["counters"].get("Geometry submits")
         blk["probes"] = {k: ms(k) for k in PROBE_KEYS}
+        if blk["probes"].get("Model render total") is None:
+            blk["probes"]["Model render total"] = blk["probes"].get("Model submit")
+        if blk["probes"].get("endBatch flush") is None:
+            blk["probes"]["endBatch flush"] = blk["probes"].get("Model flush")
         init = fields.get("State machine init (since last report)")
         blk["init_ms"] = None
         if init:
@@ -149,23 +152,24 @@ def parse_builtin(path):
 
 
 def load():
-    std, multi = [], []
-    for rep in range(1, 7):
-        af = parse_afterburner(os.path.join(BASE, f"cgc1 ({rep}).txt"))
-        bt = parse_builtin(os.path.join(BASE, f"cgc1-builtin ({rep}).txt"))
-        assert len(af) == 4 and len(bt) == 4, (rep, len(af), len(bt))
-        std.append(dict(rep=rep, af=af, bt=bt))
+    data = {}
+    for node in NODES:
+        std, multi = [], []
+        for rep in range(1, 7):
+            af = parse_afterburner(os.path.join(BASE, f"{node} ({rep}).txt"))
+            bt = parse_builtin(os.path.join(BASE, f"{node}-builtin ({rep}).txt"))
+            assert len(af) == 4 and len(bt) == 4, (node, rep, len(af), len(bt))
+            std.append(dict(rep=rep, af=af, bt=bt))
 
-        afm = parse_afterburner(os.path.join(BASE, f"cgc1-multi ({rep}).txt"))
-        btm = parse_builtin(os.path.join(BASE, f"cgc1-multi-builtin ({rep}).txt"))
-        assert len(afm) == 2 and len(btm) == 2, (rep, len(afm), len(btm))
-        # 用内置探针的「第一人称提交次数」判定哪一段含手持枪，不依赖文件顺序
-        pairs = []
-        for a, b in zip(afm, btm):
-            fp = b["counters"].get("First-person submissions") or 0.0
-            pairs.append(dict(af=a, bt=b, with_hand=fp > 0.5))
-        multi.append(dict(rep=rep, pairs=pairs))
-    return std, multi
+            afm = parse_afterburner(os.path.join(BASE, f"{node}-multi ({rep}).txt"))
+            btm = parse_builtin(os.path.join(BASE, f"{node}-multi-builtin ({rep}).txt"))
+            assert len(afm) == 2 and len(btm) == 2, (node, rep, len(afm), len(btm))
+            pairs = [dict(af=a, bt=b,
+                          with_hand=(b["counters"].get("First-person submissions") or 0.0) > 0.5)
+                     for a, b in zip(afm, btm)]
+            multi.append(dict(rep=rep, pairs=pairs))
+        data[node] = dict(std=std, multi=multi)
+    return data
 
 
 def mean_sd(vals):
@@ -175,35 +179,33 @@ def mean_sd(vals):
     return (statistics.mean(vals), statistics.stdev(vals) if len(vals) > 1 else 0.0)
 
 
-def summarize(std, multi):
+def summarize_node(entry):
+    std, multi = entry["std"], entry["multi"]
     rows = []
     for i in range(4):
-        r = {}
         af = [s["af"][i] for s in std]
         bt = [s["bt"][i] for s in std]
-        r["af_fps"] = mean_sd([v["avg"] for v in af])
-        r["af_ft"] = mean_sd([v["frame_ms"] for v in af])
-        r["af_low1"] = mean_sd([v["low1"] for v in af])
-        r["af_low01"] = mean_sd([v["low01"] for v in af])
-        r["bt_ft"] = mean_sd([v["avg_ms"] for v in bt])
-        r["bt_p99"] = mean_sd([v["p99_ms"] for v in bt])
-        r["bt_cgc"] = mean_sd([v["cgc_ms"] for v in bt])
-        r["bt_share"] = mean_sd([v["cgc_share"] for v in bt])
-        r["bt_overhead"] = (r["bt_ft"][0] - r["af_ft"][0]) if r["bt_ft"][0] and r["af_ft"][0] else None
+        r = dict(
+            af_fps=mean_sd([v["avg"] for v in af]),
+            af_ft=mean_sd([v["frame_ms"] for v in af]),
+            af_low1=mean_sd([v["low1"] for v in af]),
+            bt_ft=mean_sd([v["avg_ms"] for v in bt]),
+            bt_p99=mean_sd([v["p99_ms"] for v in bt]),
+            bt_cgc=mean_sd([v["cgc_ms"] for v in bt]),
+            bt_share=mean_sd([v["cgc_share"] for v in bt]),
+        )
+        r["overhead"] = r["bt_ft"][0] - r["af_ft"][0]
         rows.append(r)
-    base_af = rows[0]["af_ft"][0]
-    base_bt = rows[0]["bt_ft"][0]
+    base_af, base_bt = rows[0]["af_ft"][0], rows[0]["bt_ft"][0]
     for r in rows:
         r["af_dft"] = r["af_ft"][0] - base_af
         r["bt_dft"] = r["bt_ft"][0] - base_bt
         r["headroom"] = BUDGET_MS / r["af_ft"][0]
 
-    # multi：按内容分组，每组 6 次
     groups = {"仅 9 个展示框": [], "9 个展示框 + 手持枪": []}
     for s in multi:
         for p in s["pairs"]:
-            key = "9 个展示框 + 手持枪" if p["with_hand"] else "仅 9 个展示框"
-            groups[key].append(p)
+            groups["9 个展示框 + 手持枪" if p["with_hand"] else "仅 9 个展示框"].append(p)
     mg = {}
     for key, ps in groups.items():
         if not ps:
@@ -214,7 +216,6 @@ def summarize(std, multi):
             af_ft=mean_sd([p["af"]["frame_ms"] for p in ps]),
             af_low1=mean_sd([p["af"]["low1"] for p in ps]),
             bt_ft=mean_sd([p["bt"]["avg_ms"] for p in ps]),
-            bt_p99=mean_sd([p["bt"]["p99_ms"] for p in ps]),
             bt_cgc=mean_sd([p["bt"]["cgc_ms"] for p in ps]),
             bt_share=mean_sd([p["bt"]["cgc_share"] for p in ps]),
             counters={k: mean_sd([p["bt"]["counters"].get(k) for p in ps]) for k in COUNTER_KEYS},
@@ -242,44 +243,55 @@ def summarize(std, multi):
         for p in s["pairs"]:
             if p["bt"]["init_ms"] is not None:
                 init_vals.append(p["bt"]["init_ms"])
-    init_mean, init_sd = mean_sd(init_vals)
-    init = dict(mean=init_mean, sd=init_sd, n=len(init_vals))
-
-    return rows, mg, probes, counters, init, groups
-
-
-def fmt_ms(t):
-    return f"{t[0]:.4f}" if t[0] is not None else "-"
+    m, sd = mean_sd(init_vals)
+    return dict(rows=rows, mg=mg, probes=probes, counters=counters,
+                init=dict(mean=m, sd=sd, n=len(init_vals)), std=std)
 
 
-def print_summary(rows, mg, probes, counters, init):
-    print("== 标准测试（6 次重复）==")
-    print("步骤 | AF FPS | AF 帧时间(ms) | BT 帧时间(ms) | 采集开销(ms) | CGC(ms) | 占比 | 帧时间增量 AF/BT | 1%low(AF) | p99(BT)")
-    for i, r in enumerate(rows):
-        print(f"{STEPS[i]} | {r['af_fps'][0]:.1f}±{r['af_fps'][1]:.1f} | "
-              f"{r['af_ft'][0]:.4f}±{r['af_ft'][1]:.4f} | {r['bt_ft'][0]:.4f}±{r['bt_ft'][1]:.4f} | "
-              f"{r['bt_overhead']:+.4f} | {fmt_ms(r['bt_cgc'])} | {r['bt_share'][0]:.1f}% | "
-              f"{r['af_dft']:+.4f} / {r['bt_dft']:+.4f} | {r['af_low1'][0]:.1f} | {r['bt_p99'][0]:.4f}")
-    print("\n== multi ==")
-    for k, g in mg.items():
-        print(f"{k}: n={g['n']}  AF {g['af_fps'][0]:.1f}±{g['af_fps'][1]:.1f} FPS "
-              f"({g['af_ft'][0]:.4f} ms) | BT {g['bt_ft'][0]:.4f} ms | "
-              f"CGC {fmt_ms(g['bt_cgc'])} ms ({g['bt_share'][0]:.1f}%) | 1%low {g['af_low1'][0]:.1f}")
-    print("\n== 探针（ms）==")
-    print(f"{'探针':24s} {'标准持枪':>16s} {'multi+手':>16s} {'multi 无手':>16s}")
-    for k in PROBE_KEYS:
-        v = probes[k]
-        print(f"{PROBE_CN[k]:24s} {fmt_ms(v['std_gun']):>16s} {fmt_ms(v['multi_hand']):>16s} {fmt_ms(v['multi_frame']):>16s}")
-    print("\n== 计数器（/帧）==")
-    print(f"{'计数器':24s} {'标准持枪':>10s} {'multi+手':>10s} {'multi 无手':>10s}")
-    for k in COUNTER_KEYS:
-        v = counters[k]
-        f = lambda t: f"{t[0]:.2f}" if t[0] is not None else "-"
-        print(f"{COUNTER_CN[k]:24s} {f(v['std_gun']):>10s} {f(v['multi_hand']):>10s} {f(v['multi_frame']):>10s}")
-    if init["n"]:
-        print(f"\n状态机初始化（窗口外）：{init['mean']:.3f} ± {init['sd']:.3f} ms（{init['n']} 个样本）")
-    else:
-        print("\n状态机初始化：无样本")
+def print_summary(summary):
+    for node in NODES:
+        s = summary[node]
+        print(f"\n===== {NODE_LABEL[node]} · 标准测试（6 次重复）=====")
+        print("步骤 | AF FPS | AF 帧时间 | 内置帧时间 | 采集开销 | CGC | 占比 | Δft(AF/内置) | 1%low | p99")
+        for i, r in enumerate(s["rows"]):
+            print(f"{STEPS[i]} | {r['af_fps'][0]:.1f}±{r['af_fps'][1]:.1f} | "
+                  f"{r['af_ft'][0]:.4f}±{r['af_ft'][1]:.4f} | {r['bt_ft'][0]:.4f}±{r['bt_ft'][1]:.4f} | "
+                  f"{r['overhead']:+.4f} | {r['bt_cgc'][0]:.4f} | {r['bt_share'][0]:.1f}% | "
+                  f"{r['af_dft']:+.4f}/{r['bt_dft']:+.4f} | {r['af_low1'][0]:.1f} | {r['bt_p99'][0]:.4f}")
+        print("multi:")
+        for k, g in s["mg"].items():
+            print(f"  {k}: n={g['n']} AF {g['af_fps'][0]:.1f}±{g['af_fps'][1]:.1f} FPS "
+                  f"({g['af_ft'][0]:.4f} ms) BT {g['bt_ft'][0]:.4f} ms "
+                  f"CGC {g['bt_cgc'][0]:.4f} ({g['bt_share'][0]:.1f}%)")
+        if s["init"]["n"]:
+            print(f"  状态机初始化：{s['init']['mean']:.3f} ± {s['init']['sd']:.3f} ms（{s['init']['n']} 样本）")
+
+    print("\n===== 持枪探针（ms，跨端对照）=====")
+    print(f"{'探针':24s} {'1.20.1':>12s} {'26.3':>12s}")
+    for k in PROBE_SHOW:
+        a = summary["cgc1"]["probes"][k]["std_gun"]
+        b = summary["cgc2"]["probes"][k]["std_gun"]
+        fa = f"{a[0]:.4f}" if a[0] is not None else "-"
+        fb = f"{b[0]:.4f}" if b[0] is not None else "-"
+        print(f"{PROBE_CN[k]:24s} {fa:>12s} {fb:>12s}")
+
+    print("\n===== 计数器（/帧，跨端对照）=====")
+    print(f"{'计数器':20s} {'1.20.1-持枪':>14s} {'26.3-持枪':>14s} {'1.20.1-9框':>14s} {'26.3-9框':>14s}")
+    for k in COUNTER_SHOW:
+        def f(node, group):
+            t = summary[node]["counters"][k][group]
+            return f"{t[0]:.2f}" if t[0] is not None else "-"
+        print(f"{COUNTER_CN[k]:20s} {f('cgc1','std_gun'):>14s} {f('cgc2','std_gun'):>14s} "
+              f"{f('cgc1','multi_frame'):>14s} {f('cgc2','multi_frame'):>14s}")
+
+    print("\n===== multi（每帧 / 每把枪）=====")
+    for node in NODES:
+        g = summary[node]["mg"]
+        n = (g.get("仅 9 个展示框", {}).get("counters", {}).get("World-item submissions", (9, 0))[0]) or 9.0
+        for k, d in g.items():
+            per = "" if k == "9 个展示框 + 手持枪" else f", 每把 {d['bt_cgc'][0]/n:.4f} ms"
+            print(f"{NODE_LABEL[node]} {k}: CGC {d['bt_cgc'][0]:.4f} ms{per}, "
+                  f"占比 {d['bt_share'][0]:.1f}%, 165Hz 余量 {BUDGET_MS/d['af_ft'][0]:.3f}x")
 
 
 def setup_font():
@@ -292,75 +304,62 @@ def setup_font():
     plt.rcParams["axes.spines.right"] = False
 
 
-C_AF = "#b8442f"
-C_BT = "#2f6db3"
-C_AF2 = "#e8a090"
-C_BT2 = "#7fb3e6"
-
-
-def fig_standard(rows, probes, out):
+def fig_standard(summary, out):
     setup_font()
     fig, axes = plt.subplots(1, 3, figsize=(18, 5.6))
-    fig.suptitle("CGC 单端标准测试（6 次重复）：Afterburner 与内置探针对照", fontsize=14, y=0.99)
-
-    # A 平均帧率
-    ax = axes[0]
+    fig.suptitle("CGC 双端标准测试（各 6 次重复）：Afterburner 与内置探针对照", fontsize=14, y=0.99)
     x = np.arange(4)
     w = 0.36
-    af = [r["af_fps"][0] for r in rows]
-    bt = [r["bt_ft"][0] for r in rows]
-    bt_fps = [1000.0 / v for v in bt]
-    ax.bar(x - w / 2, af, w, label="Afterburner", color=C_AF,
-           yerr=[r["af_fps"][1] for r in rows], capsize=2, error_kw=dict(lw=0.8))
-    ax.bar(x + w / 2, bt_fps, w, label="内置探针", color=C_BT,
-           yerr=[1000.0 / v[0] ** 2 * v[1] for v in [r["bt_ft"] for r in rows]],
-           capsize=2, error_kw=dict(lw=0.8))
-    for xi, v in zip(x - w / 2, af):
-        ax.annotate(f"{v:.0f}", (xi, v), textcoords="offset points", xytext=(0, 3), ha="center", fontsize=7)
-    for xi, v in zip(x + w / 2, bt_fps):
-        ax.annotate(f"{v:.0f}", (xi, v), textcoords="offset points", xytext=(0, 3), ha="center", fontsize=7)
+
+    ax = axes[0]
+    for k, node in enumerate(NODES):
+        vals = [summary[node]["rows"][i]["af_ft"][0] for i in range(4)]
+        errs = [summary[node]["rows"][i]["af_ft"][1] for i in range(4)]
+        bars = ax.bar(x + (k - 0.5) * w, vals, w, label=NODE_LABEL[node], color=NODE_COLOR[node],
+                      yerr=errs, capsize=2, error_kw=dict(lw=0.8))
+        for xi, v in zip(x + (k - 0.5) * w, vals):
+            ax.annotate(f"{v:.2f}", (xi, v), textcoords="offset points", xytext=(0, 3),
+                        ha="center", fontsize=7)
     ax.set_xticks(x)
     ax.set_xticklabels(STEPS, fontsize=9)
-    ax.set_ylabel("平均帧率 (FPS)")
-    ax.set_title("A. 平均帧率（±1 样本标准差）", fontsize=11)
+    ax.set_ylabel("平均帧时间 (ms)")
+    ax.set_title("A. 帧时间（±1 样本标准差）", fontsize=11)
     ax.legend(fontsize=8)
     ax.grid(axis="y", alpha=0.25)
 
-    # B 帧时间增量
     ax = axes[1]
-    d_af = [r["af_dft"] for r in rows]
-    d_bt = [r["bt_dft"] for r in rows]
-    ax.bar(x - w / 2, d_af, w, label="Afterburner", color=C_AF)
-    ax.bar(x + w / 2, d_bt, w, label="内置探针", color=C_BT)
-    for xi, v in list(zip(x - w / 2, d_af)) + list(zip(x + w / 2, d_bt)):
-        ax.annotate(f"{v:+.3f}", (xi, v), textcoords="offset points",
-                    xytext=(0, 3 if v >= 0 else -9), ha="center", fontsize=7)
+    for k, node in enumerate(NODES):
+        vals = [summary[node]["rows"][i]["af_dft"] for i in range(4)]
+        ax.bar(x + (k - 0.5) * w, vals, w, label=NODE_LABEL[node], color=NODE_COLOR[node])
+        for xi, v in zip(x + (k - 0.5) * w, vals):
+            ax.annotate(f"{v:+.3f}", (xi, v), textcoords="offset points",
+                        xytext=(0, 3 if v >= 0 else -9), ha="center", fontsize=7)
     ax.axhline(0, color="black", lw=0.8)
     ax.set_xticks(x)
     ax.set_xticklabels(STEPS, fontsize=9)
     ax.set_ylabel("相对空快捷栏的帧时间增量 (ms)")
-    ax.set_title("B. 每帧额外耗时（0 = 空手基线）", fontsize=11)
+    ax.set_title("B. 每帧额外耗时（Afterburner）", fontsize=11)
     ax.legend(fontsize=8)
     ax.grid(axis="y", alpha=0.25)
 
-    # C 持枪段探针（互相包含，不做堆叠）
     ax = axes[2]
-    g = {k: v["std_gun"] for k, v in probes.items()}
-    cgc = g["First-person submit"][0]
-    keys = ["Geometry traverse", "endBatch flush", "Delegate render", "State update",
-            "Node snapshot", "Stencil clear", "Functional nodes", "Data refresh", "Muzzle cache"]
-    vals = [g[k][0] for k in keys][::-1]
-    labels = [f"{PROBE_CN[k]}" for k in keys][::-1]
-    colors = ["#c9c9c9", "#a9c7e2", "#c78fb0", "#5f9ea0", "#e0a35c", "#b0a0d0", "#d08a8a", "#9ab87a", "#8fb8de"][::-1]
-    ax.barh(labels, vals, color=colors)
-    for yi, v in enumerate(vals):
-        ax.annotate(f"{v:.3f} ms ({v / cgc * 100:.1f}%)", (v, yi), textcoords="offset points",
-                    xytext=(4, 0), va="center", fontsize=7.5)
-    ax.set_xlim(0, max(vals) * 1.6)
+    keys = ["State update", "Data refresh", "Node snapshot", "Geometry traverse",
+            "endBatch flush", "Delegate render"]
+    vals1 = [summary["cgc1"]["probes"][k]["std_gun"][0] for k in keys]
+    vals2 = [summary["cgc2"]["probes"][k]["std_gun"][0] for k in keys]
+    y = np.arange(len(keys))
+    ax.barh(y - 0.2, vals1, 0.4, label=NODE_LABEL["cgc1"], color=NODE_COLOR["cgc1"])
+    ax.barh(y + 0.2, vals2, 0.4, label=NODE_LABEL["cgc2"], color=NODE_COLOR["cgc2"])
+    for yi, v in zip(y - 0.2, vals1):
+        ax.annotate(f"{v:.3f}", (v, yi), textcoords="offset points", xytext=(3, 0), va="center", fontsize=7)
+    for yi, v in zip(y + 0.2, vals2):
+        ax.annotate(f"{v:.3f}", (v, yi), textcoords="offset points", xytext=(3, 0), va="center", fontsize=7)
+    ax.set_yticks(y)
+    ax.set_yticklabels([PROBE_CN[k] for k in keys], fontsize=9)
+    ax.set_xlim(0, max(vals1 + vals2) * 1.3)
     ax.set_xlabel("每帧耗时 (ms)")
-    ax.set_title(f"C. 第一人称持枪探针（CGC 总计 {cgc:.3f} ms）", fontsize=11)
-    ax.text(0.02, 0.03, "部分项相互包含（delegate 内会再次进入 model render），不可相加",
-            transform=ax.transAxes, fontsize=7, color="#666666")
+    ax.set_title("C. 持枪段探针（互相包含，不可相加）", fontsize=11)
+    ax.legend(fontsize=8)
     ax.grid(axis="x", alpha=0.25)
 
     fig.tight_layout(rect=[0, 0, 1, 0.94])
@@ -368,26 +367,22 @@ def fig_standard(rows, probes, out):
     plt.close(fig)
 
 
-def fig_multi(mg, probes, counters, out):
+def fig_multi(summary, out):
     setup_font()
     fig, axes = plt.subplots(1, 3, figsize=(18, 5.6))
-    fig.suptitle("CGC multi 场景：9 个展示框（± 手持枪）", fontsize=14, y=0.99)
-
-    # A 帧时间
-    ax = axes[0]
-    keys = list(mg.keys())
+    fig.suptitle("CGC multi：9 个展示框（± 手持枪）", fontsize=14, y=0.99)
+    keys = ["仅 9 个展示框", "9 个展示框 + 手持枪"]
     x = np.arange(len(keys))
     w = 0.36
-    ax.bar(x - w / 2, [mg[k]["af_ft"][0] for k in keys], w, label="Afterburner", color=C_AF,
-           yerr=[mg[k]["af_ft"][1] for k in keys], capsize=2, error_kw=dict(lw=0.8))
-    ax.bar(x + w / 2, [mg[k]["bt_ft"][0] for k in keys], w, label="内置探针", color=C_BT,
-           yerr=[mg[k]["bt_ft"][1] for k in keys], capsize=2, error_kw=dict(lw=0.8))
-    for xi, k in zip(x - w / 2, keys):
-        ax.annotate(f"{mg[k]['af_ft'][0]:.3f}", (xi, mg[k]["af_ft"][0]), textcoords="offset points",
-                    xytext=(0, 3), ha="center", fontsize=7)
-    for xi, k in zip(x + w / 2, keys):
-        ax.annotate(f"{mg[k]['bt_ft'][0]:.3f}", (xi, mg[k]["bt_ft"][0]), textcoords="offset points",
-                    xytext=(0, 3), ha="center", fontsize=7)
+
+    ax = axes[0]
+    for k, node in enumerate(NODES):
+        vals = [summary[node]["mg"][g]["af_ft"][0] for g in keys]
+        errs = [summary[node]["mg"][g]["af_ft"][1] for g in keys]
+        ax.bar(x + (k - 0.5) * w, vals, w, label=NODE_LABEL[node], color=NODE_COLOR[node],
+               yerr=errs, capsize=2, error_kw=dict(lw=0.8))
+        for xi, v in zip(x + (k - 0.5) * w, vals):
+            ax.annotate(f"{v:.3f}", (xi, v), textcoords="offset points", xytext=(0, 3), ha="center", fontsize=7)
     ax.set_xticks(x)
     ax.set_xticklabels(keys, fontsize=9)
     ax.set_ylabel("平均帧时间 (ms)")
@@ -395,95 +390,81 @@ def fig_multi(mg, probes, counters, out):
     ax.legend(fontsize=8)
     ax.grid(axis="y", alpha=0.25)
 
-    # B 每把展示框枪的成本构成
     ax = axes[1]
-    cnt = counters["World-item submissions"]
-    n = cnt["multi_frame"][0] or 9.0
-    per = {
-        "几何遍历": probes["Geometry traverse"]["multi_frame"][0] / n,
-        "flush": probes["endBatch flush"]["multi_frame"][0] / n,
-        "节点快照": probes["Node snapshot"]["multi_frame"][0] / n,
-        "模板清空": probes["Stencil clear"]["multi_frame"][0] / n,
-        "数据刷新": probes["Data refresh"]["multi_frame"][0] / n,
-    }
-    labels = list(per.keys())[::-1]
-    vals = [per[k] for k in labels]
-    ax.barh(labels, vals, color=["#c9c9c9", "#a9c7e2", "#e0a35c", "#b0a0d0", "#8fb8de"][::-1])
-    for yi, v in enumerate(vals):
-        ax.annotate(f"{v:.3f}", (v, yi), textcoords="offset points", xytext=(4, 0), va="center", fontsize=7.5)
-    ax.set_xlim(0, max(vals) * 1.35)
-    ax.set_xlabel("每把展示框枪的耗时 (ms)")
-    ax.set_title(f"B. 单把展示框枪成本（全帧 {probes['World-item submit']['multi_frame'][0]:.3f} ms / {n:.0f} 把）", fontsize=11)
-    ax.grid(axis="x", alpha=0.25)
+    vals = []
+    for node in NODES:
+        g = summary[node]["mg"]["仅 9 个展示框"]
+        n = g["counters"]["World-item submissions"][0] or 9.0
+        vals.append(g["bt_cgc"][0] / n)
+    ax.bar(np.arange(len(NODES)), vals, 0.5,
+           color=[NODE_COLOR[n] for n in NODES])
+    for xi, v in enumerate(vals):
+        ax.annotate(f"{v:.3f}", (xi, v), textcoords="offset points", xytext=(0, 3), ha="center", fontsize=8)
+    ax.set_xticks(np.arange(len(NODES)))
+    ax.set_xticklabels([NODE_LABEL[n] for n in NODES], fontsize=9)
+    ax.set_ylabel("每把枪的 CGC 耗时 (ms)")
+    ax.set_title("B. 单把展示框枪成本（仅 9 框组 CGC / 9）", fontsize=11)
+    ax.grid(axis="y", alpha=0.25)
 
-    # C CGC 占比与 165Hz 余量
     ax = axes[2]
-    labels = keys
-    share = [mg[k]["bt_share"][0] for k in keys]
-    bars = ax.bar(np.arange(len(keys)), share, 0.55, color="#4a7fa5")
-    for xi, v, k in zip(range(len(keys)), share, keys):
-        ax.annotate(f"{v:.1f}%\n({mg[k]['bt_cgc'][0]:.3f} ms)", (xi, v), textcoords="offset points",
-                    xytext=(0, 3), ha="center", fontsize=8)
-    ax.set_xticks(range(len(keys)))
-    ax.set_xticklabels(labels, fontsize=9)
+    for k, node in enumerate(NODES):
+        g = summary[node]["mg"]
+        vals = [g[key]["bt_share"][0] for key in keys]
+        ax.bar(x + (k - 0.5) * w, vals, w, label=NODE_LABEL[node], color=NODE_COLOR[node])
+        for xi, v, key in zip(x + (k - 0.5) * w, vals, keys):
+            ax.annotate(f"{v:.1f}%\n{g[key]['bt_cgc'][0]:.2f}ms", (xi, v), textcoords="offset points",
+                        xytext=(0, 3), ha="center", fontsize=7)
+    ax.set_xticks(x)
+    ax.set_xticklabels(keys, fontsize=9)
     ax.set_ylim(0, 100)
     ax.set_ylabel("CGC 占帧时间比例")
     ax.set_title("C. CGC 占比（括号内为每帧耗时）", fontsize=11)
+    ax.legend(fontsize=8)
     ax.grid(axis="y", alpha=0.25)
-    head = [BUDGET_MS / mg[k]["af_ft"][0] for k in keys]
-    for xi, h in zip(range(len(keys)), head):
-        ax.annotate(f"165Hz 余量 {h:.2f}×", (xi, 4), ha="center", fontsize=8, color="#b8442f")
 
     fig.tight_layout(rect=[0, 0, 1, 0.94])
     fig.savefig(out, dpi=130)
     plt.close(fig)
 
 
-def fig_stability(std, probes, out):
+def fig_stability(summary, out):
     setup_font()
     fig, axes = plt.subplots(1, 3, figsize=(18, 5.6))
-    fig.suptitle("重复性与稳定性（6 次重复）", fontsize=14, y=0.99)
+    fig.suptitle("重复性与尾帧（各 6 次重复）", fontsize=14, y=0.99)
 
-    # A 每次重复的持枪帧率
     ax = axes[0]
-    reps = [s["rep"] for s in std]
-    vals = [s["af"][1]["avg"] for s in std]
-    ax.plot(reps, vals, "o-", color=C_AF, label="Afterburner")
+    reps = list(range(1, 7))
+    for node in NODES:
+        vals = [s["af"][1]["avg"] for s in summary[node]["std"]]
+        ax.plot(reps, vals, "o-", color=NODE_COLOR[node], label=NODE_LABEL[node])
     ax.set_xticks(reps)
     ax.set_xlabel("重复编号")
     ax.set_ylabel("第一人称持枪平均帧率 (FPS)")
-    ax.set_title(f"A. 持枪帧率逐次（均值 {statistics.mean(vals):.1f}）", fontsize=11)
+    ax.set_title("A. 持枪帧率逐次", fontsize=11)
+    ax.legend(fontsize=8)
     ax.grid(alpha=0.25)
 
-    # B 持枪探针的重复分布
     ax = axes[1]
-    keys = ["State update", "Geometry traverse", "endBatch flush", "Delegate render", "Model render total"]
-    data = [[s["bt"][1]["probes"].get(k) for s in std] for k in keys]
-    data = [[v for v in d if v is not None] for d in data]
-    bp = ax.boxplot(data, tick_labels=[PROBE_CN[k] for k in keys], patch_artist=True,
-                    medianprops=dict(color="black", lw=1.2))
-    for patch in bp["boxes"]:
-        patch.set_facecolor("#9cc0dd")
-    for yi, d in enumerate(data, start=1):
-        ax.scatter([yi] * len(d), d, s=12, color=C_AF, zorder=3, alpha=0.8)
-    ax.set_ylabel("每帧耗时 (ms)")
-    ax.tick_params(axis="x", labelsize=8)
-    ax.set_title("B. 持枪段主要探针的重复分布", fontsize=11)
-    ax.grid(axis="y", alpha=0.25)
-
-    # C 尾帧对比
-    ax = axes[2]
     x = np.arange(4)
     w = 0.36
-    ax.bar(x - w / 2, [r["af_low1"][0] for r in
-                       [dict(af_low1=mean_sd([s["af"][i]["low1"] for s in std])) for i in range(4)]],
-           w, label="Afterburner 1% low (FPS)", color=C_AF)
-    ax.bar(x + w / 2, [mean_sd([s["bt"][i]["p99_ms"] for s in std])[0] for i in range(4)],
-           w, label="内置探针 p99 帧时间 (ms)", color=C_BT)
+    for k, node in enumerate(NODES):
+        vals = [summary[node]["rows"][i]["af_low1"][0] for i in range(4)]
+        ax.bar(x + (k - 0.5) * w, vals, w, label=NODE_LABEL[node], color=NODE_COLOR[node])
     ax.set_xticks(x)
     ax.set_xticklabels(STEPS, fontsize=9)
-    ax.set_ylabel("数值（单位不同，仅看趋势）")
-    ax.set_title("C. 尾帧：1% low 帧率 vs p99 帧时间", fontsize=11)
+    ax.set_ylabel("1% low 帧率 (FPS)")
+    ax.set_title("B. 1% low（Afterburner）", fontsize=11)
+    ax.legend(fontsize=8)
+    ax.grid(axis="y", alpha=0.25)
+
+    ax = axes[2]
+    for k, node in enumerate(NODES):
+        vals = [summary[node]["rows"][i]["bt_p99"][0] for i in range(4)]
+        ax.bar(x + (k - 0.5) * w, vals, w, label=NODE_LABEL[node], color=NODE_COLOR[node])
+    ax.set_xticks(x)
+    ax.set_xticklabels(STEPS, fontsize=9)
+    ax.set_ylabel("p99 帧时间 (ms)")
+    ax.set_title("C. 尾帧（内置探针）", fontsize=11)
     ax.legend(fontsize=8)
     ax.grid(axis="y", alpha=0.25)
 
@@ -493,13 +474,12 @@ def fig_stability(std, probes, out):
 
 
 def main():
-    std, multi = load()
-    rows, mg, probes, counters, init, groups = summarize(std, multi)
-    print_summary(rows, mg, probes, counters, init)
-
-    fig_standard(rows, probes, os.path.join(BASE, "测试数据总览-1-标准.png"))
-    fig_multi(mg, probes, counters, os.path.join(BASE, "测试数据总览-2-multi.png"))
-    fig_stability(std, probes, os.path.join(BASE, "测试数据总览-3-稳定性.png"))
+    data = load()
+    summary = {node: summarize_node(data[node]) for node in NODES}
+    print_summary(summary)
+    fig_standard(summary, os.path.join(BASE, "测试数据总览-1-标准.png"))
+    fig_multi(summary, os.path.join(BASE, "测试数据总览-2-multi.png"))
+    fig_stability(summary, os.path.join(BASE, "测试数据总览-3-稳定性.png"))
     print("\n图已保存：测试数据总览-1-标准.png / -2-multi.png / -3-稳定性.png")
 
 

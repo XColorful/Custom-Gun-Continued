@@ -12,6 +12,14 @@ CGC端1（forge47.4.23）：
 - ./mods/oculus-mc1.20.1-1.8.0.jar
 - ./tacz/tacz_default_gun/
 
+CGC端2（neoforge26.3.0.83）：
+- ./mods/cgccpackloader-26.9.2-neoforge-26.3.jar
+- ./mods/cgccshader-26.10.34-neoforge-26.3.jar
+- ./mods/customgun-26.11.35.1-neoforge-26.3.jar
+- ./mods/iris-neoforge-1.11.7+mc26.3.jar
+- ./mods/sodium-neoforge-0.9.3-beta.1+mc26.3.jar
+- ./tacz/tacz_default_gun/
+
 测试方式：
 - CGC端tacz_default_gun补TaCZ内置第一人称animations动画（对齐TaCZ）
 - MSI Afterburner基准全局热键保存的Benckmark.txt
@@ -22,7 +30,8 @@ CGC端1（forge47.4.23）：
 - 保持第一人称视角
 - 启动任意端，开F3等游戏内FPS从60到400~500到800~900（预热）
 - Sodium降低帧率-最小化时
-- Oculus最大阴影距离Disabled
+- Iris/Oculus最大阴影距离Disabled
+- 26.3云层距离改成2（默认设置跟渲染距离互相独立）
 - 全称关游戏内F3
 - 1. 记录空快捷栏渲染帧数
 - 2. 记录第一人称tacz:ak47渲染帧数
@@ -32,6 +41,7 @@ CGC端1（forge47.4.23）：
 测试方式-multi：
 - 在之前的基础上往眼前第三格为中心，放9个石头（/fill 9 -58 11 7 -60 11 stone）、物品展示框、9把tacz:ak47
 - 低模渲染距离改成5
+- 先开游戏内F3确保帧数不被锁住上限，然后关掉F3
 - 1. 初始即没有手持枪械，记录渲染帧数
 - 2. 记录第一人称tacz:ak47渲染帧数（画面里应该有9把物品展示框+第一人称枪）
 - 清空快捷栏（/clear），换到下一个物品槽
@@ -40,3 +50,4 @@ CGC端1（forge47.4.23）：
 - 不用F3的原因：开F3后裸渲染FPS在800~900，改用Afterburner能到1300左右；且F3会导致切换到下一个快捷栏槽，帧数需要很久才重新回升
 - 每种测试方式都是提前做好地图，保证启动游戏第一次进存档就是测试条件及角色朝向
 - 官方启动器后台没有最小化会略微影响帧数，测试时手动删除过Afterburner Minecraft帧数部分
+- 26.3 multi帧数低，跑热需要的时间长，等的久了会被锁165，反复蹲（输入按键）可以临时恢复帧数，但开游戏内F3再关掉持续的时间长一点

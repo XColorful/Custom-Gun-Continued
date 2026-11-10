@@ -20,6 +20,7 @@ import dev.xcolorful.customgun.client.resource.assets.display._LaserDisplay;
 import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
 import dev.xcolorful.customgun.client.resource.instance.data.ClientAttachmentIndexInstance;
 import dev.xcolorful.customgun.client.util.ClientRenderHelper;
+import dev.xcolorful.customgun.client.util.ClientRenderProfiler;
 import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import dev.xcolorful.customgun.core.api.item.IAttachment;
 import dev.xcolorful.customgun.core.api.item.IGun;
@@ -90,6 +91,7 @@ public class BeamRender {
              */
             RenderType bakedRenderType = ClientRenderHelper.bakePipelineState(
                     ClientRenderRegistry.LaserBeamRenderState.getLaserBeam());
+            ClientRenderProfiler.countSubmit();
             collector.submitCustomGeometry(poseStack, bakedRenderType, (pose, builder) ->
                     _stringVertex(builder, pose, z, width, r, g, b, RenderConfig.ENABLE_LASER_FADE_OUT.get()));
         }

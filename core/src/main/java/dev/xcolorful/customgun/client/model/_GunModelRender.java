@@ -20,6 +20,7 @@ import dev.xcolorful.customgun.client.renderer.model.HandRender;
 import dev.xcolorful.customgun.client.resource.assets.display.AttachmentDisplay;
 import dev.xcolorful.customgun.client.resource.instance.data.ClientAttachmentIndexInstance;
 import dev.xcolorful.customgun.client.util.ClientRenderHelper;
+import dev.xcolorful.customgun.client.util.ClientRenderProfiler;
 import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import dev.xcolorful.customgun.core.api.item.IAttachment;
 import dev.xcolorful.customgun.core.api.item.IGun;
@@ -61,6 +62,7 @@ public class _GunModelRender {
         @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return;
 
+        final long profData = ClientRenderProfiler.begin();
         { // 刷新状态
             _this.currentGunItem = gunItem;
             _this.currentMagazineCategory = MagazineCategory.NONE;
@@ -105,6 +107,7 @@ public class _GunModelRender {
                 }
             }
         }
+        ClientRenderProfiler.end(ClientRenderProfiler.DATA_REFRESH, profData);
 
         /*
         [1.20.1, 26.2) 即时模式下光束先于镜内遮罩绘制、由遮罩覆盖；移到遮罩之后改由模板测试剔除，结果一致
@@ -129,7 +132,9 @@ public class _GunModelRender {
         }
 
         { // 渲染
+            final long profScope = ClientRenderProfiler.begin();
             _renderScope(_this, matrixStack, transformType, renderType, light, overlay, gunItem);
+            ClientRenderProfiler.end(ClientRenderProfiler.SCOPE, profScope);
 
             { // 渲染激光
                 // [1.20.1, 26.2)
@@ -144,7 +149,9 @@ public class _GunModelRender {
             _renderHand(_this, matrixStack, transformType, renderType, light, overlay, gunItem);
 
             ClientRenderHelper.disableItemEntityStencilTest();
+            final long profStencil = ClientRenderProfiler.begin();
             _GunModelRender._clearStencilBuffer();
+            ClientRenderProfiler.end(ClientRenderProfiler.STENCIL_CLEAR, profStencil);
         }
     }
 
@@ -174,6 +181,7 @@ public class _GunModelRender {
         AttachmentDisplay attachmentDisplay = clientAttachmentIndexInstance.getAttachmentDisplay();
         boolean enableScope = attachmentDisplay.getEnableScope();
         if (!enableScope) return;
+        ClientRenderProfiler.countStencilWindow();
 
         // 开启模板测试，因为镜内不渲染枪体
         if (enableScope & attachmentDisplay.getEnableSight()) {

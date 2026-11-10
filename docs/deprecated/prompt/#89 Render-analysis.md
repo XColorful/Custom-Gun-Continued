@@ -417,3 +417,165 @@ State machine init (since last report) :    1.842 ms (last, 1 calls, max    1.84
 5. 剔除几乎无收益（原版已做视锥 + 64×包围盒距离剔除），LOD 只减顶点不减提交，多线程被 B 覆盖、不建议做。
 
 未修改任何源码，也没有提交；所有量级都标了「推算 / 待测」，需要用 `DebugKey` 实机日志回填。
+
+# 
+
+```
+先补benchmark，我跑测试
+- 默认我还是按benchmark/26.35.11-2/标准.txt的方式来测试，如果覆盖不到则需要额外说明
+- 目前大方向暂定往接近上限的做法，例如如果按文档里B实现完会使前面的优化失效的，就直接开始B的；但是先不进行优化实现，只写测试代码
+- 尽可能补全文档里待测的值，允许mixin
+- 如有必要可以翻Oculus/Iris源码，目前benchmark是全程不开光影的；Iris源码仓库的较新，D:\Temp-File\iris-neoforge-1.11.7+mc26.3.jar是测试用的版本
+- 说明一下是否要测26.3，如果需要则一并补上26.3探针
+```
+
+# 
+
+先确认测试口径与现有日志格式，再决定探针要补哪些点。
+
+开始写探针。先扩 `ClientRenderProfiler`：拆上传/draw、GPU 忙时、分配字节、动画通道数。
+
+1.20.1 编译通过。现在给 26.3 补同口径的 GPU 与分配探针。
+
+探针代码已加好，1.20.1 已编译通过。现在补测试批次说明与解析脚本。
+
+再补一个能直接验证「静态场景是否真的每帧重建」的计数：提交时的节点状态指纹变化次数。
+
+发现你已经建了 `benchmark/26.35.11.1-2/`，我把它当作目标目录，合并过去并删掉自己重复建的目录。
+
+探针和批次说明都准备好了，双端编译通过（`exit 0`），没有改任何渲染逻辑，也没有提交。
+
+## 加了什么
+
+**1.20.1（本分支）**
+- [BufferUploaderMixin.java](core/src/main/java/dev/xcolorful/customgun/client/mixin/renderer/BufferUploaderMixin.java)：把一次 `endBatch` 拆成 `endBatch upload`（`VertexBuffer.upload`）与 `endBatch draw`（`drawWithShader`），同时统计 draw 次数与上传字节（顶点+索引）。
+- [GpuFrameTimer.java](core/src/main/java/dev/xcolorful/customgun/client/util/GpuFrameTimer.java)：整帧 `GPU frame busy`，用 `GL_TIME_ELAPSED`，延迟一帧读取；F3 打开时原版会占用同类查询，探针自动跳过。
+- [ClientRenderProfiler.java](core/src/main/java/dev/xcolorful/customgun/client/util/ClientRenderProfiler.java)：新增 `Allocated bytes`（渲染线程 `ThreadMXBean`）、`Animation channels`、`State changes` 三个计数器。
+- [ModelObject.java](core/src/main/java/dev/xcolorful/customgun/client/model/ModelObject.java)：采集窗口内计算 11 个节点字段的指纹，统计「本次提交的几何是否真的变了」——这直接回答 B 方案的核心假设：静态展示首帧后应为 0，第一人称每帧 >0。
+
+**26.3（工作区）**
+- 同口径的 `GPU frame busy`（`GpuQueryPool` + 命令编码器时间戳）、`Allocated bytes`、`Animation channels`、`State changes`。
+- 26.3 暂时没有 upload/draw 拆分与 draw 计数：它的提交/绘制分离，CGC 拿不到最终 draw，要等自定义 `FeatureRenderer` 的烘焙实现后再补；目前可用已有的 `Flush callbacks` 作为 draw 数的近似。
+
+## 测试口径
+
+用你已建的 [26.35.11.1-2/标准.txt](docs/architecture/client/render/benchmark/26.35.11.1-2/标准.txt)（我把探针说明和新增步骤追加进去了，没有覆盖你原来的内容）。与分析脚本 [analyze_extra.py](docs/architecture/client/render/benchmark/26.35.11.1-2/analyze_extra.py)。
+
+标准 4 步与 multi 前两段照旧。**多出来的一段**：multi 第 3 段清空 9 个展示框里的枪（逐把 `/data remove entity @e[type=minecraft:item_frame,limit=1] Item`），保持框、石头、HUD、朝向不变。这一段直接测出场景基线，替代之前 `6.0688 − 4.7348 = 1.334 ms` 的推算——它决定 multi 到底应该以 1.55 ms 还是别的值为目标。
+
+**覆盖不到、需要额外说明的**：
+- 光影路径不测（你确认全程不开光影）。B 的自绘在 Oculus 下是否进对 pass，这批数据回答不了。
+- 26.3 的 upload/draw 拆分与 draw 数暂缺，如上。
+- `State changes` 与 `Animation channels` 在采集窗口内会带来很小的额外开销（每枪约 108 节点 × 11 次哈希），报告里已经把它算进帧时间，跨批次比较时注意。
+
+## 26.3 要不要测
+
+**建议测，但用缩减矩阵**：标准 4 步 + multi 3 段、每端至少 3 次。理由是 26.3 是延迟渲染的目标平台，需要确认两件事——GPU 是否同样远未饱和，以及提交/flush 的成本结构在 26.3 上与 1.20.1 的 0.23 ms 是否稳定。26.3 的 multi 跑热慢，3 次足够看趋势，不必追 6 次。
+
+`Custom-Gun-Continued` 与 `26.3neoforge` 两个工作区都有未提交改动，按约定停在这里等你验收。
+
+# 
+
+```
+multi的baseline我已经在benchmark/26.35.11.1-2/multi-baseline/测好了，这部分的结果等全部测完一起在报告里，不另建报告
+默认之后有这个结果，把清除展示框的步骤、能被multi-baseline测过的都清理掉
+清理完我在开测
+```
+
+# 
+
+基线已测：1.20.1 为 1174.3±23.9 FPS（0.852 ms），26.3 为 901.7±42.8 FPS（1.109 ms）。我先把测试步骤里多余的一段删掉，再按实测值修正文档。
+
+已清理完成，可以开测。
+
+## multi-baseline 读数
+
+按 6 次重复计算：
+
+|端|FPS|帧时间|
+|---|---:|---:|
+|1.20.1|1174.3 ± 23.9|**0.852 ms**|
+|26.3|901.7 ± 42.8|**1.109 ms**|
+
+这直接推翻了之前由 `6.0688 − 4.7348` 推出的 1.334 ms 基线：场景本身只比空快捷栏（0.800 ms）高约 0.05 ms，画枪的约 5.2 ms 几乎全是 CGC。差出来的约 0.48 ms 是探针没覆盖到的 CGC 工作，例如共享缓冲源里被连带 flush 的几何。
+
+## 清理内容
+
+- [标准.txt](docs/architecture/client/render/benchmark/26.35.11.1-2/标准.txt)：删掉“清空 9 个展示框”的第 3 段及其子项；探针说明里改为“基线已在 `multi-baseline/` 测好，本批次不再重复，结果并入本批次报告”。multi 回到原来的 2 段。
+- [benchmark/Home.md](docs/architecture/client/render/benchmark/Home.md)：批次行改为 multi 2 段 + baseline 子目录；补了基线的数值与“不另建报告”的说明。
+- [chain/Home.md](docs/architecture/client/render/chain/Home.md)、[cpu-gpu-headroom.md](docs/architecture/client/render/chain/cpu-gpu-headroom.md)：上限推导改用实测基线，multi 与标准场景共用同一个空手上限。
+- [refactor/Home.md](docs/architecture/client/render/refactor/Home.md)：multi 目标从 ≤1.55 ms 恢复为 **≤1.0 ms**（0.852 + 约 0.15）。
+- [scheme-a](docs/architecture/client/render/refactor/scheme-a-micro.md) / [scheme-b](docs/architecture/client/render/refactor/scheme-b-baked-mesh.md) / [scheme-d](docs/architecture/client/render/refactor/scheme-d-culling-lod-parallel.md)：按新基线重算，D 的敏感性表改为 `0.852 + 5.217 × f`，全剔除上限从 1.33 改成 0.85，结论仍是“最多压到约 3.5 ms，触不到 1.0”。
+- [TODO.md](docs/architecture/client/render/TODO.md)：场景基线标记为已测。
+
+一个口径提醒：baseline 用的是 `customgun-26.11.35.1`（改探针之前的构建），但那段场景没有枪、也不开 F12，新增探针不产生开销，因此与本批次数据可比。
+
+# 
+
+[fork3](#fork3)
+[fork4](#fork4)
+
+# fork3
+
+```
+1.20.1 BufferUploaderMixin没通过编译，26.3已经通过编译
+```
+
+# 
+
+`ShaderInstance` 在 1.20.1 里属于 `net.minecraft.client.renderer`，不是 `com.mojang.blaze3d.shader`（那是 26.x 的包名）。已修正，正在用 UTF-8 重新全量编译验证。
+
+修好了，1.20.1 和 26.3 现在都是 `0 error` + `BUILD SUCCESSFUL`。
+
+## 两处错误
+
+1. **`ShaderInstance` 包名不同**：1.20.1 是 `net.minecraft.client.renderer.ShaderInstance`，`com.mojang.blaze3d.shader.ShaderInstance` 是 26.x 的路径。导入和 `@Redirect` 的目标描述符都改了。
+2. **`DrawState.indexBufferSize()` 是私有方法**：改用公开的 `state.bufferSize()`（等价于顶点 + 索引字节）。
+
+## 关于之前的「编译通过」
+
+是我的验证方式有问题：命令写成了 `gradlew ... | tail -40`，shell 返回的是 `tail` 的退出码，所以 Gradle 失败也被显示成 exit 0。这次改成写完整日志再检查 `error:` 数量与 `BUILD SUCCESSFUL`，双端都确认过了。
+
+另外重跑时发现一个与本次改动无关的现象：在这个 CP1252 环境的 shell 里做全量编译（`--rerun-tasks`），仓库里已有的中文注释会报 `unmappable character for encoding windows-1252`。加 `JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF-8` 后正常。你在 IDEA 里构建应该碰不到；如果以后要在纯 shell 里做全量构建，可以留意这一点。
+
+# fork4
+
+```
+数据测好了，开始分析写报告
+注意到1.20.1空手开测后FPS比基准掉了200FPS，测量引入的开销较大
+```
+
+# 
+
+数据齐了。先把标准口径统计跑出来，再单独解析新探针。
+
+核心数据已经解析出来，其中包括几个会改变结论的点：upload 占 flush 的主体、每次 draw 约 10 µs、静态场景 State changes 为 0、分配量远低于预估。现在写报告。
+
+报告已写好。现在把实测值回填到链路与方案文档。
+
+报告写完了：[26.35.11.1-2/测试数据计算报告.md](docs/architecture/client/render/benchmark/26.35.11.1-2/测试数据计算报告.md)，对应的链路与方案文档已按实测回填。
+
+## 几个会改变判断的结果
+
+1. **上传是 flush 的主体，draw 是稳定的下限。** multi 里 CGC 上传 0.535 ms、draw 0.181 ms；单次 draw 在标准与 multi 都是 **9–10 µs**。持久 VBO 能去掉上传，但 18 次 draw 仍在，所以 B1 之后 multi 约 1.15–1.2 ms，要靠 B2 合并到 3–4 次 draw 才到 0.95–1.0 ms。
+
+2. **分配不是问题。** 每枪实际只分配约 **0.10 MB**（顶点数据本身是 0.388 MB），说明 JIT 逃逸分析把临时 `Vector3f`/`Vector4f` 基本消掉了。方案 A 里「去分配」的两项（A3/A4）价值比原先估计低得多，已在文档里降级。
+
+3. **静态展示的几何确实每帧相同。** `State changes` 在 9 个展示框场景是 **0.00**；第一人称是 0.98–2.00、12 条活跃动画通道。B 的缓存前提成立，第一人称适合「root 矩阵 + 脏子树」。
+
+4. **GPU「忙时」这个指标不成立。** 整帧 `GL_TIME_ELAPSED` 恒为帧时间的 99.4%–99.8%：它测的是第一条到最后一条 GPU 命令的跨度，CPU 间断提交时自然等于帧时间，不能区分 CPU-bound / GPU-bound。已在报告、链路文档和方案里改成「命令跨度」，并写明需要 per-pass 计时或驱动计数器。
+
+5. **模板清空在 multi 下 0.039 ms/帧**（9 把各清一次）。现在只占 0.7%，但烘焙之后它会变成剩余成本里显眼的一项，应改为每帧最多清一次。
+
+## 关于探针开销
+
+AF 跨批次对照显示：26.3 全步骤、1.20.1 除持枪外都多出 **0.06–0.09 ms/帧**（空手约 7%，multi 约 1.3%）。26.3 没有 upload/draw mixin 也一样慢，说明开销来自两端共用的整帧 GPU 查询（每帧创建查询 + 可用性轮询）和分配采样，而不是 `nanoTime` 埋点——AF 与内置帧时间之差仍然只有 0.003–0.006 ms。
+
+你在现场看到的 1300 → 1100（约 200 FPS）比这个更大。两者口径不同，报告里保留了这个差异，建议下次在同一会话里做一次「F12 开 / 关」A/B 才能定论。若继续用这套探针，下批采集前应把 GPU 查询与分配采样改成每 N 帧一次。
+
+## 结论对路线的影响
+
+- multi 目标仍为 **≤1.0 ms**，第一人称目标放宽到 **≤1.05 ms**（CGC ≤0.25）：delegate（文字 / 手臂 / 火焰 / 抛壳）与状态更新会留下约 0.25 ms，遍历和上传全消也到不了 0.15。
+- 按你之前的方向，A 里只值得做「合并同纹理 flush、去掉 1.20.1 双重节点快照、模板每帧一清」，其余直接进 B1-a（静态展示烘焙）。
+
+两个工作区的改动都还没提交，等你验收。

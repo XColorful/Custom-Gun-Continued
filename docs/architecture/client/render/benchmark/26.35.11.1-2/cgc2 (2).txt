@@ -1,0 +1,24 @@
+10-11-2026, 19:52:19 javaw.exe benchmark completed, 9844 frames rendered in 10.765 s
+                     Average framerate  :  914.4 FPS
+                     Minimum framerate  :  868.8 FPS
+                     Maximum framerate  :  947.1 FPS
+                     1% low framerate   :  434.7 FPS
+                     0.1% low framerate :   77.9 FPS
+10-11-2026, 19:53:01 javaw.exe benchmark completed, 6583 frames rendered in 10.813 s
+                     Average framerate  :  608.8 FPS
+                     Minimum framerate  :  557.1 FPS
+                     Maximum framerate  :  649.6 FPS
+                     1% low framerate   :  326.3 FPS
+                     0.1% low framerate :   51.3 FPS
+10-11-2026, 19:53:28 javaw.exe benchmark completed, 9629 frames rendered in 10.860 s
+                     Average framerate  :  886.6 FPS
+                     Minimum framerate  :  794.5 FPS
+                     Maximum framerate  :  962.1 FPS
+                     1% low framerate   :  438.7 FPS
+                     0.1% low framerate :  259.2 FPS
+10-11-2026, 19:53:57 javaw.exe benchmark completed, 10085 frames rendered in 10.890 s
+                     Average framerate  :  926.0 FPS
+                     Minimum framerate  :  851.8 FPS
+                     Maximum framerate  :  977.2 FPS
+                     1% low framerate   :  463.3 FPS
+                     0.1% low framerate :  113.9 FPS

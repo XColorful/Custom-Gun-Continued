@@ -72,53 +72,54 @@ graph TB
 |量纲|含义|随什么增长|benchmark 中的表现|
 |---|---|---|---|
 |`C_fixed`|每帧固定入口开销|不随枪数|空快捷栏与 `/clear` 都是基线，说明不渲染枪时几乎为零|
-|`C_gun`|单次枪械提交开销（S2–S4）|随「画面中的枪次数」线性|标准持枪 Δ +0.636 ms；multi 每把展示框枪 ≈ 0.54 ms|
-|`C_flush`|一次 flush 的固定代价|随子模型数线性|待测|
-|`C_vertex`|单顶点生成代价|随总顶点数线性|待测|
+|`C_gun`|单次枪械提交开销（S2–S4）|随「画面中的枪次数」线性|标准持枪 Δ +0.583 ms（CGC 0.507）；multi 每把展示框枪 ≈0.461 ms|
+|`C_flush`|一次 flush 的固定代价|随子模型数线性|显式 flush 0.106 ms（标准）/ 0.794 ms（multi）；单次 draw ≈10 µs，上传 5–6.5 GB/s|
+|`C_vertex`|单顶点生成代价|随总顶点数线性|约 27 ns/顶点（0.289 ms / 10 704 顶点）|
 
 由 benchmark 可得的两个直接结论：
 
-1. **`C_gun` 与场景无关**：第一人称单枪 0.636 ms 与展示框单枪 ~0.54 ms 同量级，说明成本由「一次提交」决定，而不是由「相机怎么摆」决定。
-2. **`C_gun` 存在约一个数量级的压缩空间**：同样 9 个展示框，TaCZ 1.2.0 只增加 ≈0.039 ms/枪，而 CGC 约 0.54 ms/枪（详见 [场景差异与静态化](./scenes-and-static.md)）。这是「理想上限」最直接的参照。
+1. **`C_gun` 与场景无关**：第一人称单枪 0.507 ms 与展示框单枪 0.461 ms 同量级，说明成本由「一次提交」决定，而不是由「相机怎么摆」决定。
+2. **`C_gun` 存在约一个数量级的压缩空间**：同样 9 个展示框，TaCZ 1.2.0 只增加 ≈0.039 ms/枪，而 CGC 约 0.461 ms/枪（详见 [场景差异与静态化](./scenes-and-static.md)），约 12 倍。这是「理想上限」最直接的参照。
 
 ## 基准数据锚点
 
 |场景|帧率|帧时间|相对基线|推导|
 |---|---:|---:|---:|---|
-|cgc1 空快捷栏|1257.8|0.795 ms|—|基线|
-|cgc1 第一人称持枪|699.0|1.431 ms|+0.636 ms|`C_gun`（第一人称）|
-|cgc1 切换槽位|1192.7|0.838 ms|+0.043 ms|GUI 槽位图标很便宜|
-|cgc1 `/clear`|1273.0|0.785 ms|≈0|不提交即无成本|
-|cgc1 multi 持枪|159.4|6.273 ms|+4.84 ms vs 标准持枪|9 把展示框 ≈ 0.54 ms/把|
-|cgc1 multi 清空|151.3|6.609 ms|—|清枪更慢：展示框占绝对主导|
+|cgc1 空快捷栏|1160.1|0.862 ms|—|基线（含约 0.06 ms 探针开销）|
+|cgc1 第一人称持枪|692.0|1.445 ms|+0.583 ms|`C_gun`（第一人称），CGC 0.507|
+|cgc1 切换槽位|1113.0|0.899 ms|+0.036 ms|GUI 槽位图标很便宜|
+|cgc1 `/clear`|1168.4|0.856 ms|≈0|不提交即无成本|
+|cgc1 multi 仅 9 展示框|183.9|5.449 ms|+4.597 ms vs 场景基线 0.852|每把 ≈0.511 ms|
+|cgc1 multi + 手持枪|153.1|6.533 ms|+5.681 ms|9 把 + 第一人称一把|
+|cgc1 multi 场景基线（无枪）|1174.3|**0.852 ms**|+0.05 ms vs 空快捷栏|9 个石头 + 9 个空展示框|
 |tacz1 multi 持枪|844.2|1.185 ms|+0.355 ms vs 其标准持枪|9 把 ≈ 0.039 ms/把（静态化）|
 
-口径说明：multi 每组仅 1 次重复，且混入了 9 个石头方块与展示框实体本身的开销；因此上表的「每把」是从组间差值做的量级估算，不是精确单枪测量。
+数据取自 [`26.35.11.1-2`](../benchmark/26.35.11.1-2/测试数据计算报告.md)（两端各 6 次重复）与其中的 [`multi-baseline/`](../benchmark/26.35.11.1-2/multi-baseline/)；TaCZ 一行仍来自 `26.35.11.1`。本批次新增探针带来约 0.06–0.09 ms/帧的固定开销，所以空手与标准场景的绝对值略高于无探针构建（上一批空手 0.800 ms）。
 
 ## 优化上限
 
-优化上限取**空手帧时间**（0.795–0.800 ms，≈1250–1300 FPS）：这是不画枪时的整帧时间，重构可以逼近但不能低于它。当前 CGC 成本为 multi 4.7348 ms、第一人称 0.5565 ms/帧。标准场景与第一人称的上限就是空手帧时间；multi 场景自身还有约 1.2–1.33 ms 的基线（9 个展示框实体 + 方块 + HUD），CGC 归零也到不了空手帧时间，详见 [CPU / GPU 利用与优化上限](./cpu-gpu-headroom.md#优化上限的推导)。
+优化上限取**空手帧时间**：无探针构建约 0.795–0.800 ms（≈1250–1300 FPS），本批次含探针约 0.862 ms。这是不画枪时的整帧时间，重构可以逼近但不能低于它。当前 CGC 成本为 multi 4.146 ms、第一人称 0.507 ms/帧。multi 的场景基线已单独实测为 **0.852 ms**（1.20.1，9 个石头 + 9 个空展示框、无手持枪；26.3 为 1.109 ms），只比空快捷栏高约 0.05 ms，因此 multi 与标准场景共用同一个上限。详见 [CPU / GPU 利用与优化上限](./cpu-gpu-headroom.md#优化上限的推导)。
 
 瓶颈判定与推导见 [CPU / GPU 利用与优化上限](./cpu-gpu-headroom.md)：现有证据（增量随提交次数线性、26.2+ 延迟渲染把 CPU 顶点生成压到 54% 后帧时间同步下降）指向 CPU 侧的顶点生成与提交；GPU 余量尚未实测，按几何量与带宽推算不是当前瓶颈，但 draw call 与 overdraw 仍需确认。
 
 ## 损耗点清单
 
-编号用于各子文档与后续埋点对齐。量级一栏在没有日志前一律为「待测」；只有 benchmark 能直接支持的量级才写数值。
+编号用于各子文档与后续埋点对齐。量级取自 [第二批报告](../benchmark/26.35.11.1-2/测试数据计算报告.md)（1.20.1，标准持枪 / multi 9 展示框）；仍无数据的项标「无数据」。
 
-|编号|损耗点|位置|性质|证据|
+|编号|损耗点|位置|性质|量级|
 |---|---|---|---|---|
-|P1|入口事件桥与渲染器选择的固定开销|`FirstPersonRender` / `RenderHandEventManager`|每帧固定|待测|
-|P2|第三人称下状态机每帧 `visualUpdate`，与渲染重复|`_LocalAnimHandler.onRenderFrame`|每枪 + 每帧|待测|
-|P3|每次提交重读全部附件槽位（物品 / NBT / 资源索引）|`_GunModelRender` 刷新状态段|每枪 + 每帧|源码 TODO 已标注|
-|P4|每个节点每帧重建变换快照，逐节点 apply / 还原|`ModelObject.render`|每枪 + 每节点|待测|
-|P5|每帧分配（列表、节点快照、顶点临时对象）|`ModelObject` / `BedrockCubeBox`|每顶点 + 每节点|待测|
-|P6|子模型各自 `endBatch`，打断全局合批|`ModelObject` / `TextRender` / `HandRender`|每 flush|待测|
-|P7|批键是 `RenderType` 实例，而实例按纹理 memoize：不同配件纹理必然各占一次绘制|`RenderType` / `BufferSource`|每次提交|源码可证（`energySwirl` 例外，每帧新建）|
-|P8|模板窗口内改用独立缓冲源，并每枪清一次模板缓冲|`ClientRenderHelper.GL` / `_GunModelRender`|每枪 + 每帧|待测（GPU 依赖强）|
-|P9|delegate 渲染缓存矩阵后重建 PoseStack 再提交|`MuzzleFlashRender` / `TextRender` / `AttachmentRender`|每子模型|待测|
-|P10|静态展示（展示框 / 地面）无任何结果复用|`GunItemRenderer.renderByItem`|每枪 + 每帧|benchmark 强证据|
-|P11|LOD 只减少顶点，不减少提交与 flush|`ClientRenderDistance`|乘数|待测|
-|P12|draw call 数与 overdraw|S5|GPU|推算，待测|
+|P1|入口事件桥与渲染器选择的固定开销|`FirstPersonRender` / `RenderHandEventManager`|每帧固定|0.001 ms（`Hand event entry`）|
+|P2|第三人称下状态机每帧 `visualUpdate`，与渲染重复|`_LocalAnimHandler.onRenderFrame`|每枪 + 每帧|第一人称 `State update` 0.028 ms；第三人称未测|
+|P3|每次提交重读全部附件槽位（物品 / NBT / 资源索引）|`_GunModelRender` 刷新状态段|每枪 + 每帧|0.003 ms（multi 9 把 0.026）|
+|P4|每个节点每帧重建变换快照，逐节点 apply / 还原|`ModelObject.render`|每枪 + 每节点|0.010 ms（multi 9 把 0.064）|
+|P5|每帧分配（列表、节点快照、顶点临时对象）|`ModelObject` / `BedrockCubeBox`|每顶点 + 每节点|每枪约 0.10 MB，逃逸分析已消掉大部分临时向量|
+|P6|子模型各自 `endBatch`，打断全局合批|`ModelObject` / `TextRender` / `HandRender`|每 flush|显式 flush 3 次（标准）/ 9 次（multi）；上传 0.077 / 0.535 ms，draw 0.037 / 0.181 ms|
+|P7|批键是 `RenderType` 实例，而实例按纹理 memoize：不同配件纹理必然各占一次绘制|`RenderType` / `BufferSource`|每次提交|CGC draw 4 次（标准）/ 约 18 次（multi）；单次约 10 µs|
+|P8|模板窗口内改用独立缓冲源，并每枪清一次模板缓冲|`ClientRenderHelper.GL` / `_GunModelRender`|每枪 + 每帧|模板清空 0.005 ms（标准）/ 0.039 ms（multi，9 把）|
+|P9|delegate 渲染缓存矩阵后重建 PoseStack 再提交|`MuzzleFlashRender` / `TextRender` / `AttachmentRender`|每子模型|0.079 ms（标准）/ 0.091 ms（multi + 手持枪）|
+|P10|静态展示（展示框 / 地面）无任何结果复用|`GunItemRenderer.renderByItem`|每枪 + 每帧|每枪 0.461 ms CGC；`State changes = 0` 证实几何每帧相同|
+|P11|LOD 只减少顶点，不减少提交与 flush|`ClientRenderDistance`|乘数|LOD 命中 0（测试场景），未触发|
+|P12|draw call 数与 overdraw|S5|GPU|整帧计时只得到命令跨度；overdraw 无数据|
 |P13|26.2+ 延迟渲染把 submit 与 flush 分离|26.3 工作区|结构性|源码可证|
 
 ## 测量与数据登记
@@ -142,6 +143,8 @@ graph TB
 |`Functional nodes`|功能性节点回调（显隐 / 替换渲染登记）|P4|
 |`Geometry traverse`|`shouldRender` 遍历与顶点生成|P5|
 |`endBatch flush`|所有 `endBatch` 的耗时合计|P6|
+|`endBatch upload`|整帧所有 `BufferUploader` 上传（含隐式 flush / 世界实体；mixin 埋点）|P6|
+|`endBatch draw`|整帧所有 `drawWithShader`（同上；mixin 埋点）|P6|
 |`Delegate render`|枪口火焰 / 抛壳 / 手臂 / 文字 / 配件|P9|
 |`Muzzle cache`|第一人称枪口位置缓存|—|
 |`Stencil clear`|瞄具模板缓冲清空|P8 后半|
@@ -150,23 +153,29 @@ graph TB
 |`Hand camera`|`BeforeRenderHandEvent` 的手部相机动画|渲染外开销|
 |`FOV`|`COMPUTE_FOV_EVENT` 与 `COMPUTE_FOV_MODIFIER_EVENT`|渲染外开销|
 
-计数器：第一人称提交次数、世界提交次数、`endBatch` 次数、立方体数（×24 即顶点量）、节点快照数（`NodeTransform` 分配量约 2×）、几何批次数（`getBuffer` 次数）、模板窗口数、LOD 命中数。
+计数器：第一人称提交次数、世界提交次数、`endBatch` 次数、立方体数（×24 即顶点量）、节点快照数（`NodeTransform` 分配量约 2×）、几何批次数（`getBuffer` 次数）、模板窗口数、LOD 命中数、draw 次数、上传字节数（顶点 + 索引）、渲染线程每帧分配字节数、动画通道数、节点状态指纹变化次数（每次提交的几何是否真的变了，直接对应「静态场景能否复用」）。
+
+整帧另有 `GPU frame busy`：`GL_ARB_timer_query` 的 `GL_TIME_ELAPSED`，延迟一帧读取；F3 打开时原版自己会占用同类查询，探针自动跳过。
 
 探针之间可以嵌套（提交包含模型渲染，模型渲染包含 flush），报告里各算各的，不能直接相加。
 
-> **26.2+（26.3 分支）**：同一套埋点保留，只有两处语义随延迟渲染改变——`Model render total` 拆成 `Model submit`（提交阶段：节点快照采集 + 提交几何）与 `Model flush`（flush 回调：真正的顶点生成，含遍历与 delegate）；`endBatch` 计数改为 `Geometry submits` / `Flush callbacks`，`CGC render per frame` 按「提交 + flush 回调」计算。瞄具模板不再逐枪 `glClear`，`Stencil clear` 恒为 0。`DebugKey`、开关逻辑、报告格式与 1.20.1 完全一致。
+> **26.2+（26.3 分支）**：同一套埋点保留，只有两处语义随延迟渲染改变——`Model render total` 拆成 `Model submit`（提交阶段：节点快照采集 + 提交几何）与 `Model flush`（flush 回调：真正的顶点生成，含遍历与 delegate）；`endBatch` 计数改为 `Geometry submits` / `Flush callbacks`，`CGC render per frame` 按「提交 + flush 回调」计算。瞄具模板不再逐枪 `glClear`，`Stencil clear` 恒为 0。26.3 当前只有 `GPU frame busy`、渲染线程分配字节与动画通道数；`endBatch upload` / `endBatch draw` 与 draw 次数要等 26.3 的自定义 FeatureRenderer 实现后再补。`DebugKey`、开关逻辑、报告格式与 1.20.1 完全一致。
 
 ### 输出
 
 - 采集周期：按 F12 开始，再按一次停止；停止瞬间统计并追加写入
 - 文件：游戏目录下的 `customgun-render-profile.txt`，格式与 Afterburner 的 `Benchmark.txt` 类似，一次采集一个区块
 - 每帧归属：帧边界取 `RENDER_FRAME_EVENT`（整帧渲染结束），因此一个样本完整覆盖世界、手部与 GUI 三个阶段
-- 统计量：帧时间的平均 / 最小 / 最大 / 1% high（p99）；每个探针的平均 / 最小 / 最大 / p99 以及命中帧占比
+- 统计量：帧时间的平均 / 最小 / 最大 / 1% high（p99）；每个探针的平均 / 最小 / 最大 / p99 以及命中帧占比；`GPU frame busy` 的平均 / 最小 / 最大 / p99 与占帧比
 - 存储上限：10 万帧，超出后丢弃并标注
 
 ### 数据登记
 
-首次实测（CGC 1.20.1 与 26.3 双端，各 6 次重复）见 [基准报告](../benchmark/26.35.11.1-1/测试数据计算报告.md)：1.20.1 持枪单次提交 0.5565 ms、9 个展示框 4.73 ms/帧；26.3 为 0.3017 ms（提交 + flush 回调）与 1.79 ms/帧。每次测量必须记录「场景 + 枪数 + 是否第一人称 + 是否开光影」，否则无法与 benchmark 对齐。填入后回填本页与各子文档的「待测项」。
+首次实测见 [第一批报告](../benchmark/26.35.11.1-1/测试数据计算报告.md)；扩展探针（上传 / draw 拆分、draw 数、上传字节、分配、状态变化）见 [第二批报告](../benchmark/26.35.11.1-2/测试数据计算报告.md)：1.20.1 持枪 CGC 0.507 ms（遍历 0.289、flush 0.106、delegate 0.079），9 个展示框 4.146 ms/帧（每把 0.461），单次 draw ≈10 µs、上传 ≈6.5 GB/s；26.3 持枪 0.303 ms、9 个展示框 1.771 ms。每次测量必须记录「场景 + 枪数 + 是否第一人称 + 是否开光影」，否则无法与 benchmark 对齐。
+
+> 第二批的 `GPU frame busy` 实测恒为帧时间的 99.4%–99.8%：它测的是 GPU 命令跨度，不是利用率，不能据此判定 GPU 余量。第二批新增探针本身带来约 0.06–0.09 ms/帧的固定开销。
+
+第二批（`endBatch upload` / `endBatch draw`、draw 数、上传字节、分配字节、GPU 忙时、动画通道数）的采集口径见 [`benchmark/26.35.11.1-2`](../benchmark/26.35.11.1-2/标准.txt)：标准 4 步 + multi 2 段；multi 的场景基线已在同目录的 [`multi-baseline/`](../benchmark/26.35.11.1-2/multi-baseline/) 单独测好，并入该批次报告。数据到位后优先回填 [CPU / GPU 与上限](./cpu-gpu-headroom.md) 与 [重构方案](../refactor/Home.md) 的推算值。
 
 ## 与重构计划的关系
 

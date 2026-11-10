@@ -49,3 +49,10 @@ if (additionalMagazine != null) {
 - 这段只需要内置探针，Afterburner 可跑可不跑
 
 报告 [5.1](docs/architecture/client/render/benchmark/26.35.11.1-1/测试数据计算报告.md:108) 与结论第 6 条已标注「1.20.1 已修、26.3 待同步」。26.3 的修复等你这一轮数据回来再做。
+
+# 
+
+```
+1.20.1和26.3的渲染分支都已经应用修复了，测试内容在26.35.11.1-1/#91 additional-magazine-fix/下
+更新下这个benchmark的文档并说明已经修复，后续基准测试不会引入这个问题
+```

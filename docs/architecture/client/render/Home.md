@@ -118,4 +118,5 @@ graph TB
 |[GUI 装配界面与提示框](./gui-and-tooltip.md)|枪械改装界面、tooltip 的渲染与变换|
 |[资源读取](./resource-reading.md)|从 ClientResourceApi 获取的 POJO / Instance 与美术资源的对应关系|
 |[渲染链路分析](./chain/Home.md)|技术链路与性能成本视角：一帧被调用几次、每次花在哪一层（重构依据）|
+|[渲染重构方案](./refactor/Home.md)|目标与成功判据、多方案对比、推荐路线与测量验收|
 |[渲染性能基准](./benchmark/Home.md)|各批次基准测试报告入口（端间对比 / CGC 单端探针构成）|

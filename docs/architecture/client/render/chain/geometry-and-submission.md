@@ -67,6 +67,10 @@ flush ≈ 1（枪体）
 
 `ModelObject.render` 会先 flush 主体、再执行 delegate（`:221-245`）。delegate 收到的 `VertexConsumer` 参数基本被忽略：配件、文字、枪口火焰都各自从 `ClientRenderHelper.GL.getModelBufferSource()` 重新取 buffer，因此它们写入的是「当前缓冲源里的下一批」，直到下一个 flush 点才提交。
 
+内置探针的实测计数（`benchmark/26.35.11.1-1/*-builtin*.txt`）：第一人称一次提交 **3 次 `endBatch`**（枪体 1 + 左右手各 1）、4 次 `getBuffer`；9 个展示框 **9 次**（每把 1 次）；第一人称 + 9 展示框 12 次。上式中的入口 flush 在 1.20.1 是空实现（`IrisCompat.endBatch`），模板窗口关闭时的 flush 只在装瞄具且窗口确实开启时发生。
+
+还有一处隐式 flush 不在 `endBatch` 探针内：`MultiBufferSource.getBuffer(renderType)` 在 RenderType 变化时会先 `endBatch` 上一个桶（`MultiBufferSource.java:42-48`）。逐模型提交时纹理切换本身就会触发 flush，这也是「同款枪为什么不合并」的直接原因。
+
 结论：**flush 次数随子模型数量线性增长，而不是每帧固定几次**。每次 flush 都打断同帧其它实体的合批，且用全局源时会把整帧的实体几何一起提交掉。
 
 ## RenderType：纹理就是批键

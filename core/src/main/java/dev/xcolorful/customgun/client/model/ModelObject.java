@@ -10,7 +10,6 @@ import dev.xcolorful.customgun.client.resource.assets.model.BedrockModel;
 import dev.xcolorful.customgun.client.resource.assets.model.bedrock.geometry._Bone;
 import dev.xcolorful.customgun.client.util.ClientModelUtils;
 import dev.xcolorful.customgun.client.util.ClientRenderHelper;
-import dev.xcolorful.customgun.client.util.ClientRenderProfiler;
 import dev.xcolorful.customgun.core.api.resource.assets.model.bedrock.geometry.NodeName;
 import dev.xcolorful.customgun.core.resource.instance.PojoInstance;
 import net.minecraft.client.renderer.SubmitNodeCollector;
@@ -188,14 +187,11 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
         @Nullable SubmitNodeCollector collector = ClientRenderHelper.FirstPersonArmHelper.getFirstPersonArmCollector();
         if (collector == null) return;
 
-        final long profModel = ClientRenderProfiler.begin();
-
         List<BedrockPart> parts = new ArrayList<>(); { // [26.2, )
             for (IBedrockRenderer renderer : this.modelMap_values()) {
                 parts.add(renderer.getModelRenderer());
             }
         }
-        ClientRenderProfiler.countNodes(parts.size());
         List<NodeTransform> animatedTransforms = new ArrayList<>(parts.size()); { // [26.2, )
             for (BedrockPart part : parts) {
                 animatedTransforms.add(NodeTransform.capture(part));
@@ -204,12 +200,8 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
 
         RenderType bakedRenderType = ClientRenderHelper.bakePipelineState(renderType); // [26.2, )
 
-        ClientRenderProfiler.countSubmit();
         collector.submitCustomGeometry(matrixStack, bakedRenderType, (pose, builder) -> {
-            final long profFlush = ClientRenderProfiler.begin();
-            ClientRenderProfiler.countFlushCallback();
             // flush 阶段节点已被清空，先保存当前（已清空）状态，恢复动画状态绘制，最后再还原已清空状态
-            final long profSnapshot = ClientRenderProfiler.begin();
             List<NodeTransform> cleanedTransforms = new ArrayList<>(parts.size()); { // [26.2, )
                 for (int i = 0; i < parts.size(); i++) {
                     BedrockPart part = parts.get(i);
@@ -220,13 +212,11 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
                     transform.apply();
                 }
             }
-            ClientRenderProfiler.end(ClientRenderProfiler.SNAPSHOT, profSnapshot);
 
             try {
                 PoseStack _matrixStack = new PoseStack();
                 _matrixStack.last().set(pose);
 
-                final long profTraverse = ClientRenderProfiler.begin();
                 {
                     for (int i = 0; i < this.shouldRender.size(); i++) {
                         this.shouldRender.get(i)
@@ -237,13 +227,11 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
                                         red, green, blue, alpha);
                     }
                 }
-                ClientRenderProfiler.end(ClientRenderProfiler.TRAVERSE, profTraverse);
 
 //                if (!IrisCompat.endBatch(bufferSource)) {
 //                    bufferSource.endBatch();
 //                }
 
-                final long profDelegate = ClientRenderProfiler.begin();
                 for (int i = 0; i < this.delegateRenderers.size(); i++) {
                     IModelComponentRenderer renderer = delegateRenderers.get(i);
                     renderer.render(_matrixStack,
@@ -252,17 +240,14 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
                             light, overlay);
                 }
                 this.delegateRenderers = new ArrayList<>();
-                ClientRenderProfiler.end(ClientRenderProfiler.DELEGATE, profDelegate);
             } finally {
                 for (int i = 0; i < cleanedTransforms.size(); i++) { // [26.2, )
                     NodeTransform transform = cleanedTransforms.get(i);
                     transform.apply();
                 }
             }
-            ClientRenderProfiler.end(ClientRenderProfiler.MODEL_FLUSH, profFlush);
         }
         );
-        ClientRenderProfiler.end(ClientRenderProfiler.MODEL_SUBMIT, profModel);
     }
 
     // --------Deprecated--------

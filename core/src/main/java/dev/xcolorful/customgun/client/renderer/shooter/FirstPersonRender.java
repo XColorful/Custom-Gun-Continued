@@ -18,7 +18,6 @@ import dev.xcolorful.customgun.client.compat.iris.IrisCompat;
 import dev.xcolorful.customgun.client.config.SoundConfig;
 import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
 import dev.xcolorful.customgun.client.sound.SoundPlayManager;
-import dev.xcolorful.customgun.client.util.ClientRenderProfiler;
 import dev.xcolorful.customgun.core.api.event.EventType;
 import dev.xcolorful.customgun.core.api.event.IEvent;
 import dev.xcolorful.customgun.core.api.event.IEventHandler;
@@ -54,9 +53,7 @@ public class FirstPersonRender implements IEventHandler {
     @Override
     public void handleEvent(EventType eventType, IEvent event) {
         if (eventType == EventType.RENDER_HAND_EVENT) {
-            final long profEntry = ClientRenderProfiler.begin();
             onRenderHand((IRenderHandEvent) event);
-            ClientRenderProfiler.end(ClientRenderProfiler.ENTRY, profEntry);
         } else {
             onReceiveWrongEvent(eventType);
         }

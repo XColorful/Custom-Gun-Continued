@@ -18,7 +18,6 @@ import dev.xcolorful.customgun.client.resource.assets.display.AttachmentDisplay;
 import dev.xcolorful.customgun.client.resource.assets.display._LodDisplay;
 import dev.xcolorful.customgun.client.resource.instance.data.ClientAttachmentIndexInstance;
 import dev.xcolorful.customgun.client.util.ClientRenderDistance;
-import dev.xcolorful.customgun.client.util.ClientRenderProfiler;
 import dev.xcolorful.customgun.client.util.ClientRenderHelper;
 import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import dev.xcolorful.customgun.core.api.item.IAttachment;
@@ -58,7 +57,6 @@ public class AttachmentRender implements IModelComponentRenderer {
             if (collector == null) return;
 
             RenderType missingRenderType = ClientRenderUtils.RenderType_.entityTranslucent(ClientRenderUtils.getMissingTextureLocation());
-            ClientRenderProfiler.countSubmit();
             collector.submitCustomGeometry(poseStack, missingRenderType, (pose, buffer) -> {
                 PoseStack _poseStack = new PoseStack();
                 _poseStack.last().set(pose);
@@ -84,7 +82,6 @@ public class AttachmentRender implements IModelComponentRenderer {
                     // 有低模display
                     attachmentModelObject = attachmentModelLod;
                     attachmentTextureLocation = lodDisplay.getTextureLocation();
-                    ClientRenderProfiler.countLod();
                 }
             }
         }

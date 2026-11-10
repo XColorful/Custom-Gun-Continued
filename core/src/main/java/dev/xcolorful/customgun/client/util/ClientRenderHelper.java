@@ -155,7 +155,6 @@ public class ClientRenderHelper {
          *     <li>这里按 1.20.1-1.21.6 的即时模式直接渲染手臂，使手的渲染仍处于模板测试期间</li>
          * </ul>
          */
-        ClientRenderProfiler.countSubmit();
         collector.submitCustomGeometry(matrixStack, bakedRenderType, (pose, vertexConsumer) -> {
             PoseStack _poseStack = new PoseStack();
             _poseStack.last().set(pose);

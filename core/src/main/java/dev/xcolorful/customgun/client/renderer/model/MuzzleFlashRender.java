@@ -19,7 +19,6 @@ import dev.xcolorful.customgun.client.resource.assets.display.GunDisplay;
 import dev.xcolorful.customgun.client.resource.assets.display.gun._MuzzleFlashDisplay;
 import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
 import dev.xcolorful.customgun.client.util.ClientRenderHelper;
-import dev.xcolorful.customgun.client.util.ClientRenderProfiler;
 import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import dev.xcolorful.customgun.core.api.item.IAttachment;
 import dev.xcolorful.customgun.core.api.item.attachment.AttachmentCategory;
@@ -152,7 +151,6 @@ public class MuzzleFlashRender implements IModelComponentRenderer {
             ClientRenderHelper.rotate(poseStack2, Axis.ZP.rotationDegrees(State.muzzleFlashRandomRotate));
             poseStack2.translate(0, -1, 0);
             RenderType renderTypeBg = ClientRenderUtils.RenderType_.entityTranslucent(muzzleFlashDisplay.getTextureLocation());
-            ClientRenderProfiler.countSubmit();
             collector.submitCustomGeometry(poseStack2, renderTypeBg, (pose, vertexConsumer) -> {
                 PoseStack _poseStack = new PoseStack();
                 _poseStack.last().set(pose);
@@ -167,7 +165,6 @@ public class MuzzleFlashRender implements IModelComponentRenderer {
             ClientRenderHelper.rotate(poseStack2, Axis.ZP.rotationDegrees(State.muzzleFlashRandomRotate));
             poseStack2.translate(0, -0.9, 0);
             RenderType renderTypeLight = ClientRenderUtils.RenderType_.energySwirl(muzzleFlashDisplay.getTextureLocation(), 1, 1);
-            ClientRenderProfiler.countSubmit();
             collector.submitCustomGeometry(poseStack2, renderTypeLight, (pose, vertexConsumer) -> {
                 PoseStack _poseStack = new PoseStack();
                 _poseStack.last().set(pose);

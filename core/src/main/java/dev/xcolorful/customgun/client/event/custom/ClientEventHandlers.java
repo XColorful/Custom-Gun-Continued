@@ -11,7 +11,6 @@ import dev.xcolorful.customgun.client.renderer.shooter.FirstPersonRender;
 import dev.xcolorful.customgun.client.renderer.victim.GunHurtBobTweak;
 import dev.xcolorful.customgun.client.resource._AllAssetsManager;
 import dev.xcolorful.customgun.client.sound.SoundPlayManager;
-import dev.xcolorful.customgun.client.util.ClientRenderProfiler;
 import dev.xcolorful.customgun.core.api.event.CustomEventType;
 import dev.xcolorful.customgun.core.api.event.EventPriority;
 import dev.xcolorful.customgun.core.api.event.EventType;
@@ -31,7 +30,6 @@ public class ClientEventHandlers {
         CoreEventHandlers.register(customEventRegister, GunCameraHelper.get(), EventType.COMPUTE_FOV_MODIFIER_EVENT, EventPriority.LOW, false);
         CoreEventHandlers.register(customEventRegister, _LocalAnimHandler.get(), EventType.CLIENT_TICK_EVENT, EventPriority.NORMAL, false);
         CoreEventHandlers.register(customEventRegister, _LocalAnimHandler.get(), EventType.RENDER_FRAME_EVENT, EventPriority.NORMAL, false);
-        CoreEventHandlers.register(customEventRegister, ClientRenderProfiler.get(), EventType.RENDER_FRAME_EVENT, EventPriority.LOW, false);
         CoreEventHandlers.register(customEventRegister, FirstPersonRender.get(), EventType.RENDER_HAND_EVENT, EventPriority.NORMAL, false);
         CoreEventHandlers.register(customEventRegister, _LocalPerspectiveHandler.Helper.get(), EventType.PREPARE_CLIENT_TICK_EVENT, EventPriority.LOWEST, false);
 

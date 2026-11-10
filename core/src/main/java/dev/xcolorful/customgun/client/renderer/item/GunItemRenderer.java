@@ -38,7 +38,6 @@ import dev.xcolorful.customgun.client.resource.assets.display._ModelTransformSca
 import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
 import dev.xcolorful.customgun.client.util.ClientRenderDistance;
 import dev.xcolorful.customgun.client.util.ClientRenderHelper;
-import dev.xcolorful.customgun.client.util.ClientRenderProfiler;
 import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
@@ -229,17 +228,12 @@ public class GunItemRenderer extends AnimateGeoItemRenderer<GunModelObject, GunA
 
         LuaAnimStateMachine<GunAnimStateContext> animationStateMachine = gunDisplayInstance.getAnimStateMachine();
 
-        final long profSubmit = ClientRenderProfiler.begin();
-        ClientRenderProfiler.countSubmission(true);
-
         // 在渲染之前，先更新动画，让动画数据写入模型
         if (animationStateMachine != null) {
             animationStateMachine.processContextIfExist(context -> {
                 updateContext(context, gunItem, player, partialTick);
             });
-            final long profState = ClientRenderProfiler.begin();
             animationStateMachine.update();
-            ClientRenderProfiler.end(ClientRenderProfiler.STATE_UPDATE, profState);
         }
 
         // 开启第一人称弹壳和火焰渲染
@@ -296,9 +290,7 @@ public class GunItemRenderer extends AnimateGeoItemRenderer<GunModelObject, GunA
             }
 
             // 缓存枪口位置，为第一人称曳光弹渲染作准备
-            final long profMuzzle = ClientRenderProfiler.begin();
             cacheMuzzlePosition(poseStack, gunModelObject);
-            ClientRenderProfiler.end(ClientRenderProfiler.MUZZLE_CACHE, profMuzzle);
 
             // 恢复手臂渲染
             gunModelObject.setRenderHand(renderHand);
@@ -310,7 +302,6 @@ public class GunItemRenderer extends AnimateGeoItemRenderer<GunModelObject, GunA
 
         // 渲染完成后，将动画数据从模型中清除，不对其他视角下的模型渲染产生影响
         gunModelObject.cleanAnimationTransform();
-        ClientRenderProfiler.end(ClientRenderProfiler.FP_SUBMIT, profSubmit);
     }
     private static void cacheMuzzlePosition(PoseStack poseStack, GunModelObject gunModel) {
         @Nullable List<BedrockPart> muzzleFlashPosPath = gunModel.getMuzzleFlashPosPath();
@@ -434,9 +425,6 @@ public class GunItemRenderer extends AnimateGeoItemRenderer<GunModelObject, GunA
 
                     _renderSlotTexture(poseStack, transformType, bufferSource, light, overlay, slotTextureLocation);
                 } else {
-                    final long profSubmit = ClientRenderProfiler.begin();
-                    ClientRenderProfiler.countSubmission(false);
-
                     { // 低模替换
                         @Nullable GunModelObject gunModelLod = gunDisplayInstance.getGunModelLod();
                         if (gunModelLod != null // 有低模
@@ -445,7 +433,6 @@ public class GunItemRenderer extends AnimateGeoItemRenderer<GunModelObject, GunA
                             if (lodDisplay != null) {
                                 gunModelObject = gunModelLod;
                                 modelTextureLocation = lodDisplay.getTextureLocation();
-                                ClientRenderProfiler.countLod();
                             }
                         }
                     }
@@ -473,8 +460,6 @@ public class GunItemRenderer extends AnimateGeoItemRenderer<GunModelObject, GunA
                     } finally {
                         ClientRenderHelper.FirstPersonArmHelper.setFirstPersonArmCollector(null);
                     }
-
-                    ClientRenderProfiler.end(ClientRenderProfiler.WORLD_SUBMIT, profSubmit);
                 }
             }
             poseStack.popPose();
@@ -556,14 +541,11 @@ public class GunItemRenderer extends AnimateGeoItemRenderer<GunModelObject, GunA
             ClientRenderHelper.rotate(poseStack, Axis.YP.rotationDegrees(180));
         }
 
-        final long profSlot = ClientRenderProfiler.begin();
-        ClientRenderProfiler.countSubmit();
         collector.submitCustomGeometry(poseStack, ClientRenderUtils.RenderType_.entityTranslucent(texture), (pose, buffer) -> {
             PoseStack _poseStack = new PoseStack();
             _poseStack.last().set(pose);
             SLOT_GUN_MODEL.renderToBuffer(_poseStack, buffer, packedLight, packedOverlay, 1.0f, 1.0f, 1.0f, 1.0f);
         }
         );
-        ClientRenderProfiler.end(ClientRenderProfiler.SLOT_ICON, profSlot);
     }
 }

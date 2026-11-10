@@ -15,7 +15,6 @@ import dev.xcolorful.customgun.client.compat.ar.AttachmentModelAR;
 import dev.xcolorful.customgun.client.model.bedrock.BedrockPart;
 import dev.xcolorful.customgun.client.renderer.model.BeamRender;
 import dev.xcolorful.customgun.client.util.ClientRenderHelper;
-import dev.xcolorful.customgun.client.util.ClientRenderProfiler;
 import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -235,7 +234,6 @@ public class _AttachmentModelRender {
 
             RenderType bakedRenderType = ClientRenderHelper.bakePipelineState(renderType); // [26.2, )
 
-            ClientRenderProfiler.countSubmit();
             collector.submitCustomGeometry(poseStack, bakedRenderType, (pose, vertexConsumer) -> {
                 PoseStack _poseStack = new PoseStack();
                 _poseStack.last().set(pose);

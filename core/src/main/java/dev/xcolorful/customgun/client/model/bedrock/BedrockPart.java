@@ -7,7 +7,6 @@ import dev.xcolorful.customgun.client.api.model.bedrock.IBedrockCube;
 import dev.xcolorful.customgun.client.api.model.bedrock.IBedrockCubeCompile;
 import dev.xcolorful.customgun.client.api.model.bedrock.IBedrockRenderer;
 import dev.xcolorful.customgun.client.util.ClientRenderHelper;
-import dev.xcolorful.customgun.client.util.ClientRenderProfiler;
 import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
@@ -110,7 +109,6 @@ public class BedrockPart implements IBedrockCubeCompile, IBedrockRenderer {
                         int light, int overlay,
                         float red, float green, float blue, float alpha) {
         for (int i = 0; i < this.cubes.size(); i++) {
-            ClientRenderProfiler.countCube();
             this.cubes.get(i)
                     .compile(pose,
                             consumer,

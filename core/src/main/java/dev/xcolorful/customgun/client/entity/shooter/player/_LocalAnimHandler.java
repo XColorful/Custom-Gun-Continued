@@ -22,7 +22,6 @@ import dev.xcolorful.customgun.client.config.SoundConfig;
 import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
 import dev.xcolorful.customgun.client.sound.SoundPlayManager;
 import dev.xcolorful.customgun.client.util.ClientInputUtils;
-import dev.xcolorful.customgun.client.util.ClientRenderProfiler;
 import dev.xcolorful.customgun.core.api.event.EventType;
 import dev.xcolorful.customgun.core.api.event.IEvent;
 import dev.xcolorful.customgun.core.api.event.IEventHandler;
@@ -119,9 +118,7 @@ public class _LocalAnimHandler implements IEventHandler {
 
         ItemStack gunItem = KeepingItemRenderer.cgc$getRenderer().cgc$getCurrentItem();
 
-        final long profVisual = ClientRenderProfiler.begin();
         this._tickAnimRender(event, player, gunItem);
-        ClientRenderProfiler.end(ClientRenderProfiler.VISUAL_UPDATE, profVisual);
     }
     /**
      * 原模组移除了对{@link IGun}的限制，见 #62 Arm-render-fix.md

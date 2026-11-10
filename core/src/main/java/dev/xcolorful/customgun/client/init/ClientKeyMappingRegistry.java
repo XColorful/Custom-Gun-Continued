@@ -1,7 +1,6 @@
 package dev.xcolorful.customgun.client.init;
 
 import dev.xcolorful.customgun.client.init.registry.ClientInputCategory;
-import dev.xcolorful.customgun.client.input.player.DebugKey;
 import dev.xcolorful.customgun.client.input.player.InteractKey;
 import dev.xcolorful.customgun.client.input.player.RefitKey;
 import dev.xcolorful.customgun.client.input.shooter.*;
@@ -22,7 +21,6 @@ public class ClientKeyMappingRegistry {
         // player
         register.accept(InteractKey.get().getKeyMapping().get());
         register.accept(RefitKey.get().getKeyMapping().get());
-        if (DebugKey.enableDebugKey) register.accept(DebugKey.get().getKeyMapping().get());
         // shooter
         register.accept(AimKey.get().getKeyMapping().get());
         register.accept(InspectKey.get().getKeyMapping().get());

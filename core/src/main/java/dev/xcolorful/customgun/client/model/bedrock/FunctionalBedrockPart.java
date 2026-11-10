@@ -3,7 +3,6 @@ package dev.xcolorful.customgun.client.model.bedrock;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import dev.xcolorful.customgun.client.api.renderer.model.IModelComponentRenderer;
-import dev.xcolorful.customgun.client.util.ClientRenderProfiler;
 import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import net.minecraft.world.item.ItemDisplayContext;
 import org.jetbrains.annotations.NotNull;
@@ -60,7 +59,6 @@ public class FunctionalBedrockPart extends BedrockPart {
 
             boolean rendered = false;
             if (this.functionalRenderer != null) {
-                final long profFunctional = ClientRenderProfiler.begin();
                 @Nullable IModelComponentRenderer renderer = this.functionalRenderer.apply(this);
                 if (renderer != null) {
                     renderer.render(poseStack,
@@ -69,7 +67,6 @@ public class FunctionalBedrockPart extends BedrockPart {
                             cubePackedLight, overlay);
                     rendered = true;
                 }
-                ClientRenderProfiler.end(ClientRenderProfiler.FUNCTIONAL_NODES, profFunctional);
             }
 
             if (!rendered) {

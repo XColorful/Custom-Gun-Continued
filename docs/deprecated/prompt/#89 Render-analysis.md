@@ -380,4 +380,40 @@ State machine init (since last report) :    1.842 ms (last, 1 calls, max    1.84
 
 # 
 
+我先看文档结构和 PLAN.md，再决定拆解方案。
 
+我已读完 PLAN、两批 benchmark 报告和 chain/ 下全部四篇分析文档，并核对了 1.20.1 与 26.3 的关键源码。现在先把细节研究并行分派出去。
+
+六项细节研究并行启动。
+
+研究任务已全部并行启动。趁等待，我先写链路分析侧的事实文档（CPU/GPU 与上限推导）。
+
+研究结果陆续返回。计数器的实测值修正了每帧 flush 的次数：第一人称实际是枪体 1 次加双手 2 次，共 3 次，而不是原先推算的 5–7 次。我先按实测数据更正链路文档。
+
+最后一项研究已返回，并发现一个重要的目标口径问题：在 multi 场景中，帧时间里有约 1.2–1.33 ms 是场景本身（展示框实体、方块、HUD），即使 CGC 成本归零，也到不了 0.8 ms。我现在按这个结果修正目标值。
+
+已完成。渲染链路分析现在分成「事实」和「方案」两部分，`chain/Home.md` 仍然只描述当前代码状态。
+
+## 新增文档
+
+**链路分析（事实侧）**
+- [cpu-gpu-headroom.md](docs/architecture/client/render/chain/cpu-gpu-headroom.md)：判定核心证据、GPU 侧量级推算、draw 成本反推、优化上限推导、测量缺口与采集方式。
+
+**重构方案（新建 `refactor/`）**
+- [Home.md](docs/architecture/client/render/refactor/Home.md)：目标与成功判据、成本事实、方案分层、评估矩阵、推荐路线、新成本模型、风险与验收。
+- [scheme-a-micro.md](docs/architecture/client/render/refactor/scheme-a-micro.md)：保留即时管线的微优化，及其收益封顶。
+- [scheme-b-baked-mesh.md](docs/architecture/client/render/refactor/scheme-b-baked-mesh.md)：几何烘焙（B1 模型空间 + 每实例矩阵、B2 静态实例世界空间合并），含 1.20.1 / 26.3 的 API 可行性、缓存键、失效条件、光影双路径。
+- [scheme-c-draw-batching.md](docs/architecture/client/render/refactor/scheme-c-draw-batching.md)：跨实例 draw 合并与实例化。
+- [scheme-d-culling-lod-parallel.md](docs/architecture/client/render/refactor/scheme-d-culling-lod-parallel.md)：剔除 / LOD / 多线程，含不采用多线程的理由。
+
+同步更新了 [PLAN.md](docs/architecture/client/render/PLAN.md)、[渲染 Home 导航](docs/architecture/client/render/Home.md)、[chain Home](docs/architecture/client/render/chain/Home.md)、[geometry-and-submission.md](docs/architecture/client/render/chain/geometry-and-submission.md)（补实测 flush 次数与隐式 flush）与 [TODO.md](docs/architecture/client/render/TODO.md)。
+
+## 关键结论
+
+1. **大头是每帧重造全部顶点**（0.3108 ms，55.8%），其次是 `endBatch`（0.1180 ms，21.2%）。实测第一人称只有 3 次 flush（枪体 + 双手），单次约 40 µs，与 384 KB 上传的带宽量级吻合——所以 flush 的主体很可能是缓冲上传，而非 draw。
+2. **微优化只能拿系数收益**，multi 仍会在 2.6 ms 以上；要接近上限必须换成本模型：从「顶点数 × 提交次数」变成「draw 数 + 动态顶点 + 重建次数」。
+3. **1.20.1 烘焙可行**：`BufferBuilder → RenderedBuffer → VertexBuffer.upload`，`drawWithShader(modelView, ...)` 直接吃实例矩阵，原版 API 齐全；最大未知是 Oculus 光影下自绘落在哪个 pass，方案里给了「有光影退回 `putBulkData`」的双路径。
+4. **multi 的目标不是 0.95 ms**：该场景自身有约 1.2–1.33 ms 基线（9 个展示框 + 方块 + HUD），CGC 归零也到不了空手帧时间，所以目标定为 ≤1.55 ms；标准场景与第一人称仍按你给的 ≈1300 FPS 上限推导。
+5. 剔除几乎无收益（原版已做视锥 + 64×包围盒距离剔除），LOD 只减顶点不减提交，多线程被 B 覆盖、不建议做。
+
+未修改任何源码，也没有提交；所有量级都标了「推算 / 待测」，需要用 `DebugKey` 实机日志回填。

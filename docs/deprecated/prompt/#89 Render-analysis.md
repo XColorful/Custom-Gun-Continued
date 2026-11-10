@@ -688,3 +688,23 @@ B1-a 静态烘焙 → B1-b 第一人称 → **B2 跨实例合并（必需，不�
 原来的「multi ≤1.0 ms」建立在裸枪 2 次 draw 之上，已改为 **≤1.6 ms**（冲刺 ≤1.2），并注明区间来自那 0.97 ms 未归因项。
 
 同步更新了 [chain/Home.md](docs/architecture/client/render/chain/Home.md)（锚点、损耗点新增 P14 瞄具模板、单枪量级）、[TODO.md](docs/architecture/client/render/TODO.md)、[PLAN.md](docs/architecture/client/render/PLAN.md)、[benchmark/Home.md](docs/architecture/client/render/benchmark/Home.md)。所有改动**未提交**，等你验收。
+
+# 
+
+```
+在报告里补一下git工作区里对26.3-multi第一次的说明，并且之前每一次测试，单个文件是一次启动Minecraft+进入存档，换文件就代表重新启动Minecraft+进存档
+```
+
+# 
+
+找到了：[标准.txt](docs/architecture/client/render/benchmark/26.35.11.1-3/标准.txt) 第 62 行已写明“26.3-multi 第一次要等最大空手 FPS…有先第一人称拿枪预热”。我把这一点和“一个文件=一次启动并进档”的采集约定补进报告。
+
+已补进报告，三处：
+
+**1. 采集约定（所有批次共用）** — [benchmark/Home.md](docs/architecture/client/render/benchmark/Home.md) 的「约定」新增一条：单个数据文件 = 一次启动 Minecraft + 进入存档，换文件即重启游戏并重新进档。因此「重复」是跨进程重复，文件之间含 JIT / GPU 时钟 / 区块加载的噪声，跨文件绝对值不做精确比较。
+
+**2. 26.3-multi 第一次的说明** — [测试数据计算报告.md](docs/architecture/client/render/benchmark/26.35.11.1-3/测试数据计算报告.md) 第 7 节，依据你在 [标准.txt](docs/architecture/client/render/benchmark/26.35.11.1-3/标准.txt) 里记的那一条：26.3 帧率掉下去后恢复慢，所以第一次采集要等空手 FPS 升到最大值、并先第一人称拿枪预热，后两次不再多等。结果三次 multi 为 103.3 / 90.7 / 90.9 FPS（满配手持 88.2 / 76.4 / 76.5），第 1 次领先约 13% —— 这是**采集状态差异，不是场景差异**。第 8 节的立方体数异常也改成只陈述事实（12 771 vs 12 852，来源未确认），不再归因成「预热差异」。
+
+**3. 顺手核对的数** — 既然第 1 次偏快，我验了跨端倍数是否被它带偏：两端漂移方向相同，剔除各自第 1 次后为 15.1 vs 11.0 ms，倍数仍是 1.37×（原 1.39×），所以「26.3 只快 1.3–1.4×」这个结论不依赖某一次采集。
+
+文档改动仍未提交。下一步是否开始阶段 1（B1-a 静态烘焙）？

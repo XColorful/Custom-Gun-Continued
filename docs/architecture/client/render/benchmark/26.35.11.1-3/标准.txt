@@ -59,3 +59,4 @@ CGC端2（neoforge26.3.0.83）：
 - tacz:scope_mk5hd是倍镜（enable_scope=true）+红点（enable_sight=true）的组合镜，有一个scope ocular和一个sight ocular
 - 本次测试用tacz:m4a1，跟基准测试tacz:ak47不同，仅用于比较配件开销；安装弹匣不一定使块数增加
 - 物品展示框上没有激光束，第一人称有激光束
+- 26.3-multi第一次需要等最大空手FPS，让后续两次不再多等，有先第一人称拿枪预热

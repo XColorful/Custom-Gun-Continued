@@ -57,6 +57,12 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
     protected float width = 0;
     protected float height = 0;
 
+    /**
+     * 渲染探针用：上次提交时节点状态的指纹，仅采集窗口内更新。
+     * 不参与渲染，仅用于统计「本次提交的几何是否真的变了」。
+     */
+    private long cgc$lastStateHash = Long.MIN_VALUE;
+
     protected
     ModelObject(@NotNull BedrockModel pojo) {
         super(pojo);
@@ -196,6 +202,29 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
             }
         }
         ClientRenderProfiler.countNodes(parts.size());
+
+        if (ClientRenderProfiler.enabled) { // 采集窗口内统计：本次提交的节点状态是否与上次不同
+            long hash = 1125899906842597L;
+            for (int i = 0; i < parts.size(); i++) {
+                BedrockPart part = parts.get(i);
+                hash = hash * 31L + Float.floatToRawIntBits(part.offsetX);
+                hash = hash * 31L + Float.floatToRawIntBits(part.offsetY);
+                hash = hash * 31L + Float.floatToRawIntBits(part.offsetZ);
+                hash = hash * 31L + Float.floatToRawIntBits(part.additionalQuaternion.x);
+                hash = hash * 31L + Float.floatToRawIntBits(part.additionalQuaternion.y);
+                hash = hash * 31L + Float.floatToRawIntBits(part.additionalQuaternion.z);
+                hash = hash * 31L + Float.floatToRawIntBits(part.additionalQuaternion.w);
+                hash = hash * 31L + Float.floatToRawIntBits(part.xScale);
+                hash = hash * 31L + Float.floatToRawIntBits(part.yScale);
+                hash = hash * 31L + Float.floatToRawIntBits(part.zScale);
+                hash = hash * 31L + (part.visible ? 1L : 2L);
+            }
+            if (hash != this.cgc$lastStateHash) {
+                this.cgc$lastStateHash = hash;
+                ClientRenderProfiler.countStateChange();
+            }
+        }
+
         List<NodeTransform> animatedTransforms = new ArrayList<>(parts.size()); { // [26.2, )
             for (BedrockPart part : parts) {
                 animatedTransforms.add(NodeTransform.capture(part));

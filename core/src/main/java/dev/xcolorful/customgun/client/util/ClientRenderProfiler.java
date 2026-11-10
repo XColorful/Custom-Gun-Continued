@@ -9,6 +9,8 @@ import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadMXBean;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -102,10 +104,14 @@ public final class ClientRenderProfiler implements IEventHandler {
     private static final int COUNTER_FLUSH_CALLBACKS = 5;
     private static final int COUNTER_STENCIL_WINDOWS = 6;
     private static final int COUNTER_LOD_HITS = 7;
-    private static final int COUNTER_COUNT = 8;
+    private static final int COUNTER_ALLOC_BYTES = 8;
+    private static final int COUNTER_ANIM_CHANNELS = 9;
+    private static final int COUNTER_STATE_CHANGES = 10;
+    private static final int COUNTER_COUNT = 11;
     private static final String[] COUNTER_NAMES = {
             "First-person submissions", "World-item submissions", "Geometry submits", "Cubes submitted",
             "Nodes captured", "Flush callbacks", "Stencil windows", "LOD hits",
+            "Allocated bytes", "Animation channels", "State changes",
     };
 
     /**
@@ -130,6 +136,15 @@ public final class ClientRenderProfiler implements IEventHandler {
     private static boolean truncated = false;
     private static int frameCount = 0;
     private static long lastFrameEnd = 0L;
+
+    /** 每帧 GPU 忙时（ns）；0 表示该帧没有采到 */
+    private static long[] gpuNanos;
+    private static long frameGpuNanos = 0L;
+
+    /** 渲染线程分配量（com.sun.management） */
+    private static com.sun.management.ThreadMXBean allocationBean;
+    private static long allocationThreadId = -1L;
+    private static long lastAllocatedBytes = -1L;
 
     /** 状态机初始化只在切枪时发生一次，通常落在采集窗口之外，因此独立累计，直到写文件才清空 */
     private static int initCount = 0;
@@ -217,6 +232,21 @@ public final class ClientRenderProfiler implements IEventHandler {
         count(COUNTER_LOD_HITS);
     }
 
+    /** 一个动画通道在本帧执行了一次插值与监听器 */
+    public static void countAnimationChannel() {
+        count(COUNTER_ANIM_CHANNELS);
+    }
+
+    /** 一次提交的节点状态指纹与上次不同（缓存会失效） */
+    public static void countStateChange() {
+        count(COUNTER_STATE_CHANGES);
+    }
+
+    /** GPU 计时查询返回的一帧忙时（ns），由 {@link GpuFrameTimer} 调用 */
+    public static void recordGpuFrame(long nanos) {
+        frameGpuNanos += nanos;
+    }
+
     /**
      * 采样状态机初始化耗时。与 {@link #begin()} 不同，这里不做开关判断：
      * 切枪发生在采集之前，必须始终记录，写文件后才重新开始累计。
@@ -237,6 +267,9 @@ public final class ClientRenderProfiler implements IEventHandler {
     private static void onFrameEnd() {
         if (!enabled) return;
 
+        GpuFrameTimer.onFrameBoundary();
+        sampleAllocation();
+
         long now = System.nanoTime();
         if (collecting) {
             if (lastFrameEnd != 0L) {
@@ -250,6 +283,7 @@ public final class ClientRenderProfiler implements IEventHandler {
                     for (int i = 0; i < COUNTER_COUNT; i++) {
                         counterSums[i][index] = frameCounter[i];
                     }
+                    gpuNanos[index] = frameGpuNanos;
                 } else {
                     truncated = true;
                 }
@@ -259,10 +293,21 @@ public final class ClientRenderProfiler implements IEventHandler {
         }
     }
 
+    private static void sampleAllocation() {
+        if (allocationBean == null) return;
+        long now = allocationBean.getThreadAllocatedBytes(allocationThreadId);
+        if (lastAllocatedBytes >= 0 && now >= lastAllocatedBytes) {
+            long delta = now - lastAllocatedBytes;
+            frameCounter[COUNTER_ALLOC_BYTES] += (int) Math.min(delta, Integer.MAX_VALUE);
+        }
+        lastAllocatedBytes = now;
+    }
+
     private static void resetFrame() {
         Arrays.fill(frameProbe, 0L);
         Arrays.fill(frameProbeHits, 0);
         Arrays.fill(frameCounter, 0);
+        frameGpuNanos = 0L;
     }
 
     public static void start() {
@@ -270,7 +315,9 @@ public final class ClientRenderProfiler implements IEventHandler {
         frameCount = 0;
         truncated = false;
         lastFrameEnd = 0L;
+        GpuFrameTimer.reset();
         resetFrame();
+        initAllocationSampler();
         collecting = true;
         enabled = true;
 //        message("渲染链路采集开始，再次按下调试键停止"); // 显示文本会降一点FPS，而且文本会驻留几秒
@@ -309,6 +356,20 @@ public final class ClientRenderProfiler implements IEventHandler {
         probeSums = new long[PROBE_COUNT][CAPACITY];
         probeHits = new int[PROBE_COUNT][CAPACITY];
         counterSums = new int[COUNTER_COUNT][CAPACITY];
+        gpuNanos = new long[CAPACITY];
+    }
+
+    private static void initAllocationSampler() {
+        ThreadMXBean bean = ManagementFactory.getThreadMXBean();
+        if (bean instanceof com.sun.management.ThreadMXBean sun && sun.isThreadAllocatedMemorySupported()) {
+            allocationBean = sun;
+            allocationThreadId = Thread.currentThread().getId();
+            lastAllocatedBytes = sun.getThreadAllocatedBytes(allocationThreadId);
+        } else {
+            allocationBean = null;
+            allocationThreadId = -1L;
+            lastAllocatedBytes = -1L;
+        }
     }
 
     // --------统计与输出--------
@@ -337,6 +398,35 @@ public final class ClientRenderProfiler implements IEventHandler {
         lines.add(line("Minimum frame time", String.format(Locale.ROOT, "%8.3f ms", minFrameMs)));
         lines.add(line("Maximum frame time", String.format(Locale.ROOT, "%8.3f ms", maxFrameMs)));
         lines.add(line("1% high frame time", String.format(Locale.ROOT, "%8.3f ms", p99FrameMs)));
+
+        { // GPU 忙时（只统计拿到结果的帧）
+            long gpuTotal = 0L;
+            long gpuMin = Long.MAX_VALUE;
+            long gpuMax = 0L;
+            int gpuFrames = 0;
+            long[] gpuActive = new long[frameCount];
+            for (int i = 0; i < frameCount; i++) {
+                long value = gpuNanos[i];
+                if (value <= 0L) continue;
+                gpuTotal += value;
+                if (value < gpuMin) gpuMin = value;
+                if (value > gpuMax) gpuMax = value;
+                gpuActive[gpuFrames++] = value;
+            }
+            if (gpuFrames == 0) {
+                lines.add(line("GPU frame busy", "        -"));
+            } else {
+                long[] sortedGpu = Arrays.copyOf(gpuActive, gpuFrames);
+                Arrays.sort(sortedGpu);
+                double gpuAvgMs = gpuTotal / 1_000_000.0 / gpuFrames;
+                lines.add(line("GPU frame busy", String.format(Locale.ROOT,
+                        "%8.3f ms (min %7.3f / max %7.3f / p99 %7.3f, %5.1f%% of frames, %5.1f%% of frame)",
+                        gpuAvgMs, gpuMin / 1_000_000.0, gpuMax / 1_000_000.0,
+                        sortedGpu[percentileIndex(gpuFrames, 0.99)] / 1_000_000.0,
+                        gpuFrames * 100.0 / frameCount,
+                        totalNanos > 0L ? gpuTotal * 100.0 / totalNanos : 0.0)));
+            }
+        }
 
         // 26.2+：提交与绘制分离，CGC 的总开销 = 提交阶段 + flush 回调
         long cgcTotal = 0L;

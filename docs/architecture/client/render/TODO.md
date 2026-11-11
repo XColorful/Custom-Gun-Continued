@@ -13,7 +13,7 @@
   - [ ] 把整帧 GPU 查询与分配采样改为每 N 帧一次（现有固定开销约 0.048 ms/帧）
 - [ ] **阶段 1 B1-a 静态烘焙**：展示框 / 地面 / 第三人称（节点静态，`State changes = 0`）；含瞄具模板的那组 pass；顺带合并同纹理 flush、去掉 1.20.1 双重节点快照、模板每帧一清。验证缓存失效与光影表现
   - 已实现（`StaticBake.ENABLED = true`）：无光影走 `customgun:cgc_baked_entity`，开光影包走光影包自己的实体 program（Oculus 在 `GameRenderer.getRendertype*Shader()` 换 shader，实例矩阵同时驱动位置 / 法线 / 雾）
-  - 1.20.1 阶段验收通过（2026-11-11，[报告](./benchmark/26.35.11.1-4/测试数据计算报告.md)）：功能项通过；光影 A/B 3.3×（烘焙关 23.9 → 7.19 ms）；待补雾的关烘焙对照、内置探针
+  - 1.20.1 阶段验收通过（2026-11-11，[报告](./benchmark/26.35.11.1-4/测试数据计算报告.md)）：功能项通过；光影 A/B 3.3×（烘焙关 23.9 → 7.19 ms）；待补内置探针
   - 已修复：F12 崩溃（`BakedMesh` 每次烘焙新建 `BufferBuilder`，1.20.1 的原生缓冲从不释放）
   - 实现与验收清单见 [`refactor/b1a-static-bake.md`](./refactor/b1a-static-bake.md)；26.3 的绘制方式（自定义 `RenderPipeline` + `assignPipeline`）见同文档「26.3 / 跨版本」
   - 已顺带完成：移除 1.20.1 双重节点快照（multi 实测 0.135 ms/帧）

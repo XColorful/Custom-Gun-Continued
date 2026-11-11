@@ -708,3 +708,164 @@ B1-a 静态烘焙 → B1-b 第一人称 → **B2 跨实例合并（必需，不�
 **3. 顺手核对的数** — 既然第 1 次偏快，我验了跨端倍数是否被它带偏：两端漂移方向相同，剔除各自第 1 次后为 15.1 vs 11.0 ms，倍数仍是 1.37×（原 1.39×），所以「26.3 只快 1.3–1.4×」这个结论不依赖某一次采集。
 
 文档改动仍未提交。下一步是否开始阶段 1（B1-a 静态烘焙）？
+
+# 
+
+```
+读 `./docs/architecture/client/render/PLAN.md`，了解CGC目前确定的重构方案
+CGC基于TaCZ1.1.8，性能相当
+现在需要对比TaCZ1.2.0对1.1.8的更新，大致了解TaCZ做了哪些优化（至少包含静态优化），是否跟CGC方案重合，CGC方案是否比TaCZ上限更高或交叉等
+列出TaCZ1.2.0对1.1.8所有的优化项
+```
+
+# 
+
+I'll start by reading the CGC refactor plan, then investigate the TaCZ 1.1.8 → 1.2.0 changes.
+
+Environment cwd shifted to TaCZ118 due to my `cd`; I'll use absolute paths with `git -C` from here on.
+
+# TaCZ 1.2.0 相对 1.1.8 的优化盘点（含与 CGC 方案对照）
+
+**证据口径**：TaCZ 侧代码读的是 tag `1.2.0-forge-mc1.20.1` 与 `1.1.8-hotfix` 的实际 diff；SBM 侧是编译产物（2.2.2 无 `v2` 包、2.6.2 有），其内部机制由类结构/字节码推断，已在文中标注「推断」。
+
+---
+
+## 一、渲染：唯一的性能改动是「静态展示静态化」
+
+### A1. 依赖库换代是载体，不是 TaCZ 自己的代码
+
+|项|1.1.8|1.2.0|
+|---|---|---|
+|SimpleBedrockModel|2.2.2（只有 v1 包，0 个 v2 类）|2.6.2（新增整套 `v2` 运行时）|
+
+TaCZ 侧只写了约 700 行适配（`ExternalGunAppearance` / `DisplayGunGeometry` / `DisplayGunMeshGroup` / `ExternalGunItemVboRenderer`），真正的烘焙、捕获、GPU 缓存、合批都在库里。CGC 不依赖 SBM，所以这部分**不能直接借用，只能照设计自研**。
+
+### A2. 模型层：烘焙 + 实例化状态
+
+- `ExternalGunModel`：由同一份枪包几何**另建一份不可变烘焙模型**（`BakedBedrockModel`），与动画用的 `BedrockGunModel` 彻底分离。
+- `DisplayGunModelInstance`：烘焙期把骨骼名解析成一次性索引（枪口、抛壳点 `shell/shell_N`、各配件挂点、激光束、弹膛/弹匣可视骨骼、默认/战术护木、弹匣等级），运行期**零字符串查找、零按名遍历**。
+- 可见性走 `BoneState.visible`，动画数据完全不参与静态路径。
+
+### A3. 几何捕获：整枪一次捕获、按 RenderType 合并
+
+- `DisplayGunGeometry.capture()` 把**枪体 + 全部配件 + 变体/转接口 + LOD 选择**写进同一个 `GeometryCollector`，每类材质一个 buffer，`RenderType.entityCutout(texture)` + 一个 `emissive(texture)`。
+- 因此单枪 draw 数 ≈ **不同纹理/材质数**，而不是子模型数；这是它和 CGC 当前「每 flush 一组」最本质的差别。
+- 几何键 `GeometryKey = resourceRevision + displayId + 配件集合(type/id/variant/adapter) + 枪膛有弹 + 弹匣有弹 + useLod`。
+
+### A4. GPU 侧：B1（持久 VBO）与 B2（世界空间合批）都做了
+
+|机制|类|要点|
+|---|---|---|
+|**B1 物品静态网格**|`StaticMeshRenderer` / `StaticMeshCache`|键 = (appearance, `ItemDisplayContext`)；持久 VBO；128 条 / 256 MB 上限；空闲 300 s 回收；命中后按材质 bind→draw|
+|**B2 世界网格合批**|`WorldMeshGroup` / `SectionMeshBatches`|按 **16³ section + RenderType** 合批，带 `LightSlice`；`patchLight` 只补光不重建；在 `RenderLevelStageEvent` 里**每帧统一绘制一次**，按材质顺序 + 距离排序；策略 `INSTANCE`/`SECTION`；300 s / 128 条 / 512 MB|
+|上传/捕获预算|`MeshUploadQueue` / `MeshPreparationPolicy`|按帧配额（捕获次数、捕获纳秒、上传字节、驻留字节），**避免首帧/换枪帧的尖峰**；不是后台线程，是分帧摊平|
+|光照与几何解耦|`MeshIntegerAttributes`（推断）|光/overlay 走整数属性在绘制期设置，改光不重新烘焙几何|
+
+### A5. 失效与回退（这是最值得抄的部分）
+
+- 渲染缓存以 `ClientIndexManager.resourceRevision()` 作世代号，资源重载整体失效。
+- 展示槽位 `DisplayGunSlot` 把 **`revision`（变换）与 `appearanceRevision`（外观/几何）拆开**：旋转只更新实例矩阵，不重捕几何。
+- 槽位变化靠 `consumeChange()` → `group.markDirty()` 推送，不做每帧比对。
+- 接管范围很窄：`THIRD_PERSON_RIGHT_HAND` / `GROUND` / `FIXED`（且不在 GUI/预览/屏幕内）；配件不受支持、模型未就绪、驱动不支持实例属性 → **回退旧路径**，不是半成品状态。
+
+### A6. LOD（D 档）
+
+- 物品：`RenderDistance.inRenderHighPolyModelDistance`；展示方块：新增 `GUN_LOD_RENDER_DISTANCE`（0 = 恒用远景模型）。
+- 配套补了一批 LOD 模型资源；LOD 也进入几何键，切换远近不串缓存。
+
+### A7. 资源预热
+
+- `ClientAssetLoadDispatcher`：单线程后台加载器 + 世代失效；`preloadExternalModels()` 在后台完成烘焙与网格准备，渲染时直接读结果、不阻塞。
+
+> 注意：`26.35.11.1` 的 9 个展示框是**原版物品展示框**（FIXED 上下文），所以 0.039 ms/枪 实测验证的是 **B1 这一条**；B2（section 合批）服务于 1.2.0 新增的挂板/展示柜，目前没有性能数据支撑。
+
+---
+
+## 二、渲染的其余改动（**不是**优化项，别误记）
+
+|改动|性质|
+|---|---|
+|`UnshadedVertexConsumer`（发光部件在 entity shader 下保持全亮）|视觉修正|
+|所有渲染入口改为显式传 `bufferSource`；新增 `tacz.oculus.mixins.json` + `UnflushableWrapperAccessor`|Iris/Oculus 模板 flush 正确性|
+|`ScopeLensRenderer` / `ScopeThermalRenderer` / 测距 / 弹量数显|新特性，不是省成本|
+|枪口火/烟改 SBM snowstorm 粒子；第三人称枪口粒子|新表现|
+|瞄具 comb 分支合并、镜片畸变/色散/暗角|重构 + 新特性|
+
+---
+
+## 三、非渲染优化（changelog 里那几条，逐一核实过）
+
+1. **枪包同步**：`GunPackSync` GZIP 压缩 + 256 KB 分片，客户端上限 64 MB —— 解决「枪包多进不了世界」。
+2. **JEI 初始化**：`AttachmentQueryData` 一次遍历同时产出「配件→枪 / 枪→配件 / 枪→弹药」三向查询，替代多次全量扫描，并打点耗时日志。
+3. **背包弹量统计**：`ClientAmmoCount` 缓存（枪 / epoch / 时间窗三重失效），顺带修掉 minigun 全自动异常。
+4. **客户端资源后台预热**（A7）。
+5. **计时统一 `GunTime`**：`System.nanoTime` 换 epoch 时钟，暂停不推进 —— 一致性修正，不是性能。
+6. **缺失 display 警告去重**（`WARNED_MISSING_GUN_DISPLAYS`），避免刷屏。
+7. 动画约束取绝对值、Player Animator 2.x 适配、脚本异常兜底 —— 兼容/健壮性。
+
+---
+
+## 四、与 CGC 方案的重合、交叉与上限
+
+| 档位 | TaCZ 1.2.0 | CGC PLAN | 关系 |
+|---|---|---|---|
+| **B1 静态烘焙 + 每实例矩阵** | 已实现（整枪捕获 + 持久 VBO，含分帧上传预算） | 计划第一步（估 0.85–0.95 ms / 9 把） | **重合**，TaCZ 是同一思路的完整参考实现 |
+| **B2 跨实例合并** | 已实现（仅展示方块，section + RenderType 合批，每帧一次绘制） | 计划第三步（估 0.25–0.35 ms / 9 把） | **重合**，但 TaCZ 没把它用到物品框上 |
+| **第一人称（动画 + 脏子树 + 瞄具模板重放）** | **零改动** | 计划第二步（满配 1.951 → 0.45–0.60 ms） | CGC **独有**，是真正的上限增量 |
+| **C 动态实例化** | 无（静态路径假设无动画） | 备选 | CGC 范围更大 |
+| **D LOD** | 已上线（物品 + 展示方块） | 备选、未做 | TaCZ 已验证 D 只是乘数收益 |
+| **26.2+ 延迟渲染** | 无该平台，SBM v2 也无适配 | 方案硬约束、以 26.3 验证 | CGC **独有**，TaCZ 无答案 |
+
+### 静态场景：上限不比 TaCZ 高，且 CGC 的 B1 估值偏保守
+
+- TaCZ 实测 9 个展示框 **+0.355 ms 总量（0.039 ms/枪）**；CGC 当前 4.843 ms（0.538 ms/枪），差 **13.6×**。
+- CGC 的 B2 目标 0.25–0.35 ms 总量（0.028–0.039 ms/枪）与 TaCZ 实测**同一地板**——说明 B2 的目标值定得准。
+- 但 CGC 的 B1 估值（0.09 ms/枪 = 9 draw）是按**当前即时管线的 flush 粒度**推的；TaCZ 的实测（39 µs/枪）意味着烘焙后单枪只剩**约 4 次 draw 量级**，因为它把整枪 + 配件按材质合并了。
+    - 推论：**B1-a 里加一步「单枪按材质合并」，B1 就能提前接近 B2 的 draw 地板**，B2 的剩余收益主要变成「跨实例共享同一纹理/网格」而非「9→1」。
+
+### 交叉点：两者都把「光」从几何里拆出去
+
+- TaCZ：物品路径每帧传 `packedLight` 绘制；世界路径用 `LightSlice` + `patchLight`，改光不重捕。
+- CGC 的新成本模型（`C_draw` / `C_state` / `C_upload` / `C_vertex` / `C_bake`）**没有把 light 列为失效维度**。展示框场景实测 `State changes = 0` 掩盖了这一点；一旦放到会变光的世界里（昼夜、火把、手持光源），「光照进顶点」的烘焙会反复重建。建议在 B1 设计时就定成「几何不含光，光在绘制期施加」。
+
+### TaCZ 方案里**不要照抄**的三点
+
+1. **无光影探测**：VBO 路径不做 Iris/Oculus 判定，直接自绘；CGC 计划要求的「有光影退回 `putBulkData`」双路径更稳妥（SBM 里没找到 shader 检测，此项为字节码级判断）。
+2. **静态路径不画功能节点**：`DisplayGunGeometry` 只走 `renderBoneTree`，没有瞄具玻璃/模板窗口/激光束/枪口火焰；CGC 的验收标准要求瞄具模板从烘焙网格**重放**，比 TaCZ 完整，也就比它贵。
+3. **没有第一人称**：TaCZ 把静态路径做成「另一份不可变模型」，代价是彻底放弃动画；CGC 的 B1-b 要处理 root 矩阵 + 脏子树，不能沿用「静态模型副本」这条路。
+
+---
+
+## 五、结论
+
+1. **PLAN 里「无需参考其实现」对性能结论成立**：TaCZ 1.2.0 的全部收益在静态展示，第一人称与 1.1.8 等价，没有可抄的性能数字。
+2. **但对「实现参考」不成立**：TaCZ 已经跑通了 CGC 的 B1+B2 同款设计，是唯一有公开落地与实测数据（0.039 ms/枪）的证据。它的几何键组成、appearance/transform 双 revision、按帧上传预算、空闲回收上限、材质顺序绘制、回退矩阵，都直接对应 CGC「测量与验收」「风险登记」里的空缺项。
+3. **CGC 上限确实更高，但增量不在静态场景**：第一人称（1.951 → 0.45–0.60 ms）与 26.2+ 延迟渲染是 TaCZ 完全没有覆盖的两块；静态场景两者收敛到同一 draw/材质地板。
+4. **最值得回写进 PLAN 的一条**：B1-a 应包含「单枪按材质合并成少量 draw」，否则 B1 的 9 draw 地板是自我设限，会把 B2 的必要性估高。
+
+**未验证项**：B2（section 合批）没有任何实测；SBM 的 `MeshIntegerAttributes` 光照解耦是字节码推断；TaCZ 静态路径在光影下的实际表现未测。
+
+# 
+
+```
+把研究到差异作为后续可以进行验证的点，但不作为已经确定的实现方案
+- 像TACZ公开版的Issue 791提到SBM借鉴了其他实现并且用相同文件夹的问题，TaCZ开发团队的实现可能并非原创且隐藏隐患，不能作为实现参考
+- 且TaCZ实际开发仓库并不公开（多个提交的Issue号跟开源仓库对不上），缺少文档和缺陷分析
+- 不更改CGCbenchmark已测得的数值，例如最初TaCZ+加速渲染却没有帧数提升，可能存在各种问题
+- 本次更新文档应该能使后续重构时能同时考虑到差异点，并通过benchmark和光影场景实测来验证
+```
+
+# 
+
+已按「只登记差异、不作实现依据」的口径落文档。
+
+**新增** [reference-tacz-1.2.0.md](docs/architecture/client/render/refactor/reference-tacz-1.2.0.md)：
+
+- **证据边界一节**先立门槛：公开 Issue #791 中维护者承认的是 SBM **粒子部分**参考 ParticleStorm 并误用同一文件夹（我核对过原文，不能扩大到网格/VBO 部分，文档里明确写了这一点）；开发仓库不公开、Issue 号对不上、无文档与缺陷分析；公开版与加速渲染同装无收益；SBM 2.6.2 只有编译产物。
+- **差异表 11 项**（机制级）：模型运行时、静态捕获、持久 VBO、世界合批、**光在顶点 vs 绘制期**、失效键、上传配额、LOD、第一人称无改动、26.2 无适配、非渲染项。仅标注「与 B1/B2/D 重合」或「不重合」，不写「应当采用」。
+- **V1–V9 待验证点**：每条一个待答问题 + 验证手段 + 归属阶段。例如 V1（单枪按材质合并后 draw 能否从 9 降到 2–4）、V2（光移出烘焙的收益）、V6（光影双路径是否必需）、V7（静态路径放弃瞄具玻璃/模板的验收清单）。
+- **数据边界**：`26.35.11.1/-2/-3` 全部数值原样引用；0.039 ms/枪 只覆盖物品展示框、不覆盖新展示方块的 section 合批；跨端不可相减。
+
+**联动改动（各一行）**：[PLAN.md:53](docs/architecture/client/render/PLAN.md:53) 结论 1 保留「无需参考其实现」，补上不公开/无缺陷分析/加速渲染无收益的理由与指针；[TODO.md](docs/architecture/client/render/TODO.md) 加「外部参照验证 V1–V9，随阶段验证、不改路线与已测数值」；[refactor/Home.md](docs/architecture/client/render/refactor/Home.md) 文档导航加一行。
+
+未改动：B1→B2 路线、任何 benchmark 数值、方案文档的估算值。

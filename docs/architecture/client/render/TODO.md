@@ -16,6 +16,7 @@
 - [ ] **阶段 3 B2 跨实例合并**：静态展示实例按 `RenderType` 合并到世界空间缓冲（每枪 9 次 draw → 全场景 N 次）
 - [ ] **阶段 4 26.3**：确认自定义 `FeatureRenderer` 路径，实现同一套烘焙抽象；**26.3 的 render pass 是它最大的单项，必须按 pass 计时验收**
 - [ ] **待评估**：方案 C（动态实例 draw 合并 / 实例化）、方案 D 的剔除保留现状
+- [ ] **外部参照验证**：[`refactor/reference-tacz-1.2.0.md`](./refactor/reference-tacz-1.2.0.md) 的 V1–V9，随对应阶段一起验证；只作验证项，不改变路线，也不改动既有 benchmark 数值
 
 ## 已测得 / 仍缺的数据
 

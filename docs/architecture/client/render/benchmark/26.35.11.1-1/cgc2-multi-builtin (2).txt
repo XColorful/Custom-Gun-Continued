@@ -1,0 +1,73 @@
+10-11-2026, 14:30:05 customgun render profile completed, 2981 frames rendered in 11.252 s
+                    Average frame time :    3.775 ms ( 264.9 FPS)
+                    Minimum frame time :    3.350 ms
+                    Maximum frame time :   10.640 ms
+                    1% high frame time :    5.052 ms
+                  CGC render per frame :    1.795 ms ( 47.6% of frame)
+              First-person submissions :     0.00 / frame
+                World-item submissions :     9.00 / frame
+                      Geometry submits :     9.00 / frame
+                       Cubes submitted :  4554.00 / frame
+                        Nodes captured :   972.00 / frame
+                       Flush callbacks :     9.00 / frame
+                       Stencil windows :     0.00 / frame
+                              LOD hits :     0.00 / frame
+
+                   First-person submit :         -
+                     World-item submit :    0.072 ms (min   0.063 / max   0.446 / p99   0.142, 100.0% of frames)
+                          State update :         -
+                          Data refresh :    0.033 ms (min   0.030 / max   0.181 / p99   0.057, 100.0% of frames)
+                          Scope render :    0.000 ms (min   0.000 / max   0.034 / p99   0.002, 100.0% of frames)
+                          Model submit :    0.029 ms (min   0.024 / max   0.305 / p99   0.080, 100.0% of frames)
+                         Node snapshot :    0.021 ms (min   0.017 / max   0.174 / p99   0.041, 100.0% of frames)
+                     Geometry traverse :    1.692 ms (min   1.608 / max   7.804 / p99   1.955, 100.0% of frames)
+                           Model flush :    1.723 ms (min   1.636 / max   7.837 / p99   1.989, 100.0% of frames)
+                       Delegate render :    0.001 ms (min   0.000 / max   0.011 / p99   0.002, 100.0% of frames)
+                          Muzzle cache :         -
+                         Stencil clear :    0.000 ms (min   0.000 / max   0.005 / p99   0.001, 100.0% of frames)
+                      Hand event entry :    0.000 ms (min   0.000 / max   0.076 / p99   0.001, 100.0% of frames)
+            Third-person visual update :         -
+                    State machine init :         -
+                      Functional nodes :    0.226 ms (min   0.214 / max   0.398 / p99   0.279, 100.0% of frames)
+                         GUI slot icon :         -
+                         Camera angles :    0.001 ms (min   0.000 / max   0.071 / p99   0.004, 100.0% of frames)
+                           Hand camera :    0.001 ms (min   0.000 / max   0.045 / p99   0.005, 100.0% of frames)
+                                   FOV :    0.002 ms (min   0.000 / max   0.072 / p99   0.007, 100.0% of frames)
+
+10-11-2026, 14:31:30 customgun render profile completed, 2925 frames rendered in 11.348 s
+                    Average frame time :    3.880 ms ( 257.7 FPS)
+                    Minimum frame time :    3.482 ms
+                    Maximum frame time :    9.326 ms
+                    1% high frame time :    5.085 ms
+                  CGC render per frame :    1.857 ms ( 47.9% of frame)
+              First-person submissions :     1.00 / frame
+                World-item submissions :     9.00 / frame
+                      Geometry submits :    12.00 / frame
+                       Cubes submitted :  4450.00 / frame
+                        Nodes captured :  1080.00 / frame
+                       Flush callbacks :    10.00 / frame
+                       Stencil windows :     0.00 / frame
+                              LOD hits :     0.00 / frame
+
+                   First-person submit :    0.081 ms (min   0.061 / max   1.853 / p99   0.142, 100.0% of frames)
+                     World-item submit :    0.071 ms (min   0.064 / max   0.190 / p99   0.107, 100.0% of frames)
+                          State update :    0.045 ms (min   0.032 / max   0.166 / p99   0.087, 100.0% of frames)
+                          Data refresh :    0.040 ms (min   0.037 / max   0.159 / p99   0.070, 100.0% of frames)
+                          Scope render :    0.000 ms (min   0.000 / max   0.001 / p99   0.001, 100.0% of frames)
+                          Model submit :    0.035 ms (min   0.030 / max   1.743 / p99   0.064, 100.0% of frames)
+                         Node snapshot :    0.023 ms (min   0.020 / max   0.269 / p99   0.038, 100.0% of frames)
+                     Geometry traverse :    1.670 ms (min   1.587 / max   3.282 / p99   2.001, 100.0% of frames)
+                           Model flush :    1.705 ms (min   1.620 / max   3.320 / p99   2.039, 100.0% of frames)
+                       Delegate render :    0.002 ms (min   0.001 / max   0.050 / p99   0.003, 100.0% of frames)
+                          Muzzle cache :    0.001 ms (min   0.001 / max   0.034 / p99   0.002, 100.0% of frames)
+                         Stencil clear :    0.000 ms (min   0.000 / max   0.001 / p99   0.001, 100.0% of frames)
+                      Hand event entry :    0.086 ms (min   0.065 / max   1.860 / p99   0.147, 100.0% of frames)
+            Third-person visual update :         -
+                    State machine init :         -
+                      Functional nodes :    0.025 ms (min   0.020 / max   0.080 / p99   0.044, 100.0% of frames)
+                         GUI slot icon :         -
+                         Camera angles :    0.004 ms (min   0.003 / max   0.161 / p99   0.005, 100.0% of frames)
+                           Hand camera :    0.007 ms (min   0.005 / max   0.114 / p99   0.017, 100.0% of frames)
+                                   FOV :    0.006 ms (min   0.003 / max   1.856 / p99   0.013, 100.0% of frames)
+State machine init (since last report) :   17.031 ms (last, 1 calls, max  17.031, at 14:30:09)
+

@@ -7,6 +7,7 @@ import dev.xcolorful.customgun.client.api.renderer.model.IModelComponentRenderer
 import dev.xcolorful.customgun.client.model.AnimatedModelObject;
 import dev.xcolorful.customgun.client.model.bedrock.BedrockPart;
 import dev.xcolorful.customgun.client.util.ClientRenderHelper;
+import dev.xcolorful.customgun.client.util.ClientRenderProfiler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.HumanoidArm;
@@ -81,8 +82,12 @@ public class HandRender implements IModelComponentRenderer {
 
             Minecraft mc = Minecraft.getInstance();
 
+            ClientRenderProfiler.countBatch();
             ClientRenderHelper.renderFirstPersonArm(mc.player, this.humanoidArm, poseStack1, _light);
+            final long profFlush = ClientRenderProfiler.begin();
+            ClientRenderProfiler.countFlush();
             ClientRenderHelper.GL.getModelBufferSource().endBatch();
+            ClientRenderProfiler.end(ClientRenderProfiler.FLUSH, profFlush);
         });
     }
 

@@ -14,6 +14,7 @@ import dev.xcolorful.customgun.client.compat.iris.IrisCompat;
 import dev.xcolorful.customgun.client.model.bedrock.BedrockPart;
 import dev.xcolorful.customgun.client.renderer.model.BeamRender;
 import dev.xcolorful.customgun.client.util.ClientRenderHelper;
+import dev.xcolorful.customgun.client.util.ClientRenderProfiler;
 import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -236,14 +237,18 @@ public class _AttachmentModelRender {
                 part.visible = true; {
                     MultiBufferSource.BufferSource bufferSource = ClientRenderHelper.GL.getModelBufferSource();
                     VertexConsumer vertexConsumer = bufferSource.getBuffer(bakedRenderType);
+                    ClientRenderProfiler.countBatch();
                     part.render(poseStack,
                             transformType,
                             vertexConsumer,
                             light, overlay);
 
+                    final long profFlush = ClientRenderProfiler.begin();
+                    ClientRenderProfiler.countFlush();
                     if (!IrisCompat.endBatch(bufferSource)) {
                         bufferSource.endBatch();
                     }
+                    ClientRenderProfiler.end(ClientRenderProfiler.FLUSH, profFlush);
                 }
                 part.visible = false;
             }

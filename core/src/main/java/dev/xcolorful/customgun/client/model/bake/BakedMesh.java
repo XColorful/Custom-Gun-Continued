@@ -11,6 +11,8 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 /**
@@ -29,6 +31,17 @@ public final class BakedMesh implements AutoCloseable {
      * 单次烘焙的初始顶点缓冲容量；超出时 {@link BufferBuilder} 自行扩容
      */
     private static final int BUILD_CAPACITY = 1024 * 1024;
+
+    /**
+     * 复用的 {@link BufferBuilder}，按烘焙嵌套深度取用。
+     * <p>
+     * 1.20.1 的 {@code BufferBuilder} 在构造时经 {@code MemoryTracker} 直接申请原生内存
+     * （{@code 容量 × 6}），而释放路径只重置计数、不归还内存：每次烘焙新建一个就是一次
+     * 几 MiB 的永久泄漏。F12 采集会每帧强制重建网格，几秒内就能把页面文件耗尽
+     * （表现是原生内存不足导致的 JVM 崩溃）。正常流程不嵌套，复用同一实例。
+     */
+    private static final List<BufferBuilder> BUILDERS = new ArrayList<>();
+    private static int builderDepth;
 
     private final @Nullable VertexBuffer vertexBuffer;
     private final int bytes;
@@ -52,21 +65,31 @@ public final class BakedMesh implements AutoCloseable {
      * @param emitter 在模型空间写顶点；写 0 个顶点时得到空网格，绘制为空操作
      */
     public static BakedMesh bake(VertexFormat.Mode mode, VertexFormat format, Consumer<VertexConsumer> emitter) {
-        BufferBuilder builder = new BufferBuilder(BUILD_CAPACITY);
-        builder.begin(mode, format);
-        emitter.accept(builder);
+        BufferBuilder builder = acquireBuilder();
+        try {
+            builder.begin(mode, format);
+            emitter.accept(builder);
 
-        BufferBuilder.RenderedBuffer rendered = builder.endOrDiscardIfEmpty();
-        if (rendered == null) return new BakedMesh(null, 0, false);
+            BufferBuilder.RenderedBuffer rendered = builder.endOrDiscardIfEmpty();
+            if (rendered == null) return new BakedMesh(null, 0, false);
 
-        int bytes = rendered.drawState().bufferSize();
-        boolean extendedFormat = rendered.drawState().format() != format;
-        VertexBuffer vertexBuffer = new VertexBuffer(VertexBuffer.Usage.STATIC);
-        // VertexBuffer.upload 要求 VAO 已绑定，原版 BufferUploader 同样先 bind 再 upload
-        vertexBuffer.bind();
-        vertexBuffer.upload(rendered);
-        VertexBuffer.unbind();
-        return new BakedMesh(vertexBuffer, bytes, extendedFormat);
+            int bytes = rendered.drawState().bufferSize();
+            boolean extendedFormat = rendered.drawState().format() != format;
+            VertexBuffer vertexBuffer = new VertexBuffer(VertexBuffer.Usage.STATIC);
+            // VertexBuffer.upload 要求 VAO 已绑定，原版 BufferUploader 同样先 bind 再 upload
+            vertexBuffer.bind();
+            vertexBuffer.upload(rendered);
+            VertexBuffer.unbind();
+            return new BakedMesh(vertexBuffer, bytes, extendedFormat);
+        } finally {
+            builderDepth--;
+        }
+    }
+
+    private static BufferBuilder acquireBuilder() {
+        int depth = builderDepth++;
+        if (depth == BUILDERS.size()) BUILDERS.add(new BufferBuilder(BUILD_CAPACITY));
+        return BUILDERS.get(depth);
     }
 
     /**

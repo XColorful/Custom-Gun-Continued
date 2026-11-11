@@ -119,3 +119,131 @@ The review found a real fog bug (cylinder mode zeroes Y in model space) plus a f
 **仍然成立的限制**（都已写进 [b1a-static-bake.md](docs/architecture/client/render/refactor/b1a-static-bake.md)）：没装 `cgccshader` 的 Oculus 用户会自动退回即时管线（画面正确、无优化）；OptiFine 光影不在目标内；退回路径会让 functional 回调在同一帧执行两次，第三方 addon 需要幂等。
 
 `./gradlew --offline build` 通过，shader 资源已打进 jar。剩下的是实机验收：重点看旋转展示框/掉落物的光照、远处展示框的圆柱雾、开关光影包的 A/B，以及 `Bake rebuilds` 稳态是否为 0。
+
+# 
+---
+
+```
+读`./docs/architecture/client/render/PLAN.md`和`#92 Static-bake-refactor.md`第1-121行
+
+针对刚才的commit的变动内容，目前测试：
+- 开光影后旋转展示框，枪纹理的阴影有更新
+- 物品掉落物实体的阴影会随旋转更新
+- （不用写报告）目前跑了一个26.35.11.1-4/b1-a-1/，只有Afterburner的统计，帧数应该是有优化了
+- 在multi空手场景按F12后的3.96秒以内会崩溃，日志在D:\Temp-File\下hs_err_pid7128.log，debug.log
+
+需要修复探针问题，文档其他的人工测试等修完再测
+```
+
+# 
+
+Now the bake method itself.
+
+探针崩溃已定位并修复。
+
+**证据链**
+
+- [hs_err_pid7128.log](D:/Temp-File/hs_err_pid7128.log) 里不是普通堆 OOM：`Failed to commit metaspace`，同时 `current process commit charge: 25817M`、`AvailPageFile size 2M`、堆只用了 1.25G。也就是说进程提交了 25.8 GB 原生内存，把页面文件吃光了。
+- 20 GB 的原生内存只能来自逐帧分配且不释放的路径。核对 1.20.1 的 `BufferBuilder`（[BufferBuilder.java:41](file:///tmp/bbtmp/com/mojang/blaze3d/vertex/BufferBuilder.java)）后确认：构造时 `MemoryTracker.m_182527_(capacity * 6)` 直接 `malloc`，整条释放路径（`m_231179_` → `m_85730_`）只重置计数，**从不归还内存**；原版靠 `BufferSource` 每 RenderType 复用一个实例来规避。
+- 我们每帧强制重建时每次都 `new BufferBuilder(1 MiB)` = 每次泄漏 6 MiB。multi 场景每帧数次烘焙、几百 FPS，3.96 秒就够累积到二十几 GB。第一次崩溃前的真实异常大概率是 `MemoryTracker` 的 `OutOfMemoryError("Failed to allocate …")`（发生在实体渲染中），随后生成 CrashReport 时要加载类、metaspace 提交 64 KB 失败，JVM 直接 abort——与 hs_err 的栈完全对得上。
+
+**修复**
+
+[BakedMesh.java](core/src/main/java/dev/xcolorful/customgun/client/model/bake/BakedMesh.java:67) 改为按烘焙嵌套深度复用 `BufferBuilder`（深度池，正常流程深度恒为 1），每次烘焙不再新建原生缓冲。复用后 `begin` → `endOrDiscardIfEmpty` → `VertexBuffer.upload`（内部 release 归零）正是原版 `BufferSource` 的用法，语义不变。顺带说明：这个泄漏在非 F12 下同样存在（每次缓存未命中泄漏 6 MiB），所以修复对正常游玩也有效。
+
+文档 [b1a-static-bake.md](docs/architecture/client/render/refactor/b1a-static-bake.md:69) 的几何段补了这条约束与实测数据。`./gradlew --offline build` 通过，改动未提交，等你按清单实测。
+
+# 
+
+```
+开关光影:
+- 枪配件、瞄具、开镜都没问题
+- 满配枪放展示框旋转、物品实体掉落物旋转都没问题
+- 枪换配件立即更新
+
+等帧数跑到之前-multi空手最高时（手机拍照，FPS和RAM一直在波动，只看MEM）：
+- 842FPS, RAM 9032MB, MEM 933MB
+- F3+T后连拍两张：723FPS, RAM 9086MB, MEM 932MB; 772FPS, RAM 8980MB, MEM 892MB
+- MEM稳定后：837FPS, RAM 8947MB, MEM 875MB
+- 再F3+T后拍照：770FPS, RAM 8916MB, MEM 893MB
+- MEM稳定后：815FPS, RAM 8937MB, MEM 875MB
+
+另外还跑了份26.35.11-4/b1-a-2/做开光影时baseline
+- 26.35.11.1-4要写报告阶段性验收一下
+```
+
+# 
+
+分析脚本跑通，数据已算出。现在写批次报告。
+
+明白，先按文档原有风格把内容压到最少，并去掉跨文档重复。
+
+已按 `chain/Home.md` 的密度重写了文档，并去掉了跨文档重复。
+
+**报告**（[测试数据计算报告.md](docs/architecture/client/render/benchmark/26.35.11.1-4/测试数据计算报告.md)，69 行）：只保留数据来源、四步结果表、重构前后对照表、光影三行、功能验收、崩溃修复、结论与异常；推导中的解释性文字删掉，数值只在表里出现一次。数据仍由同目录的 [analyze.py](docs/architecture/client/render/benchmark/26.35.11.1-4/analyze.py) 生成，不手工录入。
+
+**去重**：
+
+- [benchmark/Home.md](docs/architecture/client/render/benchmark/Home.md)：批次表加一行；分工只写「回答什么问题」，数值与结论全部指向报告。
+- [TODO.md](docs/architecture/client/render/TODO.md)：B1-a 只留三行——验收通过、待补项、已修复的 F12 崩溃。
+- [b1a-static-bake.md](docs/architecture/client/render/refactor/b1a-static-bake.md)：渲染流程里加一句 `BufferBuilder` 复用约束；验收清单顶部一行状态 + 报告链接，不再复述结果。
+
+核心结论（详细在报告里）：无光影 multi 9 把裸枪整帧 5.449 → 1.174 ms、单枪 −93.3%；开光影时空展示框已 6.68 ms，9 把枪只加 0.51 ms，CPU 侧收益在帧时间上看不见，需要一次 `StaticBake.ENABLED = false` 的同场景 A/B 才能定论。
+
+代码改动（`BakedMesh` 复用 `BufferBuilder`）与文档都未提交，等你 review。
+
+另外我把「文档要精炼、同一数据/结论只在一处写全」记进了项目记忆，后续写报告会先对照 `chain/Home.md` 的密度。
+
+# 
+
+```
+第一次benchmark测过tacz-multi同场景，明显有触发tacz静态优化，需要在-4报告补上当前阶段跟tacz的对比分析
+```
+
+# 
+
+已在 [测试数据计算报告.md](docs/architecture/client/render/benchmark/26.35.11.1-4/测试数据计算报告.md) 补了第 3 节「与 TaCZ 1.2.0 对照」，数值由 [analyze.py](docs/architecture/client/render/benchmark/26.35.11.1-4/analyze.py) 直接解析 `26.35.11.1/tacz1-multi (1).txt` 得出：
+
+| multi 9 把 ak47 | 无手持 | + 第一人称 |
+|---|---:|---:|
+| TaCZ 1.2.0 | 1.992 ms (502.0 FPS) | 1.185 ms (844.2 FPS) |
+| CGC 重构前 | 5.449 ms | 6.533 ms |
+| CGC B1-a | 1.174 ms | 1.795 ms |
+
+需要注意的一点：TaCZ 这两个窗口是**反的**——去掉手持枪后的无手持段反而慢 0.81 ms，所以至少有一个窗口不可用（该批 multi 每段只有 1 次重复）。因此报告只取了能站得住的结论：B1-a 之后静态展示从 4.60 降到 0.31 ms，CGC 的 multi 整帧已和 TaCZ 同处 1.2–2.0 ms 区间；按无手持列 CGC 是 TaCZ 的 0.59×，按持枪列是 1.52×，方向相反，具体差额要 TaCZ 端在同场景重测（固定顺序、≥3 次）才能定。
+
+顺带发现 `chain/scenes-and-static.md` 里的 **0.039 ms/枪** 是把「TaCZ multi 持枪 1.185」减「标准场景持枪 1.540」取绝对值再除以 9 得来的——这两个不是同一场景，严格说不成立，报告里已标注它只能作量级参考。改动都未提交。
+
+# 
+
+```
+现在重测了tacz的数据，并且之前tacz的测试可能有ak47没拆枪托导致性能略差的问题，更新相应报告
+- 目前估计还有潜在的常数优化或没涉及的点
+```
+
+# 
+
+新数据到了（TaCZ 1.2.0 / +Accelerated Rendering 各 4 次，协议与 CGC 一致）。我先把它并入分析脚本和报告。
+
+新 TaCZ 数据已并入，报告和相关文档已更新。
+
+**新数据**（同场景、同 4 步协议、各 4 次）：
+
+| 项 | CGC B1-a | TaCZ 1.2.0 | TaCZ + AR |
+|---|---:|---:|---:|
+| 无光影·空手 | 1.174 ms | **1.106 ms** | 1.279 ms |
+| 无光影·持枪 | **1.795 ms** | 1.994 ms | 2.026 ms |
+| 开光影·空手 | 7.193 ms | 7.160 ms | 7.187 ms |
+| 开光影·持枪 | 7.474 ms | 7.447 ms | 7.436 ms |
+
+结论：静态展示 CGC 只比 TaCZ 慢 0.067 ms（+6.1%），按空展示框基线折算单枪 0.034 vs 0.027 ms；重构前是 TaCZ 的 4.9×。差距剩下的是一个尚未归因的常数项——现在没有 draw 数/模板窗口探针，无法判断它来自 draw、模板还是状态切换，正是你说的「潜在的常数优化或没涉及的点」。持枪 CGC 反而快 0.2 ms；开光影三端完全同水平，再次印证 GPU 主导。
+
+**文档更新**：
+
+- [26.35.11.1-4 报告](docs/architecture/client/render/benchmark/26.35.11.1-4/测试数据计算报告.md)：第 3 节换成同批 TaCZ 数据，表头与结论同步；[analyze.py](docs/architecture/client/render/benchmark/26.35.11.1-4/analyze.py) 负责解析三端，图已重生成。
+- 旧批次 [26.35.11.1 报告](docs/architecture/client/render/benchmark/26.35.11.1/测试数据计算报告.md) 加了一行修订说明：TaCZ multi 只有 1 次、步骤顺序相反、ak47 可能未拆枪托，已被 -4 取代。
+- [benchmark/Home.md](docs/architecture/client/render/benchmark/Home.md)：-4 的批次范围扩大到三端，分工写明取代关系。
+- [chain/Home.md](docs/architecture/client/render/chain/Home.md) 与 [scenes-and-static.md](docs/architecture/client/render/chain/scenes-and-static.md)：TaCZ 由 0.039 改为 0.027 ms/枪，13.6 倍改为约 19 倍，旧的 844.2/1.185 锚点换成 904.0/1.106 与 501.6/1.994。
+- [reference-tacz-1.2.0.md](docs/architecture/client/render/refactor/reference-tacz-1.2.0.md) 的 V1 与 [scheme-d](docs/architecture/client/render/refactor/scheme-d-culling-lod-parallel.md) 的参照值同步更新。
+
+代码（`BakedMesh` 的 `BufferBuilder` 复用）和全部文档改动都未提交。

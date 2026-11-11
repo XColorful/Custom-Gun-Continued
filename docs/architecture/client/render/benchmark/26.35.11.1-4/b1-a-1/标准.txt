@@ -10,7 +10,7 @@ CGC端1（forge47.4.23）：
 - ./mods/customgun-26.11.35.1-forge-1.20.1.jar
 - ./mods/embeddium-0.3.31+mc1.20.1.jar
 - ./mods/oculus-mc1.20.1-1.8.0.jar
-- ./shaderpacks/ComplementaryReimagined_r5.9.3.zip
+- ./shaderpacks/ComplementaryReimagined_r5.9.3.zip（配置HIGH）
 - ./tacz/tacz_default_gun/
 
 测试方式-multi：

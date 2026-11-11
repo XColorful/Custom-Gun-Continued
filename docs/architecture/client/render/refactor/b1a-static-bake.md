@@ -69,6 +69,7 @@ vertexColor    = minecraft_mix_light(Light0_Direction, Light1_Direction, Normal,
 3. **几何段**（未命中时）：`BedrockPart#renderGeometry` 用单位 `PoseStack` 把节点姿态烘进顶点，
    上传到 `VertexBuffer(Usage.STATIC)`。几何段**不执行** functional 回调——回调已在状态段执行过，
    因此委托拿到的仍是真实姿态矩阵，也不会重复登记。
+   `BufferBuilder` 按烘焙嵌套深度**复用**：1.20.1 的构造会申请 `容量 × 6` 的原生内存且没有释放路径，每次重建新建会在 F12 强制重建下几秒耗尽页面文件。
 4. **绘制**：`RenderType.setupRenderState()` → 选着色器（见上）→ `VertexBuffer.bind()` →
    `drawWithShader(RenderSystem.getModelViewMatrix() * 姿态矩阵, 投影矩阵, shader)` →
    `VertexBuffer.unbind()` → `clearRenderState()`。**不上传、不 flush、不经过 `BufferSource`。**
@@ -166,6 +167,8 @@ vertexColor    = minecraft_mix_light(Light0_Direction, Light1_Direction, Normal,
 `Node snapshot` 在 1.20.1 上不再有命中（报告里显示 `-`），属预期。
 
 ## 验收清单（人工）
+
+> 2026-11-11 验收（1.20.1）：第 1、2、4、5、6、7 项通过；第 3 项（雾的关烘焙对照）与第 8 项（内置探针）未做。数据见 [阶段验收报告](../benchmark/26.35.11.1-4/测试数据计算报告.md)。
 
 单把枪、9 个展示框各跑一次，**开 / 关光影各一次**：
 

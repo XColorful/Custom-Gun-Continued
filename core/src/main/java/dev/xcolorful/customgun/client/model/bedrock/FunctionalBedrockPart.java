@@ -6,6 +6,7 @@ import dev.xcolorful.customgun.client.api.renderer.model.IModelComponentRenderer
 import dev.xcolorful.customgun.client.util.ClientRenderProfiler;
 import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import net.minecraft.world.item.ItemDisplayContext;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -17,6 +18,14 @@ import java.util.function.Function;
 public class FunctionalBedrockPart extends BedrockPart {
 
     public @Nullable Function<BedrockPart, IModelComponentRenderer> functionalRenderer;
+
+    /**
+     * 最近一次状态段的结果：functional 回调返回了替换渲染器。
+     * <p>
+     * 状态段与几何段成对调用，几何段据此跳过已被替换的子树，不再重复执行回调。
+     */
+    @ApiStatus.Internal
+    public boolean cgc$statusReplaced;
 
     public FunctionalBedrockPart(@NotNull String name, @Nullable Function<BedrockPart, IModelComponentRenderer> functionalRenderer) {
         super(name);
@@ -90,6 +99,77 @@ public class FunctionalBedrockPart extends BedrockPart {
             }
         }
         poseStack.popPose();
+    }
+
+    // --------静态烘焙--------
+
+    @Override
+    public boolean containsFunctional() {
+        // 只有真正挂了回调的节点才需要每帧维护姿态；模型加载时所有骨骼都是本类型、多数回调为 null
+        return this.functionalRenderer != null || super.containsFunctional();
+    }
+
+    @Override
+    public long subtreeStateHash() {
+        // 走快速指纹路径说明本节点没有执行回调，不存在替换
+        this.cgc$statusReplaced = false;
+        return super.subtreeStateHash();
+    }
+
+    @Override
+    public long renderStatus(PoseStack poseStack,
+                             ItemDisplayContext transformType,
+                             int light, int overlay,
+                             VertexConsumer discard) {
+        if (this.functionalRenderer == null) { // 没有回调：与普通节点同一套逻辑（含快速指纹）
+            this.cgc$statusReplaced = false;
+            return super.renderStatus(poseStack, transformType, light, overlay, discard);
+        }
+
+        int cubePackedLight = this.illuminated ? ClientRenderUtils.LightTexture_.pack(15, 15) : light;
+
+        poseStack.pushPose(); {
+            this.translate_rotate_scale(poseStack);
+
+            boolean rendered = false;
+            {
+                final long profFunctional = ClientRenderProfiler.begin();
+                @Nullable IModelComponentRenderer renderer = this.functionalRenderer.apply(this);
+                if (renderer != null) {
+                    renderer.render(poseStack,
+                            discard,
+                            transformType,
+                            cubePackedLight, overlay);
+                    rendered = true;
+                }
+                ClientRenderProfiler.end(ClientRenderProfiler.FUNCTIONAL_NODES, profFunctional);
+            }
+            this.cgc$statusReplaced = rendered;
+
+            long hash = this.stateHash(0x9E3779B97F4A7C15L);
+            hash = hash * 31L + (rendered ? 1L : 2L);
+
+            if (!rendered && this.visible) {
+                for (int i = 0; i < this.children.size(); i++) {
+                    hash = hash * 31L + this.children.get(i)
+                            .renderStatus(poseStack, transformType, cubePackedLight, overlay, discard);
+                }
+            }
+            poseStack.popPose();
+            return hash;
+        }
+    }
+
+    @Override
+    public void renderGeometry(PoseStack poseStack,
+                               ItemDisplayContext transformType,
+                               VertexConsumer consumer,
+                               int light, int overlay,
+                               float red, float green, float blue, float alpha) {
+        // 回调返回了替换渲染器：子弹树由该渲染器（委托）负责，与即时遍历语义一致
+        if (this.cgc$statusReplaced) return;
+
+        super.renderGeometry(poseStack, transformType, consumer, light, overlay, red, green, blue, alpha);
     }
 
 

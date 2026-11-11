@@ -5,17 +5,57 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import dev.xcolorful.customgun.CustomGun;
+import dev.xcolorful.customgun.client.api.minecraft.shader.ICoreShaderRegistrar;
 import dev.xcolorful.customgun.client.api.minecraft.texture.CustomTexture;
 import dev.xcolorful.customgun.client.compat.iris.IrisCompat;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 
 public class ClientRenderRegistry {
+
+    /**
+     * 静态烘焙网格（B1-a）用的 core shader
+     * <ul>
+     *     <li><b>无光影</b>：原版实体着色器用原始 {@code Normal} 做光照、用 {@code IViewRotMat * Position} 算雾，
+     *     两者都假设顶点已经是视图空间；烘焙网格是模型空间 + 实例矩阵，必须换成会把 {@code ModelViewMat}
+     *     一起算进法线与雾坐标的着色器，见 {@code assets/customgun/shaders/core/cgc_baked_entity.*}</li>
+     *     <li><b>开光影包</b>：不使用它，改由 Oculus/Iris 在 {@code GameRenderer.getRendertype*Shader()}
+     *     换成的光影包 program 绘制</li>
+     * </ul>
+     */
+    public static class BakedEntityRenderState {
+
+        public static final @Nullable ResourceLocation BAKED_ENTITY_SHADER =
+                CustomGun.getMcRegistry().createResourceLocation(CustomGun.MOD_ID + ":cgc_baked_entity");
+
+        private static volatile @Nullable ShaderInstance bakedEntityShader;
+
+        public static @Nullable ShaderInstance getBakedEntityShader() {
+            return bakedEntityShader;
+        }
+    }
+
+    /**
+     * 由平台在着色器注册事件里调用（Forge: {@code RegisterShadersEvent}）
+     * <p>
+     * 资源重载会重新创建 {@link ShaderInstance}，所以每次都要重新回调并覆盖引用。
+     */
+    public static void onRegisterShaders(ICoreShaderRegistrar registrar) {
+        @Nullable ResourceLocation location = BakedEntityRenderState.BAKED_ENTITY_SHADER;
+        if (location == null) return;
+
+        registrar.registerCoreShader(location,
+                DefaultVertexFormat.NEW_ENTITY,
+                shader -> BakedEntityRenderState.bakedEntityShader = shader);
+    }
 
     public static class LaserBeamRenderState extends RenderStateShard {
 

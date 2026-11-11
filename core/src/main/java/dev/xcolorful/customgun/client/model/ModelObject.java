@@ -8,6 +8,8 @@ import dev.xcolorful.customgun.client.api.renderer.model.IModelComponentRenderer
 import dev.xcolorful.customgun.client.compat.iris.IrisCompat;
 import dev.xcolorful.customgun.client.model.bedrock.BedrockPart;
 import dev.xcolorful.customgun.client.model.bedrock.NodeTransform;
+import dev.xcolorful.customgun.client.model.bake.DiscardVertexConsumer;
+import dev.xcolorful.customgun.client.model.bake.StaticBake;
 import dev.xcolorful.customgun.client.resource.assets.model.BedrockModel;
 import dev.xcolorful.customgun.client.resource.assets.model.bedrock.geometry._Bone;
 import dev.xcolorful.customgun.client.util.ClientModelUtils;
@@ -201,19 +203,13 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
         MultiBufferSource.BufferSource bufferSource = ClientRenderHelper.GL.getModelBufferSource();
         VertexConsumer builder = bufferSource.getBuffer(renderType);
         ClientRenderProfiler.countBatch();
-
-        final long profSnapshot = ClientRenderProfiler.begin();
-        List<BedrockPart> parts = new ArrayList<>(); { // [26.2, )
-            for (IBedrockRenderer renderer : this.modelMap_values()) {
-                parts.add(renderer.getModelRenderer());
-            }
-        }
-        ClientRenderProfiler.countNodes(parts.size());
+        ClientRenderProfiler.countRenderType(renderType);
 
         if (ClientRenderProfiler.enabled) { // 采集窗口内统计：本次提交的节点状态是否与上次不同
             long hash = 1125899906842597L;
-            for (int i = 0; i < parts.size(); i++) {
-                BedrockPart part = parts.get(i);
+            for (IBedrockRenderer renderer : this.modelMap_values()) {
+                BedrockPart part = renderer.getModelRenderer();
+                ClientRenderProfiler.countNodes(1);
                 hash = hash * 31L + Float.floatToRawIntBits(part.offsetX);
                 hash = hash * 31L + Float.floatToRawIntBits(part.offsetY);
                 hash = hash * 31L + Float.floatToRawIntBits(part.offsetZ);
@@ -232,68 +228,146 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
             }
         }
 
-        List<NodeTransform> animatedTransforms = new ArrayList<>(parts.size()); { // [26.2, )
+        /*
+        [1.20.1, 26.2)
+        即时模式下顶点在本次调用内就被提交，节点状态不会被清空，因此不需要快照与还原
+        这段双重快照在 1.20.1 上纯属开销（multi 场景实测 0.135 ms/帧），B1-a 中移除
+        26.2 延迟渲染下仍需在 flush 前保存/恢复节点状态，移植时按下面的注释恢复
+         */
+        // [26.2, )
+        /*
+        List<BedrockPart> parts = new ArrayList<>(); {
+            for (IBedrockRenderer renderer : this.modelMap_values()) {
+                parts.add(renderer.getModelRenderer());
+            }
+        }
+        ClientRenderProfiler.countNodes(parts.size());
+
+        List<NodeTransform> animatedTransforms = new ArrayList<>(parts.size()); {
             for (BedrockPart part : parts) {
                 animatedTransforms.add(NodeTransform.capture(part));
             }
         }
 
-        RenderType bakedRenderType = ClientRenderHelper.bakePipelineState(renderType); // [26.2, )
-
-        {
-            // flush 阶段节点已被清空，先保存当前（已清空）状态，恢复动画状态绘制，最后再还原已清空状态
-            List<NodeTransform> cleanedTransforms = new ArrayList<>(parts.size()); { // [26.2, )
-                for (int i = 0; i < parts.size(); i++) {
-                    BedrockPart part = parts.get(i);
-                    cleanedTransforms.add(NodeTransform.capture(part));
-                }
-                for (int i = 0; i < animatedTransforms.size(); i++) {
-                    NodeTransform transform = animatedTransforms.get(i);
-                    transform.apply();
-                }
+        List<NodeTransform> cleanedTransforms = new ArrayList<>(parts.size()); {
+            for (int i = 0; i < parts.size(); i++) {
+                BedrockPart part = parts.get(i);
+                cleanedTransforms.add(NodeTransform.capture(part));
             }
-            ClientRenderProfiler.end(ClientRenderProfiler.SNAPSHOT, profSnapshot);
-
-            try {
-                final long profTraverse = ClientRenderProfiler.begin();
-                matrixStack.pushPose(); {
-                    for (int i = 0; i < this.shouldRender.size(); i++) {
-                        this.shouldRender.get(i)
-                                .render(matrixStack,
-                                        transformType,
-                                        builder,
-                                        light, overlay,
-                                        red, green, blue, alpha);
-                    }
-                }
-                matrixStack.popPose();
-                ClientRenderProfiler.end(ClientRenderProfiler.TRAVERSE, profTraverse);
-
-                final long profFlush = ClientRenderProfiler.begin();
-                ClientRenderProfiler.countFlush();
-                if (!IrisCompat.endBatch(bufferSource)) {
-                    bufferSource.endBatch();
-                }
-                ClientRenderProfiler.end(ClientRenderProfiler.FLUSH, profFlush);
-
-                final long profDelegate = ClientRenderProfiler.begin();
-                for (int i = 0; i < this.delegateRenderers.size(); i++) {
-                    IModelComponentRenderer renderer = delegateRenderers.get(i);
-                    renderer.render(matrixStack,
-                            builder,
-                            transformType,
-                            light, overlay);
-                }
-                this.delegateRenderers = new ArrayList<>();
-                ClientRenderProfiler.end(ClientRenderProfiler.DELEGATE, profDelegate);
-            } finally {
-                for (int i = 0; i < cleanedTransforms.size(); i++) { // [26.2, )
-                    NodeTransform transform = cleanedTransforms.get(i);
-                    transform.apply();
-                }
+            for (int i = 0; i < animatedTransforms.size(); i++) {
+                NodeTransform transform = animatedTransforms.get(i);
+                transform.apply();
             }
         }
+        */
+
+        RenderType bakedRenderType = ClientRenderHelper.bakePipelineState(renderType); // [26.2, )
+
+        // [26.2, ) 延迟渲染下这里需要在 flush 前保存、flush 后还原节点状态
+
+        // B1-a：节点静态的场景走烘焙网格；无法烘焙时退回即时管线
+        boolean baked = StaticBake.eligible(transformType)
+                && this.renderBaked(matrixStack, transformType, bakedRenderType, light, overlay,
+                        red, green, blue, alpha);
+        if (!baked) {
+            final long profTraverse = ClientRenderProfiler.begin();
+            matrixStack.pushPose(); {
+                for (int i = 0; i < this.shouldRender.size(); i++) {
+                    this.shouldRender.get(i)
+                            .render(matrixStack,
+                                    transformType,
+                                    builder,
+                                    light, overlay,
+                                    red, green, blue, alpha);
+                }
+            }
+            matrixStack.popPose();
+            ClientRenderProfiler.end(ClientRenderProfiler.TRAVERSE, profTraverse);
+
+            final long profFlush = ClientRenderProfiler.begin();
+            ClientRenderProfiler.countFlush();
+            if (!IrisCompat.endBatch(bufferSource)) {
+                bufferSource.endBatch();
+            }
+            ClientRenderProfiler.end(ClientRenderProfiler.FLUSH, profFlush);
+        }
+
+        final long profDelegate = ClientRenderProfiler.begin();
+        for (int i = 0; i < this.delegateRenderers.size(); i++) {
+            IModelComponentRenderer renderer = delegateRenderers.get(i);
+            renderer.render(matrixStack,
+                    builder,
+                    transformType,
+                    light, overlay);
+        }
+        this.delegateRenderers = new ArrayList<>();
+        ClientRenderProfiler.end(ClientRenderProfiler.DELEGATE, profDelegate);
+
         ClientRenderProfiler.end(ClientRenderProfiler.MODEL_TOTAL, profModel);
+    }
+
+    /**
+     * 静态烘焙路径
+     * <ul>
+     *     <li>状态段：每帧执行 functional 回调与可见性判定，产出状态指纹与委托</li>
+     *     <li>几何段：仅在缓存未命中时执行，用单位 {@link PoseStack} 把节点姿态烘进模型空间网格</li>
+     *     <li>绘制：用调用方的姿态矩阵绘制，不产生上传与 flush</li>
+     * </ul>
+     * functional 回调只在状态段执行一次，因此委托拿到的仍是真实姿态矩阵。
+     *
+     * @return {@code false} 表示本帧无法烘焙（有回调直接发射几何），调用方应退回即时管线
+     */
+    private boolean renderBaked(PoseStack matrixStack,
+                                ItemDisplayContext transformType,
+                                RenderType renderType,
+                                int light, int overlay,
+                                float red, float green, float blue, float alpha) {
+        int delegateMark = this.delegateMark();
+        DiscardVertexConsumer discard = DiscardVertexConsumer.INSTANCE;
+        long vertexMark = discard.writtenVertices();
+
+        long fingerprint = 0x9E3779B97F4A7C15L;
+        for (int i = 0; i < this.shouldRender.size(); i++) {
+            fingerprint = fingerprint * 31L + this.shouldRender.get(i)
+                    .renderStatus(matrixStack, transformType, light, overlay, discard);
+        }
+
+        if (discard.writtenVertices() != vertexMark) {
+            // 回调直接把几何写进 consumer（不是委托）：烘焙会丢掉这部分几何，退回即时管线
+            this.trimDelegates(delegateMark);
+            return false;
+        }
+
+        if (!StaticBake.drawOrBake(this, null, matrixStack.last().pose(), renderType, light, overlay,
+                red, green, blue, alpha, fingerprint,
+                consumer -> {
+                    PoseStack bakePose = new PoseStack();
+                    for (int i = 0; i < this.shouldRender.size(); i++) {
+                        this.shouldRender.get(i)
+                                .renderGeometry(bakePose, transformType, consumer,
+                                        light, overlay, red, green, blue, alpha);
+                    }
+                })) {
+            // 没有可用着色器：丢弃状态段登记的委托，由调用方退回即时管线
+            this.trimDelegates(delegateMark);
+            return false;
+        }
+        return true;
+    }
+
+    @ApiStatus.Internal
+    int delegateMark() {
+        return this.delegateRenderers.size();
+    }
+
+    /**
+     * 退回即时管线前丢弃状态段登记的委托，避免同一次提交里重复渲染
+     */
+    @ApiStatus.Internal
+    void trimDelegates(int size) {
+        while (this.delegateRenderers.size() > size) {
+            this.delegateRenderers.remove(this.delegateRenderers.size() - 1);
+        }
     }
 
     // --------Deprecated--------

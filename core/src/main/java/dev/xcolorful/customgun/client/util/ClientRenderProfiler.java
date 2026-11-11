@@ -5,6 +5,7 @@ import dev.xcolorful.customgun.core.api.event.EventType;
 import dev.xcolorful.customgun.core.api.event.IEvent;
 import dev.xcolorful.customgun.core.api.event.IEventHandler;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -22,6 +23,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -84,15 +86,17 @@ public final class ClientRenderProfiler implements IEventHandler {
     public static final int UPLOAD = 20;
     /** endBatch 内的 draw（VertexBuffer.drawWithShader） */
     public static final int DRAW = 21;
+    /** B1-a 静态烘焙（首次或失效后的重建） */
+    public static final int BAKE = 22;
 
-    public static final int PROBE_COUNT = 22;
+    public static final int PROBE_COUNT = 23;
     private static final String[] PROBE_NAMES = {
             "First-person submit", "World-item submit", "State update", "Data refresh", "Scope render",
             "Model render total", "Node snapshot", "Geometry traverse", "endBatch flush",
             "Delegate render", "Muzzle cache", "Stencil clear",
             "Hand event entry", "Third-person visual update", "State machine init",
             "Functional nodes", "GUI slot icon", "Camera angles", "Hand camera", "FOV",
-            "endBatch upload", "endBatch draw",
+            "endBatch upload", "endBatch draw", "Static bake",
     };
 
     // --------计数--------
@@ -110,11 +114,14 @@ public final class ClientRenderProfiler implements IEventHandler {
     private static final int COUNTER_ALLOC_BYTES = 10;
     private static final int COUNTER_ANIM_CHANNELS = 11;
     private static final int COUNTER_STATE_CHANGES = 12;
-    private static final int COUNTER_COUNT = 13;
+    private static final int COUNTER_BAKE_REBUILDS = 13;
+    private static final int COUNTER_RENDER_TYPES = 14;
+    private static final int COUNTER_COUNT = 15;
     private static final String[] COUNTER_NAMES = {
             "First-person submissions", "World-item submissions", "endBatch calls", "Cubes submitted",
             "Nodes captured", "Geometry batches", "Stencil windows", "LOD hits",
             "Draw calls", "Upload bytes", "Allocated bytes", "Animation channels", "State changes",
+            "Bake rebuilds", "Distinct RenderTypes",
     };
 
     /**
@@ -134,6 +141,8 @@ public final class ClientRenderProfiler implements IEventHandler {
     private static final long[] frameProbe = new long[PROBE_COUNT];
     private static final int[] frameProbeHits = new int[PROBE_COUNT];
     private static final int[] frameCounter = new int[COUNTER_COUNT];
+    /** 本帧出现过的 RenderType（身份比较），帧末取数量即 B2 的 draw 下限 */
+    private static final IdentityHashMap<RenderType, Boolean> frameRenderTypes = new IdentityHashMap<>();
 
     private static boolean collecting = false;
     private static boolean truncated = false;
@@ -253,6 +262,17 @@ public final class ClientRenderProfiler implements IEventHandler {
         count(COUNTER_STATE_CHANGES);
     }
 
+    /** 一次静态网格烘焙（首帧或状态变化后） */
+    public static void countBake() {
+        count(COUNTER_BAKE_REBUILDS);
+    }
+
+    /** 记录本帧使用过的一个 RenderType 实例 */
+    public static void countRenderType(RenderType renderType) {
+        if (!collecting) return;
+        frameRenderTypes.put(renderType, Boolean.TRUE);
+    }
+
     /** GPU 计时查询返回的一帧忙时（ns），由 {@link GpuFrameTimer} 调用 */
     public static void recordGpuFrame(long nanos) {
         frameGpuNanos += nanos;
@@ -283,6 +303,7 @@ public final class ClientRenderProfiler implements IEventHandler {
 
         long now = System.nanoTime();
         if (collecting) {
+            frameCounter[COUNTER_RENDER_TYPES] = frameRenderTypes.size();
             if (lastFrameEnd != 0L) {
                 if (frameCount < CAPACITY) {
                     int index = frameCount++;
@@ -318,6 +339,7 @@ public final class ClientRenderProfiler implements IEventHandler {
         Arrays.fill(frameProbe, 0L);
         Arrays.fill(frameProbeHits, 0);
         Arrays.fill(frameCounter, 0);
+        frameRenderTypes.clear();
         frameGpuNanos = 0L;
     }
 

@@ -50,6 +50,11 @@ public class BedrockPart implements IBedrockCubeCompile, IBedrockRenderer {
 
     protected BedrockPart parent;
 
+    /**
+     * {@link #containsFunctional()} 的缓存；节点树构建完成后不再变化
+     */
+    private @Nullable Boolean cgc$subtreeFunctional;
+
     private float initRotX;
     private float initRotY;
     private float initRotZ;
@@ -117,6 +122,138 @@ public class BedrockPart implements IBedrockCubeCompile, IBedrockRenderer {
                             light, overlay,
                             red, green, blue, alpha);
         }
+    }
+
+    // --------静态烘焙--------
+
+    /**
+     * 状态段：执行 functional 回调、确定可见性，不写顶点。
+     * <p>
+     * 返回值是本子树的节点状态指纹，作为烘焙缓存的失效依据。隐藏的子树不参与渲染，因此也不计入指纹；
+     * 它们重新可见时父节点的 {@code visible} 会变化，指纹随之改变。
+     * <p>
+     * 子树内没有 functional 节点时不需要回调，也就不需要维护 {@link PoseStack}，只做指纹累加。
+     */
+    public long renderStatus(PoseStack poseStack,
+                             ItemDisplayContext transformType,
+                             int light, int overlay,
+                             VertexConsumer discard) {
+        if (!this.visible) return 0L;
+        if (!this.containsFunctional()) return this.subtreeStateHash();
+
+        long hash = this.stateHash(0x9E3779B97F4A7C15L);
+        int cubePackedLight = this.illuminated ? ClientRenderUtils.LightTexture_.pack(15, 15) : light;
+
+        poseStack.pushPose(); {
+            this.translate_rotate_scale(poseStack);
+            for (int i = 0; i < this.children.size(); i++) {
+                hash = hash * 31L + this.children.get(i)
+                        .renderStatus(poseStack, transformType, cubePackedLight, overlay, discard);
+            }
+        }
+        poseStack.popPose();
+        return hash;
+    }
+
+    /**
+     * 子树内是否存在 functional 节点。
+     * <p>
+     * 节点树在 {@code resetCache} 期间构建完成后不再改变，结果缓存到首次查询。
+     * {@link FunctionalBedrockPart} 恒为 {@code true}。
+     */
+    public boolean containsFunctional() {
+        if (this.cgc$subtreeFunctional == null) {
+            boolean found = false;
+            for (int i = 0; i < this.children.size(); i++) {
+                if (this.children.get(i).containsFunctional()) {
+                    found = true;
+                    break;
+                }
+            }
+            this.cgc$subtreeFunctional = found;
+        }
+        return this.cgc$subtreeFunctional;
+    }
+
+    /**
+     * 运行时改动 functional 回调后，清掉自身与祖先的 {@link #containsFunctional()} 缓存
+     * <p>
+     * 该缓存按「加载完成后不再变化」优化；addon 在首次渲染之后再挂回调时必须调用本方法，
+     * 否则状态段会走快速指纹路径、回调永远不执行。
+     */
+    public void invalidateFunctionalCache() {
+        BedrockPart part = this;
+        while (part != null) {
+            part.cgc$subtreeFunctional = null;
+            part = part.parent;
+        }
+    }
+
+    /**
+     * 不维护姿态、只累加可见节点指纹
+     */
+    public long subtreeStateHash() {
+        if (!this.visible) return 0L;
+        long hash = this.stateHash(0x9E3779B97F4A7C15L);
+        for (int i = 0; i < this.children.size(); i++) {
+            hash = hash * 31L + this.children.get(i).subtreeStateHash();
+        }
+        return hash;
+    }
+
+    /**
+     * 几何段：只按当前可见性发射顶点，不执行 functional 回调。
+     * <p>
+     * functional 回调由状态段执行过，回调的副作用（可见性、委托）已经生效，
+     * 因此这里可以安全地跳过回调，并使用一个独立的单位 {@link PoseStack} 烘焙出模型空间网格。
+     */
+    public void renderGeometry(PoseStack poseStack,
+                               ItemDisplayContext transformType,
+                               VertexConsumer consumer,
+                               int light, int overlay,
+                               float red, float green, float blue, float alpha) {
+        if (!this.visible) return;
+        if (this.cubes.isEmpty() && this.children.isEmpty()) return;
+
+        int cubePackedLight = this.illuminated ? ClientRenderUtils.LightTexture_.pack(15, 15) : light;
+
+        poseStack.pushPose(); {
+            this.translate_rotate_scale(poseStack);
+            this.compile(poseStack.last(), consumer, cubePackedLight, overlay, red, green, blue, alpha);
+            for (int i = 0; i < this.children.size(); i++) {
+                this.children.get(i)
+                        .renderGeometry(poseStack, transformType, consumer,
+                                cubePackedLight, overlay, red, green, blue, alpha);
+            }
+        }
+        poseStack.popPose();
+    }
+
+    /**
+     * 把本节点的全部变换字段累加进指纹。
+     * <p>
+     * 动画只写 offset / additionalQuaternion / scale / visible，其余字段在加载后不再变化；
+     * 一并计入可以让 addon 直接改写节点姿态时也能正确失效。
+     */
+    public long stateHash(long hash) {
+        hash = hash * 31L + Float.floatToRawIntBits(this.x);
+        hash = hash * 31L + Float.floatToRawIntBits(this.y);
+        hash = hash * 31L + Float.floatToRawIntBits(this.z);
+        hash = hash * 31L + Float.floatToRawIntBits(this.xRot);
+        hash = hash * 31L + Float.floatToRawIntBits(this.yRot);
+        hash = hash * 31L + Float.floatToRawIntBits(this.zRot);
+        hash = hash * 31L + Float.floatToRawIntBits(this.offsetX);
+        hash = hash * 31L + Float.floatToRawIntBits(this.offsetY);
+        hash = hash * 31L + Float.floatToRawIntBits(this.offsetZ);
+        hash = hash * 31L + Float.floatToRawIntBits(this.additionalQuaternion.x);
+        hash = hash * 31L + Float.floatToRawIntBits(this.additionalQuaternion.y);
+        hash = hash * 31L + Float.floatToRawIntBits(this.additionalQuaternion.z);
+        hash = hash * 31L + Float.floatToRawIntBits(this.additionalQuaternion.w);
+        hash = hash * 31L + Float.floatToRawIntBits(this.xScale);
+        hash = hash * 31L + Float.floatToRawIntBits(this.yScale);
+        hash = hash * 31L + Float.floatToRawIntBits(this.zScale);
+        hash = hash * 31L + (this.visible ? 1L : 2L);
+        return hash;
     }
 
     // --------IBedrockRenderer--------

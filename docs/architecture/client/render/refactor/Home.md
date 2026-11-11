@@ -249,4 +249,5 @@ graph TB
 |[C draw 合并与实例化](./scheme-c-draw-batching.md)|跨实例合并 draw 的两种做法与光影风险|
 |[D 剔除、LOD 与并行](./scheme-d-culling-lod-parallel.md)|提交次数削减、LOD 的边界、多线程方案与否决理由|
 |[外部参照：TaCZ 1.2.0 差异](./reference-tacz-1.2.0.md)|参照实现做了哪些静态化改动、哪些差异需要在各阶段用 benchmark 与光影实测验证（**不是方案**）|
+|[B1-a 实施记录](./b1a-static-bake.md)|静态烘焙已落地的覆盖范围、缓存键与失效条件、退回即时管线的情况、验收清单与未完成项|
 |[CPU/GPU 与上限](../chain/cpu-gpu-headroom.md)|瓶颈判定、draw 成本反推、测量缺口|

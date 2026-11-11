@@ -7,11 +7,15 @@
 - [x] **阶段 0 测量**：扩展探针已实现并采集完成，见 [`benchmark/26.35.11.1-2/测试数据计算报告.md`](./benchmark/26.35.11.1-2/测试数据计算报告.md)
 - [x] **阶段 0 补测：满配场景**：`tacz:m4a1` 裸配 / 满配 + 9 个满配展示框，见 [`benchmark/26.35.11.1-3/测试数据计算报告.md`](./benchmark/26.35.11.1-3/测试数据计算报告.md)
 - [ ] **探针新增（随 B1 一起加，不单独跑批次）**
-  - 全场景不同 `RenderType` 去重计数 → B2 的 draw 下限
-  - 包住「本帧所有 CGC draw」的 `GL_TIME_ELAPSED` 查询 → 定位 multi 的 0.97 ms / 26.3 的 4.38 ms 未归因项
-  - 按节点的脏计数 → B1-b 的脏子树比例
-  - 把整帧 GPU 查询与分配采样改为每 N 帧一次（现有固定开销约 0.048 ms/帧）
+  - [x] 全场景不同 `RenderType` 去重计数 → B2 的 draw 下限（`Distinct RenderTypes`，只统计 CGC 经过的位置）
+  - [ ] 包住「本帧所有 CGC draw」的 `GL_TIME_ELAPSED` 查询 → 定位 multi 的 0.97 ms / 26.3 的 4.38 ms 未归因项（与整帧查询冲突，需重做计时器分配）
+  - [ ] 按节点的脏计数 → B1-b 的脏子树比例
+  - [ ] 把整帧 GPU 查询与分配采样改为每 N 帧一次（现有固定开销约 0.048 ms/帧）
 - [ ] **阶段 1 B1-a 静态烘焙**：展示框 / 地面 / 第三人称（节点静态，`State changes = 0`）；含瞄具模板的那组 pass；顺带合并同纹理 flush、去掉 1.20.1 双重节点快照、模板每帧一清。验证缓存失效与光影表现
+  - 已实现（`StaticBake.ENABLED = true`），待人工验收：无光影走 `customgun:cgc_baked_entity`，开光影包走光影包自己的实体 program（Oculus 在 `GameRenderer.getRendertype*Shader()` 换 shader，实例矩阵同时驱动位置 / 法线 / 雾）
+  - 实现与验收清单见 [`refactor/b1a-static-bake.md`](./refactor/b1a-static-bake.md)；26.3 的绘制方式（自定义 `RenderPipeline` + `assignPipeline`）见同文档「26.3 / 跨版本」
+  - 已顺带完成：移除 1.20.1 双重节点快照（multi 实测 0.135 ms/帧）
+  - 未做：模板每帧一清（多枪共用模板缓冲时语义会变，收益 0.059 ms/帧，留给 B2 重排 pass）
 - [ ] **阶段 2 B1-b 第一人称**：root 变换提升为绘制矩阵 + 脏子树重写（实测 14 条活跃通道）；瞄具模板从烘焙网格重放
 - [ ] **阶段 3 B2 跨实例合并**：静态展示实例按 `RenderType` 合并到世界空间缓冲（每枪 9 次 draw → 全场景 N 次）
 - [ ] **阶段 4 26.3**：确认自定义 `FeatureRenderer` 路径，实现同一套烘焙抽象；**26.3 的 render pass 是它最大的单项，必须按 pass 计时验收**

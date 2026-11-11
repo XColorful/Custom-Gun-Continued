@@ -247,3 +247,35 @@ Now the bake method itself.
 - [reference-tacz-1.2.0.md](docs/architecture/client/render/refactor/reference-tacz-1.2.0.md) 的 V1 与 [scheme-d](docs/architecture/client/render/refactor/scheme-d-culling-lod-parallel.md) 的参照值同步更新。
 
 代码（`BakedMesh` 的 `BufferBuilder` 复用）和全部文档改动都未提交。
+
+# 
+
+```
+我改StaticBake额外做了个AB测试26.35.11-4/b1-a-3/，更新报告
+```
+
+# 
+
+A/B 数据已经拿到，它推翻了我之前“光影下 GPU 主导、收益不可见”的推断。我先把 A/B 并入脚本和报告。
+
+A/B 数据已并入，报告新增第 4 节。
+
+**结果**（`b1-a-3`，`StaticBake#ENABLED = false`）：
+
+| 场景 | n | 帧时间 |
+|---|---:|---:|
+| 空展示框（无烘焙） | 3 | 6.679 ± 0.039 ms |
+| 9 把枪·烘焙关 | 4 | **23.949 ± 3.288 ms** |
+| 9 把枪·B1-a | 4 | **7.193 ± 0.039 ms** |
+| 9 把枪 + 第一人称·B1-a | 4 | 7.474 ± 0.010 ms |
+
+关键结论：
+
+- **光影下烘焙是 3.3× 收益**（23.9 → 7.19 ms）。烘焙关时帧时间远高于空展示框的 6.68 ms，说明重构前在光影下是 **CPU 受限**，不是 GPU 受限；烘焙后才贴近 GPU 下限。
+- 之前报告的推断——「CPU 成本 5.45 ms 低于 GPU 6.68 ms，所以光影下收益不可见」——**作废**。错误在于拿无光影的 CPU 数值跨光影外推：Oculus 下立即路径的 CPU 成本高得多。报告里已明确写出这一点，避免后续再踩。
+- 同一 A/B 的无光影对照为 5.485 ms，与重构前的 5.449 ms 差 0.7%，证明两次构建只差这一个开关。
+- 开光影段波动较大（34.9–46.9 FPS，sd 3.29 ms，CPU 受限时对系统负载更敏感），最慢一次仍比烘焙后慢 4.0×，不影响结论。
+
+**同步更新**：[analyze.py](docs/architecture/client/render/benchmark/26.35.11.1-4/analyze.py) 解析四个分组并重画了图（A 面板加入「烘焙关」，B 面板改为光影下 A/B 与三端对比）；[TODO.md](docs/architecture/client/render/TODO.md) 的「光影 A/B 待补」改为已完成并记录 23.9 → 7.19 ms，数据清单里对应的待办也勾掉；[benchmark/Home.md](docs/architecture/client/render/benchmark/Home.md) 的 -4 行与分工补上 A/B 构建和结论。
+
+全部改动未提交，等你 review。

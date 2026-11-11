@@ -8,6 +8,7 @@
 - `tacz2-multi (N).txt`           TaCZ 1.2.0 + Accelerated Rendering，同上
 - `b1-a-1/cgc1-multi (1).txt`     同一 4 步，修复前构建的验证跑（n=1）
 - `b1-a-2/cgc1-multi (N).txt`     2 步：空手（9 个空展示框）/ 开光影·空手（n=3）
+- `b1-a-3/cgc1-multi (N).txt`     `StaticBake#ENABLED = false` 的 A/B 对照：空手 / 开光影·空手（n=4）
 
 跨批对照（只读，不修改上一批目录）：
 - `../26.35.11.1-2/cgc1-multi (N).txt`             重构前，9 把 ak47 展示框（n=6，第 1 段为空手）
@@ -48,6 +49,7 @@ AF_REC = re.compile(
 
 POST_STEPS = ["空手（9 把 ak47）", "第一人称 ak47", "开光影·空手", "开光影·第一人称 ak47"]
 BASE_STEPS = ["空手（空展示框）", "开光影·空手（空展示框）"]
+AB_STEPS = ["空手（烘焙关）", "开光影·空手（烘焙关）"]
 
 
 def parse(path):
@@ -115,6 +117,7 @@ def main():
     tacz2 = group(BASE, r"tacz2-multi \(\d+\)\.txt", POST_STEPS)
     pre_fix = group(os.path.join(BASE, "b1-a-1"), r"cgc1-multi \(\d+\)\.txt", POST_STEPS)
     shader_base = group(os.path.join(BASE, "b1-a-2"), r"cgc1-multi \(\d+\)\.txt", BASE_STEPS)
+    ab = group(os.path.join(BASE, "b1-a-3"), r"cgc1-multi \(\d+\)\.txt", AB_STEPS)
     prev_guns = group(PREV, r"cgc1-multi \(\d+\)\.txt", ["9 把 ak47（空手）", "9 把 ak47 + 手持"])
     prev_scene = group(os.path.join(PREV, "multi-baseline"), r"cgc1-multi \(\d+\)\.txt", ["空展示框（空手）"])
 
@@ -123,6 +126,7 @@ def main():
     print_table("TaCZ 1.2.0 + Accelerated Rendering（同协议）", POST_STEPS, tacz2)
     print_table("b1-a-1（修复前构建，同一 4 步，n=1）", POST_STEPS, pre_fix)
     print_table("b1-a-2（9 个空展示框，开光影基线）", BASE_STEPS, shader_base)
+    print_table("b1-a-3（StaticBake#ENABLED=false，A/B 对照）", AB_STEPS, ab)
     print_table("26.35.11.1-2（重构前，无光影）", ["9 把 ak47（空手）", "9 把 ak47 + 手持"], prev_guns)
     print_table("26.35.11.1-2 场景基线（重构前，空展示框）", ["空展示框（空手）"], prev_scene)
 
@@ -136,6 +140,8 @@ def main():
     pre_scene = stats(prev_scene[0])
     scene_base = stats(shader_base[0])
     shader_empty = stats(shader_base[1])
+    ab_off = stats(ab[0])
+    ab_sh = stats(ab[1])
 
     print("\n## 推导")
     pre_cost = pre9["ft"] - pre_scene["ft"]
@@ -151,6 +157,8 @@ def main():
     print(f"  开光影 9 把枪相对空展示框：+{post_sh['ft'] - shader_empty['ft']:.3f} ms"
           f"（{post_sh['ft']:.3f} vs {shader_empty['ft']:.3f}），占帧 "
           f"{100.0 * (post_sh['ft'] - shader_empty['ft']) / post_sh['ft']:.1f}%")
+    print(f"  A/B 烘焙关：空手 {ab_off['ft']:.3f} ms（重构前 {pre9['ft']:.3f}，验证构建一致），"
+          f"开光影 {ab_sh['ft']:.3f} ms → 烘焙开 {post_sh['ft']:.3f} ms（{ab_sh['ft'] / post_sh['ft']:.2f}×）")
     print("  场景基线：重构前 %.3f ms / b1-a-2 %.3f ms（差 %+.3f ms，跨进程噪声）"
           % (pre_scene["ft"], scene_base["ft"], scene_base["ft"] - pre_scene["ft"]))
     b2 = [r for r in shader_base[0] if r["seconds"] > 5.0]
@@ -171,7 +179,7 @@ def main():
     print(f"  TaCZ 9 把枪成本（同一空展示框基线 {scene_base['ft']:.3f}）："
           f"{ta1[0]['ft'] - scene_base['ft']:.3f} ms，单枪 {(ta1[0]['ft'] - scene_base['ft']) / 9:.4f} ms")
 
-    plot(post9, post_fp, post_sh, post_sh_fp, pre9, ta1, ta2, scene_base)
+    plot(post9, post_fp, post_sh, post_sh_fp, pre9, ta1, ta2, scene_base, ab_off, ab_sh)
 
 
 def setup_font():
@@ -184,16 +192,16 @@ def setup_font():
     plt.rcParams["axes.spines.right"] = False
 
 
-def plot(post9, post_fp, post_sh, post_sh_fp, pre9, ta1, ta2, scene_base):
+def plot(post9, post_fp, post_sh, post_sh_fp, pre9, ta1, ta2, scene_base, ab_off, ab_sh):
     setup_font()
     fig, axes = plt.subplots(1, 2, figsize=(13, 5.2))
-    fig.suptitle("B1-a 静态烘焙：重构前后与 TaCZ 对照（Afterburner，1.20.1）", fontsize=14, y=0.99)
+    fig.suptitle("B1-a 静态烘焙：重构前后、TaCZ 对照与光影 A/B（Afterburner，1.20.1）", fontsize=14, y=0.99)
 
     ax = axes[0]
-    labels = ["CGC 重构前", "CGC B1-a", "TaCZ 1.2.0", "TaCZ + AR"]
-    vals = [pre9["ft"], post9["ft"], ta1[0]["ft"], ta2[0]["ft"]]
-    errs = [pre9["ft_sd"], post9["ft_sd"], ta1[0]["ft_sd"], ta2[0]["ft_sd"]]
-    colors = ["#8c8c8c", "#b8442f", "#2f6db3", "#6a9a3f"]
+    labels = ["CGC 重构前", "烘焙关", "CGC B1-a", "TaCZ 1.2.0", "TaCZ + AR"]
+    vals = [pre9["ft"], ab_off["ft"], post9["ft"], ta1[0]["ft"], ta2[0]["ft"]]
+    errs = [pre9["ft_sd"], ab_off["ft_sd"], post9["ft_sd"], ta1[0]["ft_sd"], ta2[0]["ft_sd"]]
+    colors = ["#8c8c8c", "#c98a2a", "#b8442f", "#2f6db3", "#6a9a3f"]
     x = np.arange(len(vals))
     ax.bar(x, vals, 0.55, yerr=errs, capsize=2, color=colors, error_kw=dict(lw=0.8))
     for xi, v in zip(x, vals):
@@ -202,30 +210,24 @@ def plot(post9, post_fp, post_sh, post_sh_fp, pre9, ta1, ta2, scene_base):
     ax.annotate(f"空展示框基线 {scene_base['ft']:.2f}", (len(vals) - 0.45, scene_base["ft"]),
                 xytext=(0, -12), textcoords="offset points", ha="right", fontsize=8, color="#555555")
     ax.set_xticks(x)
-    ax.set_xticklabels(labels)
+    ax.set_xticklabels(labels, fontsize=9)
     ax.set_ylabel("平均帧时间 (ms)")
     ax.set_title("A. 无光影：9 个展示框（空手）", fontsize=11)
     ax.grid(axis="y", alpha=0.25)
 
     ax = axes[1]
-    labels = ["开光影·空手", "开光影·持枪"]
-    series = [
-        ("CGC B1-a", [post_sh["ft"], post_sh_fp["ft"]], [post_sh["ft_sd"], post_sh_fp["ft_sd"]], "#b8442f"),
-        ("TaCZ 1.2.0", [ta1[2]["ft"], ta1[3]["ft"]], [ta1[2]["ft_sd"], ta1[3]["ft_sd"]], "#2f6db3"),
-        ("TaCZ + AR", [ta2[2]["ft"], ta2[3]["ft"]], [ta2[2]["ft_sd"], ta2[3]["ft_sd"]], "#6a9a3f"),
-    ]
-    x = np.arange(2)
-    w = 0.26
-    for i, (label, vals, errs, color) in enumerate(series):
-        xi = x + (i - 1) * w
-        ax.bar(xi, vals, w, yerr=errs, capsize=2, label=label, color=color, error_kw=dict(lw=0.8))
-        for px, v in zip(xi, vals):
-            ax.annotate(f"{v:.2f}", (px, v), textcoords="offset points", xytext=(0, 3), ha="center", fontsize=8)
+    labels = ["烘焙关", "CGC B1-a", "TaCZ 1.2.0", "TaCZ + AR"]
+    vals = [ab_sh["ft"], post_sh["ft"], ta1[2]["ft"], ta2[2]["ft"]]
+    errs = [ab_sh["ft_sd"], post_sh["ft_sd"], ta1[2]["ft_sd"], ta2[2]["ft_sd"]]
+    colors = ["#c98a2a", "#b8442f", "#2f6db3", "#6a9a3f"]
+    x = np.arange(len(vals))
+    ax.bar(x, vals, 0.55, yerr=errs, capsize=2, color=colors, error_kw=dict(lw=0.8))
+    for xi, v in zip(x, vals):
+        ax.annotate(f"{v:.2f}", (xi, v), textcoords="offset points", xytext=(0, 3), ha="center", fontsize=9)
     ax.set_xticks(x)
-    ax.set_xticklabels(labels)
+    ax.set_xticklabels(labels, fontsize=9)
     ax.set_ylabel("平均帧时间 (ms)")
-    ax.set_title("B. 开光影（Complementary HIGH）：三端同水平", fontsize=11)
-    ax.legend(fontsize=9)
+    ax.set_title("B. 开光影·空手：烘焙关 vs 三端", fontsize=11)
     ax.grid(axis="y", alpha=0.25)
 
     fig.tight_layout(rect=[0, 0, 1, 0.94])

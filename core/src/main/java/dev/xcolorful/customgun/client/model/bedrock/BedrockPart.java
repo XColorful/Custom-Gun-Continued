@@ -67,6 +67,8 @@ public class BedrockPart implements IBedrockCubeCompile, IBedrockRenderer {
     private long cgc$coveredStamp = Long.MIN_VALUE;
     /** 子树节点数（含自身），节点树构建完成后缓存 */
     private int cgc$subtreeSize = -1;
+    /** 子树 cube 数（含自身），重烘焙成本的实际单位 */
+    private int cgc$subtreeCubes = -1;
 
     private float initRotX;
     private float initRotY;
@@ -118,9 +120,10 @@ public class BedrockPart implements IBedrockCubeCompile, IBedrockRenderer {
 
     public void addChild(BedrockPart child) {
         this.children.add(child);
-        // 节点树在加载期构建，子树节点数要一并失效；运行时增删子节点时同样走这里
+        // 节点树在加载期构建，子树统计要一并失效；运行时增删子节点时同样走这里
         for (BedrockPart part = this; part != null; part = part.parent) {
             part.cgc$subtreeSize = -1;
+            part.cgc$subtreeCubes = -1;
         }
     }
 
@@ -298,6 +301,7 @@ public class BedrockPart implements IBedrockCubeCompile, IBedrockRenderer {
         if (this.cgc$profileStamp == stamp) return;
         this.cgc$profileStamp = stamp;
         ClientRenderProfiler.countDistinctNode();
+        ClientRenderProfiler.countDistinctCubes(this.cubes.size());
         long hash = this.stateHash();
         if (hash == this.cgc$profileHash) return;
 
@@ -311,6 +315,7 @@ public class BedrockPart implements IBedrockCubeCompile, IBedrockRenderer {
         }
         this.cgc$coveredStamp = stamp;
         ClientRenderProfiler.countDirtySubtree(this.subtreeSize());
+        ClientRenderProfiler.countDirtyCubes(this.subtreeCubes());
     }
 
     /** 子树节点数（含自身）；节点树构建完成后缓存 */
@@ -323,6 +328,18 @@ public class BedrockPart implements IBedrockCubeCompile, IBedrockRenderer {
             this.cgc$subtreeSize = size;
         }
         return this.cgc$subtreeSize;
+    }
+
+    /** 子树 cube 数（含自身）；重烘焙按顶点计，这是比节点数更准的成本单位 */
+    public int subtreeCubes() {
+        if (this.cgc$subtreeCubes < 0) {
+            int cubes = this.cubes.size();
+            for (int i = 0; i < this.children.size(); i++) {
+                cubes += this.children.get(i).subtreeCubes();
+            }
+            this.cgc$subtreeCubes = cubes;
+        }
+        return this.cgc$subtreeCubes;
     }
 
     // --------IBedrockRenderer--------

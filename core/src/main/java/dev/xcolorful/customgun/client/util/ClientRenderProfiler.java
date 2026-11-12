@@ -119,13 +119,15 @@ public final class ClientRenderProfiler implements IEventHandler {
     private static final int COUNTER_DISTINCT_NODES = 15;
     private static final int COUNTER_DIRTY_NODES = 16;
     private static final int COUNTER_DIRTY_SUBTREE = 17;
-    private static final int COUNTER_COUNT = 18;
+    private static final int COUNTER_DISTINCT_CUBES = 18;
+    private static final int COUNTER_DIRTY_CUBES = 19;
+    private static final int COUNTER_COUNT = 20;
     private static final String[] COUNTER_NAMES = {
             "First-person submissions", "World-item submissions", "endBatch calls", "Cubes submitted",
             "Nodes captured", "Geometry batches", "Stencil windows", "LOD hits",
             "Draw calls", "Upload bytes", "Allocated bytes", "Animation channels", "State changes",
             "Bake rebuilds", "Distinct RenderTypes", "Distinct nodes", "Dirty nodes",
-            "Dirty subtree nodes",
+            "Dirty subtree nodes", "Distinct cubes", "Dirty cubes",
     };
 
     /**
@@ -314,6 +316,16 @@ public final class ClientRenderProfiler implements IEventHandler {
      */
     public static void countDirtySubtree(int nodes) {
         countBy(COUNTER_DIRTY_SUBTREE, nodes);
+    }
+
+    /** 本帧第一次访问该节点时，累加它自身的 cube 数（与 {@link #COUNTER_DISTINCT_NODES} 同口径） */
+    public static void countDistinctCubes(int cubes) {
+        countBy(COUNTER_DISTINCT_CUBES, cubes);
+    }
+
+    /** 脏子树里的 cube 数：重烘焙成本按顶点计，这是直接可用的量 */
+    public static void countDirtyCubes(int cubes) {
+        countBy(COUNTER_DIRTY_CUBES, cubes);
     }
 
     /** 当前帧序号；探针按「每帧一次」去重时用作标记值 */
@@ -523,12 +535,20 @@ public final class ClientRenderProfiler implements IEventHandler {
             if (distinct > 0.0) {
                 double dirty = countAverage(COUNTER_DIRTY_NODES);
                 double dirtySubtree = countAverage(COUNTER_DIRTY_SUBTREE);
+                double distinctCubes = countAverage(COUNTER_DISTINCT_CUBES);
+                double dirtyCubes = countAverage(COUNTER_DIRTY_CUBES);
                 lines.add(counterStatLine("Dirty nodes (per frame)", COUNTER_DIRTY_NODES));
                 lines.add(counterStatLine("Dirty subtree nodes (per frame)", COUNTER_DIRTY_SUBTREE));
+                lines.add(counterStatLine("Dirty cubes (per frame)", COUNTER_DIRTY_CUBES));
                 lines.add(line("Dirty node share", String.format(Locale.ROOT,
                         "%8.1f %% (%5.1f / %5.1f nodes per frame)", dirty * 100.0 / distinct, dirty, distinct)));
                 lines.add(line("Dirty subtree share", String.format(Locale.ROOT,
                         "%8.1f %% (%5.1f / %5.1f nodes per frame)", dirtySubtree * 100.0 / distinct, dirtySubtree, distinct)));
+                if (distinctCubes > 0.0) {
+                    lines.add(line("Dirty cube share", String.format(Locale.ROOT,
+                            "%8.1f %% (%5.1f / %5.1f cubes per frame)",
+                            dirtyCubes * 100.0 / distinctCubes, dirtyCubes, distinctCubes)));
+                }
             }
         }
 

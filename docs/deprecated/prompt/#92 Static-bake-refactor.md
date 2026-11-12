@@ -89,8 +89,8 @@ The GLSL has a type error (`mat3 * mat4`). Fixing it before the build ships.
 - 片元着色器逐行照抄 `entity_cutout`
 
 **接线方式**（按你指定的 `ClientRenderRegistry` 约定，core 不 import Forge）：
-- core：`ICoreShaderRegistrar` + `ClientRenderRegistry#onRegisterShaders`，`BakedEntityRenderState` 保存最新 `ShaderInstance`；
-- forge-compat：`ForgeCoreShaderRegistration` 监听 `RegisterShadersEvent`，每次资源重载重新注册；
+- core：`IShaderRegistrar` + `ClientRenderRegistry#onRegisterShaders`，`BakedEntityRenderState` 保存最新 `ShaderInstance`；
+- forge-compat：`ForgeClientRenderRegistry` 监听 `RegisterShadersEvent`，每次资源重载重新注册；
 - `StaticBake#resolveEntityShader()` 每次绘制时查询（重载会换实例）。
 
 **顶点格式**：开光影包时 Iris 的 `BufferBuilder` 混入会把 `NEW_ENTITY` 扩成 `IrisVertexFormats.ENTITY`。缓存键已加入光影状态，并且 `BakedMesh` 记录烘焙时**实际**格式，绘制前与当前状态比对，不一致（刚切包）只让这一帧退回即时管线，下一帧重新烘焙。

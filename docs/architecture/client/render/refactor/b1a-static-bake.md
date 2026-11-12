@@ -41,7 +41,7 @@ vertexColor    = minecraft_mix_light(Light0_Direction, Light1_Direction, Normal,
 
 - core：`ClientRenderRegistry#onRegisterShaders(ICoreShaderRegistrar)` 声明要注册哪些 shader；
   `ClientRenderRegistry.BakedEntityRenderState` 保存最新实例；
-- forge-compat：`ForgeCoreShaderRegistration` 监听 `RegisterShadersEvent`，把事件转成 `ICoreShaderRegistrar`
+- forge-compat：`ForgeClientRenderRegistry` 监听 `RegisterShadersEvent`，把事件转成 `IShaderRegistrar`
   （每次资源重载都会重新注册 `cgc_baked_entity`）；
 - `StaticBake#resolveEntityShader()` 每次绘制时查询（资源重载会换 `ShaderInstance` 实例）。
 

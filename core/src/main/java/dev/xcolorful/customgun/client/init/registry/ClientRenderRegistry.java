@@ -6,7 +6,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import dev.xcolorful.customgun.CustomGun;
-import dev.xcolorful.customgun.client.api.minecraft.shader.ICoreShaderRegistrar;
 import dev.xcolorful.customgun.client.api.minecraft.texture.CustomTexture;
 import dev.xcolorful.customgun.client.compat.iris.IrisCompat;
 import net.minecraft.client.renderer.RenderStateShard;
@@ -44,15 +43,29 @@ public class ClientRenderRegistry {
     }
 
     /**
+     * 资源重载会重新创建 {@link ShaderInstance}，{@code onLoaded} 必须在每次重载时都回调
+     */
+    @FunctionalInterface
+    public interface IShaderRegistrar {
+        /**
+         * @param location 形如 {@code customgun:cgc_baked_entity}，对应 {@code assets/<ns>/shaders/core/<path>.json}
+         * @param onLoaded 加载成功后的回调（每次资源重载都会调用）
+         */
+        void registerShader(@NotNull ResourceLocation location,
+                            @NotNull VertexFormat format,
+                            @NotNull Consumer<ShaderInstance> onLoaded);
+    }
+
+    /**
      * 由平台在着色器注册事件里调用（Forge: {@code RegisterShadersEvent}）
      * <p>
      * 资源重载会重新创建 {@link ShaderInstance}，所以每次都要重新回调并覆盖引用。
      */
-    public static void onRegisterShaders(ICoreShaderRegistrar registrar) {
+    public static void onRegisterShaders(IShaderRegistrar registrar) {
         @Nullable ResourceLocation location = BakedEntityRenderState.BAKED_ENTITY_SHADER;
         if (location == null) return;
 
-        registrar.registerCoreShader(location,
+        registrar.registerShader(location,
                 DefaultVertexFormat.NEW_ENTITY,
                 shader -> BakedEntityRenderState.bakedEntityShader = shader);
     }

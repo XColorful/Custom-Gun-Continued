@@ -196,6 +196,11 @@ Now the bake method itself.
 
 # 
 
+[fork1](#fork1)
+[fork2](#fork2)
+
+# fork1
+
 ```
 第一次benchmark测过tacz-multi同场景，明显有触发tacz静态优化，需要在-4报告补上当前阶段跟tacz的对比分析
 ```
@@ -361,3 +366,50 @@ A/B 数据已并入，报告新增第 4 节。
 陆地那组仍保留一条说明：4 个框在雾带末端（≈100% 雾），对旋转的分辨力有限，要更严格可以在 RD 2 的 28–32 格之间再放一组——这条只是建议，不影响通过结论。
 
 改动未提交。
+
+# fork2
+
+```
+见1.20.1最近两个commit，我进行了风格统一调整
+需要说明原本ModelObject和BedrockPart用的hash常数是否必须是同一个数字（是否需要引用相同来源）
+并且如果26.3有近两个commit的风格调整代码的，则也在26.3做同样的修改；若26.3没有该部分代码则不用改
+```
+
+# 
+
+## 1. 两个 hash 常量是否必须相同
+
+**不必须，也不需要引用同一个来源。** 现在两者都指向 `MathUtil.GOLDEN_RATIO_64`，只是「同一个已知常量只定义一次」的顺手写法，不是语义约束。
+
+- [MathUtil.java:29](core/src/main/java/dev/xcolorful/customgun/core/util/MathUtil.java:29) 是常量的唯一定义（Fibonacci hashing 的 64 位黄金比例）。
+- [ModelObject.java:33](core/src/main/java/dev/xcolorful/customgun/client/model/ModelObject.java:33) `FINGERPRINT_SEED` 是**模型级**指纹链的初值：`fingerprint = fingerprint*31 + part.renderStatus(...)`，最终进 `StaticBakeCache.Key`。`_AttachmentModelRender` 给瞄具子网格也用它。
+- [BedrockPart.java:241](core/src/main/java/dev/xcolorful/customgun/client/model/bedrock/BedrockPart.java:241) `STATE_HASH_SEED` 是**单节点**自身 hash 的初值，只在 `stateHash()` 内部使用；子树 hash 由它开始、被父节点 `*31 +` 折叠。
+
+需要的性质只有两条：同一状态得到同一结果；状态变化时结果高概率不同。初值取任何 64 位常量都满足，两者互不参与对方的计算，所以**取值不同不会影响正确性**。共用一个数字唯一的后果是外层链和内层链初值相同——由于两边都用 `*31 +` 且内层值已经混合过，观察不到差异；想让两级更独立也可以换成不同常量，没有实际收益。
+
+另有两点值得知道：
+
+- **值本身没有兼容性要求**：指纹只在进程内比较（缓存键 + `cgc$lastStateHash`），不落盘、不跨会话，缓存随资源重载清空。改常量不会造成任何失效或存档问题。
+- **同源 ≠ 必须同值**：`GOLDEN_RATIO_64` 只统一了「这个数是什么」的说明；两个具名常量仍可各自独立演进，改动时不需要同步。反过来，如果以后想区分两级 hash，直接把其中一个指向别的常量即可。
+
+另外确认一下这次改动的语义：`stateHash()` 改成无参、内部播种后，等价于原来的 `stateHash(GOLDEN_RATIO_64)`（原调用点传的也都是这个值），所以 hash 值与改动前一致，缓存行为不变。
+
+## 2. 26.3 的同步情况
+
+我把两个 commit 的改动逐项对到 26.3（`Render-refactor-26.3`）：
+
+**没有对应代码、未改动**：
+
+- B1-a 全部实现（`ModelObject#renderBaked`、`StaticBake`/`BakedMesh`/`DiscardVertexConsumer`/`StaticBakeCache`、`BedrockPart#renderStatus/renderGeometry/stateHash`、`cgc_baked_entity.vsh`）——26.3 没有 `client/model/bake/`，也没有这些方法。
+- core shader 注册（`ICoreShaderRegistrar`/`IShaderRegistrar`、`ForgeCoreShaderRegistration`、`ForgeClientRenderRegistry`、`BakedEntityRenderState`）——26.3 的 `ClientRenderRegistry` 里没有这部分。
+- `MathUtil.GOLDEN_RATIO_64`——26.3 没有 hash seed 使用方，不加未使用的常量。
+
+**有对应代码、已做同样修改**（仅注释/Javadoc）：
+
+|文件|改动|
+|---|---|
+|[26.3 ModelObject.java](D:/Github/Custom-Gun-Continued-26.3neoforge/core/src/main/java/dev/xcolorful/customgun/client/model/ModelObject.java)|删除「对应原模组…」类注释|
+|[26.3 ClientRenderProfiler.java](D:/Github/Custom-Gun-Continued-26.3neoforge/core/src/main/java/dev/xcolorful/customgun/client/util/ClientRenderProfiler.java)|类注释与「测量与数据登记」行的句末句号|
+|[26.3 GpuFrameTimer.java](D:/Github/Custom-Gun-Continued-26.3neoforge/core/src/main/java/dev/xcolorful/customgun/client/util/GpuFrameTimer.java)|类注释句末句号|
+
+26.3 的 `GpuFrameTimer`（renderpearl 查询池）和 `ClientRenderProfiler`（26.2+ 延迟渲染版、无 `BAKE` 探针）实现本身与 1.20.1 不同，所以只同步了确实对应的标点/类注释，其余语义没有动。改动全部是注释，未编译验证；两个 worktree 都未提交。

@@ -3,6 +3,8 @@ package dev.xcolorful.customgun.client.model.bedrock;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import dev.xcolorful.customgun.client.api.renderer.model.IModelComponentRenderer;
+import dev.xcolorful.customgun.client.model.bake.BakeDirtyTracker;
+import dev.xcolorful.customgun.client.model.bake.DiscardVertexConsumer;
 import dev.xcolorful.customgun.client.util.ClientRenderProfiler;
 import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -111,20 +113,32 @@ public class FunctionalBedrockPart extends BedrockPart {
     }
 
     @Override
-    public long subtreeStateHash() {
+    public long statusStateHash() {
+        // 替换渲染与否决定这棵子树是否产生几何，必须一起进指纹
+        return this.stateHash() * 31L + (this.cgc$statusReplaced ? 1L : 2L);
+    }
+
+    @Override
+    public long subtreeStateHash(@Nullable BakeDirtyTracker tracker) {
         // 走快速指纹路径说明本节点没有执行回调，不存在替换
         this.cgc$statusReplaced = false;
-        return super.subtreeStateHash();
+        return super.subtreeStateHash(tracker);
+    }
+
+    @Override
+    protected boolean skipsGeometry() {
+        return this.cgc$statusReplaced;
     }
 
     @Override
     public long renderStatus(PoseStack poseStack,
                              ItemDisplayContext transformType,
                              int light, int overlay,
-                             VertexConsumer discard) {
+                             DiscardVertexConsumer discard,
+                             @Nullable BakeDirtyTracker tracker) {
         if (this.functionalRenderer == null) { // 没有回调：与普通节点同一套逻辑（含快速指纹）
             this.cgc$statusReplaced = false;
-            return super.renderStatus(poseStack, transformType, light, overlay, discard);
+            return super.renderStatus(poseStack, transformType, light, overlay, discard, tracker);
         }
 
         int cubePackedLight = this.illuminated ? ClientRenderUtils.LightTexture_.pack(15, 15) : light;
@@ -135,6 +149,7 @@ public class FunctionalBedrockPart extends BedrockPart {
             boolean rendered = false;
             {
                 final long profFunctional = ClientRenderProfiler.begin();
+                long vertexBefore = discard.writtenVertices();
                 @Nullable IModelComponentRenderer renderer = this.functionalRenderer.apply(this);
                 if (renderer != null) {
                     renderer.render(poseStack,
@@ -143,17 +158,21 @@ public class FunctionalBedrockPart extends BedrockPart {
                             cubePackedLight, overlay);
                     rendered = true;
                 }
+                if (discard.writtenVertices() != vertexBefore && tracker != null) {
+                    // 回调直接发射了几何（如附加弹匣）：这部分无法烘焙，只能该节点整棵子树即时绘制
+                    tracker.markImmediate(this);
+                }
                 ClientRenderProfiler.end(ClientRenderProfiler.FUNCTIONAL_NODES, profFunctional);
             }
             this.cgc$statusReplaced = rendered;
 
-            long hash = this.stateHash();
-            hash = hash * 31L + (rendered ? 1L : 2L);
+            long hash = this.statusStateHash();
+            if (tracker != null) tracker.check(this, hash);
 
             if (!rendered && this.visible) {
                 for (int i = 0; i < this.children.size(); i++) {
                     hash = hash * 31L + this.children.get(i)
-                            .renderStatus(poseStack, transformType, cubePackedLight, overlay, discard);
+                            .renderStatus(poseStack, transformType, cubePackedLight, overlay, discard, tracker);
                 }
             }
             poseStack.popPose();

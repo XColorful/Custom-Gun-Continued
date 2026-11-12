@@ -225,9 +225,6 @@ public class _AttachmentModelRender {
         @Nullable Object collector = ClientRenderHelper.FirstPersonArmHelper.getFirstPersonArmCollector();
         if (collector == null) return;
 
-        // 路径变换烘进网格，因此绘制矩阵用施加路径之前的姿态
-        Matrix4f basePose = new Matrix4f(poseStack.last().pose());
-
         poseStack.pushPose(); {
             // 只对最后一个节点之前的节点施加变换；最后一个节点的变换由下面的 part.render() 内部施加，
             // 否则末端节点（scope_body/ocular/ocular_ring 等）的平移旋转会被应用两次
@@ -235,6 +232,8 @@ public class _AttachmentModelRender {
                 path.get(i).translate_rotate_scale(poseStack);
             }
             BedrockPart part = path.get(path.size() - 1);
+            // 路径前缀的变换提升为绘制矩阵（B1-b）：枪身骨骼每帧被动画驱动时，瞄具网格仍然可以复用
+            Matrix4f partPose = new Matrix4f(poseStack.last().pose());
 
             RenderType bakedRenderType = ClientRenderHelper.bakePipelineState(renderType); // [26.2, )
 
@@ -242,31 +241,18 @@ public class _AttachmentModelRender {
                 part.visible = true;
                 try {
                     boolean baked = false;
-                    if (StaticBake.eligible(transformType)) { // 静态场景用烘焙网格替代逐顶点遍历（渲染重构B1-a）
+                    if (StaticBake.eligible()) { // 用烘焙网格替代逐顶点遍历（渲染重构B1-a/B1-b）
                         int delegateMark = _this.delegateMark();
                         DiscardVertexConsumer discard = DiscardVertexConsumer.INSTANCE;
                         long vertexMark = discard.writtenVertices();
 
-                        long fingerprint = ModelObject.FINGERPRINT_SEED;
-                        for (int i = 0; i < path.size() - 1; i++) {
-                            // 路径前缀的变换也烘进网格，一并进指纹
-                            fingerprint = fingerprint * 31L + path.get(i).stateHash();
-                        }
-                        fingerprint = fingerprint * 31L
-                                + part.renderStatus(poseStack, transformType, light, overlay, discard);
+                        long fingerprint = part.renderStatus(poseStack, transformType, light, overlay, discard, null);
 
                         if (discard.writtenVertices() == vertexMark) {
-                            baked = StaticBake.drawOrBake(_this, path, basePose, bakedRenderType, light, overlay,
+                            baked = StaticBake.drawOrBake(_this, path, partPose, bakedRenderType, light, overlay,
                                     1, 1, 1, 1, fingerprint,
-                                    consumer -> {
-                                        // 烘焙成相对调用方姿态的网格；路径变换在模型空间重放
-                                        PoseStack bakePose = new PoseStack();
-                                        for (int i = 0; i < path.size() - 1; i++) {
-                                            path.get(i).translate_rotate_scale(bakePose);
-                                        }
-                                        part.renderGeometry(bakePose, transformType, consumer,
-                                                light, overlay, 1, 1, 1, 1);
-                                    });
+                                    consumer -> part.renderGeometry(new PoseStack(), transformType, consumer,
+                                            light, overlay, 1, 1, 1, 1));
                             if (!baked) {
                                 // 没有可用着色器：丢弃状态段登记的委托后走即时管线
                                 _this.trimDelegates(delegateMark);

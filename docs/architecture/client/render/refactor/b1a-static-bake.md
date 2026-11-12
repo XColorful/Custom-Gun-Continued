@@ -111,12 +111,12 @@ vertexColor    = minecraft_mix_light(Light0_Direction, Light1_Direction, Normal,
 
 以下情况不做烘焙，走原路径（`fail loud` 而不是画出错误结果）：
 
-1. **第一人称**：`StaticBake.eligible` 直接排除（B1-b 处理）。
+1. **第一人称**：本阶段直接排除；B1-b 已改为分块烘焙，见 [B1-b 实施记录](./b1b-first-person-bake.md)。
 2. **functional 回调直接发射几何**（而不是登记委托）：状态段用 `DiscardVertexConsumer`
    计数顶点，发现非零即退回即时管线，并丢弃状态段登记的委托以免重复渲染。
    目前内置节点里只有换弹时的附加弹匣（`MAG_ADDITIONAL`，静态场景恒为隐藏）属于这一类，
    该项是为第三方渲染 addon 准备的安全网。
-   B1-b 之后第一人称走烘焙，这条会让换弹帧整个模型退回；需要改成「该节点即时、其余烘焙」的单节点退回，见 [TODO](../TODO.md) 的阶段 2。
+   B1-b 的第一人称路径已改为「该节点即时、其余烘焙」的单节点退回，见 [B1-b 实施记录](./b1b-first-person-bake.md)。
 3. **没有可用着色器**：`cgc_baked_entity` 注册失败（资源缺失 / 编译失败，注册处会记录错误日志）
    且没有光影包时，本帧退回即时管线；网格被缓存淘汰后再被绘制也会退回。
 4. **顶点格式与光影状态不一致**：刚切换光影包时（VBO 是另一种格式），本帧退回即时管线，下一帧重烘。

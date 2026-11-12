@@ -8,7 +8,6 @@ import dev.xcolorful.customgun.client.init.registry.ClientRenderRegistry;
 import dev.xcolorful.customgun.client.util.ClientRenderProfiler;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ShaderInstance;
-import net.minecraft.world.item.ItemDisplayContext;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
@@ -43,11 +42,24 @@ public final class StaticBake {
     public static boolean FORCE_REBUILD = false;
 
     /**
-     * <li>只有非第一人称的展示类场景参与烘焙</li>
-     * <li>GUI 槽位不走模型渲染，不会进入这里</li>
+     * 所有模型渲染场景都参与烘焙
+     * <ul>
+     *     <li>节点静态的场景（展示框 / 地面 / 第三人称）整模烘焙，见 {@code ModelObject#renderBaked}</li>
+     *     <li>第一人称节点每帧被动画改写，按脏子树分块烘焙，见 {@code ModelObject#renderBakedFirstPerson}</li>
+     *     <li>GUI 槽位不走模型渲染，不会进入这里</li>
+     * </ul>
      */
-    public static boolean eligible(ItemDisplayContext transformType) {
-        return ENABLED && !transformType.firstPerson();
+    public static boolean eligible() {
+        return ENABLED;
+    }
+
+    /**
+     * 本帧是否有可用的实体着色器
+     * <li>提前判断可以让调用方在状态段之前就退回即时管线，避免同帧执行两次 functional 回调</li>
+     */
+    public static boolean available() {
+        return IrisCompat.isUsingRenderPack()
+                || ClientRenderRegistry.BakedEntityRenderState.getBakedEntityShader() != null;
     }
 
     /**
@@ -113,6 +125,14 @@ public final class StaticBake {
         // 光影包刚切换时，顶点布局与当前着色器不匹配：本帧退回即时管线，下一帧会重新烘焙
         if (mesh.bytes() > 0 && mesh.extendedFormat() != shaderPack) return false;
 
+        return drawMesh(mesh, renderType, pose);
+    }
+
+    /**
+     * 用一份已烘焙的网格绘制一次，并计入 draw / RenderType 探针
+     * @return {@code false} 表示没有可用着色器
+     */
+    public static boolean drawMesh(BakedMesh mesh, RenderType renderType, Matrix4f pose) {
         ClientRenderProfiler.countRenderType(renderType);
         final long profDraw = ClientRenderProfiler.begin();
         boolean drawn = mesh.draw(renderType, pose);

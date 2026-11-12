@@ -6,9 +6,13 @@ import dev.xcolorful.customgun.client.api.model.IModelObjectRender;
 import dev.xcolorful.customgun.client.api.model.bedrock.IBedrockRenderer;
 import dev.xcolorful.customgun.client.api.renderer.model.IModelComponentRenderer;
 import dev.xcolorful.customgun.client.compat.iris.IrisCompat;
+import dev.xcolorful.customgun.client.model.bake.BakeDirtyTracker;
+import dev.xcolorful.customgun.client.model.bake.BakedMesh;
 import dev.xcolorful.customgun.client.model.bake.DiscardVertexConsumer;
 import dev.xcolorful.customgun.client.model.bake.StaticBake;
+import dev.xcolorful.customgun.client.model.bake.StaticBakeCache;
 import dev.xcolorful.customgun.client.model.bedrock.BedrockPart;
+import dev.xcolorful.customgun.client.model.bedrock.FunctionalBedrockPart;
 import dev.xcolorful.customgun.client.resource.assets.model.BedrockModel;
 import dev.xcolorful.customgun.client.resource.assets.model.bedrock.geometry._Bone;
 import dev.xcolorful.customgun.client.util.ClientModelUtils;
@@ -25,8 +29,10 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix4f;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 public class ModelObject extends PojoInstance<BedrockModel> implements IModelObjectRender {
 
@@ -68,6 +74,23 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
     /** 上一次采集到状态指纹的帧序号，用于一帧内只算一次 */
     private long cgc$profileStamp = Long.MIN_VALUE;
 
+    /*
+    --------第一人称分块烘焙（渲染重构B1-b）--------
+    节点每帧被动画改写，整模烘焙每帧都会失效。这里把模型切成若干块：
+    顶层节点是块根（自身变换提升为绘制矩阵），动画命中的节点按需再切开，
+    每块独立缓存，只有脏子树需要重烘焙。
+     */
+    /** 每个块的最大网格数：光影的阴影 pass 会换一套光照（有时还换顶点格式），保留少量条目避免每帧重烘焙 */
+    private static final int CGC$MAX_MESHES_PER_CHUNK = 4;
+
+    /** 按 DFS 序遍历的块列表，决定绘制顺序 */
+    private final List<Cgc$Chunk> cgc$chunks = new ArrayList<>();
+    private final Map<BedrockPart, Cgc$Chunk> cgc$chunkByNode = new IdentityHashMap<>();
+    private int cgc$chunkOrderNext;
+    private final BakeDirtyTracker cgc$dirtyTracker = new BakeDirtyTracker();
+    private final Predicate<BedrockPart> cgc$isCut = this.cgc$chunkByNode::containsKey;
+    private boolean cgc$chunksInitialized;
+
     protected
     ModelObject(@NotNull BedrockModel pojo) {
         super(pojo);
@@ -81,6 +104,8 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
     }
 
     @Override public boolean resetCache() {
+        this.cgc$clearChunks();
+
         { // 加载模型
             BedrockModel pojo = this.getPojo();
             String formatVersion = pojo.getFormatVersion();
@@ -272,10 +297,13 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
 
         // [26.2, ) 延迟渲染下这里需要在 flush 前保存、flush 后还原节点状态
 
-        // 节点静态的场景走烘焙网格（渲染重构B1-a）
-        boolean baked = StaticBake.eligible(transformType)
-                && this.renderBaked(matrixStack, transformType, bakedRenderType, light, overlay,
-                        red, green, blue, alpha);
+        // 节点静态的场景走烘焙网格（渲染重构B1-a）；第一人称节点每帧被动画改写，走脏子树分块烘焙（B1-b）
+        boolean baked = StaticBake.eligible()
+                && (transformType.firstPerson()
+                    ? this.renderBakedFirstPerson(matrixStack, transformType, bakedRenderType, light, overlay,
+                            red, green, blue, alpha)
+                    : this.renderBaked(matrixStack, transformType, bakedRenderType, light, overlay,
+                            red, green, blue, alpha));
         if (!baked) { // 无法烘焙时退回即时管线
             final long profTraverse = ClientRenderProfiler.begin();
             matrixStack.pushPose(); {
@@ -335,7 +363,7 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
         long fingerprint = FINGERPRINT_SEED;
         for (int i = 0; i < this.shouldRender.size(); i++) {
             fingerprint = fingerprint * 31L + this.shouldRender.get(i)
-                    .renderStatus(matrixStack, transformType, light, overlay, discard);
+                    .renderStatus(matrixStack, transformType, light, overlay, discard, null);
         }
 
         if (discard.writtenVertices() != vertexMark) {
@@ -360,6 +388,350 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
         }
         return true;
     }
+
+    /**
+     * 第一人称分块烘焙（渲染重构B1-b）
+     * <ul>
+     *     <li>状态段每帧执行，并逐节点比较状态，收集脏节点</li>
+     *     <li>顶层节点是块根：自身变换提升为绘制矩阵，动画写根不产生重烘焙</li>
+     *     <li>其余节点首次变脏时在它所在的块上切开，只重烘焙脏节点自己的子树</li>
+     *     <li>functional 回调直接发射几何的节点改为「单节点退回」：该子树永远即时绘制，不再让整个模型退回</li>
+     * </ul>
+     * @return {@code false} 表示本帧无法烘焙（没有可用着色器），调用方应退回即时管线
+     */
+    private boolean renderBakedFirstPerson(PoseStack matrixStack,
+                                           ItemDisplayContext transformType,
+                                           RenderType renderType,
+                                           int light, int overlay,
+                                           float red, float green, float blue, float alpha) {
+        // 提前判断，避免同帧把 functional 回调执行两次后才发现无法绘制
+        if (!StaticBake.available()) return false;
+
+        int delegateMark = this.delegateMark();
+        BakeDirtyTracker tracker = this.cgc$dirtyTracker;
+        tracker.begin();
+        DiscardVertexConsumer discard = DiscardVertexConsumer.INSTANCE;
+        for (int i = 0; i < this.shouldRender.size(); i++) {
+            this.shouldRender.get(i)
+                    .renderStatus(matrixStack, transformType, light, overlay, discard, tracker);
+        }
+
+        if (!this.cgc$chunksInitialized) {
+            this.cgc$initChunks();
+        } else {
+            this.cgc$applyDirty(tracker);
+        }
+
+        if (!this.cgc$drawChunks(matrixStack, transformType, renderType, light, overlay,
+                red, green, blue, alpha)) {
+            // 退回即时管线前丢弃状态段登记的委托，避免同一次提交里重复渲染
+            this.trimDelegates(delegateMark);
+            return false;
+        }
+        return true;
+    }
+
+    private void cgc$initChunks() {
+        this.cgc$chunksInitialized = true;
+        StaticBakeCache.registerModel(this);
+
+        for (int i = 0; i < this.shouldRender.size(); i++) {
+            BedrockPart part = this.shouldRender.get(i);
+            this.cgc$assignOrder(part);
+            Cgc$Chunk chunk = new Cgc$Chunk(part, false);
+            this.cgc$chunkByNode.put(part, chunk);
+            this.cgc$chunks.add(chunk);
+        }
+
+        // 首帧的回调也可能已经直接发射了几何；这一帧的脏列表因为还没建立基线要丢弃，但即时节点必须保留
+        List<BedrockPart> immediate = this.cgc$dirtyTracker.immediate();
+        for (int i = 0; i < immediate.size(); i++) {
+            this.cgc$markImmediateChunk(immediate.get(i));
+        }
+    }
+
+    /** DFS 前序序号：决定块的绘制顺序，与即时遍历的提交顺序一致 */
+    private void cgc$assignOrder(BedrockPart part) {
+        part.cgc$dfsOrder = this.cgc$chunkOrderNext++;
+        for (int i = 0; i < part.children.size(); i++) {
+            this.cgc$assignOrder(part.children.get(i));
+        }
+    }
+
+    private void cgc$applyDirty(BakeDirtyTracker tracker) {
+        List<BedrockPart> immediate = tracker.immediate();
+        for (int i = 0; i < immediate.size(); i++) {
+            this.cgc$markImmediateChunk(immediate.get(i));
+        }
+
+        List<BedrockPart> dirty = tracker.dirty();
+        for (int i = 0; i < dirty.size(); i++) {
+            BedrockPart node = dirty.get(i);
+            // 块根自己的变换 / 可见性都不进网格（变换由矩阵承担、可见性在绘制时剪枝），无需重烘焙
+            if (this.cgc$chunkByNode.containsKey(node)) continue;
+
+            Cgc$Chunk owner = this.cgc$nearestChunk(node.getParent());
+            if (owner == null || owner.immediate) continue;
+            // 所在块本帧已经要重建，脏节点会一起烘进去
+            if (owner.dirty || owner.stale) continue;
+
+            this.cgc$splitAt(node, owner);
+        }
+    }
+
+    private void cgc$splitAt(BedrockPart node, Cgc$Chunk owner) {
+        Cgc$Chunk chunk = new Cgc$Chunk(node, false);
+        this.cgc$chunkByNode.put(node, chunk);
+        this.cgc$insertChunk(chunk);
+        this.cgc$invalidate(owner);
+    }
+
+    /**
+     * functional 回调直接发射几何：该节点整棵子树改用即时绘制
+     */
+    private void cgc$markImmediateChunk(BedrockPart node) {
+        Cgc$Chunk existing = this.cgc$chunkByNode.get(node);
+        if (existing != null && existing.immediate) return;
+
+        this.cgc$removeChunkAndDescendants(node);
+
+        Cgc$Chunk chunk = new Cgc$Chunk(node, true);
+        this.cgc$chunkByNode.put(node, chunk);
+        this.cgc$insertChunk(chunk);
+
+        Cgc$Chunk owner = this.cgc$nearestChunk(node.getParent());
+        if (owner != null) this.cgc$invalidate(owner);
+    }
+
+    private void cgc$removeChunkAndDescendants(BedrockPart node) {
+        for (int i = this.cgc$chunks.size() - 1; i >= 0; i--) {
+            Cgc$Chunk chunk = this.cgc$chunks.get(i);
+            if (chunk.node == node || this.cgc$isDescendant(chunk.node, node)) {
+                this.cgc$chunks.remove(i);
+                this.cgc$chunkByNode.remove(chunk.node);
+                chunk.close();
+            }
+        }
+    }
+
+    private static boolean cgc$isDescendant(BedrockPart node, BedrockPart ancestor) {
+        for (BedrockPart part = node.getParent(); part != null; part = part.getParent()) {
+            if (part == ancestor) return true;
+        }
+        return false;
+    }
+
+    private Cgc$Chunk cgc$nearestChunk(@Nullable BedrockPart node) {
+        for (BedrockPart part = node; part != null; part = part.getParent()) {
+            Cgc$Chunk chunk = this.cgc$chunkByNode.get(part);
+            if (chunk != null) return chunk;
+        }
+        return null;
+    }
+
+    private void cgc$insertChunk(Cgc$Chunk chunk) {
+        int order = this.cgc$orderOf(chunk.node);
+        int index = 0;
+        while (index < this.cgc$chunks.size() && this.cgc$orderOf(this.cgc$chunks.get(index).node) < order) {
+            index++;
+        }
+        this.cgc$chunks.add(index, chunk);
+    }
+
+    private int cgc$orderOf(BedrockPart node) {
+        return node.cgc$dfsOrder >= 0 ? node.cgc$dfsOrder : Integer.MAX_VALUE;
+    }
+
+    private void cgc$invalidate(Cgc$Chunk chunk) {
+        chunk.close();
+        chunk.dirty = true;
+    }
+
+    @ApiStatus.Internal
+    public void cgc$clearChunks() {
+        for (int i = 0; i < this.cgc$chunks.size(); i++) {
+            this.cgc$chunks.get(i).close();
+        }
+        this.cgc$chunks.clear();
+        this.cgc$chunkByNode.clear();
+        this.cgc$chunkOrderNext = 0;
+        this.cgc$chunksInitialized = false;
+    }
+
+    private boolean cgc$drawChunks(PoseStack matrixStack,
+                                   ItemDisplayContext transformType,
+                                   RenderType renderType,
+                                   int light, int overlay,
+                                   float red, float green, float blue, float alpha) {
+        boolean drawnAny = false;
+        boolean drawFailed = false;
+
+        for (int i = 0; i < this.cgc$chunks.size(); i++) {
+            Cgc$Chunk chunk = this.cgc$chunks.get(i);
+            // 即时块自己的可见性由回调判定，其余块（含块根）不可见就整棵跳过
+            if (this.cgc$isPruned(chunk.node, !chunk.immediate)) {
+                if (!chunk.immediate) chunk.stale = true;
+                continue;
+            }
+
+            if (chunk.immediate) {
+                this.cgc$drawImmediate(chunk, matrixStack, transformType, renderType, light, overlay,
+                        red, green, blue, alpha);
+                drawnAny = true;
+                continue;
+            }
+
+            BakedMesh mesh = this.cgc$getOrBake(chunk, renderType, light, overlay,
+                    red, green, blue, alpha);
+
+            if (StaticBake.drawMesh(mesh, renderType, this.cgc$chunkPose(chunk, matrixStack))) {
+                drawnAny = true;
+            } else {
+                // 网格已关闭（资源重载竞态）或着色器不可用：下一帧重建，本帧保持现状避免重复绘制
+                chunk.dirty = true;
+                drawFailed = true;
+            }
+        }
+
+        // 一个网格都没画出来（着色器刚失效）时退回即时管线；已经画了部分时保持现状，避免重复绘制
+        return drawnAny || !drawFailed;
+    }
+
+    private BakedMesh cgc$getOrBake(Cgc$Chunk chunk,
+                                    RenderType renderType,
+                                              int light, int overlay,
+                                              float red, float green, float blue, float alpha) {
+        Cgc$MeshKey key = new Cgc$MeshKey(renderType, light, overlay,
+                IrisCompat.isUsingRenderPack(), red, green, blue, alpha);
+
+        if (chunk.dirty || chunk.stale) {
+            // 失效是整个块的：其它光照（光影阴影 pass）的网格同样过期，一并丢弃
+            chunk.close();
+            chunk.dirty = false;
+            chunk.stale = false;
+        }
+
+        BakedMesh mesh = chunk.meshes.get(key);
+        if (mesh != null) return mesh;
+
+        final long profBake = ClientRenderProfiler.begin();
+        mesh = BakedMesh.bake(renderType.mode(), renderType.format(), consumer ->
+                chunk.node.bakeChunkGeometry(new PoseStack(), consumer,
+                        light, overlay, red, green, blue, alpha, this.cgc$isCut));
+        ClientRenderProfiler.end(ClientRenderProfiler.BAKE, profBake);
+        ClientRenderProfiler.countBake();
+
+        // 容量上限：插入前淘汰最久未用的那条
+        if (chunk.meshes.size() >= CGC$MAX_MESHES_PER_CHUNK) {
+            Iterator<Map.Entry<Cgc$MeshKey, BakedMesh>> iterator = chunk.meshes.entrySet().iterator();
+            if (iterator.hasNext()) {
+                Map.Entry<Cgc$MeshKey, BakedMesh> eldest = iterator.next();
+                iterator.remove();
+                eldest.getValue().close();
+            }
+        }
+        chunk.meshes.put(key, mesh);
+        chunk.dirty = false;
+        chunk.stale = false;
+        return mesh;
+    }
+
+    /**
+     * 块的模型空间 → 视图空间变换：调用方姿态 × 祖先链 × 块根自身变换（即时块不含自身，交给回调）
+     */
+    private PoseStack cgc$chunkPoseStack(Cgc$Chunk chunk, PoseStack matrixStack) {
+        PoseStack pose = new PoseStack();
+        pose.last().pose().set(matrixStack.last().pose());
+        for (int i = 0; i < chunk.path.length; i++) {
+            chunk.path[i].translate_rotate_scale(pose);
+        }
+        if (!chunk.immediate) {
+            chunk.node.translate_rotate_scale(pose);
+        }
+        return pose;
+    }
+
+    private Matrix4f cgc$chunkPose(Cgc$Chunk chunk, PoseStack matrixStack) {
+        return this.cgc$chunkPoseStack(chunk, matrixStack).last().pose();
+    }
+
+    private void cgc$drawImmediate(Cgc$Chunk chunk,
+                                   PoseStack matrixStack,
+                                   ItemDisplayContext transformType,
+                                   RenderType renderType,
+                                   int light, int overlay,
+                                   float red, float green, float blue, float alpha) {
+        MultiBufferSource.BufferSource bufferSource = ClientRenderHelper.GL.getModelBufferSource();
+        VertexConsumer consumer = bufferSource.getBuffer(renderType);
+        ClientRenderProfiler.countBatch();
+        ClientRenderProfiler.countRenderType(renderType);
+
+        // 回调在状态段已经执行过一次并登记了委托；这里重放几何时再登记的委托是重复的
+        int delegateMark = this.delegateMark();
+        chunk.node.render(this.cgc$chunkPoseStack(chunk, matrixStack),
+                transformType,
+                consumer,
+                light, overlay,
+                red, green, blue, alpha);
+        this.trimDelegates(delegateMark);
+
+        final long profFlush = ClientRenderProfiler.begin();
+        ClientRenderProfiler.countFlush();
+        if (!IrisCompat.endBatch(bufferSource)) {
+            bufferSource.endBatch();
+        }
+        ClientRenderProfiler.end(ClientRenderProfiler.FLUSH, profFlush);
+    }
+
+    /**
+     * 祖先链（以及可选的自身）不可见或被替换渲染时，这棵子树不产生几何
+     * @param includeSelf 即时块传 {@code false}：回调自己决定是否绘制，即使节点不可见
+     */
+    private static boolean cgc$isPruned(BedrockPart node, boolean includeSelf) {
+        for (BedrockPart part = includeSelf ? node : node.getParent(); part != null; part = part.getParent()) {
+            if (!part.visible) return true;
+            if (part instanceof FunctionalBedrockPart functional
+                    && functional.functionalRenderer != null
+                    && functional.cgc$statusReplaced) return true;
+        }
+        return false;
+    }
+
+    /**
+     * 一个烘焙块：以 {@code node} 为根，网格只覆盖「块根之下、没有被别的块切走」的部分
+     */
+    private static final class Cgc$Chunk {
+        final BedrockPart node;
+        /** 顶层 → 块根父节点，自上而下；不含块根自身 */
+        final BedrockPart[] path;
+        final boolean immediate;
+        final Map<Cgc$MeshKey, BakedMesh> meshes = new LinkedHashMap<>(2);
+        boolean dirty = true;
+        /** 被祖先剪枝跳过过：恢复可见时必须重烘焙（隐藏期间的状态变化不会被状态段看到） */
+        boolean stale = true;
+
+        Cgc$Chunk(BedrockPart node, boolean immediate) {
+            this.node = node;
+            this.immediate = immediate;
+
+            List<BedrockPart> ancestors = new ArrayList<>();
+            for (BedrockPart part = node.getParent(); part != null; part = part.getParent()) {
+                ancestors.add(part);
+            }
+            Collections.reverse(ancestors);
+            this.path = ancestors.toArray(new BedrockPart[0]);
+        }
+
+        void close() {
+            for (BakedMesh mesh : this.meshes.values()) {
+                mesh.close();
+            }
+            this.meshes.clear();
+        }
+    }
+
+    private record Cgc$MeshKey(RenderType renderType, int light, int overlay, boolean shaderPack,
+                               float red, float green, float blue, float alpha) {}
 
     @ApiStatus.Internal
     int delegateMark() {

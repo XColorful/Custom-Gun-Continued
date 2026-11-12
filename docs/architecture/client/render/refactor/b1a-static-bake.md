@@ -116,6 +116,7 @@ vertexColor    = minecraft_mix_light(Light0_Direction, Light1_Direction, Normal,
    计数顶点，发现非零即退回即时管线，并丢弃状态段登记的委托以免重复渲染。
    目前内置节点里只有换弹时的附加弹匣（`MAG_ADDITIONAL`，静态场景恒为隐藏）属于这一类，
    该项是为第三方渲染 addon 准备的安全网。
+   B1-b 之后第一人称走烘焙，这条会让换弹帧整个模型退回；需要改成「该节点即时、其余烘焙」的单节点退回，见 [TODO](../TODO.md) 的阶段 2。
 3. **没有可用着色器**：`cgc_baked_entity` 注册失败（资源缺失 / 编译失败，注册处会记录错误日志）
    且没有光影包时，本帧退回即时管线；网格被缓存淘汰后再被绘制也会退回。
 4. **顶点格式与光影状态不一致**：刚切换光影包时（VBO 是另一种格式），本帧退回即时管线，下一帧重烘。
@@ -164,7 +165,7 @@ vertexColor    = minecraft_mix_light(Light0_Direction, Light1_Direction, Normal,
 |`Bake rebuilds`|计数|每帧烘焙次数；静态场景稳态应为 0|
 |`Distinct RenderTypes`|计数|本帧出现过的 `RenderType` 实例数（只统计 CGC 经过的位置），B2 的 draw 下限|
 |`CGC GPU busy`|GPU|CGC 提交窗口内的 `GL_TIME_ELAPSED`，用于归因 multi 的 0.97 ms / 26.3 的 4.38 ms 未归因项；与整帧查询共用分段计时器，每 4 帧采样一次|
-|`Distinct nodes` / `Dirty nodes`|计数|本帧遍历到的节点数（按帧去重）与其中状态变化的节点数；B1-b 的脏子树比例，只在即时管线统计|
+|`Distinct nodes` / `Dirty nodes` / `Dirty subtree nodes`|计数|本帧遍历到的节点数（按帧去重）、其中状态变化的节点数、以及这些脏节点覆盖的子树节点数；B1-b 的脏子树比例，只在即时管线统计，根节点不计|
 
 `Node snapshot` 在 1.20.1 上不再有命中（报告里显示 `-`），属预期。
 

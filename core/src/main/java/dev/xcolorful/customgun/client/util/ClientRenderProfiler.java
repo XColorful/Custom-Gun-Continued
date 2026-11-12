@@ -118,12 +118,14 @@ public final class ClientRenderProfiler implements IEventHandler {
     private static final int COUNTER_RENDER_TYPES = 14;
     private static final int COUNTER_DISTINCT_NODES = 15;
     private static final int COUNTER_DIRTY_NODES = 16;
-    private static final int COUNTER_COUNT = 17;
+    private static final int COUNTER_DIRTY_SUBTREE = 17;
+    private static final int COUNTER_COUNT = 18;
     private static final String[] COUNTER_NAMES = {
             "First-person submissions", "World-item submissions", "endBatch calls", "Cubes submitted",
             "Nodes captured", "Geometry batches", "Stencil windows", "LOD hits",
             "Draw calls", "Upload bytes", "Allocated bytes", "Animation channels", "State changes",
             "Bake rebuilds", "Distinct RenderTypes", "Distinct nodes", "Dirty nodes",
+            "Dirty subtree nodes",
     };
 
     /**
@@ -304,6 +306,14 @@ public final class ClientRenderProfiler implements IEventHandler {
     /** 节点的变换状态与上一帧不同；B1-b 的「脏子树」就是它所在的子树 */
     public static void countDirtyNode() {
         count(COUNTER_DIRTY_NODES);
+    }
+
+    /**
+     * 脏子树的节点数：以每个脏节点为根、去掉被祖先覆盖的部分后累加
+     * 这是 B1-b 重烘焙的实际规模，比 {@link #COUNTER_DIRTY_NODES} 更接近成本
+     */
+    public static void countDirtySubtree(int nodes) {
+        countBy(COUNTER_DIRTY_SUBTREE, nodes);
     }
 
     /** 当前帧序号；探针按「每帧一次」去重时用作标记值 */
@@ -508,12 +518,17 @@ public final class ClientRenderProfiler implements IEventHandler {
             lines.add(line(COUNTER_NAMES[i], String.format(Locale.ROOT, "%8.2f / frame", countAverage(i))));
         }
 
-        { // 脏节点比例：B1-b 的「脏子树重写」能覆盖多少遍历
+        { // 脏节点 / 脏子树比例：B1-b 的「脏子树重写」能覆盖多少遍历
             double distinct = countAverage(COUNTER_DISTINCT_NODES);
             if (distinct > 0.0) {
                 double dirty = countAverage(COUNTER_DIRTY_NODES);
+                double dirtySubtree = countAverage(COUNTER_DIRTY_SUBTREE);
+                lines.add(counterStatLine("Dirty nodes (per frame)", COUNTER_DIRTY_NODES));
+                lines.add(counterStatLine("Dirty subtree nodes (per frame)", COUNTER_DIRTY_SUBTREE));
                 lines.add(line("Dirty node share", String.format(Locale.ROOT,
                         "%8.1f %% (%5.1f / %5.1f nodes per frame)", dirty * 100.0 / distinct, dirty, distinct)));
+                lines.add(line("Dirty subtree share", String.format(Locale.ROOT,
+                        "%8.1f %% (%5.1f / %5.1f nodes per frame)", dirtySubtree * 100.0 / distinct, dirtySubtree, distinct)));
             }
         }
 
@@ -592,6 +607,30 @@ public final class ClientRenderProfiler implements IEventHandler {
                 sorted[percentileIndex(activeFrames, 0.99)] / 1_000_000.0,
                 activeFrames * 100.0 / frameCount,
                 totalNanos > 0L ? total * 100.0 / totalNanos : 0.0));
+    }
+
+    /** 计数器按帧统计：均值取全部帧，min / max / p99 只取非零帧（与探针口径一致） */
+    private static String counterStatLine(String label, int counter) {
+        long total = 0L;
+        int active = 0;
+        long min = Long.MAX_VALUE;
+        long max = 0L;
+        long[] values = new long[frameCount];
+        for (int i = 0; i < frameCount; i++) {
+            long value = counterSums[counter][i];
+            total += value;
+            if (value <= 0L) continue;
+            if (value < min) min = value;
+            if (value > max) max = value;
+            values[active++] = value;
+        }
+        if (active == 0) return line(label, "        -");
+        long[] sorted = Arrays.copyOf(values, active);
+        Arrays.sort(sorted);
+        return line(label, String.format(Locale.ROOT,
+                "%8.2f / frame (min %7.2f / max %7.2f / p99 %7.2f, %5.1f%% of frames)",
+                total / (double) frameCount, (double) min, (double) max,
+                (double) sorted[percentileIndex(active, 0.99)], active * 100.0 / frameCount));
     }
 
     private static double countAverage(int counter) {

@@ -161,9 +161,10 @@ graph TB
 |`Hand camera`|`BeforeRenderHandEvent` 的手部相机动画|渲染外开销|
 |`FOV`|`COMPUTE_FOV_EVENT` 与 `COMPUTE_FOV_MODIFIER_EVENT`|渲染外开销|
 
-计数器：第一人称提交次数、世界提交次数、`endBatch` 次数、立方体数（×24 即顶点量）、节点快照数（`NodeTransform` 分配量约 2×）、几何批次数（`getBuffer` 次数）、模板窗口数、LOD 命中数、draw 次数、上传字节数（顶点 + 索引）、渲染线程每帧分配字节数、动画通道数、节点状态指纹变化次数（每次提交的几何是否真的变了，直接对应「静态场景能否复用」）、每帧去重的节点数（`Distinct nodes`）与其中状态变化的节点数（`Dirty nodes`）。
+计数器：第一人称提交次数、世界提交次数、`endBatch` 次数、立方体数（×24 即顶点量）、节点快照数（`NodeTransform` 分配量约 2×）、几何批次数（`getBuffer` 次数）、模板窗口数、LOD 命中数、draw 次数、上传字节数（顶点 + 索引）、渲染线程每帧分配字节数、动画通道数、节点状态指纹变化次数（每次提交的几何是否真的变了，直接对应「静态场景能否复用」）、每帧去重的节点数（`Distinct nodes`）、其中状态变化的节点数（`Dirty nodes`）与脏子树的节点数（`Dirty subtree nodes`）。
 
-- `Distinct nodes` / `Dirty nodes` 只在**即时管线**统计（`BedrockPart.render`）：同一个节点一帧内被多个展示框重复提交时只算一次，因此比例是「脏子树 / 本帧遍历到的节点数」，不会被枪数稀释。静态烘焙路径不经 `render`，这两个计数在该场景为 0（与 `State changes = 0` 一致）。报告另给一行 `Dirty node share`。
+- `Distinct nodes` / `Dirty nodes` / `Dirty subtree nodes` 只在**即时管线**统计（`BedrockPart.render`）：同一个节点一帧内被多个展示框重复提交时只算一次，因此比例是「脏节点（或脏子树）/ 本帧遍历到的节点数」，不会被枪数稀释。静态烘焙路径不经 `render`，这三个计数在该场景为 0（与 `State changes = 0` 一致）。
+- `Dirty subtree nodes` 是 B1-b 重烘焙的实际规模：脏节点按子树累加，祖先已计入时不再重复；**根节点不计**——B1-b 把根变换提升为绘制矩阵，改根不需要重烘焙。报告另给 `Dirty node share`、`Dirty subtree share`，以及两者的 min / max / p99（min/max 只取非零帧），换弹这类短时动画的峰值看 max。
 - 节点状态指纹（`State changes`、`Dirty nodes`）按**帧**去重：同一模型一帧内的多次提交不会重复计算指纹。
 
 整帧另有 `GPU frame busy` 与 `CGC GPU busy`：`GL_ARB_timer_query` 的 `GL_TIME_ELAPSED`，延迟一帧读取；两者不能嵌套，因此整帧查询在 CGC 提交开始时切成 `CGC GPU busy` 段、提交结束后恢复，`CGC GPU busy` 是整帧口径的子集。查询对象来自固定池，且每 4 帧采样一次（`SAMPLE_EVERY`），避免探针自身开销污染被测项——报告里两者的「占帧比例」一列因此约为 25%，不是掉帧。F3 打开时原版自己会占用同类查询，探针自动跳过；开光影时 `endBatch` 是入队语义，`CGC GPU busy` 接近 0，只有整帧口径可信。
@@ -191,6 +192,8 @@ graph TB
 第三批（满配：瞄具 / 激光 / 握把 / 枪口 / 枪托）见 [第三批报告](../benchmark/26.35.11.1-3/测试数据计算报告.md)，口径见 [`benchmark/26.35.11.1-3/标准.txt`](../benchmark/26.35.11.1-3/标准.txt)：标准 3 步（空手 / 裸配 / 满配）+ multi 3 段（9 个满配展示框；+ 手持裸配；+ 手持满配）。关键量级：满配第一人称 CGC 1.951 ms（瞄具模板 0.719、遍历 0.798、flush 0.423，19 次 draw）；multi 每枪 1.434 ms、1428 cubes、9 次 draw、1.24 MB 上传；26.3 同场景帧时间 10.57 ms，但 CGC 只解释 54%，4.38 ms 落在 render pass。**该批 multi 的场景与第二批不同（满配 vs 裸枪），不可跨批比较。**
 
 B1-a 阶段（[`b1-a-5`](../benchmark/26.35.11.1-4/b1-a-5/测试数据计算报告.md)，9 把满配展示框）：CGC 1.199 ms（draw 0.629 / 81 次、模板 0.349、`Distinct RenderTypes = 6`、`Bake rebuilds = 0`）、帧时间 2.146 ms；第一人称满配 CGC 1.916（与重构前差 −1.8%）、空闲脏节点 0.06%；CGC GPU 0.260（multi）/ 0.419（第一人称满配）。
+
+场景基线（[`b1-a-6`](../benchmark/26.35.11.1-4/b1-a-6/测试数据计算报告.md)）：9 个空展示框 **0.864 ms**，说明 multi 帧时间 = 基线 + CGC。换弹（[`b1-a-7`](../benchmark/26.35.11.1-4/b1-a-7/测试数据计算报告.md)）：CGC +0.06～0.10 ms、脏节点峰值 9–14，脏子树峰值 154–198（p99 覆盖 8.8%–53%，按枪不同）。
 
 ## 与重构计划的关系
 

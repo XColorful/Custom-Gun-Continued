@@ -63,6 +63,10 @@ public class BedrockPart implements IBedrockCubeCompile, IBedrockRenderer {
      */
     private long cgc$profileHash = Long.MIN_VALUE;
     private long cgc$profileStamp = Long.MIN_VALUE;
+    /** 本帧已把「以本节点为根的子树」计入脏子树，用于避免祖先/后代重复累加 */
+    private long cgc$coveredStamp = Long.MIN_VALUE;
+    /** 子树节点数（含自身），节点树构建完成后缓存 */
+    private int cgc$subtreeSize = -1;
 
     private float initRotX;
     private float initRotY;
@@ -114,6 +118,10 @@ public class BedrockPart implements IBedrockCubeCompile, IBedrockRenderer {
 
     public void addChild(BedrockPart child) {
         this.children.add(child);
+        // 节点树在加载期构建，子树节点数要一并失效；运行时增删子节点时同样走这里
+        for (BedrockPart part = this; part != null; part = part.parent) {
+            part.cgc$subtreeSize = -1;
+        }
     }
 
     // --------IBedrockCubeCompile--------
@@ -281,6 +289,8 @@ public class BedrockPart implements IBedrockCubeCompile, IBedrockRenderer {
      * <ul>
      *     <li>只在采集窗口内由 {@link #render} 调用；未采集时调用方只付一次 volatile 读</li>
      *     <li>状态取 {@link #stateHash()}，与烘焙缓存的失效口径一致</li>
+     *     <li>另外累加「脏子树」：以脏节点为根的子树节点数。根节点自身不算——B1-b 把根变换提升为
+     *         绘制矩阵，改根不需要重烘焙；其余节点一旦变换，整棵子树在模型空间的顶点都要重写</li>
      * </ul>
      */
     public void profileNodeState() {
@@ -289,10 +299,30 @@ public class BedrockPart implements IBedrockCubeCompile, IBedrockRenderer {
         this.cgc$profileStamp = stamp;
         ClientRenderProfiler.countDistinctNode();
         long hash = this.stateHash();
-        if (hash != this.cgc$profileHash) {
-            this.cgc$profileHash = hash;
-            ClientRenderProfiler.countDirtyNode();
+        if (hash == this.cgc$profileHash) return;
+
+        this.cgc$profileHash = hash;
+        ClientRenderProfiler.countDirtyNode();
+
+        // 根节点变换由绘制矩阵承担，不产生重烘焙；但它也不能挡住后代的计数
+        if (this.parent == null) return;
+        for (BedrockPart part = this.parent; part != null; part = part.parent) {
+            if (part.cgc$coveredStamp == stamp) return; // 祖先的子树已计入，避免重复
         }
+        this.cgc$coveredStamp = stamp;
+        ClientRenderProfiler.countDirtySubtree(this.subtreeSize());
+    }
+
+    /** 子树节点数（含自身）；节点树构建完成后缓存 */
+    public int subtreeSize() {
+        if (this.cgc$subtreeSize < 0) {
+            int size = 1;
+            for (int i = 0; i < this.children.size(); i++) {
+                size += this.children.get(i).subtreeSize();
+            }
+            this.cgc$subtreeSize = size;
+        }
+        return this.cgc$subtreeSize;
     }
 
     // --------IBedrockRenderer--------

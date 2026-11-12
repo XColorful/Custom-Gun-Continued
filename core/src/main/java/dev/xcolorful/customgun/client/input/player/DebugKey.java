@@ -1,19 +1,22 @@
 package dev.xcolorful.customgun.client.input.player;
 
 import dev.xcolorful.customgun.CustomGun;
+import dev.xcolorful.customgun.client.api.entity.shooter.ILocalShooterGetter;
 import dev.xcolorful.customgun.client.api.event.IInputKeyEvent;
 import dev.xcolorful.customgun.client.api.event.IMouseButtonEvent;
-import dev.xcolorful.customgun.client.api.input.IInputKeyManager;
-import dev.xcolorful.customgun.client.api.input.IKeyConflictContext;
-import dev.xcolorful.customgun.client.api.input.IKeyMapping;
-import dev.xcolorful.customgun.client.api.input.IKeyModifier;
-import dev.xcolorful.customgun.client.api.input.InputAction;
+import dev.xcolorful.customgun.client.api.input.*;
 import dev.xcolorful.customgun.client.api.minecraft.input.CustomInputKey;
 import dev.xcolorful.customgun.client.init.registry.ClientInputCategory;
 import dev.xcolorful.customgun.client.input.InputKey;
 import dev.xcolorful.customgun.client.util.ClientInputUtils;
 import dev.xcolorful.customgun.client.util.ClientRenderProfiler;
+import dev.xcolorful.customgun.core.api.event.EventType;
 import dev.xcolorful.customgun.core.api.event.ICustomEventRegister;
+import dev.xcolorful.customgun.core.api.event.IEvent;
+import dev.xcolorful.customgun.core.api.event.IEventHandler;
+import dev.xcolorful.customgun.core.entity.shooter.LivingShooterReload;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -70,8 +73,10 @@ public final class DebugKey extends InputKey {
         if (InputAction.of(action) != InputAction.PRESS) return;
 
         if (ClientRenderProfiler.enabled) {
+            DebugKeyReloadTest.INSTANCE.stop();
             ClientRenderProfiler.stopAndWrite();
         } else {
+            DebugKeyReloadTest.INSTANCE.start();
             ClientRenderProfiler.start();
         }
     }
@@ -80,4 +85,40 @@ public final class DebugKey extends InputKey {
      * 是否有调试逻辑 (决定是否注册调试键)
      */
     public static final boolean enableDebugKey = true;
+
+    public static class DebugKeyReloadTest implements IEventHandler {
+        public static final DebugKeyReloadTest INSTANCE = new DebugKeyReloadTest();
+        @Override public String getEventHandlerName() {
+            return this.getClass().getName();
+        }
+        @Override
+        public void handleEvent(EventType eventType, IEvent event) {
+            if (eventType == EventType.CLIENT_TICK_EVENT) {
+                tick();
+            } else {
+                onReceiveWrongEvent(eventType);
+            }
+        }
+        private void start() {
+            LivingShooterReload.clientReloadTest = true;
+            this.tickCount = 0;
+            CustomGun.getEventRegister().register(INSTANCE, EventType.CLIENT_TICK_EVENT);
+        }
+        private void stop() {
+            LivingShooterReload.clientReloadTest = false;
+            this.tickCount = 0;
+            CustomGun.getEventRegister().unregister(INSTANCE, EventType.CLIENT_TICK_EVENT);
+        }
+        private int tickCount = 0;
+        private void tick() {
+            if (this.tickCount % 20 * 3 == 0 && this.tickCount < 20 * 9) { // 每3秒自动换弹，最多三次
+                LocalPlayer localPlayer = Minecraft.getInstance().player;
+                ILocalShooterGetter.fromLocalPlayer(localPlayer).cgc$reload();
+            }
+            this.tickCount++;
+            if (this.tickCount > 20 * 10) { // 10秒
+                if (ClientRenderProfiler.enabled) DebugKey.get().onDebugKeyInput(InputAction.PRESS.keyCode()); // 自动点击结束
+            }
+        }
+    }
 }

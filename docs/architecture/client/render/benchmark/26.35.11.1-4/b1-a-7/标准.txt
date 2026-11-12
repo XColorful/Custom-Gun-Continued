@@ -1,0 +1,44 @@
+测试环境：
+- 显示器1920x1080 165hz
+- 显卡GTX 1660 SUPER
+- CPU i5-9400F
+- 显卡驱动621.14 (2026-11-04)
+
+CGC端1（forge47.4.23）：
+- ./mods/cgccpackloader-26.9.2-forge-1.20.1.jar
+- ./mods/cgccshader-26.10.28-forge-1.20.1.jar
+- ./mods/customgun-26.11.35.1-forge-1.20.1.jar
+- ./mods/embeddium-0.3.31+mc1.20.1.jar
+- ./mods/oculus-mc1.20.1-1.8.0.jar
+- ./saves/新的世界/datapacks/testgun1.20.1/pack.mcmeta
+- ./saves/新的世界/datapacks/testgun1.20.1/data/customgun/functions/testgun.mcfunction
+- ./saves/新的世界/datapacks/testgun1.20.1/data/customgun/functions/testgun_full.mcfunction
+- ./tacz/tacz_default_gun/
+
+测试方式：
+- CGC端tacz_default_gun补TaCZ内置第一人称animations动画（对齐TaCZ）
+- CGC客户端配置关掉枪械HUD
+- MSI Afterburner基准全局热键保存的Benckmark.txt
+- 超平坦虚空预设，和平，/tp @s 8.5 ~ 8.5 0 0
+- 禁用昼夜更替，禁用天气循环，/time set 5000
+- 渲染距离2，模拟距离5，全屏
+- 保持第一人称视角
+- 启动任意端，开F3等游戏内FPS从60到400~500到800~900（预热）
+- Sodium降低帧率-最小化时
+- Iris/Oculus最大阴影距离Disabled
+- 全称关游戏内F3
+- 1. Afterburner记录空快捷栏渲染帧数
+- 清空tacz:ak47子弹（/cgc debug setMagAmmo 0后再开一枪，再/tp @s ~ ~ ~ 0 0固定视角）
+- 2. Afterburner记录第一人称tacz:ak47渲染帧数
+- 3. DebugKey自动跑3次换弹，10秒后自动停止
+- 4. 清空快捷栏（/clear），Afterburner记录第一人称裸配枪械（/function customgun:testgun）渲染帧数
+- 5. DebugKey自动跑3次换弹，10秒后自动停止
+- 6. 清空快捷栏（/clear），Afterburner记录第一人称满配枪械（/function customgun:testgun_full）渲染帧数
+- 7. DebugKey自动跑3次换弹，10秒后自动停止
+- 单个Benckmark.txt保存以上七次记录，Afterburner每个录10秒左右
+
+说明：
+- 不用F3的原因：开F3后裸渲染FPS在800~900，改用Afterburner能到1300左右；且F3会导致切换到下一个快捷栏槽，帧数需要很久才重新回升
+- 每种测试方式都是提前做好地图，保证启动游戏第一次进存档就是测试条件及角色朝向
+- tacz:ak47和tacz:m4a1的换弹冷却都小于3秒
+- 测试数据1-4是在加上b2-a-7脏子树探针修复之前测的，5-8是之后测的

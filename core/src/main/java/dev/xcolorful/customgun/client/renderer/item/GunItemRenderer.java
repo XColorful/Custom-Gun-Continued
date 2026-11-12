@@ -288,10 +288,12 @@ public class GunItemRenderer extends AnimateGeoItemRenderer<GunModelObject, GunA
                     ? ClientRenderUtils.RenderType_.entityTranslucent(textureLocation)
                     : ClientRenderUtils.RenderType_.entityCutout(textureLocation);
 
+            ClientRenderProfiler.beginCgcGpu();
             try {
                 ClientRenderHelper.FirstPersonArmHelper.setFirstPersonArmCollector(event.getMultiBufferSource_SubmitNodeCollector());
                 gunModelObject.render(poseStack, ctx, renderType, light, OverlayTexture.NO_OVERLAY, gunItem);
             } finally {
+                ClientRenderProfiler.endCgcGpu();
                 ClientRenderHelper.FirstPersonArmHelper.setFirstPersonArmCollector(null);
             }
 
@@ -468,9 +470,11 @@ public class GunItemRenderer extends AnimateGeoItemRenderer<GunModelObject, GunA
                     // 渲染枪械模型
                     RenderType renderType = ClientRenderUtils.RenderType_.entityCutout(modelTextureLocation);
                     ClientRenderHelper.FirstPersonArmHelper.setFirstPersonArmCollector_(bufferSource);
+                    ClientRenderProfiler.beginCgcGpu();
                     try {
                         gunModelObject.render(poseStack, transformType, renderType, light, overlay, gunItem);
                     } finally {
+                        ClientRenderProfiler.endCgcGpu();
                         ClientRenderHelper.FirstPersonArmHelper.setFirstPersonArmCollector_(null);
                     }
 

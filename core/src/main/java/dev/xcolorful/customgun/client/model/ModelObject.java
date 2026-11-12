@@ -65,6 +65,8 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
      * <li>不参与渲染，仅用于统计「本次提交的几何是否真的变了」</li>
      */
     private long cgc$lastStateHash = Long.MIN_VALUE;
+    /** 上一次采集到状态指纹的帧序号，用于一帧内只算一次 */
+    private long cgc$profileStamp = Long.MIN_VALUE;
 
     protected
     ModelObject(@NotNull BedrockModel pojo) {
@@ -205,10 +207,16 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
         ClientRenderProfiler.countRenderType(renderType);
 
         if (ClientRenderProfiler.enabled) { // 采集窗口内统计：本次提交的节点状态是否与上次不同
+            long stamp = ClientRenderProfiler.frameStamp();
+            // 同一模型一帧内会被多个展示框 / 光影阴影 pass 重复提交，节点状态在帧内不会变化：指纹只算一次
+            boolean firstThisFrame = this.cgc$profileStamp != stamp;
+            this.cgc$profileStamp = stamp;
+
             long hash = 1125899906842597L;
             for (IBedrockRenderer renderer : this.modelMap_values()) {
                 BedrockPart part = renderer.getModelRenderer();
                 ClientRenderProfiler.countNodes(1);
+                if (!firstThisFrame) continue;
                 hash = hash * 31L + Float.floatToRawIntBits(part.offsetX);
                 hash = hash * 31L + Float.floatToRawIntBits(part.offsetY);
                 hash = hash * 31L + Float.floatToRawIntBits(part.offsetZ);
@@ -221,7 +229,7 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
                 hash = hash * 31L + Float.floatToRawIntBits(part.zScale);
                 hash = hash * 31L + (part.visible ? 1L : 2L);
             }
-            if (hash != this.cgc$lastStateHash) {
+            if (firstThisFrame && hash != this.cgc$lastStateHash) {
                 this.cgc$lastStateHash = hash;
                 ClientRenderProfiler.countStateChange();
             }

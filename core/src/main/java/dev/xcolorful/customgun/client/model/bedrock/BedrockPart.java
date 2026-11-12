@@ -56,6 +56,14 @@ public class BedrockPart implements IBedrockCubeCompile, IBedrockRenderer {
      */
     private @Nullable Boolean cgc$subtreeFunctional;
 
+    /**
+     * 渲染探针用：上一次采样到的节点状态指纹与所在帧序号
+     * <li>同一节点一帧内可能被多次提交（多个展示框 / 光影阴影 pass），按帧去重</li>
+     * <li>只有即时管线会经过，静态烘焙路径不计入「脏节点」——那里本来就应当是 0</li>
+     */
+    private long cgc$profileHash = Long.MIN_VALUE;
+    private long cgc$profileStamp = Long.MIN_VALUE;
+
     private float initRotX;
     private float initRotY;
     private float initRotZ;
@@ -268,6 +276,25 @@ public class BedrockPart implements IBedrockCubeCompile, IBedrockRenderer {
         return hash;
     }
 
+    /**
+     * 渲染探针：统计本节点是否「本帧第一次访问」，以及状态是否与上一帧不同
+     * <ul>
+     *     <li>只在采集窗口内由 {@link #render} 调用；未采集时调用方只付一次 volatile 读</li>
+     *     <li>状态取 {@link #stateHash()}，与烘焙缓存的失效口径一致</li>
+     * </ul>
+     */
+    public void profileNodeState() {
+        long stamp = ClientRenderProfiler.frameStamp();
+        if (this.cgc$profileStamp == stamp) return;
+        this.cgc$profileStamp = stamp;
+        ClientRenderProfiler.countDistinctNode();
+        long hash = this.stateHash();
+        if (hash != this.cgc$profileHash) {
+            this.cgc$profileHash = hash;
+            ClientRenderProfiler.countDirtyNode();
+        }
+    }
+
     // --------IBedrockRenderer--------
 
     @Override
@@ -371,6 +398,8 @@ public class BedrockPart implements IBedrockCubeCompile, IBedrockRenderer {
                        VertexConsumer consumer,
                        int light, int overlay,
                        float red, float green, float blue, float alpha) {
+        if (ClientRenderProfiler.enabled) this.profileNodeState();
+
         int cubePackedLight = this.illuminated ? ClientRenderUtils.LightTexture_.pack(15, 15) // 最大亮度
                 : light;
 

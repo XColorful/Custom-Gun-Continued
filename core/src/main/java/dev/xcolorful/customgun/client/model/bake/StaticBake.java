@@ -36,6 +36,13 @@ public final class StaticBake {
     public static boolean ENABLED = true;
 
     /**
+     * 每次绘制都重建网格，用于人工验收缓存失效与测量烘焙成本
+     * <li>默认关闭：开启时静态场景退化为每帧重烘，多枪场景帧时间会跌到 ~167 FPS</li>
+     * <li>与 {@link ClientRenderProfiler#enabled} 解耦，F12 采集必须保持稳态</li>
+     */
+    public static boolean FORCE_REBUILD = false;
+
+    /**
      * <li>只有非第一人称的展示类场景参与烘焙</li>
      * <li>GUI 槽位不走模型渲染，不会进入这里</li>
      */
@@ -93,8 +100,8 @@ public final class StaticBake {
         StaticBakeCache.Key key = new StaticBakeCache.Key(owner, subKey, renderType, light, overlay, fingerprint,
                 shaderPack, red, green, blue, alpha);
 
-        // F12 采集期间强制重建，用于人工验收「缓存失效」与测量烘焙成本
-        @Nullable BakedMesh mesh = ClientRenderProfiler.enabled ? null : StaticBakeCache.get(key);
+        // FORCE_REBUILD：人工验收「缓存失效」与测量烘焙成本；默认关闭，F12 采集保持稳态
+        @Nullable BakedMesh mesh = FORCE_REBUILD ? null : StaticBakeCache.get(key);
         if (mesh == null) {
             final long profBake = ClientRenderProfiler.begin();
             mesh = BakedMesh.bake(renderType.mode(), renderType.format(), emitter);

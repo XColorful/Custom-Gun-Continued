@@ -42,7 +42,7 @@ CGC端2（neoforge26.3.0.83）：
 - 1. 记录空快捷栏渲染帧数
 - 2. 记录第一人称裸配枪械（/function customgun:testgun）渲染帧数
 - 3. 清空快捷栏（/clear），记录第一人称满配枪械（/function customgun:testgun_full）渲染帧数
-- 单个Benckmark.txt保存以上两次记录，每个录10秒左右
+- 单个Benckmark.txt保存以上三次记录，每个录10秒左右
 测试方式-multi：
 - 在之前的基础上往眼前第三格为中心，放9个石头（/fill 9 -58 11 7 -60 11 stone）、物品展示框、9把满配枪械（/function customgun:testgun_full）
 - 低模渲染距离改成5

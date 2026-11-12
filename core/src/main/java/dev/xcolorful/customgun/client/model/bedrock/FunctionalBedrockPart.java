@@ -60,6 +60,8 @@ public class FunctionalBedrockPart extends BedrockPart {
                        VertexConsumer consumer,
                        int light, int overlay,
                        float red, float green, float blue, float alpha) {
+        if (ClientRenderProfiler.enabled) this.profileNodeState();
+
         int cubePackedLight = this.illuminated ? ClientRenderUtils.LightTexture_.pack(15, 15)
                 : light;
 

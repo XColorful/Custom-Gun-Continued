@@ -97,8 +97,8 @@ vertexColor    = minecraft_mix_light(Light0_Direction, Light1_Direction, Normal,
 
 - **资源重载**：`_AssetsInstanceManager#clear` 调用 `StaticBakeCache.clearAll()`，
   在渲染线程释放全部 `VertexBuffer`（旧模型对象会被整体替换，不释放会泄漏显存）。
-- **F12 采集期间强制重建**：`ClientRenderProfiler.enabled` 时跳过查找、每帧重烘，
-  用于人工验收「失效是否正确」并测量烘焙成本。
+- **强制重建**：`StaticBake.FORCE_REBUILD = true` 时跳过查找、每帧重烘，用于人工验收「失效是否正确」并测量烘焙成本。
+  默认关闭，且与 F12（`ClientRenderProfiler.enabled`）解耦——开启时静态场景退化为每帧重烘，9 把枪的帧时间会跌到约 167 FPS，采集必须保持稳态。
 - **LRU 上限**：128 个网格 / 32 MiB，超出时淘汰最久未用的网格并在渲染线程释放；
   淘汰至少保留一个，避免单个超大网格刚插入就被关闭（那会让模型直接不画）。
   条目上限按「一把枪 = 枪体 + 若干配件 + 瞄具子网格、配置不同会各自成键」估算，内存上限由字节数兜底。
@@ -136,10 +136,10 @@ vertexColor    = minecraft_mix_light(Light0_Direction, Light1_Direction, Normal,
 |项|原因|
 |---|---|
 |模板每帧一清|静态展示里的瞄具窗口只开启模板测试、不写模板值（模板由第一人称路径写），多把枪共用一张模板缓冲时，前一把枪留下的值会参与后一把枪的测试。改成每帧一清会改变这一语义，收益只有 0.059 ms/帧，留给 B2 重排 pass 时一起处理|
-|CGC 绘制区间的 `GL_TIME_ELAPSED`|会与 `GpuFrameTimer` 的整帧查询嵌套（同一时刻只允许一个 `TIME_ELAPSED` 查询），需要重做计时器分配，本阶段未做|
-|按节点的脏计数|B1-b 前才有意义，未做|
-|GPU 查询与分配采样改每 N 帧|未做，属探针自身开销优化|
 |同模型不同光照的二级缓存|见上「风险」，先用 LRU 上限兜住|
+
+> 2026-11-12 补齐了原先搁置的三项探针：`CGC GPU busy`（分段计时 + 查询池）、`Distinct / Dirty nodes`、GPU 查询与分配采样改为每 4 帧一次。
+> 采集口径见 [`b1-a-5/标准.txt`](../benchmark/26.35.11.1-4/b1-a-5/标准.txt)。
 
 ## 26.3 / 跨版本
 
@@ -163,12 +163,14 @@ vertexColor    = minecraft_mix_light(Light0_Direction, Light1_Direction, Normal,
 |`Static bake`|计时|一次烘焙的耗时|
 |`Bake rebuilds`|计数|每帧烘焙次数；静态场景稳态应为 0|
 |`Distinct RenderTypes`|计数|本帧出现过的 `RenderType` 实例数（只统计 CGC 经过的位置），B2 的 draw 下限|
+|`CGC GPU busy`|GPU|CGC 提交窗口内的 `GL_TIME_ELAPSED`，用于归因 multi 的 0.97 ms / 26.3 的 4.38 ms 未归因项；与整帧查询共用分段计时器，每 4 帧采样一次|
+|`Distinct nodes` / `Dirty nodes`|计数|本帧遍历到的节点数（按帧去重）与其中状态变化的节点数；B1-b 的脏子树比例，只在即时管线统计|
 
 `Node snapshot` 在 1.20.1 上不再有命中（报告里显示 `-`），属预期。
 
 ## 验收清单（人工）
 
-> 2026-11-11/12 验收（1.20.1）：第 1、2、4、5、6、7 项通过；第 3 项（雾）通过；第 8 项（内置探针）未做。数据见 [阶段验收报告](../benchmark/26.35.11.1-4/测试数据计算报告.md)。
+> 2026-11-11/12 验收（1.20.1）：第 1、2、4、5、6、7 项通过；第 3 项（雾）通过；第 8 项（内置探针）已于 [`b1-a-5`](../benchmark/26.35.11.1-4/b1-a-5/测试数据计算报告.md) 补齐：`Bake rebuilds = 0`、上传 30.8 KB/帧。数据见 [阶段验收报告](../benchmark/26.35.11.1-4/测试数据计算报告.md)。
 
 单把枪、9 个展示框各跑一次，**开 / 关光影各一次**：
 
@@ -182,7 +184,7 @@ vertexColor    = minecraft_mix_light(Light0_Direction, Light1_Direction, Normal,
 7. **光影**：Oculus 开光影包后画面与关闭时一致（含阴影、发光、半透明）；切换光影包时不应出现
    一帧的旧格式画面（格式不一致会退回即时管线）。
 8. **探针**：F12 后 `Bake rebuilds` 稳态为 0；`endBatch calls` / `Upload bytes` 在静态场景显著下降；
-   `Cubes submitted` 只出现在首帧（F12 强制重建时每帧都有）。
+   `Cubes submitted` 只出现在首帧（`FORCE_REBUILD = true` 时每帧都有）。
 
 ## 已知风险
 

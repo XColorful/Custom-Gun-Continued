@@ -8,7 +8,7 @@ import org.jetbrains.annotations.ApiStatus;
 import java.util.OptionalLong;
 
 /**
- * 帧级 GPU 忙时采样（26.2+ 延迟渲染版本）。
+ * 帧级 GPU 忙时采样（26.2+ 延迟渲染版本）
  * <ul>
  *     <li>用 {@code GpuQueryPool} 写两个时间戳，覆盖两次帧事件之间提交的 GPU 命令</li>
  *     <li>结果延迟读取，未就绪的槽位留到后续帧继续轮询，不阻塞渲染线程</li>

@@ -24,9 +24,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-/**
- * 对应原模组{@code com.tacz.guns.client.model.bedrock.BedrockModel}
- */
 public class ModelObject extends PojoInstance<BedrockModel> implements IModelObjectRender {
 
     /**

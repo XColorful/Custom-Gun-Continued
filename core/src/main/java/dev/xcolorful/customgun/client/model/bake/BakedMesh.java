@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.VertexBuffer;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import dev.xcolorful.customgun.client.input.player.DebugKey;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ShaderInstance;
 import org.jetbrains.annotations.ApiStatus;
@@ -22,7 +23,7 @@ import java.util.function.Consumer;
  *     <li>实例矩阵不进顶点，因此同一份网格可以被多个展示框 / 掉落物共享</li>
  *     <li>只支持即时模式：{@code RenderType} 的 setup/clear 包住 draw，与 {@code BufferSource.endBatch} 的做法一致</li>
  * </ul>
- * 失效条件由调用方放进 {@link StaticBakeCache.Key}，本类不判断。
+ * 失效条件由调用方放进 {@link StaticBakeCache.Key}，本类不判断
  */
 @ApiStatus.Internal
 public final class BakedMesh implements AutoCloseable {
@@ -33,12 +34,14 @@ public final class BakedMesh implements AutoCloseable {
     private static final int BUILD_CAPACITY = 1024 * 1024;
 
     /**
-     * 复用的 {@link BufferBuilder}，按烘焙嵌套深度取用。
-     * <p>
-     * 1.20.1 的 {@code BufferBuilder} 在构造时经 {@code MemoryTracker} 直接申请原生内存
-     * （{@code 容量 × 6}），而释放路径只重置计数、不归还内存：每次烘焙新建一个就是一次
-     * 几 MiB 的永久泄漏。F12 采集会每帧强制重建网格，几秒内就能把页面文件耗尽
-     * （表现是原生内存不足导致的 JVM 崩溃）。正常流程不嵌套，复用同一实例。
+     * 复用的 {@link BufferBuilder}，按烘焙嵌套深度取用
+     * <ul>
+     *     1.20.1
+     *     <li>{@code BufferBuilder} 在构造时经 {@code MemoryTracker} 直接申请原生内存（{@code 容量 × 6}）</li>
+     *     <li>而释放路径只重置计数、不归还内存：每次烘焙新建一个就是一次几 MiB 的永久泄漏</li>
+     *     <li>{@link DebugKey}采集会每帧强制重建网格，几秒内就能把页面文件耗尽（表现是原生内存不足导致的 JVM 崩溃）</li>
+     *     <li>正常流程不嵌套，复用同一实例</li>
+     * </ul>
      */
     private static final List<BufferBuilder> BUILDERS = new ArrayList<>();
     private static int builderDepth;
@@ -46,11 +49,11 @@ public final class BakedMesh implements AutoCloseable {
     private final @Nullable VertexBuffer vertexBuffer;
     private final int bytes;
     /**
-     * 本次烘焙实际写入的是不是扩展顶点格式（光影包会把 {@code NEW_ENTITY} 换成
-     * {@code IrisVertexFormats.ENTITY}）。
-     * <p>
-     * 绘制前要和当前光影状态比对：两者不一致说明光影包刚刚切换、缓存里的顶点布局已经不能用了，
-     * 本帧必须退回即时管线。
+     * 本次烘焙实际写入的是不是扩展顶点格式
+     * <ul>
+     *     <li>光影包会把 {@code NEW_ENTITY} 换成{@code IrisVertexFormats.ENTITY}</li>
+     *     <li>绘制前要和当前光影状态比对：两者不一致说明光影包刚刚切换、缓存里的顶点布局已经不能用了（本帧必须退回即时管线）</li>
+     * </ul>
      */
     private final boolean extendedFormat;
     private boolean closed;

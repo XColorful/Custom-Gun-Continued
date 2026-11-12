@@ -16,13 +16,13 @@ import org.joml.Matrix4f;
 import java.util.function.Consumer;
 
 /**
- * B1-a 静态烘焙的入口
+ * 静态烘焙的入口 (渲染重构B1-a)
  * <ul>
  *     <li>节点姿态不变的场景（展示框 / 地面 / 第三人称）用烘焙网格替换逐顶点遍历</li>
  *     <li>第一人称不在本阶段范围内，仍走即时管线</li>
  *     <li>光照与雾由「<b>实例矩阵参与着色</b>」保证，见 {@link #resolveEntityShader()}</li>
  * </ul>
- * 状态段（functional 回调与可见性）仍然每帧执行，见 {@code BedrockPart#renderStatus}。
+ * 状态段（functional 回调与可见性）仍然每帧执行，见 {@code BedrockPart#renderStatus}
  */
 @ApiStatus.Internal
 public final class StaticBake {
@@ -30,14 +30,14 @@ public final class StaticBake {
     private StaticBake() {}
 
     /**
-     * 烘焙路径总开关。开关用于实机对照；关闭时行为与重构前完全一致。
+     * 烘焙路径总开关
+     * <li>开关用于实机对照；关闭时行为与重构前完全一致</li>
      */
     public static boolean ENABLED = true;
 
     /**
-     * 只有非第一人称的展示类场景参与烘焙。
-     * <p>
-     * GUI 槽位不走模型渲染，不会进入这里。
+     * <li>只有非第一人称的展示类场景参与烘焙</li>
+     * <li>GUI 槽位不走模型渲染，不会进入这里</li>
      */
     public static boolean eligible(ItemDisplayContext transformType) {
         return ENABLED && !transformType.firstPerson();
@@ -45,18 +45,22 @@ public final class StaticBake {
 
     /**
      * 本次绘制该用的实体着色器；必须在 {@link RenderType#setupRenderState()} 之后调用
+     * <br>
+     * 开光影包：
      * <ul>
-     *     <li><b>开光影包</b>：Oculus/Iris 在 {@code GameRenderer.getRendertype*Shader()} 里把该 RenderType 的
-     *     shader 换成光影包 program（按 shadow / hand / block-entity / entities 阶段分支），
-     *     那份 shader 的位置与法线都由 {@code ModelViewMat} 驱动，直接沿用即可</li>
-     *     <li><b>无光影</b>：用 CGC 自己的烘焙着色器；平台没有注册它时返回 {@code null}，
-     *     调用方退回即时管线</li>
+     *     <li>Iris 在 {@code GameRenderer.getRendertype*Shader()} 里把该 RenderType 的 shader 换成光影包 program（按 shadow / hand / block-entity / entities 阶段分支）</li>
+     *     <li>那份 shader 的位置与法线都由 {@code ModelViewMat} 驱动，直接沿用即可</li>
+     * </ul>
+     * 无光影：
+     * <ul>
+     *     <li>用 CGC 自己的烘焙着色器；平台没有注册它时返回 {@code null}，调用方退回即时管线</li>
      * </ul>
      */
     public static @Nullable ShaderInstance resolveEntityShader() {
         if (IrisCompat.isUsingRenderPack()) {
             return RenderSystem.getShader();
         }
+
         @Nullable ShaderInstance shader = ClientRenderRegistry.BakedEntityRenderState.getBakedEntityShader();
         if (shader == null && !warnedNoShader) {
             warnedNoShader = true;
@@ -69,8 +73,7 @@ public final class StaticBake {
     private static boolean warnedNoShader;
 
     /**
-     * 取缓存或烘焙，然后用模型视图矩阵绘制。
-     *
+     * 取缓存或烘焙，然后用模型视图矩阵绘制
      * @param owner       网格所属的模型对象（同一把枪的所有展示框共享）
      * @param subKey      同一模型内的子网格标识（如瞄具的某条节点路径），整模型传 {@code null}
      * @param pose        烘焙空间 → 视图空间的变换；必须与 {@code emitter} 写入的模型空间一致

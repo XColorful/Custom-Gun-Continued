@@ -242,15 +242,15 @@ public class _AttachmentModelRender {
                 part.visible = true;
                 try {
                     boolean baked = false;
-                    if (StaticBake.eligible(transformType)) { // B1-a：静态场景用烘焙网格替代逐顶点遍历
+                    if (StaticBake.eligible(transformType)) { // 静态场景用烘焙网格替代逐顶点遍历（渲染重构B1-a）
                         int delegateMark = _this.delegateMark();
                         DiscardVertexConsumer discard = DiscardVertexConsumer.INSTANCE;
                         long vertexMark = discard.writtenVertices();
 
-                        long fingerprint = 0x9E3779B97F4A7C15L;
+                        long fingerprint = ModelObject.FINGERPRINT_SEED;
                         for (int i = 0; i < path.size() - 1; i++) {
                             // 路径前缀的变换也烘进网格，一并进指纹
-                            fingerprint = fingerprint * 31L + path.get(i).stateHash(0x9E3779B97F4A7C15L);
+                            fingerprint = fingerprint * 31L + path.get(i).stateHash();
                         }
                         fingerprint = fingerprint * 31L
                                 + part.renderStatus(poseStack, transformType, light, overlay, discard);

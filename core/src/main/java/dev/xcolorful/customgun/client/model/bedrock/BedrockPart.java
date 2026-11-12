@@ -9,6 +9,7 @@ import dev.xcolorful.customgun.client.api.model.bedrock.IBedrockRenderer;
 import dev.xcolorful.customgun.client.util.ClientRenderHelper;
 import dev.xcolorful.customgun.client.util.ClientRenderProfiler;
 import dev.xcolorful.customgun.client.util.ClientRenderUtils;
+import dev.xcolorful.customgun.core.util.MathUtil;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -127,12 +128,13 @@ public class BedrockPart implements IBedrockCubeCompile, IBedrockRenderer {
     // --------静态烘焙--------
 
     /**
-     * 状态段：执行 functional 回调、确定可见性，不写顶点。
-     * <p>
-     * 返回值是本子树的节点状态指纹，作为烘焙缓存的失效依据。隐藏的子树不参与渲染，因此也不计入指纹；
-     * 它们重新可见时父节点的 {@code visible} 会变化，指纹随之改变。
-     * <p>
-     * 子树内没有 functional 节点时不需要回调，也就不需要维护 {@link PoseStack}，只做指纹累加。
+     * 状态段：执行 functional 回调、确定可见性，不写顶点
+     * <ul>
+     *     <li>返回值是本子树的节点状态指纹，作为烘焙缓存的失效依据</li>
+     *     <li>隐藏的子树不参与渲染，因此也不计入指纹</li>
+     *     <li>它们重新可见时父节点的 {@code visible} 会变化，指纹随之改变</li>
+     * </ul>
+     * 子树内没有 functional 节点时不需要回调，也就不需要维护 {@link PoseStack}，只做指纹累加
      */
     public long renderStatus(PoseStack poseStack,
                              ItemDisplayContext transformType,
@@ -141,7 +143,7 @@ public class BedrockPart implements IBedrockCubeCompile, IBedrockRenderer {
         if (!this.visible) return 0L;
         if (!this.containsFunctional()) return this.subtreeStateHash();
 
-        long hash = this.stateHash(0x9E3779B97F4A7C15L);
+        long hash = this.stateHash();
         int cubePackedLight = this.illuminated ? ClientRenderUtils.LightTexture_.pack(15, 15) : light;
 
         poseStack.pushPose(); {
@@ -156,10 +158,11 @@ public class BedrockPart implements IBedrockCubeCompile, IBedrockRenderer {
     }
 
     /**
-     * 子树内是否存在 functional 节点。
-     * <p>
-     * 节点树在 {@code resetCache} 期间构建完成后不再改变，结果缓存到首次查询。
-     * {@link FunctionalBedrockPart} 恒为 {@code true}。
+     * 子树内是否存在 functional 节点
+     * <ul>
+     *     <li>节点树在 {@code resetCache} 期间构建完成后不再改变，结果缓存到首次查询</li>
+     *     <li>{@link FunctionalBedrockPart} 恒为 {@code true}</li>
+     * </ul>
      */
     public boolean containsFunctional() {
         if (this.cgc$subtreeFunctional == null) {
@@ -177,9 +180,10 @@ public class BedrockPart implements IBedrockCubeCompile, IBedrockRenderer {
 
     /**
      * 运行时改动 functional 回调后，清掉自身与祖先的 {@link #containsFunctional()} 缓存
-     * <p>
-     * 该缓存按「加载完成后不再变化」优化；addon 在首次渲染之后再挂回调时必须调用本方法，
-     * 否则状态段会走快速指纹路径、回调永远不执行。
+     * <ul>
+     *     <li>该缓存按「加载完成后不再变化」优化；addon 在首次渲染之后再挂回调时必须调用本方法</li>
+     *     <li>否则状态段会走快速指纹路径、回调永远不执行</li>
+     * </ul>
      */
     public void invalidateFunctionalCache() {
         BedrockPart part = this;
@@ -194,7 +198,7 @@ public class BedrockPart implements IBedrockCubeCompile, IBedrockRenderer {
      */
     public long subtreeStateHash() {
         if (!this.visible) return 0L;
-        long hash = this.stateHash(0x9E3779B97F4A7C15L);
+        long hash = this.stateHash();
         for (int i = 0; i < this.children.size(); i++) {
             hash = hash * 31L + this.children.get(i).subtreeStateHash();
         }
@@ -202,10 +206,11 @@ public class BedrockPart implements IBedrockCubeCompile, IBedrockRenderer {
     }
 
     /**
-     * 几何段：只按当前可见性发射顶点，不执行 functional 回调。
-     * <p>
-     * functional 回调由状态段执行过，回调的副作用（可见性、委托）已经生效，
-     * 因此这里可以安全地跳过回调，并使用一个独立的单位 {@link PoseStack} 烘焙出模型空间网格。
+     * 几何段：只按当前可见性发射顶点，不执行 functional 回调
+     * <ul>
+     *     <li>functional 回调由状态段执行过，回调的副作用（可见性、委托）已经生效</li>
+     *     <li>因此这里可以安全地跳过回调，并使用一个独立的单位 {@link PoseStack} 烘焙出模型空间网格</li>
+     * </ul>
      */
     public void renderGeometry(PoseStack poseStack,
                                ItemDisplayContext transformType,
@@ -230,13 +235,20 @@ public class BedrockPart implements IBedrockCubeCompile, IBedrockRenderer {
     }
 
     /**
-     * 把本节点的全部变换字段累加进指纹。
-     * <p>
-     * 动画只写 offset / additionalQuaternion / scale / visible，其余字段在加载后不再变化；
-     * 一并计入可以让 addon 直接改写节点姿态时也能正确失效。
+     * 64 位黄金比例常量，来源于 Fibonacci Hashing / Knuth's multiplicative hashing
+     * <li>{@code floor(2^64 * (φ - 1))}，其中 {@code φ = (1 + √5) / 2}</li>
      */
-    public long stateHash(long hash) {
-        hash = hash * 31L + Float.floatToRawIntBits(this.x);
+    private static final long STATE_HASH_SEED = MathUtil.GOLDEN_RATIO_64;
+    /**
+     * 把本节点的全部变换字段累加进指纹
+     * <ul>
+     *     <li>动画只写 offset / additionalQuaternion / scale / visible，其余字段在加载后不再变化</li>
+     *     <li>一并计入可以让 addon 直接改写节点姿态时也能正确失效</li>
+     * </ul>
+     */
+    @SuppressWarnings("NumericOverflow")
+    public long stateHash() {
+        long hash = STATE_HASH_SEED * 31L + Float.floatToRawIntBits(this.x);
         hash = hash * 31L + Float.floatToRawIntBits(this.y);
         hash = hash * 31L + Float.floatToRawIntBits(this.z);
         hash = hash * 31L + Float.floatToRawIntBits(this.xRot);

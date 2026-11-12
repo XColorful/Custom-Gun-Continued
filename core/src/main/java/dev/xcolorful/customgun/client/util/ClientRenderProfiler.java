@@ -28,14 +28,14 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * 渲染链路埋点。
+ * 渲染链路埋点
  * <ul>
  *     <li>按 F12 开始采集，再按一次停止并立即统计、追加写入文件</li>
  *     <li>未采集时热路径成本：每个埋点一次 {@link #enabled} 的 volatile 读 + 一次分支</li>
  *     <li>帧边界取 {@link EventType#RENDER_FRAME_EVENT}（Forge 上即 {@code TickEvent.RenderTickEvent} 的 END，整帧渲染结束）</li>
  *     <li>探针之间可以嵌套（例如提交包含模型渲染，模型渲染又包含 flush），统计时各算各的，不能直接相加</li>
  * </ul>
- * 埋点位置与含义见 ./docs/architecture/client/render/chain/Home.md 的「测量与数据登记」。
+ * 埋点位置与含义见 ./docs/architecture/client/render/chain/Home.md 的「测量与数据登记」
  */
 @ApiStatus.Internal
 public final class ClientRenderProfiler implements IEventHandler {
@@ -86,7 +86,7 @@ public final class ClientRenderProfiler implements IEventHandler {
     public static final int UPLOAD = 20;
     /** endBatch 内的 draw（VertexBuffer.drawWithShader） */
     public static final int DRAW = 21;
-    /** B1-a 静态烘焙（首次或失效后的重建） */
+    /** 渲染重构B1-a 静态烘焙（首次或失效后的重建） */
     public static final int BAKE = 22;
 
     public static final int PROBE_COUNT = 23;

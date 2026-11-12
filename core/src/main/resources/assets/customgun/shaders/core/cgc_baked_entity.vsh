@@ -1,14 +1,15 @@
 #version 150
 
 /*
-静态烘焙网格的实体着色器（B1-a）。
+静态烘焙网格的实体着色器（渲染重构B1-a）
 
 与 vanilla 的 rendertype_entity_cutout 的差别只有两处，都来自「顶点在模型空间、由 ModelViewMat 带入视图空间」：
-  1. 光照：vanilla 的 Normal 属性已经是视图空间法线，着色器直接用它点乘视图空间光照方向。
-     这里顶点是模型空间法线，用 ModelViewMat 的逆转置把它带到同一空间；等比缩放下与 vanilla 逐位等价。
-  2. 雾：vanilla 用 IViewRotMat * Position（Position 已是视图空间），先在相机旋转抵消后的坐标系里取样。
-     这里把 ModelViewMat 一起乘进去，得到同样的世界对齐坐标，再交给 fog_distance；注意必须在乘完之后
-     才做 shape=1 的「清 Y」，否则清掉的是模型空间的 Y。
+  1. 光照：vanilla 的 Normal 属性已经是视图空间法线，着色器直接用它点乘视图空间光照方向
+     这里顶点是模型空间法线，用 ModelViewMat 的逆转置把它带到同一空间
+     等比缩放下与 vanilla 逐位等价
+  2. 雾：vanilla 用 IViewRotMat * Position（Position 已是视图空间），先在相机旋转抵消后的坐标系里取样
+     这里把 ModelViewMat 一起乘进去，得到同样的世界对齐坐标，再交给 fog_distance
+     注意必须在乘完之后才做 shape=1 的「清 Y」，否则清掉的是模型空间的 Y
 */
 #moj_import <light.glsl>
 #moj_import <fog.glsl>
@@ -42,9 +43,9 @@ void main() {
     gl_Position = ProjMat * ModelViewMat * vec4(Position, 1.0);
 
     /*
-    雾必须先在「世界对齐」坐标系里算：原版是 fog_distance(ModelViewMat, IViewRotMat * Position)，
-    其中 IViewRotMat * Position 消除了相机旋转，shape=1 时 zero 掉的是世界 Y。
-    这里把 ModelViewMat 乘进去之后再清 Y，否则清掉的是模型空间的 Y。
+    雾必须先在「世界对齐」坐标系里算：原版是 fog_distance(ModelViewMat, IViewRotMat * Position)
+    其中 IViewRotMat * Position 消除了相机旋转，shape=1 时 zero 掉的是世界 Y
+    这里把 ModelViewMat 乘进去之后再清 Y，否则清掉的是模型空间的 Y
      */
     vec3 worldAlignedPosition = (mat4(IViewRotMat) * ModelViewMat * vec4(Position, 1.0)).xyz;
     vertexDistance = fog_distance(mat4(1.0), worldAlignedPosition, FogShape);

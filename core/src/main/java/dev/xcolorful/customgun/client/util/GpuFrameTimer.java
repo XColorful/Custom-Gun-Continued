@@ -7,13 +7,13 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL32C;
 
 /**
- * 帧级 GPU 忙时采样（在 F12 采集窗口内生效）。
+ * 帧级 GPU 忙时采样（在 F12 采集窗口内生效）
  * <ul>
  *     <li>在每帧结束时结束上一帧的 {@code GL_TIME_ELAPSED} 查询并开启下一帧的查询</li>
  *     <li>查询结果延迟读取，未就绪的查询留到下一帧继续轮询，不阻塞渲染线程</li>
  *     <li>原版在 F3 打开或性能录制时会自己使用 {@code GL_TIME_ELAPSED}，同一时刻不能嵌套，此时本类跳过采集</li>
  * </ul>
- * 口径：覆盖两次帧事件之间的 GL 命令，不含 {@code updateDisplay} 的 present 等待。
+ * 口径：覆盖两次帧事件之间的 GL 命令，不含 {@code updateDisplay} 的 present 等待
  */
 @ApiStatus.Internal
 public final class GpuFrameTimer {

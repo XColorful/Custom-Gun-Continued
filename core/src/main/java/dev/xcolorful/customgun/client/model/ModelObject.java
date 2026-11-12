@@ -6,10 +6,9 @@ import dev.xcolorful.customgun.client.api.model.IModelObjectRender;
 import dev.xcolorful.customgun.client.api.model.bedrock.IBedrockRenderer;
 import dev.xcolorful.customgun.client.api.renderer.model.IModelComponentRenderer;
 import dev.xcolorful.customgun.client.compat.iris.IrisCompat;
-import dev.xcolorful.customgun.client.model.bedrock.BedrockPart;
-import dev.xcolorful.customgun.client.model.bedrock.NodeTransform;
 import dev.xcolorful.customgun.client.model.bake.DiscardVertexConsumer;
 import dev.xcolorful.customgun.client.model.bake.StaticBake;
+import dev.xcolorful.customgun.client.model.bedrock.BedrockPart;
 import dev.xcolorful.customgun.client.resource.assets.model.BedrockModel;
 import dev.xcolorful.customgun.client.resource.assets.model.bedrock.geometry._Bone;
 import dev.xcolorful.customgun.client.util.ClientModelUtils;
@@ -17,6 +16,7 @@ import dev.xcolorful.customgun.client.util.ClientRenderHelper;
 import dev.xcolorful.customgun.client.util.ClientRenderProfiler;
 import dev.xcolorful.customgun.core.api.resource.assets.model.bedrock.geometry.NodeName;
 import dev.xcolorful.customgun.core.resource.instance.PojoInstance;
+import dev.xcolorful.customgun.core.util.MathUtil;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -28,10 +28,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-/**
- * 对应原模组{@code com.tacz.guns.client.model.bedrock.BedrockModel}
- */
 public class ModelObject extends PojoInstance<BedrockModel> implements IModelObjectRender {
+
+    public static final long FINGERPRINT_SEED = MathUtil.GOLDEN_RATIO_64;
 
     /**
      * 存储 ModelRender 子模型的 HashMap
@@ -62,8 +61,8 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
     protected float height = 0;
 
     /**
-     * 渲染探针用：上次提交时节点状态的指纹，仅采集窗口内更新。
-     * 不参与渲染，仅用于统计「本次提交的几何是否真的变了」。
+     * 渲染探针用：上次提交时节点状态的指纹，仅采集窗口内更新
+     * <li>不参与渲染，仅用于统计「本次提交的几何是否真的变了」</li>
      */
     private long cgc$lastStateHash = Long.MIN_VALUE;
 
@@ -231,7 +230,7 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
         /*
         [1.20.1, 26.2)
         即时模式下顶点在本次调用内就被提交，节点状态不会被清空，因此不需要快照与还原
-        这段双重快照在 1.20.1 上纯属开销（multi 场景实测 0.135 ms/帧），B1-a 中移除
+        这段双重快照在 1.20.1 上纯属开销（multi 场景实测 0.135 ms/帧），渲染重构B1-a 中移除
         26.2 延迟渲染下仍需在 flush 前保存/恢复节点状态，移植时按下面的注释恢复
          */
         // [26.2, )
@@ -265,11 +264,11 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
 
         // [26.2, ) 延迟渲染下这里需要在 flush 前保存、flush 后还原节点状态
 
-        // B1-a：节点静态的场景走烘焙网格；无法烘焙时退回即时管线
+        // 节点静态的场景走烘焙网格（渲染重构B1-a）
         boolean baked = StaticBake.eligible(transformType)
                 && this.renderBaked(matrixStack, transformType, bakedRenderType, light, overlay,
                         red, green, blue, alpha);
-        if (!baked) {
+        if (!baked) { // 无法烘焙时退回即时管线
             final long profTraverse = ClientRenderProfiler.begin();
             matrixStack.pushPose(); {
                 for (int i = 0; i < this.shouldRender.size(); i++) {
@@ -313,8 +312,7 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
      *     <li>几何段：仅在缓存未命中时执行，用单位 {@link PoseStack} 把节点姿态烘进模型空间网格</li>
      *     <li>绘制：用调用方的姿态矩阵绘制，不产生上传与 flush</li>
      * </ul>
-     * functional 回调只在状态段执行一次，因此委托拿到的仍是真实姿态矩阵。
-     *
+     * functional 回调只在状态段执行一次，因此委托拿到的仍是真实姿态矩阵
      * @return {@code false} 表示本帧无法烘焙（有回调直接发射几何），调用方应退回即时管线
      */
     private boolean renderBaked(PoseStack matrixStack,
@@ -326,7 +324,7 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
         DiscardVertexConsumer discard = DiscardVertexConsumer.INSTANCE;
         long vertexMark = discard.writtenVertices();
 
-        long fingerprint = 0x9E3779B97F4A7C15L;
+        long fingerprint = FINGERPRINT_SEED;
         for (int i = 0; i < this.shouldRender.size(); i++) {
             fingerprint = fingerprint * 31L + this.shouldRender.get(i)
                     .renderStatus(matrixStack, transformType, light, overlay, discard);

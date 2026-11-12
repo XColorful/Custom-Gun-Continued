@@ -21,13 +21,16 @@ import java.util.function.Consumer;
 public class ClientRenderRegistry {
 
     /**
-     * 静态烘焙网格（B1-a）用的 core shader
+     * 静态烘焙网格用的 core shader（渲染重构B1-a）
+     * <br>
+     * 无光影：
      * <ul>
-     *     <li><b>无光影</b>：原版实体着色器用原始 {@code Normal} 做光照、用 {@code IViewRotMat * Position} 算雾，
-     *     两者都假设顶点已经是视图空间；烘焙网格是模型空间 + 实例矩阵，必须换成会把 {@code ModelViewMat}
-     *     一起算进法线与雾坐标的着色器，见 {@code assets/customgun/shaders/core/cgc_baked_entity.*}</li>
-     *     <li><b>开光影包</b>：不使用它，改由 Oculus/Iris 在 {@code GameRenderer.getRendertype*Shader()}
-     *     换成的光影包 program 绘制</li>
+     *     <li>原版实体着色器用原始 {@code Normal} 做光照、用 {@code IViewRotMat * Position} 算雾，两者都假设顶点已经是视图空间</li>
+     *     <li>烘焙网格是模型空间 + 实例矩阵，必须换成会把 {@code ModelViewMat} 一起算进法线与雾坐标的着色器，见 {@code assets/customgun/shaders/core/cgc_baked_entity.*}</li>
+     * </ul>
+     * 开光影包：
+     * <ul>
+     *     <li>改由 Oculus/Iris 在 {@code GameRenderer.getRendertype*Shader()} 换成的光影包 program 绘制</li>
      * </ul>
      */
     public static class BakedEntityRenderState {
@@ -42,9 +45,6 @@ public class ClientRenderRegistry {
         }
     }
 
-    /**
-     * 资源重载会重新创建 {@link ShaderInstance}，{@code onLoaded} 必须在每次重载时都回调
-     */
     @FunctionalInterface
     public interface IShaderRegistrar {
         /**
@@ -57,12 +57,10 @@ public class ClientRenderRegistry {
     }
 
     /**
-     * 由平台在着色器注册事件里调用（Forge: {@code RegisterShadersEvent}）
-     * <p>
-     * 资源重载会重新创建 {@link ShaderInstance}，所以每次都要重新回调并覆盖引用。
+     * 资源重载会重新创建 {@link ShaderInstance}，所以每次都要重新回调并覆盖引用
      */
     public static void onRegisterShaders(IShaderRegistrar registrar) {
-        @Nullable ResourceLocation location = BakedEntityRenderState.BAKED_ENTITY_SHADER;
+        @Nullable var location = BakedEntityRenderState.BAKED_ENTITY_SHADER;
         if (location == null) return;
 
         registrar.registerShader(location,

@@ -1,6 +1,7 @@
 package dev.xcolorful.customgun.client.model.bake;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import dev.xcolorful.customgun.client.resource._AssetsInstanceManager;
 import net.minecraft.client.renderer.RenderType;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
@@ -14,7 +15,7 @@ import java.util.Map;
  * <ul>
  *     <li>键包含模型身份、子网格、纹理（{@code RenderType} 实例）、光照、叠加与节点状态指纹；<b>不含世界矩阵</b></li>
  *     <li>同款枪的多个展示框共享同一个 {@code ModelObject}，因此共享同一份网格</li>
- *     <li>资源重载时由 {@code _AssetsInstanceManager#reload} 清空，避免持有旧模型与显存</li>
+ *     <li>资源重载时由 {@link _AssetsInstanceManager#reload} 清空，避免持有旧模型与显存</li>
  * </ul>
  */
 @ApiStatus.Internal

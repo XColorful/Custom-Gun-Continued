@@ -20,9 +20,8 @@ public class FunctionalBedrockPart extends BedrockPart {
     public @Nullable Function<BedrockPart, IModelComponentRenderer> functionalRenderer;
 
     /**
-     * 最近一次状态段的结果：functional 回调返回了替换渲染器。
-     * <p>
-     * 状态段与几何段成对调用，几何段据此跳过已被替换的子树，不再重复执行回调。
+     * 最近一次状态段的结果：functional 回调返回了替换渲染器
+     * <li>状态段与几何段成对调用，几何段据此跳过已被替换的子树，不再重复执行回调</li>
      */
     @ApiStatus.Internal
     public boolean cgc$statusReplaced;
@@ -146,7 +145,7 @@ public class FunctionalBedrockPart extends BedrockPart {
             }
             this.cgc$statusReplaced = rendered;
 
-            long hash = this.stateHash(0x9E3779B97F4A7C15L);
+            long hash = this.stateHash();
             hash = hash * 31L + (rendered ? 1L : 2L);
 
             if (!rendered && this.visible) {

@@ -134,7 +134,6 @@ public final class StaticBake {
      *     <li>光照不进键：一条几何只烘焙一次，光照变化时原地改写 uv2 并重传原 VBO</li>
      *     <li>只能用于第一人称这类「同一帧只有一份实例」的路径；多实例共享的整模网格必须走 {@link #drawOrBake}</li>
      * </ul>
-     *
      * @param pose 烘焙空间 → 视图空间的变换；必须与 {@code emitter} 写入的模型空间一致
      * @return {@code false} 表示没有可用着色器，调用方应退回即时管线
      */

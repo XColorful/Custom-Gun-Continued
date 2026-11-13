@@ -50,7 +50,6 @@ public final class StaticBakeCache {
 
     /**
      * 按光照建键的整模网格键（展示框 / 地面 / 第三人称：同一份网格被多个实例共享，各自 {@code packedLight} 不同）
-     *
      * @param owner       所属模型对象（身份比较）
      * @param subKey      子网格标识（身份/结构比较），整模型为 {@code null}
      * @param fingerprint 节点状态指纹
@@ -98,7 +97,9 @@ public final class StaticBakeCache {
         return variants == null ? null : variants.get(light);
     }
 
-    /** 该键是否已经有网格：区分「首次烘焙」与「光照变体未满」 */
+    /**
+     * 该键是否已经有网格：区分「首次烘焙」与「光照变体未满」
+     */
     public static boolean hasPatchable(PatchKey key) {
         return PATCHABLE.containsKey(key);
     }
@@ -166,7 +167,9 @@ public final class StaticBakeCache {
          */
         private static final int MAX_VARIANTS = 2;
 
-        /** accessOrder = true：迭代顺序即最久未用顺序 */
+        /**
+         * accessOrder = true：迭代顺序即最久未用顺序
+         */
         private final Map<Integer, BakedMesh> meshes = new LinkedHashMap<>(2, 0.75F, true);
 
         BakedMesh get(int light) {

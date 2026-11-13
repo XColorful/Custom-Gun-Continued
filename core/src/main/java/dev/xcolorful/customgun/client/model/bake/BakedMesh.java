@@ -105,7 +105,6 @@ public final class BakedMesh implements AutoCloseable {
 
     /**
      * 光照进缓存键的场景（整模静态）：光照变化直接换网格，不需要 CPU 副本
-     *
      * @param light   烘进顶点的 packed 光照
      * @param emitter 在模型空间写顶点；写 0 个顶点时得到空网格，绘制为空操作
      */
@@ -187,7 +186,6 @@ public final class BakedMesh implements AutoCloseable {
      * 把网格的 uv2 改写成新的光照，并整段重传原 VBO（不新建缓冲、不重新发射顶点）
      * <br>
      * 发光节点烘的是满亮 15/15，不跟着世界光照变化；只有等于旧光照的顶点才会被改写
-     *
      * @return {@code false} 表示这份网格无法原地改写，调用方应关闭它并重新烘焙
      */
     public boolean updateLight(int newLight) {

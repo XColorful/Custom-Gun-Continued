@@ -74,16 +74,21 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
     /** 上一次采集到状态指纹的帧序号，用于一帧内只算一次 */
     private long cgc$profileStamp = Long.MIN_VALUE;
 
+    // ----第一人称分块烘焙（渲染重构B1-b）----
     /*
-    --------第一人称分块烘焙（渲染重构B1-b）--------
-    节点每帧被动画改写，整模烘焙每帧都会失效。这里把模型切成若干块：
-    顶层节点是块根（自身变换提升为绘制矩阵），动画命中的节点按需再切开，
-    每块独立缓存，只有脏子树需要重烘焙。
+    节点每帧被动画改写，整模烘焙每帧都会失效
+    这里把模型切成若干块：
+    顶层节点是块根（自身变换提升为绘制矩阵），动画命中的节点按需再切开，每块独立缓存，只有脏子树需要重烘焙
      */
-    /** 每个块的最大网格数：光影的阴影 pass 会换一套光照（有时还换顶点格式），保留少量条目避免每帧重烘焙 */
+    /**
+     * 每个块的最大网格数
+     * <li>光影的阴影 pass 会换一套光照（有时还换顶点格式），保留少量条目避免每帧重烘焙</li>
+     */
     private static final int CGC$MAX_MESHES_PER_CHUNK = 4;
 
-    /** 按 DFS 序遍历的块列表，决定绘制顺序 */
+    /**
+     * 按 DFS 序遍历的块列表，决定绘制顺序
+     */
     private final List<Cgc$Chunk> cgc$chunks = new ArrayList<>();
     private final Map<BedrockPart, Cgc$Chunk> cgc$chunkByNode = new IdentityHashMap<>();
     private int cgc$chunkOrderNext;
@@ -450,7 +455,9 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
         }
     }
 
-    /** DFS 前序序号：决定块的绘制顺序，与即时遍历的提交顺序一致 */
+    /**
+     * DFS 前序序号：决定块的绘制顺序，与即时遍历的提交顺序一致
+     */
     private void cgc$assignOrder(BedrockPart part) {
         part.cgc$dfsOrder = this.cgc$chunkOrderNext++;
         for (int i = 0; i < part.children.size(); i++) {
@@ -506,7 +513,7 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
     private void cgc$removeChunkAndDescendants(BedrockPart node) {
         for (int i = this.cgc$chunks.size() - 1; i >= 0; i--) {
             Cgc$Chunk chunk = this.cgc$chunks.get(i);
-            if (chunk.node == node || this.cgc$isDescendant(chunk.node, node)) {
+            if (chunk.node == node || cgc$isDescendant(chunk.node, node)) {
                 this.cgc$chunks.remove(i);
                 this.cgc$chunkByNode.remove(chunk.node);
                 chunk.close();
@@ -702,12 +709,16 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
      */
     private static final class Cgc$Chunk {
         final BedrockPart node;
-        /** 顶层 → 块根父节点，自上而下；不含块根自身 */
+        /**
+         * 顶层 → 块根父节点，自上而下；不含块根自身
+         */
         final BedrockPart[] path;
         final boolean immediate;
         final Map<Cgc$MeshKey, BakedMesh> meshes = new LinkedHashMap<>(2);
         boolean dirty = true;
-        /** 被祖先剪枝跳过过：恢复可见时必须重烘焙（隐藏期间的状态变化不会被状态段看到） */
+        /**
+         * 被祖先剪枝跳过过：恢复可见时必须重烘焙（隐藏期间的状态变化不会被状态段看到）
+         */
         boolean stale = true;
 
         Cgc$Chunk(BedrockPart node, boolean immediate) {

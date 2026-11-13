@@ -66,11 +66,17 @@ public class BedrockPart implements IBedrockCubeCompile, IBedrockRenderer {
      */
     private long cgc$profileHash = Long.MIN_VALUE;
     private long cgc$profileStamp = Long.MIN_VALUE;
-    /** 本帧已把「以本节点为根的子树」计入脏子树，用于避免祖先/后代重复累加 */
+    /**
+     * 本帧已把「以本节点为根的子树」计入脏子树，用于避免祖先/后代重复累加
+     */
     private long cgc$coveredStamp = Long.MIN_VALUE;
-    /** 子树节点数（含自身），节点树构建完成后缓存 */
+    /**
+     * 子树节点数（含自身），节点树构建完成后缓存
+     */
     private int cgc$subtreeSize = -1;
-    /** 子树 cube 数（含自身），重烘焙成本的实际单位 */
+    /**
+     * 子树 cube 数（含自身），重烘焙成本的实际单位
+     */
     private int cgc$subtreeCubes = -1;
 
     /**
@@ -79,13 +85,20 @@ public class BedrockPart implements IBedrockCubeCompile, IBedrockRenderer {
      */
     @ApiStatus.Internal
     public long cgc$stateHash = Long.MIN_VALUE;
-    /** 本帧已把本节点登记进脏列表的标记，避免同一帧重复登记 */
+    /**
+     * 本帧已把本节点登记进脏列表的标记，避免同一帧重复登记
+     */
     @ApiStatus.Internal
     public long cgc$trackStamp = Long.MIN_VALUE;
-    /** 本帧已把本节点登记进「直接发射几何」列表的标记，避免同一帧重复登记 */
+    /**
+     * 本帧已把本节点登记进「直接发射几何」列表的标记，避免同一帧重复登记
+     */
     @ApiStatus.Internal
     public long cgc$immediateStamp = Long.MIN_VALUE;
-    /** DFS 前序序号（分块烘焙的绘制顺序）；-1 表示尚未分配 */
+    /**
+     * DFS 前序序号（分块烘焙的绘制顺序）
+     * <li>{@code -1}表示尚未分配</li>
+     */
     @ApiStatus.Internal
     public int cgc$dfsOrder = -1;
 
@@ -173,7 +186,7 @@ public class BedrockPart implements IBedrockCubeCompile, IBedrockRenderer {
      *     <li>它们重新可见时父节点的 {@code visible} 会变化，指纹随之改变</li>
      * </ul>
      * 子树内没有 functional 节点时不需要回调，也就不需要维护 {@link PoseStack}，只做指纹累加
-     * @param tracker 非空时逐节点登记状态变化，供 B1-b 决定重烘焙哪棵子树；静态整模烘焙传 {@code null}
+     * @param tracker 非空时逐节点登记状态变化，供 渲染重构B1-b 决定重烘焙哪棵子树；静态整模烘焙传 {@code null}
      */
     public long renderStatus(PoseStack poseStack,
                              ItemDisplayContext transformType,
@@ -353,10 +366,6 @@ public class BedrockPart implements IBedrockCubeCompile, IBedrockRenderer {
         return false;
     }
 
-    /**
-     * 64 位黄金比例常量，来源于 Fibonacci Hashing / Knuth's multiplicative hashing
-     * <li>{@code floor(2^64 * (φ - 1))}，其中 {@code φ = (1 + √5) / 2}</li>
-     */
     private static final long STATE_HASH_SEED = MathUtil.GOLDEN_RATIO_64;
     /**
      * 把本节点的全部变换字段累加进指纹
@@ -418,7 +427,9 @@ public class BedrockPart implements IBedrockCubeCompile, IBedrockRenderer {
         ClientRenderProfiler.countDirtyCubes(this.subtreeCubes());
     }
 
-    /** 子树节点数（含自身）；节点树构建完成后缓存 */
+    /**
+     * 子树节点数（含自身）；节点树构建完成后缓存
+     */
     public int subtreeSize() {
         if (this.cgc$subtreeSize < 0) {
             int size = 1;
@@ -430,7 +441,9 @@ public class BedrockPart implements IBedrockCubeCompile, IBedrockRenderer {
         return this.cgc$subtreeSize;
     }
 
-    /** 子树 cube 数（含自身）；重烘焙按顶点计，这是比节点数更准的成本单位 */
+    /**
+     * 子树 cube 数（含自身）；重烘焙按顶点计，这是比节点数更准的成本单位
+     */
     public int subtreeCubes() {
         if (this.cgc$subtreeCubes < 0) {
             int cubes = this.cubes.size();

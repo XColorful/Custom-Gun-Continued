@@ -621,7 +621,10 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
         Cgc$MeshKey key = new Cgc$MeshKey(renderType, overlay,
                 IrisCompat.isUsingRenderPack(), red, green, blue, alpha);
 
-        if (chunk.dirty || chunk.stale) {
+        boolean invalidated = chunk.dirty || chunk.stale;
+        // 失效前这一条几何已经有网格，才是「失效导致的重建」；块的第一次烘焙不算
+        boolean reloaded = invalidated && chunk.meshes.containsKey(key);
+        if (invalidated) {
             // 失效是整个块的：其它光照（光影阴影 pass）的网格同样过期，一并丢弃
             chunk.close();
             chunk.dirty = false;
@@ -649,14 +652,17 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
 
         // 光照变了：优先改写一份现成网格（原地 patch uv2 + 重传原 VBO），而不是重新发射几何
         BakedMesh reusable = cgc$takeReusable(variants);
+        boolean patchFailed = false;
         if (reusable != null) {
             if (reusable.updateLight(light)) {
                 variants.put(light, reusable);
                 return reusable;
             }
             reusable.close();
+            patchFailed = true;
         }
 
+        ClientRenderProfiler.countBakeCause(reloaded, patchFailed, variants.isEmpty());
         final long profBake = ClientRenderProfiler.begin();
         mesh = BakedMesh.bakePatchable(renderType.mode(), renderType.format(), light, consumer ->
                 chunk.node.bakeChunkGeometry(new PoseStack(), consumer,

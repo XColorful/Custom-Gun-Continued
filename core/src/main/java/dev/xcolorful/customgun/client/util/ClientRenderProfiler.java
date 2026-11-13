@@ -94,8 +94,10 @@ public final class ClientRenderProfiler implements IEventHandler {
     public static final int BAKE_BUFFER = 24;
     /** 烘焙的缓冲上传（顶点 + 索引，含 VertexFormat.setupBufferState） */
     public static final int BAKE_UPLOAD = 25;
+    /** 渲染重构B1-c-B 原地改写光照：patch uv2 + 重传原 VBO（不重新发射顶点） */
+    public static final int LIGHT_UPDATE = 26;
 
-    public static final int PROBE_COUNT = 26;
+    public static final int PROBE_COUNT = 27;
     private static final String[] PROBE_NAMES = {
             "First-person submit", "World-item submit", "State update", "Data refresh", "Scope render",
             "Model render total", "Node snapshot", "Geometry traverse", "endBatch flush",
@@ -103,7 +105,7 @@ public final class ClientRenderProfiler implements IEventHandler {
             "Hand event entry", "Third-person visual update", "State machine init",
             "Functional nodes", "GUI slot icon", "Camera angles", "Hand camera", "FOV",
             "endBatch upload", "endBatch draw", "Static bake",
-            "Bake emit", "Bake buffer create", "Bake upload",
+            "Bake emit", "Bake buffer create", "Bake upload", "Light update",
     };
 
     // --------计数--------
@@ -129,13 +131,27 @@ public final class ClientRenderProfiler implements IEventHandler {
     private static final int COUNTER_DISTINCT_CUBES = 18;
     private static final int COUNTER_DIRTY_CUBES = 19;
     private static final int COUNTER_BAKE_BYTES = 20;
-    private static final int COUNTER_COUNT = 21;
+    /** 光照原地改写成功的次数与重传字节 */
+    private static final int COUNTER_LIGHT_PATCHES = 21;
+    private static final int COUNTER_LIGHT_PATCH_BYTES = 22;
+    /** 一次烘焙的成因：新键 / 光照变体未满 / 改写失败 / 块失效 */
+    private static final int COUNTER_BAKE_NEW = 23;
+    private static final int COUNTER_BAKE_LIGHT_FILL = 24;
+    private static final int COUNTER_BAKE_PATCH_FAILED = 25;
+    private static final int COUNTER_BAKE_CHUNK_INVALID = 26;
+    /** 光照改写失败的原因：没有 CPU 副本 / 取不到 VBO */
+    private static final int COUNTER_PATCH_NO_COPY = 27;
+    private static final int COUNTER_PATCH_NO_VBO = 28;
+    private static final int COUNTER_COUNT = 29;
     private static final String[] COUNTER_NAMES = {
             "First-person submissions", "World-item submissions", "endBatch calls", "Cubes submitted",
             "Nodes captured", "Geometry batches", "Stencil windows", "LOD hits",
             "Draw calls", "Upload bytes", "Allocated bytes", "Animation channels", "State changes",
             "Bake rebuilds", "Distinct RenderTypes", "Distinct nodes", "Dirty nodes",
             "Dirty subtree nodes", "Distinct cubes", "Dirty cubes", "Bake upload bytes",
+            "Light patches", "Light patch bytes",
+            "Bake: new key", "Bake: light fill", "Bake: patch failed", "Bake: chunk invalid",
+            "Light patch: no copy", "Light patch: no vbo",
     };
 
     /**
@@ -302,6 +318,43 @@ public final class ClientRenderProfiler implements IEventHandler {
     /** 一次烘焙写入的顶点 + 索引字节数；与 {@link #BAKE_UPLOAD} 一起给出单位字节成本 */
     public static void countBakeBytes(int bytes) {
         countBy(COUNTER_BAKE_BYTES, bytes);
+    }
+
+    /**
+     * 一次光照原地改写成功：重传的是整段交错顶点，{@code bytes} 即这次上传的字节数
+     * 与 {@link #LIGHT_UPDATE} 配套，用来和「独立 uv2 流」的 4 B/顶点对比
+     */
+    public static void countLightPatch(int bytes) {
+        if (!collecting) return;
+        frameCounter[COUNTER_LIGHT_PATCHES]++;
+        frameCounter[COUNTER_LIGHT_PATCH_BYTES] += bytes;
+    }
+
+    /** 光照改写失败：没有 CPU 副本（烘焙时恰为满亮 / 格式无 uv2） */
+    public static void countLightPatchNoCopy() {
+        count(COUNTER_PATCH_NO_COPY);
+    }
+
+    /** 光照改写失败：从 VAO 取不到 VBO id */
+    public static void countLightPatchNoVbo() {
+        count(COUNTER_PATCH_NO_VBO);
+    }
+
+    /**
+     * 一次烘焙的成因（互斥，优先级自上而下）：块失效 → 光照改写失败 → 新键 → 光照变体未满
+     * <li>四者之和小于 {@link #COUNTER_BAKE_REBUILDS} 时，差额是整模静态路径的烘焙</li>
+     */
+    public static void countBakeCause(boolean chunkInvalid, boolean patchFailed, boolean newKey) {
+        if (!collecting) return;
+        if (chunkInvalid) {
+            frameCounter[COUNTER_BAKE_CHUNK_INVALID]++;
+        } else if (patchFailed) {
+            frameCounter[COUNTER_BAKE_PATCH_FAILED]++;
+        } else if (newKey) {
+            frameCounter[COUNTER_BAKE_NEW]++;
+        } else {
+            frameCounter[COUNTER_BAKE_LIGHT_FILL]++;
+        }
     }
 
     /** 记录本帧使用过的一个 RenderType 实例 */

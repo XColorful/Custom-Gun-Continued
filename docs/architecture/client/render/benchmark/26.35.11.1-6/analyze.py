@@ -32,7 +32,10 @@ AF_STEPS = ["空手（夜晚）", "ak47 移动", "ak47+光影 静止", "ak47+光
 F12_STEPS = ["ak47 移动", "ak47+光影 移动", "满配 移动", "满配+光影 移动"]
 PROBES = ["Average frame time", "1% high frame time", "Maximum frame time",
           "CGC render per frame", "Draw calls", "Bake rebuilds",
-          "Static bake", "Bake emit", "Bake buffer create", "Bake upload", "Bake upload bytes"]
+          "Static bake", "Bake emit", "Bake buffer create", "Bake upload", "Light update"]
+COUNTERS = ["Bake upload bytes", "Light patches", "Light patch bytes",
+            "Bake: new key", "Bake: light fill", "Bake: patch failed", "Bake: chunk invalid",
+            "Light patch: no copy", "Light patch: no vbo"]
 
 
 def files(pattern):
@@ -71,7 +74,7 @@ def parse_f12(path):
                 d["Static bake"] = None if m.group(2) == "-" else float(m.group(2))
                 pct = re.search(r"([\d.]+)% of frames", line)
                 d["Static bake hits"] = float(pct.group(1)) if pct else None
-            elif name in PROBES and name not in d:
+            elif (name in PROBES or name in COUNTERS) and name not in d:
                 d[name] = None if m.group(2) == "-" else float(m.group(2))
         blocks.append(d)
     return blocks
@@ -110,6 +113,24 @@ def main():
                 continue
             m, sd, n = stat(vals)
             print(f"    {key:<24}{m:10.3f} ± {sd:7.3f}")
+        for key in COUNTERS:
+            vals = [b[i][key] for b in blocks if len(b) > i and b[i].get(key) is not None]
+            if not vals:
+                print(f"    {key:<24}{'-':>12}")
+                continue
+            m, sd, n = stat(vals)
+            print(f"    {key:<24}{m:10.3f} ± {sd:7.3f}")
+        causes = ["Bake: new key", "Bake: light fill", "Bake: patch failed", "Bake: chunk invalid"]
+        derived = []
+        for b in blocks:
+            if len(b) <= i or b[i].get("Bake rebuilds") is None:
+                continue
+            if any(b[i].get(k) is None for k in causes):
+                continue
+            derived.append(b[i]["Bake rebuilds"] - sum(b[i][k] for k in causes))
+        if derived:
+            m, sd, n = stat(derived)
+            print(f"    {'整模静态路径烘焙':<24}{m:10.3f} ± {sd:7.3f}")
         hits = [b[i]["Static bake hits"] for b in blocks if len(b) > i and b[i].get("Static bake hits") is not None]
         if hits:
             m, sd, _ = stat(hits)

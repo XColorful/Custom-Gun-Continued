@@ -197,8 +197,12 @@ public final class BakedMesh implements AutoCloseable {
             this.light = newLight;
             return true;
         }
-        if (this.vertexCopy == null) return false;
+        if (this.vertexCopy == null) {
+            ClientRenderProfiler.countLightPatchNoCopy();
+            return false;
+        }
 
+        long profileLight = ClientRenderProfiler.begin();
         short oldU = (short) (this.light & 0xFFFF);
         short oldV = (short) (this.light >>> 16);
         short newU = (short) (newLight & 0xFFFF);
@@ -211,8 +215,14 @@ public final class BakedMesh implements AutoCloseable {
                 copy.putShort(offset + 2, newV);
             }
         }
-        if (!this.uploadCopy()) return false;
+        boolean uploaded = this.uploadCopy();
+        ClientRenderProfiler.end(ClientRenderProfiler.LIGHT_UPDATE, profileLight);
+        if (!uploaded) {
+            ClientRenderProfiler.countLightPatchNoVbo();
+            return false;
+        }
         this.light = newLight;
+        ClientRenderProfiler.countLightPatch(copy.capacity());
         return true;
     }
 

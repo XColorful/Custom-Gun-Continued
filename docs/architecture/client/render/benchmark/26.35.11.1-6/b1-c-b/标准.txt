@@ -59,3 +59,4 @@ CGC端1（forge47.4.23）：
 - Afterburner快捷键设了Ctrl+Alt+X和Ctrl+Alt+C，左手小拇指按Ctrl，大拇指按Alt，食指和中指按X和C；右手中指按W
 - 左手中指按W；右手中指按DebugKey（F12）
 - 本批构建含 B1-c-B（第一人称分块网格的光照原地改写）：流程与本批探针均不变，判读看移动段 `Bake rebuilds` 应接近 0（只有最初一两次光照变化仍会烘焙）
+- （第5次为复测）（定位残留重建）时 F12 报告会多出 `Light update`、`Light patches` / `Light patch bytes`、`Bake: new key` / `light fill` / `patch failed` / `chunk invalid`、`Light patch: no copy` / `no vbo`；流程不变，数据追加到同目录即可

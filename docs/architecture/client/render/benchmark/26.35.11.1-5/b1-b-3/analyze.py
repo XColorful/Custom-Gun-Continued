@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 """解析 b1-b-3（光照变化下的重烘焙）的数据。
 
-数据来源：本目录 4 次独立启动（n=4），每次 = Afterburner + F12 同一进程内先后运行。
+数据来源：本目录 8 次独立启动（n=8），每次 = Afterburner + F12 同一进程内先后运行。
 - `cgc1 (N).txt`：Afterburner 7 步 =
   空手（夜晚静止）/ ak47 移动 / ak47+光影 静止 / ak47+光影 移动 /
   满配 移动 / 满配+光影 静止 / 满配+光影 移动
 - `cgc1-builtin (N).txt`：F12 4 段 = ak47 移动 / ak47+光影 移动 / 满配 移动 / 满配+光影 移动
+- 第 5–8 次采集起，F12 报告多出 `Bake emit` / `Bake buffer create` / `Bake upload` 与
+  计数器 `Bake upload bytes`；烘焙拆分一节只统计这 4 次（n=4）。
 
 口径：帧时间 = 1000 / FPS；均值 ± 1 样本标准差。`Static bake` 的「命中帧比例」从探针行尾读取，
-折算重建帧/秒 = 命中比例 × 该段 FPS。
+折算重建帧/秒 = 命中比例 × 该段 FPS。单次光照变化字节 = 每帧平均字节 ÷ 命中帧比例。
 """
 import os
 import re
@@ -30,7 +32,8 @@ AF_STEPS = ["空手（夜晚）", "ak47 移动", "ak47+光影 静止", "ak47+光
 F12_STEPS = ["ak47 移动", "ak47+光影 移动", "满配 移动", "满配+光影 移动"]
 PROBES = ["Average frame time", "Maximum frame time", "1% high frame time",
           "CGC render per frame", "Model render total", "Draw calls",
-          "Bake rebuilds", "Static bake", "Cubes submitted", "Upload bytes", "Scope render"]
+          "Bake rebuilds", "Static bake", "Bake emit", "Bake buffer create", "Bake upload",
+          "Bake upload bytes", "Cubes submitted", "Upload bytes", "Scope render"]
 
 
 def files(pattern):
@@ -112,6 +115,34 @@ def main():
             m, sd, n = stat(hits)
             mean_fps = 1000.0 / statistics.mean(fps)
             print(f"    {'Static bake 命中帧':<24}{m:9.2f}% ± {sd:6.2f}   ≈{m / 100 * mean_fps:5.1f} 帧/秒")
+
+    print("\n## 烘焙拆分（只统计命中帧内的单次重建）")
+    for i, step in enumerate(F12_STEPS):
+        print(f"  [{step}]")
+        runs = [b[i] for b in blocks if len(b) > i]
+        subset = [r for r in runs if all(r.get(k) is not None for k in
+                                         ("Static bake", "Bake emit", "Bake buffer create", "Bake upload"))]
+        for key in ("Static bake", "Bake emit", "Bake buffer create", "Bake upload"):
+            vals = [r[key] for r in subset]
+            if not vals:
+                print(f"    {key:<24}{'-':>12}")
+                continue
+            m, sd, n = stat(vals)
+            print(f"    {key:<24}{m:10.3f} ± {sd:7.3f}  n={n}")
+        shares = [r["Bake emit"] / r["Static bake"] for r in subset if r["Static bake"]]
+        if shares:
+            m, sd, n = stat(shares)
+            print(f"    {'emit 占比':<24}{m * 100:9.1f}% ± {sd * 100:6.1f}")
+        per_chunk = [r["Bake upload bytes"] / r["Bake rebuilds"] for r in subset
+                     if r.get("Bake upload bytes") is not None and r.get("Bake rebuilds")]
+        if per_chunk:
+            m, sd, n = stat(per_chunk)
+            print(f"    {'单块重建字节':<24}{m / 1024:9.1f} KB ± {sd / 1024:6.1f}")
+        per_event = [r["Bake upload bytes"] / (r["Static bake hits"] / 100.0) for r in subset
+                     if r.get("Bake upload bytes") is not None and r.get("Static bake hits")]
+        if per_event:
+            m, sd, n = stat(per_event)
+            print(f"    {'单次光照变化字节':<24}{m / 1024:9.1f} KB ± {sd / 1024:6.1f}")
 
 
 if __name__ == "__main__":

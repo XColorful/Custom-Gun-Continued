@@ -6,6 +6,7 @@ import com.mojang.blaze3d.vertex.VertexBuffer;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import dev.xcolorful.customgun.client.input.player.DebugKey;
+import dev.xcolorful.customgun.client.util.ClientRenderProfiler;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ShaderInstance;
 import org.jetbrains.annotations.ApiStatus;
@@ -69,20 +70,31 @@ public final class BakedMesh implements AutoCloseable {
      */
     public static BakedMesh bake(VertexFormat.Mode mode, VertexFormat format, Consumer<VertexConsumer> emitter) {
         BufferBuilder builder = acquireBuilder();
+        long profileEmit = ClientRenderProfiler.begin();
         try {
             builder.begin(mode, format);
             emitter.accept(builder);
-
             BufferBuilder.RenderedBuffer rendered = builder.endOrDiscardIfEmpty();
+            ClientRenderProfiler.end(ClientRenderProfiler.BAKE_EMIT, profileEmit);
             if (rendered == null) return new BakedMesh(null, 0, false);
 
             int bytes = rendered.drawState().bufferSize();
             boolean extendedFormat = rendered.drawState().format() != format;
+
+            long profileBuffer = ClientRenderProfiler.begin();
             VertexBuffer vertexBuffer = new VertexBuffer(VertexBuffer.Usage.STATIC);
             // VertexBuffer.upload 要求 VAO 已绑定，原版 BufferUploader 同样先 bind 再 upload
             vertexBuffer.bind();
-            vertexBuffer.upload(rendered);
-            VertexBuffer.unbind();
+            ClientRenderProfiler.end(ClientRenderProfiler.BAKE_BUFFER, profileBuffer);
+
+            long profileUpload = ClientRenderProfiler.begin();
+            try {
+                vertexBuffer.upload(rendered);
+            } finally {
+                VertexBuffer.unbind();
+                ClientRenderProfiler.end(ClientRenderProfiler.BAKE_UPLOAD, profileUpload);
+                ClientRenderProfiler.countBakeBytes(bytes);
+            }
             return new BakedMesh(vertexBuffer, bytes, extendedFormat);
         } finally {
             builderDepth--;

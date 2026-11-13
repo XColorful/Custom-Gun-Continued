@@ -88,8 +88,14 @@ public final class ClientRenderProfiler implements IEventHandler {
     public static final int DRAW = 21;
     /** 渲染重构B1-a 静态烘焙（首次或失效后的重建） */
     public static final int BAKE = 22;
+    /** 烘焙的顶点发射（BufferBuilder 写入 + endOrDiscardIfEmpty） */
+    public static final int BAKE_EMIT = 23;
+    /** 烘焙的 VertexBuffer 新建与 VAO 绑定 */
+    public static final int BAKE_BUFFER = 24;
+    /** 烘焙的缓冲上传（顶点 + 索引，含 VertexFormat.setupBufferState） */
+    public static final int BAKE_UPLOAD = 25;
 
-    public static final int PROBE_COUNT = 23;
+    public static final int PROBE_COUNT = 26;
     private static final String[] PROBE_NAMES = {
             "First-person submit", "World-item submit", "State update", "Data refresh", "Scope render",
             "Model render total", "Node snapshot", "Geometry traverse", "endBatch flush",
@@ -97,6 +103,7 @@ public final class ClientRenderProfiler implements IEventHandler {
             "Hand event entry", "Third-person visual update", "State machine init",
             "Functional nodes", "GUI slot icon", "Camera angles", "Hand camera", "FOV",
             "endBatch upload", "endBatch draw", "Static bake",
+            "Bake emit", "Bake buffer create", "Bake upload",
     };
 
     // --------计数--------
@@ -121,13 +128,14 @@ public final class ClientRenderProfiler implements IEventHandler {
     private static final int COUNTER_DIRTY_SUBTREE = 17;
     private static final int COUNTER_DISTINCT_CUBES = 18;
     private static final int COUNTER_DIRTY_CUBES = 19;
-    private static final int COUNTER_COUNT = 20;
+    private static final int COUNTER_BAKE_BYTES = 20;
+    private static final int COUNTER_COUNT = 21;
     private static final String[] COUNTER_NAMES = {
             "First-person submissions", "World-item submissions", "endBatch calls", "Cubes submitted",
             "Nodes captured", "Geometry batches", "Stencil windows", "LOD hits",
             "Draw calls", "Upload bytes", "Allocated bytes", "Animation channels", "State changes",
             "Bake rebuilds", "Distinct RenderTypes", "Distinct nodes", "Dirty nodes",
-            "Dirty subtree nodes", "Distinct cubes", "Dirty cubes",
+            "Dirty subtree nodes", "Distinct cubes", "Dirty cubes", "Bake upload bytes",
     };
 
     /**
@@ -289,6 +297,11 @@ public final class ClientRenderProfiler implements IEventHandler {
     /** 一次静态网格烘焙（首帧或状态变化后） */
     public static void countBake() {
         count(COUNTER_BAKE_REBUILDS);
+    }
+
+    /** 一次烘焙写入的顶点 + 索引字节数；与 {@link #BAKE_UPLOAD} 一起给出单位字节成本 */
+    public static void countBakeBytes(int bytes) {
+        countBy(COUNTER_BAKE_BYTES, bytes);
     }
 
     /** 记录本帧使用过的一个 RenderType 实例 */

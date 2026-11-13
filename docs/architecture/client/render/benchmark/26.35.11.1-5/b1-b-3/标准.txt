@@ -58,3 +58,4 @@ CGC端1（forge47.4.23）：
 - Afterburner每个录10秒左右
 - Afterburner快捷键设了Ctrl+Alt+X和Ctrl+Alt+C，左手小拇指按Ctrl，大拇指按Alt，食指和中指按X和C；右手中指按W
 - 左手中指按W；右手中指按DebugKey（F12）
+- 第5-8次采集新增 `Bake emit` / `Bake buffer create` / `Bake upload` 与计数器 `Bake upload bytes`，用于把单次重建拆成顶点发射 / 新建缓冲 / 上传，其余流程不变；复跑后报告需补这三段的均值与字节

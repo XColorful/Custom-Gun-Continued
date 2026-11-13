@@ -489,3 +489,144 @@ SBM 的基准报告与样本 CSV 确实在 `5d5a4dd「清理文档」` 里被从
 4. 真要正式做解耦，选**独立 UV2 流**——它是唯一同时满足「合并 draw + 光影」的形态；实例属性只适合留在 B1 的逐实例路径。
 
 已把这条结论补进 TODO 的光照项（含「B2 建批次时应记录实例顶点区间」）。
+
+# 
+---
+
+```
+读`./docs/architecture/client/render/PLAN.md`和`#93 Dirty-subtree-render-refactor.md`454-491行
+- 现在需要分析两个光照解耦的方案，目前认定是必要的优化，要加进方案，但实现无需参考SBM
+- 跑benchmark测试（移动时不断改变光照等级）的时候Afterburner的帧率图标是能看到固定频率的瞬时掉帧，即使室内视觉很亮但是光照等级可能会变，固定频率掉帧实际感觉会变成一直持续卡顿
+- 需要分析两种方案的CPU/GPU开销，测得两种方案的收益，分析光影兼容性
+```
+
+# 
+
+我先读一下这两个文档。
+
+我已了解 B1-b 的现状和 b1-b-3 的数据。接下来核对光影下实体 program 的顶点属性绑定方式，这是两个方案兼容性的关键。
+
+分析所需的源码事实已经齐了。我先用一个独立的 CPU 微基准测出两种方案的光照数组写入成本，作为「CPU 开销」的实测部分。
+
+关键事实已核对完（Oculus 侧 UV2 固定在 attribute slot 4、Iris 扩展格式 52 B、26.3 的 `withVertexBinding`）。现在把分析和方案写成文档并更新计划。
+
+方案与计划已写入文档。把这个决策和关键 API 事实记入项目记忆，便于后续任务直接沿用。
+
+分析已经落地到文档，计划也同步改了。结论如下。
+
+## 问题重述
+
+平均帧时间不是判据。`b1-b-3` 的关键数字是 **2.6–2.9 次/秒、单次 0.6 / 1.4 ms（无光影）、2.7 / 9.1 ms（光影）**：平均只占 0.4%–2.6%，但它直接决定 1% low / 0.1% low（满配+光影 55.2 vs 静止 118.5）。你说的「固定频率瞬时掉帧」正是这个量级——每约 350 ms 一次 9 ms 的帧，观感就是持续卡顿。而且 2.6–2.9 次/秒只是火把场景的下界；室内经过灯、窗、楼梯时采样点跨界的频率只会更高。B2 合并成一次 draw 后，一次光照变化会重建整个批次（9 把满配约 11 MB），所以布局必须在 B2 之前定下来。
+
+## 两条路线
+
+| | A 独立 uv2 流 | B 交错缓冲原地重写 |
+|---|---|---|
+| 光照变化 CPU（满配实测微基准） | 17 µs | 21–43 µs（另需一次性 63 µs 副本） |
+| 光照变化 GPU 上传 | 4 B/顶点 = 43–140 KB | 全量 1.24–1.29 / 1.86 MB |
+| 几何 / VertexBuffer 重建 | 消除 | 消除 |
+| 光影下 9 ms 尖峰 | 大概率能消掉 | **不确定**，全量上传可能保留大部分停顿 |
+| 26.3 延迟渲染 | 需第二 vertex binding，待验证 | 字节布局不变，较保守 |
+| 实现风险 | 中（attribute 覆盖、小缓冲轮转） | 低 |
+
+CPU 侧两者都只有几十微秒，**真正的差别在 GL 上传**。光影下 9.1 ms 无法用 1.86 MB 的带宽解释，大头是队列已满时的驱动停顿；这正是「B 是否有效」的未知项，所以原型第一步必须把烘焙探针拆成 `Bake emit` / `Bake buffer` / `Light update`，先确认 9 ms 的构成。
+
+## 光影兼容性（1.20.1 已核实源码）
+
+- `NEW_ENTITY` 的元素顺序里 UV2 是第 5 个 → attribute **slot 4**；Oculus 的 `IrisVertexFormats.ENTITY`（52 B）里 UV2 仍是 slot 4。
+- `ShaderInstance` 按格式元素顺序绑定 attribute；Oculus 对 `ExtendedShader` 加 `iris_` 前缀但序号不变，shader pack 的 `vaUV2` 就是 slot 4。
+- 所以方案 A 只需在 VAO 上把 slot 4 指向独立光照 VBO，**不需要改 shader、shader pack 或 cgccshader**。阴影 pass 用同一几何、换一份小光照数组即可；方案 B 则要两份全量副本或每 pass 重传。
+- 26.3 的 `withVertexBinding` 在 API 上支持多流，但 `PreparedRenderType.drawFromBuffer` 能否分 binding 绑定、Iris 26.3 的 program 是否接受第二 binding，尚未验证——因此两条路线都保留，1.20.1 先落 A，B 作为回退。
+
+## 文档改动
+
+- 新增 [lighting-decoupling.md](docs/architecture/client/render/refactor/lighting-decoupling.md)：问题、两方案、成本对比、光影核实、收益中「已实测 / 推算 / 待测」的分界、验收协议。
+- [PLAN.md](docs/architecture/client/render/PLAN.md)、[TODO.md](docs/architecture/client/render/TODO.md)、[refactor/Home.md](docs/architecture/client/render/refactor/Home.md)：路线改为 B1-a → B1-b → **B1-c 光照解耦** → B2，并注明 B2 必须按实例记录顶点区间与光照。
+- [b1a](docs/architecture/client/render/refactor/b1a-static-bake.md) / [b1b](docs/architecture/client/render/refactor/b1b-first-person-bake.md) 的「光照烘进顶点」限制改为指向 B1-c；[b1-b-3 报告](docs/architecture/client/render/benchmark/26.35.11.1-5/b1-b-3/测试数据计算报告.md) 补了决策更新，实测数值未改。
+
+本轮只改了文档，没有动代码，也未提交。GL 上传端的真实收益要等拆分探针或原型跑过 `b1-b-3` 场景才能写进结论表。
+
+# 
+
+```
+加探针，先把信息测到，预计还是按b1-b-3跑测试，如果测试流程不够测到再新建测试
+```
+
+# 
+
+我先看一下 `ClientRenderProfiler` 的探针定义与输出格式，再在烘焙路径上拆点。
+
+探针已加到烘焙路径。现在检查这两个文件的编译问题。
+
+探针已加好，编译通过。
+
+## 改了什么
+
+**[ClientRenderProfiler.java](core/src/main/java/dev/xcolorful/customgun/client/util/ClientRenderProfiler.java)**
+- 新增 3 个探针：`Bake emit`（`BufferBuilder` 写入 + `endOrDiscardIfEmpty`）、`Bake buffer create`（`new VertexBuffer` + `bind()`，即 glGenBuffers / glGenVertexArrays / 绑 VAO）、`Bake upload`（`VertexBuffer.upload`，含 `setupBufferState`、索引上传与 `RenderedBuffer` 释放）。
+- 新增计数器 `Bake upload bytes`，与 `Bake upload` 配套给出单位字节成本。
+- 数组按 `PROBE_COUNT` / `COUNTER_COUNT` 自动扩容，输出格式不变；没有命中的探针仍显示 `-`。
+
+**[BakedMesh.java](core/src/main/java/dev/xcolorful/customgun/client/model/bake/BakedMesh.java)**
+- `bake()` 按上述三段分别计时，`Bake upload` 用 `finally` 保证异常时也结算；字节数在上传完成后计入。
+- 未采集时只多出每个探针一次 volatile 读，不影响稳态帧。
+
+**文档**
+- [chain/Home.md](docs/architecture/client/render/chain/Home.md)：探针表补上 `Static bake` 与三个拆分探针，计数器说明补 `Bake upload bytes`。
+- [lighting-decoupling.md](docs/architecture/client/render/refactor/lighting-decoupling.md)：把「必须测的拆分」改成已实现的探针，并注明现有 b1-b-3 F12 流程足够。
+- [TODO.md](docs/architecture/client/render/TODO.md)：拆分探针标记完成，复跑采集仍未完成。
+- [b1-b-3/标准.txt](docs/architecture/client/render/benchmark/26.35.11.1-5/b1-b-3/标准.txt)：补一行说明本次 profile 多了三段拆分，复跑后需回填均值与字节。
+
+## 跑法与判读
+
+按原 b1-b-3 流程跑即可，F12 段（ak47 / 满配、开 / 关光影）会在 `customgun-render-profile.txt` 里直接多出这三行。复跑后重点看开光影满配段的单次重建拆分：
+
+- `Bake upload` 占大头 → 方案 A 的 140 KB 小上传是正确方向，B 的全量重传大概率无效；
+- `Bake emit` 占大头 → 顶点发射是主成本，A 仍能消掉它，B 也能；
+- `Bake buffer create` 占大头 → 先考虑复用 `VertexBuffer`，光照解耦未必是唯一解法。
+
+把新的 profile 文本（或这三段的均值/最大值与 `Bake upload bytes`）发回来，我回填报告并给出两条路线的实测对比。代码改动未提交。
+
+# 
+
+```
+测试跑好了，更新报告
+另外注意一点，之前1-4以及现在的5-8似乎只有满配m4+开光影的时候Afterburner帧率图才有明显的周期性low帧，ak开光影有时能看到小幅度
+```
+
+# 
+
+采集数据已经能直接看出方向了：光影下的尖峰几乎全在 `Bake emit`，不是上传。我先把分析脚本扩展到新探针，再汇总 8 次数据。
+
+报告已更新，新增的拆分探针把 9 ms 的来源测清楚了。
+
+## 关键结果（`b1-b-3` 第 5–8 次，n=4）
+
+|场景|`Static bake`|`Bake emit`|`Bake buffer create`|`Bake upload`|emit 占比|
+|---|---:|---:|---:|---:|---:|
+|ak47|0.611 ms|0.474|0.013|0.117|77.6%|
+|ak47+光影|2.665|2.502|0.014|0.146|93.9%|
+|满配|1.361|1.111|0.023|0.223|81.6%|
+|满配+光影|9.395|**8.844**|0.049|**0.494**|94.1%|
+
+**光影下的尖峰几乎全是顶点发射，不是上传，也不是新建缓冲。** 原因是 `BufferBuilder.switchFormat` 只对精确的 `DefaultVertexFormat.NEW_ENTITY` 启用 `fastFormat`；Oculus 在 `begin` 前把格式换成 `IrisVertexFormats.ENTITY`（52 B，多出 entityId / midTexCoord / tangent），每个顶点改走通用逐元素路径并多写三个属性，所以 emit 从 0.47 ms 涨到 2.50 / 8.84 ms。之前「9 ms 是驱动停顿」的推测被否定。
+
+## 你的观察
+
+数据完全吻合：
+
+- **满配+光影**：单次重建 9.25 ms > 6.90 ms 的帧，p99 被抬到 15.4 ms，1% low 115.7 → 59.1，所以能看到明显周期性 low 帧。
+- **ak47+光影**：单次重建 2.70 ms < 6.35 ms 的帧，1% low 136.7 与静止 138.2 在噪声内，肉眼几乎不可见；偶尔的小幅波动应是个别光照变化落在已经偏慢的帧上，或多块同时重建。
+- 判据不是「重建贵不贵」，而是**重建成本是否超过该帧的 CPU 余量**。
+
+## 方案结论已改写
+
+两条路线都能消掉 emit，所以都能消掉尖峰。差别只剩上传：满配+光影下 B 重传 1.73 MB / 0.494 ms，A 只传 4 B/顶点约 140 KB / ≈0.04 ms。A 每次再省约 0.45 ms（约 0.13% 平均帧时间），但需要覆盖 attribute slot 4，26.3 的第二 binding 还没验证。因此建议**先做改动更小、跨版本更保守的 B（CPU 副本 + 原地重写 uv2 + 原 VBO 重传）**，A 留作后续降低上传/显存/缓存键的优化。
+
+## 同步更新
+
+- [b1-b-3 报告](docs/architecture/client/render/benchmark/26.35.11.1-5/b1-b-3/测试数据计算报告.md)：n=8，新增第 4 节烘焙拆分，重写结论；`analyze.py` 已扩展。
+- [lighting-decoupling.md](docs/architecture/client/render/refactor/lighting-decoupling.md)：用实测替换推测，实施顺序改为 B 先、A 后。
+- [PLAN.md](docs/architecture/client/render/PLAN.md)、[TODO.md](docs/architecture/client/render/TODO.md)、[refactor/Home.md](docs/architecture/client/render/refactor/Home.md)、[benchmark/Home.md](docs/architecture/client/render/benchmark/Home.md) 与实际数值同步。
+
+本轮只改文档与 `analyze.py`；探针代码和文档都未提交。

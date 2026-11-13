@@ -86,6 +86,8 @@ public final class DebugKey extends InputKey {
      */
     public static final boolean enableDebugKey = true;
 
+    public static final boolean enableReloadTest = false;
+
     public static class DebugKeyReloadTest implements IEventHandler {
         public static final DebugKeyReloadTest INSTANCE = new DebugKeyReloadTest();
         @Override public String getEventHandlerName() {
@@ -100,11 +102,13 @@ public final class DebugKey extends InputKey {
             }
         }
         private void start() {
+            if (!enableReloadTest) return;
             LivingShooterReload.clientReloadTest = true;
             this.tickCount = 0;
             CustomGun.getEventRegister().register(INSTANCE, EventType.CLIENT_TICK_EVENT);
         }
         private void stop() {
+            if (!enableReloadTest) return;
             LivingShooterReload.clientReloadTest = false;
             this.tickCount = 0;
             CustomGun.getEventRegister().unregister(INSTANCE, EventType.CLIENT_TICK_EVENT);

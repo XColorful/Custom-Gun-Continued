@@ -31,7 +31,10 @@
 - [ ] **阶段 2.5 B1-c 光照解耦**（必需，方案见 [`refactor/lighting-decoupling.md`](./refactor/lighting-decoupling.md)）：把 uv2 从几何里拆出来，光照变化不再重建几何
   - [x] 拆分探针 `Bake emit` / `Bake buffer create` / `Bake upload` + `Bake upload bytes`，随现有 `b1-b-3` F12 流程输出
   - [x] 复跑 `b1-b-3`：光影下 9.2 ms 的 94% 是 `Bake emit`，上传仅 0.49 ms、新建缓冲 0.05 ms；`BufferBuilder` 因 Oculus 扩展格式失去快速路径
-  - [ ] **B（先做）** 交错缓冲原地重写：保留 CPU 副本，光照变化 patch uv2 并重传原 VBO；不改顶点格式 / attribute，跨版本最保守；缓存键去掉 `light`
+  - [x] **B（先做）** 交错缓冲原地重写：保留 CPU 副本，光照变化 patch uv2 并重传原 VBO；不改顶点格式 / attribute，跨版本最保守；第一人称分块路径的缓存键去掉 `light`（整模静态路径仍按光照建键，留给 B2；方案细节见 [`lighting-decoupling.md`](./refactor/lighting-decoupling.md)「方案 B」）
+  - [x] 实测 `b1-c-b`（[报告](./benchmark/26.35.11.1-6/测试数据计算报告.md)）：ak47（有无光影）与满配（无光影）的重建次数**归零**；满配+光影重建字节 −79%、单次 9.2 → 5.3 ms，1% low 59.1 → 101.8、0.1% low 41.1 → 58.5
+  - [ ] 残留：满配+光影仍有约 1.2 次/秒的重建（92% 是 `Bake emit`，不是上传），只在光影 + 满配出现；需要两个临时计数区分「变体填充 / 回退重建」后复测
+  - [ ] 验收未完成：满配+光影移动的 1% low（101.8）仍低于同场景静止（132.6）；画面与 `OFF` 的一致性未人工确认
   - [ ] A（可选，后续）独立 uv2 流：4 B/顶点光照 VBO + 绘制时把 attribute 4 指向它；1.20.1 已核实 UV2 = slot 4，26.3 第二 binding 待验证
   - [ ] 验收：移动段 `Bake rebuilds = 0`；光照变化帧 ≤ 普通帧 + 0.2 ms（无光影）/ + 0.5 ms（光影）；1% low 回到静止值附近；画面与 `OFF` 一致
 - [ ] **阶段 3 B2 跨实例合并**：静态展示实例按 `RenderType` 合并到世界空间缓冲（每枪 9 次 draw → 全场景 N 次）；建批次时记录每个实例的顶点区间并按实例存光照，避免一次光照变化重建整批

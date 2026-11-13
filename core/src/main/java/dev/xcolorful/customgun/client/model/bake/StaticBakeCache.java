@@ -19,6 +19,8 @@ import java.util.Set;
  * <ul>
  *     <li>键包含模型身份、子网格、纹理（{@code RenderType} 实例）、光照、叠加与节点状态指纹；<b>不含世界矩阵</b></li>
  *     <li>同款枪的多个展示框共享同一个 {@code ModelObject}，因此共享同一份网格</li>
+ *     <li>光照仍是键：同一份整模网格会被多个展示实例同时使用（各自 {@code packedLight} 不同），
+ *         按光照保留多份才是这里的正确形态；光照解耦只做在第一人称分块路径（见 {@code ModelObject.Cgc$Chunk}）</li>
  *     <li>资源重载时由 {@link _AssetsInstanceManager#reload} 清空，避免持有旧模型与显存</li>
  * </ul>
  */

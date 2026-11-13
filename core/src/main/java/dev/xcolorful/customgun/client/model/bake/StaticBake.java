@@ -116,7 +116,7 @@ public final class StaticBake {
         @Nullable BakedMesh mesh = FORCE_REBUILD ? null : StaticBakeCache.get(key);
         if (mesh == null) {
             final long profBake = ClientRenderProfiler.begin();
-            mesh = BakedMesh.bake(renderType.mode(), renderType.format(), emitter);
+            mesh = BakedMesh.bake(renderType.mode(), renderType.format(), light, emitter);
             ClientRenderProfiler.end(ClientRenderProfiler.BAKE, profBake);
             ClientRenderProfiler.countBake();
             StaticBakeCache.put(key, mesh);

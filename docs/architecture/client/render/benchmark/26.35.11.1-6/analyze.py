@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
 """解析 26.35.11.1-6 / b1-c-b（B1-c-B 光照原地改写）的数据。
 
-数据来源：`b1-c-b/` 下 4 次独立启动（n=4），每次 = Afterburner + F12 同一进程内先后运行。
+数据来源：`b1-c-b/` 下 6 次独立启动，每次 = Afterburner + F12 同一进程内先后运行。
 - `cgc1 (N).txt`：Afterburner 7 步 =
   空手（夜晚静止）/ ak47 移动 / ak47+光影 静止 / ak47+光影 移动 /
   满配 移动 / 满配+光影 静止 / 满配+光影 移动
 - `cgc1-builtin (N).txt`：F12 4 段 = ak47 移动 / ak47+光影 移动 / 满配 移动 / 满配+光影 移动
+
+三次构建，用 `python analyze.py 首次 末次` 分别统计：
+- 第 1–5 次：B1-c-B，瞄具子网格仍按光照建键（第 5 次起多了定位探针）
+- 第 6 次：瞄具子网格也改成原地改写
 
 口径：帧时间 = 1000 / FPS；均值 ± 1 样本标准差。
 `Bake rebuilds` 是每帧的重建次数（一次光照变化会重建多个分块网格）；
@@ -18,6 +22,9 @@ import sys
 
 BASE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "b1-c-b")
 sys.stdout.reconfigure(encoding="utf-8")
+
+# (首次, 末次) 文件序号；None 表示全部
+RUNS = None
 
 AF_REC = re.compile(
     r"(?:\d{2}-\d{2}-\d{4}, \d{2}:\d{2}:\d{2}) (\S+) benchmark completed, (\d+) frames rendered in ([\d.]+) s\s*\n"
@@ -40,7 +47,10 @@ COUNTERS = ["Bake upload bytes", "Light patches", "Light patch bytes",
 
 def files(pattern):
     names = [f for f in os.listdir(BASE) if re.fullmatch(pattern, f)]
-    return sorted(names, key=lambda f: int(re.search(r"\((\d+)\)", f).group(1)))
+    names = sorted(names, key=lambda f: int(re.search(r"\((\d+)\)", f).group(1)))
+    if RUNS is None:
+        return names
+    return [f for f in names if RUNS[0] <= int(re.search(r"\((\d+)\)", f).group(1)) <= RUNS[1]]
 
 
 def parse_af(path):
@@ -86,6 +96,7 @@ def stat(values):
 
 
 def main():
+    print(f"## 统计范围：第 {RUNS[0]}–{RUNS[1]} 次" if RUNS else "## 统计范围：全部")
     runs = [parse_af(os.path.join(BASE, f)) for f in files(r"cgc1 \(\d+\)\.txt")]
     print("## Afterburner：帧时间（n=%d）" % len(runs))
     for i, step in enumerate(AF_STEPS):
@@ -130,7 +141,7 @@ def main():
             derived.append(b[i]["Bake rebuilds"] - sum(b[i][k] for k in causes))
         if derived:
             m, sd, n = stat(derived)
-            print(f"    {'整模静态路径烘焙':<24}{m:10.3f} ± {sd:7.3f}")
+            print(f"    {'多实例整模路径烘焙（差额）':<20}{m:10.3f} ± {sd:7.3f}")
         hits = [b[i]["Static bake hits"] for b in blocks if len(b) > i and b[i].get("Static bake hits") is not None]
         if hits:
             m, sd, _ = stat(hits)
@@ -164,4 +175,6 @@ def main():
 
 
 if __name__ == "__main__":
+    # 可选：python analyze.py 首次 末次（按文件序号筛选，比较不同构建时用）
+    RUNS = (int(sys.argv[1]), int(sys.argv[2])) if len(sys.argv) >= 3 else None
     main()

@@ -213,3 +213,142 @@ n=5 的帧时间也顺手更新了：满配+光影移动 1% low **97.5**、0.1% 
 文档里同时点明了：固定毫秒换算成「占平均帧时间的百分比」会随基础帧率单调变化，上线场景枪比例更低、帧更长时百分比更小，所以不能用它评价 A。反过来，图上也能看出本次 4.4 ms 的残留为什么仍然可见（60 FPS → 47.5、240 → 117）。
 
 代码这轮没动，改动仍未提交。
+
+# 
+
+```
+补上改写
+```
+
+# 
+
+给瞄具子网格补同一套原地改写。先改缓存，再接入调用点。
+
+瞄具子网格的原地改写已经补上，编译通过。
+
+## 改动
+
+**[StaticBakeCache.java](core/src/main/java/dev/xcolorful/customgun/client/model/bake/StaticBakeCache.java)**
+- 新增 `PatchKey`（不含 `light`）和独立的 `PATCHABLE` 表：每条几何保留 2 份光照变体，命中不到时改写最久未用的那份，正在用的不动。
+- 原来的 `Key`（按光照建键）和 `MESHES` 保持原样，展示框 / 第三人称的多实例路径完全不受影响；字节预算与淘汰规则覆盖两张表（先淘汰按光照建键的条目）。
+
+**[StaticBake.java](core/src/main/java/dev/xcolorful/customgun/client/model/bake/StaticBake.java)**
+- 新增 `drawOrBakePatchable(...)`：走 `PatchKey` + `BakedMesh.bakePatchable`，光照变化时原地改写；注释里写明只能给「同一帧只有一份实例」的路径用。
+
+**[_AttachmentModelRender.java](core/src/main/java/dev/xcolorful/customgun/client/model/_AttachmentModelRender.java)**
+- `renderModelPart`（瞄具模板 / 目镜环 / 分划，只在第一人称、`getFirstPersonArmCollector()` 为 null 时直接返回）改用它。
+
+顺带把烘焙成因计数器铺到了这条新路径上，所以现在 `Bake: new key / light fill / patch failed / chunk invalid` 覆盖两条解耦路径，`Bake rebuilds` 减去它们的差额就只剩多实例整模路径（展示框 / 地面 / 第三人称），链路总览和 `analyze.py` 的措辞都已同步。
+
+## 文档
+
+- [lighting-decoupling.md](docs/architecture/client/render/refactor/lighting-decoupling.md)：作用范围改成「两条单实例路径都已做，多实例留给 B2」。
+- [TODO.md](docs/architecture/client/render/TODO.md)、[26.35.11.1-6 报告](docs/architecture/client/render/benchmark/26.35.11.1-6/测试数据计算报告.md)：残留项标为已定位并已补实现，报告里的数据仍是补之前的构建，复测后按同一口径回填。
+
+预期复测结果：满配+光影 `Bake rebuilds` 归零、`Light patches` 上升、单次事件的 4.4 ms 消失，1% low 从 97.5 回到静止的 ~127 附近。代码和文档都还没提交，也还没实机跑过。
+
+# 
+
+```
+测好了，更新报告
+```
+
+# 
+
+复测结果显示 `Bake rebuilds` 归零。更新报告。
+
+报告已按三组构建重写：[26.35.11.1-6/测试数据计算报告.md](docs/architecture/client/render/benchmark/26.35.11.1-6/测试数据计算报告.md)。
+
+## 第 6 次（补齐瞄具子网格）的结果
+
+|项|b1-b-3|第 1–5 次|**第 6 次**|
+|---|---:|---:|---:|
+|满配+光影 `Bake rebuilds`|0.34 / 帧|0.070|**0**|
+|`Static bake`|9.246 ms|5.149 ms|**不再出现**|
+|满配+光影移动 1% low|59.1|97.5|**130.5**|
+|同场景静止 1% low|115.7|126.6|139.1|
+|0.1% low|41.1|58.0|55.3|
+|一次光照变化|9.246 ms|5.149 ms|**0.68 ms**|
+
+- **四段第一人称（ak47 有无光影、满配无光影、满配+光影）全部 `Bake rebuilds = 0`**，移动段一次烘焙都没有，`Static bake` 探针不再出现。
+- 原地改写现在覆盖 12 个网格/次变化（分块 + 瞄具子网格），每次 ≈210 KB / ≈62 µs，合计 ≈2.5 MB / ≈0.68 ms。
+- 1% low 与静止的差距从 29 收窄到 9（130.5 vs 139.1），周期性 low 基本消失。
+
+## 两个保留意见（报告里写明了）
+
+1. **第 6 次只有 1 次采集**，1% / 0.1% low 的绝对值建议后续补重复；0.1% low 55.3 仍低于静止的 77.8，它只是 1704 帧里最差的 2 帧，n=1 判不了是不是还有残留。
+2. **A 的空间还在但已很小**：现在一次事件 ≈2.5 MB / 0.68 ms，A 能把它压到 ≈133 KB / ≈0.06 ms，省 ≈0.6 ms/次；且它已经不涉及任何顶点发射（那部分归零了）。按你的要求，文档里仍然只按绝对毫秒表述，不换算成平均帧时间占比。
+
+## 文档同步
+
+- 报告重写为三组（A 组 1–4 次 / B 组第 5 次定位 / C 组第 6 次修复），`analyze.py` 支持 `python analyze.py 1 5`、`python analyze.py 6 6` 分组统计。
+- `PLAN.md`、`TODO.md`、`refactor/Home.md`、`benchmark/Home.md`、`lighting-decoupling.md` 的结论都换成了最终数值；TODO 里剩下的只有「画面与 OFF 人工确认」和「建议补重复采集」。
+
+代码和文档的这轮改动还没提交（之前的两次提交是你自己做的）。
+
+# 
+
+```
+按照新算的A省的时间更新之前的FPS图
+```
+
+# 
+
+图已按新的 A 收益重画：[光照解耦-固定开销对帧率.png](docs/architecture/client/render/refactor/光照解耦-固定开销对帧率.png)。
+
+## 变化
+
+- 重叠开销 0.45 ms → **0.6 ms**（依据：C 组实测一次事件 ≈2.5 MB 重传、`Light update` ≈0.68 ms，A 把它压到 ≈133 KB 后省 ≈0.6 ms）。
+- 参考点降幅随之变大：
+
+|基础帧率|60|90|120|144|165|240|1000|
+|---|---:|---:|---:|---:|---:|---:|---:|
+|叠加后|57.9|85.4|111.9|132.5|150.1|209.8|625|
+|降幅|−3.5%|−5.1%|−6.7%|−8.0%|−9.0%|−12.6%|−37.5%|
+
+结论不变：>300 FPS 那段仍然无感，所以 A 的收益只能按「每次事件固定 0.6 ms」这个绝对量来看。
+
+## 同步改的文字
+
+- [lighting-decoupling.md](docs/architecture/client/render/refactor/lighting-decoupling.md)：图的说明与百分比、A 的估算（「≈2.5 MB → 133 KB，省 ≈0.6 ms/次」）；4.4 ms 那个对比改成「解耦前残留」，不再说成当前状态。
+- [26.35.11.1-6 报告](docs/architecture/client/render/benchmark/26.35.11.1-6/测试数据计算报告.md)：把 0.68 ms 的拆分写准——「绝大部分是 2.5 MB 整段重传，patch 本身只有几十微秒」。
+- 画图脚本里的 `DELTA_MS = 0.6` 附了实测口径注释，以后换个数值就能重画。
+
+没有改代码，这轮只动了文档与配图。
+
+# 
+
+```
+再更新下，120fps降到111，240降30fps已经要对A持保留意见了，等到26.3如果发现可行则一定要做
+```
+
+# 
+
+图和数据都按这个判断更新了。
+
+## 图
+
+[光照解耦-固定开销对帧率.png](docs/architecture/client/render/refactor/光照解耦-固定开销对帧率.png) 重画过一次，参考点现在同时标绝对降幅和百分比：
+
+- 60 → 57.9（−2，−3.5%）
+- 90 → 85.4（−5，−5.1%）
+- **120 → 111（−9，−6.7%）**
+- 144 → 133（−11，−8.0%）
+- 165 → 150（−15，−9.0%）
+- **240 → 210（−30，−12.6%）**
+- 1000 → 625（−375，−37.5%）
+
+## 结论改口
+
+[lighting-decoupling.md](docs/architecture/client/render/refactor/lighting-decoupling.md) 里新增了一条明确的判断，和「不能用平均帧时间衡量」并列：
+
+> 0.6 ms 在 120 FPS 上是 111 FPS（−9）、240 FPS 上是 210 FPS（−30），这两档都在人眼敏感区，等于实打实吃掉 7%–14% 的帧预算。所以对 A 持保留意见——26.3 只要验证第二 vertex binding 可行，A 就必须做，而不是留成「有空再说」。
+
+同一判断同步到了四处，口径一致：
+
+- [lighting-decoupling.md](docs/architecture/client/render/refactor/lighting-decoupling.md) 实施顺序第 3 条：`B1-c-A（26.3 验证可行则必做）`
+- [TODO.md](docs/architecture/client/render/TODO.md)：A 的条目从「可选，后续」改成「26.3 验证第二 binding 可行则必做」，附 0.6 ms / 9、30 FPS 的量化
+- [PLAN.md](docs/architecture/client/render/PLAN.md)：B 那段的「独立 uv2 流留作后续优化」换成「不是可选优化……26.3 验证可行后必做」
+- [26.35.11.1-6 报告](docs/architecture/client/render/benchmark/26.35.11.1-6/测试数据计算报告.md)：第 3 节结论与代价一处，排期仍是 B2 之后，但明确「可行即做」
+
+「>300 FPS 时这个开销对人眼没意义」那句保留着——它和上面的结论不冲突：高帧率段无所谓，但 120/240 这两档正是目标帧率，所以 A 不能一直挂着。本轮只动了文档和配图，代码和文档的改动都还没提交。

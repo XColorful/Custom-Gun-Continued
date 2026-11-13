@@ -17,10 +17,9 @@ import java.util.Set;
 /**
  * 烘焙网格的全局 LRU 缓存
  * <ul>
- *     <li>键包含模型身份、子网格、纹理（{@code RenderType} 实例）、光照、叠加与节点状态指纹；<b>不含世界矩阵</b></li>
+ *     <li>有两套键：按光照建键的整模网格（会被多个展示实例共享），以及不含光照的单实例网格
+ *         （第一人称分块与瞄具子网格，光照变化时原地改写 uv2）</li>
  *     <li>同款枪的多个展示框共享同一个 {@code ModelObject}，因此共享同一份网格</li>
- *     <li>光照仍是键：同一份整模网格会被多个展示实例同时使用（各自 {@code packedLight} 不同），
- *         按光照保留多份才是这里的正确形态；光照解耦只做在第一人称分块路径（见 {@code ModelObject.Cgc$Chunk}）</li>
  *     <li>资源重载时由 {@link _AssetsInstanceManager#reload} 清空，避免持有旧模型与显存</li>
  * </ul>
  */
@@ -35,6 +34,10 @@ public final class StaticBakeCache {
     private static final long MAX_BYTES = 32L << 20;
 
     private static final LinkedHashMap<Key, BakedMesh> MESHES = new LinkedHashMap<>(16, 0.75F, true);
+    /**
+     * 光照解耦的单实例网格（第一人称）：键不含光照，一个键保留少量光照变体
+     */
+    private static final LinkedHashMap<PatchKey, Variants> PATCHABLE = new LinkedHashMap<>(16, 0.75F, true);
     private static long bytes;
 
     /**
@@ -46,6 +49,8 @@ public final class StaticBakeCache {
     private StaticBakeCache() {}
 
     /**
+     * 按光照建键的整模网格键（展示框 / 地面 / 第三人称：同一份网格被多个实例共享，各自 {@code packedLight} 不同）
+     *
      * @param owner       所属模型对象（身份比较）
      * @param subKey      子网格标识（身份/结构比较），整模型为 {@code null}
      * @param fingerprint 节点状态指纹
@@ -61,6 +66,19 @@ public final class StaticBakeCache {
                       boolean shaderPack,
                       float red, float green, float blue, float alpha) {}
 
+    /**
+     * 光照解耦的单实例网格键（第一人称分块 / 瞄具子网格）：<b>不含 {@code light}</b>，光照变化走原地改写
+     * <br>
+     * 只能用于「同一帧只有一份实例」的路径；多实例共享的整模网格必须用 {@link Key}
+     */
+    public record PatchKey(@Nullable Object owner,
+                           @Nullable Object subKey,
+                           RenderType renderType,
+                           int overlay,
+                           long fingerprint,
+                           boolean shaderPack,
+                           float red, float green, float blue, float alpha) {}
+
     public static @Nullable BakedMesh get(Key key) {
         return MESHES.get(key);
     }
@@ -75,15 +93,113 @@ public final class StaticBakeCache {
         evict();
     }
 
+    public static @Nullable BakedMesh getPatchable(PatchKey key, int light) {
+        @Nullable Variants variants = PATCHABLE.get(key);
+        return variants == null ? null : variants.get(light);
+    }
+
+    /** 该键是否已经有网格：区分「首次烘焙」与「光照变体未满」 */
+    public static boolean hasPatchable(PatchKey key) {
+        return PATCHABLE.containsKey(key);
+    }
+
+    /**
+     * 满员时取出一条最久未用的变体，供调用方改写光照；取出后必须 {@link #putPatchable} 回去或关闭
+     */
+    public static @Nullable BakedMesh takeReusablePatchable(PatchKey key) {
+        @Nullable Variants variants = PATCHABLE.get(key);
+        if (variants == null) return null;
+        @Nullable BakedMesh mesh = variants.takeReusable();
+        if (mesh != null) bytes -= mesh.bytes();
+        return mesh;
+    }
+
+    public static void putPatchable(PatchKey key, int light, BakedMesh mesh) {
+        Variants variants = PATCHABLE.get(key);
+        if (variants == null) {
+            variants = new Variants();
+            PATCHABLE.put(key, variants);
+        }
+        int before = variants.bytes();
+        variants.put(light, mesh);
+        bytes += variants.bytes() - before;
+        evict();
+    }
+
     private static void evict() {
         // 至少保留一个：单个网格就超过预算时也不能把它淘汰掉，否则调用方拿到已关闭的网格、画面直接消失
-        while ((MESHES.size() > MAX_ENTRIES || bytes > MAX_BYTES) && MESHES.size() > 1) {
-            Iterator<Map.Entry<Key, BakedMesh>> iterator = MESHES.entrySet().iterator();
-            if (!iterator.hasNext()) return;
-            Map.Entry<Key, BakedMesh> eldest = iterator.next();
-            iterator.remove();
+        while ((MESHES.size() + PATCHABLE.size() > MAX_ENTRIES || bytes > MAX_BYTES)
+                && MESHES.size() + PATCHABLE.size() > 1) {
+            if (!evictEldest()) return;
+        }
+    }
+
+    private static boolean evictEldest() {
+        Iterator<Map.Entry<Key, BakedMesh>> meshes = MESHES.entrySet().iterator();
+        if (meshes.hasNext()) {
+            Map.Entry<Key, BakedMesh> eldest = meshes.next();
+            meshes.remove();
             bytes -= eldest.getValue().bytes();
             close(eldest.getValue());
+            return true;
+        }
+        Iterator<Map.Entry<PatchKey, Variants>> variants = PATCHABLE.entrySet().iterator();
+        if (variants.hasNext()) {
+            Map.Entry<PatchKey, Variants> eldest = variants.next();
+            variants.remove();
+            bytes -= eldest.getValue().bytes();
+            close(eldest.getValue());
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 同一条几何在不同光照下的网格变体；满员后改写最久未用的那一份，正在使用的那份不动
+     */
+    private static final class Variants {
+
+        /**
+         * 变体上限：主 pass 与光影阴影 pass 各一份
+         * <li>不能只留一份：两个 pass 的光照不同，每帧来回切换会退化成每帧整段重传</li>
+         * <li>不放大余量：满员才开始改写，上限越大，光照变化前要白白多烘焙几次</li>
+         */
+        private static final int MAX_VARIANTS = 2;
+
+        /** accessOrder = true：迭代顺序即最久未用顺序 */
+        private final Map<Integer, BakedMesh> meshes = new LinkedHashMap<>(2, 0.75F, true);
+
+        BakedMesh get(int light) {
+            return this.meshes.get(light);
+        }
+
+        @Nullable BakedMesh takeReusable() {
+            if (this.meshes.size() < MAX_VARIANTS) return null;
+            Iterator<Map.Entry<Integer, BakedMesh>> iterator = this.meshes.entrySet().iterator();
+            if (!iterator.hasNext()) return null;
+            Map.Entry<Integer, BakedMesh> eldest = iterator.next();
+            iterator.remove();
+            return eldest.getValue();
+        }
+
+        void put(int light, BakedMesh mesh) {
+            @Nullable BakedMesh previous = this.meshes.put(light, mesh);
+            if (previous != null && previous != mesh) previous.close();
+        }
+
+        int bytes() {
+            int total = 0;
+            for (BakedMesh mesh : this.meshes.values()) {
+                total += mesh.bytes();
+            }
+            return total;
+        }
+
+        void close() {
+            for (BakedMesh mesh : this.meshes.values()) {
+                mesh.close();
+            }
+            this.meshes.clear();
         }
     }
 
@@ -102,6 +218,10 @@ public final class StaticBakeCache {
             close(mesh);
         }
         MESHES.clear();
+        for (Variants variants : PATCHABLE.values()) {
+            close(variants);
+        }
+        PATCHABLE.clear();
         bytes = 0;
 
         for (ModelObject model : MODEL_CHUNKS) {
@@ -119,6 +239,14 @@ public final class StaticBakeCache {
             mesh.close();
         } else {
             RenderSystem.recordRenderCall(mesh::close);
+        }
+    }
+
+    private static void close(Variants variants) {
+        if (RenderSystem.isOnRenderThread()) {
+            variants.close();
+        } else {
+            RenderSystem.recordRenderCall(variants::close);
         }
     }
 }

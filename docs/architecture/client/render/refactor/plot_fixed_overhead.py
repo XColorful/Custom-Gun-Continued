@@ -18,8 +18,10 @@ import numpy as np
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 
-# 一次光照变化的固定开销（ms）：A 之后 B 仍要多传的部分（满配+光影约 0.45 ms）
-DELTA_MS = 0.45
+# 一次光照变化的固定开销（ms）：A 之后 B 仍要多传的那部分
+# 实测口径见 ../benchmark/26.35.11.1-6/测试数据计算报告.md：一次事件 ≈2.5 MB、Light update ≈0.68 ms，
+# A 把它压到 ≈133 KB 后省下约 0.6 ms
+DELTA_MS = 0.6
 # 对比标注用的参考帧率
 REFERENCE_FPS = (60, 90, 120, 144, 165, 240)
 # 超过这个帧率，固定开销对人眼没有意义
@@ -56,7 +58,7 @@ def main():
         y = float(with_overhead(fps, DELTA_MS))
         ax.axvline(fps, color="#dadce0", linestyle="--", linewidth=1, zorder=1)
         ax.scatter([fps], [y], color="#1a73e8", s=26, zorder=3)
-        ax.annotate(f"{y:.0f} FPS（{y / fps * 100 - 100:+.1f}%）",
+        ax.annotate(f"{y:.0f} FPS（{y - fps:+.0f}，{y / fps * 100 - 100:+.1f}%）",
                     xy=(fps, y), xytext=(6, -14), textcoords="offset points",
                     fontsize=9, color="#1a73e8")
         ax.text(fps, 1.03, f"{fps}", transform=ax.get_xaxis_transform(),

@@ -168,7 +168,7 @@ graph TB
 
 计数器：第一人称提交次数、世界提交次数、`endBatch` 次数、立方体数（×24 即顶点量）、节点快照数（`NodeTransform` 分配量约 2×）、几何批次数（`getBuffer` 次数）、模板窗口数、LOD 命中数、draw 次数、上传字节数（顶点 + 索引）、烘焙上传字节数（`Bake upload bytes`，与 `Bake upload` 配套给出单位字节成本）、渲染线程每帧分配字节数、动画通道数、节点状态指纹变化次数（每次提交的几何是否真的变了，直接对应「静态场景能否复用」）、每帧去重的节点数（`Distinct nodes`）、其中状态变化的节点数（`Dirty nodes`）与脏子树的节点数（`Dirty subtree nodes`）。
 
-光照解耦（B1-c-B）另有：`Light patches` / `Light patch bytes`（原地改写次数与被重传的交错字节，用于和「4 B/顶点独立光照流」对比）；一次烘焙的成因 `Bake: new key` / `Bake: light fill` / `Bake: patch failed` / `Bake: chunk invalid`（四者之和与 `Bake rebuilds` 的差额就是整模静态路径的烘焙，那条路径仍按光照建键）；改写失败原因 `Light patch: no copy`（烘焙时恰为满亮或格式无 uv2）与 `Light patch: no vbo`。
+光照解耦（B1-c-B）另有：`Light patches` / `Light patch bytes`（原地改写次数与被重传的交错字节，用于和「4 B/顶点独立光照流」对比）；一次烘焙的成因 `Bake: new key` / `Bake: light fill` / `Bake: patch failed` / `Bake: chunk invalid`（覆盖两条解耦路径——第一人称分块与瞄具子网格；四者之和与 `Bake rebuilds` 的差额就是仍按光照建键的**多实例整模路径**，即展示框 / 地面 / 第三人称）；改写失败原因 `Light patch: no copy`（烘焙时恰为满亮或格式无 uv2）与 `Light patch: no vbo`。
 
 - `Distinct nodes` / `Dirty nodes` / `Dirty subtree nodes` 只在**即时管线**统计（`BedrockPart.render`）：同一个节点一帧内被多个展示框重复提交时只算一次，因此比例是「脏节点（或脏子树）/ 本帧遍历到的节点数」，不会被枪数稀释。静态烘焙路径不经 `render`，这三个计数在该场景为 0（与 `State changes = 0` 一致）。
 - `Dirty subtree nodes` 是 B1-b 重烘焙的实际规模：脏节点按子树累加，祖先已计入时不再重复；**根节点不计**——B1-b 把根变换提升为绘制矩阵，改根不需要重烘焙。报告另给 `Dirty node share`、`Dirty subtree share`，以及两者的 min / max / p99（min/max 只取非零帧），换弹这类短时动画的峰值看 max。

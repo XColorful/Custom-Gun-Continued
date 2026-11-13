@@ -249,7 +249,7 @@ public class _AttachmentModelRender {
                         long fingerprint = part.renderStatus(poseStack, transformType, light, overlay, discard, null);
 
                         if (discard.writtenVertices() == vertexMark) {
-                            baked = StaticBake.drawOrBake(_this, path, partPose, bakedRenderType, light, overlay,
+                            baked = StaticBake.drawOrBakePatchable(_this, path, partPose, bakedRenderType, light, overlay,
                                     1, 1, 1, 1, fingerprint,
                                     consumer -> part.renderGeometry(new PoseStack(), transformType, consumer,
                                             light, overlay, 1, 1, 1, 1));

@@ -81,10 +81,20 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
     顶层节点是块根（自身变换提升为绘制矩阵），动画命中的节点按需再切开，每块独立缓存，只有脏子树需要重烘焙
      */
     /**
-     * 每个块的最大网格数
-     * <li>光影的阴影 pass 会换一套光照（有时还换顶点格式），保留少量条目避免每帧重烘焙</li>
+     * 每个块的最大网格键数（`RenderType` / 叠加 / 颜色组合）
+     * <li>光影的阴影 pass 会换一套光照（有时还换顶点格式）；光照已不建键，改由每条几何的光照变体保留</li>
      */
     private static final int CGC$MAX_MESHES_PER_CHUNK = 4;
+
+    /**
+     * 每条几何保留的光照变体数（渲染重构B1-c-B）
+     * <ul>
+     *     <li>不能只留一份：主 pass 与光影阴影 pass 的光照不同，每帧来回切换会退化成每帧整段重传</li>
+     *     <li>不放大余量：满员才开始改写，上限越大，光照变化前要白白多烘焙几次；
+     *         `b1-b-3` 实测光影下重建次数与无光影持平（2.8 vs 2.6 次/秒），同一帧确实只有这两种光照</li>
+     * </ul>
+     */
+    private static final int CGC$MAX_LIGHT_VARIANTS = 2;
 
     /**
      * 按 DFS 序遍历的块列表，决定绘制顺序
@@ -608,39 +618,81 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
                                     RenderType renderType,
                                               int light, int overlay,
                                               float red, float green, float blue, float alpha) {
-        Cgc$MeshKey key = new Cgc$MeshKey(renderType, light, overlay,
+        Cgc$MeshKey key = new Cgc$MeshKey(renderType, overlay,
                 IrisCompat.isUsingRenderPack(), red, green, blue, alpha);
 
-        if (chunk.dirty || chunk.stale) {
+        boolean invalidated = chunk.dirty || chunk.stale;
+        // 失效前这一条几何已经有网格，才是「失效导致的重建」；块的第一次烘焙不算
+        boolean reloaded = invalidated && chunk.meshes.containsKey(key);
+        if (invalidated) {
             // 失效是整个块的：其它光照（光影阴影 pass）的网格同样过期，一并丢弃
             chunk.close();
             chunk.dirty = false;
             chunk.stale = false;
         }
 
-        BakedMesh mesh = chunk.meshes.get(key);
+        Map<Integer, BakedMesh> variants = chunk.meshes.get(key);
+        if (variants == null) {
+            // 容量上限：插入前淘汰最久未用的那条
+            if (chunk.meshes.size() >= CGC$MAX_MESHES_PER_CHUNK) {
+                Iterator<Map.Entry<Cgc$MeshKey, Map<Integer, BakedMesh>>> iterator = chunk.meshes.entrySet().iterator();
+                if (iterator.hasNext()) {
+                    Map.Entry<Cgc$MeshKey, Map<Integer, BakedMesh>> eldest = iterator.next();
+                    iterator.remove();
+                    cgc$closeVariants(eldest.getValue());
+                }
+            }
+            // accessOrder = true：迭代顺序即最久未用顺序
+            variants = new LinkedHashMap<>(2, 0.75F, true);
+            chunk.meshes.put(key, variants);
+        }
+
+        BakedMesh mesh = variants.get(light);
         if (mesh != null) return mesh;
 
+        // 光照变了：优先改写一份现成网格（原地 patch uv2 + 重传原 VBO），而不是重新发射几何
+        BakedMesh reusable = cgc$takeReusable(variants);
+        boolean patchFailed = false;
+        if (reusable != null) {
+            if (reusable.updateLight(light)) {
+                variants.put(light, reusable);
+                return reusable;
+            }
+            reusable.close();
+            patchFailed = true;
+        }
+
+        ClientRenderProfiler.countBakeCause(reloaded, patchFailed, variants.isEmpty());
         final long profBake = ClientRenderProfiler.begin();
-        mesh = BakedMesh.bake(renderType.mode(), renderType.format(), consumer ->
+        mesh = BakedMesh.bakePatchable(renderType.mode(), renderType.format(), light, consumer ->
                 chunk.node.bakeChunkGeometry(new PoseStack(), consumer,
                         light, overlay, red, green, blue, alpha, this.cgc$isCut));
         ClientRenderProfiler.end(ClientRenderProfiler.BAKE, profBake);
         ClientRenderProfiler.countBake();
 
-        // 容量上限：插入前淘汰最久未用的那条
-        if (chunk.meshes.size() >= CGC$MAX_MESHES_PER_CHUNK) {
-            Iterator<Map.Entry<Cgc$MeshKey, BakedMesh>> iterator = chunk.meshes.entrySet().iterator();
-            if (iterator.hasNext()) {
-                Map.Entry<Cgc$MeshKey, BakedMesh> eldest = iterator.next();
-                iterator.remove();
-                eldest.getValue().close();
-            }
-        }
-        chunk.meshes.put(key, mesh);
+        variants.put(light, mesh);
         chunk.dirty = false;
         chunk.stale = false;
         return mesh;
+    }
+
+    /**
+     * 满员时取出最久未使用的光照变体，供改写后放回；未满员返回 {@code null}，调用方应正常烘焙
+     */
+    private static @Nullable BakedMesh cgc$takeReusable(Map<Integer, BakedMesh> variants) {
+        if (variants.size() < CGC$MAX_LIGHT_VARIANTS) return null;
+        Iterator<Map.Entry<Integer, BakedMesh>> iterator = variants.entrySet().iterator();
+        if (!iterator.hasNext()) return null;
+        Map.Entry<Integer, BakedMesh> eldest = iterator.next();
+        iterator.remove();
+        return eldest.getValue();
+    }
+
+    private static void cgc$closeVariants(Map<Integer, BakedMesh> variants) {
+        for (BakedMesh mesh : variants.values()) {
+            mesh.close();
+        }
+        variants.clear();
     }
 
     /**
@@ -714,7 +766,7 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
          */
         final BedrockPart[] path;
         final boolean immediate;
-        final Map<Cgc$MeshKey, BakedMesh> meshes = new LinkedHashMap<>(2);
+        final Map<Cgc$MeshKey, Map<Integer, BakedMesh>> meshes = new LinkedHashMap<>(2);
         boolean dirty = true;
         /**
          * 被祖先剪枝跳过过：恢复可见时必须重烘焙（隐藏期间的状态变化不会被状态段看到）
@@ -734,14 +786,14 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
         }
 
         void close() {
-            for (BakedMesh mesh : this.meshes.values()) {
-                mesh.close();
+            for (Map<Integer, BakedMesh> variants : this.meshes.values()) {
+                cgc$closeVariants(variants);
             }
             this.meshes.clear();
         }
     }
 
-    private record Cgc$MeshKey(RenderType renderType, int light, int overlay, boolean shaderPack,
+    private record Cgc$MeshKey(RenderType renderType, int overlay, boolean shaderPack,
                                float red, float green, float blue, float alpha) {}
 
     @ApiStatus.Internal

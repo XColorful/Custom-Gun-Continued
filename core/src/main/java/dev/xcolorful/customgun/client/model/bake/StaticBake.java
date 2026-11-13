@@ -116,10 +116,61 @@ public final class StaticBake {
         @Nullable BakedMesh mesh = FORCE_REBUILD ? null : StaticBakeCache.get(key);
         if (mesh == null) {
             final long profBake = ClientRenderProfiler.begin();
-            mesh = BakedMesh.bake(renderType.mode(), renderType.format(), emitter);
+            mesh = BakedMesh.bake(renderType.mode(), renderType.format(), light, emitter);
             ClientRenderProfiler.end(ClientRenderProfiler.BAKE, profBake);
             ClientRenderProfiler.countBake();
             StaticBakeCache.put(key, mesh);
+        }
+
+        // 光影包刚切换时，顶点布局与当前着色器不匹配：本帧退回即时管线，下一帧会重新烘焙
+        if (mesh.bytes() > 0 && mesh.extendedFormat() != shaderPack) return false;
+
+        return drawMesh(mesh, renderType, pose);
+    }
+
+    /**
+     * 单实例路径的烘焙入口（第一人称瞄具子网格，渲染重构B1-c-B）
+     * <ul>
+     *     <li>光照不进键：一条几何只烘焙一次，光照变化时原地改写 uv2 并重传原 VBO</li>
+     *     <li>只能用于第一人称这类「同一帧只有一份实例」的路径；多实例共享的整模网格必须走 {@link #drawOrBake}</li>
+     * </ul>
+     * @param pose 烘焙空间 → 视图空间的变换；必须与 {@code emitter} 写入的模型空间一致
+     * @return {@code false} 表示没有可用着色器，调用方应退回即时管线
+     */
+    public static boolean drawOrBakePatchable(@Nullable Object owner,
+                                              @Nullable Object subKey,
+                                              Matrix4f pose,
+                                              RenderType renderType,
+                                              int light, int overlay,
+                                              float red, float green, float blue, float alpha,
+                                              long fingerprint,
+                                              Consumer<VertexConsumer> emitter) {
+        boolean shaderPack = IrisCompat.isUsingRenderPack();
+        StaticBakeCache.PatchKey key = new StaticBakeCache.PatchKey(owner, subKey, renderType, overlay, fingerprint,
+                shaderPack, red, green, blue, alpha);
+
+        @Nullable BakedMesh mesh = FORCE_REBUILD ? null : StaticBakeCache.getPatchable(key, light);
+        boolean patchFailed = false;
+        if (mesh == null && !FORCE_REBUILD) {
+            // 光照变了：优先改写一份现成网格（原地 patch uv2 + 重传），而不是重新发射几何
+            @Nullable BakedMesh reusable = StaticBakeCache.takeReusablePatchable(key);
+            if (reusable != null) {
+                if (reusable.updateLight(light)) {
+                    StaticBakeCache.putPatchable(key, light, reusable);
+                    mesh = reusable;
+                } else {
+                    reusable.close();
+                    patchFailed = true;
+                }
+            }
+        }
+        if (mesh == null) {
+            ClientRenderProfiler.countBakeCause(false, patchFailed, !StaticBakeCache.hasPatchable(key));
+            final long profBake = ClientRenderProfiler.begin();
+            mesh = BakedMesh.bakePatchable(renderType.mode(), renderType.format(), light, emitter);
+            ClientRenderProfiler.end(ClientRenderProfiler.BAKE, profBake);
+            ClientRenderProfiler.countBake();
+            StaticBakeCache.putPatchable(key, light, mesh);
         }
 
         // 光影包刚切换时，顶点布局与当前着色器不匹配：本帧退回即时管线，下一帧会重新烘焙

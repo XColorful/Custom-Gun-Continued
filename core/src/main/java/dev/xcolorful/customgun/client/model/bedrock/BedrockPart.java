@@ -6,6 +6,8 @@ import com.mojang.math.Axis;
 import dev.xcolorful.customgun.client.api.model.bedrock.IBedrockCube;
 import dev.xcolorful.customgun.client.api.model.bedrock.IBedrockCubeCompile;
 import dev.xcolorful.customgun.client.api.model.bedrock.IBedrockRenderer;
+import dev.xcolorful.customgun.client.model.bake.BakeDirtyTracker;
+import dev.xcolorful.customgun.client.model.bake.DiscardVertexConsumer;
 import dev.xcolorful.customgun.client.util.ClientRenderHelper;
 import dev.xcolorful.customgun.client.util.ClientRenderProfiler;
 import dev.xcolorful.customgun.client.util.ClientRenderUtils;
@@ -18,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 
 import java.util.Random;
+import java.util.function.Predicate;
 
 public class BedrockPart implements IBedrockCubeCompile, IBedrockRenderer {
 
@@ -63,12 +66,41 @@ public class BedrockPart implements IBedrockCubeCompile, IBedrockRenderer {
      */
     private long cgc$profileHash = Long.MIN_VALUE;
     private long cgc$profileStamp = Long.MIN_VALUE;
-    /** 本帧已把「以本节点为根的子树」计入脏子树，用于避免祖先/后代重复累加 */
+    /**
+     * 本帧已把「以本节点为根的子树」计入脏子树，用于避免祖先/后代重复累加
+     */
     private long cgc$coveredStamp = Long.MIN_VALUE;
-    /** 子树节点数（含自身），节点树构建完成后缓存 */
+    /**
+     * 子树节点数（含自身），节点树构建完成后缓存
+     */
     private int cgc$subtreeSize = -1;
-    /** 子树 cube 数（含自身），重烘焙成本的实际单位 */
+    /**
+     * 子树 cube 数（含自身），重烘焙成本的实际单位
+     */
     private int cgc$subtreeCubes = -1;
+
+    /**
+     * 上次状态段看到的节点状态（含可见性与替换标记），B1-b 分块烘焙的失效依据
+     * <li>{@link Long#MIN_VALUE} 表示尚未建立基线，第一次状态段必然登记为脏</li>
+     */
+    @ApiStatus.Internal
+    public long cgc$stateHash = Long.MIN_VALUE;
+    /**
+     * 本帧已把本节点登记进脏列表的标记，避免同一帧重复登记
+     */
+    @ApiStatus.Internal
+    public long cgc$trackStamp = Long.MIN_VALUE;
+    /**
+     * 本帧已把本节点登记进「直接发射几何」列表的标记，避免同一帧重复登记
+     */
+    @ApiStatus.Internal
+    public long cgc$immediateStamp = Long.MIN_VALUE;
+    /**
+     * DFS 前序序号（分块烘焙的绘制顺序）
+     * <li>{@code -1}表示尚未分配</li>
+     */
+    @ApiStatus.Internal
+    public int cgc$dfsOrder = -1;
 
     private float initRotX;
     private float initRotY;
@@ -154,22 +186,28 @@ public class BedrockPart implements IBedrockCubeCompile, IBedrockRenderer {
      *     <li>它们重新可见时父节点的 {@code visible} 会变化，指纹随之改变</li>
      * </ul>
      * 子树内没有 functional 节点时不需要回调，也就不需要维护 {@link PoseStack}，只做指纹累加
+     * @param tracker 非空时逐节点登记状态变化，供 渲染重构B1-b 决定重烘焙哪棵子树；静态整模烘焙传 {@code null}
      */
     public long renderStatus(PoseStack poseStack,
                              ItemDisplayContext transformType,
                              int light, int overlay,
-                             VertexConsumer discard) {
-        if (!this.visible) return 0L;
-        if (!this.containsFunctional()) return this.subtreeStateHash();
+                             DiscardVertexConsumer discard,
+                             @Nullable BakeDirtyTracker tracker) {
+        if (!this.visible) {
+            if (tracker != null) tracker.check(this, this.statusStateHash());
+            return 0L;
+        }
+        if (!this.containsFunctional()) return this.subtreeStateHash(tracker);
 
-        long hash = this.stateHash();
+        long hash = this.statusStateHash();
+        if (tracker != null) tracker.check(this, hash);
         int cubePackedLight = this.illuminated ? ClientRenderUtils.LightTexture_.pack(15, 15) : light;
 
         poseStack.pushPose(); {
             this.translate_rotate_scale(poseStack);
             for (int i = 0; i < this.children.size(); i++) {
                 hash = hash * 31L + this.children.get(i)
-                        .renderStatus(poseStack, transformType, cubePackedLight, overlay, discard);
+                        .renderStatus(poseStack, transformType, cubePackedLight, overlay, discard, tracker);
             }
         }
         poseStack.popPose();
@@ -213,13 +251,24 @@ public class BedrockPart implements IBedrockCubeCompile, IBedrockRenderer {
     }
 
     /**
+     * 节点自身的状态指纹；functional 节点会把「是否被替换渲染」一并混入
+     */
+    public long statusStateHash() {
+        return this.stateHash();
+    }
+
+    /**
      * 不维护姿态、只累加可见节点指纹
      */
-    public long subtreeStateHash() {
-        if (!this.visible) return 0L;
-        long hash = this.stateHash();
+    public long subtreeStateHash(@Nullable BakeDirtyTracker tracker) {
+        if (!this.visible) {
+            if (tracker != null) tracker.check(this, this.statusStateHash());
+            return 0L;
+        }
+        long hash = this.statusStateHash();
+        if (tracker != null) tracker.check(this, hash);
         for (int i = 0; i < this.children.size(); i++) {
-            hash = hash * 31L + this.children.get(i).subtreeStateHash();
+            hash = hash * 31L + this.children.get(i).subtreeStateHash(tracker);
         }
         return hash;
     }
@@ -254,9 +303,69 @@ public class BedrockPart implements IBedrockCubeCompile, IBedrockRenderer {
     }
 
     /**
-     * 64 位黄金比例常量，来源于 Fibonacci Hashing / Knuth's multiplicative hashing
-     * <li>{@code floor(2^64 * (φ - 1))}，其中 {@code φ = (1 + √5) / 2}</li>
+     * 分块烘焙的块根：顶点写在「本节点变换之后」的空间，自身变换由绘制矩阵承担
+     * <ul>
+     *     <li>因此块根自己的平移 / 旋转 / 缩放 / 可见性都不进网格，动画驱动块根不需要重烘焙</li>
+     *     <li>子节点照常把各自的变换烘进网格；{@code cut} 命中的子树是别的块（或直接发射几何的节点），这里跳过</li>
+     * </ul>
      */
+    public void bakeChunkGeometry(PoseStack poseStack,
+                                  VertexConsumer consumer,
+                                  int light, int overlay,
+                                  float red, float green, float blue, float alpha,
+                                  Predicate<BedrockPart> cut) {
+        int cubePackedLight = this.illuminated ? ClientRenderUtils.LightTexture_.pack(15, 15) : light;
+        if (!this.cubes.isEmpty()) {
+            this.compile(poseStack.last(), consumer, cubePackedLight, overlay, red, green, blue, alpha);
+        }
+        if (this.children.isEmpty()) return;
+
+        poseStack.pushPose(); {
+            for (int i = 0; i < this.children.size(); i++) {
+                BedrockPart child = this.children.get(i);
+                if (cut.test(child)) continue;
+                child.bakeSubtreeGeometry(poseStack, consumer,
+                        cubePackedLight, overlay, red, green, blue, alpha, cut);
+            }
+        }
+        poseStack.popPose();
+    }
+
+    /**
+     * 分块烘焙的子树部分：与 {@link #renderGeometry} 同语义（含自身变换、可见性与替换判断）
+     */
+    public void bakeSubtreeGeometry(PoseStack poseStack,
+                                    VertexConsumer consumer,
+                                    int light, int overlay,
+                                    float red, float green, float blue, float alpha,
+                                    Predicate<BedrockPart> cut) {
+        if (!this.visible) return;
+        if (this.skipsGeometry()) return;
+        if (this.cubes.isEmpty() && this.children.isEmpty()) return;
+
+        int cubePackedLight = this.illuminated ? ClientRenderUtils.LightTexture_.pack(15, 15) : light;
+
+        poseStack.pushPose(); {
+            this.translate_rotate_scale(poseStack);
+            this.compile(poseStack.last(), consumer, cubePackedLight, overlay, red, green, blue, alpha);
+            for (int i = 0; i < this.children.size(); i++) {
+                BedrockPart child = this.children.get(i);
+                if (cut.test(child)) continue;
+                child.bakeSubtreeGeometry(poseStack, consumer,
+                        cubePackedLight, overlay, red, green, blue, alpha, cut);
+            }
+        }
+        poseStack.popPose();
+    }
+
+    /**
+     * 本节点的几何是否由替换渲染器接管（状态段的结果）
+     */
+    @ApiStatus.Internal
+    protected boolean skipsGeometry() {
+        return false;
+    }
+
     private static final long STATE_HASH_SEED = MathUtil.GOLDEN_RATIO_64;
     /**
      * 把本节点的全部变换字段累加进指纹
@@ -318,7 +427,9 @@ public class BedrockPart implements IBedrockCubeCompile, IBedrockRenderer {
         ClientRenderProfiler.countDirtyCubes(this.subtreeCubes());
     }
 
-    /** 子树节点数（含自身）；节点树构建完成后缓存 */
+    /**
+     * 子树节点数（含自身）；节点树构建完成后缓存
+     */
     public int subtreeSize() {
         if (this.cgc$subtreeSize < 0) {
             int size = 1;
@@ -330,7 +441,9 @@ public class BedrockPart implements IBedrockCubeCompile, IBedrockRenderer {
         return this.cgc$subtreeSize;
     }
 
-    /** 子树 cube 数（含自身）；重烘焙按顶点计，这是比节点数更准的成本单位 */
+    /**
+     * 子树 cube 数（含自身）；重烘焙按顶点计，这是比节点数更准的成本单位
+     */
     public int subtreeCubes() {
         if (this.cgc$subtreeCubes < 0) {
             int cubes = this.cubes.size();

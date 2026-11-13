@@ -153,6 +153,10 @@ graph TB
 |`endBatch flush`|所有 `endBatch` 的耗时合计|P6|
 |`endBatch upload`|整帧所有 `BufferUploader` 上传（含隐式 flush / 世界实体；mixin 埋点）|P6|
 |`endBatch draw`|整帧所有 `drawWithShader`（同上；mixin 埋点）|P6|
+|`Static bake`|一次烘焙重建的整段（顶点发射 + 新建缓冲 + 上传），B1-a/B1-b|B 阶段|
+|`Bake emit`|`BakedMesh.bake` 的 `BufferBuilder` 写入段|B1-c 拆分|
+|`Bake buffer create`|`new VertexBuffer` + `bind()`（glGenBuffers / glGenVertexArrays / 绑 VAO）|B1-c 拆分|
+|`Bake upload`|`VertexBuffer.upload`（顶点 + 索引 + `setupBufferState`）|B1-c 拆分|
 |`Delegate render`|枪口火焰 / 抛壳 / 手臂 / 文字 / 配件|P9|
 |`Muzzle cache`|第一人称枪口位置缓存|—|
 |`Stencil clear`|瞄具模板缓冲清空|P8 后半|
@@ -161,7 +165,7 @@ graph TB
 |`Hand camera`|`BeforeRenderHandEvent` 的手部相机动画|渲染外开销|
 |`FOV`|`COMPUTE_FOV_EVENT` 与 `COMPUTE_FOV_MODIFIER_EVENT`|渲染外开销|
 
-计数器：第一人称提交次数、世界提交次数、`endBatch` 次数、立方体数（×24 即顶点量）、节点快照数（`NodeTransform` 分配量约 2×）、几何批次数（`getBuffer` 次数）、模板窗口数、LOD 命中数、draw 次数、上传字节数（顶点 + 索引）、渲染线程每帧分配字节数、动画通道数、节点状态指纹变化次数（每次提交的几何是否真的变了，直接对应「静态场景能否复用」）、每帧去重的节点数（`Distinct nodes`）、其中状态变化的节点数（`Dirty nodes`）与脏子树的节点数（`Dirty subtree nodes`）。
+计数器：第一人称提交次数、世界提交次数、`endBatch` 次数、立方体数（×24 即顶点量）、节点快照数（`NodeTransform` 分配量约 2×）、几何批次数（`getBuffer` 次数）、模板窗口数、LOD 命中数、draw 次数、上传字节数（顶点 + 索引）、烘焙上传字节数（`Bake upload bytes`，与 `Bake upload` 配套给出单位字节成本）、渲染线程每帧分配字节数、动画通道数、节点状态指纹变化次数（每次提交的几何是否真的变了，直接对应「静态场景能否复用」）、每帧去重的节点数（`Distinct nodes`）、其中状态变化的节点数（`Dirty nodes`）与脏子树的节点数（`Dirty subtree nodes`）。
 
 - `Distinct nodes` / `Dirty nodes` / `Dirty subtree nodes` 只在**即时管线**统计（`BedrockPart.render`）：同一个节点一帧内被多个展示框重复提交时只算一次，因此比例是「脏节点（或脏子树）/ 本帧遍历到的节点数」，不会被枪数稀释。静态烘焙路径不经 `render`，这三个计数在该场景为 0（与 `State changes = 0` 一致）。
 - `Dirty subtree nodes` 是 B1-b 重烘焙的实际规模：脏节点按子树累加，祖先已计入时不再重复；**根节点不计**——B1-b 把根变换提升为绘制矩阵，改根不需要重烘焙。报告另给 `Dirty node share`、`Dirty subtree share`，以及两者的 min / max / p99（min/max 只取非零帧），换弹这类短时动画的峰值看 max。

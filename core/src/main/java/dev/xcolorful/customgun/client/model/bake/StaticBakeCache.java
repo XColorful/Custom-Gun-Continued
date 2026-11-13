@@ -1,14 +1,18 @@
 package dev.xcolorful.customgun.client.model.bake;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import dev.xcolorful.customgun.client.model.ModelObject;
 import dev.xcolorful.customgun.client.resource._AssetsInstanceManager;
 import net.minecraft.client.renderer.RenderType;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * 烘焙网格的全局 LRU 缓存
@@ -30,6 +34,12 @@ public final class StaticBakeCache {
 
     private static final LinkedHashMap<Key, BakedMesh> MESHES = new LinkedHashMap<>(16, 0.75F, true);
     private static long bytes;
+
+    /**
+     * 持有第一人称分块网格的模型（B1-b）：分块网格挂在模型上管理生命周期，这里只保留身份引用，
+     * 以便资源重载时统一释放显存
+     */
+    private static final Set<ModelObject> MODEL_CHUNKS = Collections.newSetFromMap(new IdentityHashMap<>());
 
     private StaticBakeCache() {}
 
@@ -76,6 +86,13 @@ public final class StaticBakeCache {
     }
 
     /**
+     * 登记一个创建了分块网格的模型，资源重载时统一释放
+     */
+    public static void registerModel(ModelObject model) {
+        MODEL_CHUNKS.add(model);
+    }
+
+    /**
      * 资源重载：旧模型对象会被整体替换，网格必须一并释放
      */
     public static void clearAll() {
@@ -84,6 +101,15 @@ public final class StaticBakeCache {
         }
         MESHES.clear();
         bytes = 0;
+
+        for (ModelObject model : MODEL_CHUNKS) {
+            if (RenderSystem.isOnRenderThread()) {
+                model.cgc$clearChunks();
+            } else {
+                RenderSystem.recordRenderCall(model::cgc$clearChunks);
+            }
+        }
+        MODEL_CHUNKS.clear();
     }
 
     private static void close(BakedMesh mesh) {

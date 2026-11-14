@@ -96,10 +96,8 @@ public final class ClientRenderProfiler implements IEventHandler {
     public static final int BAKE_UPLOAD = 25;
     /** 渲染重构B1-c-B 原地改写光照：patch uv2 + 重传原 VBO（不重新发射顶点） */
     public static final int LIGHT_UPDATE = 26;
-    /** 渲染重构B2 跨实例合批：拼接世界空间顶点并上传（实例集合或内容变化时） */
-    public static final int BATCH_BUILD = 27;
 
-    public static final int PROBE_COUNT = 28;
+    public static final int PROBE_COUNT = 27;
     private static final String[] PROBE_NAMES = {
             "First-person submit", "World-item submit", "State update", "Data refresh", "Scope render",
             "Model render total", "Node snapshot", "Geometry traverse", "endBatch flush",
@@ -108,7 +106,6 @@ public final class ClientRenderProfiler implements IEventHandler {
             "Functional nodes", "GUI slot icon", "Camera angles", "Hand camera", "FOV",
             "endBatch upload", "endBatch draw", "Static bake",
             "Bake emit", "Bake buffer create", "Bake upload", "Light update",
-            "Batch build",
     };
 
     // --------计数--------
@@ -145,21 +142,7 @@ public final class ClientRenderProfiler implements IEventHandler {
     /** 光照改写失败的原因：没有 CPU 副本 / 取不到 VBO */
     private static final int COUNTER_PATCH_NO_COPY = 27;
     private static final int COUNTER_PATCH_NO_VBO = 28;
-    /** B2：一次跨实例批次的拼接与整段重传 */
-    private static final int COUNTER_BATCH_REBUILDS = 29;
-    /** B2：进入合批判定的实例数与登记成功的实例数（差值即被守卫拒绝的实例） */
-    private static final int COUNTER_BATCH_CANDIDATES = 30;
-    private static final int COUNTER_BATCH_SUBMITS = 31;
-    /** B2 的拒绝 / 失效成因，用于定位「合批未生效」 */
-    private static final int COUNTER_BATCH_GUARD_REJECT = 32;
-    private static final int COUNTER_BATCH_EMIT_REJECT = 33;
-    private static final int COUNTER_BATCH_REBAKE = 34;
-    private static final int COUNTER_BATCH_UNBATCHED = 35;
-    /** B2：每帧真正由合批发出的 draw 次数 */
-    private static final int COUNTER_BATCH_DRAWS = 36;
-    /** B2：因为没有可用着色器而拒绝 */
-    private static final int COUNTER_BATCH_NO_SHADER = 37;
-    private static final int COUNTER_COUNT = 38;
+    private static final int COUNTER_COUNT = 29;
     private static final String[] COUNTER_NAMES = {
             "First-person submissions", "World-item submissions", "endBatch calls", "Cubes submitted",
             "Nodes captured", "Geometry batches", "Stencil windows", "LOD hits",
@@ -168,10 +151,7 @@ public final class ClientRenderProfiler implements IEventHandler {
             "Dirty subtree nodes", "Distinct cubes", "Dirty cubes", "Bake upload bytes",
             "Light patches", "Light patch bytes",
             "Bake: new key", "Bake: light fill", "Bake: patch failed", "Bake: chunk invalid",
-            "Light patch: no copy", "Light patch: no vbo", "Batch rebuilds",
-            "Batch candidates", "Batch submits",
-            "Batch: guard reject", "Batch: emit reject", "Batch: content rebake", "Batch: unbatched", "Batch draws",
-            "Batch: no shader",
+            "Light patch: no copy", "Light patch: no vbo",
     };
 
     /**
@@ -333,49 +313,6 @@ public final class ClientRenderProfiler implements IEventHandler {
     /** 一次静态网格烘焙（首帧或状态变化后） */
     public static void countBake() {
         count(COUNTER_BAKE_REBUILDS);
-    }
-
-    /** B2：一次跨实例批次的拼接与上传；稳态应为 0 */
-    public static void countBatchRebuild() {
-        count(COUNTER_BATCH_REBUILDS);
-    }
-
-    /** B2：一个静态实例进入了合批判定；与 {@link #countBatchSubmit()} 的差值是被守卫拒绝的实例 */
-    public static void countBatchCandidate() {
-        count(COUNTER_BATCH_CANDIDATES);
-    }
-
-    public static void countBatchSubmit() {
-        count(COUNTER_BATCH_SUBMITS);
-    }
-
-    /** B2：着色器 / 顶点格式 / 实例身份等前置守卫拒绝 */
-    public static void countBatchGuardReject() {
-        count(COUNTER_BATCH_GUARD_REJECT);
-    }
-
-    /** B2：发射结果为空或顶点步长不符 */
-    public static void countBatchEmitReject() {
-        count(COUNTER_BATCH_EMIT_REJECT);
-    }
-
-    /** B2：内容或姿态变化导致的重新发射 */
-    public static void countBatchRebake() {
-        count(COUNTER_BATCH_REBAKE);
-    }
-
-    /** B2：实例被判定为「每帧都在变」而暂时退回逐实例绘制 */
-    public static void countBatchUnbatched() {
-        count(COUNTER_BATCH_UNBATCHED);
-    }
-
-    /** B2：一次由合批发出的 draw */
-    public static void countBatchDraw() {
-        count(COUNTER_BATCH_DRAWS);
-    }
-
-    public static void countBatchNoShader() {
-        count(COUNTER_BATCH_NO_SHADER);
     }
 
     /** 一次烘焙写入的顶点 + 索引字节数；与 {@link #BAKE_UPLOAD} 一起给出单位字节成本 */

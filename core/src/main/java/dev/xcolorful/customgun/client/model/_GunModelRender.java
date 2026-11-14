@@ -178,11 +178,6 @@ public class _GunModelRender {
         AttachmentDisplay attachmentDisplay = clientAttachmentIndexInstance.getAttachmentDisplay();
         boolean enableScope = attachmentDisplay.getEnableScope();
         if (!enableScope) return;
-        /*
-        模板窗口只在第一人称有意义：静态展示（展示框 / 掉落物 / 第三人称）不写模板值，
-        开启测试只会读到上一处残留，而且合批后枪体已延后到帧末绘制（渲染重构B2）
-         */
-        if (!transformType.firstPerson()) return;
         ClientRenderProfiler.countStencilWindow();
 
         // 开启模板测试，因为镜内不渲染枪体

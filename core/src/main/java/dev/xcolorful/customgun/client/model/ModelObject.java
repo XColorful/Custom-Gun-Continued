@@ -11,7 +11,6 @@ import dev.xcolorful.customgun.client.model.bake.BakedMesh;
 import dev.xcolorful.customgun.client.model.bake.DiscardVertexConsumer;
 import dev.xcolorful.customgun.client.model.bake.StaticBake;
 import dev.xcolorful.customgun.client.model.bake.StaticBakeCache;
-import dev.xcolorful.customgun.client.model.bake.StaticBatch;
 import dev.xcolorful.customgun.client.model.bedrock.BedrockPart;
 import dev.xcolorful.customgun.client.model.bedrock.FunctionalBedrockPart;
 import dev.xcolorful.customgun.client.resource.assets.model.BedrockModel;
@@ -33,7 +32,6 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class ModelObject extends PojoInstance<BedrockModel> implements IModelObjectRender {
@@ -389,25 +387,16 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
             return false;
         }
 
-        Matrix4f pose = matrixStack.last().pose();
-        Consumer<VertexConsumer> emitter = consumer -> {
-            PoseStack bakePose = new PoseStack();
-            for (int i = 0; i < this.shouldRender.size(); i++) {
-                this.shouldRender.get(i)
-                        .renderGeometry(bakePose, transformType, consumer,
-                                light, overlay, red, green, blue, alpha);
-            }
-        };
-
-        // 展示框的静态实例按 RenderType 跨实例合批（渲染重构B2），帧末统一绘制
-        if (StaticBatch.batching(transformType)
-                && StaticBatch.submit(this, null, pose, renderType, light, overlay,
-                        red, green, blue, alpha, fingerprint, emitter)) {
-            return true;
-        }
-
-        if (!StaticBake.drawOrBake(this, null, pose, renderType, light, overlay,
-                red, green, blue, alpha, fingerprint, emitter)) {
+        if (!StaticBake.drawOrBake(this, null, matrixStack.last().pose(), renderType, light, overlay,
+                red, green, blue, alpha, fingerprint,
+                consumer -> {
+                    PoseStack bakePose = new PoseStack();
+                    for (int i = 0; i < this.shouldRender.size(); i++) {
+                        this.shouldRender.get(i)
+                                .renderGeometry(bakePose, transformType, consumer,
+                                        light, overlay, red, green, blue, alpha);
+                    }
+                })) {
             // 没有可用着色器：丢弃状态段登记的委托，由调用方退回即时管线
             this.trimDelegates(delegateMark);
             return false;

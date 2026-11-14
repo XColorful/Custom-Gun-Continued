@@ -199,3 +199,35 @@ b2-3 已并入 [报告](docs/architecture/client/render/benchmark/26.35.11.1-7/�
 4. **固定收益与 FPS 图**：固定收益 **0.42 ms**（draw 口径 48×7.8 µs≈0.37 ms）。图已生成：[B2收益-固定0.42ms对帧率的影响.png](docs/architecture/client/render/benchmark/26.35.11.1-7/B2收益-固定0.42ms对帧率的影响.png)，脚本 [plot_b2_gain.py](docs/architecture/client/render/benchmark/26.35.11.1-7/plot_b2_gain.py)，参考点：60→61.6(+2.6%)、144→153.3(+6.5%)、240→267.0(+11.2%)、466→579.7(+24.4%)、1000→1727(+72.7%)。
 
 另外 b2-3（夜晚移动）也并进了同一报告第 7 节：移动段 `Bake rebuilds=0`、单次光照改写 0.147–0.628 ms（B1-c 前 0.6–9.2 ms）。它**没有展示框**，只验证了第一人称；B2 自己的按实例光照仍待一个「夜晚 + 展示框」场景。
+
+# 
+
+```
+我现在提交了这个commit，报告里更新：
+- 如果之后要重新实现，则读刚才的"Add render type merge render refactor"
+- 不保留开关，不是收益有边界的问题，是“多个相同枪械展示”和“多人用同一配件”在实际游玩场景几乎不存在，针对极少数场景引入的非数量级收益不够弥补工程上的兼容性风险
+- 并且在git工作区把刚才commit里代码部分（非文档部分）做一个revert，包括取消模板测试
+我会在提交本次修改之后再让你恢复“移除模板测试”
+```
+
+# 
+
+已按你的决定处理完。
+
+**代码回退（已 stage，未提交）**
+
+回退到 `ed78e3b4e` 的父提交 `51e96bd1a`，只动代码：
+- 删除 `StaticBatch.java`、`LevelRendererMixin.java`；
+- 还原 `ModelObject`、`BakedMesh`、`StaticBakeCache`、`ClientRenderProfiler`、`customgunclient.mixins.json`、`EntityRenderDispatcherMixin`；
+- `_GunModelRender` 的「展示实例不再开启模板测试」也一并还原——现在对所有上下文都开启模板测试。
+
+`./gradlew compileJava` 通过。没有保留任何开关。
+
+**文档更新**
+
+- [报告](docs/architecture/client/render/benchmark/26.35.11.1-7/测试数据计算报告.md)：顶部加了最终决定；第 0 节改为「能工作、但不值得保留」；第 6 节整节换成**决策记录**——否决理由（两类场景实际不存在、非数量级收益、风险不成比例、不保留开关）、回退范围，以及「**若以后重新实现，读 commit `ed78e3b4e`「Add render type merge render refactor」**」。
+- [B2 实施记录](docs/architecture/client/render/refactor/b2-cross-instance-batch.md)：状态改为「已否决并回退」，同样的 commit 指引与原因；实现事实、收益边界、风险表保留。
+- TODO：路线改为只保留 B1，阶段 3 标为「已实现、实测后否决，代码已回退」。
+- refactor/Home、PLAN、scheme-b、lighting-decoupling、b1a：同步否决结论；同时把「multi ≤1.6 ms」这一依赖 B2 的目标标注为不再作为当前目标（multi 维持 B1-a 的约 2.15 ms）。
+
+**状态**：代码回退已 stage，文档改动未 stage、未提交。等你把这次修改提交后，再让我恢复「移除模板测试」那一条改动。

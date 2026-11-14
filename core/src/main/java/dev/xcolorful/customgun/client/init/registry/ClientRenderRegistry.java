@@ -4,18 +4,69 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.api.minecraft.texture.CustomTexture;
 import dev.xcolorful.customgun.client.compat.iris.IrisCompat;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.TriState;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 
 public class ClientRenderRegistry {
+
+    /**
+     * 静态烘焙网格用的 core shader（渲染重构B1-a）
+     * <br>
+     * 无光影：
+     * <ul>
+     *     <li>原版实体着色器用原始 {@code Normal} 做光照、用 {@code IViewRotMat * Position} 算雾，两者都假设顶点已经是视图空间</li>
+     *     <li>烘焙网格是模型空间 + 实例矩阵，必须换成会把 {@code ModelViewMat} 一起算进法线与雾坐标的着色器，见 {@code assets/customgun/shaders/core/cgc_baked_entity.*}</li>
+     * </ul>
+     * 开光影包：
+     * <ul>
+     *     <li>改由 Oculus/Iris 在 {@code GameRenderer.getRendertype*Shader()} 换成的光影包 program 绘制</li>
+     * </ul>
+     */
+    public static class BakedEntityRenderState {
+
+        public static final @Nullable ResourceLocation BAKED_ENTITY_SHADER =
+                CustomGun.getMcRegistry().createResourceLocation(CustomGun.MOD_ID + ":cgc_baked_entity");
+
+        private static volatile @Nullable ShaderInstance bakedEntityShader;
+
+        public static @Nullable ShaderInstance getBakedEntityShader() {
+            return bakedEntityShader;
+        }
+    }
+
+    @FunctionalInterface
+    public interface IShaderRegistrar {
+        /**
+         * @param location 形如 {@code customgun:cgc_baked_entity}，对应 {@code assets/<ns>/shaders/core/<path>.json}
+         * @param onLoaded 加载成功后的回调（每次资源重载都会调用）
+         */
+        void registerShader(@NotNull ResourceLocation location,
+                            @NotNull VertexFormat format,
+                            @NotNull Consumer<ShaderInstance> onLoaded);
+    }
+
+    /**
+     * 资源重载会重新创建 {@link ShaderInstance}，所以每次都要重新回调并覆盖引用
+     */
+    public static void onRegisterShaders(IShaderRegistrar registrar) {
+        @Nullable var location = BakedEntityRenderState.BAKED_ENTITY_SHADER;
+        if (location == null) return;
+
+        registrar.registerShader(location,
+                DefaultVertexFormat.NEW_ENTITY,
+                shader -> BakedEntityRenderState.bakedEntityShader = shader);
+    }
 
     public static class LaserBeamRenderState extends RenderStateShard {
 

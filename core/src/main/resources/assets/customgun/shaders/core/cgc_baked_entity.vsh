@@ -29,7 +29,7 @@ uniform sampler2D Sampler2;
 
 uniform mat4 ModelViewMat;
 uniform mat4 ProjMat;
-uniform mat3 IViewRotMat; // 1.21.1移除
+//uniform mat3 IViewRotMat; // 1.21.1移除
 uniform int FogShape;
 
 uniform vec3 Light0_Direction;
@@ -51,11 +51,11 @@ void main() {
     其中 IViewRotMat * Position 消除了相机旋转，shape=1 时 zero 掉的是世界 Y
     这里把 ModelViewMat 乘进去之后再清 Y，否则清掉的是模型空间的 Y
      */
-    vec3 worldAlignedPosition = (mat4(IViewRotMat) * ModelViewMat * vec4(Position, 1.0)).xyz;
-    vertexDistance = fog_distance(mat4(1.0), worldAlignedPosition, FogShape);
+//     vec3 worldAlignedPosition = (mat4(IViewRotMat) * ModelViewMat * vec4(Position, 1.0)).xyz;
+//     vertexDistance = fog_distance(mat4(1.0), worldAlignedPosition, FogShape);
     // [1.21.1, )
-//     vec3 viewPosition = (ModelViewMat * vec4(Position, 1.0)).xyz;
-//     vertexDistance = fog_distance(viewPosition, FogShape);
+    vec3 viewPosition = (ModelViewMat * vec4(Position, 1.0)).xyz;
+    vertexDistance = fog_distance(viewPosition, FogShape);
 
     mat3 normalMatrix = mat3(transpose(inverse(ModelViewMat)));
     vertexColor = minecraft_mix_light(Light0_Direction, Light1_Direction, normalMatrix * Normal, Color);

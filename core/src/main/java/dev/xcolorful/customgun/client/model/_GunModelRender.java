@@ -140,15 +140,23 @@ public class _GunModelRender {
 //                if (_this.laserBeamPaths != null) BeamRender.render(matrixStack, transformType, _this.laserBeamPaths, gunItem);
             }
 
-            ClientRenderHelper.GL._stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
+            /*
+            模板状态只服务第一人称的瞄具窗口：静态展示（展示框 / 掉落物 / 第三人称）既不写模板值、也不开启测试，
+            因此连同「每实例关闭测试 + 清空模板缓冲」一起跳过（每次清空约 4 µs，9 个展示框约 0.04 ms/帧）
+             */
+            if (transformType.firstPerson()) {
+                ClientRenderHelper.GL._stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
+            }
             _this.super_render(matrixStack, transformType, renderType, light, overlay);
 
             _renderHand(_this, matrixStack, transformType, renderType, light, overlay, gunItem);
 
-            ClientRenderHelper.disableItemEntityStencilTest();
-            final long profStencil = ClientRenderProfiler.begin();
-            _GunModelRender._clearStencilBuffer();
-            ClientRenderProfiler.end(ClientRenderProfiler.STENCIL_CLEAR, profStencil);
+            if (transformType.firstPerson()) {
+                ClientRenderHelper.disableItemEntityStencilTest();
+                final long profStencil = ClientRenderProfiler.begin();
+                _GunModelRender._clearStencilBuffer();
+                ClientRenderProfiler.end(ClientRenderProfiler.STENCIL_CLEAR, profStencil);
+            }
         }
     }
 
@@ -178,6 +186,11 @@ public class _GunModelRender {
         AttachmentDisplay attachmentDisplay = clientAttachmentIndexInstance.getAttachmentDisplay();
         boolean enableScope = attachmentDisplay.getEnableScope();
         if (!enableScope) return;
+        /*
+        模板窗口只在第一人称有意义：静态展示（展示框 / 掉落物 / 第三人称）不写模板值，
+        开启测试只会读到别处残留的模板值
+         */
+        if (!transformType.firstPerson()) return;
         ClientRenderProfiler.countStencilWindow();
 
         // 开启模板测试，因为镜内不渲染枪体

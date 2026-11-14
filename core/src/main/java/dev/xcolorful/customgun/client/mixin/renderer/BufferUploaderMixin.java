@@ -1,7 +1,7 @@
 package dev.xcolorful.customgun.client.mixin.renderer;
 
-import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.BufferUploader;
+import com.mojang.blaze3d.vertex.MeshData;
 import com.mojang.blaze3d.vertex.VertexBuffer;
 import dev.xcolorful.customgun.client.util.ClientRenderProfiler;
 import net.minecraft.client.renderer.ShaderInstance;
@@ -20,21 +20,21 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class BufferUploaderMixin {
 
     @Inject(method = "_drawWithShader", at = @At("HEAD"))
-    private static void cgc$countDraw(BufferBuilder.RenderedBuffer buffer, // MeshData meshData
+    private static void cgc$countDraw(MeshData meshData,
                                       CallbackInfo ci) {
         // [1.20.1, 1.21.1)
-        if (buffer.isEmpty()) return; // this.drawState.vertexCount == 0;
+//        if (buffer.isEmpty()) return; // this.drawState.vertexCount == 0;
 
         // [1.21.1, )
-//        MeshData.DrawState state = meshData.drawState();
-//        if (state.vertexCount() == 0) return;
+        MeshData.DrawState state = meshData.drawState();
+        if (state.vertexCount() == 0) return;
 
         ClientRenderProfiler.countDraw();
         ClientRenderProfiler.countUploadBytes(
                 // [1.20.1, 1.21.1)
-                buffer.drawState().bufferSize()
+//                buffer.drawState().bufferSize()
                 // [1.21.1, )
-//                state.vertexCount() * state.format().getVertexSize()
+                state.vertexCount() * state.format().getVertexSize()
         );
     }
 
@@ -43,16 +43,16 @@ public class BufferUploaderMixin {
             at = @At(
                     value = "INVOKE",
                     // [1.20.1, 1.21.1)
-                    target = "Lcom/mojang/blaze3d/vertex/VertexBuffer;upload(Lcom/mojang/blaze3d/vertex/BufferBuilder$RenderedBuffer;)V"
+//                    target = "Lcom/mojang/blaze3d/vertex/VertexBuffer;upload(Lcom/mojang/blaze3d/vertex/BufferBuilder$RenderedBuffer;)V"
                     // [1.21.1, )
-//                    target = "Lcom/mojang/blaze3d/vertex/VertexBuffer;upload(Lcom/mojang/blaze3d/vertex/MeshData;)V"
+                    target = "Lcom/mojang/blaze3d/vertex/VertexBuffer;upload(Lcom/mojang/blaze3d/vertex/MeshData;)V"
             )
     )
     private static void cgc$timeUpload(VertexBuffer vertexBuffer,
-                                       BufferBuilder.RenderedBuffer buffer) { // MeshData meshData
+                                       MeshData meshData) {
         long start = ClientRenderProfiler.begin();
         try {
-            vertexBuffer.upload(buffer); // vertexBuffer.upload(meshData);
+            vertexBuffer.upload(meshData);
         } finally {
             ClientRenderProfiler.end(ClientRenderProfiler.UPLOAD, start);
         }

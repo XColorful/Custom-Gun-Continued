@@ -11,9 +11,6 @@ import net.neoforged.neoforge.client.event.RegisterShadersEvent;
 @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = CustomGun.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class NeoClientRenderRegistry {
 
-    /**
-     * {@code RegisterShadersEvent} 每次资源重载都会重新触发，{@code onLoaded} 由 core 覆盖保存最新实例
-     */
     @SubscribeEvent
     public static void onRegisterShaders(RegisterShadersEvent event) {
         ClientRenderRegistry.onRegisterShaders((location, format, onLoaded) -> {

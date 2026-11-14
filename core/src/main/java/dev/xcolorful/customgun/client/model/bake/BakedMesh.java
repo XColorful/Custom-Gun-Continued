@@ -165,7 +165,12 @@ public final class BakedMesh implements AutoCloseable {
             ByteBuffer vertexCopy = !keepLightCopy || uv2Offset < 0 ? null : copyVertices(rendered.vertexBuffer());
 
             long profileBuffer = ClientRenderProfiler.begin();
-            VertexBuffer vertexBuffer = new VertexBuffer(VertexBuffer.Usage.STATIC);
+            VertexBuffer vertexBuffer = new VertexBuffer(
+                    // [1.20.1, 1.21.4)
+                    VertexBuffer.Usage.STATIC
+                    // [1.21.4, )
+//                    BufferUsage.STATIC_WRITE
+            );
             // VertexBuffer.upload 要求 VAO 已绑定，原版 BufferUploader 同样先 bind 再 upload
             vertexBuffer.bind();
             ClientRenderProfiler.end(ClientRenderProfiler.BAKE_BUFFER, profileBuffer);

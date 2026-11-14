@@ -1,5 +1,6 @@
 package dev.xcolorful.customgun.client.model.bake;
 
+import com.mojang.blaze3d.buffers.BufferUsage;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.platform.GlStateManager;
@@ -17,8 +18,8 @@ import dev.xcolorful.customgun.client.input.player.DebugKey;
 import dev.xcolorful.customgun.client.util.ClientRenderHelper;
 import dev.xcolorful.customgun.client.util.ClientRenderProfiler;
 import dev.xcolorful.customgun.client.util.ClientRenderUtils;
+import net.minecraft.client.renderer.CompiledShaderProgram;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.ShaderInstance;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
@@ -190,22 +191,16 @@ public final class BakedMesh implements AutoCloseable {
              */
             ByteBuffer vertexCopy = !keepLightCopy || uv2Offset < 0 ? null : copyVertices(rendered.vertexBuffer());
 
-            VertexBuffer vertexBuffer; // GpuBuffer vertexBuffer;
-            {
-                // [1.20.1, 1.21.6)
-                long profileBuffer = ClientRenderProfiler.begin();
-                vertexBuffer = new VertexBuffer(
-                        // [1.20.1, 1.21.4)
-                        VertexBuffer.Usage.STATIC
-                        // [1.21.4, )
-//                        BufferUsage.STATIC_WRITE
-                );
-                // VertexBuffer.upload 要求 VAO 已绑定，原版 BufferUploader 同样先 bind 再 upload
-                vertexBuffer.bind();
-                ClientRenderProfiler.end(ClientRenderProfiler.BAKE_BUFFER, profileBuffer);
-
-                // [1.21.6, )
-            }
+            long profileBuffer = ClientRenderProfiler.begin();
+            VertexBuffer vertexBuffer = new VertexBuffer(
+                    // [1.20.1, 1.21.4)
+//                    VertexBuffer.Usage.STATIC
+                    // [1.21.4, )
+                    BufferUsage.STATIC_WRITE
+            );
+            // VertexBuffer.upload 要求 VAO 已绑定，原版 BufferUploader 同样先 bind 再 upload
+            vertexBuffer.bind();
+            ClientRenderProfiler.end(ClientRenderProfiler.BAKE_BUFFER, profileBuffer);
 
             long profileUpload = ClientRenderProfiler.begin();
             try {
@@ -381,8 +376,7 @@ public final class BakedMesh implements AutoCloseable {
             renderType.setupRenderState();
             setup = true;
 
-            // [1.20.1, 1.21.6)
-            @Nullable ShaderInstance shader = StaticBake.resolveEntityShader();
+            @Nullable CompiledShaderProgram shader = StaticBake.resolveEntityShader();
             if (shader == null) return false;
 
             this.vertexBuffer.bind();

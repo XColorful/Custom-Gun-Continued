@@ -33,6 +33,7 @@ public class CustomGunNeoforgeClient {
                 CustomGunNeoforgeClient.accessTransformer,
                 CustomGunNeoforgeClient.clientItemExtensionProvider,
                 CustomGunNeoforgeClient.stencilOperator);
+
         initialized = true;
     }
 }

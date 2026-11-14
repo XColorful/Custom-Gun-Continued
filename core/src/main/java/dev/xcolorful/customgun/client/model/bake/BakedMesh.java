@@ -100,7 +100,7 @@ public final class BakedMesh implements AutoCloseable {
 
     private BakedMesh(@Nullable VertexBuffer vertexBuffer, int bytes, boolean extendedFormat,
                       @Nullable ByteBuffer vertexCopy, int vertexCount, int stride, int uv2Offset,
-                      // int indexCount, VertexFormat.Mode mode, // [1.21.6, )
+//                      int indexCount, VertexFormat.Mode mode, // [1.21.6, )
                       int light) {
         this.vertexBuffer = vertexBuffer;
         this.bytes = bytes;

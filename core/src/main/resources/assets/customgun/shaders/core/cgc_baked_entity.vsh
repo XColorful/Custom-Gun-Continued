@@ -10,6 +10,9 @@
   2. 雾：vanilla 用 IViewRotMat * Position（Position 已是视图空间），先在相机旋转抵消后的坐标系里取样
      这里把 ModelViewMat 一起乘进去，得到同样的世界对齐坐标，再交给 fog_distance
      注意必须在乘完之后才做 shape=1 的「清 Y」，否则清掉的是模型空间的 Y
+     1.21.1 起
+        fog_distance 不再接矩阵，也没有 IViewRotMat
+        这里同样先把顶点乘进 ModelViewMat，再交给 fog_distance
 */
 #moj_import <light.glsl>
 #moj_import <fog.glsl>
@@ -26,7 +29,7 @@ uniform sampler2D Sampler2;
 
 uniform mat4 ModelViewMat;
 uniform mat4 ProjMat;
-uniform mat3 IViewRotMat;
+uniform mat3 IViewRotMat; // 1.21.1移除
 uniform int FogShape;
 
 uniform vec3 Light0_Direction;
@@ -42,6 +45,7 @@ out vec4 normal;
 void main() {
     gl_Position = ProjMat * ModelViewMat * vec4(Position, 1.0);
 
+     // [1.20.1, 1.21.1)
     /*
     雾必须先在「世界对齐」坐标系里算：原版是 fog_distance(ModelViewMat, IViewRotMat * Position)
     其中 IViewRotMat * Position 消除了相机旋转，shape=1 时 zero 掉的是世界 Y
@@ -49,6 +53,9 @@ void main() {
      */
     vec3 worldAlignedPosition = (mat4(IViewRotMat) * ModelViewMat * vec4(Position, 1.0)).xyz;
     vertexDistance = fog_distance(mat4(1.0), worldAlignedPosition, FogShape);
+    // [1.21.1, )
+//     vec3 viewPosition = (ModelViewMat * vec4(Position, 1.0)).xyz;
+//     vertexDistance = fog_distance(viewPosition, FogShape);
 
     mat3 normalMatrix = mat3(transpose(inverse(ModelViewMat)));
     vertexColor = minecraft_mix_light(Light0_Direction, Light1_Direction, normalMatrix * Normal, Color);

@@ -27,7 +27,14 @@ public class _GunLoader {
         if (magazine != null) _this.magazineNode = magazine.getModelRenderer();
 
         @Nullable IBedrockRenderer additionalMagazine = _this.modelMap_get(NodeName.MAG_ADDITIONAL.getName());
-        if (additionalMagazine != null) _this.additionalMagazineNode = additionalMagazine.getModelRenderer();
+        if (additionalMagazine != null) {
+            _this.additionalMagazineNode = additionalMagazine.getModelRenderer();
+            /**
+             * {@link BedrockPart#visible} 默认 true；只有换弹动画的 {@link NodeName#MAG_ADDITIONAL} 关键帧会打开它
+             * 不能只依赖第一人称渲染结束时的 {@link GunModelObject#cleanAnimationTransform}，展示框/掉落物/第三人称从不调用它
+             */
+            _this.additionalMagazineNode.visible = false;
+        }
     }
 
     /**

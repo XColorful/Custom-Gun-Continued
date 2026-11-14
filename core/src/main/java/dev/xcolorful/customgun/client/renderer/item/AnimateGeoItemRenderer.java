@@ -25,6 +25,7 @@ import dev.xcolorful.customgun.client.model.bedrock.BedrockPart;
 import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
 import dev.xcolorful.customgun.client.sound.SoundPlayManager;
 import dev.xcolorful.customgun.client.util.ClientRenderHelper;
+import dev.xcolorful.customgun.client.util.ClientRenderProfiler;
 import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import dev.xcolorful.customgun.core.api.item.IAnimationItem;
 import dev.xcolorful.customgun.core.config.GunConfig;
@@ -151,8 +152,15 @@ public abstract class AnimateGeoItemRenderer<M extends AnimatedModelObject, CTX 
 
     @Override
     public void tryInit(ItemStack itemStack, Player player, float partialTicks) {
+        // 切枪发生在采集窗口之前，这里独立计时并始终累计
+        final long initStart = System.nanoTime();
+        final long profInit = ClientRenderProfiler.begin();
         @Nullable LuaAnimStateMachine<CTX> stateMachine = this.getStateMachine(itemStack);
-        if (stateMachine == null) return;
+        if (stateMachine == null) {
+            ClientRenderProfiler.end(ClientRenderProfiler.TRY_INIT, profInit);
+            ClientRenderProfiler.recordInit(System.nanoTime() - initStart);
+            return;
+        }
 
         if (stateMachine.isInitialized()) {
             stateMachine.exit();
@@ -162,6 +170,8 @@ public abstract class AnimateGeoItemRenderer<M extends AnimatedModelObject, CTX 
         stateMachine.initialize();
 
         stateMachine.trigger(GunAnimationState.INPUT_DRAW.getConstantName());
+        ClientRenderProfiler.end(ClientRenderProfiler.TRY_INIT, profInit);
+        ClientRenderProfiler.recordInit(System.nanoTime() - initStart);
     }
 
     @Override

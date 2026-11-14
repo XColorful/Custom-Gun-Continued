@@ -16,6 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * 把一次 {@code endBatch} 拆成「缓冲上传」与「draw」两段，并统计 draw 次数与上传字节
  * <li>只在 F12 采集窗口内计时；未采集时每段只有一次 volatile 读</li>
  */
+@Deprecated(since = "1.21.6")
 @Mixin(BufferUploader.class)
 public class BufferUploaderMixin {
 

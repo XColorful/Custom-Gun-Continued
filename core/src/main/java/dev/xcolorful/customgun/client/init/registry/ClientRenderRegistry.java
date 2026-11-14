@@ -5,6 +5,7 @@ import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import dev.xcolorful.customgun.CustomGun;
+import dev.xcolorful.customgun.client.CustomGunClient;
 import dev.xcolorful.customgun.client.api.minecraft.texture.CustomTexture;
 import dev.xcolorful.customgun.client.compat.iris.IrisCompat;
 import net.minecraft.client.Minecraft;
@@ -19,6 +20,8 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.IdentityHashMap;
+import java.util.Map;
 import java.util.function.Consumer;
 
 public class ClientRenderRegistry {
@@ -42,9 +45,10 @@ public class ClientRenderRegistry {
          * <ul>
          *     <li>[1.20.1, 1.21.4) 程序 id 无需自带文件夹</li>
          *     <li>[1.21.4, ) 程序 id 由 {@code shaders/core/<path>.json} 的路径推出，必须带 {@code core/} 前缀</li>
+         *     <li>[1.21.6, ) 不再是程序 json 的 id，而是管线引用的着色器资源 id（{@code shaders/core/<path>.vsh/.fsh}）</li>
          * </ul>
          */
-        public static final @Nullable ResourceLocation BAKED_ENTITY_SHADER =
+        public static final @NotNull ResourceLocation BAKED_ENTITY_SHADER =
                 CustomGun.getMcRegistry().createResourceLocation(CustomGun.MOD_ID +
                         // [1.20.1, 1.21.4)
 //                        ":cgc_baked_entity"
@@ -54,22 +58,66 @@ public class ClientRenderRegistry {
 
         @Deprecated(since = "1.21.4")
         private static volatile @Nullable CompiledShaderProgram bakedEntityShader;
+
+        @Deprecated(since = "1.21.6")
         @ApiStatus.AvailableSince("1.21.4")
-        private static final @Nullable ShaderProgram bakedEntityProgram =
-                BAKED_ENTITY_SHADER == null ? null
+        private static final @NotNull Object bakedEntityProgram =
                         // [1.20.1, 1.21.4)
-//                        : new Object();
+                        new Object();
                         // [1.21.4, )
-                        : new ShaderProgram(BAKED_ENTITY_SHADER, DefaultVertexFormat.NEW_ENTITY, ShaderDefines.EMPTY);
+//                        new ShaderProgram(BAKED_ENTITY_SHADER, DefaultVertexFormat.NEW_ENTITY, ShaderDefines.EMPTY);
+
+        @ApiStatus.AvailableSince("1.21.6")
+        private static final @NotNull Object bakedEntityPipeline =
+                        // [1.20.1, 1.21.6)
+                        new Object();
+                        // [1.21.6, )
+//                RenderPipeline.builder(RenderPipelines.MATRICES_FOG_LIGHT_DIR_SNIPPET)
+//                        .withLocation(BAKED_ENTITY_SHADER)
+//                        .withVertexShader(BAKED_ENTITY_SHADER)
+//                        .withFragmentShader(BAKED_ENTITY_SHADER)
+//                        .withSampler("Sampler0")
+//                        .withSampler("Sampler1")
+//                        .withSampler("Sampler2")
+//                        .withBlend(BlendFunction.TRANSLUCENT)
+//                        .withCull(false)
+//                        .withVertexFormat(DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS)
+//                        .build();
 
         public static @Nullable CompiledShaderProgram getBakedEntityShader() {
             // [1.20.1, 1.21.4)
 //            return bakedEntityShader;
 
             // [1.21.4, )
-            @Nullable ShaderProgram program = bakedEntityProgram;
-            return program == null ? null : Minecraft.getInstance().getShaderManager().getProgram(program);
+            return Minecraft.getInstance().getShaderManager().getProgram(bakedEntityProgram);
         }
+        public static @Nullable Object getBakedEntityPipeline() {
+            return bakedEntityPipeline;
+        }
+
+        /**
+         * 按调用方的 {@link RenderType} 派生烘焙管线：保留它的混合 / 剔除 / 深度等状态，只把着色器换成烘焙用的
+         * <ul>
+         *     <li>烘焙网格是模型空间顶点，vanilla 实体着色器算不对法线与雾，必须换成自己的</li>
+         *     <li>但状态不能换：枪体走不透明 {@link RenderType}、镜片走半透明</li>
+         *     <li>Iris 正是按这些状态把管线派到对应 program，统一成半透明管线会让不透明几何落进 alpha program，表现为整体透明</li>
+         *     <li>{@code toBuilder()} 每调用一次都是新实例，按基础管线缓存，避免每帧重编译</li>
+         * </ul>
+         */
+        @ApiStatus.AvailableSince("1.21.6")
+        public static @Nullable RenderPipeline bakedPipelineFor(RenderType renderType) {
+            RenderPipeline base = CustomGunClient.getAccessTransformer().getRenderPipeline(renderType);
+            // [1.20.1, 1.21.6)
+            return null;
+
+            // [1.21.6, )
+//            return BAKED_PIPELINES.computeIfAbsent(base, pipeline -> pipeline.toBuilder()
+//                    .withVertexShader(BAKED_ENTITY_SHADER)
+//                    .withFragmentShader(BAKED_ENTITY_SHADER)
+//                    .build());
+        }
+
+        private static final Map<RenderPipeline, RenderPipeline> BAKED_PIPELINES = new IdentityHashMap<>();
     }
 
     @FunctionalInterface
@@ -101,6 +149,7 @@ public class ClientRenderRegistry {
      *     <li>资源重载后编译产物会被重建，因此这里只登记定义，取用时再到管理器里查</li>
      * </ul>
      */
+//    @Deprecated(since = "1.21.6")
     public static void onRegisterShaders(IShaderRegistrar registrar) {
         // [1.20.1, 1.21.4)
 //        @Nullable var location = BakedEntityRenderState.BAKED_ENTITY_SHADER;
@@ -111,10 +160,9 @@ public class ClientRenderRegistry {
 //                shader -> BakedEntityRenderState.bakedEntityShader = shader);
 
         // [1.21.4, )
-        @Nullable var program = BakedEntityRenderState.bakedEntityProgram;
-        if (program == null) return;
+//        registrar.registerShader(BakedEntityRenderState.bakedEntityProgram);
 
-        registrar.registerShader(program);
+        // [1.21.6, )
     }
 
     public static class LaserBeamRenderState extends RenderStateShard {
@@ -223,6 +271,7 @@ public class ClientRenderRegistry {
     @ApiStatus.AvailableSince("1.21.6")
     public static void onRegisterRenderPipelines(Consumer<RenderPipeline> registrar) {
 
+        registrar.accept(BakedEntityRenderState.bakedEntityPipeline);
         registrar.accept(LaserBeamRenderState.LASER_BEAM_PIPELINE);
         registrar.accept(LaserBeamRenderState.LASER_BEAM_ENTITY_PIPELINE);
 

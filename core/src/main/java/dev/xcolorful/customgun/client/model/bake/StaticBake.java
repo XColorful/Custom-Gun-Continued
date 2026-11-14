@@ -19,7 +19,8 @@ import java.util.function.Consumer;
  * <ul>
  *     <li>节点姿态不变的场景（展示框 / 地面 / 第三人称）用烘焙网格替换逐顶点遍历</li>
  *     <li>第一人称不在本阶段范围内，仍走即时管线</li>
- *     <li>光照与雾由「<b>实例矩阵参与着色</b>」保证，见 {@link #resolveEntityShader()}</li>
+ *     <li>[1.20.1, 1.21.6) 光照与雾由「<b>实例矩阵参与着色</b>」保证，见 {@link #resolveEntityShader()}</li>
+ *     <li>[1.21.6, ) 光照与雾由「<b>实例矩阵参与着色</b>」保证，见 {@link ClientRenderRegistry.BakedEntityRenderState#bakedPipelineFor(RenderType)}</li>
  * </ul>
  * 状态段（functional 回调与可见性）仍然每帧执行，见 {@code BedrockPart#renderStatus}
  */
@@ -54,12 +55,26 @@ public final class StaticBake {
     }
 
     /**
+     * 只在第一次缺少烘焙着色器时告警，避免每帧刷屏
+     */
+    private static boolean warnedNoShader;
+    /**
      * 本帧是否有可用的实体着色器
      * <li>提前判断可以让调用方在状态段之前就退回即时管线，避免同帧执行两次 functional 回调</li>
      */
     public static boolean available() {
+        // [1.20.1, 1.21.6)
         return IrisCompat.isUsingRenderPack()
                 || ClientRenderRegistry.BakedEntityRenderState.getBakedEntityShader() != null;
+
+        // [1.21.6, )
+//        boolean available = ClientRenderRegistry.BakedEntityRenderState.getBakedEntityPipeline() != null;
+//        if (!available && !warnedNoShader) {
+//            warnedNoShader = true;
+//            CustomGun.LOGGER.warn("Core shader {} is unavailable, static bake falls back to the immediate pipeline",
+//                    ClientRenderRegistry.BakedEntityRenderState.BAKED_ENTITY_SHADER);
+//        }
+//        return available;
     }
 
     /**
@@ -75,6 +90,7 @@ public final class StaticBake {
      *     <li>用 CGC 自己的烘焙着色器；平台没有注册它时返回 {@code null}，调用方退回即时管线</li>
      * </ul>
      */
+    @Deprecated(since = "1.21.6")
     public static @Nullable CompiledShaderProgram resolveEntityShader() {
         if (IrisCompat.isUsingRenderPack()) {
             return RenderSystem.getShader();
@@ -88,8 +104,6 @@ public final class StaticBake {
         }
         return shader;
     }
-
-    private static boolean warnedNoShader;
 
     /**
      * 取缓存或烘焙，然后用模型视图矩阵绘制

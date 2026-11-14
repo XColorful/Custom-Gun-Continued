@@ -869,3 +869,121 @@ TaCZ 侧只写了约 700 行适配（`ExternalGunAppearance` / `DisplayGunGeomet
 **联动改动（各一行）**：[PLAN.md:53](docs/architecture/client/render/PLAN.md:53) 结论 1 保留「无需参考其实现」，补上不公开/无缺陷分析/加速渲染无收益的理由与指针；[TODO.md](docs/architecture/client/render/TODO.md) 加「外部参照验证 V1–V9，随阶段验证、不改路线与已测数值」；[refactor/Home.md](docs/architecture/client/render/refactor/Home.md) 文档导航加一行。
 
 未改动：B1→B2 路线、任何 benchmark 数值、方案文档的估算值。
+
+# 
+---
+
+读`./docs/architecture/client/render/PLAN.md`和`26.35.11.1-4/测试数据计算报告`，现在需要对比TaCZ渲染，排查剩下0.067ms的常数项在哪
+- 可以对比TaCZ1.2.0对1.1.8的更新
+- 预计按照26.35.11.1-8进行测试，不开光影
+
+# 
+
+## 两条路径的逐帧差
+
+我在对比 TaCZ 1.2.0（`D:/Github/TACZ`，tag `1.2.0-forge-mc1.20.1`）和 CGC 的静态展示路径后，发现了两边的逐帧差：
+
+**TaCZ 1.2.0**：`GunItemRendererWrapper.renderByItem` → `ExternalGunItemVboRenderer.tryRender` → SBM v2 的 `StaticMeshRenderer.tryDraw`。每个展示实例每帧只做：若干次 record 分配，外加 `hasBulletInBarrel`、`getCurrentAmmoCount` 两次 NBT 读取；2～3 次 map 查询；然后对每个材质依次执行 shader 绑定、整数属性设置、draw。**它不遍历模型树，也不重新解析配件。**
+
+**CGC**：`GunItemRenderer.renderByItem` → `_GunModelRender.render`，每帧对 7 类配件重新执行 `getAttachment` 和 `getBuiltinAttachment`，并做资源索引查询（代码里还留着 TODO「渲染时每帧都这么拼命地读NBT？」）→ `ModelObject.renderBaked`，对整棵节点树运行 `renderStatus`，并逐节点计算 18 个字段的指纹 → 按 `Key` 查 LRU → 每网格 1 次 draw。
+
+TaCZ 1.1.8→1.2.0 的 diff 也印证了这一点：1.2.0 新增的 `DisplayGunGeometry`、`ExternalGunAppearance`、`StaticMeshCache` 全都把「解析外观、可见性、材质」的时机从每帧移到了捕获期，运行时只剩下外观键比较。
+
+## 已有数据可以确定的量级
+
+从 `b1-a-5` 的 9 把满配 F12 原始数据（n=4，很稳）：
+
+|项|每帧|折算|
+|---|---:|---:|
+|`World-item submit`|1.186–1.229 ms|—|
+|`Data refresh`|**0.043–0.046 ms**|4.9 µs/提交|
+|`endBatch draw`|0.616–0.644 ms|7.6–8.0 µs/draw|
+|`Draw calls`|81|—|
+|`Nodes captured`|1512|168 节点/提交（ak47 是 108，`26.35.11.1-1` 的 972/9）|
+
+裸枪 9 把 34 µs/枪里，draw 占约 18 µs，`Data refresh` 按满配折算量级在 3–5 µs，剩下的 8–12 µs 就是**唯一还没有探针的那段状态段**（`renderBaked` 里的逐节点 `renderStatus` + 指纹）。7.4 µs/枪的缺口正好落在这两项上，而这两项 TaCZ 都不做。
+
+## 已做的改动（未提交）
+
+- `ClientRenderProfiler`：新增 `STATIC_STATUS = 27`（`PROBE_COUNT` 27→28，名称表加 `Static status`）
+- `ModelObject.renderBaked`：把状态段包进该探针（只有 F12 开启时多两次 `nanoTime`，AF 帧时间不受影响）
+- 文档：探针表登记在 [chain/Home.md](docs/architecture/client/render/chain/Home.md:161)，待办写进 [TODO.md](docs/architecture/client/render/TODO.md:69)
+- `./gradlew :core:compileJava` 通过
+
+## -8 的判读方式
+
+同一份 F12 输出里 `Static status / 9` 和 `Data refresh / 9` 两个数就能决定归因：如果状态段在 4–6 µs/枪，那 0.067 ms 基本就是它，方向是「同一帧同一个模型只算一次指纹」（9 个展示框共享同一个 `ModelObject`，现在算了 9 遍）；如果两项都不大，就把 `World-item submit − Data refresh − Static status − draw` 的余量当作 Key/LRU/矩阵/getBuffer 的杂项。
+
+另外提醒一个口径问题：`26.35.11.1-4` 的 0.866 ms 空展示框基线**只在 CGC 端测过**，而 CGC 端多装了 `cgccpackloader` / `cgccshader`，所以 0.067 ms 里可能有非 CGC 成分——这也是我在下一步框里问的那个基线要不要两端都测的原因。
+
+# 
+
+```
+测试跑好了，baseline也有
+另外需要比较下这个差距是否刚好是b1-c-a这个待做优化
+```
+
+# 
+
+## 帧时间（n=4，TaCZ 有枪 n=3：`tacz1-multi (2)` 只有第 2 步）
+
+|场景|CGC|TaCZ|差|
+|---|---:|---:|---:|
+|9 个空展示框|0.8591 ± 0.026|0.8470 ± 0.032|+0.012 ms（0.6σ，噪声内）|
+|9 把 ak47 展示框|1.1893 ± 0.040|1.1357 ± 0.013|**+0.054 ms**|
+|每枪（同批基线相减）|36.7 µs|32.1 µs|**+4.6 µs**|
+
+基线两端相等，所以这次不用再折算跨端基线。**0.067 ms 是 `26.35.11.1-4` 的偏差，原因是那批 0.866 ms 只测了 CGC 端。** 真实差是 0.041–0.054 ms（用原始值相减是 0.054，用同批基线相减是 0.041），每枪 4.6–6.0 µs，约 2.5σ。
+
+## CGC 每枪的 31.8 µs 已全部归因（新增 `Static status` 探针，n=4）
+
+|项|每帧|每提交|
+|---|---:|---:|
+|`World-item submit`|0.286 ms|31.8 µs|
+|**`Static status`（状态段）**|**0.125 ms**|**13.9 µs（43%）**|
+|`Data refresh`|0.0265|2.9 µs|
+|2 次 draw（`endBatch draw` 中静态部分）|≈0.140|≈15.6 µs|
+
+13.9 + 2.9 + 15.6 = 32.3 ≈ 31.8 ✓，说明这个算术结果支持「每枪 2 次 draw」；并且和 `26.35.11.1-4` 的实测结果一致。
+
+## 结论：这 4.6 µs 不是 B1-c-A
+
+- 本场景 `Light patches = 0`、`Bake rebuilds = 0`、`Bake upload bytes = 0`、`Distinct RenderTypes = 1`，说明**没有任何光照工作在执行**，A 没有东西可省。A 省下的只是「一次光照变化 ≈0.6 ms」，而在稳定状态下，它反而会让每次 draw 多绑定一个 attribute。
+- `lighting-decoupling.md` 里 A 的 4.8 µs 是「ak47 一次光照变化时填充 4 B/顶点光照数组」的 CPU 成本，属于**事件成本**而非每帧成本；它和 4.6 µs/枪 的数值接近纯属巧合。
+- 更根本的原因在于：**没有任何单个项的值等于 4.6 µs**。CGC 侧能测到的最小项是 `Data refresh` 的 2.9 µs，而状态段一项就是差的 3 倍。因此这个差其实是「两种相当量级的每实例开销之差」；它并不是 CGC 里某个固定常数，TaCZ 自己也在每帧执行 `ExternalGunAppearance.resolve` 和逐 part 的整数属性设置。
+- 唯一能在结构上对上的差别是**每枪 draw 数**：TaCZ 的捕获期按材质合并（`GeometryCollector.snapshot()` 丢弃空 pass），裸 ak47 只有 1 次 draw；CGC 按模型对象逐个 draw，结果是 2 次。但 CGC 的非 draw 部分已经有 16.8 µs/枪，要么是 TaCZ 那次 draw 比 CGC 贵一倍，要么是两端正好持平；**不测 TaCZ 内部无法再细分**，继续追这 4.6 µs 的性价比很低。
+
+## 值得做的是状态段
+
+`Static status` **13.9 µs/提交 = 0.125 ms/帧，约占整帧 10%**，比整个与 TaCZ 的差大 3 倍。9 个展示框共享同一个 `ModelObject`，同一帧内状态完全相同，指纹却被算了 9 遍；其中 `Functional nodes` 只占 2.8 µs/枪，剩下 11 µs 是纯遍历 + 18 字段哈希。按「模型 + 帧」去重、同时对含 functional 节点的子树仍每次执行回调，理论上能省下约 0.10 ms/帧，CGC 会明显快于 TaCZ。
+
+另外，第 2 步的帧时间结果是 CGC 1.398 ms、TaCZ 2.048 ms，CGC 快 0.65 ms；这部分是 B1-b 第一人称烘焙的收益，和静态展示无关。结论已写进 [TODO.md](docs/architecture/client/render/TODO.md:69)，`-8` 的批次报告和 `analyze.py` 还没有生成。
+
+# 
+
+```
+引入这个状态段去重对于展示框都是不同枪械的场景是否有优化？如果没有优化还会引入额外常数开销就不加入（见B2否决原因）
+补报告
+```
+
+# 
+
+## 状态段去重：对「展示框放不同枪」没有优化，因此不加入
+
+- 去重的键只能是共享的 `ModelObject`。9 个展示框**放不同枪**时对应 9 个不同模型，**命中率为 0**，收益为 0。
+- 引入的额外开销是：每次提交多一次帧序号比较，这部分可忽略；真正的负担在语义上：functional 节点的委托是**逐提交登记**的，所以去重时不能跳过含回调的子树，只能跳过纯几何子树。这样一来，分支、缓存失效的判定规则以及 addon 重新挂回调的时机都变得复杂，而这些正是 B2 被否决的那类风险。
+- 这和 B2 的否决原因属于同一类情形：**收益只在「同一把枪重复展示」时成立**。按同一套标准，不加入。
+- 附带说明：不同枪的场景里状态段仍是 13.89 µs/枪 = 0.125 ms/帧（约占整帧 8%）。要优化它只能更换成本模型，比如用动画写入时维护的 revision 替代逐节点哈希，或者只在姿态类节点上计算指纹；那是另一项设计，不在这一轮。
+
+## -8 报告已生成
+
+新增 [analyze.py](docs/architecture/client/render/benchmark/26.35.11.1-8/analyze.py)（运行 `python analyze.py` 会重新计算全部数值并生成图）和 [测试数据计算报告.md](docs/architecture/client/render/benchmark/26.35.11.1-8/测试数据计算报告.md)，图是 [测试数据总览-1-帧时间.png](docs/architecture/client/render/benchmark/26.35.11.1-8/测试数据总览-1-帧时间.png)。
+
+写报告时发现两处需要修正之前口语结论的地方：
+
+1. **差比上一轮说的更不显著**。用同批基线相减后是 4.74 ± 3.29 µs/枪（**1.4σ**），只有有枪时原始差 0.0545 ± 0.0215 ms 才达到 2.5σ。因为每端基线自身也有噪声，四项标准误合起来就把差值推到噪声范围内。报告里两个口径都列了。
+2. **`Static status` 占每提交 43.7%**，纯遍历 + 18 字段哈希是 11.1 µs/提交（≈103 ns/节点，108 个节点）。整体构成是「闭合」的：`World-item submit` 31.78 = 状态段 13.89 + 数据刷新 2.94 + 余量 14.94 µs（2 次 draw + 缓存键/矩阵/getBuffer），没有剩下无法解释的部分。
+
+文档同步：benchmark 的批次表、各批次分工、[TODO](docs/architecture/client/render/TODO.md:69)（含否决理由）、[reference-tacz-1.2.0.md](docs/architecture/client/render/refactor/reference-tacz-1.2.0.md) 的 V1 都更新了。
+
+工作区里 `26.35.11.1-6/测试数据计算报告.md` 和 `docs/deprecated/prompt/#96.md` 有改动，那些不是本次改的，我没有动。

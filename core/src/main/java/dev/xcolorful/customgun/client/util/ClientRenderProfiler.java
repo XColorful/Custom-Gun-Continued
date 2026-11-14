@@ -96,8 +96,10 @@ public final class ClientRenderProfiler implements IEventHandler {
     public static final int BAKE_UPLOAD = 25;
     /** 渲染重构B1-c-B 原地改写光照：patch uv2 + 重传原 VBO（不重新发射顶点） */
     public static final int LIGHT_UPDATE = 26;
+    /** 静态烘焙的状态段：逐节点可见性 / functional 回调与状态指纹，每个展示实例每帧执行一次 */
+    public static final int STATIC_STATUS = 27;
 
-    public static final int PROBE_COUNT = 27;
+    public static final int PROBE_COUNT = 28;
     private static final String[] PROBE_NAMES = {
             "First-person submit", "World-item submit", "State update", "Data refresh", "Scope render",
             "Model render total", "Node snapshot", "Geometry traverse", "endBatch flush",
@@ -106,6 +108,7 @@ public final class ClientRenderProfiler implements IEventHandler {
             "Functional nodes", "GUI slot icon", "Camera angles", "Hand camera", "FOV",
             "endBatch upload", "endBatch draw", "Static bake",
             "Bake emit", "Bake buffer create", "Bake upload", "Light update",
+            "Static status",
     };
 
     // --------计数--------

@@ -17,6 +17,7 @@ TaCZ端1（forge47.4.23）：
 - ./mods/embeddium-0.3.31+mc1.20.1.jar
 - ./mods/oculus-mc1.20.1-1.8.0.jar
 - ./mods/tacz-forge-1.20.1-1.2.0-all.jar
+- ./shaderpacks/ComplementaryReimagined_r5.9.3.zip（配置HIGH）
 - ./tacz/tacz_default_gun/
 
 TaCZ端2（forge47.4.23）：
@@ -24,6 +25,7 @@ TaCZ端2（forge47.4.23）：
 - ./mods/embeddium-0.3.31+mc1.20.1.jar
 - ./mods/oculus-mc1.20.1-1.8.0.jar
 - ./mods/tacz-forge-1.20.1-1.2.0-all.jar
+- ./shaderpacks/ComplementaryReimagined_r5.9.3.zip（配置HIGH）
 - ./tacz/tacz_default_gun/
 
 测试方式-multi：

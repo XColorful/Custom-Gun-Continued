@@ -158,6 +158,7 @@ graph TB
 |`Bake buffer create`|`new VertexBuffer` + `bind()`（glGenBuffers / glGenVertexArrays / 绑 VAO）|B1-c 拆分|
 |`Bake upload`|`VertexBuffer.upload`（顶点 + 索引 + `setupBufferState`）|B1-c 拆分|
 |`Light update`|`BakedMesh.updateLight`：原地改写 uv2 + 重传原 VBO（不重新发射顶点）|B1-c-B|
+|`Static status`|静态烘焙的状态段：逐节点可见性判定 / functional 回调与状态指纹（每个展示实例每帧一次）|B1-a|
 |`Delegate render`|枪口火焰 / 抛壳 / 手臂 / 文字 / 配件|P9|
 |`Muzzle cache`|第一人称枪口位置缓存|—|
 |`Stencil clear`|瞄具模板缓冲清空|P8 后半|

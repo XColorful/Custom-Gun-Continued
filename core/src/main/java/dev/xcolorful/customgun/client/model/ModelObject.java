@@ -376,10 +376,12 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
         long vertexMark = discard.writtenVertices();
 
         long fingerprint = FINGERPRINT_SEED;
+        final long profStatus = ClientRenderProfiler.begin();
         for (int i = 0; i < this.shouldRender.size(); i++) {
             fingerprint = fingerprint * 31L + this.shouldRender.get(i)
                     .renderStatus(matrixStack, transformType, light, overlay, discard, null);
         }
+        ClientRenderProfiler.end(ClientRenderProfiler.STATIC_STATUS, profStatus);
 
         if (discard.writtenVertices() != vertexMark) {
             // 回调直接把几何写进 consumer（不是委托）：烘焙会丢掉这部分几何，退回即时管线

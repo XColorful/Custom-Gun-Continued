@@ -36,8 +36,6 @@ public class BufferUploaderMixin {
                 // [1.21.1, )
 //                state.vertexCount() * state.format().getVertexSize()
         );
-
-        // [1.21.1, )
     }
 
     @Redirect(

@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.MeshData;
 import com.mojang.blaze3d.vertex.VertexBuffer;
 import dev.xcolorful.customgun.client.util.ClientRenderProfiler;
-import net.minecraft.client.renderer.ShaderInstance;
+import net.minecraft.client.renderer.CompiledShaderProgram;
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -19,7 +19,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(BufferUploader.class)
 public class BufferUploaderMixin {
 
-    @Inject(method = "_drawWithShader", at = @At("HEAD"))
+    // [1.20.1, 1.21.4)
+//    @Inject(method = "_drawWithShader", at = @At("HEAD"))
+    // [1.21.4, )
+    @Inject(method = "drawWithShader", at = @At("HEAD"))
     private static void cgc$countDraw(MeshData meshData,
                                       CallbackInfo ci) {
         // [1.20.1, 1.21.1)
@@ -59,19 +62,22 @@ public class BufferUploaderMixin {
     }
 
     @Redirect(
-            method = "_drawWithShader",
+            // [1.20.1, 1.21.4)
+//            method = "_drawWithShader",
+            // [1.21.4, )
+            method = "drawWithShader",
             at = @At(
                     value = "INVOKE",
                     // [1.20.1, 1.21.4)
-                    target = "Lcom/mojang/blaze3d/vertex/VertexBuffer;drawWithShader(Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;Lnet/minecraft/client/renderer/ShaderInstance;)V"
+//                    target = "Lcom/mojang/blaze3d/vertex/VertexBuffer;drawWithShader(Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;Lnet/minecraft/client/renderer/ShaderInstance;)V"
                     // [1.21.4, )
-//                    target = "Lcom/mojang/blaze3d/vertex/VertexBuffer;drawWithShader(Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;Lnet/minecraft/client/renderer/CompiledShaderProgram;)V"
+                    target = "Lcom/mojang/blaze3d/vertex/VertexBuffer;drawWithShader(Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;Lnet/minecraft/client/renderer/CompiledShaderProgram;)V"
             )
     )
     private static void cgc$timeDraw(VertexBuffer vertexBuffer,
                                      Matrix4f modelView,
                                      Matrix4f projection,
-                                     ShaderInstance shader) {
+                                     CompiledShaderProgram shader) {
         long start = ClientRenderProfiler.begin();
         try {
             vertexBuffer.drawWithShader(modelView, projection, shader);

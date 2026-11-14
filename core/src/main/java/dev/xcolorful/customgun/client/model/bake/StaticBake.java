@@ -7,7 +7,7 @@ import dev.xcolorful.customgun.client.compat.iris.IrisCompat;
 import dev.xcolorful.customgun.client.init.registry.ClientRenderRegistry;
 import dev.xcolorful.customgun.client.util.ClientRenderProfiler;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.ShaderInstance;
+import net.minecraft.client.renderer.CompiledShaderProgram;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
@@ -75,12 +75,12 @@ public final class StaticBake {
      *     <li>用 CGC 自己的烘焙着色器；平台没有注册它时返回 {@code null}，调用方退回即时管线</li>
      * </ul>
      */
-    public static @Nullable ShaderInstance resolveEntityShader() {
+    public static @Nullable CompiledShaderProgram resolveEntityShader() {
         if (IrisCompat.isUsingRenderPack()) {
             return RenderSystem.getShader();
         }
 
-        @Nullable ShaderInstance shader = ClientRenderRegistry.BakedEntityRenderState.getBakedEntityShader();
+        @Nullable CompiledShaderProgram shader = ClientRenderRegistry.BakedEntityRenderState.getBakedEntityShader();
         if (shader == null && !warnedNoShader) {
             warnedNoShader = true;
             CustomGun.LOGGER.warn("Core shader {} is unavailable, static bake falls back to the immediate pipeline",

@@ -4,8 +4,8 @@
         "srcrgb": "srcalpha",
         "dstrgb": "1-srcalpha"
     },
-    "vertex": "customgun:cgc_baked_entity",
-    "fragment": "customgun:cgc_baked_entity",
+    "vertex": "customgun:core/cgc_baked_entity",
+    "fragment": "customgun:core/cgc_baked_entity",
     "attributes": [
         "Position",
         "Color",

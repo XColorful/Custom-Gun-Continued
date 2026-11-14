@@ -3,6 +3,8 @@ package dev.xcolorful.customgun.client.model.bake;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.ByteBufferBuilder;
+import com.mojang.blaze3d.vertex.MeshData;
 import com.mojang.blaze3d.vertex.VertexBuffer;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
@@ -52,7 +54,7 @@ public final class BakedMesh implements AutoCloseable {
      *     <li>正常流程不嵌套，复用同一实例</li>
      * </ul>
      */
-    private static final List<BufferBuilder> BUILDERS = new ArrayList<>();
+    private static final List<ByteBufferBuilder> BUILDERS = new ArrayList<>();
     private static int builderDepth;
 
     /**
@@ -126,10 +128,10 @@ public final class BakedMesh implements AutoCloseable {
         BufferBuilder builder = acquireBuilder(mode, format);
         long profileEmit = ClientRenderProfiler.begin();
         try {
-            builder.begin(mode, format); {
+            {
                 emitter.accept(builder);
             }
-            BufferBuilder.RenderedBuffer rendered = builder.endOrDiscardIfEmpty();
+            MeshData rendered = builder.build();
             ClientRenderProfiler.end(ClientRenderProfiler.BAKE_EMIT, profileEmit);
 
             if (rendered == null) return new BakedMesh(null, 0, false,
@@ -144,17 +146,17 @@ public final class BakedMesh implements AutoCloseable {
                 1.20.1 drawState.bufferSize()
                 sequential 输出没有独立索引缓冲，只算顶点字节
                  */
-                bytes = rendered.drawState().bufferSize();
-                writtenFormat = rendered.drawState().format();
-                extendedFormat = writtenFormat != format;
-                vertexCount = rendered.drawState().vertexCount();
+//                bytes = rendered.drawState().bufferSize();
+//                writtenFormat = rendered.drawState().format();
+//                extendedFormat = writtenFormat != format;
+//                vertexCount = rendered.drawState().vertexCount();
 
                 // [1.21.1, )
-//                MeshData.DrawState drawState = rendered.drawState();
-//                writtenFormat = drawState.format();
-//                extendedFormat = writtenFormat != format;
-//                vertexCount = drawState.vertexCount();
-//                bytes = vertexCount * writtenFormat.getVertexSize();
+                MeshData.DrawState drawState = rendered.drawState();
+                writtenFormat = drawState.format();
+                extendedFormat = writtenFormat != format;
+                vertexCount = drawState.vertexCount();
+                bytes = vertexCount * writtenFormat.getVertexSize();
 
             }
             int stride = writtenFormat.getVertexSize();
@@ -274,13 +276,13 @@ public final class BakedMesh implements AutoCloseable {
     private static BufferBuilder acquireBuilder(VertexFormat.Mode mode, VertexFormat format) {
         int depth = builderDepth++;
         if (depth == BUILDERS.size()) BUILDERS.add(
-                new BufferBuilder(BUILD_CAPACITY) // new ByteBufferBuilder(BUILD_CAPACITY)
+                new ByteBufferBuilder(BUILD_CAPACITY)
         );
         // [1.20.1, 1.21.1)
-        return BUILDERS.get(depth);
+//        return BUILDERS.get(depth);
 
         // [1.21.1, )
-//        return new BufferBuilder(BUILDERS.get(depth), mode, format);
+        return new BufferBuilder(BUILDERS.get(depth), mode, format);
     }
 
     /**

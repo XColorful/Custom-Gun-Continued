@@ -1,6 +1,5 @@
 package dev.xcolorful.customgun.client.util;
 
-import net.minecraft.client.Minecraft;
 import org.jetbrains.annotations.ApiStatus;
 import org.lwjgl.opengl.ARBTimerQuery;
 import org.lwjgl.opengl.GL;
@@ -62,8 +61,7 @@ public final class GpuFrameTimer {
         }
 
         try {
-            Minecraft mc = Minecraft.getInstance();
-            if (mc != null && mc.options.renderDebug) {
+            if (ClientRenderUtils.getShowDebugScreen()) {
                 endActive(true);
                 drain(true);
                 return;

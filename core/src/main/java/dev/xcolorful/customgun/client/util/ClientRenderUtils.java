@@ -109,15 +109,15 @@ public class ClientRenderUtils {
 
     public static VertexFormatElement.Usage getUsage(VertexFormatElement element) {
         // [1.20.1, 1.21.1)
-        return element.getUsage();
+//        return element.getUsage();
         // [1.21.1, )
-//        return element.usage();
+        return element.usage();
     }
     public static int getByteSize(VertexFormatElement element) {
         // [1.20.1, 1.21.1)
-        return element.getByteSize();
+//        return element.getByteSize();
         // [1.21.1, )
-//        return element.byteSize();
+        return element.byteSize();
     }
     public static int getIndex(VertexFormatElement element) {
         // [1.20.1, 1.21.1)

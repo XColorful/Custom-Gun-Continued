@@ -9,6 +9,8 @@
     "gui.AbstractButtonMixin",
     "model.HumanoidModelMixin",
     "model.PlayerModelMixin",
+    "renderer.BufferUploaderMixin",
+    "renderer.EntityRenderDispatcherMixin",
     "renderer.EntityRendererMixin",
     "renderer.GameRendererMixin",
     "renderer.ItemInHandLayerMixin",

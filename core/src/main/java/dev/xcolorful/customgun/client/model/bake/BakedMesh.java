@@ -123,22 +123,43 @@ public final class BakedMesh implements AutoCloseable {
 
     private static BakedMesh bake(VertexFormat.Mode mode, VertexFormat format, int light,
                                   boolean keepLightCopy, Consumer<VertexConsumer> emitter) {
-        BufferBuilder builder = acquireBuilder();
+        BufferBuilder builder = acquireBuilder(mode, format);
         long profileEmit = ClientRenderProfiler.begin();
         try {
-            builder.begin(mode, format);
-            emitter.accept(builder);
+            builder.begin(mode, format); {
+                emitter.accept(builder);
+            }
             BufferBuilder.RenderedBuffer rendered = builder.endOrDiscardIfEmpty();
             ClientRenderProfiler.end(ClientRenderProfiler.BAKE_EMIT, profileEmit);
-            if (rendered == null) return new BakedMesh(null, 0, false, null, 0, 0, -1, light);
 
-            int bytes = rendered.drawState().bufferSize();
-            VertexFormat writtenFormat = rendered.drawState().format();
-            boolean extendedFormat = writtenFormat != format;
-            int vertexCount = rendered.drawState().vertexCount();
+            if (rendered == null) return new BakedMesh(null, 0, false,
+                    null, 0, 0, -1, light);
+
+            int bytes;
+            VertexFormat writtenFormat;
+            boolean extendedFormat;
+            int vertexCount; {
+                // [1.20.1, 1.21.1)
+                /*
+                1.20.1 drawState.bufferSize()
+                sequential 输出没有独立索引缓冲，只算顶点字节
+                 */
+                bytes = rendered.drawState().bufferSize();
+                writtenFormat = rendered.drawState().format();
+                extendedFormat = writtenFormat != format;
+                vertexCount = rendered.drawState().vertexCount();
+
+                // [1.21.1, )
+//                MeshData.DrawState drawState = rendered.drawState();
+//                writtenFormat = drawState.format();
+//                extendedFormat = writtenFormat != format;
+//                vertexCount = drawState.vertexCount();
+//                bytes = vertexCount * writtenFormat.getVertexSize();
+
+            }
             int stride = writtenFormat.getVertexSize();
             int uv2Offset = light == FULL_BRIGHT ? -1 : uv2Offset(writtenFormat);
-            // 上传会释放 RenderedBuffer，CPU 副本必须在 upload 之前拷出来
+            // 上传会释放 RenderedBuffer/MeshData，CPU 副本必须在 upload 之前拷出来
             ByteBuffer vertexCopy = !keepLightCopy || uv2Offset < 0 ? null : copyVertices(rendered.vertexBuffer());
 
             long profileBuffer = ClientRenderProfiler.begin();
@@ -176,8 +197,9 @@ public final class BakedMesh implements AutoCloseable {
     private static int uv2Offset(VertexFormat format) {
         int offset = 0;
         for (VertexFormatElement element : format.getElements()) {
-            if (element.getUsage() == VertexFormatElement.Usage.UV && element.getIndex() == 2) return offset;
-            offset += element.getByteSize();
+            if (ClientRenderUtils.getUsage(element) == VertexFormatElement.Usage.UV
+                    && ClientRenderUtils.getIndex(element) == 2) return offset;
+            offset += ClientRenderUtils.getByteSize(element);
         }
         return -1;
     }
@@ -242,10 +264,23 @@ public final class BakedMesh implements AutoCloseable {
         }
     }
 
-    private static BufferBuilder acquireBuilder() {
+    /**
+     * <ul>
+     *     <li>1.21.1 {@code BufferBuilder} 把 mode/format 收进了构造函数、不再有 {@code begin()}</li>
+     *     <li>池子改成缓存 {@code ByteBufferBuilder}，每次烘焙 {@code new BufferBuilder}(池中的 builder, mode, format)</li>
+     *     <li>{@code VertexBuffer.upload} 会 close 掉 {@code MeshData}，进而归还 {@code ByteBufferBuilder} 的区段，池可以安全复用</li>
+     * </ul>
+     */
+    private static BufferBuilder acquireBuilder(VertexFormat.Mode mode, VertexFormat format) {
         int depth = builderDepth++;
-        if (depth == BUILDERS.size()) BUILDERS.add(new BufferBuilder(BUILD_CAPACITY));
+        if (depth == BUILDERS.size()) BUILDERS.add(
+                new BufferBuilder(BUILD_CAPACITY) // new ByteBufferBuilder(BUILD_CAPACITY)
+        );
+        // [1.20.1, 1.21.1)
         return BUILDERS.get(depth);
+
+        // [1.21.1, )
+//        return new BufferBuilder(BUILDERS.get(depth), mode, format);
     }
 
     /**

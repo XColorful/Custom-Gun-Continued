@@ -1,6 +1,7 @@
 package dev.xcolorful.customgun.client.model.bake;
 
-import com.mojang.blaze3d.buffers.BufferUsage;
+import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
@@ -19,6 +20,7 @@ import net.minecraft.client.renderer.RenderType;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
+import org.joml.Vector4f;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 
@@ -65,6 +67,8 @@ public final class BakedMesh implements AutoCloseable {
      * 打包格式随版本变化，走项目包装而不是写死数值
      */
     private static final int FULL_BRIGHT = ClientRenderUtils.LightTexture_.pack(15, 15);
+    @ApiStatus.AvailableSince("1.21.6")
+    private static final Vector4f WHITE = new Vector4f(1.0F, 1.0F, 1.0F, 1.0F);
 
     // [1.20.1, 1.21.6)
     private final @Nullable VertexBuffer vertexBuffer;
@@ -105,7 +109,7 @@ public final class BakedMesh implements AutoCloseable {
 
     private BakedMesh(@Nullable VertexBuffer vertexBuffer, int bytes, boolean extendedFormat,
                       @Nullable ByteBuffer vertexCopy, int vertexCount, int stride, int uv2Offset,
-                      // int indexCount, VertexFormat.Mode mode, // [1.21.6, )
+//                      int indexCount, VertexFormat.Mode mode, // [1.21.6, )
                       int light) {
         this.vertexBuffer = vertexBuffer;
         this.bytes = bytes;
@@ -357,6 +361,7 @@ public final class BakedMesh implements AutoCloseable {
         if (this.closed) return false;
         if (this.vertexBuffer == null) return true;
 
+//        @Nullable RenderPipeline pipeline; // [1.21.6, )
         Matrix4f modelView; {
             // [1.20.1, 1.21.6)
             modelView = new Matrix4f(ClientRenderHelper.GL._getModelViewMatrix()).mul(pose);
@@ -369,7 +374,7 @@ public final class BakedMesh implements AutoCloseable {
 
         boolean setup = false;
         try {
-            // setupRenderState 才会把该 RenderType 的 shader 设进 RenderSystem
+            // setupRenderState 才会把该 RenderType 的 (shader / 贴图/lightmap/overlay) 设进 RenderSystem
             renderType.setupRenderState();
             setup = true;
 
@@ -381,12 +386,8 @@ public final class BakedMesh implements AutoCloseable {
             this.vertexBuffer.drawWithShader(modelView, RenderSystem.getProjectionMatrix(), shader);
 
             // [1.21.6, )
-//            // setupRenderState 才会把该 RenderType 的贴图 / lightmap / overlay 设进 RenderSystem
-//            renderType.setupRenderState();
-//            setup = true;
-//
 //            // 与 RenderType#draw 一致：状态设好之后才取矩阵，layering / texturing 状态可能改过它们
-//            Matrix4f modelView = new Matrix4f(RenderSystem.getModelViewMatrix()).mul(pose);
+//            modelView = new Matrix4f(RenderSystem.getModelViewMatrix()).mul(pose);
 //            GpuBufferSlice transforms = RenderSystem.getDynamicUniforms().writeTransform(
 //                    modelView, WHITE, RenderSystem.getModelOffset(),
 //                    RenderSystem.getTextureMatrix(), RenderSystem.getShaderLineWidth());
@@ -429,7 +430,7 @@ public final class BakedMesh implements AutoCloseable {
 
             return true;
         } finally {
-            VertexBuffer.unbind();
+            VertexBuffer.unbind(); // 1.21.6移除
             if (setup) renderType.clearRenderState();
         }
     }

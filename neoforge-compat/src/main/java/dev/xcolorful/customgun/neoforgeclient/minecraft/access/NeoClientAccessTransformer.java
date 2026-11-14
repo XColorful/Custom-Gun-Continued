@@ -47,6 +47,20 @@ public class NeoClientAccessTransformer implements IClientAccessTransformer {
         gameMode.ensureHasSentCarriedItem();
     }
 
+    @Override public @Nullable Object
+    getOutputState(
+            RenderType renderType
+    ) {
+        return null; // ((RenderType.CompositeRenderType) renderType).state.outputState;
+    }
+
+    @Override public RenderPipeline
+    getRenderPipeline(
+            RenderType renderType
+    ) {
+        return null; // ((RenderType.CompositeRenderType) renderType).renderPipeline;
+    }
+
     @Override public RenderSetup
     getState(
             RenderType renderType

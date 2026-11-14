@@ -162,6 +162,46 @@ public final class BakedMesh implements AutoCloseable {
         }
     }
 
+    /**
+     * 只发射顶点、不上传（渲染重构B2）：合并批次要把顶点自己搬到世界空间缓冲里
+     * <ul>
+     *     <li>与 {@link #bake} 同一条发射路径，复用同一个 {@link BufferBuilder} 池</li>
+     *     <li>光照恰为满亮时与 {@link #bake} 一样不给出 uv2 偏移：发光顶点与普通顶点无法区分，不能原地改写</li>
+     * </ul>
+     * @return {@code null} 表示没有顶点
+     */
+    static @Nullable EmittedGeometry emitGeometry(VertexFormat.Mode mode, VertexFormat format, int light,
+                                                  Consumer<VertexConsumer> emitter) {
+        BufferBuilder builder = acquireBuilder();
+        try {
+            long profileEmit = ClientRenderProfiler.begin();
+            builder.begin(mode, format);
+            emitter.accept(builder);
+            BufferBuilder.RenderedBuffer rendered = builder.endOrDiscardIfEmpty();
+            ClientRenderProfiler.end(ClientRenderProfiler.BAKE_EMIT, profileEmit);
+            if (rendered == null) return null;
+            try {
+                ByteBuffer source = rendered.vertexBuffer();
+                ByteBuffer copy = ByteBuffer.allocateDirect(source.remaining()).order(source.order());
+                copy.put(source);
+                copy.position(0);
+                VertexFormat writtenFormat = rendered.drawState().format();
+                int uv2Offset = light == FULL_BRIGHT ? -1 : uv2Offset(writtenFormat);
+                return new EmittedGeometry(copy, rendered.drawState().vertexCount(),
+                        writtenFormat.getVertexSize(), uv2Offset);
+            } finally {
+                rendered.release();
+            }
+        } finally {
+            builderDepth--;
+        }
+    }
+
+    /**
+     * {@link #emitGeometry} 的结果：模型空间顶点字节与它的布局
+     */
+    record EmittedGeometry(ByteBuffer bytes, int vertexCount, int stride, int uv2Offset) {}
+
     private static ByteBuffer copyVertices(ByteBuffer source) {
         // 与 BufferBuilder 保持同一字节序：patch 时按同样的序读写 short
         ByteBuffer copy = ByteBuffer.allocateDirect(source.remaining()).order(source.order());

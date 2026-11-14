@@ -226,6 +226,7 @@ public final class StaticBakeCache {
         }
         PATCHABLE.clear();
         bytes = 0;
+        StaticBatch.clearAll();
 
         for (ModelObject model : MODEL_CHUNKS) {
             if (RenderSystem.isOnRenderThread()) {

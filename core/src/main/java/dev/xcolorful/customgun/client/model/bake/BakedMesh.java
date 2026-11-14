@@ -197,7 +197,8 @@ public final class BakedMesh implements AutoCloseable {
     private static int uv2Offset(VertexFormat format) {
         int offset = 0;
         for (VertexFormatElement element : format.getElements()) {
-            if (ClientRenderUtils.getUsage(element) == VertexFormatElement.Usage.UV && element.getIndex() == 2) return offset;
+            if (ClientRenderUtils.getUsage(element) == VertexFormatElement.Usage.UV
+                    && ClientRenderUtils.getIndex(element) == 2) return offset;
             offset += ClientRenderUtils.getByteSize(element);
         }
         return -1;

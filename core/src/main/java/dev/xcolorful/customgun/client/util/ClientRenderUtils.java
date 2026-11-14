@@ -116,6 +116,12 @@ public class ClientRenderUtils {
         // [1.21.1, )
 //        return element.byteSize();
     }
+    public static int getIndex(VertexFormatElement element) {
+        // [1.20.1, 1.21.1)
+        return element.getIndex();
+        // [1.21.1, )
+//        return element.index();
+    }
 
     public static class LightTexture_ {
 

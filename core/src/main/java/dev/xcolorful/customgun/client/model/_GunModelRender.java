@@ -145,17 +145,17 @@ public class _GunModelRender {
             因此连同「每实例关闭测试 + 清空模板缓冲」一起跳过（每次清空约 4 µs，9 个展示框约 0.04 ms/帧）
              */
             if (transformType.firstPerson()) {
-            ClientRenderHelper.GL._stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
+                ClientRenderHelper.GL._stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
             }
             _this.super_render(matrixStack, transformType, renderType, light, overlay);
 
             _renderHand(_this, matrixStack, transformType, renderType, light, overlay, gunItem);
 
             if (transformType.firstPerson()) {
-            ClientRenderHelper.disableItemEntityStencilTest();
-            final long profStencil = ClientRenderProfiler.begin();
-            _GunModelRender._clearStencilBuffer();
-            ClientRenderProfiler.end(ClientRenderProfiler.STENCIL_CLEAR, profStencil);
+                ClientRenderHelper.disableItemEntityStencilTest();
+                final long profStencil = ClientRenderProfiler.begin();
+                _GunModelRender._clearStencilBuffer();
+                ClientRenderProfiler.end(ClientRenderProfiler.STENCIL_CLEAR, profStencil);
             }
         }
     }

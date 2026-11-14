@@ -231,3 +231,86 @@ b2-3 已并入 [报告](docs/architecture/client/render/benchmark/26.35.11.1-7/�
 - refactor/Home、PLAN、scheme-b、lighting-decoupling、b1a：同步否决结论；同时把「multi ≤1.6 ms」这一依赖 B2 的目标标注为不再作为当前目标（multi 维持 B1-a 的约 2.15 ms）。
 
 **状态**：代码回退已 stage，文档改动未 stage、未提交。等你把这次修改提交后，再让我恢复「移除模板测试」那一条改动。
+
+# 
+
+```
+现在恢复对模板测试的移除
+- 需要说明有多少实际性能收益，需要加到方案里
+- 移除后对原行为有什么改变，例如原本是否可以在展示框物品里看到模板测试效果
+- 如果方便，把这个移除做一个bool开关
+```
+
+# 
+
+现在恢复该改动，并做成配置开关。先确认了 1.20.1 的模板附件行为：主渲染目标默认没有模板附件，`enableStencil()` 会把深度附件换成 `DEPTH32F_STENCIL8` 并重建一次；之后每把展示枪只是开关 GL 状态。
+
+已恢复「静态展示不再开启模板测试」，并做成配置开关。编译通过。
+
+**开关**
+
+- 配置项：`render.StaticDisplayStencil`（`ClientModConfigTag` / `RenderConfig`）
+- 默认 `false` = 移除（非第一人称不开模板测试）；设为 `true` 恢复旧行为
+- 代码位置：[_GunModelRender.java:181](core/src/main/java/dev/xcolorful/customgun/client/model/_GunModelRender.java:181)，条件是 `!transformType.firstPerson() && !RenderConfig.STATIC_DISPLAY_STENCIL.get()` 时直接返回
+
+**实际性能收益**
+
+- 约 **0.05 ms / 帧**（9 个展示框，≈5 µs/框）。口径：`26.35.11.1-7` 满配 multi 空手档 2.146 → 1.725 ms（0.42 ms），减去 B2 的 draw 节省（48 × 7.8 µs ≈ 0.37 ms）后的余量。
+- 这是**推算，不是独立 A/B**——现在有开关，可以直接用同场景跑两组 F12 对照确认（切开关不需要重新构建）。
+- 省掉的是每框的 `glEnable(GL_STENCIL_TEST)` + `stencilFunc` + 关闭时的 `glDisable` 与 stencil 缓冲源 flush（烘焙路径下该源为空）。主渲染目标的模板附件在首次 `enableStencil()` 时一次性换成 `DEPTH32F_STENCIL8` 并重建，之后常驻，不是每次开销。
+- **未改**：每枪的 `glClear(GL_STENCIL_BUFFER_BIT)` 仍然保留（`Stencil clear` 实测 0.032–0.045 ms/帧）。如果后续把它也按上下文跳过，还能再省这一项。
+
+**行为变化（原本能不能在展示框里看到模板效果）**
+
+- 静态展示路径**只开启测试、从不写模板值**：写值只发生在第一人称的 `renderBoth / renderScope / renderSight` 和目镜三角扇。
+- 因此旧行为在展示里等价于「拿别处残留的模板值做比较」：
+    - 长筒镜（`EQUAL 0`）：残留为 0 时与移除后**完全一致**；
+    - 组合镜（`GREATER 127`）：残留为 0 时理论上会把枪体整块剔除，残留非 0 时可能被随机切掉一块。移除后不再受任何残留影响。
+- 第一人称的模板窗口、准星、镜内遮罩路径**完全未改**。
+
+**文档**
+
+- 方案：[refactor/Home.md](docs/architecture/client/render/refactor/Home.md) 新增「静态展示的模板测试（默认移除）」——收益口径、省掉的调用、行为差异、开关；
+- 实施记录：[b1a-static-bake.md](docs/architecture/client/render/refactor/b1a-static-bake.md) 新增同名小节并更新「未完成」表；
+- 报告：[26.35.11.1-7](docs/architecture/client/render/benchmark/26.35.11.1-7/测试数据计算报告.md) 第 8 节补「模板测试移除」与回退说明（含回退提交 `834490ff1`）；
+- TODO 的 B2 记录里标注该项已独立保留。
+
+改动未提交。建议下一步用开关跑一组同场景 A/B（F12 即可）把 0.05 ms 从推算变成实测。
+
+# 
+
+```
+那么直接去掉config，避免受残留影响
+同时把非必要的模板清除也去了
+```
+
+# 
+
+已按你的要求改成无条件生效，并连模板清除一起移除。
+
+**代码（仅 [_GunModelRender.java](core/src/main/java/dev/xcolorful/customgun/client/model/_GunModelRender.java)）**
+
+- `_renderScope`：`enableScope` 后直接 `if (!transformType.firstPerson()) return;` —— 静态展示、掉落物、第三人称不再开启模板测试窗口。
+- `render` 的收尾：`_stencilOp(...)`、`disableItemEntityStencilTest()`、`_clearStencilBuffer()` 全部移入 `if (transformType.firstPerson())`，非第一人称不再做这些。
+- 第一人称路径逐行未改：窗口、准心、镜内遮罩、每枪清空都保留。
+- 配置项 `StaticDisplayStencil` 已从 `ClientModConfigTag` / `RenderConfig` 删除，两个文件回到 HEAD 状态。
+
+**收益（推算，不是独立 A/B）**
+
+- 模板测试 + 状态切换 ≈ **0.05 ms/帧**（0.42 ms 实测差 − B2 的 draw 节省 0.37 ms）。
+- 每展示实例的模板清空 ≈ **0.04 ms/帧**（`Stencil clear` 实测 3.6–4.5 µs × 9）。
+- 合计 ≈ **0.09 ms/帧**（9 个展示框场景）。没有开关后，要做 A/B 需要构建两版；这两个数来自 `26.35.11.1-7` 与 `b1-a-5` 的差，仍标记为推算。
+
+**行为**
+
+- 静态展示本来就不写模板值，旧行为只是拿别处残留的模板值比较：长筒镜（`EQUAL 0`）在残留为 0 时不变；组合镜（`GREATER 127`）在残留为 0 时理论上会整块剔除枪体、残留非 0 时可能切掉一块。移除后不再受残留影响。
+- 模板缓冲的清理现在只由第一人称窗口负责；第一人称写完即清，下一帧世界阶段开始时为 0。
+
+**文档**
+
+- [refactor/Home.md](docs/architecture/client/render/refactor/Home.md)：方案里改为「静态展示的模板测试（无条件移除）」，收益与行为按上面更新。
+- [b1a-static-bake.md](docs/architecture/client/render/refactor/b1a-static-bake.md)：同名小节改为无条件移除 + 清空一并移除；「未完成」表里的「模板每帧一清」已结案移除。
+- [报告 26.35.11.1-7](docs/architecture/client/render/benchmark/26.35.11.1-7/测试数据计算报告.md)：第 8 节与回退说明去掉配置描述，改为无条件保留。
+- TODO、B2 实施记录同步。
+
+改动未提交。

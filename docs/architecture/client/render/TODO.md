@@ -42,7 +42,8 @@
 - [x] **阶段 3 B2 跨实例合并：已实现、实测后否决，代码已回退（2026-11-14）**
   - **结论**：收益只出现在「同一把枪被多个展示框重复展示」或「多个展示框共用同一配件纹理」，这两类场景在实际游玩中几乎不存在；非数量级的收益不足以抵消新增的兼容性风险。**不保留开关**。
   - 实测（[报告](./benchmark/26.35.11.1-7/测试数据计算报告.md)）：同款满配 multi 的展示部分 draw 72 → **24**（合批 6 + 瞄具镜身 18 未合批）、同款 ak47 9 → **1**；满配空手帧时间 2.146 → **1.725 ms**（−19.6%）；**9 把不同裸枪为 0**，不同满配共用配件才省 40 次 draw。
-  - 回退范围：commit `ed78e3b4e` 的**代码部分**已在工作区回退（`StaticBatch`、`LevelRendererMixin`、实体登记、`ModelObject` 接入、`BakedMesh.emitGeometry`、缓存清理调用、profiler 探针、mixin 配置），展示实例的模板测试也恢复原状；**文档保留**。
+  - 回退范围：commit `ed78e3b4e` 的**代码部分**已在工作区回退（`StaticBatch`、`LevelRendererMixin`、实体登记、`ModelObject` 接入、`BakedMesh.emitGeometry`、缓存清理调用、profiler 探针、mixin 配置）；**文档保留**。
+  - 保留项：「静态展示不再进入瞄具模板流程」已拆出独立保留（无条件生效，无开关；模板测试 + 每枪清空 ≈0.09 ms/帧，见 [refactor/Home.md](./refactor/Home.md)「静态展示的模板测试」）
   - 若要重新实现：读 commit `ed78e3b4e`「Add render type merge render refactor」，并先看报告第 8 节的收益边界与风险表。
 - [ ] **阶段 4 26.3**：确认自定义 `FeatureRenderer` 路径，实现同一套烘焙抽象；**26.3 的 render pass 是它最大的单项，必须按 pass 计时验收**
 - [ ] **待评估**：方案 C（动态实例 draw 合并 / 实例化）、方案 D 的剔除保留现状

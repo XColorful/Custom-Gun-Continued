@@ -1,16 +1,13 @@
 package dev.xcolorful.customgun.client.model.bake;
 
 import com.mojang.blaze3d.buffers.BufferUsage;
+import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.ByteBufferBuilder;
-import com.mojang.blaze3d.vertex.MeshData;
-import com.mojang.blaze3d.vertex.VertexBuffer;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.blaze3d.vertex.VertexFormat;
-import com.mojang.blaze3d.vertex.VertexFormatElement;
+import com.mojang.blaze3d.vertex.*;
+import dev.xcolorful.customgun.client.CustomGunClient;
 import dev.xcolorful.customgun.client.input.player.DebugKey;
+import dev.xcolorful.customgun.client.util.ClientRenderHelper;
 import dev.xcolorful.customgun.client.util.ClientRenderProfiler;
 import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import net.minecraft.client.renderer.CompiledShaderProgram;
@@ -31,9 +28,10 @@ import java.util.function.Consumer;
  * <ul>
  *     <li>顶点只生成一次，常驻 {@link VertexBuffer}；每帧只绑定并换模型视图矩阵绘制</li>
  *     <li>实例矩阵不进顶点，因此同一份网格可以被多个展示框 / 掉落物共享</li>
- *     <li>只支持即时模式：{@code RenderType} 的 setup/clear 包住 draw，与 {@code BufferSource.endBatch} 的做法一致</li>
- *     <li>光照需要原地改写的网格（渲染重构B1-c-B，见 {@link #bakePatchable}）额外保留一份 CPU 副本，
- *         光照变化时改写其中的 uv2 并重传原 VBO，几何本身不再重新发射</li>
+ *     <li>[1.20.1, 1.21.6) 只支持即时模式：{@code RenderType} 的 setup/clear 包住 draw，与 {@code BufferSource.endBatch} 的做法一致</li>
+ *     <li>[1.21.6, )绘制自己开 {@code RenderPass}：管线用 CGC 的烘焙管线，状态与贴图仍由 {@code RenderType} 的 setup/clear 提</li>
+ *     <li>光照需要原地改写的网格（渲染重构B1-c-B，见 {@link #bakePatchable}）额外保留一份 CPU 副本</li>
+ *     <li>光照变化时改写其中的 uv2 并 (重传原 VBO / 1.21.6 整段写回原缓冲)，几何本身不再重新发射</li>
  * </ul>
  * 失效条件由调用方放进 {@link StaticBakeCache.Key}，本类不判断
  */
@@ -64,7 +62,14 @@ public final class BakedMesh implements AutoCloseable {
      */
     private static final int FULL_BRIGHT = ClientRenderUtils.LightTexture_.pack(15, 15);
 
+    // [1.20.1, 1.21.6)
     private final @Nullable VertexBuffer vertexBuffer;
+
+    // [1.21.6, )
+//    private final @Nullable GpuBuffer vertexBuffer;
+//    private final int indexCount;
+//    private final VertexFormat.Mode mode;
+
     private final int bytes;
     /**
      * 本次烘焙实际写入的是不是扩展顶点格式
@@ -75,7 +80,7 @@ public final class BakedMesh implements AutoCloseable {
      */
     private final boolean extendedFormat;
     /**
-     * 交错顶点字节的 CPU 副本，光照变化时改写其中的 uv2 后再整段重传
+     * 交错顶点字节的 CPU 副本，光照变化时改写其中的 uv2 后再 (整段重传 / 1.21.6 整段写回)
      * <ul>
      *     <li>{@code null} 表示无法原地改写：空网格、格式里没有 uv2、烘焙时光照恰为满亮
      *     （发光节点与普通顶点的 uv2 此时无法区分），或调用方没有要求保留副本</li>
@@ -95,7 +100,9 @@ public final class BakedMesh implements AutoCloseable {
     private boolean closed;
 
     private BakedMesh(@Nullable VertexBuffer vertexBuffer, int bytes, boolean extendedFormat,
-                      @Nullable ByteBuffer vertexCopy, int vertexCount, int stride, int uv2Offset, int light) {
+                      @Nullable ByteBuffer vertexCopy, int vertexCount, int stride, int uv2Offset,
+                      // int indexCount, VertexFormat.Mode mode, // [1.21.6, )
+                      int light) {
         this.vertexBuffer = vertexBuffer;
         this.bytes = bytes;
         this.extendedFormat = extendedFormat;
@@ -103,6 +110,8 @@ public final class BakedMesh implements AutoCloseable {
         this.vertexCount = vertexCount;
         this.stride = stride;
         this.uv2Offset = uv2Offset;
+//        this.indexCount = indexCount;
+//        this.mode = mode;
         this.light = light;
     }
 
@@ -136,8 +145,11 @@ public final class BakedMesh implements AutoCloseable {
             ClientRenderProfiler.end(ClientRenderProfiler.BAKE_EMIT, profileEmit);
 
             if (rendered == null) return new BakedMesh(null, 0, false,
-                    null, 0, 0, -1, light);
+                    null, 0, 0, -1,
+//                    0, mode, // [1.21.6, )
+                    light);
 
+            MeshData.DrawState drawState = rendered.drawState();
             int bytes;
             VertexFormat writtenFormat;
             boolean extendedFormat;
@@ -147,13 +159,12 @@ public final class BakedMesh implements AutoCloseable {
                 1.20.1 drawState.bufferSize()
                 sequential 输出没有独立索引缓冲，只算顶点字节
                  */
-//                bytes = rendered.drawState().bufferSize();
-//                writtenFormat = rendered.drawState().format();
+//                bytes = drawState.bufferSize();
+//                writtenFormat = drawState.format();
 //                extendedFormat = writtenFormat != format;
-//                vertexCount = rendered.drawState().vertexCount();
+//                vertexCount = drawState.vertexCount();
 
                 // [1.21.1, )
-                MeshData.DrawState drawState = rendered.drawState();
                 writtenFormat = drawState.format();
                 extendedFormat = writtenFormat != format;
                 vertexCount = drawState.vertexCount();
@@ -162,30 +173,54 @@ public final class BakedMesh implements AutoCloseable {
             }
             int stride = writtenFormat.getVertexSize();
             int uv2Offset = light == FULL_BRIGHT ? -1 : uv2Offset(writtenFormat);
-            // 上传会释放 RenderedBuffer/MeshData，CPU 副本必须在 upload 之前拷出来
+            /*
+            [1.20.1, 1.21.6) 上传会释放 RenderedBuffer/MeshData，CPU 副本必须在 upload 之前拷出来
+            [1.21.6, ) 关闭 MeshData 会归还 ByteBufferBuilder 的区段，CPU 副本必须在建缓冲之前拷出来
+             */
             ByteBuffer vertexCopy = !keepLightCopy || uv2Offset < 0 ? null : copyVertices(rendered.vertexBuffer());
 
-            long profileBuffer = ClientRenderProfiler.begin();
-            VertexBuffer vertexBuffer = new VertexBuffer(
-                    // [1.20.1, 1.21.4)
-//                    VertexBuffer.Usage.STATIC
-                    // [1.21.4, )
-                    BufferUsage.STATIC_WRITE
-            );
-            // VertexBuffer.upload 要求 VAO 已绑定，原版 BufferUploader 同样先 bind 再 upload
-            vertexBuffer.bind();
-            ClientRenderProfiler.end(ClientRenderProfiler.BAKE_BUFFER, profileBuffer);
+            VertexBuffer vertexBuffer; // GpuBuffer vertexBuffer;
+            {
+                // [1.20.1, 1.21.6)
+                long profileBuffer = ClientRenderProfiler.begin();
+                vertexBuffer = new VertexBuffer(
+                        // [1.20.1, 1.21.4)
+//                        VertexBuffer.Usage.STATIC
+                        // [1.21.4, )
+                        BufferUsage.STATIC_WRITE
+                );
+                // VertexBuffer.upload 要求 VAO 已绑定，原版 BufferUploader 同样先 bind 再 upload
+                vertexBuffer.bind();
+                ClientRenderProfiler.end(ClientRenderProfiler.BAKE_BUFFER, profileBuffer);
+
+                // [1.21.6, )
+            }
 
             long profileUpload = ClientRenderProfiler.begin();
             try {
+                // [1.20.1, 1.21.6)
                 vertexBuffer.upload(rendered);
+
+                // [1.21.6, )
+//                vertexBuffer = RenderSystem.getDevice().createBuffer(
+//                        () -> "CGC baked mesh",
+//                        GpuBuffer.USAGE_VERTEX | GpuBuffer.USAGE_COPY_DST,
+//                        rendered.vertexBuffer());
             } finally {
-                VertexBuffer.unbind();
+                {
+                    // [1.20.1, 1.21.6)
+                    VertexBuffer.unbind();
+
+                    // [1.21.6, )
+//                    rendered.close();
+                }
                 ClientRenderProfiler.end(ClientRenderProfiler.BAKE_UPLOAD, profileUpload);
                 ClientRenderProfiler.countBakeBytes(bytes);
             }
             return new BakedMesh(vertexBuffer, bytes, extendedFormat,
-                    vertexCopy, vertexCount, stride, uv2Offset, light);
+                    vertexCopy, vertexCount, stride, uv2Offset,
+//                    drawState.indexCount(), drawState.mode(), // [1.21.6, )
+                    light);
         } finally {
             builderDepth--;
         }
@@ -213,9 +248,11 @@ public final class BakedMesh implements AutoCloseable {
     }
 
     /**
-     * 把网格的 uv2 改写成新的光照，并整段重传原 VBO（不新建缓冲、不重新发射顶点）
-     * <br>
-     * 发光节点烘的是满亮 15/15，不跟着世界光照变化；只有等于旧光照的顶点才会被改写
+     * 把网格的 uv2 改写成新的光照，并 (整段重传原 VBO / 1.21.6 整段写回原缓冲)
+     * <ul>
+     *     <li>不新建缓冲、不重新发射顶点</li>
+     *     <li>发光节点烘的是满亮 15/15，不跟着世界光照变化；只有等于旧光照的顶点才会被改写</li>
+     * </ul>
      * @return {@code false} 表示这份网格无法原地改写，调用方应关闭它并重新烘焙
      */
     public boolean updateLight(int newLight) {
@@ -255,20 +292,36 @@ public final class BakedMesh implements AutoCloseable {
     }
 
     /**
-     * 重传 {@link #vertexCopy}：VAO 里保存的 attribute 指针本来就指向这份网格自己的 VBO，
-     * 取回该 VBO 的 id 后整段覆盖即可，顶点格式与 attribute 绑定都不变
+     * <ul>
+     *     [1.20.1, 1.21.6)
+     *     <li>重传 {@link #vertexCopy}：VAO 里保存的 attribute 指针本来就指向这份网格自己的 VBO</li>
+     *     <li>取回该 VBO 的 id 后整段覆盖即可，顶点格式与 attribute 绑定都不变</li>
+     * </ul>
+     * <ul>
+     *     [1.21.6, )
+     *     <li>整段写回 {@link #vertexCopy}：缓冲创建时带了 {@code COPY_DST}，用一次拷贝命令覆盖即可</li>
+     *     <li>顶点数与布局都不变</li>
+     * </ul>
      */
     private boolean uploadCopy() {
         if (this.vertexBuffer == null || this.vertexCopy == null) return false;
-        this.vertexBuffer.bind();
-        try {
-            int vbo = GL20.glGetVertexAttribi(0, GL20.GL_VERTEX_ATTRIB_ARRAY_BUFFER_BINDING);
-            if (vbo <= 0) return false;
-            GlStateManager._glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
-            RenderSystem.glBufferData(GL15.GL_ARRAY_BUFFER, this.vertexCopy, GL15.GL_STATIC_DRAW);
-            return true;
-        } finally {
-            VertexBuffer.unbind();
+        {
+            // [1.20.1, 1.21.6)
+            this.vertexBuffer.bind();
+            try {
+                int vbo = GL20.glGetVertexAttribi(0, GL20.GL_VERTEX_ATTRIB_ARRAY_BUFFER_BINDING);
+                if (vbo <= 0) return false;
+                GlStateManager._glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
+                RenderSystem.glBufferData(GL15.GL_ARRAY_BUFFER, this.vertexCopy, GL15.GL_STATIC_DRAW);
+                return true;
+            } finally {
+                VertexBuffer.unbind();
+            }
+
+            // [1.21.6, )
+//            RenderSystem.getDevice().createCommandEncoder()
+//                    .writeToBuffer(this.vertexBuffer.slice(), this.vertexCopy.duplicate());
+//            return true;
         }
     }
 
@@ -276,7 +329,8 @@ public final class BakedMesh implements AutoCloseable {
      * <ul>
      *     <li>1.21.1 {@code BufferBuilder} 把 mode/format 收进了构造函数、不再有 {@code begin()}</li>
      *     <li>池子改成缓存 {@code ByteBufferBuilder}，每次烘焙 {@code new BufferBuilder}(池中的 builder, mode, format)</li>
-     *     <li>{@code VertexBuffer.upload} 会 close 掉 {@code MeshData}，进而归还 {@code ByteBufferBuilder} 的区段，池可以安全复用</li>
+     *     <li>[1.20.1, 1.21.6) {@code VertexBuffer.upload} 会 close 掉 {@code MeshData}，进而归还 {@code ByteBufferBuilder} 的区段，池可以安全复用</li>
+     *     <li>[1.21.6, ) {@code MeshData.close()} 会归还 {@code ByteBufferBuilder} 的区段，池可以安全复用</li>
      * </ul>
      */
     private static BufferBuilder acquireBuilder(VertexFormat.Mode mode, VertexFormat format) {
@@ -293,29 +347,97 @@ public final class BakedMesh implements AutoCloseable {
 
     /**
      * @param pose 模型空间 → 当前视图空间的变换，即调用方的 PoseStack 顶矩阵
-     * @return {@code false} 表示没有可用的着色器（自定义 shader 未注册且没有光影包），调用方应退回即时管线
+     * @return {@code false} 表示没有可用的着色器（自定义 shader 未注册且没有光影包）或管线（自定义管线未注册），调用方应退回即时管线
      */
     public boolean draw(RenderType renderType, Matrix4f pose) {
         if (this.closed) return false;
         if (this.vertexBuffer == null) return true;
 
-        Matrix4f modelView = new Matrix4f(RenderSystem.getModelViewMatrix()).mul(pose);
+        Matrix4f modelView; {
+            // [1.20.1, 1.21.6)
+            modelView = new Matrix4f(ClientRenderHelper.GL._getModelViewMatrix()).mul(pose);
+
+            // [1.21.6, )
+//            @Nullable RenderPipeline pipeline = ClientRenderRegistry.BakedEntityRenderState.bakedPipelineFor(renderType);
+//            if (pipeline == null) return false;
+        }
+
+
         boolean setup = false;
         try {
             // setupRenderState 才会把该 RenderType 的 shader 设进 RenderSystem
             renderType.setupRenderState();
             setup = true;
 
+            // [1.20.1, 1.21.6)
             @Nullable CompiledShaderProgram shader = StaticBake.resolveEntityShader();
             if (shader == null) return false;
 
             this.vertexBuffer.bind();
             this.vertexBuffer.drawWithShader(modelView, RenderSystem.getProjectionMatrix(), shader);
+
+            // [1.21.6, )
+//            // setupRenderState 才会把该 RenderType 的贴图 / lightmap / overlay 设进 RenderSystem
+//            renderType.setupRenderState();
+//            setup = true;
+//
+//            // 与 RenderType#draw 一致：状态设好之后才取矩阵，layering / texturing 状态可能改过它们
+//            Matrix4f modelView = new Matrix4f(RenderSystem.getModelViewMatrix()).mul(pose);
+//            GpuBufferSlice transforms = RenderSystem.getDynamicUniforms().writeTransform(
+//                    modelView, WHITE, RenderSystem.getModelOffset(),
+//                    RenderSystem.getTextureMatrix(), RenderSystem.getShaderLineWidth());
+//
+//            RenderTarget target = outputTarget(renderType);
+//            GpuTextureView colorTexture = RenderSystem.outputColorTextureOverride != null
+//                    ? RenderSystem.outputColorTextureOverride
+//                    : target.getColorTextureView();
+//            GpuTextureView depthTexture = target.useDepth
+//                    ? (RenderSystem.outputDepthTextureOverride != null
+//                    ? RenderSystem.outputDepthTextureOverride
+//                    : target.getDepthTextureView())
+//                    : null;
+//
+//            try (RenderPass pass = RenderSystem.getDevice()
+//                    .createCommandEncoder()
+//                    .createRenderPass(() -> "CGC baked mesh", colorTexture, OptionalInt.empty(), depthTexture, OptionalDouble.empty())) {
+//                pass.setPipeline(pipeline);
+//                RenderSystem.bindDefaultUniforms(pass);
+//                pass.setUniform("DynamicTransforms", transforms);
+//                /*
+//                与 RenderType#draw 一致：NeoForge 的模板测试只存在于 RenderSystem，必须由每个 pass 自己带上
+//                NeoForge类，但是不触发import
+//                 */ @Nullable var stencilTest = RenderSystem.STENCIL_TEST;
+//                if (stencilTest != null) {
+//                    pass.enableStencilTest(stencilTest);
+//                }
+//                pass.setVertexBuffer(0, this.vertexBuffer);
+//
+//                for (int i = 0; i < 12; i++) {
+//                    GpuTextureView texture = RenderSystem.getShaderTexture(i);
+//                    if (texture != null) pass.bindSampler("Sampler" + i, texture);
+//                }
+//
+//                // 非排序输出没有独立索引缓冲，用平台按 mode 生成的顺序索引
+//                RenderSystem.AutoStorageIndexBuffer indices = RenderSystem.getSequentialBuffer(this.mode);
+//                pass.setIndexBuffer(indices.getBuffer(this.indexCount), indices.type());
+//                pass.drawIndexed(0, 0, this.indexCount, 1);
+//            }
+
             return true;
         } finally {
             VertexBuffer.unbind();
             if (setup) renderType.clearRenderState();
         }
+    }
+
+    @ApiStatus.AvailableSince("1.21.6")
+    private static RenderTarget outputTarget(RenderType renderType) {
+        Object outputState = CustomGunClient.getAccessTransformer().getOutputState(renderType);
+        return null; // 让IDE保留上面的引用关系
+//        if (outputState instanceof RenderStateShard.OutputStateShard output) {
+//            return output.getRenderTarget();
+//        }
+//        return ClientRenderUtils.getMainRenderTarget(Minecraft.getInstance());
     }
 
     public int bytes() {

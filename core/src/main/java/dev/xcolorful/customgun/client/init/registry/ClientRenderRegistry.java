@@ -35,13 +35,37 @@ public class ClientRenderRegistry {
      */
     public static class BakedEntityRenderState {
 
+        /**
+         * <ul>
+         *     <li>[1.20.1, 1.21.4) 程序 id 无需自带文件夹</li>
+         *     <li>[1.21.4, ) 程序 id 由 {@code shaders/core/<path>.json} 的路径推出，必须带 {@code core/} 前缀</li>
+         * </ul>
+         */
         public static final @Nullable ResourceLocation BAKED_ENTITY_SHADER =
-                CustomGun.getMcRegistry().createResourceLocation(CustomGun.MOD_ID + ":cgc_baked_entity");
+                CustomGun.getMcRegistry().createResourceLocation(CustomGun.MOD_ID +
+                        // [1.20.1, 1.21.4)
+                        ":cgc_baked_entity"
+                        // [1.21.4, )
+//                        ":core/cgc_baked_entity"
+                );
 
+//        @Deprecated(since = "1.21.4")
         private static volatile @Nullable ShaderInstance bakedEntityShader;
+        @ApiStatus.AvailableSince("1.21.4")
+        private static final @Nullable Object bakedEntityProgram =
+                BAKED_ENTITY_SHADER == null ? null
+                        // [1.20.1, 1.21.4)
+                        : new Object();
+                        // [1.21.4, )
+//                        : new ShaderProgram(BAKED_ENTITY_SHADER, DefaultVertexFormat.NEW_ENTITY, ShaderDefines.EMPTY);
 
         public static @Nullable ShaderInstance getBakedEntityShader() {
+            // [1.20.1, 1.21.4)
             return bakedEntityShader;
+
+            // [1.21.4, )
+//            @Nullable ShaderProgram program = bakedEntityProgram;
+//            return program == null ? null : Minecraft.getInstance().getShaderManager().getProgram(program);
         }
     }
 
@@ -50,22 +74,44 @@ public class ClientRenderRegistry {
         /**
          * @param location 形如 {@code customgun:cgc_baked_entity}，对应 {@code assets/<ns>/shaders/core/<path>.json}
          * @param onLoaded 加载成功后的回调（每次资源重载都会调用）
+//         * @param program 对应 {@code assets/<ns>/shaders/core/<path>.json}；编译产物由平台的着色器管理器持有
          */
-        void registerShader(@NotNull ResourceLocation location,
-                            @NotNull VertexFormat format,
-                            @NotNull Consumer<ShaderInstance> onLoaded);
+        void registerShader(
+                // [1.20.1, 1.21.4)
+                @NotNull ResourceLocation location,
+                @NotNull VertexFormat format,
+                @NotNull Consumer<ShaderInstance> onLoaded
+
+                // [1.21.4, )
+//                @NotNull ShaderProgram program
+        );
     }
 
     /**
-     * 资源重载会重新创建 {@link ShaderInstance}，所以每次都要重新回调并覆盖引用
+     * <ul>
+     *     [1.20.1, 1.21.4)
+     *     <li>资源重载会重新创建 {@link ShaderInstance}，所以每次都要重新回调并覆盖引用</li>
+     * </ul>
+     * <ul>
+     *     [1.21.4, )
+     *     <li>着色器以「定义」注册，编译产物由 {@code ShaderManager} 每次重载重建/li>
+     *     <li>资源重载后编译产物会被重建，因此这里只登记定义，取用时再到管理器里查</li>
+     * </ul>
      */
     public static void onRegisterShaders(IShaderRegistrar registrar) {
+        // [1.20.1, 1.21.4)
         @Nullable var location = BakedEntityRenderState.BAKED_ENTITY_SHADER;
         if (location == null) return;
 
         registrar.registerShader(location,
                 DefaultVertexFormat.NEW_ENTITY,
                 shader -> BakedEntityRenderState.bakedEntityShader = shader);
+
+        // [1.21.4, )
+//        @Nullable var program = BakedEntityRenderState.bakedEntityProgram;
+//        if (program == null) return;
+//
+//        registrar.registerShader(program);
     }
 
     public static class LaserBeamRenderState extends RenderStateShard {

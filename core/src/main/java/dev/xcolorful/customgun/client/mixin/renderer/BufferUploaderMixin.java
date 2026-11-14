@@ -62,7 +62,10 @@ public class BufferUploaderMixin {
             method = "_drawWithShader",
             at = @At(
                     value = "INVOKE",
+                    // [1.20.1, 1.21.4)
                     target = "Lcom/mojang/blaze3d/vertex/VertexBuffer;drawWithShader(Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;Lnet/minecraft/client/renderer/ShaderInstance;)V"
+                    // [1.21.4, )
+//                    target = "Lcom/mojang/blaze3d/vertex/VertexBuffer;drawWithShader(Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;Lnet/minecraft/client/renderer/CompiledShaderProgram;)V"
             )
     )
     private static void cgc$timeDraw(VertexBuffer vertexBuffer,

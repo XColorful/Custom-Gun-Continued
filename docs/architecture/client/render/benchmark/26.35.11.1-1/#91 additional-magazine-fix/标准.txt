@@ -1,0 +1,22 @@
+测试环境：
+- 显示器1920x1080 165hz
+- 显卡GTX 1660 SUPER
+- CPU i5-9400F
+- 显卡驱动621.14 (2026-11-04)
+
+CGC端1（forge47.4.23）：
+- ./mods/cgccpackloader-26.9.2-forge-1.20.1.jar
+- ./mods/cgccshader-26.10.28-forge-1.20.1.jar
+- ./mods/customgun-26.11.35.1-forge-1.20.1.jar
+- ./mods/embeddium-0.3.31+mc1.20.1.jar
+- ./mods/oculus-mc1.20.1-1.8.0.jar
+- ./tacz/tacz_default_gun/
+
+测试方式-multi：
+- 在之前的基础上往眼前第三格为中心，放9个石头（/fill 9 -58 11 7 -60 11 stone）、物品展示框、9把tacz:ak47
+- 低模渲染距离改成5
+- 先开游戏内F3确保帧数不被锁住上限，然后关掉F3
+- 1. 初始即没有手持枪械，记录渲染帧数
+
+说明：
+- 每种测试方式都是提前做好地图，保证启动游戏第一次进存档就是测试条件及角色朝向

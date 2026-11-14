@@ -2,6 +2,7 @@ package dev.xcolorful.customgun.client.resource;
 
 import dev.xcolorful.customgun.client.api.entity.shooter.ILocalShooterGetter;
 import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
+import dev.xcolorful.customgun.client.model.bake.StaticBakeCache;
 import dev.xcolorful.customgun.client.resource.assets.display.GunDisplay;
 import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
 import dev.xcolorful.customgun.client.resource.instance.data.ClientAmmoIndexInstance;
@@ -50,6 +51,8 @@ public class _AssetsInstanceManager {
         AMMO_INDEX.clear();
         BLOCK_INDEX.clear();
         GUN_DISPLAY.clear();
+        // 旧模型对象会被整体替换，静态烘焙网格必须一并释放（持有显存与旧模型引用）
+        StaticBakeCache.clearAll();
     }
     /**
      * 主线程操作(线程不安全)

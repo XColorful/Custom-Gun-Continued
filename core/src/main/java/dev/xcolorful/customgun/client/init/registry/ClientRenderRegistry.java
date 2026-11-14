@@ -104,8 +104,8 @@ public class ClientRenderRegistry {
          * </ul>
          */
         @ApiStatus.AvailableSince("1.21.6")
-        public static @Nullable RenderPipeline bakedPipelineFor(RenderType renderType) {
-            RenderPipeline base = CustomGunClient.getAccessTransformer().getRenderPipeline(renderType);
+        public static @Nullable Object bakedPipelineFor(RenderType renderType) {
+            Object base = CustomGunClient.getAccessTransformer().getRenderPipeline(renderType);
             // [1.20.1, 1.21.6)
             return null;
 
@@ -116,7 +116,7 @@ public class ClientRenderRegistry {
 //                    .build());
         }
 
-        private static final Map<RenderPipeline, RenderPipeline> BAKED_PIPELINES = new IdentityHashMap<>();
+        private static final Map<Object, Object> BAKED_PIPELINES = new IdentityHashMap<>();
     }
 
     @FunctionalInterface

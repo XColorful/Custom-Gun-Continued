@@ -40,7 +40,7 @@ public interface IClientAccessTransformer {
      * [1.21.6, ) 烘焙网格沿用该 RenderType 的管线状态（混合 / 剔除 / 深度），只把着色器换成烘焙用的
      */
     @ApiStatus.AvailableSince("1.21.6")
-    RenderPipeline
+    Object
     getRenderPipeline(
             RenderType renderType
     );

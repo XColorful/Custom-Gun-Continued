@@ -5,10 +5,10 @@ import dev.xcolorful.customgun.client.init.registry.ClientRenderRegistry;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterShadersEvent;
 
-@Mod.EventBusSubscriber(value = Dist.CLIENT, modid = CustomGun.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(value = Dist.CLIENT, modid = CustomGun.MOD_ID)
 public class NeoClientRenderRegistry {
 
     /**

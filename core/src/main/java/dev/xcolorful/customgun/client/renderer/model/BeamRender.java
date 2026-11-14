@@ -20,6 +20,7 @@ import dev.xcolorful.customgun.client.resource.assets.display._LaserDisplay;
 import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
 import dev.xcolorful.customgun.client.resource.instance.data.ClientAttachmentIndexInstance;
 import dev.xcolorful.customgun.client.util.ClientRenderHelper;
+import dev.xcolorful.customgun.client.util.ClientRenderProfiler;
 import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import dev.xcolorful.customgun.core.api.item.IAttachment;
 import dev.xcolorful.customgun.core.api.item.IGun;
@@ -63,6 +64,7 @@ public class BeamRender {
 
         MultiBufferSource.BufferSource bufferSource = ClientRenderHelper.GL.getModelBufferSource();
         VertexConsumer builder = bufferSource.getBuffer(ClientRenderRegistry.LaserBeamRenderState.getLaserBeam());
+        ClientRenderProfiler.countBatch();
         poseStack.pushPose(); {
             for (int i = 0; i < path.size(); ++i) {
                 path.get(i).translate_rotate_scale(poseStack);

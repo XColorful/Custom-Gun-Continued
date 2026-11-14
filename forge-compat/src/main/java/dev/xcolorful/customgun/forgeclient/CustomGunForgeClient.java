@@ -36,10 +36,6 @@ public class CustomGunForgeClient {
                 CustomGunForgeClient.clientItemExtensionProvider,
                 CustomGunForgeClient.stencilOperator);
 
-        // 静态烘焙用的 core shader：只能由平台注册（core 不允许 import Forge 事件）
-        FMLJavaModLoadingContext.get().getModEventBus()
-                .addListener(ForgeClientRenderRegistry::onRegisterShaders);
-
         initialized = true;
     }
 }

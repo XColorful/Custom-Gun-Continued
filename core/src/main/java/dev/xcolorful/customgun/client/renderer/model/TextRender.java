@@ -16,6 +16,7 @@ import dev.xcolorful.customgun.client.init.registry.ClientRenderRegistry;
 import dev.xcolorful.customgun.client.model.ModelObject;
 import dev.xcolorful.customgun.client.resource.assets.display._ModelNodeTextDisplay;
 import dev.xcolorful.customgun.client.util.ClientRenderHelper;
+import dev.xcolorful.customgun.client.util.ClientRenderProfiler;
 import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import dev.xcolorful.customgun.core.api.text.placeholder.IPlaceholderManager;
 import dev.xcolorful.customgun.core.util.ColorUtils;
@@ -79,6 +80,7 @@ public class TextRender implements IModelComponentRenderer {
             { // 提交文字
                 // [1.20.1, 26.2)
                 MultiBufferSource.BufferSource bufferSource = ClientRenderHelper.GL.getModelBufferSource();
+                ClientRenderProfiler.countBatch();
                 font.drawInBatch(parsed,
                         -xOffset,
                         -font.lineHeight / 2f,
@@ -89,7 +91,10 @@ public class TextRender implements IModelComponentRenderer {
                         Font.DisplayMode.NORMAL,
                         0,
                         packLight);
+                final long profFlush = ClientRenderProfiler.begin();
+                ClientRenderProfiler.countFlush();
                 bufferSource.endBatch();
+                ClientRenderProfiler.end(ClientRenderProfiler.FLUSH, profFlush);
 
                 // [26.2, )
                 /**

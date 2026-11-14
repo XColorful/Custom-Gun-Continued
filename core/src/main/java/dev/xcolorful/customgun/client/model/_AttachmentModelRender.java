@@ -13,9 +13,12 @@ import com.mojang.blaze3d.vertex.*;
 import dev.xcolorful.customgun.client.api.entity.shooter.ILocalShooterGetter;
 import dev.xcolorful.customgun.client.compat.ar.AttachmentModelAR;
 import dev.xcolorful.customgun.client.compat.iris.IrisCompat;
+import dev.xcolorful.customgun.client.model.bake.DiscardVertexConsumer;
+import dev.xcolorful.customgun.client.model.bake.StaticBake;
 import dev.xcolorful.customgun.client.model.bedrock.BedrockPart;
 import dev.xcolorful.customgun.client.renderer.model.BeamRender;
 import dev.xcolorful.customgun.client.util.ClientRenderHelper;
+import dev.xcolorful.customgun.client.util.ClientRenderProfiler;
 import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -231,23 +234,56 @@ public class _AttachmentModelRender {
                 path.get(i).translate_rotate_scale(poseStack);
             }
             BedrockPart part = path.get(path.size() - 1);
+            // 路径前缀的变换提升为绘制矩阵（B1-b）：枪身骨骼每帧被动画驱动时，瞄具网格仍然可以复用
+            Matrix4f partPose = new Matrix4f(poseStack.last().pose());
 
             RenderType bakedRenderType = ClientRenderHelper.bakePipelineState(renderType); // [26.2, )
 
             {
-                part.visible = true; {
-                    MultiBufferSource.BufferSource bufferSource = ClientRenderHelper.GL.getModelBufferSource();
-                    VertexConsumer vertexConsumer = bufferSource.getBuffer(bakedRenderType);
-                    part.render(poseStack,
-                            transformType,
-                            vertexConsumer,
-                            light, overlay);
+                part.visible = true;
+                try {
+                    boolean baked = false;
+                    if (StaticBake.eligible()) { // 用烘焙网格替代逐顶点遍历（渲染重构B1-a/B1-b）
+                        int delegateMark = _this.delegateMark();
+                        DiscardVertexConsumer discard = DiscardVertexConsumer.INSTANCE;
+                        long vertexMark = discard.writtenVertices();
 
-                    if (!IrisCompat.endBatch(bufferSource)) {
-                        bufferSource.endBatch();
+                        long fingerprint = part.renderStatus(poseStack, transformType, light, overlay, discard, null);
+
+                        if (discard.writtenVertices() == vertexMark) {
+                            baked = StaticBake.drawOrBakePatchable(_this, path, partPose, bakedRenderType, light, overlay,
+                                    1, 1, 1, 1, fingerprint,
+                                    consumer -> part.renderGeometry(new PoseStack(), transformType, consumer,
+                                            light, overlay, 1, 1, 1, 1));
+                            if (!baked) {
+                                // 没有可用着色器：丢弃状态段登记的委托后走即时管线
+                                _this.trimDelegates(delegateMark);
+                            }
+                        } else {
+                            // 回调直接发射了几何，无法烘焙：丢弃状态段登记的委托后走即时管线
+                            _this.trimDelegates(delegateMark);
+                        }
                     }
+                    if (!baked) {
+                        MultiBufferSource.BufferSource bufferSource = ClientRenderHelper.GL.getModelBufferSource();
+                        VertexConsumer vertexConsumer = bufferSource.getBuffer(bakedRenderType);
+                        ClientRenderProfiler.countBatch();
+                        ClientRenderProfiler.countRenderType(bakedRenderType);
+                        part.render(poseStack,
+                                transformType,
+                                vertexConsumer,
+                                light, overlay);
+
+                        final long profFlush = ClientRenderProfiler.begin();
+                        ClientRenderProfiler.countFlush();
+                        if (!IrisCompat.endBatch(bufferSource)) {
+                            bufferSource.endBatch();
+                        }
+                        ClientRenderProfiler.end(ClientRenderProfiler.FLUSH, profFlush);
+                    }
+                } finally {
+                    part.visible = false;
                 }
-                part.visible = false;
             }
         }
         poseStack.popPose();

@@ -8,6 +8,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterShadersEvent;
 
+@Deprecated(since = "1.21.6")
 @EventBusSubscriber(value = Dist.CLIENT, modid = CustomGun.MOD_ID)
 public class NeoClientRenderRegistry {
 

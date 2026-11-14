@@ -32,14 +32,14 @@ public class ClientRenderUtils {
 
     public static boolean getShowDebugScreen() {
         // [1.20.1, 1.20.2)
-        return Minecraft.getInstance()
-                .options
-                .renderDebug;
+//        return Minecraft.getInstance()
+//                .options
+//                .renderDebug;
 
         // [1.20.2, )
-//        return Minecraft.getInstance()
-//                .getDebugOverlay()
-//                .showDebugScreen();
+        return Minecraft.getInstance()
+                .getDebugOverlay()
+                .showDebugScreen();
     }
 
     /**

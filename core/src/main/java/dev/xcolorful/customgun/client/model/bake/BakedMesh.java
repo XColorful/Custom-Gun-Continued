@@ -1,5 +1,6 @@
 package dev.xcolorful.customgun.client.model.bake;
 
+import com.mojang.blaze3d.buffers.BufferUsage;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
@@ -12,8 +13,8 @@ import com.mojang.blaze3d.vertex.VertexFormatElement;
 import dev.xcolorful.customgun.client.input.player.DebugKey;
 import dev.xcolorful.customgun.client.util.ClientRenderProfiler;
 import dev.xcolorful.customgun.client.util.ClientRenderUtils;
+import net.minecraft.client.renderer.CompiledShaderProgram;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.ShaderInstance;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
@@ -167,9 +168,9 @@ public final class BakedMesh implements AutoCloseable {
             long profileBuffer = ClientRenderProfiler.begin();
             VertexBuffer vertexBuffer = new VertexBuffer(
                     // [1.20.1, 1.21.4)
-                    VertexBuffer.Usage.STATIC
+//                    VertexBuffer.Usage.STATIC
                     // [1.21.4, )
-//                    BufferUsage.STATIC_WRITE
+                    BufferUsage.STATIC_WRITE
             );
             // VertexBuffer.upload 要求 VAO 已绑定，原版 BufferUploader 同样先 bind 再 upload
             vertexBuffer.bind();
@@ -305,7 +306,7 @@ public final class BakedMesh implements AutoCloseable {
             renderType.setupRenderState();
             setup = true;
 
-            @Nullable ShaderInstance shader = StaticBake.resolveEntityShader();
+            @Nullable CompiledShaderProgram shader = StaticBake.resolveEntityShader();
             if (shader == null) return false;
 
             this.vertexBuffer.bind();

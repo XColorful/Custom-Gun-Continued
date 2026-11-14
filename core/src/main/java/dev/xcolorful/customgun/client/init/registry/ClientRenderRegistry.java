@@ -7,10 +7,13 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.api.minecraft.texture.CustomTexture;
 import dev.xcolorful.customgun.client.compat.iris.IrisCompat;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.CompiledShaderProgram;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.ShaderInstance;
+import net.minecraft.client.renderer.ShaderDefines;
+import net.minecraft.client.renderer.ShaderProgram;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -44,53 +47,53 @@ public class ClientRenderRegistry {
         public static final @Nullable ResourceLocation BAKED_ENTITY_SHADER =
                 CustomGun.getMcRegistry().createResourceLocation(CustomGun.MOD_ID +
                         // [1.20.1, 1.21.4)
-                        ":cgc_baked_entity"
+//                        ":cgc_baked_entity"
                         // [1.21.4, )
-//                        ":core/cgc_baked_entity"
+                        ":core/cgc_baked_entity"
                 );
 
-//        @Deprecated(since = "1.21.4")
-        private static volatile @Nullable ShaderInstance bakedEntityShader;
+        @Deprecated(since = "1.21.4")
+        private static volatile @Nullable CompiledShaderProgram bakedEntityShader;
         @ApiStatus.AvailableSince("1.21.4")
-        private static final @Nullable Object bakedEntityProgram =
+        private static final @Nullable ShaderProgram bakedEntityProgram =
                 BAKED_ENTITY_SHADER == null ? null
                         // [1.20.1, 1.21.4)
-                        : new Object();
+//                        : new Object();
                         // [1.21.4, )
-//                        : new ShaderProgram(BAKED_ENTITY_SHADER, DefaultVertexFormat.NEW_ENTITY, ShaderDefines.EMPTY);
+                        : new ShaderProgram(BAKED_ENTITY_SHADER, DefaultVertexFormat.NEW_ENTITY, ShaderDefines.EMPTY);
 
-        public static @Nullable ShaderInstance getBakedEntityShader() {
+        public static @Nullable CompiledShaderProgram getBakedEntityShader() {
             // [1.20.1, 1.21.4)
-            return bakedEntityShader;
+//            return bakedEntityShader;
 
             // [1.21.4, )
-//            @Nullable ShaderProgram program = bakedEntityProgram;
-//            return program == null ? null : Minecraft.getInstance().getShaderManager().getProgram(program);
+            @Nullable ShaderProgram program = bakedEntityProgram;
+            return program == null ? null : Minecraft.getInstance().getShaderManager().getProgram(program);
         }
     }
 
     @FunctionalInterface
     public interface IShaderRegistrar {
         /**
-         * @param location 形如 {@code customgun:cgc_baked_entity}，对应 {@code assets/<ns>/shaders/core/<path>.json}
-         * @param onLoaded 加载成功后的回调（每次资源重载都会调用）
-//         * @param program 对应 {@code assets/<ns>/shaders/core/<path>.json}；编译产物由平台的着色器管理器持有
+//         * @param location 形如 {@code customgun:cgc_baked_entity}，对应 {@code assets/<ns>/shaders/core/<path>.json}
+//         * @param onLoaded 加载成功后的回调（每次资源重载都会调用）
+         * @param program 对应 {@code assets/<ns>/shaders/core/<path>.json}；编译产物由平台的着色器管理器持有
          */
         void registerShader(
                 // [1.20.1, 1.21.4)
-                @NotNull ResourceLocation location,
-                @NotNull VertexFormat format,
-                @NotNull Consumer<ShaderInstance> onLoaded
+//                @NotNull ResourceLocation location,
+//                @NotNull VertexFormat format,
+//                @NotNull Consumer<ShaderInstance> onLoaded
 
                 // [1.21.4, )
-//                @NotNull ShaderProgram program
+                @NotNull ShaderProgram program
         );
     }
 
     /**
      * <ul>
      *     [1.20.1, 1.21.4)
-     *     <li>资源重载会重新创建 {@link ShaderInstance}，所以每次都要重新回调并覆盖引用</li>
+     *     <li>资源重载会重新创建 {@code ShaderInstance}，所以每次都要重新回调并覆盖引用</li>
      * </ul>
      * <ul>
      *     [1.21.4, )
@@ -100,18 +103,18 @@ public class ClientRenderRegistry {
      */
     public static void onRegisterShaders(IShaderRegistrar registrar) {
         // [1.20.1, 1.21.4)
-        @Nullable var location = BakedEntityRenderState.BAKED_ENTITY_SHADER;
-        if (location == null) return;
-
-        registrar.registerShader(location,
-                DefaultVertexFormat.NEW_ENTITY,
-                shader -> BakedEntityRenderState.bakedEntityShader = shader);
+//        @Nullable var location = BakedEntityRenderState.BAKED_ENTITY_SHADER;
+//        if (location == null) return;
+//
+//        registrar.registerShader(location,
+//                DefaultVertexFormat.NEW_ENTITY,
+//                shader -> BakedEntityRenderState.bakedEntityShader = shader);
 
         // [1.21.4, )
-//        @Nullable var program = BakedEntityRenderState.bakedEntityProgram;
-//        if (program == null) return;
-//
-//        registrar.registerShader(program);
+        @Nullable var program = BakedEntityRenderState.bakedEntityProgram;
+        if (program == null) return;
+
+        registrar.registerShader(program);
     }
 
     public static class LaserBeamRenderState extends RenderStateShard {

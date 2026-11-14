@@ -102,6 +102,14 @@ public class ClientRenderHelper {
 //        poseStack.rotate(by);
     }
 
+    public static void queueFencedTask(RenderCall task) {
+        // [1.20.1, 1.21.6)
+        RenderSystem.recordRenderCall(task);
+
+        // [1.21.6, )
+//        RenderSystem.queueFencedTask(task);
+    }
+
     /**
      * 26.2 提交 + 延迟渲染：把当前模板/颜色写入等管线状态烘焙进 RenderType，使 flush 阶段绘制仍用正确管线
      */

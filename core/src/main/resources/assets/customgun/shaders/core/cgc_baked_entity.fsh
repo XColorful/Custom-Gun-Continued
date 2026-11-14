@@ -1,20 +1,31 @@
 #version 150
 
+// [1.20.1, 1.21.6)--------
 #moj_import <fog.glsl>
+// [1.21.6, )
+// #moj_import <minecraft:fog.glsl>
+// #moj_import <minecraft:dynamictransforms.glsl>
+// --------
 
 uniform sampler2D Sampler0;
 
+// [1.20.1, 1.21.6)--------
 uniform vec4 ColorModulator;
 uniform float FogStart;
 uniform float FogEnd;
 uniform vec4 FogColor;
 
 in float vertexDistance;
+// [1.21.6, )
+// in float sphericalVertexDistance;
+// in float cylindricalVertexDistance;
+// --------
+
 in vec4 vertexColor;
 in vec4 lightMapColor;
 in vec4 overlayColor;
 in vec2 texCoord0;
-in vec4 normal;
+in vec4 normal; // 1.21.6移除
 
 out vec4 fragColor;
 
@@ -26,5 +37,10 @@ void main() {
     color *= vertexColor * ColorModulator;
     color.rgb = mix(overlayColor.rgb, color.rgb, overlayColor.a);
     color *= lightMapColor;
+    // [1.20.1, 1.21.6)
     fragColor = linear_fog(color, vertexDistance, FogStart, FogEnd, FogColor);
+    // [1.21.6, )
+//     fragColor = apply_fog(color, sphericalVertexDistance, cylindricalVertexDistance,
+//             FogEnvironmentalStart, FogEnvironmentalEnd,
+//             FogRenderDistanceStart, FogRenderDistanceEnd, FogColor);
 }

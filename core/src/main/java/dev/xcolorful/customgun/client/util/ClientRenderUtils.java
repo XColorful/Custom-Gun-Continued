@@ -121,9 +121,9 @@ public class ClientRenderUtils {
     }
     public static int getIndex(VertexFormatElement element) {
         // [1.20.1, 1.21.1)
-        return element.getIndex();
+//        return element.getIndex();
         // [1.21.1, )
-//        return element.index();
+        return element.index();
     }
 
     public static class LightTexture_ {

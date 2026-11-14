@@ -1,5 +1,6 @@
 package dev.xcolorful.customgun.client.util;
 
+import com.mojang.blaze3d.pipeline.RenderCall;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
@@ -99,6 +100,14 @@ public class ClientRenderHelper {
 
         // [26.3, )
 //        poseStack.rotate(by);
+    }
+
+    public static void queueFencedTask(RenderCall task) {
+        // [1.20.1, 1.21.6)
+        RenderSystem.recordRenderCall(task);
+
+        // [1.21.6, )
+//        RenderSystem.queueFencedTask(task);
     }
 
     /**

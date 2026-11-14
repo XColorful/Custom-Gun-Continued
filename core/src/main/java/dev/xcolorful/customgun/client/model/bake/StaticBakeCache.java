@@ -3,16 +3,12 @@ package dev.xcolorful.customgun.client.model.bake;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.xcolorful.customgun.client.model.ModelObject;
 import dev.xcolorful.customgun.client.resource._AssetsInstanceManager;
+import dev.xcolorful.customgun.client.util.ClientRenderHelper;
 import net.minecraft.client.renderer.RenderType;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
-import java.util.IdentityHashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * 烘焙网格的全局 LRU 缓存
@@ -231,7 +227,7 @@ public final class StaticBakeCache {
             if (RenderSystem.isOnRenderThread()) {
                 model.cgc$clearChunks();
             } else {
-                RenderSystem.recordRenderCall(model::cgc$clearChunks);
+                ClientRenderHelper.queueFencedTask(model::cgc$clearChunks);
             }
         }
         MODEL_CHUNKS.clear();
@@ -241,7 +237,7 @@ public final class StaticBakeCache {
         if (RenderSystem.isOnRenderThread()) {
             mesh.close();
         } else {
-            RenderSystem.recordRenderCall(mesh::close);
+            ClientRenderHelper.queueFencedTask(mesh::close);
         }
     }
 
@@ -249,7 +245,7 @@ public final class StaticBakeCache {
         if (RenderSystem.isOnRenderThread()) {
             variants.close();
         } else {
-            RenderSystem.recordRenderCall(variants::close);
+            ClientRenderHelper.queueFencedTask(variants::close);
         }
     }
 }

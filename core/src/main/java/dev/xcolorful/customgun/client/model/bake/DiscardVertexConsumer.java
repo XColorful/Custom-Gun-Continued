@@ -27,84 +27,84 @@ public final class DiscardVertexConsumer implements VertexConsumer {
     }
 
     @Deprecated(since = "1.21.1")
-    @Override
+//    @Override
     public VertexConsumer vertex(double x, double y, double z) {
         return this;
     }
     @ApiStatus.AvailableSince("1.21.1")
-//    @Override
+    @Override
     public VertexConsumer addVertex(float x, float y, float z) {
         this.vertices++; return this;
     }
 
     @Deprecated(since = "1.21.1")
-    @Override
+//    @Override
     public VertexConsumer color(int red, int green, int blue, int alpha) {
         return this;
     }
     @ApiStatus.AvailableSince("1.21.1")
-//    @Override
+    @Override
     public VertexConsumer setColor(int red, int green, int blue, int alpha) {
         return this;
     }
 
     @Deprecated(since = "1.21.1")
-    @Override
+//    @Override
     public VertexConsumer uv(float u, float v) {
         return this;
     }
     @ApiStatus.AvailableSince("1.21.1")
-//    @Override
+    @Override
     public VertexConsumer setUv(float u, float v) {
         return this;
     }
 
     @Deprecated(since = "1.21.1")
-    @Override
+//    @Override
     public VertexConsumer overlayCoords(int u, int v) {
         return this;
     }
     @ApiStatus.AvailableSince("1.21.1")
-//    @Override
+    @Override
     public VertexConsumer setUv1(int u, int v) {
         return this;
     }
 
     @Deprecated(since = "1.21.1")
-    @Override
+//    @Override
     public VertexConsumer uv2(int u, int v) {
         return this;
     }
     @ApiStatus.AvailableSince("1.21.1")
-//    @Override
+    @Override
     public VertexConsumer setUv2(int u, int v) {
         return this;
     }
 
     @Deprecated(since = "1.21.1")
-    @Override
+//    @Override
     public VertexConsumer normal(float x, float y, float z) {
         return this;
     }
     @ApiStatus.AvailableSince("1.21.1")
-//    @Override
+    @Override
     public VertexConsumer setNormal(float x, float y, float z) {
         return this;
     }
 
     @Deprecated(since = "1.21.1")
-    @Override
+//    @Override
     public void endVertex() {
         this.vertices++;
     }
 
     @Deprecated(since = "1.21.1")
-    @Override
+//    @Override
     public void defaultColor(int red, int green, int blue, int alpha) {
     }
 
     @Deprecated(since = "1.21.1")
-    @Override
+//    @Override
     public void unsetDefaultColor() {
     }
 }

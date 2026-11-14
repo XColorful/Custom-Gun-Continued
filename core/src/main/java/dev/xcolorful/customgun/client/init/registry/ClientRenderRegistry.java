@@ -86,8 +86,7 @@ public class ClientRenderRegistry {
             return bakedEntityShader;
 
             // [1.21.4, )
-//            @Nullable ShaderProgram program = bakedEntityProgram;
-//            return program == null ? null : Minecraft.getInstance().getShaderManager().getProgram(program);
+//            return Minecraft.getInstance().getShaderManager().getProgram(bakedEntityProgram);
         }
         public static @Nullable Object getBakedEntityPipeline() {
             return bakedEntityPipeline;
@@ -158,10 +157,7 @@ public class ClientRenderRegistry {
                 shader -> BakedEntityRenderState.bakedEntityShader = shader);
 
         // [1.21.4, )
-//        @Nullable var program = BakedEntityRenderState.bakedEntityProgram;
-//        if (program == null) return;
-//
-//        registrar.registerShader(program);
+//        registrar.registerShader(BakedEntityRenderState.bakedEntityProgram);
 
         // [1.21.6, )
     }

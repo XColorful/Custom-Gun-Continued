@@ -4,9 +4,13 @@ import dev.xcolorful.customgun.client.api.model.bedrock.IBedrockRenderer;
 import dev.xcolorful.customgun.client.api.renderer.model.IModelComponentRenderer;
 import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
 import dev.xcolorful.customgun.client.model.bedrock.BedrockPart;
-import dev.xcolorful.customgun.client.renderer.model.*;
+import dev.xcolorful.customgun.client.renderer.model.AttachmentRender;
+import dev.xcolorful.customgun.client.renderer.model.HandRender;
+import dev.xcolorful.customgun.client.renderer.model.MuzzleFlashRender;
+import dev.xcolorful.customgun.client.renderer.model.ShellRender;
 import dev.xcolorful.customgun.client.resource.assets.display.AttachmentDisplay;
 import dev.xcolorful.customgun.client.resource.instance.data.ClientAttachmentIndexInstance;
+import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import dev.xcolorful.customgun.core.api.item.IAttachment;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.attachment.AttachmentCategory;
@@ -117,6 +121,13 @@ public class _GunLoader {
         _this.setFunctionalRenderer(NodeName.HANDGUARD_TACTICAL.getName(), bedrockPart -> handguardTacticalRender(_this, bedrockPart));
     }
 
+    /**
+     * 与 {@link BedrockPart#renderGeometry} 一致
+     * <ul>
+     *     <li>发光节点要换成满亮</li>
+     *     <li>直接用调用方传进来的 light，附加弹匣会比模型其余部分明显更暗</li>
+     * </ul>
+     */
     private static @NotNull IModelComponentRenderer renderAdditionalMagazine(GunModelObject _this, BedrockPart bedrockPart) {
         return (poseStack,
                 vertexBuffer,
@@ -125,18 +136,28 @@ public class _GunLoader {
                 overlay) -> {
             if (!bedrockPart.visible) return;
 
-            bedrockPart.compile(poseStack.last(), vertexBuffer, light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
+            int cubePackedLight = bedrockPart.illuminated ? ClientRenderUtils.LightTexture_.pack(15, 15) : light;
+            bedrockPart.compile(poseStack.last(), vertexBuffer,
+                    cubePackedLight, overlay,
+                    1.0F, 1.0F, 1.0F, 1.0F);
             for (int i = 0; i < bedrockPart.children.size(); i++) {
                 BedrockPart part = bedrockPart.children.get(i);
-                part.render(poseStack, transformType, vertexBuffer, light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
+                part.render(poseStack, transformType, vertexBuffer,
+                        cubePackedLight, overlay,
+                        1.0F, 1.0F, 1.0F, 1.0F);
             }
 
             if (_this.magazineNode == null || !_this.magazineNode.visible) return;
 
-            _this.magazineNode.compile(poseStack.last(), vertexBuffer, light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
+            int magazineLight = _this.magazineNode.illuminated ? ClientRenderUtils.LightTexture_.pack(15, 15) : cubePackedLight;
+            _this.magazineNode.compile(poseStack.last(), vertexBuffer,
+                    magazineLight, overlay,
+                    1.0F, 1.0F, 1.0F, 1.0F);
             for (int i = 0; i < _this.magazineNode.children.size(); i++) {
                 BedrockPart part = _this.magazineNode.children.get(i);
-                part.render(poseStack, transformType, vertexBuffer, light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
+                part.render(poseStack, transformType, vertexBuffer,
+                        magazineLight, overlay,
+                        1.0F, 1.0F, 1.0F, 1.0F);
             }
         };
     }

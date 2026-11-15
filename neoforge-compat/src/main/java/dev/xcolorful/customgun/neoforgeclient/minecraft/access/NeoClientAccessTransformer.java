@@ -52,14 +52,14 @@ public class NeoClientAccessTransformer implements IClientAccessTransformer {
     getOutputState(
             RenderType renderType
     ) {
-        return null; // ((RenderType.CompositeRenderType) renderType).state.outputState;
+        return ((RenderType.CompositeRenderType) renderType).state.outputState;
     }
 
     @Override public RenderPipeline
     getRenderPipeline(
             RenderType renderType
     ) {
-        return null; // ((RenderType.CompositeRenderType) renderType).renderPipeline;
+        return ((RenderType.CompositeRenderType) renderType).renderPipeline;
     }
 
     @Override public RenderSetup

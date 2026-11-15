@@ -1,7 +1,8 @@
 #version 150
 
+// moj_import注释行前面不能带井号，否则会被当成真指令导入
 // [1.20.1, 1.21.6)--------
-// #moj_import <fog.glsl>
+// moj_import <fog.glsl>
 // [1.21.6, )
 #moj_import <minecraft:fog.glsl>
 #moj_import <minecraft:dynamictransforms.glsl>

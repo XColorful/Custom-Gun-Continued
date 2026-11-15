@@ -135,8 +135,22 @@ public final class StaticBake {
             StaticBakeCache.put(key, mesh);
         }
 
-        // 光影包刚切换时，顶点布局与当前着色器不匹配：本帧退回即时管线，下一帧会重新烘焙
-        if (mesh.bytes() > 0 && mesh.extendedFormat() != shaderPack) return false;
+        /*
+        光影包刚切换时，顶点布局与当前着色器不匹配：本帧退回即时管线，下一帧会重新烘焙
+        [1.20.1, 1.21.6)
+            声明格式取自 RenderType 的固定字段，写入格式取自 BufferBuilder（Iris 在构造时换成扩展格式）
+            两者不一致就说明光影状态变了
+        [1.21.6, )
+            RenderType#format() 直接取自 RenderPipeline#getVertexFormat()
+            而 Iris 扩展的正是这个 getter，声明与写入恒为同一个格式
+            只能拿烘焙时的步长和当前管线要求的步长比
+         */
+        if (mesh.bytes() > 0
+                // [1.20.1, 1.21.6)
+                && mesh.extendedFormat() != shaderPack
+                // [1.21.6, )
+//                && mesh.stride() != renderType.format().getVertexSize()
+        ) return false;
 
         return drawMesh(mesh, renderType, pose);
     }
@@ -186,8 +200,22 @@ public final class StaticBake {
             StaticBakeCache.putPatchable(key, light, mesh);
         }
 
-        // 光影包刚切换时，顶点布局与当前着色器不匹配：本帧退回即时管线，下一帧会重新烘焙
-        if (mesh.bytes() > 0 && mesh.extendedFormat() != shaderPack) return false;
+        /*
+        光影包刚切换时，顶点布局与当前着色器不匹配：本帧退回即时管线，下一帧会重新烘焙
+        [1.20.1, 1.21.6)
+            声明格式取自 RenderType 的固定字段，写入格式取自 BufferBuilder（Iris 在构造时换成扩展格式）
+            两者不一致就说明光影状态变了
+        [1.21.6, )
+            RenderType#format() 直接取自 RenderPipeline#getVertexFormat()
+            而 Iris 扩展的正是这个 getter，声明与写入恒为同一个格式
+            只能拿烘焙时的步长和当前管线要求的步长比
+         */
+        if (mesh.bytes() > 0
+                // [1.20.1, 1.21.6)
+                && mesh.extendedFormat() != shaderPack
+                // [1.21.6, )
+//                && mesh.stride() != renderType.format().getVertexSize()
+        ) return false;
 
         return drawMesh(mesh, renderType, pose);
     }

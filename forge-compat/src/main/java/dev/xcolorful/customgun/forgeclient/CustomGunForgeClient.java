@@ -10,7 +10,9 @@ import dev.xcolorful.customgun.forgeclient.event.ForgeClientEventRegister;
 import dev.xcolorful.customgun.forgeclient.input.ForgeKeyMapping;
 import dev.xcolorful.customgun.forgeclient.item.ForgeClientItemExtensionProvider;
 import dev.xcolorful.customgun.forgeclient.minecraft.access.ForgeClientAccessTransformer;
+import dev.xcolorful.customgun.forgeclient.init.ForgeClientRenderRegistry;
 import dev.xcolorful.customgun.forgeclient.minecraft.stencil.ForgeStencilOperator;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 public class CustomGunForgeClient {
 
@@ -33,6 +35,7 @@ public class CustomGunForgeClient {
                 CustomGunForgeClient.accessTransformer,
                 CustomGunForgeClient.clientItemExtensionProvider,
                 CustomGunForgeClient.stencilOperator);
+
         initialized = true;
     }
 }

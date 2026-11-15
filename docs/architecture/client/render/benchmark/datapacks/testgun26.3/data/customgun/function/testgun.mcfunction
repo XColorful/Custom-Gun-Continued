@@ -1,0 +1,1 @@
+give @s customgun:gun[custom_data={gun_rl:"tacz:m4a1"}]

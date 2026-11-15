@@ -20,6 +20,8 @@ public class CustomInputKeyTag {
     public static final String SHOOT = "shoot";
     public static final String SWITCH_FIRE_MODE = "switch_fire_mode";
     public static final String ZOOM = "zoom";
+    // debug
+    public static final String DEBUG = "debug";
 
     private CustomInputKeyTag() {}
 }

@@ -162,6 +162,7 @@ public class AnimatedModelObject extends ModelObject implements IAnimationListen
             this.modelMap_put(nodeName, IBedrockRenderer.of(functionalPart));
         } else if (renderer.getModelRenderer() instanceof FunctionalBedrockPart functionalPart) {
             functionalPart.functionalRenderer = function;
+            functionalPart.invalidateFunctionalCache();
         }
     }
 

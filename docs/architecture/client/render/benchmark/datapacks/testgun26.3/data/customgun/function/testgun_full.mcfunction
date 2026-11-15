@@ -1,0 +1,1 @@
+give @s customgun:gun[custom_data={gun_rl:"tacz:m4a1",attachment_muzzle:{attachment_rl:"tacz:muzzle_brake_cthulhu"},attachment_laser:{attachment_rl:"tacz:laser_compact"},attachment_grip:{attachment_rl:"tacz:grip_vertical_military"},attachment_scope:{attachment_rl:"tacz:scope_mk5hd"},attachment_stock:{attachment_rl:"tacz:stock_tactical_ar"}}]

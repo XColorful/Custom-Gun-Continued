@@ -29,6 +29,7 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 
 import java.util.*;
@@ -101,6 +102,11 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
      */
     private final List<Cgc$Chunk> cgc$chunks = new ArrayList<>();
     private final Map<BedrockPart, Cgc$Chunk> cgc$chunkByNode = new IdentityHashMap<>();
+    /**
+     * 当前以即时块绘制的块根
+     * <li>哪种绘制方式是按帧决定的（真弹匣只在附加弹匣可见期间让位），下一帧要还原成一帧没有登记的那些</li>
+     */
+    private final Set<BedrockPart> cgc$immediateRoots = Collections.newSetFromMap(new IdentityHashMap<>());
     private int cgc$chunkOrderNext;
     private final BakeDirtyTracker cgc$dirtyTracker = new BakeDirtyTracker();
     private final Predicate<BedrockPart> cgc$isCut = this.cgc$chunkByNode::containsKey;
@@ -432,6 +438,7 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
             this.shouldRender.get(i)
                     .renderStatus(matrixStack, transformType, light, overlay, discard, tracker);
         }
+        this.cgc$collectImmediate(tracker);
 
         if (!this.cgc$chunksInitialized) {
             this.cgc$initChunks();
@@ -447,6 +454,17 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
         }
         return true;
     }
+
+    /**
+     * 状态段跑完之后、应用脏节点之前的一次回调
+     * <ul>
+     *     <li>子类在这里把「本帧必须和即时块走同一条即时绘制路径」的节点也登记为即时块</li>
+     *     <li>例如附加弹匣的即时块会再画一遍真弹匣，两份几何重合</li>
+     *     <li>真弹匣留在烘焙块里时，它的深度是「(ModelView × 姿态) × 顶点」，即时块是「ModelView × (姿态 × 顶点)」</li>
+     *     <li>浮点结合顺序不同就差最后一位，重合面随视角来回压过 → 闪烁</li>
+     * </ul>
+     */
+    protected void cgc$collectImmediate(BakeDirtyTracker tracker) {}
 
     private void cgc$initChunks() {
         this.cgc$chunksInitialized = true;
@@ -482,6 +500,7 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
         for (int i = 0; i < immediate.size(); i++) {
             this.cgc$markImmediateChunk(immediate.get(i));
         }
+        this.cgc$restoreStaleImmediate(immediate);
 
         List<BedrockPart> dirty = tracker.dirty();
         for (int i = 0; i < dirty.size(); i++) {
@@ -509,8 +528,14 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
      * functional 回调直接发射几何：该节点整棵子树改用即时绘制
      */
     private void cgc$markImmediateChunk(BedrockPart node) {
+        this.cgc$immediateRoots.add(node);
+
         Cgc$Chunk existing = this.cgc$chunkByNode.get(node);
         if (existing != null && existing.immediate) return;
+
+        Cgc$Chunk owner = this.cgc$nearestChunk(node.getParent());
+        // 祖先已经是即时块：它的回调整棵子树都会画一遍，再给本节点切一块就是画两遍
+        if (owner != null && owner.immediate) return;
 
         this.cgc$removeChunkAndDescendants(node);
 
@@ -518,8 +543,32 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
         this.cgc$chunkByNode.put(node, chunk);
         this.cgc$insertChunk(chunk);
 
-        Cgc$Chunk owner = this.cgc$nearestChunk(node.getParent());
         if (owner != null) this.cgc$invalidate(owner);
+    }
+
+    /**
+     * 本帧不再需要即时绘制的节点还原成烘焙块
+     * <li>还原后仍是自己的块根：父块的网格早就把它切出去了，合回去要连带重烘父块，得不偿失</li>
+     * <li>新块带着「脏」状态，下一次绘制会重新烘焙</li>
+     */
+    private void cgc$restoreStaleImmediate(List<BedrockPart> immediate) {
+        if (this.cgc$immediateRoots.isEmpty()) return;
+        this.cgc$immediateRoots.removeIf(node -> {
+            if (immediate.contains(node)) return false;
+            Cgc$Chunk chunk = this.cgc$chunkByNode.get(node);
+            if (chunk != null && chunk.immediate) this.cgc$restoreChunk(node, chunk);
+            return true;
+        });
+    }
+
+    private void cgc$restoreChunk(BedrockPart node, Cgc$Chunk immediateChunk) {
+        this.cgc$chunks.remove(immediateChunk);
+        this.cgc$chunkByNode.remove(node);
+        immediateChunk.close();
+
+        Cgc$Chunk chunk = new Cgc$Chunk(node, false);
+        this.cgc$chunkByNode.put(node, chunk);
+        this.cgc$insertChunk(chunk);
     }
 
     private void cgc$removeChunkAndDescendants(BedrockPart node) {
@@ -573,6 +622,7 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
         }
         this.cgc$chunks.clear();
         this.cgc$chunkByNode.clear();
+        this.cgc$immediateRoots.clear();
         this.cgc$chunkOrderNext = 0;
         this.cgc$chunksInitialized = false;
     }
@@ -705,9 +755,15 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
         pose.last().pose().set(matrixStack.last().pose());
         /*
         即时块写进原版 RenderType 的缓冲，那套着色器直接点乘视图空间法线；只抄 pose 会让法线丢掉调用方的旋转
-        烘焙块存的是模型空间法线，由烘焙着色器乘逆转置矩阵，不受这里影响
+        烘焙块存的是模型空间法线，由烘焙着色器乘 IT(姿态)，不受这里影响
+        两者要对齐就得同源：调用方的 normal 在视角大幅旋转后会与 IT(姿态) 差到 1.0（1.20.1 实测，同一帧里
+        烘焙块正常、即时块偏亮），因此这里从位置矩阵现算，而不是照抄
+
+        调用方的 normal 为什么会失真还没查清；已排除项、影响面与复现方式见
+        docs/architecture/client/render/refactor/b1b-first-person-bake.md 的「未查清」一节，
+        那边修好后请一并更新本注释和文档
          */
-        pose.last().normal().set(matrixStack.last().normal());
+        pose.last().normal().set(pose.last().pose()).invert().transpose();
         for (int i = 0; i < chunk.path.length; i++) {
             chunk.path[i].translate_rotate_scale(pose);
         }

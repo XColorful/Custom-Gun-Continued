@@ -12,7 +12,7 @@
     "renderer.BufferUploaderMixin",
     "renderer.CameraMixin",
     "renderer.EntityHitboxDebugRendererMixin",
-    "renderer.EntityRenderDispatcherMixin",
+    "renderer.EntityRendererMixin",
     "renderer.GameRendererMixin",
     "renderer.ItemInHandLayerMixin",
     "renderer.ItemInHandRendererMixin",

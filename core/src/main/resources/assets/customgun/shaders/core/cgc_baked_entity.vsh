@@ -65,6 +65,16 @@ out float vertexDistance;
 // out float cylindricalVertexDistance;
 // --------
 
+// [1.21.6, )
+/*
+烘焙网格存模型空间法线，原版 entity.vsh 直接用顶点里的 Normal（即时块在 CPU 用 IT(姿态) 写入）
+DynamicTransforms 的 ModelViewMat 是 mv × 姿态，逆转置会少一次摄像机旋转：转视角枪体亮度不变
+法线矩阵因此单独走这个 UBO，内容就是 IT(姿态)
+ */
+// layout(std140) uniform CgcBaked {
+//     mat4 NormalMat;
+// };
+
 out vec4 vertexColor;
 out vec4 lightMapColor;
 out vec4 overlayColor;
@@ -97,8 +107,11 @@ void main() {
 //     cylindricalVertexDistance = fog_cylindrical_distance(viewPosition);
     // --------
 
+    // [1.20.1, 1.21.6)
     mat3 normalMatrix = mat3(transpose(inverse(ModelViewMat)));
     vertexColor = minecraft_mix_light(Light0_Direction, Light1_Direction, normalMatrix * Normal, Color);
+    // [1.21.6, )
+//     vertexColor = minecraft_mix_light(Light0_Direction, Light1_Direction, mat3(NormalMat) * Normal, Color);
 
     lightMapColor = texelFetch(Sampler2, UV2 / 16, 0);
     overlayColor = texelFetch(Sampler1, UV1, 0);

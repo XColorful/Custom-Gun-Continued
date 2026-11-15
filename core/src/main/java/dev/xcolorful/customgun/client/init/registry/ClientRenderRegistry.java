@@ -110,9 +110,16 @@ public class ClientRenderRegistry {
             return null;
 
             // [1.21.6, )
+            /*
+            CgcBaked：自用的法线矩阵块
+            烘焙网格存模型空间法线
+            而 DynamicTransforms 的 ModelViewMat 是 mv × 姿态
+            逆转置与即时块 CPU 写的 IT(姿态) 差一次摄像机旋转，见 BakedMesh#draw
+             */
 //            return BAKED_PIPELINES.computeIfAbsent(base, pipeline -> pipeline.toBuilder()
 //                    .withVertexShader(BAKED_ENTITY_SHADER)
 //                    .withFragmentShader(BAKED_ENTITY_SHADER)
+//                    .withUniform("CgcBaked", UniformType.UNIFORM_BUFFER)
 //                    .build());
         }
 

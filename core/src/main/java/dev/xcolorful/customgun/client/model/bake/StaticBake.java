@@ -147,9 +147,9 @@ public final class StaticBake {
          */
         if (mesh.bytes() > 0
                 // [1.20.1, 1.21.6)
-                && mesh.extendedFormat() != shaderPack
+//                && mesh.extendedFormat() != shaderPack
                 // [1.21.6, )
-//                && mesh.stride() != renderType.format().getVertexSize()
+                && mesh.stride() != renderType.format().getVertexSize()
         ) return false;
 
         return drawMesh(mesh, renderType, pose);
@@ -212,9 +212,9 @@ public final class StaticBake {
          */
         if (mesh.bytes() > 0
                 // [1.20.1, 1.21.6)
-                && mesh.extendedFormat() != shaderPack
+//                && mesh.extendedFormat() != shaderPack
                 // [1.21.6, )
-//                && mesh.stride() != renderType.format().getVertexSize()
+                && mesh.stride() != renderType.format().getVertexSize()
         ) return false;
 
         return drawMesh(mesh, renderType, pose);

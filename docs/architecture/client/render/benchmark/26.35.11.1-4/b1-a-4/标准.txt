@@ -1,0 +1,54 @@
+测试环境：
+- 显示器1920x1080 165hz
+- 显卡GTX 1660 SUPER
+- CPU i5-9400F
+- 显卡驱动621.14 (2026-11-04)
+
+CGC端1（forge47.4.23）：
+- ./mods/cgccpackloader-26.9.2-forge-1.20.1.jar
+- ./mods/cgccshader-26.10.28-forge-1.20.1.jar
+- ./mods/customgun-26.11.35.1-forge-1.20.1.jar
+- ./mods/embeddium-0.3.31+mc1.20.1.jar
+- ./mods/oculus-mc1.20.1-1.8.0.jar
+- ./shaderpacks/ComplementaryReimagined_r5.9.3.zip（配置HIGH）
+- ./tacz/tacz_default_gun/
+
+测试方式：
+- 超平坦虚空预设，和平，/tp @s 8.5 ~ 8.5 0 0
+- 禁用昼夜更替，禁用天气循环，/time set 5000
+- 渲染距离2，模拟距离5，全屏
+- 保持第一人称视角
+- Iris/Oculus最大阴影距离Disabled
+- 全称关游戏内F3
+- /fill ~ ~1 ~32 ~ ~13 ~32 stone
+- /fill ~ ~2 ~32 ~ ~11 ~32 air
+- /fill ~ ~ ~28 ~ ~ ~28 stone
+- 在四个石头放展示框，各放一把tacz:ak47，最上面一把转3下，上面第二把转7下
+- /tp @s 8.5 -60 8.5 0 0
+- 1. 观察开关光影远处3把是否更淡，是否上面三把是否一样淡
+- 清除前面的石头
+- 渲染距离7，模拟距离7
+- /fill ~ ~ ~10 ~ ~ ~10 stone
+- /fill ~ ~ ~30 ~ ~ ~30 stone
+- /fill ~ ~1 ~60 ~ ~1 ~60 stone
+- /fill ~ ~2 ~90 ~ ~2 ~90 stone
+- /fill ~ ~35 ~60 ~ ~35 ~60 stone
+- /fill ~ ~ ~ ~ ~2 ~ water
+- 每个石头放物品展示框+tacz:ak47
+- /tp @s 8.5 -60 8.5 0 0
+- 2. 截图观察开关光影是否远处雾更重，是否第三近的比上面的雾更淡
+- 3. StaticBake.ENABLED=false测1
+- 4. StaticBake.ENABLED=false测2
+
+说明：
+- 1. 是，都在一个级别
+- 2. 关光影时最远的已不可见，第三近的可见，上面的已极其淡；开光影时最远的能看到石头颜色，第三近的跟上面的都很模糊分不清，画面整体比关光影时亮很多
+- 3. 是，都在一个级别
+- 4. 关光影时第三近已经不可见，开光影是一致
+
+复测：
+- /fill ~ ~1 ~60 ~ ~1 ~60 stone
+- /fill ~ ~35 ~60 ~ ~35 ~60 stone
+- /fill ~ ~ ~ ~ ~2 ~ water
+- 1. 进游戏（已经在水中）等若干秒后水颜色变淡，开始可见
+- 4. 进游戏（已经在水中）等若干秒后水颜色变淡，开始可见

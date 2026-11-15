@@ -19,6 +19,7 @@ import dev.xcolorful.customgun.client.resource.assets.display.GunDisplay;
 import dev.xcolorful.customgun.client.resource.assets.display.gun._MuzzleFlashDisplay;
 import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
 import dev.xcolorful.customgun.client.util.ClientRenderHelper;
+import dev.xcolorful.customgun.client.util.ClientRenderProfiler;
 import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import dev.xcolorful.customgun.core.api.item.IAttachment;
 import dev.xcolorful.customgun.core.api.item.attachment.AttachmentCategory;
@@ -154,6 +155,7 @@ public class MuzzleFlashRender implements IModelComponentRenderer {
             collector.submitCustomGeometry(poseStack2, renderTypeBg, (pose, vertexConsumer) -> {
                 PoseStack _poseStack = new PoseStack();
                 _poseStack.last().set(pose);
+                ClientRenderProfiler.countBatch();
                 MUZZLE_FLASH_MODEL.renderToBuffer(_poseStack, vertexConsumer, light, overlay, 1.0f, 1.0f, 1.0f, 1.0f);
             });
         }
@@ -168,6 +170,7 @@ public class MuzzleFlashRender implements IModelComponentRenderer {
             collector.submitCustomGeometry(poseStack2, renderTypeLight, (pose, vertexConsumer) -> {
                 PoseStack _poseStack = new PoseStack();
                 _poseStack.last().set(pose);
+                ClientRenderProfiler.countBatch();
                 MUZZLE_FLASH_MODEL.renderToBuffer(_poseStack, vertexConsumer, light, overlay, 1.0f, 1.0f, 1.0f, 1.0f);
             });
         }

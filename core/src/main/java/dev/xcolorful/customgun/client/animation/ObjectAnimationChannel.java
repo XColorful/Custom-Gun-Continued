@@ -4,6 +4,7 @@ import dev.xcolorful.customgun.client.animation.channel.AnimChannelContent;
 import dev.xcolorful.customgun.client.api.animation.AnimationChannelType;
 import dev.xcolorful.customgun.client.api.animation.interpolator.IInterpolator;
 import dev.xcolorful.customgun.client.api.animation.listener.IAnimationListener;
+import dev.xcolorful.customgun.client.util.ClientRenderProfiler;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -76,6 +77,7 @@ public class ObjectAnimationChannel {
      */
     public void update(float timeS, boolean blend) {
         if (!transitioning) {
+            ClientRenderProfiler.countAnimationChannel();
             float[] result = getResult(timeS);
             for (int i = 0; i < this.listeners.size(); i++) {
                 IAnimationListener listener = this.listeners.get(i);

@@ -25,13 +25,13 @@
 */
 
 // [1.20.1, 1.21.6)--------
-#moj_import <light.glsl>
-#moj_import <fog.glsl>
+// #moj_import <light.glsl>
+// #moj_import <fog.glsl>
 // [1.21.6, )
-// #moj_import <minecraft:light.glsl>
-// #moj_import <minecraft:fog.glsl>
-// #moj_import <minecraft:dynamictransforms.glsl>
-// #moj_import <minecraft:projection.glsl>
+#moj_import <minecraft:light.glsl>
+#moj_import <minecraft:fog.glsl>
+#moj_import <minecraft:dynamictransforms.glsl>
+#moj_import <minecraft:projection.glsl>
 // --------
 
 in vec3 Position;
@@ -45,47 +45,49 @@ uniform sampler2D Sampler1;
 uniform sampler2D Sampler2;
 
 // [1.20.1, 1.21.6)--------
-uniform mat4 ModelViewMat;
-uniform mat4 ProjMat;
+// uniform mat4 ModelViewMat;
+// uniform mat4 ProjMat;
 //uniform mat3 IViewRotMat; // 1.21.1移除
-uniform int FogShape;
-
-uniform vec3 Light0_Direction;
-uniform vec3 Light1_Direction;
-
-out float vertexDistance;
+// uniform int FogShape;
+//
+// uniform vec3 Light0_Direction;
+// uniform vec3 Light1_Direction;
+//
+// out float vertexDistance;
 // [1.21.6, )
-// out float sphericalVertexDistance;
-// out float cylindricalVertexDistance;
+out float sphericalVertexDistance;
+out float cylindricalVertexDistance;
 // --------
 
 out vec4 vertexColor;
 out vec4 lightMapColor;
 out vec4 overlayColor;
 out vec2 texCoord0;
-out vec4 normal;
 
 void main() {
     // [1.20.1, 1.21.6)--------
-    gl_Position = ProjMat * ModelViewMat * vec4(Position, 1.0);
-    // [1.20.1, 1.21.1)
-    /*
-    雾必须先在「世界对齐」坐标系里算：原版是 fog_distance(ModelViewMat, IViewRotMat * Position)
-    其中 IViewRotMat * Position 消除了相机旋转，shape=1 时 zero 掉的是世界 Y
-    这里把 ModelViewMat 乘进去之后再清 Y，否则清掉的是模型空间的 Y
-     */
-//     vec3 worldAlignedPosition = (mat4(IViewRotMat) * ModelViewMat * vec4(Position, 1.0)).xyz;
-//     vertexDistance = fog_distance(mat4(1.0), worldAlignedPosition, FogShape);
-    // [1.21.1, )
-    vec3 viewPosition = (ModelViewMat * vec4(Position, 1.0)).xyz;
-    vertexDistance = fog_distance(viewPosition, FogShape);
-
-    // [1.21.6, )
+//     gl_Position = ProjMat * ModelViewMat * vec4(Position, 1.0);
+//     // [1.20.1, 1.21.1)
+//     /*
+//     雾必须先在「世界对齐」坐标系里算：原版是 fog_distance(ModelViewMat, IViewRotMat * Position)
+//     其中 IViewRotMat * Position 消除了相机旋转，shape=1 时 zero 掉的是世界 Y
+//     这里把 ModelViewMat 乘进去之后再清 Y，否则清掉的是模型空间的 Y
+//      */
+// //     vec3 worldAlignedPosition = (mat4(IViewRotMat) * ModelViewMat * vec4(Position, 1.0)).xyz;
+// //     vertexDistance = fog_distance(mat4(1.0), worldAlignedPosition, FogShape);
+//     // [1.21.1, )
 //     vec3 viewPosition = (ModelViewMat * vec4(Position, 1.0)).xyz;
 //     gl_Position = ProjMat * vec4(viewPosition, 1.0);
 //
 //     sphericalVertexDistance = fog_spherical_distance(viewPosition);
 //     cylindricalVertexDistance = fog_cylindrical_distance(viewPosition);
+
+    // [1.21.6, )
+    vec3 viewPosition = (ModelViewMat * vec4(Position, 1.0)).xyz;
+    gl_Position = ProjMat * vec4(viewPosition, 1.0);
+
+    sphericalVertexDistance = fog_spherical_distance(viewPosition);
+    cylindricalVertexDistance = fog_cylindrical_distance(viewPosition);
     // --------
 
     mat3 normalMatrix = mat3(transpose(inverse(ModelViewMat)));
@@ -94,5 +96,5 @@ void main() {
     lightMapColor = texelFetch(Sampler2, UV2 / 16, 0);
     overlayColor = texelFetch(Sampler1, UV1, 0);
     texCoord0 = UV0;
-    normal = ProjMat * ModelViewMat * vec4(Normal, 0.0); // 1.21.6移除
+//     normal = ProjMat * ModelViewMat * vec4(Normal, 0.0); // 1.21.6移除
 }

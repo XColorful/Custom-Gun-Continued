@@ -17,6 +17,12 @@
 
 使用 delegate 的渲染器：枪口火焰、抛壳、配件、手臂、文字。它们的特点是在回调里缓存当前 `PoseStack` 的 normal / pose 矩阵，delegate 阶段用缓存的矩阵重建独立栈再绘制。
 
+## 光照约定
+
+功能性渲染器**直接写顶点**时（例如 `_GunLoader#renderAdditionalMagazine`），必须和 `BedrockPart#renderGeometry` 一样
+先按节点的 `illuminated` 换成满亮（`ClientRenderUtils.LightTexture_.pack(15, 15)`）。手持位置 `light = 0xf00000`
+（方块光 0），漏掉这一步发光骨头会明显偏深；回调里顺带重复绘制其它节点时也要用同一个光照。
+
 ## 枪口火焰
 
 `MuzzleFlashRender` 绑定到 `muzzle_flash_origin` 节点。开火时 `onShoot()` 记录时间戳和随机旋转角，之后 50ms 内用两层 `SlotModel`（平面模型）渲染：先半透明背景层，再加性混合发光层。开火时间戳由 `GUN_FIRE_EVENT` 写入（见 [枪械附加变换模块](./gun-render-addons.md)）。渲染前检查枪口配件是否抑制火焰（消音器），并只在 `isSelf` 为 true（第一人称或本地玩家自己的枪）时渲染。

@@ -9,6 +9,7 @@ import dev.xcolorful.customgun.client.api.model.IModelTextConsumer;
 import dev.xcolorful.customgun.client.api.model.bedrock.IBedrockRenderer;
 import dev.xcolorful.customgun.client.api.model.gun.GunModelType;
 import dev.xcolorful.customgun.client.api.renderer.model.IModelComponentRenderer;
+import dev.xcolorful.customgun.client.model.bake.BakeDirtyTracker;
 import dev.xcolorful.customgun.client.model.bedrock.BedrockPart;
 import dev.xcolorful.customgun.client.renderer.model.ShellRender;
 import dev.xcolorful.customgun.client.renderer.model.TextRender;
@@ -162,6 +163,18 @@ public class GunModelObject extends AnimatedModelObject implements IGunModelObje
         if (this.additionalMagazineNode != null) {
             this.additionalMagazineNode.visible = false;
         }
+    }
+
+    /**
+     * 附加弹匣的即时块会把真弹匣再画一遍，两份几何在同一位置重合
+     * <li>真弹匣留在烘焙块里时两条绘制链的浮点结合顺序不同，重合面的深度只差最后一位，随视角来回压过 → 闪烁</li>
+     * <li>让它一起走即时块，两份就落在同一条链路上，与关掉烘焙时的表现一致</li>
+     */
+    @Override
+    protected void cgc$collectImmediate(BakeDirtyTracker tracker) {
+        if (this.additionalMagazineNode == null || !this.additionalMagazineNode.visible) return;
+        if (this.magazineNode == null || !this.magazineNode.visible) return;
+        tracker.markImmediate(this.magazineNode);
     }
 
     // --------IModelObjectRender--------

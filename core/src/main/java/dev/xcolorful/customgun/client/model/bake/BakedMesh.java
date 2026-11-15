@@ -91,7 +91,7 @@ public final class BakedMesh implements AutoCloseable {
      *     <li>布局比对改用 {@link #stride()}（见 {@link StaticBake}），本字段保留给 [1.20.1, 1.21.6) 的实现</li>
      * </ul>
      */
-//    @Deprecated(since = "1.21.6")
+    @Deprecated(since = "1.21.6")
     private final boolean extendedFormat;
     /**
      * 交错顶点字节的 CPU 副本，光照变化时改写其中的 uv2 后再 (整段重传 / 1.21.6 整段写回)
@@ -456,7 +456,7 @@ public final class BakedMesh implements AutoCloseable {
         return this.bytes;
     }
 
-//    @Deprecated(since = "1.21.6")
+    @Deprecated(since = "1.21.6")
     public boolean extendedFormat() {
         return this.extendedFormat;
     }

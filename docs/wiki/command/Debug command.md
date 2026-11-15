@@ -1,7 +1,7 @@
 [English](#English)
 
 # 调试指令
-> wiki 版本：`0.0.9`.4
+> wiki 版本：`26.11.35.1`.6
 
 ## 服务端指令
 
@@ -65,8 +65,14 @@
 验证客户端Mixin是否正确应用
 - `target`（字面量）：测试目标，可选值为`IAnimateGeoItem`
 
+### 启用静态烘焙
+> _/customgun debug enableStaticBake [bool]_
+
+若画面异常，可以关闭该功能
+- `bool`（bool）：是否启用静态烘焙
+
 # English
-> wiki version: `0.0.15`.5
+> wiki version: `26.11.35.1`.6
 
 ## Server command
 
@@ -129,3 +135,9 @@ Test whether the specified sound file can be loaded by the resource manager
 
 Verify that client Mixin is correctly applied
 - `target` (literal): Test target, options are `IAnimateGeoItem`
+
+### Enable static bake
+> _/customgun debug enableStaticBake [bool]_
+
+Disable this feature if rendering is abnormal
+- `bool` (bool): Whether to enable static bake

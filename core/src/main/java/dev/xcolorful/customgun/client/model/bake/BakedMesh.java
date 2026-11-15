@@ -371,8 +371,16 @@ public final class BakedMesh implements AutoCloseable {
 
         @Nullable RenderPipeline pipeline; // [1.21.6, )
         Matrix4f modelView; {
-            // [1.20.1, 1.21.6)
-//            modelView = new Matrix4f(ClientRenderHelper.GL._getModelViewMatrix()).mul(pose);
+            // [1.20.1, 1.21.1)
+            modelView = new Matrix4f(ClientRenderHelper.GL._getModelViewMatrix()).mul(pose);
+
+            // [1.21.1, 1.21.6)
+            /*
+            1.21.1 起 RenderSystem 的 modelview 不是单位阵（手部渲染时是摄像机旋转的逆）
+            这里只取 modelview 本身，绘制时并进投影矩阵
+            ModelViewMat 只放调用方姿态，理由见下方绘制段
+             */
+//            modelView = new Matrix4f(ClientRenderHelper.GL._getModelViewMatrix());
 
             // [1.21.6, )
             pipeline = ClientRenderRegistry.BakedEntityRenderState.bakedPipelineFor(renderType);
@@ -387,11 +395,30 @@ public final class BakedMesh implements AutoCloseable {
             setup = true;
 
             // [1.20.1, 1.21.6)
-//            @Nullable CompiledShaderProgram shader = StaticBake.resolveEntityShader();
-//            if (shader == null) return false;
-//
-//            this.vertexBuffer.bind();
-//            this.vertexBuffer.drawWithShader(modelView, RenderSystem.getProjectionMatrix(), shader);
+            @Nullable ShaderInstance shader = StaticBake.resolveEntityShader();
+            if (shader == null) return false;
+
+            this.vertexBuffer.bind();
+
+            // [1.20.1, 1.21.1)
+            this.vertexBuffer.drawWithShader(modelView, RenderSystem.getProjectionMatrix(), shader);
+
+            // [1.21.1, 1.21.6)
+            /*
+            ModelViewMat 只能放调用方姿态，不能带 RenderSystem 的 modelview：
+            原版实体着色器把顶点里的 Normal 当视图空间法线直接点乘光照，即时块的 Normal 就是 CPU 用 IT(姿态) 写进顶点的；
+            烘焙块由着色器现算 IT(ModelViewMat)，两者相等才是同一口径
+            1.21.1 手部渲染的 modelview 是摄像机旋转的逆（GameRenderer#renderItemInHand），
+            带进去会让 IT(ModelViewMat) 少乘一次该旋转，枪体法线冻结在固定朝向：转视角亮度不变，而弹匣（即时块）正常
+            把 modelview 并进投影矩阵后位置不变：Proj × mv × 姿态 == (Proj × mv) × 姿态
+             */
+            // 雾要真实视图坐标，而 ModelViewMat 已交给姿态：modelview 单独走 CgcViewMat
+            // 光影包的 program 里没有这个 uniform，取不到就跳过（不能用 safeGetUniform，那会每帧刷警告）
+//            @Nullable var viewMat = shader.getUniform("CgcViewMat");
+//            if (viewMat != null) viewMat.set(modelView);
+//            this.vertexBuffer.drawWithShader(pose,
+//                    new Matrix4f(RenderSystem.getProjectionMatrix()).mul(modelView),
+//                    shader);
 
             // [1.21.6, )
             // 与 RenderType#draw 一致：状态设好之后才取矩阵，layering / texturing 状态可能改过它们

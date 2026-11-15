@@ -703,6 +703,11 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
     private PoseStack cgc$chunkPoseStack(Cgc$Chunk chunk, PoseStack matrixStack) {
         PoseStack pose = new PoseStack();
         pose.last().pose().set(matrixStack.last().pose());
+        /*
+        即时块写进原版 RenderType 的缓冲，那套着色器直接点乘视图空间法线；只抄 pose 会让法线丢掉调用方的旋转
+        烘焙块存的是模型空间法线，由烘焙着色器乘逆转置矩阵，不受这里影响
+         */
+        pose.last().normal().set(matrixStack.last().normal());
         for (int i = 0; i < chunk.path.length; i++) {
             chunk.path[i].translate_rotate_scale(pose);
         }

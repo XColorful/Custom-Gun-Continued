@@ -1,0 +1,63 @@
+测试环境：
+- 显示器1920x1080 165hz
+- 显卡GTX 1660 SUPER
+- CPU i5-9400F
+- 显卡驱动621.14 (2026-11-04)
+
+CGC端1（forge47.4.23）：
+- ./mods/cgccpackloader-26.9.2-forge-1.20.1.jar
+- ./mods/cgccshader-26.10.28-forge-1.20.1.jar
+- ./mods/customgun-26.11.35.1-forge-1.20.1.jar
+- ./mods/embeddium-0.3.31+mc1.20.1.jar
+- ./mods/oculus-mc1.20.1-1.8.0.jar
+- ./saves/新的世界/datapacks/testgun1.20.1/pack.mcmeta
+- ./saves/新的世界/datapacks/testgun1.20.1/data/customgun/functions/testgun.mcfunction
+- ./saves/新的世界/datapacks/testgun1.20.1/data/customgun/functions/testgun_full.mcfunction
+- ./shaderpacks/ComplementaryReimagined_r5.9.3.zip（配置HIGH）
+- ./tacz/tacz_default_gun/
+
+测试方式：
+- CGC端tacz_default_gun补TaCZ内置第一人称animations动画（对齐TaCZ）
+- CGC客户端配置关掉枪械HUD
+- MSI Afterburner基准全局热键保存的Benckmark.txt
+- 超平坦虚空预设，和平，无物品展示框，/tp @s 8.5 ~ 8.5 0 0
+- 脚下放火把/fill ~ ~ ~ ~ ~ ~ minecraft:torch
+- 命令方块/fill 8 ~-1 25 8 ~-1 25 minecraft:command_block，命令"tp @p 8.5 -60 -7.5 0 0"
+- 压力板/fill 8 ~ 25 8 ~ 25 minecraft:oak_pressure_plate
+- 关掉命令方块弹聊天框（略微影响渲染）/gamerule commandBlockOutput false
+- 禁用昼夜更替，禁用天气循环，/time set 5000
+- 渲染距离2，模拟距离5，全屏
+- 保持第一人称视角，CGC客户端配置关掉枪械HUD
+- 启动任意端，等Afterburner游戏内FPS到1100~1300（预热）
+- Sodium降低帧率-最小化时
+- Iris/Oculus最大阴影距离Disabled
+- 全称关游戏内F3
+- 每种测试方式都是提前做好地图，保证启动游戏第一次进存档就是测试条件及角色朝向
+- 每个数据文件 = 一次独立启动 + 进档；测试 A、测试 B 分开跑
+- 1. Afterburner记录空快捷栏渲染帧数（夜晚）
+- 之后测试均按以下流程：
+-   按W（非疾跑）的同时开始记录，跑8格到命令方块传送后再跑16格，触发传送的一瞬间停止记录，人工反应误差应该不超过+0.5秒，总时长最多延长1秒
+-   /tp @s 8.5 ~ 8.5 0 0回起点
+- 清空tacz:ak47子弹（/cgc debug setMagAmmo 0后再开一枪，再/tp @s ~ ~ ~ 0 0固定视角）
+- 2. Afterburner记录第一人称tacz:ak47
+- 3. DebugKey记录第一人称tacz:ak47
+- 3. 开光影，Afterburner记录第一人称tacz:ak47（火把位置原地10秒）
+- 4. 开光影，Afterburner记录第一人称tacz:ak47
+- 5. 开光影，DebugKey记录第一人称tacz:ak47
+- 关光影
+- 6. Afterburner记录第一人称满配枪械（/function customgun:testgun_full）
+- 7. DebugKey记录第一人称满配枪械（/function customgun:testgun_full）
+- 8. 开光影，Afterburner记录第一人称满配枪械（/function customgun:testgun_full）（火把位置原地10秒）
+- 9. 开光影，Afterburner记录第一人称满配枪械（/function customgun:testgun_full）
+- 10. 开光影，DebugKey记录第一人称满配枪械（/function customgun:testgun_full）
+- 关光影
+
+说明：
+- 不用F3的原因：开F3后裸渲染FPS在800~900，改用Afterburner能到1300左右；且F3会导致切换到下一个快捷栏槽，帧数需要很久才重新回升
+- 每种测试方式都是提前做好地图，保证启动游戏第一次进存档就是测试条件及角色朝向
+- Afterburner每个录10秒左右
+- Afterburner快捷键设了Ctrl+Alt+X和Ctrl+Alt+C，左手小拇指按Ctrl，大拇指按Alt，食指和中指按X和C；右手中指按W
+- 左手中指按W；右手中指按DebugKey（F12）
+- 本批构建含 B1-c-B（第一人称分块网格的光照原地改写）：流程与本批探针均不变，判读看移动段 `Bake rebuilds` 应接近 0（只有最初一两次光照变化仍会烘焙）
+- （第5次为复测）（定位残留重建）时 F12 报告会多出 `Light update`、`Light patches` / `Light patch bytes`、`Bake: new key` / `light fill` / `patch failed` / `chunk invalid`、`Light patch: no copy` / `no vbo`；流程不变，数据追加到同目录即可
+- （第6次为复测）验证修复

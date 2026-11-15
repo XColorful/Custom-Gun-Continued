@@ -27,6 +27,25 @@ public interface IClientAccessTransformer {
             MultiPlayerGameMode gameMode
     );
 
+    /**
+     * [1.21.6, ) 烘焙网格自己开 RenderPass，必须知道该 RenderType 画到哪个输出目标
+     * @return {@code RenderStateShard.OutputStateShard}；拿不到时返回 {@code null}
+     */
+    @ApiStatus.AvailableSince("1.21.6")
+    @Nullable Object
+    getOutputState(
+            RenderType renderType
+    );
+
+    /**
+     * [1.21.6, ) 烘焙网格沿用该 RenderType 的管线状态（混合 / 剔除 / 深度），只把着色器换成烘焙用的
+     */
+    @ApiStatus.AvailableSince("1.21.6")
+    RenderPipeline
+    getRenderPipeline(
+            RenderType renderType
+    );
+
     @ApiStatus.AvailableSince("26.2")
     RenderSetup
     getState(

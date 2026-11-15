@@ -15,6 +15,7 @@ import dev.xcolorful.customgun.core.resource.instance.data.GunIndexInstance;
 import dev.xcolorful.customgun.core.util.SendUtils;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 public final class LivingShooterReload extends LivingShooterAspect {
@@ -111,9 +112,16 @@ public final class LivingShooterReload extends LivingShooterAspect {
         this.shooterProperty.reloadStateType = result.getStateType();
         if (!result.getStateType().isReloading()) {
             this.shooterProperty.reloadTimestamp = -1;
+            if (clientReloadTest) { // 写在这是因为代码只有默认实现，测试枪走脚本逻辑
+                ItemStack currentGunItem = this.shooterProperty.currentGunItem.get(); // 测试，默认还在持枪
+                IGun iGun = IGunGetter.fromItemStack(currentGunItem);
+                iGun.setMagAmmoCount(currentGunItem, 0);
+                iGun.setBarrelAmmoCount(currentGunItem, 0);
+            }
         }
         return result;
     }
+    @ApiStatus.Internal public static boolean clientReloadTest = false; // 单人游戏(同一进程)测试用
 
     public void cancelReload() {
         // 1. 手持枪械检查

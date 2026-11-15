@@ -1,6 +1,7 @@
 package dev.xcolorful.customgun.client.util;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
+import com.mojang.blaze3d.vertex.VertexFormatElement;
 import dev.xcolorful.customgun.client.api.event.IRenderLevelStageEvent;
 import dev.xcolorful.customgun.client.api.event.ISubmitCustomGeometryEvent;
 import net.minecraft.client.Camera;
@@ -29,6 +30,18 @@ public class ClientRenderUtils {
 
     public static Identifier getSkinTextureLocation(LocalPlayer clientPlayer) {
         return clientPlayer.getSkin().body().texturePath();
+    }
+
+    public static boolean getShowDebugScreen() {
+        // [1.20.1, 1.20.2)
+        return Minecraft.getInstance()
+                .options
+                .renderDebug;
+
+        // [1.20.2, )
+//        return Minecraft.getInstance()
+//                .getDebugOverlay()
+//                .showDebugScreen();
     }
 
     /**
@@ -99,6 +112,25 @@ public class ClientRenderUtils {
     }
     public static Matrix4f createCenterOffsetMatrix(ISubmitCustomGeometryEvent event, double centerX, double centerY, double centerZ, Vec3 cameraPos) {
         return createCenterOffsetMatrix(new Matrix4f(), centerX, centerY, centerZ, cameraPos);
+    }
+
+    public static VertexFormatElement.Usage getUsage(VertexFormatElement element) {
+        // [1.20.1, 1.21.1)
+        return element.getUsage();
+        // [1.21.1, )
+//        return element.usage();
+    }
+    public static int getByteSize(VertexFormatElement element) {
+        // [1.20.1, 1.21.1)
+        return element.getByteSize();
+        // [1.21.1, )
+//        return element.byteSize();
+    }
+    public static int getIndex(VertexFormatElement element) {
+        // [1.20.1, 1.21.1)
+        return element.getIndex();
+        // [1.21.1, )
+//        return element.index();
     }
 
     public static class LightTexture_ {

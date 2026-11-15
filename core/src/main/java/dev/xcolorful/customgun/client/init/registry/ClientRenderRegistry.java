@@ -8,13 +8,9 @@ import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.CustomGunClient;
 import dev.xcolorful.customgun.client.api.minecraft.texture.CustomTexture;
 import dev.xcolorful.customgun.client.compat.iris.IrisCompat;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.CompiledShaderProgram;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.ShaderDefines;
-import net.minecraft.client.renderer.ShaderProgram;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -57,7 +53,7 @@ public class ClientRenderRegistry {
                 );
 
         @Deprecated(since = "1.21.4")
-        private static volatile @Nullable CompiledShaderProgram bakedEntityShader;
+        private static volatile @Nullable Object bakedEntityShader;
 
         @Deprecated(since = "1.21.6")
         @ApiStatus.AvailableSince("1.21.4")
@@ -66,30 +62,32 @@ public class ClientRenderRegistry {
                         new Object();
                         // [1.21.4, )
 //                        new ShaderProgram(BAKED_ENTITY_SHADER, DefaultVertexFormat.NEW_ENTITY, ShaderDefines.EMPTY);
+                        new Object();
 
         @ApiStatus.AvailableSince("1.21.6")
-        private static final @NotNull Object bakedEntityPipeline =
+        private static final @NotNull RenderPipeline bakedEntityPipeline =
                         // [1.20.1, 1.21.6)
-                        new Object();
+//                        new Object();
                         // [1.21.6, )
-//                RenderPipeline.builder(RenderPipelines.MATRICES_FOG_LIGHT_DIR_SNIPPET)
-//                        .withLocation(BAKED_ENTITY_SHADER)
-//                        .withVertexShader(BAKED_ENTITY_SHADER)
-//                        .withFragmentShader(BAKED_ENTITY_SHADER)
-//                        .withSampler("Sampler0")
-//                        .withSampler("Sampler1")
-//                        .withSampler("Sampler2")
-//                        .withBlend(BlendFunction.TRANSLUCENT)
-//                        .withCull(false)
-//                        .withVertexFormat(DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS)
-//                        .build();
+                RenderPipeline.builder(RenderPipelines.MATRICES_FOG_LIGHT_DIR_SNIPPET)
+                        .withLocation(BAKED_ENTITY_SHADER)
+                        .withVertexShader(BAKED_ENTITY_SHADER)
+                        .withFragmentShader(BAKED_ENTITY_SHADER)
+                        .withSampler("Sampler0")
+                        .withSampler("Sampler1")
+                        .withSampler("Sampler2")
+                        .withBlend(BlendFunction.TRANSLUCENT)
+                        .withCull(false)
+                        .withVertexFormat(DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS)
+                        .build();
 
-        public static @Nullable CompiledShaderProgram getBakedEntityShader() {
+        public static @Nullable Object getBakedEntityShader() {
             // [1.20.1, 1.21.4)
 //            return bakedEntityShader;
 
             // [1.21.4, )
-            return Minecraft.getInstance().getShaderManager().getProgram(bakedEntityProgram);
+//            return Minecraft.getInstance().getShaderManager().getProgram(bakedEntityProgram);
+            return null;
         }
         public static @Nullable Object getBakedEntityPipeline() {
             return bakedEntityPipeline;
@@ -106,15 +104,15 @@ public class ClientRenderRegistry {
          */
         @ApiStatus.AvailableSince("1.21.6")
         public static @Nullable RenderPipeline bakedPipelineFor(RenderType renderType) {
-            RenderPipeline base = CustomGunClient.getAccessTransformer().getRenderPipeline(renderType);
             // [1.20.1, 1.21.6)
-            return null;
+//            return null;
 
             // [1.21.6, )
-//            return BAKED_PIPELINES.computeIfAbsent(base, pipeline -> pipeline.toBuilder()
-//                    .withVertexShader(BAKED_ENTITY_SHADER)
-//                    .withFragmentShader(BAKED_ENTITY_SHADER)
-//                    .build());
+            RenderPipeline base = CustomGunClient.getAccessTransformer().getRenderPipeline(renderType);
+            return BAKED_PIPELINES.computeIfAbsent(base, pipeline -> pipeline.toBuilder()
+                    .withVertexShader(BAKED_ENTITY_SHADER)
+                    .withFragmentShader(BAKED_ENTITY_SHADER)
+                    .build());
         }
 
         private static final Map<RenderPipeline, RenderPipeline> BAKED_PIPELINES = new IdentityHashMap<>();
@@ -134,7 +132,7 @@ public class ClientRenderRegistry {
 //                @NotNull Consumer<ShaderInstance> onLoaded
 
                 // [1.21.4, )
-                @NotNull ShaderProgram program
+                @NotNull Object program
         );
     }
 
@@ -149,7 +147,7 @@ public class ClientRenderRegistry {
      *     <li>资源重载后编译产物会被重建，因此这里只登记定义，取用时再到管理器里查</li>
      * </ul>
      */
-//    @Deprecated(since = "1.21.6")
+    @Deprecated(since = "1.21.6")
     public static void onRegisterShaders(IShaderRegistrar registrar) {
         // [1.20.1, 1.21.4)
 //        @Nullable var location = BakedEntityRenderState.BAKED_ENTITY_SHADER;

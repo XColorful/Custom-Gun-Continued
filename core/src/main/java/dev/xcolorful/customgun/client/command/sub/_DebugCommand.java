@@ -1,12 +1,14 @@
 package dev.xcolorful.customgun.client.command.sub;
 
 import com.mojang.brigadier.Command;
+import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.api.item.IAnimateGeoItem;
 import dev.xcolorful.customgun.client.api.renderer.item.IAnimateGeoItemRenderer;
+import dev.xcolorful.customgun.client.model.bake.StaticBake;
 import dev.xcolorful.customgun.core.init.registry.ModItems;
 import dev.xcolorful.customgun.core.item.gun.GunItem;
 import net.minecraft.client.Minecraft;
@@ -23,6 +25,9 @@ public class _DebugCommand {
 
     public static LiteralArgumentBuilder<CommandSourceStack> getClient() {
         return Commands.literal(DEBUG)
+                .then(Commands.literal("enableStaticBake")
+                        .then(Commands.argument("bool", BoolArgumentType.bool())
+                                .executes(_DebugCommand::setEnableStaticBake)))
                 .then(Commands.literal("clientMixinTest")
                         .then(Commands.literal("IAnimateGeoItem")
                                 .executes(_DebugCommand::testIAnimateGeoItemMixin)))
@@ -55,6 +60,12 @@ public class _DebugCommand {
         } else {
             context.getSource().sendFailure(Component.literal("GunItem is not IAnimateGeoItem"));
         }
+        return Command.SINGLE_SUCCESS;
+    }
+    private static int setEnableStaticBake(CommandContext<CommandSourceStack> context) {
+        boolean enable = BoolArgumentType.getBool(context, "bool");
+        StaticBake.ENABLED = enable;
+        context.getSource().sendSuccess(() -> Component.literal("StaticBake: " + enable), false);
         return Command.SINGLE_SUCCESS;
     }
 }

@@ -20,6 +20,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
+import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 import java.nio.ByteBuffer;
@@ -446,9 +447,9 @@ public final class BakedMesh implements AutoCloseable {
             GpuBufferSlice transforms = RenderSystem.getDynamicUniforms().writeTransform(
                     modelView, WHITE,
                     // [1.21.6, 1.21.10) 取 RenderSystem 累积的模型偏移
-                    RenderSystem.getModelOffset(),
+//                    RenderSystem.getModelOffset(),
                     // [1.21.10, ) 模型偏移的 getter 被移除，vanilla 的 RenderType#draw 也改传零向量
-//                    new Vector3f(),
+                    new Vector3f(),
                     RenderSystem.getTextureMatrix(), RenderSystem.getShaderLineWidth());
 
             // 法线矩阵单独上传：ModelViewMat 保持 mv × 姿态供位置与雾使用，这里给 IT(姿态)
@@ -491,10 +492,10 @@ public final class BakedMesh implements AutoCloseable {
                 {
                     // [1.21.6, 1.21.10)
                     // 与 RenderType#draw 一致：NeoForge 的模板测试只存在于 RenderSystem，必须由每个 pass 自己带上
-                    @Nullable var stencilTest = RenderSystem.STENCIL_TEST;  // NeoForge类，但是不触发import
-                    if (stencilTest != null) {
-                        pass.enableStencilTest(stencilTest);
-                    }
+//                    @Nullable var stencilTest = RenderSystem.STENCIL_TEST;  // NeoForge类，但是不触发import
+//                    if (stencilTest != null) {
+//                        pass.enableStencilTest(stencilTest);
+//                    }
 
                     // [1.21.10, )
                     // 模板测试改由 RenderPipeline 携带：

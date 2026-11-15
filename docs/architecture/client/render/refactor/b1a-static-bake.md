@@ -41,6 +41,10 @@ vertexColor    = minecraft_mix_light(Light0_Direction, Light1_Direction, Normal,
 |无光影包|`customgun:cgc_baked_entity`|CGC 自己的 core shader，见 `core/src/main/resources/assets/customgun/shaders/core/`：位置 `ProjMat * ModelViewMat * Position`，法线 `inverse-transpose(mat3(ModelViewMat))`（对任意仿射姿态都与原版 `PoseStack.Pose#normal()` 等价，含非等比缩放），雾先算 `CgcViewMat * ModelViewMat * Position`（1.20.1 为 `IViewRotMat`）再交给 `fog_distance`；片元逐行照抄 `entity_cutout`|
 |开光影包|光影包自己的实体 program|Oculus/Iris 在 `GameRenderer.getRendertype*Shader()` 注入，把该 `RenderType` 的 shader 换成 `ENTITIES_CUTOUT_DIFFUSE`（按 shadow / hand / block-entity / entities 阶段分支）；`ExtendedShader.apply()` 用 `ModelViewMat` 算 `NormalMat = inverse-transpose(ModelViewMat)`，位置、法线、雾全部由实例矩阵驱动。调用方只需 `setupRenderState()` 后用 `RenderSystem.getShader()`|
 
+1.21.6 起位置与法线**共用** `DynamicTransforms.ModelViewMat`（mv × 姿态），不能照抄 1.21.1 的换挡：烘焙管线额外带一个 `CgcBaked`
+块，内容为 `IT(姿态)`，着色器只用它算法线，`ModelViewMat` 仍供位置与雾。否则 `IT(ModelViewMat)` 比即时块在 CPU 写的
+`IT(姿态)` 少一次摄像机旋转，表现为转视角枪体亮度不变（2026-11-15 修）。
+
 **平台接线**（`core` 不允许直接 import Forge 事件，沿用 `ClientRenderRegistry` 的注册点约定）：
 
 - core：`ClientRenderRegistry#onRegisterShaders(ICoreShaderRegistrar)` 声明要注册哪些 shader；

@@ -45,6 +45,11 @@ vertexColor    = minecraft_mix_light(Light0_Direction, Light1_Direction, Normal,
 块，内容为 `IT(姿态)`，着色器只用它算法线，`ModelViewMat` 仍供位置与雾。否则 `IT(ModelViewMat)` 比即时块在 CPU 写的
 `IT(姿态)` 少一次摄像机旋转，表现为转视角枪体亮度不变（2026-11-15 修）。
 
+光影包看不到 `CgcBaked`：Iris 的 `iris_NormalMat` 取自 `RenderSystem.getModelViewMatrix()`（不是 `ModelViewMat`），
+所以烘焙绘制期间要把本次姿态并进那个栈（`ModelViewMat` 本来就是 mv × 姿态，是同一个矩阵），光影下枪体才与弹匣一致
+（2026-11-16 修）。这条只对用 `gl_NormalMatrix` 的光影包等价（Complementary 是）；直接读 `gl_Normal` 的包不经过这个矩阵，
+uniform 补不回来，烘焙块的法线仍会少一次姿态。
+
 **平台接线**（`core` 不允许直接 import Forge 事件，沿用 `ClientRenderRegistry` 的注册点约定）：
 
 - core：`ClientRenderRegistry#onRegisterShaders(ICoreShaderRegistrar)` 声明要注册哪些 shader；

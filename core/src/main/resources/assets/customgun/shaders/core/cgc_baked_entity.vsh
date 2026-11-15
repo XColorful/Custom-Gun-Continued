@@ -51,9 +51,9 @@ uniform sampler2D Sampler2;
 uniform mat4 ModelViewMat;
 uniform mat4 ProjMat;
 // [1.20.1, 1.21.1)
-uniform mat3 IViewRotMat;
+// uniform mat3 IViewRotMat;
 // [1.21.1, )
-// uniform mat4 CgcViewMat; // 绘制时 RenderSystem 的 modelview，只用来把顶点还原成真实视图坐标（雾）
+uniform mat4 CgcViewMat; // 绘制时 RenderSystem 的 modelview，只用来把顶点还原成真实视图坐标（雾）
 uniform int FogShape;
 
 uniform vec3 Light0_Direction;
@@ -86,8 +86,8 @@ void main() {
     /*
     雾要在真实视图坐标里取样：ModelViewMat 是调用方姿态，再乘 CgcViewMat（RenderSystem 的 modelview）才是视图位置
      */
-//     vec3 viewPosition = (CgcViewMat * ModelViewMat * vec4(Position, 1.0)).xyz;
-//     vertexDistance = fog_distance(viewPosition, FogShape);
+    vec3 viewPosition = (CgcViewMat * ModelViewMat * vec4(Position, 1.0)).xyz;
+    vertexDistance = fog_distance(viewPosition, FogShape);
 
     // [1.21.6, )
 //     vec3 viewPosition = (ModelViewMat * vec4(Position, 1.0)).xyz;

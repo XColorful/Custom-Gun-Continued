@@ -28,13 +28,17 @@ vertexColor    = minecraft_mix_light(Light0_Direction, Light1_Direction, Normal,
 ```
 
 - 光照用**原始 `Normal`**：原版在 CPU 端用 `PoseStack.Pose#normal()` 把法线算到视图空间再写顶点，烘焙网格存的是模型空间法线；
-- 雾用 `IViewRotMat * Position`：原版 `Position` 已是视图空间，烘焙网格是模型空间。
+- 雾用 `IViewRotMat * Position`：原版 `Position` 已是视图空间，烘焙网格是模型空间；
+- **法线口径与即时块对齐**（1.21.1 起）：着色器的 `ModelViewMat` 只放调用方姿态，`RenderSystem` 的 modelview 并入 `ProjMat`。
+  这样 `IT(ModelViewMat)` 恰好等于即时块 CPU 写进顶点的 `IT(姿态)`；带上 modelview 会多/少一次旋转
+  （1.21.1 手部渲染的 modelview 是摄像机旋转的逆，`GameRenderer#renderItemInHand`）——表现为枪体亮度不随视角变化、
+  而弹匣（即时块）正常（2026-11-15 修）。位置不变：`Proj × mv × 姿态 == (Proj × mv) × 姿态`。
 
 因此「持久 VBO + 每实例矩阵」必须配一个**会消费 `ModelViewMat` 的着色器**。落地成两条路径：
 
 |条件|使用的着色器|说明|
 |---|---|---|
-|无光影包|`customgun:cgc_baked_entity`|CGC 自己的 core shader，见 `core/src/main/resources/assets/customgun/shaders/core/`：位置 `ProjMat * ModelViewMat * Position`，法线 `inverse-transpose(mat3(ModelViewMat))`（对任意仿射姿态都与原版 `PoseStack.Pose#normal()` 等价，含非等比缩放），雾先算 `IViewRotMat * ModelViewMat * Position` 再交给 `fog_distance`；片元逐行照抄 `entity_cutout`|
+|无光影包|`customgun:cgc_baked_entity`|CGC 自己的 core shader，见 `core/src/main/resources/assets/customgun/shaders/core/`：位置 `ProjMat * ModelViewMat * Position`，法线 `inverse-transpose(mat3(ModelViewMat))`（对任意仿射姿态都与原版 `PoseStack.Pose#normal()` 等价，含非等比缩放），雾先算 `CgcViewMat * ModelViewMat * Position`（1.20.1 为 `IViewRotMat`）再交给 `fog_distance`；片元逐行照抄 `entity_cutout`|
 |开光影包|光影包自己的实体 program|Oculus/Iris 在 `GameRenderer.getRendertype*Shader()` 注入，把该 `RenderType` 的 shader 换成 `ENTITIES_CUTOUT_DIFFUSE`（按 shadow / hand / block-entity / entities 阶段分支）；`ExtendedShader.apply()` 用 `ModelViewMat` 算 `NormalMat = inverse-transpose(ModelViewMat)`，位置、法线、雾全部由实例矩阵驱动。调用方只需 `setupRenderState()` 后用 `RenderSystem.getShader()`|
 
 **平台接线**（`core` 不允许直接 import Forge 事件，沿用 `ClientRenderRegistry` 的注册点约定）：
@@ -71,7 +75,8 @@ vertexColor    = minecraft_mix_light(Light0_Direction, Light1_Direction, Normal,
    因此委托拿到的仍是真实姿态矩阵，也不会重复登记。
    `BufferBuilder` 按烘焙嵌套深度**复用**：1.20.1 的构造会申请 `容量 × 6` 的原生内存且没有释放路径，每次重建新建会在 F12 强制重建下几秒耗尽页面文件。
 4. **绘制**：`RenderType.setupRenderState()` → 选着色器（见上）→ `VertexBuffer.bind()` →
-   `drawWithShader(RenderSystem.getModelViewMatrix() * 姿态矩阵, 投影矩阵, shader)` →
+   `drawWithShader(姿态矩阵, 投影矩阵 × RenderSystem.getModelViewMatrix(), shader)`（1.21.1 起，矩阵口径见上；
+   1.20.1 仍传 `RenderSystem.getModelViewMatrix() * 姿态矩阵` 与投影矩阵，mv 为单位阵时两者等价）→
    `VertexBuffer.unbind()` → `clearRenderState()`。**不上传、不 flush、不经过 `BufferSource`。**
 5. **委托**：与即时管线相同，在网格之后执行（配件 / 文字 / 火焰 / 抛壳按各自条件早退）。
 

@@ -444,7 +444,11 @@ public final class BakedMesh implements AutoCloseable {
             // 与 RenderType#draw 一致：状态设好之后才取矩阵，layering / texturing 状态可能改过它们
             modelView = new Matrix4f(RenderSystem.getModelViewMatrix()).mul(pose);
             GpuBufferSlice transforms = RenderSystem.getDynamicUniforms().writeTransform(
-                    modelView, WHITE, RenderSystem.getModelOffset(),
+                    modelView, WHITE,
+                    // [1.21.6, 1.21.10) 取 RenderSystem 累积的模型偏移
+                    RenderSystem.getModelOffset(),
+                    // [1.21.10, ) 模型偏移的 getter 被移除，vanilla 的 RenderType#draw 也改传零向量
+//                    new Vector3f(),
                     RenderSystem.getTextureMatrix(), RenderSystem.getShaderLineWidth());
 
             // 法线矩阵单独上传：ModelViewMat 保持 mv × 姿态供位置与雾使用，这里给 IT(姿态)

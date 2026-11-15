@@ -23,6 +23,7 @@ import dev.xcolorful.customgun.client.resource.assets.display.AttachmentDisplay;
 import dev.xcolorful.customgun.client.resource.assets.display.GunDisplay;
 import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
 import dev.xcolorful.customgun.client.resource.instance.data.ClientAttachmentIndexInstance;
+import dev.xcolorful.customgun.client.util.ClientRenderProfiler;
 import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import dev.xcolorful.customgun.core.api.entity.ILivingShooter;
 import dev.xcolorful.customgun.core.api.entity.ShootState;
@@ -71,13 +72,19 @@ public class GunCameraHelper implements IEventHandler {
     public void handleEvent(EventType eventType, IEvent event) {
         switch (eventType) {
             case COMPUTE_CAMERA_ANGLES_EVENT -> {
+                final long profCamera = ClientRenderProfiler.begin();
                 onComputeCameraAngles((IComputeCameraAnglesEvent) event);
+                ClientRenderProfiler.end(ClientRenderProfiler.CAMERA_LEVEL, profCamera);
             }
             case COMPUTE_FOV_EVENT -> {
+                final long profFov = ClientRenderProfiler.begin();
                 onComputeFovEvent((IComputeFovEvent) event);
+                ClientRenderProfiler.end(ClientRenderProfiler.FOV, profFov);
             }
             case COMPUTE_FOV_MODIFIER_EVENT -> {
+                final long profFov = ClientRenderProfiler.begin();
                 onComputeFovModifierEvent((IComputeFovModifierEvent) event);
+                ClientRenderProfiler.end(ClientRenderProfiler.FOV, profFov);
             }
             default -> {
                 onReceiveWrongEvent(eventType);
@@ -297,7 +304,9 @@ public class GunCameraHelper implements IEventHandler {
                     onGunFire((GunFireEvent) event);
                 }
                 case BEFORE_RENDER_HAND_EVENT -> {
+                    final long profHandCamera = ClientRenderProfiler.begin();
                     onBeforeRenderHand((BeforeRenderHandEvent) event);
+                    ClientRenderProfiler.end(ClientRenderProfiler.CAMERA_HAND, profHandCamera);
                 }
                 default -> {
                     onReceiveWrongEvent(eventType);

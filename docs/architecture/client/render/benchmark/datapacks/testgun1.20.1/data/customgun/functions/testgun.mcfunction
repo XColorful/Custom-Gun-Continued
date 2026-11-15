@@ -1,0 +1,1 @@
+give @s customgun:gun{gun_rl:"tacz:m4a1"}

@@ -1,0 +1,149 @@
+14-11-2026, 13:55:08 customgun render profile completed, 4164 frames rendered in 10.492 s
+                    Average frame time :    2.520 ms ( 396.9 FPS)
+                    Minimum frame time :    2.062 ms
+                    Maximum frame time :   12.179 ms
+                    1% high frame time :    3.896 ms
+                        GPU frame busy :    2.313 ms (min   0.231 / max   4.433 / p99   3.745,  26.1% of frames,  23.9% of frame)
+                          CGC GPU busy :    0.228 ms (min   0.104 / max   0.301 / p99   0.258,  26.1% of frames,   2.4% of frame)
+                  CGC render per frame :    1.284 ms ( 50.9% of frame)
+              First-person submissions :     1.00 / frame
+                World-item submissions :     9.00 / frame
+                        endBatch calls :     4.00 / frame
+                       Cubes submitted :     1.00 / frame
+                        Nodes captured :  1680.00 / frame
+                      Geometry batches :    66.00 / frame
+                       Stencil windows :     1.00 / frame
+                              LOD hits :     0.00 / frame
+                            Draw calls :    70.00 / frame
+                          Upload bytes : 37356.00 / frame
+                       Allocated bytes : 302812.52 / frame
+                    Animation channels :    14.00 / frame
+                         State changes :     0.00 / frame
+                         Bake rebuilds :     0.00 / frame
+                  Distinct RenderTypes :     6.00 / frame
+                        Distinct nodes :     1.00 / frame
+                           Dirty nodes :     0.00 / frame
+                   Dirty subtree nodes :     0.00 / frame
+                        Distinct cubes :     1.00 / frame
+                           Dirty cubes :     0.00 / frame
+                     Bake upload bytes :     0.00 / frame
+                         Light patches :     0.00 / frame
+                     Light patch bytes :     0.00 / frame
+                         Bake: new key :     0.00 / frame
+                      Bake: light fill :     0.00 / frame
+                    Bake: patch failed :     0.00 / frame
+                   Bake: chunk invalid :     0.00 / frame
+                  Light patch: no copy :     0.00 / frame
+                   Light patch: no vbo :     0.00 / frame
+                        Batch rebuilds :     0.00 / frame
+               Dirty nodes (per frame) :         -
+       Dirty subtree nodes (per frame) :         -
+               Dirty cubes (per frame) :         -
+                      Dirty node share :      0.0 % (  0.0 /   1.0 nodes per frame)
+                   Dirty subtree share :      0.0 % (  0.0 /   1.0 nodes per frame)
+                      Dirty cube share :      0.0 % (  0.0 /   1.0 cubes per frame)
+
+                   First-person submit :    0.462 ms (min   0.396 / max   1.096 / p99   0.680, 100.0% of frames)
+                     World-item submit :    0.822 ms (min   0.673 / max   1.646 / p99   1.209, 100.0% of frames)
+                          State update :    0.046 ms (min   0.034 / max   0.151 / p99   0.087, 100.0% of frames)
+                          Data refresh :    0.055 ms (min   0.045 / max   0.327 / p99   0.176, 100.0% of frames)
+                          Scope render :    0.521 ms (min   0.433 / max   1.022 / p99   0.830, 100.0% of frames)
+                    Model render total :    0.801 ms (min   0.671 / max   1.709 / p99   1.226, 100.0% of frames)
+                         Node snapshot :         -
+                     Geometry traverse :         -
+                        endBatch flush :    0.072 ms (min   0.059 / max   0.376 / p99   0.213, 100.0% of frames)
+                       Delegate render :    0.300 ms (min   0.252 / max   0.893 / p99   0.491, 100.0% of frames)
+                          Muzzle cache :    0.001 ms (min   0.001 / max   0.018 / p99   0.002, 100.0% of frames)
+                         Stencil clear :    0.047 ms (min   0.038 / max   0.366 / p99   0.160, 100.0% of frames)
+                      Hand event entry :    0.467 ms (min   0.400 / max   1.101 / p99   0.691, 100.0% of frames)
+            Third-person visual update :         -
+                    State machine init :         -
+                      Functional nodes :    0.049 ms (min   0.039 / max   0.246 / p99   0.116, 100.0% of frames)
+                         GUI slot icon :    0.004 ms (min   0.002 / max   0.058 / p99   0.015, 100.0% of frames)
+                         Camera angles :    0.005 ms (min   0.002 / max   0.202 / p99   0.011, 100.0% of frames)
+                           Hand camera :    0.003 ms (min   0.002 / max   0.035 / p99   0.006, 100.0% of frames)
+                                   FOV :    0.007 ms (min   0.004 / max   0.141 / p99   0.017, 100.0% of frames)
+                       endBatch upload :    0.094 ms (min   0.076 / max   0.388 / p99   0.231, 100.0% of frames)
+                         endBatch draw :    0.448 ms (min   0.394 / max   0.954 / p99   0.674, 100.0% of frames)
+                           Static bake :         -
+                             Bake emit :    0.010 ms (min   0.008 / max   0.145 / p99   0.031, 100.0% of frames)
+                    Bake buffer create :         -
+                           Bake upload :         -
+                          Light update :         -
+                           Batch build :         -
+State machine init (since last report) :   17.085 ms (last, 1 calls, max  17.085, at 13:54:28)
+
+14-11-2026, 13:55:49 customgun render profile completed, 1195 frames rendered in 10.462 s
+                    Average frame time :    8.755 ms ( 114.2 FPS)
+                    Minimum frame time :    6.857 ms
+                    Maximum frame time :   11.908 ms
+                    1% high frame time :   11.446 ms
+                        GPU frame busy :    4.397 ms (min   1.052 / max   8.851 / p99   4.846,  49.8% of frames,  25.0% of frame)
+                          CGC GPU busy :    2.467 ms (min   0.090 / max   2.531 / p99   2.506,  25.0% of frames,   7.1% of frame)
+                  CGC render per frame :    4.262 ms ( 48.7% of frame)
+              First-person submissions :     1.00 / frame
+                World-item submissions :    19.00 / frame
+                        endBatch calls :     4.00 / frame
+                       Cubes submitted :     1.00 / frame
+                        Nodes captured :  2240.00 / frame
+                      Geometry batches :    97.00 / frame
+                       Stencil windows :     1.00 / frame
+                              LOD hits :    30.00 / frame
+                            Draw calls :   141.00 / frame
+                          Upload bytes : 118124.00 / frame
+                       Allocated bytes : 438240.82 / frame
+                    Animation channels :    14.00 / frame
+                         State changes :     0.00 / frame
+                         Bake rebuilds :     0.00 / frame
+                  Distinct RenderTypes :     9.00 / frame
+                        Distinct nodes :     1.00 / frame
+                           Dirty nodes :     0.00 / frame
+                   Dirty subtree nodes :     0.00 / frame
+                        Distinct cubes :     1.00 / frame
+                           Dirty cubes :     0.00 / frame
+                     Bake upload bytes :     0.00 / frame
+                         Light patches :     0.00 / frame
+                     Light patch bytes :     0.00 / frame
+                         Bake: new key :     0.00 / frame
+                      Bake: light fill :     0.00 / frame
+                    Bake: patch failed :     0.00 / frame
+                   Bake: chunk invalid :     0.00 / frame
+                  Light patch: no copy :     0.00 / frame
+                   Light patch: no vbo :     0.00 / frame
+                        Batch rebuilds :     0.00 / frame
+               Dirty nodes (per frame) :         -
+       Dirty subtree nodes (per frame) :         -
+               Dirty cubes (per frame) :         -
+                      Dirty node share :      0.0 % (  0.0 /   1.0 nodes per frame)
+                   Dirty subtree share :      0.0 % (  0.0 /   1.0 nodes per frame)
+                      Dirty cube share :      0.0 % (  0.0 /   1.0 cubes per frame)
+
+                   First-person submit :    0.821 ms (min   0.733 / max   1.152 / p99   0.984, 100.0% of frames)
+                     World-item submit :    3.441 ms (min   3.143 / max   4.474 / p99   4.275, 100.0% of frames)
+                          State update :    0.048 ms (min   0.042 / max   0.195 / p99   0.069, 100.0% of frames)
+                          Data refresh :    0.109 ms (min   0.097 / max   0.161 / p99   0.142, 100.0% of frames)
+                          Scope render :    1.328 ms (min   1.198 / max   1.787 / p99   1.633, 100.0% of frames)
+                    Model render total :    4.414 ms (min   4.036 / max   5.503 / p99   5.387, 100.0% of frames)
+                         Node snapshot :         -
+                     Geometry traverse :         -
+                        endBatch flush :    0.070 ms (min   0.063 / max   0.170 / p99   0.098, 100.0% of frames)
+                       Delegate render :    1.695 ms (min   1.546 / max   2.104 / p99   2.054, 100.0% of frames)
+                          Muzzle cache :    0.001 ms (min   0.001 / max   0.027 / p99   0.002, 100.0% of frames)
+                         Stencil clear :    0.099 ms (min   0.088 / max   0.165 / p99   0.133, 100.0% of frames)
+                      Hand event entry :    0.827 ms (min   0.737 / max   1.158 / p99   0.989, 100.0% of frames)
+            Third-person visual update :         -
+                    State machine init :         -
+                      Functional nodes :    0.065 ms (min   0.057 / max   0.145 / p99   0.088, 100.0% of frames)
+                         GUI slot icon :    0.004 ms (min   0.003 / max   0.022 / p99   0.005, 100.0% of frames)
+                         Camera angles :    0.004 ms (min   0.003 / max   0.022 / p99   0.005, 100.0% of frames)
+                           Hand camera :    0.003 ms (min   0.002 / max   0.027 / p99   0.004, 100.0% of frames)
+                                   FOV :    0.009 ms (min   0.008 / max   0.027 / p99   0.012, 100.0% of frames)
+                       endBatch upload :    0.128 ms (min   0.106 / max   0.302 / p99   0.214, 100.0% of frames)
+                         endBatch draw :    3.211 ms (min   2.919 / max   5.322 / p99   3.928, 100.0% of frames)
+                           Static bake :         -
+                             Bake emit :         -
+                    Bake buffer create :         -
+                           Bake upload :         -
+                          Light update :         -
+                           Batch build :         -
+

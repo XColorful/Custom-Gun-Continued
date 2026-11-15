@@ -24,7 +24,10 @@ public enum CustomInputKey implements ICustomInputKey {
     RELOAD(CustomInputKeyTag.RELOAD),
     SHOOT(CustomInputKeyTag.SHOOT),
     SWITCH_FIRE_MODE(CustomInputKeyTag.SWITCH_FIRE_MODE),
-    ZOOM(CustomInputKeyTag.ZOOM);
+    ZOOM(CustomInputKeyTag.ZOOM),
+    // debug
+    DEBUG(CustomInputKeyTag.DEBUG)
+    ;
 
     public final String tagName;
     public final String categoryName;

@@ -18,6 +18,7 @@ import dev.xcolorful.customgun.client.resource.assets.display.AttachmentDisplay;
 import dev.xcolorful.customgun.client.resource.assets.display._LodDisplay;
 import dev.xcolorful.customgun.client.resource.instance.data.ClientAttachmentIndexInstance;
 import dev.xcolorful.customgun.client.util.ClientRenderDistance;
+import dev.xcolorful.customgun.client.util.ClientRenderProfiler;
 import dev.xcolorful.customgun.client.util.ClientRenderHelper;
 import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import dev.xcolorful.customgun.core.api.item.IAttachment;
@@ -59,6 +60,7 @@ public class AttachmentRender implements IModelComponentRenderer {
             MultiBufferSource bufferSource = ClientRenderHelper.GL.getModelBufferSource();
             {
                 VertexConsumer buffer = bufferSource.getBuffer(ClientRenderUtils.RenderType_.entityTranslucent(ClientRenderUtils.getMissingTextureLocation()));
+                ClientRenderProfiler.countBatch();
                 AttachmentItemRenderer.SLOT_ATTACHMENT_MODEL.renderToBuffer(poseStack, buffer, light, overlay, 1.0f, 1.0f, 1.0f, 1.0f);
             }
             return;
@@ -81,6 +83,7 @@ public class AttachmentRender implements IModelComponentRenderer {
                     // 有低模display
                     attachmentModelObject = attachmentModelLod;
                     attachmentTextureLocation = lodDisplay.getTextureLocation();
+                    ClientRenderProfiler.countLod();
                 }
             }
         }

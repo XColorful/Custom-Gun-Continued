@@ -19,6 +19,7 @@ import dev.xcolorful.customgun.client.resource.assets.display.GunDisplay;
 import dev.xcolorful.customgun.client.resource.assets.display.gun._MuzzleFlashDisplay;
 import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstance;
 import dev.xcolorful.customgun.client.util.ClientRenderHelper;
+import dev.xcolorful.customgun.client.util.ClientRenderProfiler;
 import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import dev.xcolorful.customgun.core.api.item.IAttachment;
 import dev.xcolorful.customgun.core.api.item.attachment.AttachmentCategory;
@@ -153,6 +154,7 @@ public class MuzzleFlashRender implements IModelComponentRenderer {
             poseStack2.translate(0, -1, 0);
             RenderType renderTypeBg = ClientRenderUtils.RenderType_.entityTranslucent(muzzleFlashDisplay.getTextureLocation());
             {
+                ClientRenderProfiler.countBatch();
                 MUZZLE_FLASH_MODEL.renderToBuffer(poseStack2, multiBufferSource.getBuffer(renderTypeBg), light, overlay, 1.0f, 1.0f, 1.0f, 1.0f);
             }
         }
@@ -165,6 +167,7 @@ public class MuzzleFlashRender implements IModelComponentRenderer {
             poseStack2.translate(0, -0.9, 0);
             RenderType renderTypeLight = ClientRenderUtils.RenderType_.energySwirl(muzzleFlashDisplay.getTextureLocation(), 1, 1);
             {
+                ClientRenderProfiler.countBatch();
                 MUZZLE_FLASH_MODEL.renderToBuffer(poseStack2, multiBufferSource.getBuffer(renderTypeLight), light, overlay, 1.0f, 1.0f, 1.0f, 1.0f);
             }
         }

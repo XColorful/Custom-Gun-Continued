@@ -48,7 +48,8 @@ vertexColor    = minecraft_mix_light(Light0_Direction, Light1_Direction, Normal,
 光影包看不到 `CgcBaked`：Iris 的 `iris_NormalMat` 取自 `RenderSystem.getModelViewMatrix()`（不是 `ModelViewMat`），
 所以烘焙绘制期间要把本次姿态并进那个栈（`ModelViewMat` 本来就是 mv × 姿态，是同一个矩阵），光影下枪体才与弹匣一致
 （2026-11-16 修）。这条只对用 `gl_NormalMatrix` 的光影包等价（Complementary 是）；直接读 `gl_Normal` 的包不经过这个矩阵，
-uniform 补不回来，烘焙块的法线仍会少一次姿态。
+uniform 补不回来，烘焙块的法线仍会少一次姿态。只在 `[1.21.6, )` 需要：1.21.1 – 1.21.4 的 `ModelViewMat` 只放调用方姿态，
+不存在该差异。
 
 **平台接线**（`core` 不允许直接 import Forge 事件，沿用 `ClientRenderRegistry` 的注册点约定）：
 
@@ -71,6 +72,10 @@ uniform 补不回来，烘焙块的法线仍会少一次姿态。
 - 缓存键带 `shaderPack` 布尔；
 - `BakedMesh` 记录烘焙时**实际**写出的格式是否被扩展，绘制前和当前光影状态比对；
   不一致（刚切光影包）本帧退回即时管线，下一帧重新烘焙。
+- **1.21.6 起** `RenderType#format()` 改为返回 `RenderPipeline#getVertexFormat()`，而 Iris 扩展的正是这个 getter，
+  声明格式与写入格式恒为同一个对象，上面的「格式对象比对」恒为 `false`。改判**步长**：
+  `BakedMesh#stride()`（烘焙时实际写出的顶点字节数）与当前 `renderType.format().getVertexSize()` 比对。
+  1.21.1 / 1.21.4 没有这个问题。
 
 ## 渲染流程
 
@@ -163,6 +168,20 @@ uniform 补不回来，烘焙块的法线仍会少一次姿态。
 > 2026-11-12 补齐了原先搁置的三项探针：`CGC GPU busy`（分段计时 + 查询池）、`Distinct / Dirty nodes`、GPU 查询与分配采样改为每 4 帧一次。
 > 采集口径见 [`b1-a-5/标准.txt`](../benchmark/26.35.11.1-4/b1-a-5/标准.txt)。
 
+## 1.21.6+ 的绘制路径
+
+`[1.21.6, )` 不走 `VertexBuffer#drawWithShader`，改为自建 `RenderPass`（`BakedMesh#draw`）：
+
+- **管线**：取 `RenderType` 自带管线 `toBuilder()`，换成本项目的烘焙着色器并 `withUniform("CgcBaked", UNIFORM_BUFFER)`。
+  NeoForge 上 Iris 的 `PipelineMixin#toBuilder` + `PipelineBuilderMixin#build` 会把 base 管线的 program 映射**自动拷给派生实例**，
+  1.21.6 上不需要 `assignPipeline`（移植到其他版本时先确认 Iris 仍会拷贝）；26.3 是另一套 API，见下。
+- **状态**：`RenderType#setupRenderState()` 仍负责贴图 / lightmap / overlay；`DynamicTransforms` 由
+  `RenderSystem.getDynamicUniforms().writeTransform(...)` 写入，法线另走 `CgcBaked`。
+- **绑定**：采样器 `RenderSystem.getShaderTexture(i)` → `pass.bindSampler("Sampler" + i, …)`；
+  索引用 `RenderSystem.getSequentialBuffer(mode)`，非排序输出没有独立索引缓冲。
+- **1.21.10 起**：`RenderSystem.getModelOffset()` 移除，`writeTransform` 传零向量；
+  `RenderSystem.STENCIL_TEST` 移除，模板状态由 `RenderPipeline` 携带并在 `setPipeline` 内注入，不再逐 pass 手动 `enableStencilTest`。
+
 ## 26.3 / 跨版本
 
 26.3 的实体着色器结构不同，需要单独验证，不能照抄 1.20.1 的实现：
@@ -207,6 +226,16 @@ uniform 补不回来，烘焙块的法线仍会少一次姿态。
    一帧的旧格式画面（格式不一致会退回即时管线）。
 8. **探针**：F12 后 `Bake rebuilds` 稳态为 0；`endBatch calls` / `Upload bytes` 在静态场景显著下降；
    `Cubes submitted` 只出现在首帧（`FORCE_REBUILD = true` 时每帧都有）。
+
+## 已排除的做法（不要重试）
+
+- **把绘制矩阵塞进 `TextureMat` 当法线矩阵**：光影包普遍用 `gl_TextureMatrix[0]` 变换 UV，占用该槽位会让贴图随视角错乱。
+- **光影下退回即时管线**：画面正确，但等于放弃光影下的烘焙收益。
+- **`skipBake` 跳过模型弹匣**：能消除两份重合，但装弹时枪自身的弹匣一起消失。
+- **改法线公式（绘制矩阵的逆转置 / `TextureMat`）补亮度**：无效；无光影下跑的正是自定义着色器，问题不在公式本身。
+- **改用 `RenderType` 自带管线（`cgc-bake-base-pipeline`）**：对亮度无影响；派生管线与自带管线被 Iris 派到同一个 program。
+- 已逐一排除、无需再查：顶点格式 / 步长错位（光影下 54/54、无光影 36/36）、采样器未绑定、
+  `no_color_write` / `no_depth_test` 修饰器泄漏（只出现在瞄具模板窗口内的子网格）。
 
 ## 已知风险
 

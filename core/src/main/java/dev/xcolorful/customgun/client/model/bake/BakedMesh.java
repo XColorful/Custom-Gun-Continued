@@ -84,7 +84,14 @@ public final class BakedMesh implements AutoCloseable {
      *     <li>光影包会把 {@code NEW_ENTITY} 换成{@code IrisVertexFormats.ENTITY}</li>
      *     <li>绘制前要和当前光影状态比对：两者不一致说明光影包刚刚切换、缓存里的顶点布局已经不能用了（本帧必须退回即时管线）</li>
      * </ul>
+     * <ul>
+     *     [1.21.6, )
+     *     <li>{@code RenderType#format()} 直接取自 {@code RenderPipeline#getVertexFormat()}</li>
+     *     <li>而 Iris 扩展的正是这个 getter，声明的格式与写入的格式恒为同一个对象，这里因此恒为 {@code false}</li>
+     *     <li>布局比对改用 {@link #stride()}（见 {@link StaticBake}），本字段保留给 [1.20.1, 1.21.6) 的实现</li>
+     * </ul>
      */
+//    @Deprecated(since = "1.21.6")
     private final boolean extendedFormat;
     /**
      * 交错顶点字节的 CPU 副本，光照变化时改写其中的 uv2 后再 (整段重传 / 1.21.6 整段写回)
@@ -449,8 +456,16 @@ public final class BakedMesh implements AutoCloseable {
         return this.bytes;
     }
 
+//    @Deprecated(since = "1.21.6")
     public boolean extendedFormat() {
         return this.extendedFormat;
+    }
+    /**
+     * [1.21.6, ) 烘焙时的顶点步长，供绘制侧和当前管线要求的布局比对
+     */
+    @ApiStatus.AvailableSince("1.21.6")
+    public int stride() {
+        return this.stride;
     }
 
     @Override

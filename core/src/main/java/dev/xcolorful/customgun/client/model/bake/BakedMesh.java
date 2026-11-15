@@ -434,58 +434,77 @@ public final class BakedMesh implements AutoCloseable {
                     shader);
 
             // [1.21.6, )
-//            // 与 RenderType#draw 一致：状态设好之后才取矩阵，layering / texturing 状态可能改过它们
-//            modelView = new Matrix4f(RenderSystem.getModelViewMatrix()).mul(pose);
-//            GpuBufferSlice transforms = RenderSystem.getDynamicUniforms().writeTransform(
-//                    modelView, WHITE, RenderSystem.getModelOffset(),
-//                    RenderSystem.getTextureMatrix(), RenderSystem.getShaderLineWidth());
-//
-//            // 法线矩阵单独上传：ModelViewMat 保持 mv × 姿态供位置与雾使用，这里给 IT(姿态)
-//            // writeToBuffer 不能在 render pass 内调用，必须放在建 pass 之前
-//            GpuBuffer normalBuffer = normalUniformBuffer();
-//            ByteBuffer normalData = NORMAL_SCRATCH;
-//            normalData.clear();
-//            new Matrix4f(pose).invert().transpose().get(normalData);
-//            // get(ByteBuffer) 是否推进 position 随 JOML 实现不同，clear() 让写读两端都从 0 开始
-//            normalData.clear();
-//            RenderSystem.getDevice().createCommandEncoder().writeToBuffer(normalBuffer.slice(), normalData);
-//
-//            RenderTarget target = outputTarget(renderType);
-//            GpuTextureView colorTexture = RenderSystem.outputColorTextureOverride != null
-//                    ? RenderSystem.outputColorTextureOverride
-//                    : target.getColorTextureView();
-//            GpuTextureView depthTexture = target.useDepth
-//                    ? (RenderSystem.outputDepthTextureOverride != null
-//                    ? RenderSystem.outputDepthTextureOverride
-//                    : target.getDepthTextureView())
-//                    : null;
-//
-//            try (RenderPass pass = RenderSystem.getDevice()
-//                    .createCommandEncoder()
-//                    .createRenderPass(() -> "CGC baked mesh", colorTexture, OptionalInt.empty(), depthTexture, OptionalDouble.empty())) {
-//                pass.setPipeline(pipeline);
-//                RenderSystem.bindDefaultUniforms(pass);
-//                pass.setUniform("DynamicTransforms", transforms);
-//                pass.setUniform("CgcBaked", normalBuffer);
-//                /*
-//                与 RenderType#draw 一致：NeoForge 的模板测试只存在于 RenderSystem，必须由每个 pass 自己带上
-//                NeoForge类，但是不触发import
-//                 */ @Nullable var stencilTest = RenderSystem.STENCIL_TEST;
-//                if (stencilTest != null) {
-//                    pass.enableStencilTest(stencilTest);
-//                }
-//                pass.setVertexBuffer(0, this.vertexBuffer);
-//
-//                for (int i = 0; i < 12; i++) {
-//                    GpuTextureView texture = RenderSystem.getShaderTexture(i);
-//                    if (texture != null) pass.bindSampler("Sampler" + i, texture);
-//                }
-//
-//                // 非排序输出没有独立索引缓冲，用平台按 mode 生成的顺序索引
-//                RenderSystem.AutoStorageIndexBuffer indices = RenderSystem.getSequentialBuffer(this.mode);
-//                pass.setIndexBuffer(indices.getBuffer(this.indexCount), indices.type());
-//                pass.drawIndexed(0, 0, this.indexCount, 1);
-//            }
+            /* 源码太长，并且跨版本要改，所以用保留commit记录的方式，1.20.1改直接在1.21.6能用
+            // 与 RenderType#draw 一致：状态设好之后才取矩阵，layering / texturing 状态可能改过它们
+            modelView = new Matrix4f(RenderSystem.getModelViewMatrix()).mul(pose);
+            GpuBufferSlice transforms = RenderSystem.getDynamicUniforms().writeTransform(
+                    modelView, WHITE, RenderSystem.getModelOffset(),
+                    RenderSystem.getTextureMatrix(), RenderSystem.getShaderLineWidth());
+
+            // 法线矩阵单独上传：ModelViewMat 保持 mv × 姿态供位置与雾使用，这里给 IT(姿态)
+            // writeToBuffer 不能在 render pass 内调用，必须放在建 pass 之前
+            GpuBuffer normalBuffer = normalUniformBuffer();
+            ByteBuffer normalData = NORMAL_SCRATCH;
+            normalData.clear();
+            new Matrix4f(pose).invert().transpose().get(normalData);
+            // get(ByteBuffer) 是否推进 position 随 JOML 实现不同，clear() 让写读两端都从 0 开始
+            normalData.clear();
+            RenderSystem.getDevice().createCommandEncoder().writeToBuffer(normalBuffer.slice(), normalData);
+
+            RenderTarget target = outputTarget(renderType);
+            GpuTextureView colorTexture = RenderSystem.outputColorTextureOverride != null
+                    ? RenderSystem.outputColorTextureOverride
+                    : target.getColorTextureView();
+            GpuTextureView depthTexture = target.useDepth
+                    ? (RenderSystem.outputDepthTextureOverride != null
+                    ? RenderSystem.outputDepthTextureOverride
+                    : target.getDepthTextureView())
+                    : null;
+
+            // ModelViewMat 只供位置与雾（mv × 姿态），法线由渲染器另取 RenderSystem 的 modelview 现算：
+            // 光影包用的是 Iris 的 iris_NormalMat = IT(modelview)
+            // 而烘焙网格存模型空间法线，不把本次姿态并进去就比即时块（CPU 用 IT(姿态) 写顶点 Normal）少一次姿态旋转
+            // 导致光影下枪体（烘焙块）因此比弹匣（即时块）暗，且只在 [1.21.6, ) 成立
+            // ModelViewMat 本来就是 mv × 姿态，所以并进 modelview 的是同一个矩阵，位置与雾都不变
+            // 已知限制：
+            // 只对用 gl_NormalMatrix 的光影包等价（Complementary 是）
+            // 直接读 gl_Normal 的包不经过这个矩阵，uniform 补不回来，烘焙块法线仍会少一次姿态
+            Matrix4fStack modelViewStack = RenderSystem.getModelViewStack();
+            modelViewStack.pushMatrix().mul(pose);
+            try (RenderPass pass = RenderSystem.getDevice()
+                    .createCommandEncoder()
+                    .createRenderPass(() -> "CGC baked mesh", colorTexture, OptionalInt.empty(), depthTexture, OptionalDouble.empty())) {
+                pass.setPipeline(pipeline);
+                RenderSystem.bindDefaultUniforms(pass);
+                pass.setUniform("DynamicTransforms", transforms);
+                pass.setUniform("CgcBaked", normalBuffer);
+                {
+                    // [1.21.6, 1.21.10)
+                    // 与 RenderType#draw 一致：NeoForge 的模板测试只存在于 RenderSystem，必须由每个 pass 自己带上
+                    @Nullable var stencilTest = RenderSystem.STENCIL_TEST;  // NeoForge类，但是不触发import
+                    if (stencilTest != null) {
+                        pass.enableStencilTest(stencilTest);
+                    }
+
+                    // [1.21.10, )
+                    // 模板测试改由 RenderPipeline 携带：
+                    // setPipeline 内部会先经 RenderSystem#applyPipelineModifiers 注入 CGC 累积的模板状态，这里不需要再手动设置
+                }
+                pass.setVertexBuffer(0, this.vertexBuffer);
+
+                for (int i = 0; i < 12; i++) {
+                    GpuTextureView texture = RenderSystem.getShaderTexture(i);
+                    if (texture != null) pass.bindSampler("Sampler" + i, texture);
+                }
+
+                // 非排序输出没有独立索引缓冲，用平台按 mode 生成的顺序索引
+                RenderSystem.AutoStorageIndexBuffer indices = RenderSystem.getSequentialBuffer(this.mode);
+                pass.setIndexBuffer(indices.getBuffer(this.indexCount), indices.type());
+                pass.drawIndexed(0, 0, this.indexCount, 1);
+            } finally {
+                modelViewStack.popMatrix();
+            }
+            */
 
             return true;
         } finally {

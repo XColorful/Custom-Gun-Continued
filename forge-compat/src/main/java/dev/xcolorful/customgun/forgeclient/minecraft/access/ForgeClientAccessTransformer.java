@@ -46,6 +46,20 @@ public class ForgeClientAccessTransformer implements IClientAccessTransformer {
         gameMode.ensureHasSentCarriedItem();
     }
 
+    @Override public @Nullable Object
+    getOutputState(
+            RenderType renderType
+    ) {
+        return null; // ((RenderType.CompositeRenderType) renderType).state.outputState;
+    }
+
+    @Override public RenderPipeline
+    getRenderPipeline(
+            RenderType renderType
+    ) {
+        return null; // ((RenderType.CompositeRenderType) renderType).renderPipeline;
+    }
+
     @Override public Object
     getState(
             RenderType renderType

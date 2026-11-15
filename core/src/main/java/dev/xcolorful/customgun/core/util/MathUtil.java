@@ -22,6 +22,12 @@ import java.util.Random;
  */
 public class MathUtil {
 
+    /**
+     * 64 位黄金比例常量，来源于 Fibonacci Hashing / Knuth's multiplicative hashing
+     * <li>{@code floor(2^64 * (φ - 1))}，其中 {@code φ = (1 + √5) / 2}</li>
+     */
+    public static final long GOLDEN_RATIO_64 = 0x9E3779B97F4A7C15L;
+
     public static double magnificationToFovMultiplier(double magnification, double currentFov) {
         return magnificationToFov(magnification, currentFov) / currentFov;
     }

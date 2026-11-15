@@ -19,6 +19,7 @@ import net.minecraft.client.renderer.RenderType;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
+import org.joml.Matrix4fStack;
 import org.joml.Vector4f;
 
 import java.nio.ByteBuffer;
@@ -440,7 +441,7 @@ public final class BakedMesh implements AutoCloseable {
 //                    shader);
 
             // [1.21.6, )
-            /* 源码太长，并且跨版本要改，所以用保留commit记录的方式，1.20.1改直接在1.21.6能用
+//            /* 源码太长，并且跨版本要改，所以用保留commit记录的方式，1.20.1改直接在1.21.6能用
             // 与 RenderType#draw 一致：状态设好之后才取矩阵，layering / texturing 状态可能改过它们
             modelView = new Matrix4f(RenderSystem.getModelViewMatrix()).mul(pose);
             GpuBufferSlice transforms = RenderSystem.getDynamicUniforms().writeTransform(
@@ -510,7 +511,7 @@ public final class BakedMesh implements AutoCloseable {
             } finally {
                 modelViewStack.popMatrix();
             }
-            */
+//            */
 
             return true;
         } finally {

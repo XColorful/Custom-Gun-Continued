@@ -366,7 +366,7 @@ public final class BakedMesh implements AutoCloseable {
 //        @Nullable RenderPipeline pipeline; // [1.21.6, )
         Matrix4f modelView; {
             // [1.20.1, 1.21.1)
-            modelView = new Matrix4f(ClientRenderHelper.GL._getModelViewMatrix()).mul(pose);
+//            modelView = new Matrix4f(ClientRenderHelper.GL._getModelViewMatrix()).mul(pose);
 
             // [1.21.1, 1.21.6)
             /*
@@ -374,7 +374,7 @@ public final class BakedMesh implements AutoCloseable {
             这里只取 modelview 本身，绘制时并进投影矩阵
             ModelViewMat 只放调用方姿态，理由见下方绘制段
              */
-//            modelView = new Matrix4f(ClientRenderHelper.GL._getModelViewMatrix());
+            modelView = new Matrix4f(ClientRenderHelper.GL._getModelViewMatrix());
 
             // [1.21.6, )
 //            @Nullable RenderPipeline pipeline = ClientRenderRegistry.BakedEntityRenderState.bakedPipelineFor(renderType);
@@ -395,7 +395,7 @@ public final class BakedMesh implements AutoCloseable {
             this.vertexBuffer.bind();
 
             // [1.20.1, 1.21.1)
-            this.vertexBuffer.drawWithShader(modelView, RenderSystem.getProjectionMatrix(), shader);
+//            this.vertexBuffer.drawWithShader(modelView, RenderSystem.getProjectionMatrix(), shader);
 
             // [1.21.1, 1.21.6)
             /*
@@ -408,11 +408,11 @@ public final class BakedMesh implements AutoCloseable {
              */
             // 雾要真实视图坐标，而 ModelViewMat 已交给姿态：modelview 单独走 CgcViewMat
             // 光影包的 program 里没有这个 uniform，取不到就跳过（不能用 safeGetUniform，那会每帧刷警告）
-//            @Nullable var viewMat = shader.getUniform("CgcViewMat");
-//            if (viewMat != null) viewMat.set(modelView);
-//            this.vertexBuffer.drawWithShader(pose,
-//                    new Matrix4f(RenderSystem.getProjectionMatrix()).mul(modelView),
-//                    shader);
+            @Nullable var viewMat = shader.getUniform("CgcViewMat");
+            if (viewMat != null) viewMat.set(modelView);
+            this.vertexBuffer.drawWithShader(pose,
+                    new Matrix4f(RenderSystem.getProjectionMatrix()).mul(modelView),
+                    shader);
 
             // [1.21.6, )
 //            // 与 RenderType#draw 一致：状态设好之后才取矩阵，layering / texturing 状态可能改过它们

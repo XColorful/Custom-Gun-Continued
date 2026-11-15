@@ -2,6 +2,7 @@ package dev.xcolorful.customgun.client.init.registry;
 
 import com.mojang.blaze3d.pipeline.BlendFunction;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.blaze3d.shaders.UniformType;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import dev.xcolorful.customgun.CustomGun;
@@ -111,14 +112,21 @@ public class ClientRenderRegistry {
          */
         @ApiStatus.AvailableSince("1.21.6")
         public static @Nullable RenderPipeline bakedPipelineFor(RenderType renderType) {
+            RenderPipeline base = CustomGunClient.getAccessTransformer().getRenderPipeline(renderType);
             // [1.20.1, 1.21.6)
 //            return null;
 
             // [1.21.6, )
-            RenderPipeline base = CustomGunClient.getAccessTransformer().getRenderPipeline(renderType);
+            /*
+            CgcBaked：自用的法线矩阵块
+            烘焙网格存模型空间法线
+            而 DynamicTransforms 的 ModelViewMat 是 mv × 姿态
+            逆转置与即时块 CPU 写的 IT(姿态) 差一次摄像机旋转，见 BakedMesh#draw
+             */
             return BAKED_PIPELINES.computeIfAbsent(base, pipeline -> pipeline.toBuilder()
                     .withVertexShader(BAKED_ENTITY_SHADER)
                     .withFragmentShader(BAKED_ENTITY_SHADER)
+                    .withUniform("CgcBaked", UniformType.UNIFORM_BUFFER)
                     .build());
         }
 

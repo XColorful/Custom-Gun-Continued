@@ -106,6 +106,7 @@ public class AttachmentRender implements IModelComponentRenderer {
         @Nullable IAttachment iAttachment = IAttachmentGetter.fromItemStack(attachmentItem);
         if (iAttachment == null) return;
 
+        // 照抄调用方的 normal：它在大幅旋转后会与 IT(姿态) 失配，见 docs/architecture/client/render/refactor/b1b-first-person-bake.md 的「未查清」一节
         Matrix3f normal = new Matrix3f(poseStack.last().normal());
         Matrix4f pose = new Matrix4f(poseStack.last().pose());
 

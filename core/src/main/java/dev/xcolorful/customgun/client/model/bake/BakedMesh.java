@@ -69,6 +69,25 @@ public final class BakedMesh implements AutoCloseable {
     @ApiStatus.AvailableSince("1.21.6")
     private static final Vector4f WHITE = new Vector4f(1.0F, 1.0F, 1.0F, 1.0F);
 
+    // [1.21.6, )
+//    private static final ByteBuffer NORMAL_SCRATCH = ByteBuffer.allocateDirect(64).order(ByteOrder.nativeOrder());
+    /**
+     * 法线矩阵块的内容：烘焙网格存模型空间法线，而原版 {@code entity.vsh} 直接用顶点里的 {@code Normal}
+     * （即时块在 CPU 用 {@code IT(姿态)} 写入）。{@code DynamicTransforms} 的 {@code ModelViewMat} 是 mv × 姿态，
+     * 取逆转置会少一次摄像机旋转 —— 枪体法线冻结在固定朝向，转视角亮度不变。所以单独走这个 UBO
+     */
+    private static @Nullable Object normalUniformBuffer; // GpuBuffer
+    @ApiStatus.AvailableSince("1.21.6")
+    private static Object normalUniformBuffer() {
+        return null;
+//        GpuBuffer buffer = normalUniformBuffer;
+//        if (buffer == null || buffer.isClosed()) {
+//            buffer = normalUniformBuffer = RenderSystem.getDevice().createBuffer(
+//                    () -> "CGC baked normal matrix", GpuBuffer.USAGE_UNIFORM | GpuBuffer.USAGE_COPY_DST, 64);
+//        }
+//        return buffer;
+    }
+
     // [1.20.1, 1.21.6)
 //    private final @Nullable VertexBuffer vertexBuffer;
 
@@ -427,6 +446,16 @@ public final class BakedMesh implements AutoCloseable {
                     modelView, WHITE, RenderSystem.getModelOffset(),
                     RenderSystem.getTextureMatrix(), RenderSystem.getShaderLineWidth());
 
+            // 法线矩阵单独上传：ModelViewMat 保持 mv × 姿态供位置与雾使用，这里给 IT(姿态)
+            // writeToBuffer 不能在 render pass 内调用，必须放在建 pass 之前
+            GpuBuffer normalBuffer = normalUniformBuffer();
+            ByteBuffer normalData = NORMAL_SCRATCH;
+            normalData.clear();
+            new Matrix4f(pose).invert().transpose().get(normalData);
+            // get(ByteBuffer) 是否推进 position 随 JOML 实现不同，clear() 让写读两端都从 0 开始
+            normalData.clear();
+            RenderSystem.getDevice().createCommandEncoder().writeToBuffer(normalBuffer.slice(), normalData);
+
             RenderTarget target = outputTarget(renderType);
             GpuTextureView colorTexture = RenderSystem.outputColorTextureOverride != null
                     ? RenderSystem.outputColorTextureOverride
@@ -443,6 +472,7 @@ public final class BakedMesh implements AutoCloseable {
                 pass.setPipeline(pipeline);
                 RenderSystem.bindDefaultUniforms(pass);
                 pass.setUniform("DynamicTransforms", transforms);
+                pass.setUniform("CgcBaked", normalBuffer);
                 /*
                 与 RenderType#draw 一致：NeoForge 的模板测试只存在于 RenderSystem，必须由每个 pass 自己带上
                 NeoForge类，但是不触发import

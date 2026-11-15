@@ -58,6 +58,7 @@
 
 - **实测**（1.20.1，`ModelObject.render` 第一人称入口每秒一次，取 `maxDiff(matrixStack.last().normal(), IT(matrixStack.last().pose()))`）：枪正着时是 `2.4e-7`（浮点噪声），姿态接近 90°（`pose` 对角线 x/z 逼近 0）时跳到 `1.0`。同一帧里烘焙块（着色器现算 `IT`）正常、即时块（照抄 `normal`）明显偏亮，这就是装配界面切视角后弹匣变色的成因。
 - **已排除**：`RenderSystem.getModelViewMatrix()` 实测是单位阵，`IT(MV × 姿态)` 与 `IT(姿态)` 差为 0，所以与绘制矩阵参与法线无关。
+  该实测只在 1.20.1 成立（1.21.1 手部渲染的 modelview 是摄像机旋转的逆），烘焙块的法线口径见 [B1-a 静态烘焙](./b1a-static-bake.md)。
 - **已排除**：`translate_rotate_scale`、`mulPoseMatrix`、`rotate` 都走 `PoseStack` 的公开方法，会同步 `normal`；直接改写 `pose` 的几处（`HandRender`、`MuzzleFlashRender`、`ShellRender`、`AttachmentRender`、`TextRender`、`_AttachmentModelRender#getBedrockPartCenter`、`GunItemRenderer#cacheMuzzlePosition`）都在自己的 `PoseStack` 或 `pushPose/popPose` 内。
 - **影响面**：同一个 `normal` 还被 `HandRender`、`AttachmentRender` 抄进各自的栈，手臂与配件的法线理论上同样失真；本次未改动，也未观察到对应症状。
 - **复现**：临时在 `ModelObject.render` 的第一人称入口打印上面那个 `maxDiff`，在装配界面把枪转到接近 90° 即可看到 `1.0`。

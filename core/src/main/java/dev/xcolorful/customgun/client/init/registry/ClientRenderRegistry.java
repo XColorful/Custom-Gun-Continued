@@ -65,9 +65,8 @@ public class ClientRenderRegistry {
         @Deprecated(since = "1.21.6")
         @ApiStatus.AvailableSince("1.21.4")
         private static final @Nullable ShaderProgram bakedEntityProgram =
-                BAKED_ENTITY_SHADER == null ? null
                         // [1.20.1, 1.21.4)
-//                        : new Object();
+//                        new Object();
                         // [1.21.4, )
 //                        new ShaderProgram(BAKED_ENTITY_SHADER, DefaultVertexFormat.NEW_ENTITY, ShaderDefines.EMPTY);
                         new Object();

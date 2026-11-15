@@ -1,41 +1,37 @@
 package dev.xcolorful.customgun.client.model.bake;
 
-import com.mojang.blaze3d.buffers.BufferUsage;
+import com.mojang.blaze3d.buffers.GpuBuffer;
+import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.pipeline.RenderTarget;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderPass;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.textures.GpuTextureView;
 import com.mojang.blaze3d.vertex.*;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.ByteBufferBuilder;
-import com.mojang.blaze3d.vertex.MeshData;
-import com.mojang.blaze3d.vertex.VertexBuffer;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.blaze3d.vertex.VertexFormat;
-import com.mojang.blaze3d.vertex.VertexFormatElement;
 import dev.xcolorful.customgun.client.CustomGunClient;
+import dev.xcolorful.customgun.client.init.registry.ClientRenderRegistry;
 import dev.xcolorful.customgun.client.input.player.DebugKey;
-import dev.xcolorful.customgun.client.util.ClientRenderHelper;
 import dev.xcolorful.customgun.client.util.ClientRenderProfiler;
 import dev.xcolorful.customgun.client.util.ClientRenderUtils;
-import net.minecraft.client.renderer.CompiledShaderProgram;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
-import org.lwjgl.opengl.GL15;
-import org.lwjgl.opengl.GL20;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.OptionalDouble;
+import java.util.OptionalInt;
 import java.util.function.Consumer;
 
 /**
  * 模型空间的静态烘焙网格
  * <ul>
- *     <li>顶点只生成一次，常驻 {@link VertexBuffer}；每帧只绑定并换模型视图矩阵绘制</li>
+ *     <li>顶点只生成一次，常驻 {@link GpuBuffer}；每帧只绑定并换模型视图矩阵绘制</li>
  *     <li>实例矩阵不进顶点，因此同一份网格可以被多个展示框 / 掉落物共享</li>
  *     <li>[1.20.1, 1.21.6) 只支持即时模式：{@code RenderType} 的 setup/clear 包住 draw，与 {@code BufferSource.endBatch} 的做法一致</li>
  *     <li>[1.21.6, )绘制自己开 {@code RenderPass}：管线用 CGC 的烘焙管线，状态与贴图仍由 {@code RenderType} 的 setup/clear 提</li>
@@ -74,12 +70,12 @@ public final class BakedMesh implements AutoCloseable {
     private static final Vector4f WHITE = new Vector4f(1.0F, 1.0F, 1.0F, 1.0F);
 
     // [1.20.1, 1.21.6)
-    private final @Nullable VertexBuffer vertexBuffer;
+//    private final @Nullable VertexBuffer vertexBuffer;
 
     // [1.21.6, )
-//    private final @Nullable GpuBuffer vertexBuffer;
-//    private final int indexCount;
-//    private final VertexFormat.Mode mode;
+    private final @Nullable GpuBuffer vertexBuffer;
+    private final int indexCount;
+    private final VertexFormat.Mode mode;
 
     private final int bytes;
     /**
@@ -110,9 +106,9 @@ public final class BakedMesh implements AutoCloseable {
     private int light;
     private boolean closed;
 
-    private BakedMesh(@Nullable VertexBuffer vertexBuffer, int bytes, boolean extendedFormat,
+    private BakedMesh(@Nullable GpuBuffer vertexBuffer, int bytes, boolean extendedFormat,
                       @Nullable ByteBuffer vertexCopy, int vertexCount, int stride, int uv2Offset,
-//                      int indexCount, VertexFormat.Mode mode, // [1.21.6, )
+                      int indexCount, VertexFormat.Mode mode, // [1.21.6, )
                       int light) {
         this.vertexBuffer = vertexBuffer;
         this.bytes = bytes;
@@ -121,8 +117,8 @@ public final class BakedMesh implements AutoCloseable {
         this.vertexCount = vertexCount;
         this.stride = stride;
         this.uv2Offset = uv2Offset;
-//        this.indexCount = indexCount;
-//        this.mode = mode;
+        this.indexCount = indexCount;
+        this.mode = mode;
         this.light = light;
     }
 
@@ -157,14 +153,15 @@ public final class BakedMesh implements AutoCloseable {
 
             if (rendered == null) return new BakedMesh(null, 0, false,
                     null, 0, 0, -1,
-//                    0, mode, // [1.21.6, )
+                    0, mode, // [1.21.6, )
                     light);
 
             BufferBuilder.DrawState drawState = rendered.drawState();
             int bytes;
             VertexFormat writtenFormat;
             boolean extendedFormat;
-            int vertexCount; {
+            int vertexCount;
+            {
                 // [1.20.1, 1.21.1)
                 /*
                 1.20.1 drawState.bufferSize()
@@ -181,8 +178,8 @@ public final class BakedMesh implements AutoCloseable {
                 extendedFormat = writtenFormat != format;
                 vertexCount = drawState.vertexCount();
                 bytes = vertexCount * writtenFormat.getVertexSize();
-
             }
+
             int stride = writtenFormat.getVertexSize();
             int uv2Offset = light == FULL_BRIGHT ? -1 : uv2Offset(writtenFormat);
             /*
@@ -191,41 +188,47 @@ public final class BakedMesh implements AutoCloseable {
              */
             ByteBuffer vertexCopy = !keepLightCopy || uv2Offset < 0 ? null : copyVertices(rendered.vertexBuffer());
 
-            long profileBuffer = ClientRenderProfiler.begin();
-            VertexBuffer vertexBuffer = new VertexBuffer(
-                    // [1.20.1, 1.21.4)
-//                    VertexBuffer.Usage.STATIC
-                    // [1.21.4, )
-                    BufferUsage.STATIC_WRITE
-            );
-            // VertexBuffer.upload 要求 VAO 已绑定，原版 BufferUploader 同样先 bind 再 upload
-            vertexBuffer.bind();
-            ClientRenderProfiler.end(ClientRenderProfiler.BAKE_BUFFER, profileBuffer);
+            GpuBuffer vertexBuffer;
+            {
+                // [1.20.1, 1.21.6)
+//                long profileBuffer = ClientRenderProfiler.begin();
+//                vertexBuffer = new VertexBuffer(
+//                        // [1.20.1, 1.21.4)
+//                        VertexBuffer.Usage.STATIC
+//                        // [1.21.4, )
+////                        BufferUsage.STATIC_WRITE
+//                );
+//                // VertexBuffer.upload 要求 VAO 已绑定，原版 BufferUploader 同样先 bind 再 upload
+//                vertexBuffer.bind();
+//                ClientRenderProfiler.end(ClientRenderProfiler.BAKE_BUFFER, profileBuffer);
+
+                // [1.21.6, )
+            }
 
             long profileUpload = ClientRenderProfiler.begin();
             try {
                 // [1.20.1, 1.21.6)
-                vertexBuffer.upload(rendered);
+//                vertexBuffer.upload(rendered);
 
                 // [1.21.6, )
-//                vertexBuffer = RenderSystem.getDevice().createBuffer(
-//                        () -> "CGC baked mesh",
-//                        GpuBuffer.USAGE_VERTEX | GpuBuffer.USAGE_COPY_DST,
-//                        rendered.vertexBuffer());
+                vertexBuffer = RenderSystem.getDevice().createBuffer(
+                        () -> "CGC baked mesh",
+                        GpuBuffer.USAGE_VERTEX | GpuBuffer.USAGE_COPY_DST,
+                        rendered.vertexBuffer());
             } finally {
                 {
                     // [1.20.1, 1.21.6)
-                    VertexBuffer.unbind();
+//                    VertexBuffer.unbind();
 
                     // [1.21.6, )
-//                    rendered.close();
+                    rendered.close();
                 }
                 ClientRenderProfiler.end(ClientRenderProfiler.BAKE_UPLOAD, profileUpload);
                 ClientRenderProfiler.countBakeBytes(bytes);
             }
             return new BakedMesh(vertexBuffer, bytes, extendedFormat,
                     vertexCopy, vertexCount, stride, uv2Offset,
-//                    drawState.indexCount(), drawState.mode(), // [1.21.6, )
+                    drawState.indexCount(), drawState.mode(), // [1.21.6, )
                     light);
         } finally {
             builderDepth--;
@@ -313,21 +316,21 @@ public final class BakedMesh implements AutoCloseable {
         if (this.vertexBuffer == null || this.vertexCopy == null) return false;
         {
             // [1.20.1, 1.21.6)
-            this.vertexBuffer.bind();
-            try {
-                int vbo = GL20.glGetVertexAttribi(0, GL20.GL_VERTEX_ATTRIB_ARRAY_BUFFER_BINDING);
-                if (vbo <= 0) return false;
-                GlStateManager._glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
-                RenderSystem.glBufferData(GL15.GL_ARRAY_BUFFER, this.vertexCopy, GL15.GL_STATIC_DRAW);
-                return true;
-            } finally {
-                VertexBuffer.unbind();
-            }
+//            this.vertexBuffer.bind();
+//            try {
+//                int vbo = GL20.glGetVertexAttribi(0, GL20.GL_VERTEX_ATTRIB_ARRAY_BUFFER_BINDING);
+//                if (vbo <= 0) return false;
+//                GlStateManager._glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
+//                RenderSystem.glBufferData(GL15.GL_ARRAY_BUFFER, this.vertexCopy, GL15.GL_STATIC_DRAW);
+//                return true;
+//            } finally {
+//                VertexBuffer.unbind();
+//            }
 
             // [1.21.6, )
-//            RenderSystem.getDevice().createCommandEncoder()
-//                    .writeToBuffer(this.vertexBuffer.slice(), this.vertexCopy.duplicate());
-//            return true;
+            RenderSystem.getDevice().createCommandEncoder()
+                    .writeToBuffer(this.vertexBuffer.slice(), this.vertexCopy.duplicate());
+            return true;
         }
     }
 
@@ -359,14 +362,14 @@ public final class BakedMesh implements AutoCloseable {
         if (this.closed) return false;
         if (this.vertexBuffer == null) return true;
 
-//        @Nullable RenderPipeline pipeline; // [1.21.6, )
+        @Nullable RenderPipeline pipeline; // [1.21.6, )
         Matrix4f modelView; {
             // [1.20.1, 1.21.6)
-            modelView = new Matrix4f(ClientRenderHelper.GL._getModelViewMatrix()).mul(pose);
+//            modelView = new Matrix4f(ClientRenderHelper.GL._getModelViewMatrix()).mul(pose);
 
             // [1.21.6, )
-//            @Nullable RenderPipeline pipeline = ClientRenderRegistry.BakedEntityRenderState.bakedPipelineFor(renderType);
-//            if (pipeline == null) return false;
+            pipeline = ClientRenderRegistry.BakedEntityRenderState.bakedPipelineFor(renderType);
+            if (pipeline == null) return false;
         }
 
 
@@ -376,58 +379,59 @@ public final class BakedMesh implements AutoCloseable {
             renderType.setupRenderState();
             setup = true;
 
-            @Nullable CompiledShaderProgram shader = StaticBake.resolveEntityShader();
-            if (shader == null) return false;
-
-            this.vertexBuffer.bind();
-            this.vertexBuffer.drawWithShader(modelView, RenderSystem.getProjectionMatrix(), shader);
+            // [1.20.1, 1.21.6)
+//            @Nullable CompiledShaderProgram shader = StaticBake.resolveEntityShader();
+//            if (shader == null) return false;
+//
+//            this.vertexBuffer.bind();
+//            this.vertexBuffer.drawWithShader(modelView, RenderSystem.getProjectionMatrix(), shader);
 
             // [1.21.6, )
-//            // 与 RenderType#draw 一致：状态设好之后才取矩阵，layering / texturing 状态可能改过它们
-//            modelView = new Matrix4f(RenderSystem.getModelViewMatrix()).mul(pose);
-//            GpuBufferSlice transforms = RenderSystem.getDynamicUniforms().writeTransform(
-//                    modelView, WHITE, RenderSystem.getModelOffset(),
-//                    RenderSystem.getTextureMatrix(), RenderSystem.getShaderLineWidth());
-//
-//            RenderTarget target = outputTarget(renderType);
-//            GpuTextureView colorTexture = RenderSystem.outputColorTextureOverride != null
-//                    ? RenderSystem.outputColorTextureOverride
-//                    : target.getColorTextureView();
-//            GpuTextureView depthTexture = target.useDepth
-//                    ? (RenderSystem.outputDepthTextureOverride != null
-//                    ? RenderSystem.outputDepthTextureOverride
-//                    : target.getDepthTextureView())
-//                    : null;
-//
-//            try (RenderPass pass = RenderSystem.getDevice()
-//                    .createCommandEncoder()
-//                    .createRenderPass(() -> "CGC baked mesh", colorTexture, OptionalInt.empty(), depthTexture, OptionalDouble.empty())) {
-//                pass.setPipeline(pipeline);
-//                RenderSystem.bindDefaultUniforms(pass);
-//                pass.setUniform("DynamicTransforms", transforms);
-//                /*
-//                与 RenderType#draw 一致：NeoForge 的模板测试只存在于 RenderSystem，必须由每个 pass 自己带上
-//                NeoForge类，但是不触发import
-//                 */ @Nullable var stencilTest = RenderSystem.STENCIL_TEST;
-//                if (stencilTest != null) {
-//                    pass.enableStencilTest(stencilTest);
-//                }
-//                pass.setVertexBuffer(0, this.vertexBuffer);
-//
-//                for (int i = 0; i < 12; i++) {
-//                    GpuTextureView texture = RenderSystem.getShaderTexture(i);
-//                    if (texture != null) pass.bindSampler("Sampler" + i, texture);
-//                }
-//
-//                // 非排序输出没有独立索引缓冲，用平台按 mode 生成的顺序索引
-//                RenderSystem.AutoStorageIndexBuffer indices = RenderSystem.getSequentialBuffer(this.mode);
-//                pass.setIndexBuffer(indices.getBuffer(this.indexCount), indices.type());
-//                pass.drawIndexed(0, 0, this.indexCount, 1);
-//            }
+            // 与 RenderType#draw 一致：状态设好之后才取矩阵，layering / texturing 状态可能改过它们
+            modelView = new Matrix4f(RenderSystem.getModelViewMatrix()).mul(pose);
+            GpuBufferSlice transforms = RenderSystem.getDynamicUniforms().writeTransform(
+                    modelView, WHITE, RenderSystem.getModelOffset(),
+                    RenderSystem.getTextureMatrix(), RenderSystem.getShaderLineWidth());
+
+            RenderTarget target = outputTarget(renderType);
+            GpuTextureView colorTexture = RenderSystem.outputColorTextureOverride != null
+                    ? RenderSystem.outputColorTextureOverride
+                    : target.getColorTextureView();
+            GpuTextureView depthTexture = target.useDepth
+                    ? (RenderSystem.outputDepthTextureOverride != null
+                    ? RenderSystem.outputDepthTextureOverride
+                    : target.getDepthTextureView())
+                    : null;
+
+            try (RenderPass pass = RenderSystem.getDevice()
+                    .createCommandEncoder()
+                    .createRenderPass(() -> "CGC baked mesh", colorTexture, OptionalInt.empty(), depthTexture, OptionalDouble.empty())) {
+                pass.setPipeline(pipeline);
+                RenderSystem.bindDefaultUniforms(pass);
+                pass.setUniform("DynamicTransforms", transforms);
+                /*
+                与 RenderType#draw 一致：NeoForge 的模板测试只存在于 RenderSystem，必须由每个 pass 自己带上
+                NeoForge类，但是不触发import
+                 */ @Nullable var stencilTest = RenderSystem.STENCIL_TEST;
+                if (stencilTest != null) {
+                    pass.enableStencilTest(stencilTest);
+                }
+                pass.setVertexBuffer(0, this.vertexBuffer);
+
+                for (int i = 0; i < 12; i++) {
+                    GpuTextureView texture = RenderSystem.getShaderTexture(i);
+                    if (texture != null) pass.bindSampler("Sampler" + i, texture);
+                }
+
+                // 非排序输出没有独立索引缓冲，用平台按 mode 生成的顺序索引
+                RenderSystem.AutoStorageIndexBuffer indices = RenderSystem.getSequentialBuffer(this.mode);
+                pass.setIndexBuffer(indices.getBuffer(this.indexCount), indices.type());
+                pass.drawIndexed(0, 0, this.indexCount, 1);
+            }
 
             return true;
         } finally {
-            VertexBuffer.unbind(); // 1.21.6移除
+//            VertexBuffer.unbind();
             if (setup) renderType.clearRenderState();
         }
     }
@@ -435,11 +439,10 @@ public final class BakedMesh implements AutoCloseable {
     @ApiStatus.AvailableSince("1.21.6")
     private static RenderTarget outputTarget(RenderType renderType) {
         Object outputState = CustomGunClient.getAccessTransformer().getOutputState(renderType);
-        return null; // 让IDE保留上面的引用关系
-//        if (outputState instanceof RenderStateShard.OutputStateShard output) {
-//            return output.getRenderTarget();
-//        }
-//        return ClientRenderUtils.getMainRenderTarget(Minecraft.getInstance());
+        if (outputState instanceof RenderStateShard.OutputStateShard output) {
+            return output.getRenderTarget();
+        }
+        return ClientRenderUtils.getMainRenderTarget(Minecraft.getInstance());
     }
 
     public int bytes() {

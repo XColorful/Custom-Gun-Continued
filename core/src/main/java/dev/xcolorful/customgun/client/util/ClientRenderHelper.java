@@ -104,12 +104,12 @@ public class ClientRenderHelper {
 //        poseStack.rotate(by);
     }
 
-    public static void queueFencedTask(RenderCall task) {
+    public static void queueFencedTask(Runnable task) {
         // [1.20.1, 1.21.6)
-        RenderSystem.recordRenderCall(task);
+//        RenderSystem.recordRenderCall(task);
 
         // [1.21.6, )
-//        RenderSystem.queueFencedTask(task);
+        RenderSystem.queueFencedTask(task);
     }
 
     /**

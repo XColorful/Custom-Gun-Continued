@@ -9,10 +9,6 @@ import dev.xcolorful.customgun.client.api.minecraft.access.IClientAccessTransfor
 import dev.xcolorful.customgun.client.api.minecraft.texture.CustomTexture;
 import dev.xcolorful.customgun.client.compat.iris.IrisCompat;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.renderer.RenderStateShard;
-import net.minecraft.client.renderer.ShaderDefines;
-import net.minecraft.client.renderer.ShaderInstance;
-import net.minecraft.client.renderer.ShaderProgram;
 import net.minecraft.client.renderer.rendertype.LayeringTransform;
 import net.minecraft.client.renderer.rendertype.RenderSetup;
 import net.minecraft.client.renderer.rendertype.RenderType;
@@ -50,7 +46,7 @@ public class ClientRenderRegistry {
          *     <li>[1.21.6, ) 不再是程序 json 的 id，而是管线引用的着色器资源 id（{@code shaders/core/<path>.vsh/.fsh}）</li>
          * </ul>
          */
-        public static final @NotNull ResourceLocation BAKED_ENTITY_SHADER =
+        public static final @NotNull Identifier BAKED_ENTITY_SHADER =
                 CustomGun.getMcRegistry().createResourceLocation(CustomGun.MOD_ID +
                         // [1.20.1, 1.21.4)
 //                        ":cgc_baked_entity"
@@ -63,7 +59,7 @@ public class ClientRenderRegistry {
 
         @Deprecated(since = "1.21.6")
         @ApiStatus.AvailableSince("1.21.4")
-        private static final @Nullable ShaderProgram bakedEntityProgram =
+        private static final @Nullable Object bakedEntityProgram =
                         // [1.20.1, 1.21.4)
 //                        new Object();
                         // [1.21.4, )
@@ -86,7 +82,7 @@ public class ClientRenderRegistry {
                        .withCull(false)
                        .withVertexFormat(DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS)
                        // [1.21.11, ) 着色器声明了 CgcBaked；管线不声明时 GlProgram 会告警，且该块没人绑定
-//                        .withUniform("CgcBaked", UniformType.UNIFORM_BUFFER)
+                        .withUniform("CgcBaked", UniformType.UNIFORM_BUFFER)
                        .build();
 
         public static @Nullable Object getBakedEntityShader() {
@@ -178,7 +174,7 @@ public class ClientRenderRegistry {
         registrar.registerShader(program);
     }
 
-    public static class LaserBeamRenderState extends RenderStateShard {
+    public static class LaserBeamRenderState {
 
         public static final @NotNull Identifier LASER_BEAM_TEXTURE = CustomTexture.WHITE_8x8.getLocation();
 

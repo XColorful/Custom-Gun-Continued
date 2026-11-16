@@ -1,11 +1,9 @@
 package dev.xcolorful.customgun.client.util;
 
-import com.mojang.renderpearl.api.pipeline.PrimitiveTopology;
-import com.mojang.renderpearl.backend.opengl.GlStateManager;
-import com.mojang.blaze3d.pipeline.RenderCall;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
+import com.mojang.renderpearl.api.pipeline.PrimitiveTopology;
+import com.mojang.renderpearl.backend.opengl.GlStateManager;
 import dev.xcolorful.customgun.client.CustomGunClient;
 import dev.xcolorful.customgun.client.api.minecraft.pipeline.PipelineModifier;
 import dev.xcolorful.customgun.client.api.minecraft.pipeline.RenderTypePipelineBake;

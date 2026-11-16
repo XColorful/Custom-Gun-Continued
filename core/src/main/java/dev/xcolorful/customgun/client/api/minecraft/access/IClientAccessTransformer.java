@@ -1,13 +1,20 @@
 package dev.xcolorful.customgun.client.api.minecraft.access;
 
 import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix4f;
+import org.joml.Matrix4fStack;
+
+import java.util.Map;
+import java.util.function.Consumer;
 
 public interface IClientAccessTransformer {
 
@@ -42,6 +49,35 @@ public interface IClientAccessTransformer {
     @ApiStatus.AvailableSince("1.21.6")
     RenderPipeline
     getRenderPipeline(
+            RenderType renderType
+    );
+
+    /**
+     * [1.21.11, ) 1.21.11 起 {@link RenderType} 的状态由 {@code RenderSetup} 携带（字段包可见）
+     * <li>贴图 / 采样器绑定，含 lightmap 与 overlay</li>
+     */
+    @ApiStatus.AvailableSince("1.21.11")
+    @NotNull Map<String, Object>
+    getRenderSetupTextures(
+            RenderType renderType
+    );
+
+    /**
+     * [1.21.11, ) glint 等贴图变换不再写进 {@link RenderSystem}，改由 {@code RenderSetup} 提供
+     */
+    @ApiStatus.AvailableSince("1.21.11")
+    @NotNull Matrix4f
+    getRenderSetupTextureTransform(
+            RenderType renderType
+    );
+
+    /**
+     * [1.21.11, ) layering 变换由 {@code RenderSetup} 提供；没有时返回 {@code null}
+     */
+    @ApiStatus.AvailableSince("1.21.11")
+    @Nullable
+    Consumer<Matrix4fStack>
+    getRenderSetupLayering(
             RenderType renderType
     );
 

@@ -75,17 +75,19 @@ public class ClientRenderRegistry {
                         // [1.20.1, 1.21.6)
 //                        new Object();
                         // [1.21.6, )
-                RenderPipeline.builder(RenderPipelines.MATRICES_FOG_LIGHT_DIR_SNIPPET)
-                        .withLocation(BAKED_ENTITY_SHADER)
-                        .withVertexShader(BAKED_ENTITY_SHADER)
-                        .withFragmentShader(BAKED_ENTITY_SHADER)
-                        .withSampler("Sampler0")
-                        .withSampler("Sampler1")
-                        .withSampler("Sampler2")
-                        .withBlend(BlendFunction.TRANSLUCENT)
-                        .withCull(false)
-                        .withVertexFormat(DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS)
-                        .build();
+               RenderPipeline.builder(RenderPipelines.MATRICES_FOG_LIGHT_DIR_SNIPPET)
+                       .withLocation(BAKED_ENTITY_SHADER)
+                       .withVertexShader(BAKED_ENTITY_SHADER)
+                       .withFragmentShader(BAKED_ENTITY_SHADER)
+                       .withSampler("Sampler0")
+                       .withSampler("Sampler1")
+                       .withSampler("Sampler2")
+                       .withBlend(BlendFunction.TRANSLUCENT)
+                       .withCull(false)
+                       .withVertexFormat(DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS)
+                       // [1.21.11, ) 着色器声明了 CgcBaked；管线不声明时 GlProgram 会告警，且该块没人绑定
+//                        .withUniform("CgcBaked", UniformType.UNIFORM_BUFFER)
+                       .build();
 
         public static @Nullable Object getBakedEntityShader() {
             // [1.20.1, 1.21.4)
@@ -114,11 +116,17 @@ public class ClientRenderRegistry {
 //            return null;
 
             // [1.21.6, )
-            RenderPipeline base = CustomGunClient.getAccessTransformer().getRenderPipeline(renderType);
-            return BAKED_PIPELINES.computeIfAbsent(base, pipeline -> pipeline.toBuilder()
-                    .withVertexShader(BAKED_ENTITY_SHADER)
-                    .withFragmentShader(BAKED_ENTITY_SHADER)
-                    .build());
+            /*
+            CgcBaked：自用的法线矩阵块
+            烘焙网格存模型空间法线
+            而 DynamicTransforms 的 ModelViewMat 是 mv × 姿态
+            逆转置与即时块 CPU 写的 IT(姿态) 差一次摄像机旋转，见 BakedMesh#draw
+             */
+           return BAKED_PIPELINES.computeIfAbsent(base, pipeline -> pipeline.toBuilder()
+                   .withVertexShader(BAKED_ENTITY_SHADER)
+                   .withFragmentShader(BAKED_ENTITY_SHADER)
+                   .withUniform("CgcBaked", UniformType.UNIFORM_BUFFER) // 派生自调用方管线（不是 bakedEntityPipeline），必须自己声明，否则该块无人绑定
+                   .build());
         }
 
         private static final Map<RenderPipeline, RenderPipeline> BAKED_PIPELINES = new IdentityHashMap<>();

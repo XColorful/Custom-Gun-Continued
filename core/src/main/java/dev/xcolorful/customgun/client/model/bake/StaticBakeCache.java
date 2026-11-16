@@ -4,7 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import dev.xcolorful.customgun.client.model.ModelObject;
 import dev.xcolorful.customgun.client.resource._AssetsInstanceManager;
 import dev.xcolorful.customgun.client.util.ClientRenderHelper;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 

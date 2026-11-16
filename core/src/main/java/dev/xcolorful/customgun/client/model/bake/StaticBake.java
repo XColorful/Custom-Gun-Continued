@@ -5,7 +5,7 @@ import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.compat.iris.IrisCompat;
 import dev.xcolorful.customgun.client.init.registry.ClientRenderRegistry;
 import dev.xcolorful.customgun.client.util.ClientRenderProfiler;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;

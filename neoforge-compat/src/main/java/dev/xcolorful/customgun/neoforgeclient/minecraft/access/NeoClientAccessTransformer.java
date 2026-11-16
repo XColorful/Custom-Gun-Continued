@@ -15,7 +15,6 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -61,10 +60,10 @@ public class NeoClientAccessTransformer implements IClientAccessTransformer {
     ) {
 //        return null;
         // [1.20.6, 1.21.11)
-        return ((RenderType.CompositeRenderType) renderType).state.outputState;
+//        return ((RenderType.CompositeRenderType) renderType).state.outputState;
 
         // [1.21.11, )
-//        return renderType.state.outputTarget;
+        return renderType.state.outputTarget;
     }
 
     @Override public RenderPipeline
@@ -74,31 +73,31 @@ public class NeoClientAccessTransformer implements IClientAccessTransformer {
 //        return null;
 
         // [1.20.6, 1.21.11)
-        return ((RenderType.CompositeRenderType) renderType).renderPipeline;
+//        return ((RenderType.CompositeRenderType) renderType).renderPipeline;
 
         // [1.21.11, )
-//        return renderType.pipeline();
+        return renderType.pipeline();
     }
 
-    @Override public @NotNull Map<String, Object>
+    @Override public @NotNull Map<String, RenderSetup.TextureAndSampler>
     getRenderSetupTextures(
             RenderType renderType
     ) {
-        return new HashMap<>(); // renderType.state.getTextures();
+        return renderType.state.getTextures();
     }
 
     @Override public @NotNull Matrix4f
     getRenderSetupTextureTransform(
             RenderType renderType
     ) {
-        return new Matrix4f(); // renderType.state.textureTransform.getMatrix();
+        return renderType.state.textureTransform.getMatrix();
     }
 
     @Override public @Nullable Consumer<Matrix4fStack>
     getRenderSetupLayering(
             RenderType renderType
     ) {
-        return null; // renderType.state.layeringTransform.getModifier();
+        return renderType.state.layeringTransform.getModifier();
     }
 
     @Override public RenderSetup

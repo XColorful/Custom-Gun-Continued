@@ -182,6 +182,7 @@
 ### 工具
 > _./client/util_
 
+- ClientChatUtils：本地聊天栏消息统一发送入口
 - ClientEntityUtils：实体工具及相关兼容封装
 - ClientGuiUtils：客户端 GUI 操作封装
 - ClientJsonUtils：客户端 JSON 序列化封装
@@ -372,6 +373,7 @@ Module division based on the `dev.xcolorful.customgun.client` top-level package
 ### Utility
 > _./client/util_
 
+- ClientChatUtils: Unified entry point for sending local chat messages
 - ClientEntityUtils: Entity utilities and compatibility wrappers
 - ClientGuiUtils: Client GUI operations wrapper
 - ClientJsonUtils: Client JSON serialization wrapper

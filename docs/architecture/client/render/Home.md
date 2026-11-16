@@ -117,6 +117,7 @@ graph TB
 |[功能性渲染器](./functional-renderers.md)|枪口火焰、抛壳、激光、配件、手臂、文字、瞄具模板、LOD 等|
 |[GUI 装配界面与提示框](./gui-and-tooltip.md)|枪械改装界面、tooltip 的渲染与变换|
 |[资源读取](./resource-reading.md)|从 ClientResourceApi 获取的 POJO / Instance 与美术资源的对应关系|
+|[1.21.11 → 26.1.x 渲染系统差异](./26.1-rendering-differences.md)|26.1.x 的 builder / 顶点格式 / 消息 API 变更对照、去哪找源码|
 |[26.1.x → 26.2 渲染系统差异](./26.2-rendering-differences.md)|26.2 渲染 API 变更对照（即时模式 → 延迟提交）、去哪找源码、迁移坑|
 |[26.2 MultiBufferSource 移除移植报告](./26.2-multibuffersource-migration-report.md)|MultiBufferSource 移除的迁移记录与运行时风险|
 |[渲染链路分析](./chain/Home.md)|技术链路与性能成本视角：一帧被调用几次、每次花在哪一层（重构依据）|

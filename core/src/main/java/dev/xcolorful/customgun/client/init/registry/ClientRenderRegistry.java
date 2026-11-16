@@ -79,6 +79,8 @@ public class ClientRenderRegistry {
 //                        .withBlend(BlendFunction.TRANSLUCENT)
 //                        .withCull(false)
 //                        .withVertexFormat(DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS)
+//                        // [1.21.11, ) 着色器声明了 CgcBaked；管线不声明时 GlProgram 会告警，且该块没人绑定
+////                        .withUniform("CgcBaked", UniformType.UNIFORM_BUFFER)
 //                        .build();
 
         public static @Nullable ShaderInstance getBakedEntityShader() {
@@ -117,7 +119,7 @@ public class ClientRenderRegistry {
 //            return BAKED_PIPELINES.computeIfAbsent(base, pipeline -> pipeline.toBuilder()
 //                    .withVertexShader(BAKED_ENTITY_SHADER)
 //                    .withFragmentShader(BAKED_ENTITY_SHADER)
-//                    .withUniform("CgcBaked", UniformType.UNIFORM_BUFFER)
+//                    .withUniform("CgcBaked", UniformType.UNIFORM_BUFFER) // 派生自调用方管线（不是 bakedEntityPipeline），必须自己声明，否则该块无人绑定
 //                    .build());
         }
 

@@ -69,7 +69,7 @@ public class NeoClientAccessTransformer implements IClientAccessTransformer {
     getRenderPipeline(
             RenderType renderType
     ) {
-        return null;
+//        return null;
 
         // [1.20.6, 1.21.11)
         return ((RenderType.CompositeRenderType) renderType).renderPipeline;

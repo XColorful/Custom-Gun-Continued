@@ -88,7 +88,7 @@ public class ClientRenderRegistry {
                         // [26.1.x, )
 //                        .withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
 //                        .withVertexFormat(DefaultVertexFormat.ENTITY, VertexFormat.Mode.QUADS)
-//                        .build();
+                        .build();
 
         public static @Nullable Object getBakedEntityShader() {
             // [1.20.1, 1.21.4)

@@ -57,6 +57,6 @@ public class ClientChatUtils {
         player.displayClientMessage(actionBar, true);
 
         // [26.1.x, )
-//        player.sendOverlayMessage(component);
+//        player.sendOverlayMessage(actionBar);
     }
 }

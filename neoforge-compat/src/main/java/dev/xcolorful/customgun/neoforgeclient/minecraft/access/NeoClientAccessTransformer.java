@@ -8,7 +8,14 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix4f;
+import org.joml.Matrix4fStack;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Consumer;
 
 public class NeoClientAccessTransformer implements IClientAccessTransformer {
     public static final NeoClientAccessTransformer INSTANCE = new NeoClientAccessTransformer();
@@ -50,14 +57,46 @@ public class NeoClientAccessTransformer implements IClientAccessTransformer {
     getOutputState(
             RenderType renderType
     ) {
+//        return null;
+        // [1.20.6, 1.21.11)
         return ((RenderType.CompositeRenderType) renderType).state.outputState;
+
+        // [1.21.11, )
+//        return renderType.state.outputTarget;
     }
 
     @Override public RenderPipeline
     getRenderPipeline(
             RenderType renderType
     ) {
+        return null;
+
+        // [1.20.6, 1.21.11)
         return ((RenderType.CompositeRenderType) renderType).renderPipeline;
+
+        // [1.21.11, )
+//        return renderType.pipeline();
+    }
+
+    @Override public @NotNull Map<String, Object>
+    getRenderSetupTextures(
+            RenderType renderType
+    ) {
+        return new HashMap<>(); // renderType.state.getTextures();
+    }
+
+    @Override public @NotNull Matrix4f
+    getRenderSetupTextureTransform(
+            RenderType renderType
+    ) {
+        return new Matrix4f(); // renderType.state.textureTransform.getMatrix();
+    }
+
+    @Override public @Nullable Consumer<Matrix4fStack>
+    getRenderSetupLayering(
+            RenderType renderType
+    ) {
+        return null; // renderType.state.layeringTransform.getModifier();
     }
 
     @Override public Object

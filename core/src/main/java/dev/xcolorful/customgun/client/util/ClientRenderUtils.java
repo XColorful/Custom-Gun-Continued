@@ -117,8 +117,8 @@ public class ClientRenderUtils {
     /**
      * [26.1.x, ) 移除了 {@code VertexFormatElement.Usage} 与 {@code usage()}，元素改为具名常量（UV0/UV1/UV2）
      */
-//    @Deprecated(since = "26.1.x")
-    public static VertexFormatElement.Usage getUsage(VertexFormatElement element) {
+    @Deprecated(since = "26.1.x")
+    public static Object getUsage(VertexFormatElement element) {
         // [1.20.1, 1.21.1)
 //        return element.getUsage();
         // [1.21.1, 26.1.x)

@@ -77,12 +77,16 @@ public class ClientRenderRegistry {
                        .withSampler("Sampler0")
                        .withSampler("Sampler1")
                        .withSampler("Sampler2")
-                       .withBlend(BlendFunction.TRANSLUCENT)
                        .withCull(false)
+                        // [1.21.6, 26.1.x)
+                       .withBlend(BlendFunction.TRANSLUCENT)
                        .withVertexFormat(DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS)
-                       // [1.21.11, ) 着色器声明了 CgcBaked；管线不声明时 GlProgram 会告警，且该块没人绑定
+                        // [1.21.11, ) 着色器声明了 CgcBaked；管线不声明时 GlProgram 会告警，且该块没人绑定
 //                        .withUniform("CgcBaked", UniformType.UNIFORM_BUFFER)
-                       .build();
+                        // [26.1.x, )
+//                        .withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
+//                        .withVertexFormat(DefaultVertexFormat.ENTITY, VertexFormat.Mode.QUADS)
+//                        .build();
 
         public static @Nullable Object getBakedEntityShader() {
             // [1.20.1, 1.21.4)

@@ -107,4 +107,18 @@ public final class DiscardVertexConsumer implements VertexConsumer {
     @Override
     public void unsetDefaultColor() {
     }
+
+    // [1.21.11, ) VertexConsumer 新增抽象方法（线宽随管线走）
+    @ApiStatus.AvailableSince("1.21.11")
+//    @Override
+    public VertexConsumer setLineWidth(float lineWidth) {
+        return this;
+    }
+
+    // [1.21.11, ) VertexConsumer 新增的 ARGB 打包颜色重载
+    @ApiStatus.AvailableSince("1.21.11")
+//    @Override
+    public VertexConsumer setColor(int color) {
+        return this;
+    }
 }

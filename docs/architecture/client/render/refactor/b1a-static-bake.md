@@ -182,6 +182,31 @@ uniform 补不回来，烘焙块的法线仍会少一次姿态。只在 `[1.21.6
 - **1.21.10 起**：`RenderSystem.getModelOffset()` 移除，`writeTransform` 传零向量；
   `RenderSystem.STENCIL_TEST` 移除，模板状态由 `RenderPipeline` 携带并在 `setPipeline` 内注入，不再逐 pass 手动 `enableStencilTest`。
 
+## 1.21.11
+
+原版 API 差异单独记录在 [1.21.11 渲染系统差异参考](../1.21.11-rendering-differences.md)；这里只写烘焙路径的实现事实。
+
+`[1.21.11, )` 没有 `setupRenderState` / `clearRenderState`，`BakedMesh#draw` 改为按 `RenderSetup` 组 pass：
+
+1. layering 修饰器作用于 `RenderSystem.getModelViewStack()`；
+2. `writeTransform(mv × 姿态, 白, 零偏移, Setup.textureTransform)`（4 参重载）；
+3. **先**取 `getTextures()` 与 `outputTarget`，再建 `RenderPass`；
+4. pass 内：`setPipeline(烘焙管线)` → `bindDefaultUniforms` → `DynamicTransforms` / `CgcBaked` →
+   scissor（`getScissorStateForRenderTypeDraws`）→ 顶点 / 顺序索引 → 逐项 `bindTexture` → `drawIndexed`。
+
+- **贴图必须在建 pass 之前取**：`RenderSetup#getTextures()` 会惰性上传纹理，pass 内调用直接崩
+  （2026-11-16 实测，第一把枪的第一个未加载贴图触发 `IllegalStateException: Close the existing render pass…`）。
+- **`CgcBaked` 要在每条用烘焙着色器的管线上各自声明**（1.21.11）：原版 `GlProgram` 只绑定管线声明过的 UBO，
+  未声明的块会打 `Found unknown and unsupported uniform` 且永远拿不到数据。实际绘制用的是从**调用方 RenderType 管线**派生的管线
+  （不是 `bakedEntityPipeline`），所以派生处必须 `withUniform("CgcBaked")`；基础 `bakedEntityPipeline` 也要声明一份，
+  它在注册时会被预编译，否则同样告警。2026-11-16 一次只保留基础管线声明的改动，导致无光影下转视角枪体亮度不再变化（弹匣正常），已回退。
+- `RenderSetup` 字段包可见：core 经 `IClientAccessTransformer` 的 `getRenderSetupTextures` /
+  `getRenderSetupTextureTransform` / `getRenderSetupLayering` 读取，兼容层用 AT 放开 `RenderType#state` 与
+  `RenderSetup` 的 `outputTarget` / `textureTransform` / `layeringTransform`。
+- 管线派生（`bakedPipelineFor`）与着色器 id 不变；`LaserBeamRenderState` 不再继承已移除的 `RenderStateShard`；
+  `DiscardVertexConsumer` 补齐新增的 `setLineWidth` / `setColor(int)`。
+- **未验收**：画面、光照、雾、光影下亮度；`cgc_baked_entity` 的 `#version 150` 在 vanilla 已用 `#version 330` 的 1.21.11 下能否编译。
+
 ## 26.3 / 跨版本
 
 26.3 的实体着色器结构不同，需要单独验证，不能照抄 1.20.1 的实现：

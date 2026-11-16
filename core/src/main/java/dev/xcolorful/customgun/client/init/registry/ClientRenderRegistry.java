@@ -5,6 +5,7 @@ import com.mojang.blaze3d.pipeline.BlendFunction;
 import com.mojang.blaze3d.pipeline.ColorTargetState;
 import com.mojang.blaze3d.pipeline.DepthStencilState;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.blaze3d.shaders.UniformType;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import dev.xcolorful.customgun.CustomGun;
@@ -116,6 +117,7 @@ public class ClientRenderRegistry {
          */
         @ApiStatus.AvailableSince("1.21.6")
         public static @Nullable RenderPipeline bakedPipelineFor(RenderType renderType) {
+            RenderPipeline base = CustomGunClient.getAccessTransformer().getRenderPipeline(renderType);
             // [1.20.1, 1.21.6)
 //            return null;
 

@@ -609,7 +609,7 @@ public final class BakedMesh implements AutoCloseable {
             return true;
         } finally {
             // [1.20.1, 1.21.6)
-            VertexBuffer.unbind();
+//            VertexBuffer.unbind();
 
             // [1.20.1, 1.21.11)
             if (setup) renderType.clearRenderState();
@@ -621,16 +621,15 @@ public final class BakedMesh implements AutoCloseable {
     @ApiStatus.AvailableSince("1.21.6")
     private static RenderTarget outputTarget(RenderType renderType) {
         Object outputState = CustomGunClient.getAccessTransformer().getOutputState(renderType);
-        return null; // 让IDE保留上面的引用关系
 
-//        if (outputState instanceof
-//                // [1.21.6, 1.21.11)
-////                RenderStateShard.OutputStateShard output
-//                // [1.21.11, )
-////                OutputTarget output
-//        ) return output.getRenderTarget();
+        if (outputState instanceof
+                // [1.21.6, 1.21.11)
+                RenderStateShard.OutputStateShard output
+                // [1.21.11, )
+//                OutputTarget output
+        ) return output.getRenderTarget();
 
-//        return ClientRenderUtils.getMainRenderTarget(Minecraft.getInstance());
+        return ClientRenderUtils.getMainRenderTarget(Minecraft.getInstance());
     }
 
     public int bytes() {

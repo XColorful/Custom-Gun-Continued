@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
+import net.minecraft.client.renderer.rendertype.RenderSetup;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.ApiStatus;
@@ -57,7 +58,7 @@ public interface IClientAccessTransformer {
      * <li>贴图 / 采样器绑定，含 lightmap 与 overlay</li>
      */
     @ApiStatus.AvailableSince("1.21.11")
-    @NotNull Map<String, Object>
+    @NotNull Map<String, RenderSetup.TextureAndSampler>
     getRenderSetupTextures(
             RenderType renderType
     );

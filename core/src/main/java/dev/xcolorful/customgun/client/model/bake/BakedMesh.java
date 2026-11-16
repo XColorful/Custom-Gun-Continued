@@ -6,6 +6,7 @@ import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.systems.RenderPass;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.systems.ScissorState;
 import com.mojang.blaze3d.textures.GpuTextureView;
 import com.mojang.blaze3d.vertex.*;
 import dev.xcolorful.customgun.client.CustomGunClient;
@@ -14,8 +15,9 @@ import dev.xcolorful.customgun.client.input.player.DebugKey;
 import dev.xcolorful.customgun.client.util.ClientRenderProfiler;
 import dev.xcolorful.customgun.client.util.ClientRenderUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderStateShard;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.OutputTarget;
+import net.minecraft.client.renderer.rendertype.RenderSetup;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
@@ -25,10 +27,7 @@ import org.joml.Vector4f;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.OptionalDouble;
-import java.util.OptionalInt;
+import java.util.*;
 import java.util.function.Consumer;
 
 /**
@@ -184,7 +183,7 @@ public final class BakedMesh implements AutoCloseable {
                     0, mode, // [1.21.6, )
                     light);
 
-            BufferBuilder.DrawState drawState = rendered.drawState();
+            MeshData.DrawState drawState = rendered.drawState();
             int bytes;
             VertexFormat writtenFormat;
             boolean extendedFormat;
@@ -201,7 +200,6 @@ public final class BakedMesh implements AutoCloseable {
 //                vertexCount = rendered.drawState().vertexCount();
 
                 // [1.21.1, )
-                MeshData.DrawState drawState = rendered.drawState();
                 writtenFormat = drawState.format();
                 extendedFormat = writtenFormat != format;
                 vertexCount = drawState.vertexCount();
@@ -417,8 +415,8 @@ public final class BakedMesh implements AutoCloseable {
             1.21.11 移除了 RenderType#setupRenderState / clearRenderState 与 RenderSystem 上的贴图 / 着色器状态
             该 RenderType 的贴图、输出目标、layering / texturing 变换全部由 RenderSetup 携带，绘制段直接读取
              */
-            renderType.setupRenderState();
-            setup = true;
+//            renderType.setupRenderState();
+//            setup = true;
 
             // [1.20.1, 1.21.6)
 //            @Nullable CompiledShaderProgram shader = StaticBake.resolveEntityShader();
@@ -521,10 +519,10 @@ public final class BakedMesh implements AutoCloseable {
             } finally {
                 modelViewStack.popMatrix();
             }
-//            */
+            */
 
             // [1.21.11, )
-            /* 源码太长，并且跨版本要改，所以用保留commit记录的方式，1.20.1改直接在1.21.11能用
+//            /* 源码太长，并且跨版本要改，所以用保留commit记录的方式，1.20.1改直接在1.21.11能用
             // 顺序同 vanilla RenderType#draw：layering 先作用于 modelview 栈，状态从 RenderSetup 读
             Matrix4fStack modelViewStack = RenderSystem.getModelViewStack();
             // layering 状态先作用于 modelview 栈，之后再取矩阵
@@ -606,7 +604,7 @@ public final class BakedMesh implements AutoCloseable {
             } finally {
                 if (layering != null) modelViewStack.popMatrix();
             }
-            */
+//            */
 
             return true;
         } finally {
@@ -614,7 +612,7 @@ public final class BakedMesh implements AutoCloseable {
 //            VertexBuffer.unbind();
 
             // [1.20.1, 1.21.11)
-            if (setup) renderType.clearRenderState();
+//            if (setup) renderType.clearRenderState();
 
             // [1.21.11, ) 没有 setup/clearRenderState，绘制段不再往 RenderSystem 写状态，无需清理
         }
@@ -626,9 +624,9 @@ public final class BakedMesh implements AutoCloseable {
 
         if (outputState instanceof
                 // [1.21.6, 1.21.11)
-                RenderStateShard.OutputStateShard output
+//                RenderStateShard.OutputStateShard output
                 // [1.21.11, )
-//                OutputTarget output
+                OutputTarget output
         ) return output.getRenderTarget();
 
         return ClientRenderUtils.getMainRenderTarget(Minecraft.getInstance());

@@ -10,8 +10,6 @@
     "model.HumanoidModelMixin",
     "model.PlayerModelMixin",
     "renderer.EntityHitboxDebugRendererMixin",
-    "renderer.BufferUploaderMixin",
-    "renderer.EntityRendererMixin",
     "renderer.GameRendererMixin",
     "renderer.ItemInHandLayerMixin",
     "renderer.ItemInHandRendererMixin",

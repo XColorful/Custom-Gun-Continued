@@ -5,6 +5,7 @@ import dev.xcolorful.customgun.core.api.event.EventType;
 import dev.xcolorful.customgun.core.api.event.IEvent;
 import dev.xcolorful.customgun.core.api.event.IEventHandler;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.ApiStatus;
@@ -736,9 +737,9 @@ public final class ClientRenderProfiler implements IEventHandler {
 
     private static void message(String text) {
         CustomGun.LOGGER.info("{}", text);
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.player != null) {
-            mc.player.displayClientMessage(Component.literal("[CGC] " + text), false);
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (player != null) {
+            ClientChatUtils.sendMessageToPlayer(player, "[CGC] " + text);
         }
     }
 }

@@ -205,7 +205,21 @@ uniform 补不回来，烘焙块的法线仍会少一次姿态。只在 `[1.21.6
   `RenderSetup` 的 `outputTarget` / `textureTransform` / `layeringTransform`。
 - 管线派生（`bakedPipelineFor`）与着色器 id 不变；`LaserBeamRenderState` 不再继承已移除的 `RenderStateShard`；
   `DiscardVertexConsumer` 补齐新增的 `setLineWidth` / `setColor(int)`。
-- **未验收**：画面、光照、雾、光影下亮度；`cgc_baked_entity` 的 `#version 150` 在 vanilla 已用 `#version 330` 的 1.21.11 下能否编译。
+- **验收**：无光影下已实机确认烘焙块绘制、转视角枪体亮度随视角变化（与弹匣一致，2026-11-16）。
+  光影包路径未覆盖（测试机 `enableShaders=false`）：开光影后的亮度、`cgc_baked_entity` 的 `#version 150`
+  在 vanilla 已用 `#version 330` 的 1.21.11 下能否编译，均待测。
+
+## 26.1.x
+
+原版 API 差异见 [26.1 渲染系统差异参考](../26.1-rendering-differences.md)；这里只写烘焙路径的实现事实。
+
+`[26.1.x, )` 的结构与 1.21.11 相同（`RenderSetup` 组 pass、先取贴图再建 pass、`CgcBaked` 各管线自声明），只需编译适配（2026-11-16）：
+
+- 基础烘焙管线：`DefaultVertexFormat.NEW_ENTITY` → `ENTITY`，`withBlend` → `withColorTargetState(new ColorTargetState(...))`；
+  `withUniform("CgcBaked", UNIFORM_BUFFER)` 原样保留（26.1.x 尚未 renderpearl）。
+- `uv2Offset` 改判 `element == VertexFormatElement.UV2`（`Usage` 已移除）。
+- 调试输出 `ClientRenderProfiler` 的聊天消息改 `sendSystemMessage`。
+- **未实机验证**：烘焙块画面、光影路径、`cgc_baked_entity` 的 `#version 150` 能否被 26.1 的 `GlProgram` 接受。
 
 ## 26.3 / 跨版本
 

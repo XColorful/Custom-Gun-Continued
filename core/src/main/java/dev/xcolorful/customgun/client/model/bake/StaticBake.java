@@ -6,6 +6,7 @@ import dev.xcolorful.customgun.client.compat.iris.IrisCompat;
 import dev.xcolorful.customgun.client.init.registry.ClientRenderRegistry;
 import dev.xcolorful.customgun.client.util.ClientRenderHelper;
 import dev.xcolorful.customgun.client.util.ClientRenderProfiler;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
@@ -55,63 +56,19 @@ public final class StaticBake {
     }
 
     /**
-     * 只在第一次缺少烘焙着色器时告警，避免每帧刷屏
-     */
-    private static boolean warnedNoShader;
-    /**
-     * <ul>
-     *     <li>[1.20.1, 26.2) 本帧是否有可用的实体着色器</li>
-     *     <li>[26.2, ) 是否有可用的绘制通道</li>
-     *     <li>26.2 起烘焙结果走 {@code submitCustomGeometry}，只需要当前有提交收集器</li>
-     *     <li>提前判断可以让调用方在状态段之前就退回即时管线，避免同帧执行两次 functional 回调</li>
-     * </ul>
+     * 是否有可用的绘制通道
+     * <li>26.2 起烘焙结果走 {@code submitCustomGeometry}，只需要当前有提交收集器</li>
+     * <li>提前判断可以让调用方在状态段之前就退回即时管线，避免同帧执行两次 functional 回调</li>
      */
     public static boolean available() {
-        // [1.20.1, 1.21.6)
-//        return IrisCompat.isUsingRenderPack()
-//                || ClientRenderRegistry.BakedEntityRenderState.getBakedEntityShader() != null;
-
-        // [1.21.6, 26.2)
-//        boolean available = ClientRenderRegistry.BakedEntityRenderState.getBakedEntityPipeline() != null;
-//        if (!available && !warnedNoShader) {
-//            warnedNoShader = true;
-//            CustomGun.LOGGER.warn("Core shader {} is unavailable, static bake falls back to the immediate pipeline",
-//                    ClientRenderRegistry.BakedEntityRenderState.BAKED_ENTITY_SHADER);
-//        }
-//        return available;
-
-        // [26.2, )
         return ClientRenderHelper.FirstPersonArmHelper.getFirstPersonArmCollector() != null;
     }
 
     /**
-     * 本次绘制该用的实体着色器；必须在 {@code RenderType.setupRenderState()} 之后调用
-     * <br>
-     * 开光影包：
-     * <ul>
-     *     <li>Iris 在 {@code GameRenderer.getRendertype*Shader()} 里把该 RenderType 的 shader 换成光影包 program（按 shadow / hand / block-entity / entities 阶段分支）</li>
-     *     <li>那份 shader 的位置与法线都由 {@code ModelViewMat} 驱动，直接沿用即可</li>
-     * </ul>
-     * 无光影：
-     * <ul>
-     *     <li>用 CGC 自己的烘焙着色器；平台没有注册它时返回 {@code null}，调用方退回即时管线</li>
-     * </ul>
+     * 旧签名（[1.20.1, 26.2) 用于取实体着色器）；26.2 起回放走原版管线，不再需要
      */
     @Deprecated(since = "1.21.6")
     public static @Nullable Object resolveEntityShader() {
-        /*
-        if (IrisCompat.isUsingRenderPack()) {
-            return RenderSystem.getShader();
-        }
-
-        @Nullable CompiledShaderProgram shader = ClientRenderRegistry.BakedEntityRenderState.getBakedEntityShader();
-        if (shader == null && !warnedNoShader) {
-            warnedNoShader = true;
-            CustomGun.LOGGER.warn("Core shader {} is unavailable, static bake falls back to the immediate pipeline",
-                    ClientRenderRegistry.BakedEntityRenderState.BAKED_ENTITY_SHADER);
-        }
-        return shader;
-        */
         return null;
     }
 
@@ -134,38 +91,7 @@ public final class StaticBake {
                                      float red, float green, float blue, float alpha,
                                      long fingerprint,
                                      Consumer<VertexConsumer> emitter) {
-        boolean shaderPack = IrisCompat.isUsingRenderPack();
-        StaticBakeCache.Key key = new StaticBakeCache.Key(owner, subKey, renderType, light, overlay, fingerprint,
-                shaderPack, red, green, blue, alpha);
-
-        // FORCE_REBUILD：人工验收「缓存失效」与测量烘焙成本；默认关闭，F12 采集保持稳态
-        @Nullable BakedMesh mesh = FORCE_REBUILD ? null : StaticBakeCache.get(key);
-        if (mesh == null) {
-            final long profBake = ClientRenderProfiler.begin();
-            mesh = BakedMesh.bake(renderType.mode(), renderType.format(), light, emitter);
-            ClientRenderProfiler.end(ClientRenderProfiler.BAKE, profBake);
-            ClientRenderProfiler.countBake();
-            StaticBakeCache.put(key, mesh);
-        }
-
-        /*
-        光影包刚切换时，顶点布局与当前着色器不匹配：本帧退回即时管线，下一帧会重新烘焙
-        [1.20.1, 1.21.6)
-            声明格式取自 RenderType 的固定字段，写入格式取自 BufferBuilder（Iris 在构造时换成扩展格式）
-            两者不一致就说明光影状态变了
-        [1.21.6, )
-            RenderType#format() 直接取自 RenderPipeline#getVertexFormat()
-            而 Iris 扩展的正是这个 getter，声明与写入恒为同一个格式
-            只能拿烘焙时的步长和当前管线要求的步长比
-         */
-        if (mesh.bytes() > 0
-                // [1.20.1, 1.21.6)
-//                && mesh.extendedFormat() != shaderPack
-                // [1.21.6, )
-                && mesh.stride() != renderType.format().getVertexSize()
-        ) return false;
-
-        return drawMesh(mesh, renderType, pose);
+        return false;
     }
     /**
      * 取缓存或烘焙，然后回放一次
@@ -185,8 +111,6 @@ public final class StaticBake {
                                          float red, float green, float blue, float alpha,
                                          long fingerprint,
                                          Consumer<VertexConsumer> emitter) {
-        return false;
-        /*
         boolean shaderPack = IrisCompat.isUsingRenderPack();
         StaticBakeCache.Key key = new StaticBakeCache.Key(owner, subKey, renderType, light, overlay, fingerprint,
                 shaderPack, red, green, blue, alpha);
@@ -202,8 +126,7 @@ public final class StaticBake {
             StaticBakeCache.put(key, mesh);
         }
 
-        return drawMesh(mesh, renderType, poseStack);
-         */
+        return drawMesh26_2(mesh, renderType, poseStack);
     }
 
     /**
@@ -225,52 +148,7 @@ public final class StaticBake {
                                               float red, float green, float blue, float alpha,
                                               long fingerprint,
                                               Consumer<VertexConsumer> emitter) {
-        boolean shaderPack = IrisCompat.isUsingRenderPack();
-        StaticBakeCache.PatchKey key = new StaticBakeCache.PatchKey(owner, subKey, renderType, overlay, fingerprint,
-                shaderPack, red, green, blue, alpha);
-
-        @Nullable BakedMesh mesh = FORCE_REBUILD ? null : StaticBakeCache.getPatchable(key, light);
-        boolean patchFailed = false;
-        if (mesh == null && !FORCE_REBUILD) {
-            // 光照变了：优先改写一份现成网格（原地 patch uv2 + 重传），而不是重新发射几何
-            @Nullable BakedMesh reusable = StaticBakeCache.takeReusablePatchable(key);
-            if (reusable != null) {
-                if (reusable.updateLight(light)) {
-                    StaticBakeCache.putPatchable(key, light, reusable);
-                    mesh = reusable;
-                } else {
-                    reusable.close();
-                    patchFailed = true;
-                }
-            }
-        }
-        if (mesh == null) {
-            ClientRenderProfiler.countBakeCause(false, patchFailed, !StaticBakeCache.hasPatchable(key));
-            final long profBake = ClientRenderProfiler.begin();
-            mesh = BakedMesh.bakePatchable(renderType.mode(), renderType.format(), light, emitter);
-            ClientRenderProfiler.end(ClientRenderProfiler.BAKE, profBake);
-            ClientRenderProfiler.countBake();
-            StaticBakeCache.putPatchable(key, light, mesh);
-        }
-
-        /*
-        光影包刚切换时，顶点布局与当前着色器不匹配：本帧退回即时管线，下一帧会重新烘焙
-        [1.20.1, 1.21.6)
-            声明格式取自 RenderType 的固定字段，写入格式取自 BufferBuilder（Iris 在构造时换成扩展格式）
-            两者不一致就说明光影状态变了
-        [1.21.6, )
-            RenderType#format() 直接取自 RenderPipeline#getVertexFormat()
-            而 Iris 扩展的正是这个 getter，声明与写入恒为同一个格式
-            只能拿烘焙时的步长和当前管线要求的步长比
-         */
-        if (mesh.bytes() > 0
-                // [1.20.1, 1.21.6)
-//                && mesh.extendedFormat() != shaderPack
-                // [1.21.6, )
-                && mesh.stride() != renderType.format().getVertexSize()
-        ) return false;
-
-        return drawMesh(mesh, renderType, pose);
+        return false;
     }
     /**
      * 单实例路径的烘焙入口（第一人称分块 / 瞄具子网格，渲染重构B1-c-B）
@@ -290,8 +168,6 @@ public final class StaticBake {
                                                   float red, float green, float blue, float alpha,
                                                   long fingerprint,
                                                   Consumer<VertexConsumer> emitter) {
-        return false;
-        /*
         boolean shaderPack = IrisCompat.isUsingRenderPack();
         StaticBakeCache.PatchKey key = new StaticBakeCache.PatchKey(owner, subKey, renderType, overlay, fingerprint,
                 shaderPack, red, green, blue, alpha);
@@ -322,7 +198,6 @@ public final class StaticBake {
         }
 
         return drawMesh26_2(mesh, renderType, poseStack);
-        */
     }
 
     /**
@@ -330,7 +205,7 @@ public final class StaticBake {
      * <li>[26.2, ) 改用 {@link #drawMesh26_2}</li>
      * @return {@code false} 表示没有可用着色器
      */
-//    @Deprecated(since = "26.2")
+    @Deprecated(since = "26.2")
     public static boolean drawMesh(BakedMesh mesh,
                                    RenderType renderType,
                                    Matrix4f pose) {
@@ -349,8 +224,6 @@ public final class StaticBake {
     public static boolean drawMesh26_2(BakedMesh mesh,
                                        RenderType renderType,
                                        PoseStack poseStack) {
-        return false;
-        /*
         @Nullable SubmitNodeCollector collector = ClientRenderHelper.FirstPersonArmHelper.getFirstPersonArmCollector();
         if (collector == null) return false;
 
@@ -366,6 +239,5 @@ public final class StaticBake {
         ClientRenderProfiler.countDraw();
         collector.submitCustomGeometry(drawPose, renderType, mesh::replay);
         return true;
-         */
     }
 }

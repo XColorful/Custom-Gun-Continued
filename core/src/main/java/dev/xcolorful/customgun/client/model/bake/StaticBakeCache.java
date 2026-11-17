@@ -132,29 +132,6 @@ public final class StaticBakeCache {
     }
 
     private static boolean evictEldest() {
-        // [1.20.1, 26.2)
-//        /*
-        Iterator<Map.Entry<Key, BakedMesh>> meshes = MESHES.entrySet().iterator();
-        if (meshes.hasNext()) {
-            Map.Entry<Key, BakedMesh> eldest = meshes.next();
-            meshes.remove();
-            bytes -= eldest.getValue().bytes();
-            close(eldest.getValue());
-            return true;
-        }
-        Iterator<Map.Entry<PatchKey, Variants>> variants = PATCHABLE.entrySet().iterator();
-        if (variants.hasNext()) {
-            Map.Entry<PatchKey, Variants> eldest = variants.next();
-            variants.remove();
-            bytes -= eldest.getValue().bytes();
-            close(eldest.getValue());
-            return true;
-        }
-        return false;
-//        */
-
-        // [26.2, )
-        /*
         boolean meshEmpty = MESHES.isEmpty();
         boolean patchEmpty = PATCHABLE.isEmpty();
         if (meshEmpty && patchEmpty) return false;
@@ -164,7 +141,6 @@ public final class StaticBakeCache {
         // 两套缓存都有内容时从占用更多的一侧淘汰
         // 固定优先淘汰整模静态缓存会让第一人称的瞄具子网格把它整体挤空：切过第一人称后第三人称的枪体与配件全部消失
         return meshBytes() >= patchableBytes() ? evictEldestMesh() : evictEldestPatchable();
-         */
     }
 
     @ApiStatus.AvailableSince("26.2")

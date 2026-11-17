@@ -96,3 +96,36 @@ B 面板的「单枪渲染帧时间」就是 0.203 vs 0.797 ms 那组，误差�
 - 报告里「环境与采集」仍写 Forge 1.20.1，那是平台版本，没有动
 
 需要你确认一处不一致：本批的测试说明 [新宿决战.txt](docs/architecture/client/render/benchmark/26.35.11.1-9/新宿决战.txt) 里列的是 `customgun-26.11.35.1`，当前 `gradle.properties` 也是 `mod_version=26.11.35.1`（git describe 为 26.11.35.1-97）。要一并改成 26.11.36，还是这两个文件保持原样？
+
+# 
+
+```
+文件夹都改成26.11.35.xxx（原本26.35.11顺序错了），并且检查下文档链接也要改
+```
+
+# 
+
+理解：`26.35.11.x` 是版本号顺序写反了，应改为 `26.11.35.x`。先盘点目录和所有引用。
+
+检查到 5 个既有相对路径链接本身就少了一级（与改名无关，但属于这次要检查的链接），一并修掉。
+
+目录与引用已改完：
+
+**改名（git mv，保留重命名历史）**
+`docs/architecture/client/render/benchmark/` 下 10 个目录：`26.35.11.1` → `26.11.35.1`，`26.35.11.1-1`…`-9` → `26.11.35.1-1`…`-9`。
+
+**引用更新（36 个文件，151 处）**
+- [PLAN.md](docs/architecture/client/render/PLAN.md)、[TODO.md](docs/architecture/client/render/TODO.md)、[benchmark/Home.md](docs/architecture/client/render/benchmark/Home.md)
+- `chain/`、`refactor/` 下所有提到批次号的正文与链接
+- 各批次的 `测试数据计算报告.md` 与 `analyze.py`（含注释里的批次号）
+
+**链接检查**
+- `docs/architecture/client/render` 子树共 346 个相对链接，改后 **0 失效**。
+- 顺带修了 5 处**原本就少一级目录**的链接（与这次改名无关）：`b1-a-5` 指向 `-3`、`b1-a-7` 指向 `refactor/` 与 `TODO.md`、`-5` 主报告指向 `refactor/Home.md`、`b1-b-1` 指向 `TODO.md`、`b1-b-2` 指向 `b1b-first-person-bake.md`。
+- `docs/architecture` 其余 177 个「失效」都是 `/docs/...` 站点根路径（core/api/wiki），属文档站的写法，未动。
+
+**未改**
+- `docs/deprecated/prompt/` 的 7 个提示词归档仍写着旧名——它们是历史记录，且其中的链接本来就按仓库根写的，不是可点击的相对链接。要一并批量替换可以说一声。
+- 批次 9 的 `analyze.py` 已在新目录下重跑通过，图正常生成。
+
+工作区仍未提交；提交时 Git 会把这批目录识别为重命名。

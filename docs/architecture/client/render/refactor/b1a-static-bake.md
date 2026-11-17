@@ -277,20 +277,25 @@ uniform 补不回来，烘焙块的法线仍会少一次姿态。只在 `[1.21.6
 遗留：回放后的帧时间未测（`Bake upload bytes` 现为拷贝字节数，口径已变，旧报告数值不可直接对比）；
 `CgcBaked` 与 `cgc_baked_entity` 在 26.2 已不参与绘制，相关管线声明保留给低版本。
 
-## 26.3 / 跨版本
+## 26.3（编译适配完成，实机未验收）
 
-26.3 的实体着色器结构不同，需要单独验证，不能照抄 1.20.1 的实现：
+26.3 沿用 26.2 的「CPU 顶点副本 + `submitCustomGeometry` 回放」。原版 API 差异见
+[26.3 渲染系统差异](../26.3-rendering-differences.md)。
 
-- 26.3 的 `entity.vsh` 位置已消费 `ModelViewMat`，实体管线带 `NO_CARDINAL_LIGHTING`（顶点法线不参与光照），
-  但 `fog_spherical_distance(Position)` 用的是**原始顶点坐标**——标准实体管线把模型矩阵烘进了顶点，
-  烘焙网格是模型空间，雾需要标量字段或自定义着色器确认。
-- 26.3 的烘焙绘制要走自定义 `RenderPipeline` + `GpuDevice.createBuffer` + `PreparedRenderType.drawFromBuffer`
-  （或 `RenderPass.drawIndexed`），并且：
-  - 在 `ClientRenderRegistry.onRegisterRenderPipelines` 里注册管线；
-  - 在 `IrisCompat.registerRenderPipelines` 注入点由 `cgccshader`（`CGC-Compat-Shader-iris-26.3neoforge`）
-    调 `IrisApi.assignPipeline(pipeline, IrisProgram.ENTITIES)`，否则 Iris 查不到 program，几何不画或极淡；
-  - 若走自定义管线，需同时处理 OIT（26.3 开「改进透明」时 `oitPipelineSet` 为空会直接抛异常）。
-- 具体以 [PLAN](../PLAN.md) 的「阶段 4」为准；本阶段只在 1.20.1 落地。
+- 不再需要「自定义 `RenderPipeline` + 自有 `GpuBuffer` + `PreparedRenderType.drawFromBuffer`」：那套正是 26.2 已排除的做法
+  （见上「排查记录」），`IrisCompat.assignPipeline` 与 OIT 的问题随之不需要单独处理。
+- 本次移植（2026-11-17）：
+  - 换包：`VertexFormat` / `VertexFormatElement` → `renderpearl.api.vertex`；`PrimitiveTopology` / `UniformType` 等管线类 →
+    `renderpearl.api.pipeline`（`blaze3d.vertex` 的 `BufferBuilder` / `MeshData` / `VertexConsumer` / `PoseStack` 未动）。
+  - `DiscardVertexConsumer` 补 `setUv3`（26.3 新增的抽象方法）。
+  - `RenderSetup` 不可变 + `OitPipelineSet`：`new_RenderSetup` 按 26.3 的字段顺序重建；`getOutputState` 没有调用方，返回 `null`。
+  - `cgc_baked_entity` 的着色器改写为 26.3 写法（`#version 330` + `#include <minecraft:...>` + `layout(location=…)`）：
+    26.3 用 shaderc 编译 SPIR-V，不支持 `#moj_import`；管线是 required，编译不过会直接启动黑屏。
+    已用与 26.3 同版本的 shaderc（lwjgl 3.4.3）单独编译两条 shader 验证通过。
+  - 合并残留：`BeamRender` 里 26.2 之前的即时管线两行（`MultiBufferSource`）删除，与 26.2 一致；
+    `GunItemRenderer#_renderSlotTexture` 补回 `profSlot` 起点。
+- 未完成：实机画面与光影路径；`Bake rebuilds`、烘焙帧时间与 pass 计时（26.3 的 render pass 是最大单项，按 pass 计时验收，
+  见 [TODO](../TODO.md) 阶段 4）。`Bake upload bytes` 口径与 26.2 相同（拷贝字节数），旧报告数值不可直接对比。
 
 ## 新增探针
 

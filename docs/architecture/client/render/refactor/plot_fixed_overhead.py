@@ -6,7 +6,7 @@
 曲线二：同一帧再叠加一次固定的 Δ 毫秒（一次光照变化的剩余开销）后的瞬时帧率，
         即 1000 / (1000 / fps + Δ)。
 
-数据口径见 ./lighting-decoupling.md 与 ../benchmark/26.35.11.1-6/测试数据计算报告.md。
+数据口径见 ./lighting-decoupling.md 与 ../benchmark/26.11.35.1-6/测试数据计算报告.md。
 """
 import os
 
@@ -19,7 +19,7 @@ import numpy as np
 BASE = os.path.dirname(os.path.abspath(__file__))
 
 # 一次光照变化的固定开销（ms）：A 之后 B 仍要多传的那部分
-# 实测口径见 ../benchmark/26.35.11.1-6/测试数据计算报告.md：一次事件 ≈2.5 MB、Light update ≈0.68 ms，
+# 实测口径见 ../benchmark/26.11.35.1-6/测试数据计算报告.md：一次事件 ≈2.5 MB、Light update ≈0.68 ms，
 # A 把它压到 ≈133 KB 后省下约 0.6 ms
 DELTA_MS = 0.6
 # 对比标注用的参考帧率

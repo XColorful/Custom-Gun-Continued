@@ -84,9 +84,9 @@ public final class DebugKey extends InputKey {
     /**
      * 是否有调试逻辑 (决定是否注册调试键)
      */
-    public static final boolean enableDebugKey = true;
+    public static boolean enableDebugKey = true;
 
-    public static final boolean enableReloadTest = false;
+    public static boolean enableReloadTest = false;
 
     public static class DebugKeyReloadTest implements IEventHandler {
         public static final DebugKeyReloadTest INSTANCE = new DebugKeyReloadTest();

@@ -49,6 +49,10 @@
   - [x] 26.2 已实机验收（2026-11-16）：烘焙网格改为「CPU 顶点副本 + `submitCustomGeometry` 回放」，不再自建 GpuBuffer / 派生管线；
     被排除的做法、三条硬约束（包装 RenderType 缓存、缓存淘汰均衡、回放忽略关闭）与 API 差异见 [`refactor/b1a-static-bake.md`](./refactor/b1a-static-bake.md)「26.2」
   - [ ] 26.2 回放后的帧时间未测；`Bake upload bytes` 口径已变（现为拷贝字节数），旧报告数值不可直接对比
+  - [x] 26.3 编译适配（2026-11-17）：沿用 26.2 回放，不需要自定义 `FeatureRenderer` / 自有 `GpuBuffer`；
+    renderpearl 换包、`VertexConsumer#setUv3`、`RenderSetup#oitPipelineSet`、`cgc_baked_entity` 着色器改 26.3 写法，`build` 通过。
+    见 [`refactor/b1a-static-bake.md`](./refactor/b1a-static-bake.md)「26.3」与 [`26.3-rendering-differences.md`](./26.3-rendering-differences.md)
+  - [ ] 26.3 实机验收：画面、光影路径、`Bake rebuilds`，以及按 pass 计时的烘焙帧时间
 - [ ] **待评估**：方案 C（动态实例 draw 合并 / 实例化）、方案 D 的剔除保留现状
 - [ ] **待评估：第一人称的分块 draw 数**：满配 35 次 CGC draw ≈0.27 ms，块切得越多 draw 越多；`b1-b-1` 实测换弹后的待机只 +2%，暂不紧迫。若要做，可考虑「长时间不脏的块回并到父块」或按 `RenderType` 合并相邻块（B2 只覆盖静态展示实例，不覆盖第一人称）
 - [ ] **外部参照验证**：[`refactor/reference-tacz-1.2.0.md`](./refactor/reference-tacz-1.2.0.md) 的 V1–V9，随对应阶段一起验证；只作验证项，不改变路线，也不改动既有 benchmark 数值

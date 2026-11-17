@@ -123,14 +123,20 @@ public class ClientRenderUtils {
     public static int getByteSize(VertexFormatElement element) {
         // [1.20.1, 1.21.1)
 //        return element.getByteSize();
-        // [1.21.1, )
+        // [1.21.1, 26.2)
         return element.byteSize();
+        // [26.2, )
+//        return element.format().blockSize();
     }
+//    @Deprecated(since = "26.2")
     public static int getIndex(VertexFormatElement element) {
         // [1.20.1, 1.21.1)
 //        return element.getIndex();
-        // [1.21.1, )
+        // [1.21.1, 26.2)
         return element.index();
+        // [26.2, )
+        // 元素改为 (名字, 偏移, GpuFormat)
+//        return 0;
     }
 
     public static class LightTexture_ {

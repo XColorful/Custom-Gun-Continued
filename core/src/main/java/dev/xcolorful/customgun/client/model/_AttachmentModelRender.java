@@ -14,6 +14,7 @@ import dev.xcolorful.customgun.client.compat.iris.IrisCompat;
 import dev.xcolorful.customgun.client.model.bake.DiscardVertexConsumer;
 import dev.xcolorful.customgun.client.model.bake.StaticBake;
 import dev.xcolorful.customgun.client.model.bedrock.BedrockPart;
+import dev.xcolorful.customgun.client.model.bedrock.NodeTransform;
 import dev.xcolorful.customgun.client.renderer.model.BeamRender;
 import dev.xcolorful.customgun.client.util.ClientRenderHelper;
 import dev.xcolorful.customgun.client.util.ClientRenderProfiler;
@@ -233,13 +234,26 @@ public class _AttachmentModelRender {
             }
             BedrockPart part = path.get(path.size() - 1);
             // 路径前缀的变换提升为绘制矩阵（B1-b）：枪身骨骼每帧被动画驱动时，瞄具网格仍然可以复用
-            Matrix4f partPose = new Matrix4f(poseStack.last().pose());
+            Matrix4f partPose; {
+                // [1.20.1, 26.2)
+                partPose = new Matrix4f(poseStack.last().pose());
+
+                // [26.2, )
+                // 上面的 pushPose 已经把前缀写进 poseStack，回放与即时绘制都直接取栈顶
+            }
 
             RenderType bakedRenderType = ClientRenderHelper.bakePipelineState(renderType); // [26.2, )
 
             {
                 part.visible = true;
                 try {
+                    List<NodeTransform> animatedTransforms; {
+                        // [26.2, )
+                        // 延迟渲染：绘制回调在 prepare 阶段执行，那时动画已把节点状态清空
+                        // 先快照这棵子树（含刚设的 visible），回调里写回，画完还原成清空后的状态
+//                        animatedTransforms = NodeTransform.captureSubtree(part);
+                    }
+
                     boolean baked = false;
                     if (StaticBake.eligible()) { // 用烘焙网格替代逐顶点遍历（渲染重构B1-a/B1-b）
                         int delegateMark = _this.delegateMark();
@@ -249,7 +263,9 @@ public class _AttachmentModelRender {
                         long fingerprint = part.renderStatus(poseStack, transformType, light, overlay, discard, null);
 
                         if (discard.writtenVertices() == vertexMark) {
-                            baked = StaticBake.drawOrBakePatchable(_this, path, partPose, bakedRenderType, light, overlay,
+                            baked = StaticBake.drawOrBakePatchable(_this, path,
+                                    partPose,
+                                    bakedRenderType, light, overlay,
                                     1, 1, 1, 1, fingerprint,
                                     consumer -> part.renderGeometry(new PoseStack(), transformType, consumer,
                                             light, overlay, 1, 1, 1, 1));
@@ -263,21 +279,49 @@ public class _AttachmentModelRender {
                         }
                     }
                     if (!baked) {
-                        MultiBufferSource.BufferSource bufferSource = ClientRenderHelper.GL.getModelBufferSource();
-                        VertexConsumer vertexConsumer = bufferSource.getBuffer(bakedRenderType);
+                        MultiBufferSource.BufferSource bufferSource;
+                        VertexConsumer vertexConsumer;
+                        {
+                            // [1.20.1, 26.2)
+                            bufferSource = ClientRenderHelper.GL.getModelBufferSource();
+                            vertexConsumer = bufferSource.getBuffer(bakedRenderType);
+
+                            // [26.2, )
+                        }
+
                         ClientRenderProfiler.countBatch();
                         ClientRenderProfiler.countRenderType(bakedRenderType);
-                        part.render(poseStack,
-                                transformType,
-                                vertexConsumer,
-                                light, overlay);
 
-                        final long profFlush = ClientRenderProfiler.begin();
-                        ClientRenderProfiler.countFlush();
-                        if (!IrisCompat.endBatch(bufferSource)) {
-                            bufferSource.endBatch();
+                        { // collector.submitCustomGeometry(poseStack, bakedRenderType, (pose, vertexConsumer) -> {
+                            List<NodeTransform> cleanedTransforms;
+                            PoseStack _poseStack;
+                            {
+                                // [26.2, )
+//                                cleanedTransforms = NodeTransform.captureSubtree(part);
+//                                _poseStack = new PoseStack();
+//                                _poseStack.last().set(pose);
+//                                // 与烘焙回放同口径：法线从位置矩阵现算
+//                                _poseStack.last().normal().set(_poseStack.last().pose()).invert().transpose();
+//                                NodeTransform.applyAll(animatedTransforms);
+                            }
+
+                            try {
+                                part.render(poseStack,
+                                        transformType,
+                                        vertexConsumer,
+                                        light, overlay);
+
+                                final long profFlush = ClientRenderProfiler.begin();
+                                ClientRenderProfiler.countFlush();
+                                if (!IrisCompat.endBatch(bufferSource)) {
+                                    bufferSource.endBatch();
+                                }
+                                ClientRenderProfiler.end(ClientRenderProfiler.FLUSH, profFlush);
+                            } finally {
+                                // [26.2, )
+//                                NodeTransform.applyAll(cleanedTransforms);
+                            }
                         }
-                        ClientRenderProfiler.end(ClientRenderProfiler.FLUSH, profFlush);
                     }
                 } finally {
                     part.visible = false;

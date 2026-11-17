@@ -63,8 +63,6 @@ public class BeamRender {
         @Nullable SubmitNodeCollector collector = ClientRenderHelper.FirstPersonArmHelper.getFirstPersonArmCollector();
         if (collector == null) return;
 
-        MultiBufferSource.BufferSource bufferSource = ClientRenderHelper.GL.getModelBufferSource();
-        VertexConsumer builder = bufferSource.getBuffer(ClientRenderRegistry.LaserBeamRenderState.getLaserBeam());
         ClientRenderProfiler.countBatch();
         poseStack.pushPose(); {
             for (int i = 0; i < path.size(); ++i) {

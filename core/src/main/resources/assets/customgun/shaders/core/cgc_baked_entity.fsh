@@ -1,34 +1,25 @@
-#version 150
+#version 330
+#extension GL_ARB_separate_shader_objects : require
 
-// moj_import注释行前面不能带井号，否则会被当成真指令导入
-// [1.20.1, 1.21.6)--------
-// moj_import <fog.glsl>
-// [1.21.6, )
-#moj_import <minecraft:fog.glsl>
-#moj_import <minecraft:dynamictransforms.glsl>
-// --------
+/*
+静态烘焙网格的实体着色器（渲染重构B1-a）
+26.3 起管线的着色器由 shaderc 编译为 SPIR-V：#include <minecraft:...> 取代 #moj_import，输入/输出必须带 location。
+26.2 起绘制已改用「顶点副本 + submitCustomGeometry 回放」，本管线只为低版本保留。
+*/
+
+#include <minecraft:fog.glsl>
+#include <minecraft:dynamictransforms.glsl>
 
 uniform sampler2D Sampler0;
 
-// [1.20.1, 1.21.6)--------
-// uniform vec4 ColorModulator;
-// uniform float FogStart;
-// uniform float FogEnd;
-// uniform vec4 FogColor;
-//
-// in float vertexDistance;
-// [1.21.6, )
-in float sphericalVertexDistance;
-in float cylindricalVertexDistance;
-// --------
+layout(location = 0) in float sphericalVertexDistance;
+layout(location = 1) in float cylindricalVertexDistance;
+layout(location = 2) in vec4 vertexColor;
+layout(location = 3) in vec4 lightMapColor;
+layout(location = 4) in vec4 overlayColor;
+layout(location = 5) in vec2 texCoord0;
 
-in vec4 vertexColor;
-in vec4 lightMapColor;
-in vec4 overlayColor;
-in vec2 texCoord0;
-//in vec4 normal; // 1.21.6移除
-
-out vec4 fragColor;
+layout(location = 0) out vec4 fragColor;
 
 void main() {
     vec4 color = texture(Sampler0, texCoord0);
@@ -38,9 +29,6 @@ void main() {
     color *= vertexColor * ColorModulator;
     color.rgb = mix(overlayColor.rgb, color.rgb, overlayColor.a);
     color *= lightMapColor;
-    // [1.20.1, 1.21.6)
-//     fragColor = linear_fog(color, vertexDistance, FogStart, FogEnd, FogColor);
-    // [1.21.6, )
     fragColor = apply_fog(color, sphericalVertexDistance, cylindricalVertexDistance,
             FogEnvironmentalStart, FogEnvironmentalEnd,
             FogRenderDistanceStart, FogRenderDistanceEnd, FogColor);

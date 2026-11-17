@@ -123,7 +123,7 @@ public final class DiscardVertexConsumer implements VertexConsumer {
     }
 
     @ApiStatus.AvailableSince("26.3")
-//    @Override
+    @Override
     public VertexConsumer setUv3(float u, float v) {
         return this;
     }

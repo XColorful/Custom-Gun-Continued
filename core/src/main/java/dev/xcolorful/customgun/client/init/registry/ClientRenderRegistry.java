@@ -1,10 +1,5 @@
 package dev.xcolorful.customgun.client.init.registry;
 
-import com.mojang.blaze3d.PrimitiveTopology;
-import com.mojang.blaze3d.pipeline.BlendFunction;
-import com.mojang.blaze3d.pipeline.ColorTargetState;
-import com.mojang.blaze3d.pipeline.DepthStencilState;
-import com.mojang.blaze3d.shaders.UniformType;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.renderpearl.api.pipeline.*;
 import dev.xcolorful.customgun.CustomGun;
@@ -76,7 +71,7 @@ public class ClientRenderRegistry {
          * <li>26.2 起 uniform 由 {@code BindGroupLayout} 声明，管线不声明时该块没人绑定</li>
          */
         @ApiStatus.AvailableSince("26.2")
-        private static final @NotNull Object CGC_BAKED_BIND_GROUP =
+        private static final @NotNull BindGroupLayout CGC_BAKED_BIND_GROUP =
                 BindGroupLayout.builder()
                         .withUniform("CgcBaked", UniformType.UNIFORM_BUFFER)
                         .build();

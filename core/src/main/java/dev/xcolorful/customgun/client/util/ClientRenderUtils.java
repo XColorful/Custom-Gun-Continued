@@ -1,7 +1,7 @@
 package dev.xcolorful.customgun.client.util;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
-import com.mojang.blaze3d.vertex.VertexFormatElement;
+import com.mojang.renderpearl.api.vertex.VertexFormatElement;
 import dev.xcolorful.customgun.client.api.event.IRenderLevelStageEvent;
 import dev.xcolorful.customgun.client.api.event.ISubmitCustomGeometryEvent;
 import net.minecraft.client.Camera;

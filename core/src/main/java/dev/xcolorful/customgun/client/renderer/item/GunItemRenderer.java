@@ -561,6 +561,7 @@ public class GunItemRenderer extends AnimateGeoItemRenderer<GunModelObject, GunA
         }
 
         collector.submitCustomGeometry(poseStack, ClientRenderUtils.RenderType_.entityTranslucent(texture), (pose, buffer) -> {
+            final long profSlot = ClientRenderProfiler.begin();
             PoseStack _poseStack = new PoseStack();
             _poseStack.last().set(pose);
             ClientRenderProfiler.countBatch();

@@ -1,7 +1,7 @@
 [English](#English)
 
 # 调试指令
-> wiki 版本：`26.11.35.1`.6
+> wiki 版本：`26.11.35.1`.7
 
 ## 服务端指令
 
@@ -71,8 +71,13 @@
 若画面异常，可以关闭该功能
 - `bool`（bool）：是否启用静态烘焙
 
+### 启用装弹动画调试测试
+> _/customgun debug enableReloadAnimationDebugTest [bool]_
+
+- `bool`（bool）：是否为调试键启用装弹动画测试
+
 # English
-> wiki version: `26.11.35.1`.6
+> wiki version: `26.11.35.1`.7
 
 ## Server command
 
@@ -141,3 +146,8 @@ Verify that client Mixin is correctly applied
 
 Disable this feature if rendering is abnormal
 - `bool` (bool): Whether to enable static bake
+
+### Enable reload animation debug test
+> _/customgun debug enableReloadAnimationDebugTest [bool]_
+
+- `bool` (bool): Whether to enable reload animation test for debug key

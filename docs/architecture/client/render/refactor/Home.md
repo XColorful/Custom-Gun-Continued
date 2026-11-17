@@ -289,6 +289,7 @@ B1-b 数值来自 [`26.35.11.1-5`](../benchmark/26.35.11.1-5/测试数据计算�
 |[C draw 合并与实例化](./scheme-c-draw-batching.md)|跨实例合并 draw 的两种做法与光影风险|
 |[D 剔除、LOD 与并行](./scheme-d-culling-lod-parallel.md)|提交次数削减、LOD 的边界、多线程方案与否决理由|
 |[外部参照：TaCZ 1.2.0 差异](./reference-tacz-1.2.0.md)|参照实现做了哪些静态化改动、哪些差异需要在各阶段用 benchmark 与光影实测验证（**不是方案**）|
+|[外部参照：Accelerated Rendering 1.0.16](./reference-ar-1.0.16.md)|AR 的 GPU 变换机制、与 B1/B2/E 的重合度、此前负优化的归因（**不是方案**）|
 |[B1-a 实施记录](./b1a-static-bake.md)|静态烘焙已落地的覆盖范围、缓存键与失效条件、退回即时管线的情况、验收清单与未完成项|
 |[B1-b 实施记录](./b1b-first-person-bake.md)|第一人称的 root 矩阵提升、脏子树分块与失效条件、单节点退回、瞄具模板重放、验收清单|
 |[B2 实施记录（已否决并回退）](./b2-cross-instance-batch.md)|跨实例合批的批次组织、相机剥离与锚点、按实例光照改写、覆盖门槛、收益边界与风险；重新实现时读 commit `ed78e3b4e`|

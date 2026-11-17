@@ -53,8 +53,6 @@ public class RenderTypePipelineBake {
         // 26.3去掉了 RenderSystem#applyPipelineModifiers，改从私有修饰器栈取被修饰后的管线
         RenderPipeline modified = accessTransformer.RenderSystem_getPIPELINE_MODIFIERS_apply(base.pipeline());
 
-        // [26.2, )
-//        /*
         Map<RenderPipeline, RenderType> perBase = BAKED_TYPES.get(base);
         if (perBase == null) {
             if (BAKED_TYPES.size() >= MAX_CACHED_TYPES) BAKED_TYPES.clear();
@@ -69,6 +67,5 @@ public class RenderTypePipelineBake {
             perBase.put(modified, baked);
         }
         return baked;
-//         */
     }
 }

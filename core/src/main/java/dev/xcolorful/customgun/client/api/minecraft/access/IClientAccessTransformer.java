@@ -12,7 +12,6 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
-import org.joml.Matrix4fStack;
 
 import java.util.Map;
 import java.util.function.Consumer;
@@ -57,9 +56,9 @@ public interface IClientAccessTransformer {
      * [1.21.11, ) 1.21.11 起 {@link RenderType} 的状态由 {@code RenderSetup} 携带（字段包可见）
      * <li>贴图 / 采样器绑定，含 lightmap 与 overlay</li>
      */
-//    @Deprecated(since = "26.2")
+    @Deprecated(since = "26.2")
     @ApiStatus.AvailableSince("1.21.11")
-    @NotNull Map<String, RenderSetup.TextureAndSampler>
+    @NotNull Map<String, Object>
     getRenderSetupTextures(
             RenderType renderType
     );
@@ -78,10 +77,11 @@ public interface IClientAccessTransformer {
 
     /**
      * [1.21.11, ) layering 变换由 {@code RenderSetup} 提供；没有时返回 {@code null}
+     * <li>[26.2, ) 修饰器改为作用于模型视图矩阵本身（之前作用于矩阵栈）</li>
      */
     @ApiStatus.AvailableSince("1.21.11")
     @Nullable
-    Consumer<Matrix4fStack>
+    Consumer<Matrix4f>
     getRenderSetupLayering(
             RenderType renderType
     );

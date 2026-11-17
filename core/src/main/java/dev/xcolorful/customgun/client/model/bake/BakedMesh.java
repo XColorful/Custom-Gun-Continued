@@ -1,53 +1,32 @@
 package dev.xcolorful.customgun.client.model.bake;
 
-import com.mojang.blaze3d.buffers.GpuBuffer;
-import com.mojang.blaze3d.buffers.GpuBufferSlice;
-import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.blaze3d.PrimitiveTopology;
 import com.mojang.blaze3d.pipeline.RenderTarget;
-import com.mojang.blaze3d.systems.RenderPass;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.systems.ScissorState;
-import com.mojang.blaze3d.textures.GpuTextureView;
 import com.mojang.blaze3d.vertex.*;
-import dev.xcolorful.customgun.client.CustomGunClient;
-import dev.xcolorful.customgun.client.init.registry.ClientRenderRegistry;
 import dev.xcolorful.customgun.client.input.player.DebugKey;
 import dev.xcolorful.customgun.client.util.ClientRenderProfiler;
 import dev.xcolorful.customgun.client.util.ClientRenderUtils;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.rendertype.OutputTarget;
-import net.minecraft.client.renderer.rendertype.RenderSetup;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
-import org.joml.Matrix4fStack;
-import org.joml.Vector3f;
 
 import java.nio.ByteBuffer;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 /**
  * 模型空间的静态烘焙网格（渲染重构B1-a）
  * <ul>
- *     [1.20.1, 26.2)
- *     <li>顶点只生成一次，常驻 {@link VertexBuffer}；每帧只绑定并换模型视图矩阵绘制</li>
- *     <li>实例矩阵不进顶点，因此同一份网格可以被多个展示框 / 掉落物共享</li>
- *     <li>[1.20.1, 1.21.6) 只支持即时模式：{@code RenderType} 的 setup/clear 包住 draw，与 {@code BufferSource.endBatch} 的做法一致</li>
- *     <li>[1.21.6, )绘制自己开 {@code RenderPass}：管线用 CGC 的烘焙管线，状态与贴图仍由 {@code RenderType} 的 setup/clear 提</li>
- *     <li>光照需要原地改写的网格（渲染重构B1-c-B，见 {@link #bakePatchable}）额外保留一份 CPU 副本</li>
- *     <li>光照变化时改写其中的 uv2 并 (重传原 VBO / 1.21.6 整段写回原缓冲)，几何本身不再重新发射</li>
- * </ul>
- * <ul>
- *     [26.2, )
  *     <li>顶点只生成一次，保留一份交错顶点副本；每帧回放进原版 {@link VertexConsumer}，不再逐节点遍历与计算姿态</li>
  *     <li>实例矩阵不进顶点：回放时用调用方的 {@code PoseStack.Pose} 变换位置与法线，同一份网格可被多个展示框共享</li>
  *     <li>光照需要原地改写（渲染重构B1-c-B）：副本里的 uv2 直接改写，不需要重新发射几何</li>
- *     <li>26.2 的几何只能在 {@code submitCustomGeometry} 的回调里写顶点，自有 {@code GpuBuffer} 无法插进原版批次</li>
- *     <li>而把烘焙块拆成独立 feature type 会打乱与其它自定义几何的提交顺序（瞄具模板序列依赖严格顺序），自定义管线也让光影包找不到 program</li>
- *     <li>因此 26.2 起统一走回放，代价是每帧一次顶点拷贝</li>
+ *     <li>26.2 的几何只能在 {@code submitCustomGeometry} 的回调里写顶点，自有 {@code GpuBuffer} 无法插进原版批次；
+ *         而把烘焙块拆成独立 feature type 会打乱与其它自定义几何的提交顺序（瞄具模板序列依赖严格顺序），
+ *         自定义管线也让光影包找不到 program。因此 26.2 起统一走回放，代价是每帧一次顶点拷贝</li>
  * </ul>
+ * 旧版本（[1.20.1, 26.2)）的 GPU 常驻网格实现见本文件的 git 历史；本分支只保留回放。
  * 失效条件由调用方放进 {@link StaticBakeCache.Key}，本类不判断
  */
 @ApiStatus.Internal
@@ -61,11 +40,9 @@ public final class BakedMesh implements AutoCloseable {
     /**
      * 复用的 {@link BufferBuilder}，按烘焙嵌套深度取用
      * <ul>
-     *     [1.20.1, )
      *     <li>{@code BufferBuilder} 在构造时经 {@code MemoryTracker} 直接申请原生内存（{@code 容量 × 6}）</li>
      *     <li>而释放路径只重置计数、不归还内存：每次烘焙新建一个就是一次几 MiB 的永久泄漏</li>
      *     <li>{@link DebugKey}采集会每帧强制重建网格，几秒内就能把页面文件耗尽（表现是原生内存不足导致的 JVM 崩溃）</li>
-     *     <li>[1.20.1, 26.2) 正常流程不嵌套，复用同一实例</li>
      * </ul>
      */
     private static final List<ByteBufferBuilder> BUILDERS = new ArrayList<>();
@@ -77,72 +54,9 @@ public final class BakedMesh implements AutoCloseable {
      */
     private static final int FULL_BRIGHT = ClientRenderUtils.LightTexture_.pack(15, 15);
 
-    // [1.21.6, 26.2)
-    /*
-    @ApiStatus.AvailableSince("1.21.6")
-    private static final Vector4f WHITE = new Vector4f(1.0F, 1.0F, 1.0F, 1.0F);
-
-    private static final ByteBuffer NORMAL_SCRATCH = ByteBuffer.allocateDirect(64).order(ByteOrder.nativeOrder());
-     */
-
     /**
+     * 交错顶点字节的 CPU 副本：回放与光照改写的唯一数据来源
      * <ul>
-     *     <li>法线矩阵块的内容：烘焙网格存模型空间法线</li>
-     *     <li><而原版 {@code entity.vsh} 直接用顶点里的 {@code Normal}（即时块在 CPU 用 {@code IT(姿态)} 写入）</li>
-     *     <li>{@code DynamicTransforms} 的 {@code ModelViewMat} 是 mv × 姿态</li>
-     *     <li>取逆转置会少一次摄像机旋转 —— 枪体法线冻结在固定朝向，转视角亮度不变</li>
-     *     <li>所以单独走这个 UBO</li>
-     * </ul>
-     */
-    /*
-    private static @Nullable GpuBuffer normalUniformBuffer;
-    @ApiStatus.AvailableSince("1.21.6")
-    private static Object normalUniformBuffer() {
-        GpuBuffer buffer = normalUniformBuffer;
-        if (buffer == null || buffer.isClosed()) {
-            buffer = normalUniformBuffer = RenderSystem.getDevice().createBuffer(
-                    () -> "CGC baked normal matrix", GpuBuffer.USAGE_UNIFORM | GpuBuffer.USAGE_COPY_DST, 64);
-        }
-        return buffer;
-    }
-     */
-
-    // [1.20.1, 1.21.6)
-//    private final @Nullable VertexBuffer vertexBuffer;
-
-    // [1.21.6, 26.2)
-//    private final @Nullable GpuBuffer vertexBuffer;
-//    private final int indexCount;
-//    private final VertexFormat.Mode mode;
-
-    // [1.20.1, 26.2)
-//    private final int bytes;
-    /**
-     * 本次烘焙实际写入的是不是扩展顶点格式
-     * <ul>
-     *     <li>光影包会把 {@code NEW_ENTITY} 换成{@code IrisVertexFormats.ENTITY}</li>
-     *     <li>绘制前要和当前光影状态比对：两者不一致说明光影包刚刚切换、缓存里的顶点布局已经不能用了（本帧必须退回即时管线）</li>
-     * </ul>
-     * <ul>
-     *     [1.21.6, )
-     *     <li>{@code RenderType#format()} 直接取自 {@code RenderPipeline#getVertexFormat()}</li>
-     *     <li>而 Iris 扩展的正是这个 getter，声明的格式与写入的格式恒为同一个对象，这里因此恒为 {@code false}</li>
-     *     <li>布局比对改用 {@link #stride()}（见 {@link StaticBake}），本字段保留给 [1.20.1, 1.21.6) 的实现</li>
-     * </ul>
-     */
-//    @Deprecated(since = "1.21.6")
-//    private final boolean extendedFormat;
-
-    /**
-     * 交错顶点字节的 CPU 副本
-     * <ul>
-     *     [1.20.1, 26.2)
-     *     <li>光照变化时改写其中的 uv2 后再 (整段重传 / 1.21.6 整段写回)</li>
-     *     <li>{@code null} 表示无法原地改写：空网格、格式里没有 uv2、烘焙时光照恰为满亮（发光节点与普通顶点的 uv2 此时无法区分），或调用方没有要求保留副本</li>
-     * </ul>
-     * <ul>
-     *     [26.2, )
-     *     <li>回放与光照改写的唯一数据来源</li>
      *     <li>{@code null} 只出现在空网格</li>
      *     <li>光照恰为满亮时 uv2 无法区分发光节点与普通顶点，{@code uv2PatchOffset} 置 {@code -1}，不做原地改写</li>
      * </ul>
@@ -154,14 +68,6 @@ public final class BakedMesh implements AutoCloseable {
      * uv2 在单个顶点里的字节偏移；格式不含 uv2 时为 {@code -1}
      */
     private final int uv2Offset;
-
-    /**
-     * 网格当前烘着的 packed 光照
-     */
-    private int light;
-    private boolean closed;
-
-    // [26.2, )
     /**
      * 光照原地改写用的 uv2 偏移：满亮网格无法区分发光节点，置 {@code -1} 表示不改写
      */
@@ -178,49 +84,30 @@ public final class BakedMesh implements AutoCloseable {
     private final int normalOffset;
     private final int lineWidthOffset;
 
-    private BakedMesh(
-            // [1.20.1, 1.21.6)
-//            @Nullable VertexBuffer vertexBuffer, int bytes, boolean extendedFormat,
-//            @Nullable ByteBuffer vertexCopy, int vertexCount, int stride, int uv2Offset,
-            // [1.21.6, 26.2)
-//            @Nullable GpuBuffer vertexBuffer, int bytes, boolean extendedFormat,
-//            @Nullable ByteBuffer vertexCopy, int vertexCount, int stride, int uv2Offset,
-//            int indexCount, VertexFormat.Mode mode,
-            // [26.2, )
-            @Nullable ByteBuffer vertexCopy, VertexFormat format,
-            int vertexCount, int stride, int uv2PatchOffset, int bytes,
-            int light
-    ) {
-        {
-            // [1.20.1, 26.2)
-//            this.vertexBuffer = vertexBuffer;
-//            this.bytes = bytes;
-//            this.extendedFormat = extendedFormat;
-//            this.vertexCopy = vertexCopy;
-//            this.vertexCount = vertexCount;
-//            this.stride = stride;
-//            this.uv2Offset = uv2Offset;
-//            this.indexCount = indexCount; // [1.21.6, )
-//            this.mode = mode; // [1.21.6, )
-//            this.light = light;
+    /**
+     * 网格当前烘着的 packed 光照
+     */
+    private int light;
+    private boolean closed;
 
-            // [26.2, )
-            this.vertexCopy = vertexCopy;
-            this.vertexCount = vertexCount;
-            this.stride = stride;
-            this.uv2PatchOffset = uv2PatchOffset;
-            this.bytes = bytes;
-            this.light = light;
+    private BakedMesh(@Nullable ByteBuffer vertexCopy, VertexFormat format,
+                      int vertexCount, int stride, int uv2PatchOffset, int bytes, int light) {
+        this.vertexCopy = vertexCopy;
+        this.vertexCount = vertexCount;
+        this.stride = stride;
+        this.uv2PatchOffset = uv2PatchOffset;
+        this.bytes = bytes;
+        this.light = light;
 
-            this.positionOffset = elementOffset(format, "Position");
-            this.colorOffset = elementOffset(format, "Color");
-            this.uv0Offset = elementOffset(format, "UV0");
-            this.uv1Offset = elementOffset(format, "UV1");
-            this.uv2Offset = elementOffset(format, "UV2");
-            this.normalOffset = elementOffset(format, "Normal");
-            this.lineWidthOffset = elementOffset(format, "LineWidth");
-        }
+        this.positionOffset = elementOffset(format, "Position");
+        this.colorOffset = elementOffset(format, "Color");
+        this.uv0Offset = elementOffset(format, "UV0");
+        this.uv1Offset = elementOffset(format, "UV1");
+        this.uv2Offset = elementOffset(format, "UV2");
+        this.normalOffset = elementOffset(format, "Normal");
+        this.lineWidthOffset = elementOffset(format, "LineWidth");
     }
+
     @ApiStatus.AvailableSince("26.2")
     private static int elementOffset(VertexFormat format, String name) {
         @Nullable VertexFormatElement element = format.getElement(name);
@@ -230,143 +117,39 @@ public final class BakedMesh implements AutoCloseable {
     /**
      * 光照进缓存键的场景（整模静态）
      * <li>光照变化直接换网格</li>
-     * <li>[1.20.1, 26.2) 不需要 CPU 副本</li>
      * @param light   烘进顶点的 packed 光照
      * @param emitter 在模型空间写顶点；写 0 个顶点时得到空网格，绘制为空操作
      */
-    public static BakedMesh bake(VertexFormat.Mode mode,
+    public static BakedMesh bake(PrimitiveTopology mode,
                                  VertexFormat format, int light,
                                  Consumer<VertexConsumer> emitter) {
-        // [1.20.1, 26.2)
-        return bake(mode, format, light, false, emitter);
-
-        // [26.2, )
-//        return bake26_2(mode, format, light, emitter);
+        return bake26_2(mode, format, light, emitter);
     }
 
     /**
-     * <ul>
-     *     <li>[1.20.1, 26.2) 光照不进缓存键的场景（第一人称分块）：保留 CPU 副本，供 {@link #updateLight} 原地改写</li>
-     *     <li>[26.2, ) 光照不进缓存键的场景（第一人称分块 / 瞄具子网格）：光照变化时改写副本里的 uv2</li>
-     * </ul>
+     * 单实例路径（第一人称分块 / 瞄具子网格）：光照不进缓存键，光照变化时改写副本里的 uv2
      */
-    public static BakedMesh bakePatchable(VertexFormat.Mode mode,
+    public static BakedMesh bakePatchable(PrimitiveTopology mode,
                                           VertexFormat format, int light,
                                           Consumer<VertexConsumer> emitter) {
-        // [1.20.1, 26.2)
-        return bake(mode, format, light, true, emitter);
-
-        // [26.2, )
-//        return bake26_2(mode, format, light, emitter);
+        return bake26_2(mode, format, light, emitter);
     }
 
     /**
-     * [26.2, ) 改用 {@link #bake26_2}
+     * 旧签名（[1.20.1, 26.2) 区分是否保留 CPU 副本），26.2 起统一由 {@link #bake26_2} 处理
      */
-    private static BakedMesh bake(VertexFormat.Mode mode,
+    @Deprecated(since = "26.2")
+    private static BakedMesh bake(PrimitiveTopology mode,
                                   VertexFormat format, int light,
                                   boolean keepLightCopy,
                                   Consumer<VertexConsumer> emitter) {
-//        /*
-        BufferBuilder builder = acquireBuilder(mode, format);
-        long profileEmit = ClientRenderProfiler.begin();
-        try {
-            {
-                emitter.accept(builder);
-            }
-            MeshData rendered = builder.build();
-            ClientRenderProfiler.end(ClientRenderProfiler.BAKE_EMIT, profileEmit);
-
-            if (rendered == null) return new BakedMesh(null, 0, false,
-                    null, 0, 0, -1,
-                    0, mode, // [1.21.6, )
-                    light);
-
-            MeshData.DrawState drawState = rendered.drawState();
-            int bytes;
-            VertexFormat writtenFormat;
-            boolean extendedFormat;
-            int vertexCount;
-            {
-                // [1.20.1, 1.21.1)
-                /*
-                1.20.1 drawState.bufferSize()
-                sequential 输出没有独立索引缓冲，只算顶点字节
-                 */
-//                bytes = rendered.drawState().bufferSize();
-//                writtenFormat = rendered.drawState().format();
-//                extendedFormat = writtenFormat != format;
-//                vertexCount = rendered.drawState().vertexCount();
-
-                // [1.21.1, )
-                writtenFormat = drawState.format();
-                extendedFormat = writtenFormat != format;
-                vertexCount = drawState.vertexCount();
-                bytes = vertexCount * writtenFormat.getVertexSize();
-            }
-
-            int stride = writtenFormat.getVertexSize();
-            int uv2Offset = light == FULL_BRIGHT ? -1 : uv2Offset(writtenFormat);
-            /*
-            [1.20.1, 1.21.6) 上传会释放 RenderedBuffer/MeshData，CPU 副本必须在 upload 之前拷出来
-            [1.21.6, ) 关闭 MeshData 会归还 ByteBufferBuilder 的区段，CPU 副本必须在建缓冲之前拷出来
-             */
-            ByteBuffer vertexCopy = !keepLightCopy || uv2Offset < 0 ? null : copyVertices(rendered.vertexBuffer());
-
-            GpuBuffer vertexBuffer;
-            {
-                // [1.20.1, 1.21.6)
-//                long profileBuffer = ClientRenderProfiler.begin();
-//                vertexBuffer = new VertexBuffer(
-//                        // [1.20.1, 1.21.4)
-//                        VertexBuffer.Usage.STATIC
-//                        // [1.21.4, )
-////                        BufferUsage.STATIC_WRITE
-//                );
-//                // VertexBuffer.upload 要求 VAO 已绑定，原版 BufferUploader 同样先 bind 再 upload
-//                vertexBuffer.bind();
-//                ClientRenderProfiler.end(ClientRenderProfiler.BAKE_BUFFER, profileBuffer);
-
-                // [1.21.6, )
-            }
-
-            long profileUpload = ClientRenderProfiler.begin();
-            try {
-                // [1.20.1, 1.21.6)
-//                vertexBuffer.upload(rendered);
-
-                // [1.21.6, )
-                vertexBuffer = RenderSystem.getDevice().createBuffer(
-                        () -> "CGC baked mesh",
-                        GpuBuffer.USAGE_VERTEX | GpuBuffer.USAGE_COPY_DST,
-                        rendered.vertexBuffer());
-            } finally {
-                {
-                    // [1.20.1, 1.21.6)
-//                    VertexBuffer.unbind();
-
-                    // [1.21.6, )
-                    rendered.close();
-                }
-                ClientRenderProfiler.end(ClientRenderProfiler.BAKE_UPLOAD, profileUpload);
-                ClientRenderProfiler.countBakeBytes(bytes);
-            }
-            return new BakedMesh(vertexBuffer, bytes, extendedFormat,
-                    vertexCopy, vertexCount, stride, uv2Offset,
-                    drawState.indexCount(), drawState.mode(), // [1.21.6, )
-                    light);
-        } finally {
-            builderDepth--;
-        }
-//        */
-    }
-    @ApiStatus.AvailableSince("26.2")
-    private static BakedMesh bake26_2(// PrimitiveTopology mode,
-                                      VertexFormat format, int light,
-                                      Consumer<VertexConsumer> emitter
-    ) {
         return null;
-        /*
+    }
+
+    @ApiStatus.AvailableSince("26.2")
+    private static BakedMesh bake26_2(PrimitiveTopology mode,
+                                      VertexFormat format, int light,
+                                      Consumer<VertexConsumer> emitter) {
         BufferBuilder builder = acquireBuilder(mode, format);
         long profileEmit = ClientRenderProfiler.begin();
         try {
@@ -383,7 +166,7 @@ public final class BakedMesh implements AutoCloseable {
             int stride = writtenFormat.getVertexSize();
             int bytes = vertexCount * stride;
             int uv2Offset = light == FULL_BRIGHT ? -1 : elementOffset(writtenFormat, "UV2");
-            // 副本必须在 close 之前拷出来：26.2 的 MeshData 关闭会归还 ByteBufferBuilder 的区段
+            // 副本必须在 close 之前拷出来：MeshData 关闭会归还 ByteBufferBuilder 的区段
             @Nullable ByteBuffer vertexCopy = copyVertices(rendered.vertexBuffer());
             rendered.close();
             ClientRenderProfiler.countBakeBytes(bytes);
@@ -392,15 +175,10 @@ public final class BakedMesh implements AutoCloseable {
         } finally {
             builderDepth--;
         }
-         */
     }
 
     private static ByteBuffer copyVertices(ByteBuffer source) {
-        /*
-        与 BufferBuilder 保持同一字节序：
-        [1.20.1, 26.2) patch 时按同样的序读写 short
-        [26.2, ) 回放按同样的序读写 short / float
-         */
+        // 与 BufferBuilder 保持同一字节序：回放按同样的序读写 short / float
         ByteBuffer copy = ByteBuffer.allocateDirect(source.remaining()).order(source.order());
         copy.put(source);
         copy.position(0);
@@ -408,31 +186,17 @@ public final class BakedMesh implements AutoCloseable {
     }
 
     /**
-     * uv2 元素在顶点里的字节偏移；格式里没有 uv2 时返回 {@code -1}
+     * 旧签名的 uv2 偏移查询；26.2 起用 {@link #elementOffset}
      */
-//    @Deprecated(since = "26.2")
+    @Deprecated(since = "26.2")
     private static int uv2Offset(VertexFormat format) {
-//        /*
-        int offset = 0;
-        for (VertexFormatElement element : format.getElements()) {
-            if (
-                    // [1.20.1, 26.1.x)
-//                    ClientRenderUtils.getUsage(element) == VertexFormatElement.Usage.UV
-//                    && ClientRenderUtils.getIndex(element) == 2
-                    // [26.1.x, )
-                    element == VertexFormatElement.UV2
-            ) return offset;
-            offset += ClientRenderUtils.getByteSize(element);
-        }
-//        */
         return -1;
     }
 
     /**
-     * 把网格的 uv2 改写成新的光照，并 (整段重传原 VBO / 1.21.6 整段写回原缓冲)
+     * 把网格的 uv2 改写成新的光照（只改 CPU 副本，回放时自然生效）
      * <ul>
-     *     <li>不重新发射顶点</li>
-     *     <li>[1.20.1, 26.2) 不新建缓冲</li>
+     *     <li>不重新发射顶点，也不新建缓冲</li>
      *     <li>发光节点烘的是满亮 15/15，不跟着世界光照变化；只有等于旧光照的顶点才会被改写</li>
      * </ul>
      * @return {@code false} 表示这份网格无法原地改写，调用方应关闭它并重新烘焙
@@ -441,23 +205,12 @@ public final class BakedMesh implements AutoCloseable {
         if (this.closed) return false;
         if (this.light == newLight) return true;
 
-        // [1.20.1, 26.2)
-        if (this.vertexBuffer == null) {
+        @Nullable ByteBuffer copy = this.vertexCopy;
+        if (copy == null) {
             this.light = newLight;
             return true;
         }
-        ByteBuffer copy = this.vertexCopy;
-        if (this.vertexCopy == null) {
-            ClientRenderProfiler.countLightPatchNoCopy();
-            return false;
-        }
-        // [26.2, )
-//        @Nullable ByteBuffer copy = this.vertexCopy;
-//        if (copy == null) {
-//            this.light = newLight;
-//            return true;
-//        }
-//        if (this.uv2PatchOffset < 0) return false;
+        if (this.uv2PatchOffset < 0) return false;
 
         long profileLight = ClientRenderProfiler.begin();
         short oldU = (short) (this.light & 0xFFFF);
@@ -466,21 +219,13 @@ public final class BakedMesh implements AutoCloseable {
         short newV = (short) (newLight >>> 16);
 
         for (int i = 0; i < this.vertexCount; i++) {
-            int offset = i * this.stride +
-                    this.uv2Offset; // [1.20.1, 26.2)
-//                    this.uv2PatchOffset; // [26.2, )
-
+            int offset = i * this.stride + this.uv2PatchOffset;
             if (copy.getShort(offset) == oldU && copy.getShort(offset + 2) == oldV) {
                 copy.putShort(offset, newU);
                 copy.putShort(offset + 2, newV);
             }
         }
-        boolean uploaded = this.uploadCopy(); // [1.20.1, 26.2)
         ClientRenderProfiler.end(ClientRenderProfiler.LIGHT_UPDATE, profileLight);
-        if (!uploaded) { // [1.20.1, 26.2)
-            ClientRenderProfiler.countLightPatchNoVbo();
-            return false;
-        }
         this.light = newLight;
 
         ClientRenderProfiler.countLightPatch(copy.capacity());
@@ -488,328 +233,50 @@ public final class BakedMesh implements AutoCloseable {
     }
 
     /**
-     * <ul>
-     *     [1.20.1, 1.21.6)
-     *     <li>重传 {@link #vertexCopy}：VAO 里保存的 attribute 指针本来就指向这份网格自己的 VBO</li>
-     *     <li>取回该 VBO 的 id 后整段覆盖即可，顶点格式与 attribute 绑定都不变</li>
-     * </ul>
-     * <ul>
-     *     [1.21.6, )
-     *     <li>整段写回 {@link #vertexCopy}：缓冲创建时带了 {@code COPY_DST}，用一次拷贝命令覆盖即可</li>
-     *     <li>顶点数与布局都不变</li>
-     * </ul>
+     * 旧签名（[1.20.1, 26.2) 重传原 VBO）；26.2 起光照只改 CPU 副本，回放时自然生效
      */
-//    @Deprecated(since = "26.2")
+    @Deprecated(since = "26.2")
     private boolean uploadCopy() {
-//        /*
-        if (this.vertexBuffer == null || this.vertexCopy == null) return false;
-        {
-            // [1.20.1, 1.21.6)
-//            this.vertexBuffer.bind();
-//            try {
-//                int vbo = GL20.glGetVertexAttribi(0, GL20.GL_VERTEX_ATTRIB_ARRAY_BUFFER_BINDING);
-//                if (vbo <= 0) return false;
-//                GlStateManager._glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
-//                RenderSystem.glBufferData(GL15.GL_ARRAY_BUFFER, this.vertexCopy, GL15.GL_STATIC_DRAW);
-//                return true;
-//            } finally {
-//                VertexBuffer.unbind();
-//            }
-
-            // [1.21.6, )
-            RenderSystem.getDevice().createCommandEncoder()
-                    .writeToBuffer(this.vertexBuffer.slice(), this.vertexCopy.duplicate());
-            return true;
-        }
-//        */
+        return false;
     }
 
-    /**
-     * <ul>
-     *     <li>1.21.1 {@code BufferBuilder} 把 mode/format 收进了构造函数、不再有 {@code begin()}</li>
-     *     <li>池子改成缓存 {@code ByteBufferBuilder}，每次烘焙 {@code new BufferBuilder}(池中的 builder, mode, format)</li>
-     *     <li>[1.20.1, 1.21.6) {@code VertexBuffer.upload} 会 close 掉 {@code MeshData}，进而归还 {@code ByteBufferBuilder} 的区段，池可以安全复用</li>
-     *     <li>[1.21.6, ) {@code MeshData.close()} 会归还 {@code ByteBufferBuilder} 的区段，池可以安全复用</li>
-     * </ul>
-     */
-    private static BufferBuilder acquireBuilder(VertexFormat.Mode mode, // PrimitiveTopology mode,
+    private static BufferBuilder acquireBuilder(PrimitiveTopology mode,
                                                 VertexFormat format) {
         int depth = builderDepth++;
         if (depth == BUILDERS.size()) BUILDERS.add(
                 new ByteBufferBuilder(BUILD_CAPACITY)
         );
-        // [1.20.1, 1.21.1)
-//        return BUILDERS.get(depth);
-
-        // [1.21.1, )
         return new BufferBuilder(BUILDERS.get(depth), mode, format);
     }
 
     /**
-     * @param pose 模型空间 → 当前视图空间的变换，即调用方的 PoseStack 顶矩阵
-     * @return {@code false} 表示没有可用的着色器（自定义 shader 未注册且没有光影包）或管线（自定义管线未注册），调用方应退回即时管线
+     * 旧签名（[1.20.1, 26.2) 用自有 GpuBuffer 绘制）；26.2 起改用 {@code StaticBake#drawMesh26_2}
      */
-//    @Deprecated(since = "26.2")
+    @Deprecated(since = "26.2")
     public boolean draw(RenderType renderType, Matrix4f pose) {
-        if (this.closed) return false;
-        if (this.vertexBuffer == null) return true;
-
-        @Nullable RenderPipeline pipeline; // [1.21.6, )
-        Matrix4f modelView; {
-            // [1.20.1, 1.21.1)
-//            modelView = new Matrix4f(ClientRenderHelper.GL._getModelViewMatrix()).mul(pose);
-
-            // [1.21.1, 1.21.6)
-            /*
-            1.21.1 起 RenderSystem 的 modelview 不是单位阵（手部渲染时是摄像机旋转的逆）
-            这里只取 modelview 本身，绘制时并进投影矩阵
-            ModelViewMat 只放调用方姿态，理由见下方绘制段
-             */
-//            modelView = new Matrix4f(ClientRenderHelper.GL._getModelViewMatrix());
-
-            // [1.21.6, )
-            pipeline = ClientRenderRegistry.BakedEntityRenderState.bakedPipelineFor(renderType);
-            if (pipeline == null) return false;
-        }
-
-
-        boolean setup = false;
-        try {
-            // [1.20.1, 1.21.11)
-            /*
-            setupRenderState 才会把该 RenderType 的 (shader / 贴图/lightmap/overlay) 设进 RenderSystem
-            1.21.11 移除了 RenderType#setupRenderState / clearRenderState 与 RenderSystem 上的贴图 / 着色器状态
-            该 RenderType 的贴图、输出目标、layering / texturing 变换全部由 RenderSetup 携带，绘制段直接读取
-             */
-//            renderType.setupRenderState();
-//            setup = true;
-
-            // [1.20.1, 1.21.6)
-//            @Nullable CompiledShaderProgram shader = StaticBake.resolveEntityShader();
-//            if (shader == null) return false;
-//
-//            this.vertexBuffer.bind();
-
-            // [1.20.1, 1.21.1)
-//            this.vertexBuffer.drawWithShader(modelView, RenderSystem.getProjectionMatrix(), shader);
-
-            // [1.21.1, 1.21.6)
-            /*
-            ModelViewMat 只能放调用方姿态，不能带 RenderSystem 的 modelview：
-            原版实体着色器把顶点里的 Normal 当视图空间法线直接点乘光照，即时块的 Normal 就是 CPU 用 IT(姿态) 写进顶点的；
-            烘焙块由着色器现算 IT(ModelViewMat)，两者相等才是同一口径
-            1.21.1 手部渲染的 modelview 是摄像机旋转的逆（GameRenderer#renderItemInHand），
-            带进去会让 IT(ModelViewMat) 少乘一次该旋转，枪体法线冻结在固定朝向：转视角亮度不变，而弹匣（即时块）正常
-            把 modelview 并进投影矩阵后位置不变：Proj × mv × 姿态 == (Proj × mv) × 姿态
-             */
-            // 雾要真实视图坐标，而 ModelViewMat 已交给姿态：modelview 单独走 CgcViewMat
-            // 光影包的 program 里没有这个 uniform，取不到就跳过（不能用 safeGetUniform，那会每帧刷警告）
-//            @Nullable var viewMat = shader.getUniform("CgcViewMat");
-//            if (viewMat != null) viewMat.set(modelView);
-//            this.vertexBuffer.drawWithShader(pose,
-//                    new Matrix4f(RenderSystem.getProjectionMatrix()).mul(modelView),
-//                    shader);
-
-            // [1.21.6, 1.21.11)
-            /* 源码太长，并且跨版本要改，所以用保留commit记录的方式，1.20.1改直接在1.21.6能用
-            // 与 RenderType#draw 一致：状态设好之后才取矩阵，layering / texturing 状态可能改过它们
-            modelView = new Matrix4f(RenderSystem.getModelViewMatrix()).mul(pose);
-            GpuBufferSlice transforms = RenderSystem.getDynamicUniforms().writeTransform(
-                    modelView, WHITE,
-                    // [1.21.6, 1.21.10) 取 RenderSystem 累积的模型偏移
-//                    RenderSystem.getModelOffset(),
-                    // [1.21.10, ) 模型偏移的 getter 被移除，vanilla 的 RenderType#draw 也改传零向量
-                    new Vector3f(),
-                    RenderSystem.getTextureMatrix(), RenderSystem.getShaderLineWidth());
-
-            // 法线矩阵单独上传：ModelViewMat 保持 mv × 姿态供位置与雾使用，这里给 IT(姿态)
-            // writeToBuffer 不能在 render pass 内调用，必须放在建 pass 之前
-            GpuBuffer normalBuffer = normalUniformBuffer();
-            ByteBuffer normalData = NORMAL_SCRATCH;
-            normalData.clear();
-            new Matrix4f(pose).invert().transpose().get(normalData);
-            // get(ByteBuffer) 是否推进 position 随 JOML 实现不同，clear() 让写读两端都从 0 开始
-            normalData.clear();
-            RenderSystem.getDevice().createCommandEncoder().writeToBuffer(normalBuffer.slice(), normalData);
-
-            RenderTarget target = outputTarget(renderType);
-            GpuTextureView colorTexture = RenderSystem.outputColorTextureOverride != null
-                    ? RenderSystem.outputColorTextureOverride
-                    : target.getColorTextureView();
-            GpuTextureView depthTexture = target.useDepth
-                    ? (RenderSystem.outputDepthTextureOverride != null
-                    ? RenderSystem.outputDepthTextureOverride
-                    : target.getDepthTextureView())
-                    : null;
-
-            // ModelViewMat 只供位置与雾（mv × 姿态），法线由渲染器另取 RenderSystem 的 modelview 现算：
-            // 光影包用的是 Iris 的 iris_NormalMat = IT(modelview)
-            // 而烘焙网格存模型空间法线，不把本次姿态并进去就比即时块（CPU 用 IT(姿态) 写顶点 Normal）少一次姿态旋转
-            // 导致光影下枪体（烘焙块）因此比弹匣（即时块）暗，且只在 [1.21.6, ) 成立
-            // ModelViewMat 本来就是 mv × 姿态，所以并进 modelview 的是同一个矩阵，位置与雾都不变
-            // 已知限制：
-            // 只对用 gl_NormalMatrix 的光影包等价（Complementary 是）
-            // 直接读 gl_Normal 的包不经过这个矩阵，uniform 补不回来，烘焙块法线仍会少一次姿态
-            Matrix4fStack modelViewStack = RenderSystem.getModelViewStack();
-            modelViewStack.pushMatrix().mul(pose);
-            try (RenderPass pass = RenderSystem.getDevice()
-                    .createCommandEncoder()
-                    .createRenderPass(() -> "CGC baked mesh", colorTexture, OptionalInt.empty(), depthTexture, OptionalDouble.empty())) {
-                pass.setPipeline(pipeline);
-                RenderSystem.bindDefaultUniforms(pass);
-                pass.setUniform("DynamicTransforms", transforms);
-                pass.setUniform("CgcBaked", normalBuffer);
-                {
-                    // [1.21.6, 1.21.10)
-                    // 与 RenderType#draw 一致：NeoForge 的模板测试只存在于 RenderSystem，必须由每个 pass 自己带上
-//                    @Nullable var stencilTest = RenderSystem.STENCIL_TEST;  // NeoForge类，但是不触发import
-//                    if (stencilTest != null) {
-//                        pass.enableStencilTest(stencilTest);
-//                    }
-
-                    // [1.21.10, )
-                    // 模板测试改由 RenderPipeline 携带：
-                    // setPipeline 内部会先经 RenderSystem#applyPipelineModifiers 注入 CGC 累积的模板状态，这里不需要再手动设置
-                }
-                pass.setVertexBuffer(0, this.vertexBuffer);
-
-                for (int i = 0; i < 12; i++) {
-                    GpuTextureView texture = RenderSystem.getShaderTexture(i);
-                    if (texture != null) pass.bindSampler("Sampler" + i, texture);
-                }
-
-                // 非排序输出没有独立索引缓冲，用平台按 mode 生成的顺序索引
-                RenderSystem.AutoStorageIndexBuffer indices = RenderSystem.getSequentialBuffer(this.mode);
-                pass.setIndexBuffer(indices.getBuffer(this.indexCount), indices.type());
-                pass.drawIndexed(0, 0, this.indexCount, 1);
-            } finally {
-                modelViewStack.popMatrix();
-            }
-            */
-
-            // [1.21.11, )
-//            /* 源码太长，并且跨版本要改，所以用保留commit记录的方式，1.20.1改直接在1.21.11能用
-            // 顺序同 vanilla RenderType#draw：layering 先作用于 modelview 栈，状态从 RenderSetup 读
-            Matrix4fStack modelViewStack = RenderSystem.getModelViewStack();
-            // layering 状态先作用于 modelview 栈，之后再取矩阵
-            @Nullable Consumer<Matrix4fStack> layering = CustomGunClient.getAccessTransformer()
-                    .getRenderSetupLayering(renderType);
-            if (layering != null) {
-                modelViewStack.pushMatrix();
-                layering.accept(modelViewStack);
-            }
-            try {
-                // ModelViewMat 只在位置与雾里被消费（mv × 姿态），法线由渲染器另取 RenderSystem 的 modelview 现算：
-                // 光影包用的是 Iris 的 iris_NormalMat = IT(modelview)
-                // 而烘焙网格存模型空间法线，不把本次姿态并进去就比即时块（CPU 用 IT(姿态) 写顶点 Normal）少一次姿态旋转
-                // 导致光影下枪体（烘焙块）因此比弹匣（即时块）暗
-                // ModelViewMat 本来就是 mv × 姿态，所以并进 modelview 的是同一个矩阵，位置与雾都不变
-                // 已知限制：
-                // 只对用 gl_NormalMatrix 的光影包等价（Complementary 是）
-                // 直接读 gl_Normal 的包不经过这个矩阵，uniform 补不回来，烘焙块法线仍会少一次姿态
-                modelViewStack.pushMatrix().mul(pose);
-
-                // 与 RenderType#draw 一致：矩阵在 layering 生效之后才取
-                modelView = new Matrix4f(RenderSystem.getModelViewMatrix());
-                GpuBufferSlice transforms = RenderSystem.getDynamicUniforms().writeTransform(
-                        modelView, WHITE, new Vector3f(),
-                        CustomGunClient.getAccessTransformer().getRenderSetupTextureTransform(renderType));
-
-                // 法线矩阵单独上传：ModelViewMat 保持 mv × 姿态供位置与雾使用，这里给 IT(姿态)
-                // writeToBuffer 不能在 render pass 内调用，必须放在建 pass 之前
-                GpuBuffer normalBuffer = normalUniformBuffer();
-                ByteBuffer normalData = NORMAL_SCRATCH;
-                normalData.clear();
-                new Matrix4f(pose).invert().transpose().get(normalData);
-                // get(ByteBuffer) 是否推进 position 随 JOML 实现不同，clear() 让写读两端都从 0 开始
-                normalData.clear();
-                RenderSystem.getDevice().createCommandEncoder().writeToBuffer(normalBuffer.slice(), normalData);
-
-                // 贴图按需加载：getTextures 会经 TextureManager 上传纹理，写命令不能在 render pass 内
-                Map<String, RenderSetup.TextureAndSampler> textures = CustomGunClient.getAccessTransformer()
-                        .getRenderSetupTextures(renderType);
-                RenderTarget target = outputTarget(renderType);
-                GpuTextureView colorTexture = RenderSystem.outputColorTextureOverride != null
-                        ? RenderSystem.outputColorTextureOverride
-                        : target.getColorTextureView();
-                GpuTextureView depthTexture = target.useDepth
-                        ? (RenderSystem.outputDepthTextureOverride != null
-                        ? RenderSystem.outputDepthTextureOverride
-                        : target.getDepthTextureView())
-                        : null;
-
-                try (RenderPass pass = RenderSystem.getDevice()
-                        .createCommandEncoder()
-                        .createRenderPass(() -> "CGC baked mesh", colorTexture, OptionalInt.empty(), depthTexture, OptionalDouble.empty())) {
-                    pass.setPipeline(pipeline);
-                    RenderSystem.bindDefaultUniforms(pass);
-                    pass.setUniform("DynamicTransforms", transforms);
-                    pass.setUniform("CgcBaked", normalBuffer);
-                    // 模板测试改由 RenderPipeline 携带：
-                    // setPipeline 内部会先经 RenderSystem#applyPipelineModifiers 注入 CGC 累积的模板状态，这里不需要再手动设置
-                    // 与 vanilla 一致：即时绘制的裁剪状态也要带上
-                    ScissorState scissor = RenderSystem.getScissorStateForRenderTypeDraws();
-                    if (scissor.enabled()) {
-                        pass.enableScissor(scissor.x(), scissor.y(), scissor.width(), scissor.height());
-                    }
-                    pass.setVertexBuffer(0, this.vertexBuffer);
-
-                    // 贴图与采样器来自该 RenderType 的 RenderSetup（lightmap / overlay 也在这里给出）
-                    for (Map.Entry<String, RenderSetup.TextureAndSampler> entry : textures.entrySet()) {
-                        pass.bindTexture(entry.getKey(),
-                                entry.getValue().textureView(), entry.getValue().sampler());
-                    }
-
-                    // 非排序输出没有独立索引缓冲，用平台按 mode 生成的顺序索引
-                    RenderSystem.AutoStorageIndexBuffer indices = RenderSystem.getSequentialBuffer(this.mode);
-                    pass.setIndexBuffer(indices.getBuffer(this.indexCount), indices.type());
-                    pass.drawIndexed(0, 0, this.indexCount, 1);
-                } finally {
-                    modelViewStack.popMatrix();
-                }
-            } finally {
-                if (layering != null) modelViewStack.popMatrix();
-            }
-//            */
-
-            return true;
-        } finally {
-            // [1.20.1, 1.21.6)
-//            VertexBuffer.unbind();
-
-            // [1.20.1, 1.21.11)
-//            if (setup) renderType.clearRenderState();
-
-            // [1.21.11, ) 没有 setup/clearRenderState，绘制段不再往 RenderSystem 写状态，无需清理
-        }
+        return false;
     }
 
-//    @Deprecated(since = "26.2")
+    @Deprecated(since = "26.2")
     @ApiStatus.AvailableSince("1.21.6")
     private static RenderTarget outputTarget(RenderType renderType) {
-        Object outputState = CustomGunClient.getAccessTransformer().getOutputState(renderType);
-
-        if (outputState instanceof
-                // [1.21.6, 1.21.11)
-//                RenderStateShard.OutputStateShard output
-                // [1.21.11, )
-                OutputTarget output
-        ) return output.getRenderTarget();
-
-        return ClientRenderUtils.getMainRenderTarget(Minecraft.getInstance());
+        return null;
     }
 
     public int bytes() {
         return this.bytes;
     }
 
+    /**
+     * 旧签名（[1.20.1, 26.2) 比对顶点格式是否被光影包扩展）；26.2 起回放按属性名写入，不再需要
+     */
     @Deprecated(since = "1.21.6")
     public boolean extendedFormat() {
-        return this.extendedFormat;
+        return false;
     }
 
     /**
-     * [1.21.6, ) 烘焙时的顶点步长，供绘制侧和当前管线要求的布局比对
+     * 烘焙时的顶点步长
      */
     @ApiStatus.AvailableSince("1.21.6")
     public int stride() {
@@ -818,15 +285,7 @@ public final class BakedMesh implements AutoCloseable {
 
     @Override
     public void close() {
-        // [1.20.1, 26.2)
-        if (this.closed) return;
         this.closed = true;
-        if (this.vertexBuffer != null) {
-            this.vertexBuffer.close();
-        }
-
-        // [26.2, )
-//        this.closed = true;
     }
 
     /**
@@ -849,8 +308,6 @@ public final class BakedMesh implements AutoCloseable {
     @ApiStatus.AvailableSince("26.2")
     public boolean replay(PoseStack.Pose pose,
                           VertexConsumer consumer) {
-        return false;
-        /*
         @Nullable ByteBuffer copy = this.vertexCopy;
         if (copy == null) return true;
 
@@ -890,6 +347,5 @@ public final class BakedMesh implements AutoCloseable {
             }
         }
         return true;
-         */
     }
 }

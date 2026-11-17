@@ -5,13 +5,12 @@ import com.mojang.blaze3d.pipeline.BlendFunction;
 import com.mojang.blaze3d.pipeline.ColorTargetState;
 import com.mojang.blaze3d.pipeline.DepthStencilState;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.mojang.blaze3d.shaders.UniformType;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.CustomGunClient;
 import dev.xcolorful.customgun.client.api.minecraft.texture.CustomTexture;
 import dev.xcolorful.customgun.client.compat.iris.IrisCompat;
+import net.minecraft.client.renderer.BindGroupLayouts;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.rendertype.LayeringTransform;
 import net.minecraft.client.renderer.rendertype.OutputTarget;
@@ -80,19 +79,38 @@ public class ClientRenderRegistry {
                         .withLocation(BAKED_ENTITY_SHADER)
                         .withVertexShader(BAKED_ENTITY_SHADER)
                         .withFragmentShader(BAKED_ENTITY_SHADER)
-                        .withSampler("Sampler0")
-                        .withSampler("Sampler1")
-                        .withSampler("Sampler2")
                         .withCull(false)
                         // [1.21.6, 26.1.x)
 //                        .withBlend(BlendFunction.TRANSLUCENT)
 //                        .withVertexFormat(DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS)
-                        // [1.21.11, ) 着色器声明了 CgcBaked；管线不声明时 GlProgram 会告警，且该块没人绑定
-                       .withUniform("CgcBaked", UniformType.UNIFORM_BUFFER)
+                        // [1.21.6, 26.2)
+//                        .withSampler("Sampler0")
+//                        .withSampler("Sampler1")
+//                        .withSampler("Sampler2")
+                        // [1.21.11, 26.2) 着色器声明了 CgcBaked；管线不声明时 GlProgram 会告警，且该块没人绑定
+//                        .withUniform("CgcBaked", UniformType.UNIFORM_BUFFER)
                         // [26.1.x, )
-                       .withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
-                       .withVertexFormat(DefaultVertexFormat.ENTITY, VertexFormat.Mode.QUADS)
-                       .build();
+                        .withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
+                        // [26.1.x, 26.2)
+//                        .withVertexFormat(DefaultVertexFormat.ENTITY, VertexFormat.Mode.QUADS)
+                        // [26.2, )
+                        .withBindGroupLayout(CGC_BAKED_BIND_GROUP) // uniform 改由 BindGroupLayout 声明
+                        .withBindGroupLayout(BindGroupLayouts.SAMPLER0_SAMPLER1_SAMPLER2)
+                        // 26.2 顶点格式与拓扑分开声明
+                        .withVertexBinding(0, DefaultVertexFormat.ENTITY)
+                        .withPrimitiveTopology(PrimitiveTopology.QUADS)
+                        .build();
+
+        /**
+         * 着色器声明的 {@code CgcBaked} 法线矩阵块
+         * <li>26.2 起 uniform 由 {@code BindGroupLayout} 声明，管线不声明时该块没人绑定</li>
+         */
+        @ApiStatus.AvailableSince("26.2")
+        private static final @NotNull Object CGC_BAKED_BIND_GROUP =
+                null;
+//                BindGroupLayout.builder()
+//                        .withUniform("CgcBaked", UniformType.UNIFORM_BUFFER)
+//                        .build();
 
         public static @Nullable Object getBakedEntityShader() {
             // [1.20.1, 1.21.4)
@@ -121,18 +139,21 @@ public class ClientRenderRegistry {
             // [1.20.1, 1.21.6)
 //            return null;
 
-            // [1.21.6, )
+            // [1.21.6, 26.2)
             /*
             CgcBaked：自用的法线矩阵块
             烘焙网格存模型空间法线
             而 DynamicTransforms 的 ModelViewMat 是 mv × 姿态
             逆转置与即时块 CPU 写的 IT(姿态) 差一次摄像机旋转，见 BakedMesh#draw
              */
-           return BAKED_PIPELINES.computeIfAbsent(base, pipeline -> pipeline.toBuilder()
-                   .withVertexShader(BAKED_ENTITY_SHADER)
-                   .withFragmentShader(BAKED_ENTITY_SHADER)
-                   .withUniform("CgcBaked", UniformType.UNIFORM_BUFFER) // 派生自调用方管线（不是 bakedEntityPipeline），必须自己声明，否则该块无人绑定
-                   .build());
+//            return BAKED_PIPELINES.computeIfAbsent(base, pipeline -> pipeline.toBuilder()
+//                    .withVertexShader(BAKED_ENTITY_SHADER)
+//                    .withFragmentShader(BAKED_ENTITY_SHADER)
+//                    .withUniform("CgcBaked", UniformType.UNIFORM_BUFFER) // 派生自调用方管线（不是 bakedEntityPipeline），必须自己声明，否则该块无人绑定
+//                    .build());
+
+            // [26.2, )
+            return null;
         }
 
         private static final Map<RenderPipeline, RenderPipeline> BAKED_PIPELINES = new IdentityHashMap<>();

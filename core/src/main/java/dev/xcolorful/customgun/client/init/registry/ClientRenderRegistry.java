@@ -111,7 +111,7 @@ public class ClientRenderRegistry {
             // [1.20.1, 1.21.4)
 //            return bakedEntityShader;
 
-            // [1.21.4, )
+            // [1.21.4, 1.21.6)
 //            return Minecraft.getInstance().getShaderManager().getProgram(bakedEntityProgram);
             return null;
         }

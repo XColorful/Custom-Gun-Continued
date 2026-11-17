@@ -89,7 +89,13 @@ public class NeoClientAccessTransformer implements IClientAccessTransformer {
     getRenderSetupTextureTransform(
             RenderType renderType
     ) {
+//        return new Matrix4f();
+
+        // [1.21.11, 26.2)
         return renderType.state.textureTransform.getMatrix();
+
+        // [26.2, )
+//        return renderType.state.textureTransform.createMatrix();
     }
 
     @Override public @Nullable Consumer<Matrix4fStack>

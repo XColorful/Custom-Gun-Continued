@@ -13,8 +13,8 @@ import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
-import org.joml.Matrix4fStack;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -79,11 +79,11 @@ public class NeoClientAccessTransformer implements IClientAccessTransformer {
         return renderType.pipeline();
     }
 
-    @Override public @NotNull Map<String, RenderSetup.TextureAndSampler>
+    @Override public @NotNull Map<String, Object>
     getRenderSetupTextures(
             RenderType renderType
     ) {
-        return renderType.state.getTextures();
+        return new HashMap<>();
     }
 
     @Override public @NotNull Matrix4f
@@ -93,13 +93,13 @@ public class NeoClientAccessTransformer implements IClientAccessTransformer {
 //        return new Matrix4f();
 
         // [1.21.11, 26.2)
-        return renderType.state.textureTransform.getMatrix();
+//        return renderType.state.textureTransform.getMatrix();
 
         // [26.2, )
-//        return renderType.state.textureTransform.createMatrix();
+        return renderType.state.textureTransform.createMatrix();
     }
 
-    @Override public @Nullable Consumer<Matrix4fStack>
+    @Override public @Nullable Consumer<Matrix4f>
     getRenderSetupLayering(
             RenderType renderType
     ) {

@@ -61,8 +61,12 @@ public class ForgeClientAccessTransformer implements IClientAccessTransformer {
         // [1.20.6, 1.21.11)
 //        return ((RenderType.CompositeRenderType) renderType).state.outputState;
 
-        // [1.21.11, )
+        // [1.21.11, 26.3)
 //        return renderType.state.outputTarget;
+
+        // [26.3, )
+        // OutputTarget 整体删除，改由 OitPipelineSet 表达；本方法没有调用方
+//        return null;
     }
 
     @Override public RenderPipeline

@@ -67,6 +67,17 @@ public class ClientRenderRegistry {
 //                        new ShaderProgram(BAKED_ENTITY_SHADER, DefaultVertexFormat.NEW_ENTITY, ShaderDefines.EMPTY);
                         new Object();
 
+        /**
+         * 着色器声明的 {@code CgcBaked} 法线矩阵块
+         * <li>26.2 起 uniform 由 {@code BindGroupLayout} 声明，管线不声明时该块没人绑定</li>
+         */
+        @ApiStatus.AvailableSince("26.2")
+        private static final @NotNull Object CGC_BAKED_BIND_GROUP =
+                null;
+//                BindGroupLayout.builder()
+//                        .withUniform("CgcBaked", UniformType.UNIFORM_BUFFER)
+//                        .build();
+
         @ApiStatus.AvailableSince("1.21.6")
         private static final @NotNull RenderPipeline bakedEntityPipeline =
                         // [1.20.1, 1.21.6)
@@ -97,17 +108,6 @@ public class ClientRenderRegistry {
 //                        .withVertexBinding(0, DefaultVertexFormat.ENTITY)
 //                        .withPrimitiveTopology(PrimitiveTopology.QUADS)
                         .build();
-
-        /**
-         * 着色器声明的 {@code CgcBaked} 法线矩阵块
-         * <li>26.2 起 uniform 由 {@code BindGroupLayout} 声明，管线不声明时该块没人绑定</li>
-         */
-        @ApiStatus.AvailableSince("26.2")
-        private static final @NotNull Object CGC_BAKED_BIND_GROUP =
-                null;
-//                BindGroupLayout.builder()
-//                        .withUniform("CgcBaked", UniformType.UNIFORM_BUFFER)
-//                        .build();
 
         public static @Nullable Object getBakedEntityShader() {
             // [1.20.1, 1.21.4)

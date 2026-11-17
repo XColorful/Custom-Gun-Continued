@@ -782,6 +782,13 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
             BakedMesh mesh = this.cgc$getOrBake(chunk, renderType, light, overlay,
                     red, green, blue, alpha);
 
+            // 空块（分块后没有可见几何）：姿态矩阵与绘制都可以省
+            // 26.2 的 drawMesh26_2 同样在提交前跳过空块
+            if (mesh.bytes() == 0) {
+                drawnAny = true;
+                continue;
+            }
+
             if (StaticBake.drawMesh(mesh, renderType,
                     this.cgc$chunkPose(chunk, matrixStack)) // [1.20.1, 26.2)
 //                    this.cgc$chunkPoseStack(chunk, matrixStack)) // [26.2, )

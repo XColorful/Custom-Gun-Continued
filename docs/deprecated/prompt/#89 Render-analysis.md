@@ -987,3 +987,132 @@ TaCZ 1.1.8→1.2.0 的 diff 也印证了这一点：1.2.0 新增的 `DisplayGunG
 文档同步：benchmark 的批次表、各批次分工、[TODO](docs/architecture/client/render/TODO.md:69)（含否决理由）、[reference-tacz-1.2.0.md](docs/architecture/client/render/refactor/reference-tacz-1.2.0.md) 的 V1 都更新了。
 
 工作区里 `26.35.11.1-6/测试数据计算报告.md` 和 `docs/deprecated/prompt/#96.md` 有改动，那些不是本次改的，我没有动。
+
+# 
+---
+
+```
+读`docs/architecture/client/render/PLAN.md`和`docs/architecture/client/render/refactor/reference-tacz-1.2.0.md`
+- 现在需要写一个`reference-ar-1.0.16.md`，研究AR的优化方式和排查在之前测试中负优化的原因
+- 同样需要对比跟CGC渲染重构方案的重合度
+- 按其README的说明，估计是后台线程跑顶点变换，需要研究是否是CGC渲染重构E的方向
+- 我目前推测其优化是基于利用多核心（多线程）来跑顶点，但是没有消除顶点遍历的工作量，所以在核心利用不够的时候不如直接根治的静态烘焙方案，对于AR要做的通用的优化无法预测静态/脏子树等问题
+```
+
+# 
+
+I'll read the two docs and explore the AR repository in parallel.
+
+Now let me read the refactor overview (for direction E details) and explore the AR repo.
+
+AR 的关键事实已经和推测不同：它是 **GPU compute shader** 变换，不是 CPU 后台线程。继续深入源码与 CGC 文档中的实测记录。
+
+AR 的机制已基本清楚。现在查 CGC 侧对 AR 的实测记录与负优化细节。
+
+AR 机制已摸清。现在读第一批基准报告，量化负优化的绝对值。
+
+AR 侧机制已清楚。再快速核对 TaCZ 1.2.0 的展示路径是否仍经过 `BedrockPart.render`，这决定 AR 到底有没有加速到它。
+
+研究完成，机制与数据都能对上。现在写文档。
+
+已完成 [reference-ar-1.0.16.md](docs/architecture/client/render/refactor/reference-ar-1.0.16.md)，并在 [PLAN.md:66](docs/architecture/client/render/PLAN.md:66) 与 [refactor/Home.md](docs/architecture/client/render/refactor/Home.md) 的导航表回填了结论。
+
+**你的推测需要修正一处**：AR 不是后台线程跑顶点，而是 **GPU compute shader**（README 的 "parallel in GPU" 就是这个意思），CPU 侧仍在渲染线程单线程。所以它不是「多核利用率」问题，而是「把变换从 CPU 搬到 GPU」。
+
+**负优化归因（三条读数）**
+1. 代价与枪数无关：空枪 +0.157 ms、9 枪静态 +0.173 ms、9 枪 multi +0.197 ms——不是顶点量。
+2. 只在 CPU 受限的帧显形：无光影 +0.173 ms；开光影三端都贴在 GPU 下限 7.19 ms，Δ 只剩 +0.027（CPU 有 6 ms 余量，被吞掉）。
+3. 收益≈0：TaCZ 1.2.0 的展示几何由 `DisplayGunGeometry.capture` 自烘焙，每帧不进 `BufferSource`；AR 的 SBM 兼容针对 2.x 之前的 `tartaricacid` 包，而 TaCZ 自带的 SBM 2.6.2 已经没有该 class，`@Pseudo` mixin 直接不生效。
+
+结论：AR 加速的正是 B1 已经归零的「每帧重新生成顶点」，剩下的 draw / 模板 / delegate 它覆盖不到，所以只剩每帧约 0.15–0.2 ms 的固定成本（7 套 CoreBuffers 的 prepare/draw/clear、每帧状态捕获、按 RenderType 的 dispatch + barrier、默认开启的文字/GUI 加速等，各项份额未拆分）。
+
+**是不是方向 E**：不是。E 是 CPU 多线程摊薄同一份成本；AR 换的是执行硬件。它和 B 的冲突比 E 更彻底——要求每帧存在一份完整顶点流，而 B1 的目标就是让这份流不存在。你对「无法预测静态/脏子树」的判断成立：AR 的缓存只到部件级，可见部件每帧全量提交、全量变换。
+
+**与重构的重合度**：AR ≈ B1（网格缓存 + 每实例矩阵）+ B2（单帧按 RenderType 跨实例合批）+ GPU 变换；对静态几何严格比 B1 贵，B2 的否决理由对它同样成立。26.2+ 无实现，仍是硬约束。
+
+文档里留了 V1–V4 四个待验证点（固定成本拆分、CGC+AR 未实测等），都标了「重构路线不依赖它们」。
+
+# 
+
+```
+需要再回答几个问题：
+- CGC对B2否决的原因是正常场景下不太可能所有玩家都用同一把枪/配件，收益约等于0，AR的展示界面是放了大量的羊/猪，也就是同一纹理的场景，要说明AR这个优化是否同样有非同一纹理无优化的限制
+- 把顶点变换移到GPU，是否是顶点变化的工作量不变，CPU工作量减少，相较于CGC静态烘焙是否会使GPU性能被顶点变换用掉一部分，这个计算放在GPU是否约等于完全并行可忽略？
+- 假如TaCZ实现CGC的脏子树优化，AR是否还有优化空间？
+- AR的优化项是否会干扰CGC的渲染重构（假如AR跟CGC一起装是否会被AR改乱？）
+- AR的收益场景需要指出，并且如果AR适配的是非TaCZ的SBM版本，那么TaCZ内已有的对AR的适配是否是没用的？对比下TaCZ1.1.8（无静态VBO优化）是否有顶点变换移到GPU的优化？
+```
+
+# 
+
+先核实 TaCZ 1.1.8 与 1.2.0 的模型/AR 相关代码，再回答这几个问题。
+
+TaCZ 竟然有自己的 AR 适配层。继续看它加速了什么。
+
+TaCZ 1.1.8 与 1.2.0 都自带 AR 适配层，这会修正之前的判断。我把这些结论补进文档。
+
+五个问题都已核实并补进 [reference-ar-1.0.16.md](docs/architecture/client/render/refactor/reference-ar-1.0.16.md)（新增第六~八节，原待验证点/数据边界顺延为九、十）。
+
+**1. 同纹理限制**
+AR 的**合批**有同样的限制：批次键是（layer, `RenderType`），而 `RenderType` 含纹理，所以跨实例合并只在同一纹理/渲染状态内成立——和 B2 完全一样。但 AR 的**主收益**不是合批，是「每顶点 CPU 变换 → GPU」，这一半按顶点算、与纹理无关。所以 AR 不会因为大家用不同的枪而失效；演示里的羊群是「同纹理可合批 + 顶点多 + 网格可去重」三条同时最大的最佳场景，不能当一般预期。
+
+**2. GPU 变换的开销**
+总量不是不变：每帧多一遍完整顶点流（读网格 + 写变换结果），顶点着色器之后还要再跑一遍，顶点阶段约 2× 工作量 + 额外带宽。ALU 上确实是完全并行的，但受内存带宽和 compute→draw 屏障约束，且随顶点数线性增长。按 CGC 满配 9 枪约 5.1 万顶点估算约 0.02–0.05 ms（推算，无探针），小但非零。与 B1 的本质差别是：B1 每帧**零**变换，AR 每帧**全量**变换——光影下 GPU 已贴 7.19 ms 下限时，AR 是在最紧的资源上加活。实测 Δ 只有 +0.027 不是因为它免费，而是那时 AR 没有多少几何可加速。
+
+**3. TaCZ 若做脏子树**
+几乎没空间。静态展示已烘焙；脏子树只覆盖动画部件，p99 顶点占比 9.3%–44%、成本约 0.08–0.15 ms，典型帧接近 0；而 AR 仍要付每帧全量提交 + GPU 流 + 0.15–0.2 ms 固定税，净收益大概率为负。唯一还剩空间的是「每个可见顶点每帧都在变」的整模型动画，枪械的刚体子树烘焙已经覆盖。
+
+**4. AR 与 CGC 同装**
+会互相干扰。证据不是推测，而是 TaCZ 自己写的 opt-out：渲染层 `-943…`、`disableAcceleration()`、保存/回填 VAO、`BufferUploader.invalidate()`，注释原话是「否则这里的渲染会被导向到加速管线中，造成被延后和内存泄漏」。CGC 的即时几何（模板窗口、瞄具、准心、火焰、抛壳、HUD 文字）正是这类提交，被延后到 pass 末尾后模板顺序就乱了；此外还有 GL 状态被改、GUI/文字被接管、半透明顺序变化（`SEPARATED` + 强制半透明）。CGC 的烘焙 VBO 绘制 AR 碰不到，所以同装 = CGC 不受益 + 固定税 + 顺序风险，而 CGC 目前没有任何 AR 适配代码。
+
+**5. TaCZ 的 AR 适配白做了吗 / 1.1.8**
+不白做。AR 自带的 SBM mixin 指向 2.x 之前的 `tartaricacid` 包，对 TaCZ 无效；TaCZ 两版都自带 `compat/ar` + `mixin/client/ar/BedrockPartMixin`（实现 AR 的 `IAcceleratedRenderer`、按 `IBufferGraph` 缓存部件网格、顶点不变换交给 GPU），这才是唯一入口。
+- **1.1.8 本身没有 GPU 变换**：`BedrockCubeBox#compile` 在 CPU 上 `vector4f.mul(matrix4f)` 逐顶点变换后发射；装 AR 后由 TaCZ 的 mixin 搬到 GPU。
+- **1.2.0** 保留同一 mixin，但静态展示改成 `DisplayGunGeometry.capture` 自烘焙，加速面只剩动态部件。之前的测试恰好是这个「AR 可加速面最小」的版本，且没有 1.1.8+AR 的对照（已登记为 V5 未测）。
+- 收益场景：大量每帧都在动的实体/方块实体、CPU 单线程变换是瓶颈、GPU 有空闲、非光影贴下限、GL 能力足够、26.2 之前。
+
+另外提醒：`docs/deprecated/prompt/#89 Render-analysis.md` 在工作树里显示被修改，不是我改的，提交时我不会带上它。
+
+# 
+
+```
+- 火焰、抛壳、文字这些本身就开销很小的渲染，是否能改AR的配置来关掉？
+- AR这个强制接管是否会使所有像CGC自定义渲染的mod都受影响？
+- ALU上并行，但是仍有这个工作量的话是否会占用CPU到GPU的带宽？理论上在GPU多了顶点变换是否会挤占GPU进行其他渲染的性能？
+- 假设可以往ARCompat加ar接口，是否有简单方式直接让AR不接管？
+```
+
+# 
+
+这几个问题需要看 AR 的过滤器与接管时机。我去查对应源码。
+
+我的 §8 说「即时几何都会被劫持」需要核实——AR 究竟是按渲染器接管还是按顶点流接管。查它的 Item/Font/ModelPart mixin 范围。
+
+接管机制的判断需要修正：AR 接管的是**渲染器**，不是任意顶点流。重写第 8 节。
+
+这轮查证纠正了上一轮的一个关键判断，文档第八节已重写，第 7.2 节也补了带宽口径。
+
+**1. 火焰/抛壳/文字能不能靠配置关掉**
+- 文字：能，`accelerated_text_rendering.feature_status = DISABLED`。
+- 物品/手持/GUI 物品：`accelerated_item_rendering.feature_status`、`hand_acceleration`、`gui_acceleration`、`gui_item_batching`。
+- 火焰/抛壳：**没有独立开关**，但也不需要——它们由 CGC 自己的渲染器直接写顶点，AR 碰不到（见第 2 点）。若弹壳是物品实体，才会走 `ItemRenderer`，可用 item/entity 过滤器排除。
+- 过滤器粒度只有实体类型 / 方块实体类型 / 物品 / 菜单 / `RenderLevelStage` 五类，**没有按 RenderType 或单个几何块**的开关。
+- 就算把所有特性关掉，AR 每帧的 7 套 CoreBuffers 与两次状态捕获仍然执行，固定税不会消失；要彻底去掉只能不装。
+
+**2. 强制接管是否影响所有自定义渲染 mod**
+不是「所有」，因为 **AR 接管的入口是渲染器，不是顶点流**。真正的接管点只有：原版 `ModelPart`、原版物品 baked model（`renderModelLists`，BEWLR 路径不动）、`Font`/`GuiGraphics`、旧 `tartaricacid` SBM 的 `BedrockPart`，以及像 TaCZ 那样自己实现 `IAcceleratedRenderer` 并调用 `doRender` 的 mod。自绘 VBO 或直接写 `BufferBuilder` 的自定义渲染器不会被改道。
+
+对 CGC 的具体暴露面（已在源码核实）：
+- HUD 文字与物品图标——`ClientGuiUtils` 走 `drawString(font, …)` 与 `renderItem(…)`。
+- 第一人称的原版手臂——CGC 动画的是 vanilla `ModelPart`，最终由 `PlayerModel` 渲染，走 `ModelPartMixin`。
+- 物品实体（弹壳等）走 `ItemRenderer`。
+- 烘焙枪体、自定义火焰/激光四边形不受影响。
+
+**3. 带宽与 GPU 争用**
+- CPU→GPU 的传输**不会省**：每帧仍要把未变换顶点写进持久映射缓冲（格式 36 B vs 原版 32 B），再加每顶点 16 B 的 varying 流。AR 省的是矩阵运算与缓存命中时的 Java 逐顶点调用，不是传输。
+- GPU 内部多一遍「读网格 + 写变换结果」，顶点着色器照跑，约 2× 顶点带宽。并行只是能摊到多个 SM，不改变它占用同一块 GPU 的 SM 与带宽——GPU 忙时就是在最紧的资源上加活。光影下只测到 +0.027，是因为那时 AR 几乎没有可加速的几何，不是因为变换便宜。
+
+**4. 让 AR 不接管的最简方式**
+不用给 AR 加接口，它已经暴露了栈式 API：`AcceleratedEntityRenderingFeature.useVanillaPipeline()` / `resetPipeline()`，物品与文字各有同名方法；TaCZ 的 `ARCompatImpl#disableAcceleration()` 就是三个一起 push。在区域前后 push/pop，区域内的 ModelPart / 物品 / 文字渲染器就回落到原版路径。三个注意点：push 必须在取 `VertexConsumer` 之前；同一帧同一 `RenderType` 若已被 AR 取过，回落段会变成「延迟 + 即时」两个 draw，顺序要自己保证；AR 的类只能在确认已加载后触达（TaCZ 用独立 Impl 类 + mixin plugin 门控）。
+
+文档改动仍未提交。

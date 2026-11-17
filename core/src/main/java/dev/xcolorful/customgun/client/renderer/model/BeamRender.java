@@ -11,6 +11,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
 import dev.xcolorful.customgun.client.compat.ar.BeamRenderAR;
+import dev.xcolorful.customgun.client.compat.iris.IrisCompat;
 import dev.xcolorful.customgun.client.config.RenderConfig;
 import dev.xcolorful.customgun.client.init.registry.ClientRenderRegistry;
 import dev.xcolorful.customgun.client.model.bedrock.BedrockPart;
@@ -53,6 +54,8 @@ public class BeamRender {
                               @NotNull List<BedrockPart> path,
                               ItemStack pojoItem) {
         if (pojoItem == null) return;
+        // 激光是发光几何，不该进 shadow map；Iris 的阴影 pass 用独立的 program 映射表，没派的管线会在那里刷 Missing program 告警
+        if (IrisCompat.isRenderShadow()) return;
         // 第三人称只有主手会走到这里：副手由 ItemInHandLayerMixin 取消，因此左右手都要放行
         if (!transformType.firstPerson()
                 && transformType != ItemDisplayContext.THIRD_PERSON_RIGHT_HAND

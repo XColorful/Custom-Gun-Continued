@@ -60,6 +60,31 @@ public class IrisCompat {
         return true;
     }
 
+    /**
+     * 把 CGC 用到的管线派给 Iris 的 program（实现在 CGC Compat Shader 的
+     * {@code IrisCompatMixin#registerRenderPipelines}，这里是它的 mixin 注入点）
+     * <ul>
+     *     <li>Iris 按 {@code RenderPipeline} <b>实例</b>查 program 表，没派过的管线不会替换成光影包的着色器</li>
+     *     <li>激光束：{@code LASER_BEAM_PIPELINE} → {@code BEACON_BEAM}，
+     *     {@code LASER_BEAM_ENTITY_PIPELINE} → {@code EMISSIVE_ENTITIES}，所有版本都已派。
+     *     这里只覆盖主 pass；阴影 pass 查的是另一张映射表，激光在 {@code BeamRender} 里直接跳过</li>
+     *     <li>目镜 INVERT 圆：需要派 {@code RenderPipelines.DEBUG_TRIANGLE_FAN} → {@code BASIC}。
+     *     Iris 的正式分支都没有这条映射（1.21.6 只映射了 {@code DEBUG_LINE_STRIP}，26.3 的 dev 分支
+     *     最近才在 {@code IrisPipelines} 里补上）</li>
+     * </ul>
+     * <b>不是所有 CGC 版本都画 {@code DEBUG_TRIANGLE_FAN}</b>，补绑定前先看对应分支：
+     * <ul>
+     *     <li>1.20.1–1.21.4：Tesselator + {@code BufferUploader.drawWithShader}，没有 RenderType / 管线，不需要</li>
+     *     <li>1.21.6–1.21.10：{@code RenderType.debugTriangleFan()}；1.21.11–26.1.x：{@code RenderTypes.debugTriangleFan()}。
+     *     两者画到的都是 base 管线</li>
+     *     <li>26.2–26.3：{@code bakePipelineState(RenderTypes.debugTriangleFan())}，画的是被修饰器派生的实例；
+     *     Iris 的 NeoForge mixin（{@code PipelineMixin} / {@code PipelineBuilderMixin}）在
+     *     {@code RenderPipeline#toBuilder()} 时复制映射，所以派 base 管线即可覆盖派生实例</li>
+     * </ul>
+     * 因此只有 1.21.6 及以上需要补这条绑定，其余分支待补。
+     * 另外 Iris 的 {@code assignPipeline} 对已存在的映射会抛 {@code IllegalStateException}，
+     * 将来 Iris 正式版合入 {@code 26.3-new} 的映射后要防重复派发。
+     */
     @ApiStatus.AvailableSince("1.21.6")
     public static void registerRenderPipelines(Consumer<RenderPipeline> registrar) {
         // mixin注入点

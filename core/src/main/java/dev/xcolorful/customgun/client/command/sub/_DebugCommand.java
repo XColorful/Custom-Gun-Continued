@@ -8,6 +8,7 @@ import com.mojang.brigadier.context.CommandContext;
 import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.api.item.IAnimateGeoItem;
 import dev.xcolorful.customgun.client.api.renderer.item.IAnimateGeoItemRenderer;
+import dev.xcolorful.customgun.client.input.player.DebugKey;
 import dev.xcolorful.customgun.client.model.bake.StaticBake;
 import dev.xcolorful.customgun.core.init.registry.ModItems;
 import dev.xcolorful.customgun.core.item.gun.GunItem;
@@ -28,6 +29,9 @@ public class _DebugCommand {
                 .then(Commands.literal("enableStaticBake")
                         .then(Commands.argument("bool", BoolArgumentType.bool())
                                 .executes(_DebugCommand::setEnableStaticBake)))
+                .then(Commands.literal("enableReloadAnimationDebugTest")
+                        .then(Commands.argument("bool", BoolArgumentType.bool())
+                                .executes(_DebugCommand::setEnableReloadTest)))
                 .then(Commands.literal("clientMixinTest")
                         .then(Commands.literal("IAnimateGeoItem")
                                 .executes(_DebugCommand::testIAnimateGeoItemMixin)))
@@ -66,6 +70,12 @@ public class _DebugCommand {
         boolean enable = BoolArgumentType.getBool(context, "bool");
         StaticBake.ENABLED = enable;
         context.getSource().sendSuccess(() -> Component.literal("StaticBake: " + enable), false);
+        return Command.SINGLE_SUCCESS;
+    }
+    private static int setEnableReloadTest(CommandContext<CommandSourceStack> context) {
+        boolean enable = BoolArgumentType.getBool(context, "bool");
+        DebugKey.enableReloadTest = enable;
+        context.getSource().sendSuccess(() -> Component.literal("ReloadTest: " + enable), false);
         return Command.SINGLE_SUCCESS;
     }
 }

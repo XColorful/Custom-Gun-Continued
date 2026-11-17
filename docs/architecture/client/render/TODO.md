@@ -48,8 +48,13 @@
 - [ ] **阶段 4 26.3**：确认自定义 `FeatureRenderer` 路径，实现同一套烘焙抽象；**26.3 的 render pass 是它最大的单项，必须按 pass 计时验收**
   - [x] 26.2 已实机验收（2026-11-16）：烘焙网格改为「CPU 顶点副本 + `submitCustomGeometry` 回放」，不再自建 GpuBuffer / 派生管线；
     被排除的做法、三条硬约束（包装 RenderType 缓存、缓存淘汰均衡、回放忽略关闭）与 API 差异见 [`refactor/b1a-static-bake.md`](./refactor/b1a-static-bake.md)「26.2」
-  - [ ] 26.2 回放后的帧时间未测；`Bake upload bytes` 口径已变（现为拷贝字节数），旧报告数值不可直接对比
-  - [x] 26.3 编译适配（2026-11-17）：沿用 26.2 回放，不需要自定义 `FeatureRenderer` / 自有 `GpuBuffer`；
+  - [x] 26.2 **静态优化已实现（2026-11-17）**：烘焙网格常驻显存，借原版 `Custom` 组的外部 draw 直接 `drawIndexed`
+    （无光影时为法线/雾派生一个只换着色器的烘焙管线，开光影包仍用原管线；钩子不生效时自动退回回放）。
+    见 [`refactor/b1a-static-bake.md`](./refactor/b1a-static-bake.md)「26.2 / 静态优化」
+  - [x] 26.2 画面实机验收（2026-11-17）：关 / 开光影、第一人称与第三人称、瞄具模板、倍镜开镜；
+    探针 `Baked GPU draws 1 / Baked replays 0`（关光影、第一人称持镜），空块已改为不提交
+  - [ ] 26.2 帧时间仍缺基准数据（`StaticBake.GPU_RESIDENT_26_2` 关 / 开 A/B）；`Bake upload bytes` 口径已变，旧报告数值不可直接对比
+  - [x] 26.3 编译适配（2026-11-17）：沿用 26.2 回放，不需要自定义 `FeatureRenderer`；
     renderpearl 换包、`VertexConsumer#setUv3`、`RenderSetup#oitPipelineSet`、`cgc_baked_entity` 着色器改 26.3 写法，`build` 通过。
     见 [`refactor/b1a-static-bake.md`](./refactor/b1a-static-bake.md)「26.3」与 [`26.3-rendering-differences.md`](./26.3-rendering-differences.md)
   - [ ] 26.3 实机验收：画面、光影路径、`Bake rebuilds`，以及按 pass 计时的烘焙帧时间

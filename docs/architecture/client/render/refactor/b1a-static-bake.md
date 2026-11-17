@@ -233,10 +233,63 @@ uniform 补不回来，烘焙块的法线仍会少一次姿态。只在 `[1.21.6
 - 回放走 `submitCustomGeometry`：与其它 CGC 几何同一 feature type、同一提交顺序、同一套原版管线。
 - 光照解耦（B1-c-B）仍然成立：光照变化改写副本里的 uv2，不需要重新发射几何。
 - 即时块 / 委托的绘制回调里写回提交时快照的节点姿态（`NodeTransform`），画完还原；烘焙网格本身不需要节点状态。
-- 代价：每帧一次顶点拷贝，B1 的「顶点常驻显存」收益在 26.2+ 不可用。26.3 若要收回绘制权，必须先解决下面「排查记录」的前两条。
+- 代价：每帧一次顶点拷贝。**这一代价已于 2026-11-17 消除**，见下节「静态优化：常驻显存绘制」。
 - 代码组织（2026-11-17 起）：旧版本独有的函数保留原名与原签名（参数类型可放宽为 `Object`），内部实现可整段删除；
   26.2 的新实现使用 `26_2` 后缀（`bake26_2` / `drawOrBake26_2` / `drawOrBakePatchable26_2` / `drawMesh26_2`），
   旧签名只做转发或空实现。规则见 [`PLAN.md`](../PLAN.md) 的「跨版本代码写法」。
+
+### 静态优化：常驻显存绘制（2026-11-17 实现，画面已实机验收）
+
+**做法**：仍用 `submitCustomGeometry` 提交（顺序、模板、光影 program 映射都不变），但回调换成 `BakedGeometryRenderer`：
+
+- 回调不写顶点，而是往**当前 `RenderTypeFeatureRenderer$Group` 追加一条外部绘制**：顶点用 `BakedMesh` 的 `GpuBuffer`
+  （`USAGE_VERTEX | USAGE_COPY_DST`），索引走原版顺序索引缓冲（`PrimitiveTopology#indexCount`）；
+- `DynamicTransforms`：`ModelViewMat` = 模型视图 × 实例姿态（调 `prepare` 前把姿态压进 `RenderSystem` 的模型视图栈），
+  `TextureMat` = **姿态本身**；layering 修饰器照原版再作用一次（`entityTranslucent` 的 Z 偏移靠它）；
+- **无光影换成烘焙管线**（`RenderType#pipeline().toBuilder()` 只换 `.vsh/.fsh`，状态全保留）：
+  26.2 的 `core/entity` 直接用顶点里的 `Normal` 点乘世界空间光照方向、用原始 `Position` 算雾，
+  而烘焙网格是模型空间——`cgc_baked_entity` 用 `TextureMat` 复现即时块的 `pose * Position`（雾）与 `IT(姿态) * Normal`（光照）。
+  不换时的表现是**整枪偏暗、转动时亮度不变化**（2026-11-17 实测）。着色器保留 `PER_FACE_LIGHTING` / `ALPHA_CUTOUT` /
+  `EMISSIVE` / `NO_OVERLAY` 分支，与调用方管线的 define 对齐（枪体是 `entityCutout`，走边面光照）；
+  **颜色目标必须逐个重放**：`toBuilder()` 只拷贝数组、不还原数量，`build()` 会落回 `ColorTargetState.DEFAULT`，
+  丢掉 `NO_COLOR_WRITE`（瞄具模板遮罩）与半透明混合——表现为开镜后**目镜被黑色盖住、看不到场景**（2026-11-17 实测；
+  同一处坑 `NeoStencilOperator` 里已有注释，本处是派生烘焙管线自己踩到的）；
+- **开光影包仍用 RenderType 自带的管线**：光影包的 program 按 `iris_NormalMat = IT(模型视图)` 处理法线，
+  换管线反而找不到 program；绘制期把同一次姿态再压一次模型视图栈就是给它用的；
+- **退回**：拿不到组（mixin 未生效、或不在 prepare 阶段）、`sortOnUpload()` 的 RenderType、或取不到烘焙管线时走原有回放，画面始终正确；
+  `StaticBake.GPU_RESIDENT_26_2` 可整体关掉做 A/B。
+
+**为什么这条路不重复「已排除的做法」**：不新开 feature type（顺序与瞄具模板不变）；管线是**从调用方管线派生**的，
+Iris 的 `PipelineMixin#toBuilder` / `PipelineBuilderMixin#build` 会把 program 映射拷给派生实例，且无光影分支根本不经过 Iris。
+下一节前两条现象各由这两点解释。
+
+**接线（mixin，均在 `core/client/mixin/renderer/`）**：
+
+|类|作用|
+|---|---|
+|`RenderTypeFeatureRenderer$Group`|构造时登记为当前组；追加外部 draw（`appendDraw` + 自建 `PreparedRenderType`）、预扩容顺序索引缓冲、重置 `lastDraw`；无光影时派生烘焙管线并把姿态写进 `TextureMat`|
+|`RenderTypeFeatureRenderer`|`prepareGroup` 返回时清空当前组；`executeGroup` 的 `drawFromBuffer` 调用点包一层姿态压栈（给光影包的 `iris_NormalMat`）|
+|`StagedVertexBuffer$Draw`|外部缓冲字段（缓冲 / 索引数 / 拓扑 / 姿态）|
+|`StagedVertexBuffer`|`getExecuteInfo` 对这类 draw 在判空前改报外部缓冲，并登记本次绘制的姿态|
+
+**实测（2026-11-17，关光影、第一人称持镜，1618 帧）**：`Baked GPU draws 1 / Baked replays 0 / Baked empties 5`、`Bake rebuilds 0`。
+即 6 个分块里只有 1 个有几何，且路径上没有一次回放。空块（分块后未显示的分支）原本每帧仍要一次 `submitCustomGeometry`
+加原版的一次 `prepare`，现已改为**空网格不提交**，`Draw calls` 随之从 6 降到 1。
+
+**失效与显存**：显存归 `BakedMesh`，`close()` 经 `RenderSystem.queueFencedTask` 释放（本帧可能已提交过它的绘制）；
+光照原地改写（B1-c-B）改为改完 CPU 副本后 `CommandEncoder#writeToBuffer` 回传，仍在提交阶段、没有打开的 render pass。
+
+**未验收 / 风险**：
+
+- 老探针 `Upload bytes` / `Cubes submitted` / `endBatch *` / `Geometry traverse` 在 26.2 已没有调用方（`BufferUploader` 移除、
+  烘焙不再发 cube），**不能**用它们的 0 值判断优化是否生效；判断路径看 `Baked GPU draws` / `Baked replays`。
+- 画面已实机确认（2026-11-17：关 / 开光影、第一人称与第三人称、瞄具模板、倍镜开镜）；**帧时间仍无基准测试数据**
+  （现有采样不是测试场景，只作量级参考：第一人称持镜 `CGC render 0.134 ms / Model render 0.062 ms`）。
+- 烘焙着色器占用 `TextureMat` 传姿态：烘焙网格因此不支持纹理变换（glint 这类 RenderType 不进烘焙路径）。
+- 没装 `cgccshader` 的 Oculus 用户 `isUsingRenderPack()` 恒为 false，会走烘焙管线；派生管线能继承 Iris 的 program 映射，
+  但 `TextureMat` 被光影包当 UV 变换时未验证（安装 `cgccshader` 的常规配置不会走到这里）。
+- 与其它模组对这两个原版类的 mixin 可能冲突（`executeGroup` 的包装只认我们的执行信息，其它绘制原样透传）。
+- 26.3 的 `StagedVertexBuffer` / `RenderSetup` 已改（renderpearl、`OitPipelineSet`），这套接线需要在 26.3 重做；回放路径在 26.3 上仍然可用。
 
 ### 排查记录（已排除的做法，26.3 重做时先读这里）
 
@@ -276,14 +329,16 @@ uniform 补不回来，烘焙块的法线仍会少一次姿态。只在 `[1.21.6
 
 遗留：回放后的帧时间未测（`Bake upload bytes` 现为拷贝字节数，口径已变，旧报告数值不可直接对比）；
 `CgcBaked` 与 `cgc_baked_entity` 在 26.2 已不参与绘制，相关管线声明保留给低版本。
+2026-11-17 起的常驻显存路径（见上「静态优化」）编译通过，画面与帧时间**均未实机验收**。
 
 ## 26.3（编译适配完成，实机未验收）
 
 26.3 沿用 26.2 的「CPU 顶点副本 + `submitCustomGeometry` 回放」。原版 API 差异见
 [26.3 渲染系统差异](../26.3-rendering-differences.md)。
 
-- 不再需要「自定义 `RenderPipeline` + 自有 `GpuBuffer` + `PreparedRenderType.drawFromBuffer`」：那套正是 26.2 已排除的做法
+- 不再需要「自定义 `RenderPipeline` + 自定义 `FeatureRenderer`」：那套正是 26.2 已排除的做法
   （见上「排查记录」），`IrisCompat.assignPipeline` 与 OIT 的问题随之不需要单独处理。
+  常驻显存绘制（26.2 的「静态优化」）是另一条路线：复用原版 `Custom` 组与原版管线，26.3 需按新版 `StagedVertexBuffer` 重做。
 - 本次移植（2026-11-17）：
   - 换包：`VertexFormat` / `VertexFormatElement` → `renderpearl.api.vertex`；`PrimitiveTopology` / `UniformType` 等管线类 →
     `renderpearl.api.pipeline`（`blaze3d.vertex` 的 `BufferBuilder` / `MeshData` / `VertexConsumer` / `PoseStack` 未动）。
@@ -305,6 +360,7 @@ uniform 补不回来，烘焙块的法线仍会少一次姿态。只在 `[1.21.6
 |`Bake rebuilds`|计数|每帧烘焙次数；静态场景稳态应为 0|
 |`Distinct RenderTypes`|计数|本帧出现过的 `RenderType` 实例数（只统计 CGC 经过的位置），B2 的 draw 下限|
 |`CGC GPU busy`|GPU|CGC 提交窗口内的 `GL_TIME_ELAPSED`，用于归因 multi 的 0.97 ms / 26.3 的 4.38 ms 未归因项；与整帧查询共用分段计时器，每 4 帧采样一次|
+|`Baked GPU draws` / `Baked replays` / `Baked empties`|计数|26.2：烘焙网格走常驻显存外部 draw / 退回顶点回放 / 因烘成空网格而未提交的次数；稳态应为「GPU > 0、replay = 0」，replay 大于 0 说明钩子没生效|
 |`Distinct nodes` / `Dirty nodes` / `Dirty subtree nodes`|计数|本帧遍历到的节点数（按帧去重）、其中状态变化的节点数、以及这些脏节点覆盖的子树节点数；B1-b 的脏子树比例，只在即时管线统计，根节点不计|
 
 `Node snapshot` 在 1.20.1 上不再有命中（报告里显示 `-`），属预期。

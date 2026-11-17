@@ -221,6 +221,59 @@ uniform 补不回来，烘焙块的法线仍会少一次姿态。只在 `[1.21.6
 - 调试输出 `ClientRenderProfiler` 的聊天消息改 `sendSystemMessage`。
 - **未实机验证**：烘焙块画面、光影路径、`cgc_baked_entity` 的 `#version 150` 能否被 26.1 的 `GlProgram` 接受。
 
+## 26.2（已完成实机验收，2026-11-16）
+
+### 结论
+
+26.2 引入延迟提交：`MultiBufferSource` 移除，几何只能在 `submitCustomGeometry(poseStack, renderType, (pose, buffer) -> …)`
+的回调里写顶点，回调在 **prepare 阶段**执行。烘焙网格因此改为「保留交错顶点副本 + 回放」：
+
+- `BakedMesh` 只存一份 CPU 交错顶点副本（不再建 `GpuBuffer`）；`replay(pose, consumer)` 按属性名把顶点写回原版
+  `VertexConsumer`，位置/法线用提交时姿态变换，**法线从位置矩阵现算**（与即时块同口径）。
+- 回放走 `submitCustomGeometry`：与其它 CGC 几何同一 feature type、同一提交顺序、同一套原版管线。
+- 光照解耦（B1-c-B）仍然成立：光照变化改写副本里的 uv2，不需要重新发射几何。
+- 即时块 / 委托的绘制回调里写回提交时快照的节点姿态（`NodeTransform`），画完还原；烘焙网格本身不需要节点状态。
+- 代价：每帧一次顶点拷贝，B1 的「顶点常驻显存」收益在 26.2+ 不可用。26.3 若要收回绘制权，必须先解决下面「排查记录」的前两条。
+
+### 排查记录（已排除的做法，26.3 重做时先读这里）
+
+先按 1.21.11 的结构实现了「自定义 `FeatureRenderer` + 自有 `GpuBuffer` + 派生烘焙管线」（`RegisterFeatureRenderersEvent`
+注册、`submitSpecial` 投递、`PreparedRenderType` + 逐实例 `DynamicTransforms`），编译通过、实机可画，但暴露出结构性冲突：
+
+| 现象 | 原因 |
+|---|---|
+| 目镜显示模型自身颜色，模板效果丢失 | 独立 `FeatureRendererType` 让所有烘焙块整段执行，与原版 `Custom` 组的几何分成两段；瞄具模板「写值 → 读值」的严格顺序被打乱（`SimpleFeatureRenderPhase` 按 feature type 分组） |
+| 开光影后全枪偏暗，弹匣正常 | 派生烘焙管线不在 Iris 的管线映射里，`iris_NormalMat` 取不到姿态，法线少一次旋转 |
+| 开光影后第三人称完全不画 | 同上：自定义管线没有 `assignPipeline`，找不到 program |
+| 第三人称进游戏正常，切过一次第一人称后只剩瞄具 | 见下节第一条硬约束 |
+
+回放方案落地后又出现同一个「只剩瞄具」现象，最后定位到三条独立的硬约束（均已修复）：
+
+- **包装后的 `RenderType` 必须缓存**（`RenderTypePipelineBake` 按「基础 RenderType + 修饰后管线」缓存）。烘焙缓存以
+  `RenderType` 实例为键；每次新建包装会让键每帧翻新，第一人称的模板状态把共享缓存撑满并持续触发淘汰。
+- **淘汰要在两套缓存间均衡**（`StaticBakeCache` 的整模静态 vs 单实例子网格）。固定优先淘汰整模缓存会把第三人称的枪体与配件整体挤空，
+  只剩走单实例路径的瞄具子网格。
+- **回放不检查「已关闭」**：提交与绘制分离，淘汰可能发生在两者之间；关闭只表示不再复用（下次重新烘焙），本帧仍要画完，
+  否则整片几何静默消失。`drawOrBake*` 命中已关闭条目时按未命中处理、当场重烘。
+
+### 26.2 API 差异（本阶段踩到的）
+
+- `VertexFormat.Mode` → `PrimitiveTopology`；`RenderType#mode()` → `primitiveTopology()`。
+- `VertexFormatElement` 变为 `(name, offset, GpuFormat)`：按名字取偏移，`byteSize()`/`index()` 移除。
+- `RenderSetup` 的贴图改为按需解析，统一由 `RenderType#prepare()` 产出；不再经 AT 读 `getTextures()`。
+- `LayeringTransform#getModifier()` 改为 `Consumer<Matrix4f>`；`TextureTransform#createMatrix()`。
+- 管线：`withSampler` / `withUniform` / `withVertexFormat` 移除，改 `withBindGroupLayout` / `withVertexBinding` / `withPrimitiveTopology`。
+- `RenderPipeline#toBuilder()` 不还原颜色目标数量：派生管线必须按 `getColorTargetStates()` 重新 `withColorTargetState`。
+- 文字渲染不再走 `drawInBatch`；本分支文字改为 `TextRenderOverlay` 排队重画。
+
+### 验收状态
+
+实机通过（用户确认，2026-11-16）：关光影下视角旋转时枪体与弹匣亮度一致、准心正常、目镜模板遮罩正常、
+第一↔第三人称来回切换不再丢几何；开光影下全枪亮度与弹匣一致、准心与目镜正常、第三人称正常显示。
+
+遗留：回放后的帧时间未测（`Bake upload bytes` 现为拷贝字节数，口径已变，旧报告数值不可直接对比）；
+`CgcBaked` 与 `cgc_baked_entity` 在 26.2 已不参与绘制，相关管线声明保留给低版本。
+
 ## 26.3 / 跨版本
 
 26.3 的实体着色器结构不同，需要单独验证，不能照抄 1.20.1 的实现：

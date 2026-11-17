@@ -85,10 +85,15 @@ public class HandRender implements IModelComponentRenderer {
 
             ClientRenderProfiler.countBatch();
             ClientRenderHelper.renderFirstPersonArm(mc.player, this.humanoidArm, poseStack1, _light);
+
+            // [1.20.1, 26.2)
             final long profFlush = ClientRenderProfiler.begin();
             ClientRenderProfiler.countFlush();
             ClientRenderHelper.GL.getModelBufferSource().endBatch();
             ClientRenderProfiler.end(ClientRenderProfiler.FLUSH, profFlush);
+
+            // [26.2, )
+            // 手臂自己提交自定义几何，没有可 flush 的即时缓冲
         });
     }
 

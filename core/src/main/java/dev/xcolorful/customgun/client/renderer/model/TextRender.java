@@ -79,6 +79,7 @@ public class TextRender implements IModelComponentRenderer {
 
             { // 提交文字
                 // [1.20.1, 26.2)
+//                /*
                 MultiBufferSource.BufferSource bufferSource = ClientRenderHelper.GL.getModelBufferSource();
                 ClientRenderProfiler.countBatch();
                 font.drawInBatch(parsed,
@@ -95,6 +96,7 @@ public class TextRender implements IModelComponentRenderer {
                 ClientRenderProfiler.countFlush();
                 bufferSource.endBatch();
                 ClientRenderProfiler.end(ClientRenderProfiler.FLUSH, profFlush);
+//                 */
 
                 // [26.2, )
                 /**
@@ -105,14 +107,16 @@ public class TextRender implements IModelComponentRenderer {
                  *     <li>改为排队：由 {@link TextRenderOverlay} 在手部几何画完之后用 {@link ClientRenderRegistry} 的管线重画</li>
                  * </ul>
                  */
-//                TextRenderOverlay.queue(poseStack2.last().pose(),
-//                        poseStack2.last().normal(),
-//                        -xOffset,
-//                        -font.lineHeight / 2f,
-//                        parsed,
-//                        shadow,
-//                        packLight,
-//                        color);
+                /*
+                TextRenderOverlay.queue(poseStack2.last().pose(),
+                        poseStack2.last().normal(),
+                        -xOffset,
+                        -font.lineHeight / 2f,
+                        parsed,
+                        shadow,
+                        packLight,
+                        color);
+                 */
             }
         }
         );

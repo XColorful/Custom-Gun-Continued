@@ -1,7 +1,7 @@
 package dev.xcolorful.customgun.client.mixin.renderer;
 
-import com.mojang.blaze3d.PrimitiveTopology;
-import com.mojang.blaze3d.buffers.GpuBuffer;
+import com.mojang.renderpearl.api.pipeline.PrimitiveTopology;
+import com.mojang.renderpearl.api.buffers.GpuBuffer;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.xcolorful.customgun.client.model.bake.BakedDrawSink;
 import net.minecraft.client.renderer.StagedVertexBuffer;
@@ -35,8 +35,9 @@ public class StagedVertexBufferMixin {
 
         int indexCount = external.cgc$indexCount();
         RenderSystem.AutoStorageIndexBuffer indices = RenderSystem.getSequentialBuffer(topology);
+        indices.getBuffer(indexCount);
         StagedVertexBuffer.ExecuteInfo info = new StagedVertexBuffer.ExecuteInfo(
-                vertexBuffer, indices.getBuffer(indexCount), indices.type(), 0, 0, indexCount);
+                vertexBuffer, null, indices.type(), 0, 0, indexCount, topology);
         // 绘制紧接着发生：把这次绘制的实例姿态挂上去，绘制期间补进模型视图栈（光影包的法线矩阵取这里）
         @Nullable Matrix4f pose = external.cgc$pose();
         if (pose != null) BakedDrawSink.setPendingDraw(info, pose);

@@ -152,21 +152,13 @@ public class ClientRenderRegistry {
             26.2 的实体着色器直接用顶点里的 Normal 点乘世界空间光照方向，烘焙网格是模型空间法线
             （关光影时整枪偏暗、转动不变化就是这一条），必须换成会把姿态算进法线的着色器
             实例姿态走 DynamicTransforms 的 TextureMat（雾与法线都由它还原），不需要额外 UBO，
-            因此可以只换着色器、保留调用方管线的状态与 Iris 的 program 映射（颜色目标要手动重放，见下）
+            因此可以只换着色器、保留调用方管线的状态与 Iris 的 program 映射
+            （26.2 的 toBuilder() 会丢颜色目标数量，当时需逐个重放；26.3 已修复，见 b1a 的 26.2 API 差异）
              */
-            return BAKED_PIPELINES.computeIfAbsent(base, pipeline -> {
-                RenderPipeline.Builder builder = pipeline.toBuilder()
-                        .withVertexShader(BAKED_ENTITY_SHADER)
-                        .withFragmentShader(BAKED_ENTITY_SHADER);
-                // toBuilder() 只拷贝颜色目标数组，不还原数量；不补的话 build() 落回 ColorTargetState.DEFAULT，
-                // 于是 no_color_write（瞄具模板遮罩）与半透明混合全部丢失——表现为开镜后目镜被黑色盖住（2026-11-17 实测）
-                @Nullable ColorTargetState[] colorTargets = pipeline.getColorTargetStates();
-                for (int i = 0; i < colorTargets.length; i++) {
-                    @Nullable ColorTargetState colorTarget = colorTargets[i];
-                    if (colorTarget != null) builder.withColorTargetState(i, colorTarget);
-                }
-                return builder.build();
-            });
+            return BAKED_PIPELINES.computeIfAbsent(base, pipeline -> pipeline.toBuilder()
+                    .withVertexShader(BAKED_ENTITY_SHADER)
+                    .withFragmentShader(BAKED_ENTITY_SHADER)
+                    .build());
         }
 
         private static final Map<RenderPipeline, RenderPipeline> BAKED_PIPELINES = new IdentityHashMap<>();

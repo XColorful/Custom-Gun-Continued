@@ -3,6 +3,7 @@ package dev.xcolorful.customgun.client.mixin.renderer;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.renderpearl.api.commands.RenderPass;
 import dev.xcolorful.customgun.client.model.bake.BakedDrawSink;
 import net.minecraft.client.renderer.StagedVertexBuffer;
 import net.minecraft.client.renderer.feature.RenderTypeFeatureRenderer;
@@ -29,13 +30,14 @@ public class RenderTypeFeatureRendererDrawMixin {
 
     @WrapOperation(method = "executeGroup",
             at = @At(value = "INVOKE",
-                    target = "Lnet/minecraft/client/renderer/rendertype/PreparedRenderType;drawFromBuffer(Lnet/minecraft/client/renderer/StagedVertexBuffer$ExecuteInfo;)V"))
+                    target = "Lnet/minecraft/client/renderer/rendertype/PreparedRenderType;drawFromBuffer(Lnet/minecraft/client/renderer/StagedVertexBuffer$ExecuteInfo;Lcom/mojang/renderpearl/api/commands/RenderPass;)V"))
     private void cgc$drawWithBakedPose(PreparedRenderType prepared,
                                        StagedVertexBuffer.ExecuteInfo info,
+                                       RenderPass renderPass,
                                        Operation<Void> original) {
         @Nullable Matrix4f pose = BakedDrawSink.takePendingPose(info);
         if (pose == null) {
-            original.call(prepared, info);
+            original.call(prepared, info, renderPass);
             return;
         }
 
@@ -43,7 +45,7 @@ public class RenderTypeFeatureRendererDrawMixin {
         modelViewStack.pushMatrix();
         modelViewStack.mul(pose);
         try {
-            original.call(prepared, info);
+            original.call(prepared, info, renderPass);
         } finally {
             modelViewStack.popMatrix();
         }

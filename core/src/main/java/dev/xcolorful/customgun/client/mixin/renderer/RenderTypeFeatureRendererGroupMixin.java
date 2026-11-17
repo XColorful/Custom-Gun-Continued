@@ -1,9 +1,9 @@
 package dev.xcolorful.customgun.client.mixin.renderer;
 
-import com.mojang.blaze3d.PrimitiveTopology;
-import com.mojang.blaze3d.buffers.GpuBuffer;
-import com.mojang.blaze3d.buffers.GpuBufferSlice;
-import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.renderpearl.api.pipeline.PrimitiveTopology;
+import com.mojang.renderpearl.api.buffers.GpuBuffer;
+import com.mojang.renderpearl.api.buffers.GpuBufferSlice;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.xcolorful.customgun.client.CustomGunClient;
 import dev.xcolorful.customgun.client.model.bake.BakedDrawSink;
@@ -109,7 +109,7 @@ public class RenderTypeFeatureRendererGroupMixin implements BakedDrawSink.Group 
         if (layering != null) layering.accept(modelView);
 
         GpuBufferSlice dynamicTransforms = RenderSystem.getDynamicUniforms().writeTransform(modelView, new Matrix4f(pose));
-        return new PreparedRenderType(bakedPipeline, base.outputTarget(), dynamicTransforms,
+        return new PreparedRenderType(base.name(), bakedPipeline, base.oitPipelineSet(), dynamicTransforms,
                 base.scissorState(), base.textures());
     }
 }

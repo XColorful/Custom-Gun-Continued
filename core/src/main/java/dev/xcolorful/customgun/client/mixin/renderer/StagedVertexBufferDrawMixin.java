@@ -1,7 +1,7 @@
 package dev.xcolorful.customgun.client.mixin.renderer;
 
-import com.mojang.blaze3d.PrimitiveTopology;
-import com.mojang.blaze3d.buffers.GpuBuffer;
+import com.mojang.renderpearl.api.pipeline.PrimitiveTopology;
+import com.mojang.renderpearl.api.buffers.GpuBuffer;
 import dev.xcolorful.customgun.client.model.bake.BakedDrawSink;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;

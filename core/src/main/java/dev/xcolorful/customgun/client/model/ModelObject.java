@@ -12,6 +12,7 @@ import dev.xcolorful.customgun.client.model.bake.StaticBake;
 import dev.xcolorful.customgun.client.model.bake.StaticBakeCache;
 import dev.xcolorful.customgun.client.model.bedrock.BedrockPart;
 import dev.xcolorful.customgun.client.model.bedrock.FunctionalBedrockPart;
+import dev.xcolorful.customgun.client.model.bedrock.NodeTransform;
 import dev.xcolorful.customgun.client.resource.assets.model.BedrockModel;
 import dev.xcolorful.customgun.client.resource.assets.model.bedrock.geometry._Bone;
 import dev.xcolorful.customgun.client.util.ClientModelUtils;
@@ -247,10 +248,13 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
 
         final long profModel = ClientRenderProfiler.begin();
 
+        // [1.20.1, 26.2)
+//        /*
         MultiBufferSource.BufferSource bufferSource = ClientRenderHelper.GL.getModelBufferSource();
         VertexConsumer builder = bufferSource.getBuffer(renderType);
         ClientRenderProfiler.countBatch();
         ClientRenderProfiler.countRenderType(renderType);
+//         */
 
         if (ClientRenderProfiler.enabled) { // 采集窗口内统计：本次提交的节点状态是否与上次不同
             long stamp = ClientRenderProfiler.frameStamp();
@@ -285,46 +289,37 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
         [1.20.1, 26.2)
         即时模式下顶点在本次调用内就被提交，节点状态不会被清空，因此不需要快照与还原
         这段双重快照在 1.20.1 上纯属开销（multi 场景实测 0.135 ms/帧），渲染重构B1-a 中移除
-        26.2 延迟渲染下仍需在 flush 前保存/恢复节点状态，移植时按下面的注释恢复
+        [26.2, ) 延迟渲染
+        几何要在 prepare 阶段才真正写顶点，那时动画已把节点状态清空
+        这里把本帧的动画姿态快照下来，绘制回调里写回，画完再还原成清空后的状态
          */
         // [26.2, )
         /*
-        List<BedrockPart> parts = new ArrayList<>(); {
+        List<BedrockPart> parts = new ArrayList<>(this.modelMap.size()); {
             for (IBedrockRenderer renderer : this.modelMap_values()) {
                 parts.add(renderer.getModelRenderer());
             }
         }
-        ClientRenderProfiler.countNodes(parts.size());
-
         List<NodeTransform> animatedTransforms = new ArrayList<>(parts.size()); {
-            for (BedrockPart part : parts) {
-                animatedTransforms.add(NodeTransform.capture(part));
-            }
-        }
-
-        List<NodeTransform> cleanedTransforms = new ArrayList<>(parts.size()); {
             for (int i = 0; i < parts.size(); i++) {
-                BedrockPart part = parts.get(i);
-                cleanedTransforms.add(NodeTransform.capture(part));
-            }
-            for (int i = 0; i < animatedTransforms.size(); i++) {
-                NodeTransform transform = animatedTransforms.get(i);
-                transform.apply();
+                animatedTransforms.add(NodeTransform.capture(parts.get(i)));
             }
         }
         */
 
         RenderType bakedRenderType = ClientRenderHelper.bakePipelineState(renderType); // [26.2, )
 
-        // [26.2, ) 延迟渲染下这里需要在 flush 前保存、flush 后还原节点状态
-
         // 节点静态的场景走烘焙网格（渲染重构B1-a）；第一人称节点每帧被动画改写，走脏子树分块烘焙（B1-b）
         boolean baked = StaticBake.eligible()
                 && (transformType.firstPerson()
-                    ? this.renderBakedFirstPerson(matrixStack, transformType, bakedRenderType, light, overlay,
-                            red, green, blue, alpha)
-                    : this.renderBaked(matrixStack, transformType, bakedRenderType, light, overlay,
-                            red, green, blue, alpha));
+                    ? this.renderBakedFirstPerson(matrixStack,
+//                collector, animatedTransforms, // [26.2, )
+                transformType, bakedRenderType, light, overlay, red, green, blue, alpha)
+                    : this.renderBaked(matrixStack,
+                transformType, bakedRenderType, light, overlay, red, green, blue, alpha));
+
+        // [1.20.1, 26.2)
+//        /*
         if (!baked) { // 无法烘焙时退回即时管线
             final long profTraverse = ClientRenderProfiler.begin();
             matrixStack.pushPose(); {
@@ -360,6 +355,23 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
         ClientRenderProfiler.end(ClientRenderProfiler.DELEGATE, profDelegate);
 
         ClientRenderProfiler.end(ClientRenderProfiler.MODEL_TOTAL, profModel);
+//        */
+
+        // [26.2, )
+        /*
+        if (!baked) { // 无法烘焙时退回即时管线
+            this.cgc$submitImmediateModel(matrixStack,
+                    collector, animatedTransforms,
+                    transformType, bakedRenderType, light, overlay, red, green, blue, alpha);
+        }
+
+        // 状态段登记的委托也要在绘制回调里执行：它们读节点姿态，而绘制阶段节点已被清空
+        this.cgc$submitDelegates(matrixStack,
+                collector, animatedTransforms,
+                transformType, bakedRenderType, light, overlay);
+
+        ClientRenderProfiler.end(ClientRenderProfiler.MODEL_TOTAL, profModel);
+        */
     }
 
     /**
@@ -377,6 +389,9 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
                                 RenderType renderType,
                                 int light, int overlay,
                                 float red, float green, float blue, float alpha) {
+        // 提前判断，避免同帧把 functional 回调执行两次后才发现无法绘制
+        if (!StaticBake.available()) return false;
+
         int delegateMark = this.delegateMark();
         DiscardVertexConsumer discard = DiscardVertexConsumer.INSTANCE;
         long vertexMark = discard.writtenVertices();
@@ -395,7 +410,10 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
             return false;
         }
 
-        if (!StaticBake.drawOrBake(this, null, matrixStack.last().pose(), renderType, light, overlay,
+        if (!StaticBake.drawOrBake(this, null,
+                matrixStack.last().pose(), // [1.20.1, 26.2)
+//                matrixStack, // [26.2, )
+                renderType, light, overlay,
                 red, green, blue, alpha, fingerprint,
                 consumer -> {
                     PoseStack bakePose = new PoseStack();
@@ -423,6 +441,8 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
      * @return {@code false} 表示本帧无法烘焙（没有可用着色器），调用方应退回即时管线
      */
     private boolean renderBakedFirstPerson(PoseStack matrixStack,
+//                                           SubmitNodeCollector collector, // [26.2, )
+//                                           List<NodeTransform> animatedTransforms, // [26.2, )
                                            ItemDisplayContext transformType,
                                            RenderType renderType,
                                            int light, int overlay,
@@ -446,13 +466,119 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
             this.cgc$applyDirty(tracker);
         }
 
-        if (!this.cgc$drawChunks(matrixStack, transformType, renderType, light, overlay,
-                red, green, blue, alpha)) {
+        if (!this.cgc$drawChunks(matrixStack,
+//                collector, animatedTransforms, // [26.2, )
+                transformType, renderType, light, overlay, red, green, blue, alpha)) {
             // 退回即时管线前丢弃状态段登记的委托，避免同一次提交里重复渲染
             this.trimDelegates(delegateMark);
             return false;
         }
         return true;
+    }
+
+    /**
+     * 把整模几何提交为一次自定义几何绘制（无法烘焙时的退回路径）
+     */
+    @ApiStatus.AvailableSince("26.2")
+    private void cgc$submitImmediateModel(PoseStack matrixStack,
+                                          Object collector, // SubmitNodeCollector collector,
+                                          List<NodeTransform> animatedTransforms,
+                                          ItemDisplayContext transformType,
+                                          RenderType renderType,
+                                          int light, int overlay,
+                                          float red, float green, float blue, float alpha) {
+        /*
+        final long profTraverse = ClientRenderProfiler.begin();
+        ClientRenderProfiler.countBatch();
+        ClientRenderProfiler.countRenderType(renderType);
+        collector.submitCustomGeometry(matrixStack, renderType, (pose, builder) -> {
+            List<NodeTransform> cleanedTransforms = new ArrayList<>(animatedTransforms.size());
+            PoseStack poseStack = cgc$enterDrawCallback(pose, animatedTransforms, cleanedTransforms);
+            try {
+                {
+                    for (int i = 0; i < this.shouldRender.size(); i++) {
+                        this.shouldRender.get(i)
+                                .render(poseStack,
+                                        transformType,
+                                        builder,
+                                        light, overlay,
+                                        red, green, blue, alpha);
+                    }
+                }
+            } finally {
+                cgc$exitDrawCallback(cleanedTransforms);
+            }
+        });
+        ClientRenderProfiler.end(ClientRenderProfiler.TRAVERSE, profTraverse);
+        */
+    }
+    /**
+     * 把状态段登记的委托提交为一次自定义几何绘制
+     */
+    @ApiStatus.AvailableSince("26.2")
+    private void cgc$submitDelegates(PoseStack matrixStack,
+                                     Object collector, // SubmitNodeCollector collector,
+                                     List<NodeTransform> animatedTransforms,
+                                     ItemDisplayContext transformType,
+                                     RenderType renderType,
+                                     int light, int overlay) {
+        /*
+        if (this.delegateRenderers.isEmpty()) return;
+
+        // 回调延后执行，这里把列表换掉，避免后续登记混进来
+        final List<IModelComponentRenderer> delegates = this.delegateRenderers;
+        this.delegateRenderers = new ArrayList<>();
+
+        final long profDelegate = ClientRenderProfiler.begin();
+        ClientRenderProfiler.countRenderType(renderType);
+        collector.submitCustomGeometry(matrixStack, renderType, (pose, builder) -> {
+            List<NodeTransform> cleanedTransforms = new ArrayList<>(animatedTransforms.size());
+            PoseStack poseStack = cgc$enterDrawCallback(pose, animatedTransforms, cleanedTransforms);
+            try {
+                for (int i = 0; i < delegates.size(); i++) {
+                    delegates.get(i).render(poseStack,
+                            builder,
+                            transformType,
+                            light, overlay);
+                }
+            } finally {
+                cgc$exitDrawCallback(cleanedTransforms);
+            }
+        });
+        ClientRenderProfiler.end(ClientRenderProfiler.DELEGATE, profDelegate);
+         */
+    }
+    /**
+     * 延迟渲染的绘制回调里，节点状态已被动画清空：先记下清空后的状态，再写回提交时快照的姿态
+     * @param cleanedTransforms 出口处必须 apply 回去，否则会影响同帧其它绘制
+     * @return 以快照姿态为基底的 PoseStack，可直接递归渲染节点
+     */
+    @ApiStatus.AvailableSince("26.2")
+    private static PoseStack cgc$enterDrawCallback(PoseStack.Pose pose,
+                                                   List<NodeTransform> animatedTransforms,
+                                                   List<NodeTransform> cleanedTransforms) {
+        return null;
+        /*
+        for (int i = 0; i < animatedTransforms.size(); i++) {
+            cleanedTransforms.add(NodeTransform.capture(animatedTransforms.get(i).part()));
+        }
+        PoseStack poseStack = new PoseStack();
+        poseStack.last().set(pose);
+        // 与烘焙回放同口径：法线从位置矩阵现算，不沿用调用方可能失真的 normal
+        poseStack.last().normal().set(poseStack.last().pose()).invert().transpose();
+        for (int i = 0; i < animatedTransforms.size(); i++) {
+            animatedTransforms.get(i).apply();
+        }
+        return poseStack;
+         */
+    }
+    @ApiStatus.AvailableSince("26.2")
+    private static void cgc$exitDrawCallback(List<NodeTransform> cleanedTransforms) {
+        /*
+        for (int i = 0; i < cleanedTransforms.size(); i++) {
+            cleanedTransforms.get(i).apply();
+        }
+         */
     }
 
     /**
@@ -628,6 +754,8 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
     }
 
     private boolean cgc$drawChunks(PoseStack matrixStack,
+//                                   SubmitNodeCollector collector, // [26.2, )
+//                                   List<NodeTransform> animatedTransforms, // [26.2, )
                                    ItemDisplayContext transformType,
                                    RenderType renderType,
                                    int light, int overlay,
@@ -644,8 +772,9 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
             }
 
             if (chunk.immediate) {
-                this.cgc$drawImmediate(chunk, matrixStack, transformType, renderType, light, overlay,
-                        red, green, blue, alpha);
+                this.cgc$drawImmediate(chunk, matrixStack,
+//                        collector, animatedTransforms, // [26.2, )
+                        transformType, renderType, light, overlay, red, green, blue, alpha);
                 drawnAny = true;
                 continue;
             }
@@ -653,7 +782,10 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
             BakedMesh mesh = this.cgc$getOrBake(chunk, renderType, light, overlay,
                     red, green, blue, alpha);
 
-            if (StaticBake.drawMesh(mesh, renderType, this.cgc$chunkPose(chunk, matrixStack))) {
+            if (StaticBake.drawMesh(mesh, renderType,
+                    this.cgc$chunkPose(chunk, matrixStack)) // [1.20.1, 26.2)
+//                    this.cgc$chunkPoseStack(chunk, matrixStack)) // [26.2, )
+            ) {
                 drawnAny = true;
             } else {
                 // 网格已关闭（资源重载竞态）或着色器不可用：下一帧重建，本帧保持现状避免重复绘制
@@ -716,9 +848,10 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
 
         ClientRenderProfiler.countBakeCause(reloaded, patchFailed, variants.isEmpty());
         final long profBake = ClientRenderProfiler.begin();
-        mesh = BakedMesh.bakePatchable(renderType.mode(), renderType.format(), light, consumer ->
-                chunk.node.bakeChunkGeometry(new PoseStack(), consumer,
-                        light, overlay, red, green, blue, alpha, this.cgc$isCut));
+        mesh = BakedMesh.bakePatchable(renderType.mode(), // renderType.primitiveTopology(),
+                renderType.format(), light, consumer ->
+                        chunk.node.bakeChunkGeometry(new PoseStack(), consumer,
+                                light, overlay, red, green, blue, alpha, this.cgc$isCut));
         ClientRenderProfiler.end(ClientRenderProfiler.BAKE, profBake);
         ClientRenderProfiler.countBake();
 
@@ -777,8 +910,8 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
         return this.cgc$chunkPoseStack(chunk, matrixStack).last().pose();
     }
 
-    private void cgc$drawImmediate(Cgc$Chunk chunk,
-                                   PoseStack matrixStack,
+//    @Deprecated(since = "26.2")
+    private void cgc$drawImmediate(Cgc$Chunk chunk, PoseStack matrixStack,
                                    ItemDisplayContext transformType,
                                    RenderType renderType,
                                    int light, int overlay,
@@ -803,6 +936,36 @@ public class ModelObject extends PojoInstance<BedrockModel> implements IModelObj
             bufferSource.endBatch();
         }
         ClientRenderProfiler.end(ClientRenderProfiler.FLUSH, profFlush);
+    }
+    @ApiStatus.AvailableSince("26.2")
+    private void cgc$submitImmediateChunk(Cgc$Chunk chunk, PoseStack matrixStack,
+                                          Object collector, // SubmitNodeCollector collector,
+                                          List<NodeTransform> animatedTransforms,
+                                          ItemDisplayContext transformType,
+                                          RenderType renderType,
+                                          int light, int overlay,
+                                          float red, float green, float blue, float alpha) {
+        /*
+        ClientRenderProfiler.countBatch();
+        ClientRenderProfiler.countRenderType(renderType);
+
+        collector.submitCustomGeometry(matrixStack, renderType, (pose, consumer) -> {
+            List<NodeTransform> cleanedTransforms = new ArrayList<>(animatedTransforms.size());
+            PoseStack poseStack = cgc$enterDrawCallback(pose, animatedTransforms, cleanedTransforms);
+            try {
+                // 回调在状态段已经执行过一次并登记了委托；这里重放几何时再登记的委托是重复的
+                int delegateMark = this.delegateMark();
+                chunk.node.render(this.cgc$chunkPoseStack(chunk, poseStack),
+                        transformType,
+                        consumer,
+                        light, overlay,
+                        red, green, blue, alpha);
+                this.trimDelegates(delegateMark);
+            } finally {
+                cgc$exitDrawCallback(cleanedTransforms);
+            }
+        });
+         */
     }
 
     /**

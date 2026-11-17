@@ -1,6 +1,6 @@
 package dev.xcolorful.customgun.client.api.minecraft.pipeline;
 
-import com.mojang.blaze3d.pipeline.RenderPipeline;
+//import com.mojang.blaze3d.pipeline.RenderPipeline; // 1.21.4没有RenderPipeline
 import dev.xcolorful.customgun.client.CustomGunClient;
 import dev.xcolorful.customgun.client.api.minecraft.access.IClientAccessTransformer;
 import dev.xcolorful.customgun.client.model.bake.StaticBakeCache;
@@ -25,7 +25,7 @@ public class RenderTypePipelineBake {
      *     <li>管线修饰器本身已按「基础管线 + 模板状态」缓存，这里只需保证包装实例稳定</li>
      * </ul>
      */
-    private static final Map<RenderType, Map<RenderPipeline, RenderType>> BAKED_TYPES = new IdentityHashMap<>();
+    private static final Map<RenderType, Map<Object, RenderType>> BAKED_TYPES = new IdentityHashMap<>();
 
     /**
      * 包装种类是有限的（基础 RenderType × 模板状态），超过这个数只可能是资源重载后换了实例

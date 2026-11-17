@@ -1,6 +1,8 @@
 package dev.xcolorful.customgun.client.model.bake;
 
+import com.mojang.blaze3d.buffers.GpuBuffer;
 import com.mojang.blaze3d.pipeline.RenderTarget;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.renderpearl.api.pipeline.PrimitiveTopology;
 import com.mojang.renderpearl.api.vertex.VertexFormat;
@@ -66,6 +68,17 @@ public final class BakedMesh implements AutoCloseable {
     private final @Nullable ByteBuffer vertexCopy;
     private final int vertexCount;
     private final int stride;
+    private final PrimitiveTopology topology;
+    /**
+     * 常驻显存的顶点缓冲（26.2 延迟渲染）
+     * <ul>
+     *     <li>提交期只登记「用这份缓冲画一次」，绘制期由原版 {@code Custom} 组直接 {@code drawIndexed}，
+     *         不再每帧回放顶点</li>
+     *     <li>{@code USAGE_COPY_DST} 供光照原地改写（B1-c-B）重写 uv2 后用 {@code writeToBuffer} 回传</li>
+     *     <li>为空时调用方必须退回 {@link #replay}（烘焙失败的空网格）</li>
+     * </ul>
+     */
+    private @Nullable GpuBuffer vertexBuffer;
     /**
      * uv2 在单个顶点里的字节偏移；格式不含 uv2 时为 {@code -1}
      */
@@ -93,10 +106,12 @@ public final class BakedMesh implements AutoCloseable {
     private boolean closed;
 
     private BakedMesh(@Nullable ByteBuffer vertexCopy, VertexFormat format,
-                      int vertexCount, int stride, int uv2PatchOffset, int bytes, int light) {
+                      int vertexCount, int stride, int uv2PatchOffset, int bytes, int light,
+                      PrimitiveTopology topology) {
         this.vertexCopy = vertexCopy;
         this.vertexCount = vertexCount;
         this.stride = stride;
+        this.topology = topology;
         this.uv2PatchOffset = uv2PatchOffset;
         this.bytes = bytes;
         this.light = light;
@@ -159,7 +174,7 @@ public final class BakedMesh implements AutoCloseable {
             MeshData rendered = builder.build();
             ClientRenderProfiler.end(ClientRenderProfiler.BAKE_EMIT, profileEmit);
             if (rendered == null) {
-                return new BakedMesh(null, format, 0, 0, -1, 0, light);
+                return new BakedMesh(null, format, 0, 0, -1, 0, light, mode);
             }
 
             MeshData.DrawState drawState = rendered.drawState();
@@ -173,7 +188,9 @@ public final class BakedMesh implements AutoCloseable {
             rendered.close();
             ClientRenderProfiler.countBakeBytes(bytes);
 
-            return new BakedMesh(vertexCopy, writtenFormat, vertexCount, stride, uv2Offset, bytes, light);
+            BakedMesh mesh = new BakedMesh(vertexCopy, writtenFormat, vertexCount, stride, uv2Offset, bytes, light, mode);
+            mesh.uploadToGpu();
+            return mesh;
         } finally {
             builderDepth--;
         }
@@ -185,6 +202,52 @@ public final class BakedMesh implements AutoCloseable {
         copy.put(source);
         copy.position(0);
         return copy;
+    }
+
+    /**
+     * 把顶点副本上传成常驻显存缓冲
+     * <ul>
+     *     <li>只在烘焙时调用一次；之后每帧只引用它，不再写顶点</li>
+     *     <li>{@code USAGE_COPY_DST} 是 {@link #updateLight} 回传所必需的</li>
+     * </ul>
+     */
+    @ApiStatus.AvailableSince("26.2")
+    private void uploadToGpu() {
+        @Nullable ByteBuffer copy = this.vertexCopy;
+        if (copy == null || this.vertexCount == 0) return;
+        this.vertexBuffer = RenderSystem.getDevice().createBuffer(
+                () -> "CGC baked mesh",
+                GpuBuffer.USAGE_VERTEX | GpuBuffer.USAGE_COPY_DST,
+                copy.duplicate());
+    }
+
+    /**
+     * 常驻显存的顶点缓冲；为空表示只能回放
+     */
+    @ApiStatus.AvailableSince("26.2")
+    public @Nullable GpuBuffer gpuBuffer() {
+        return this.vertexBuffer;
+    }
+
+    /**
+     * 空网格（这一块没有可见几何）；回放与绘制都是空操作
+     */
+    @ApiStatus.AvailableSince("26.2")
+    public boolean isEmpty() {
+        return this.vertexCopy == null;
+    }
+
+    /**
+     * 顺序索引的索引数：与 {@code StagedVertexBuffer} 的非排序绘制口径一致
+     */
+    @ApiStatus.AvailableSince("26.2")
+    public int indexCount() {
+        return this.topology.indexCount(this.vertexCount);
+    }
+
+    @ApiStatus.AvailableSince("26.2")
+    public PrimitiveTopology topology() {
+        return this.topology;
     }
 
     /**
@@ -231,7 +294,24 @@ public final class BakedMesh implements AutoCloseable {
         this.light = newLight;
 
         ClientRenderProfiler.countLightPatch(copy.capacity());
+        uploadCopy26_2();
+
         return true;
+    }
+
+    /**
+     * 把改写后的顶点副本回传到常驻缓冲
+     * <ul>
+     *     <li>B1-c-B 的 26.2 版本：只重写已有的 uv2，不重新发射几何</li>
+     *     <li>命令在提交阶段下发，此时没有打开的 render pass</li>
+     * </ul>
+     */
+    @ApiStatus.AvailableSince("26.2")
+    private void uploadCopy26_2() {
+        @Nullable GpuBuffer gpu = this.vertexBuffer;
+        @Nullable ByteBuffer copy = this.vertexCopy;
+        if (gpu == null || copy == null) return;
+        RenderSystem.getDevice().createCommandEncoder().writeToBuffer(gpu.slice(), copy.duplicate());
     }
 
     /**
@@ -288,6 +368,10 @@ public final class BakedMesh implements AutoCloseable {
     @Override
     public void close() {
         this.closed = true;
+        @Nullable GpuBuffer gpu = this.vertexBuffer;
+        this.vertexBuffer = null;
+        // 本帧可能已经提交过这次绘制：等队列排空后再删，避免删掉还在用的缓冲
+        if (gpu != null) RenderSystem.queueFencedTask(gpu::close);
     }
 
     /**

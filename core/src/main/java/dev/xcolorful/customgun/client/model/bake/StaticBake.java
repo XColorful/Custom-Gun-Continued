@@ -44,6 +44,15 @@ public final class StaticBake {
     public static boolean FORCE_REBUILD = false;
 
     /**
+     * 26.2 延迟渲染下的静态优化：烘焙网格常驻显存，绘制阶段直接 drawIndexed，不再每帧回放顶点
+     * <ul>
+     *     <li>关闭时退回顶点回放（2026-11-16 验收过的路径），用于实机 A/B 与排障</li>
+     *     <li>关闭只影响每帧成本，不影响画面</li>
+     * </ul>
+     */
+    public static boolean GPU_RESIDENT_26_2 = true;
+
+    /**
      * 所有模型渲染场景都参与烘焙
      * <ul>
      *     <li>节点静态的场景（展示框 / 地面 / 第三人称）整模烘焙，见 {@code ModelObject#renderBaked}</li>
@@ -217,7 +226,12 @@ public final class StaticBake {
         return drawn;
     }
     /**
-     * 提交一次烘焙网格的回放，并计入 draw / RenderType 探针
+     * 提交一次烘焙网格的绘制，并计入 draw / RenderType 探针
+     * <ul>
+     *     <li>[26.2, ) 仍走 {@code submitCustomGeometry}：顺序与管线由原版决定</li>
+     *     <li>是否用常驻显存缓冲或顶点回放由 {@link BakedGeometryRenderer} 决定，
+     *         关闭 {@link #GPU_RESIDENT_26_2} 时就是纯回放</li>
+     * </ul>
      * @return {@code false} 表示当前没有提交收集器
      */
     @ApiStatus.AvailableSince("26.2")
@@ -226,6 +240,13 @@ public final class StaticBake {
                                        PoseStack poseStack) {
         @Nullable SubmitNodeCollector collector = ClientRenderHelper.FirstPersonArmHelper.getFirstPersonArmCollector();
         if (collector == null) return false;
+
+        // 空网格（第一人称分块里未显示的分支）没有几何可画：不提交，
+        // 省掉每帧一次 submitCustomGeometry 与原版的一次 prepare（实测满配枪 6 块里有 5 块是空的）
+        if (mesh.isEmpty()) {
+            ClientRenderProfiler.countEmptyDraw();
+            return true;
+        }
 
         // 回放用 pose 的法线矩阵变换法线，而调用方的 normal 在大幅旋转后会与 IT(姿态) 失配
         // 1.20.1 实测同一帧里烘焙块正常、即时块偏亮
@@ -237,7 +258,7 @@ public final class StaticBake {
         ClientRenderProfiler.countRenderType(renderType);
         ClientRenderProfiler.countBatch();
         ClientRenderProfiler.countDraw();
-        collector.submitCustomGeometry(drawPose, renderType, mesh::replay);
+        collector.submitCustomGeometry(drawPose, renderType, new BakedGeometryRenderer(mesh, renderType));
         return true;
     }
 }

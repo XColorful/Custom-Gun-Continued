@@ -142,7 +142,15 @@ public final class ClientRenderProfiler implements IEventHandler {
     /** 光照改写失败的原因：没有 CPU 副本 / 取不到 VBO */
     private static final int COUNTER_PATCH_NO_COPY = 27;
     private static final int COUNTER_PATCH_NO_VBO = 28;
-    private static final int COUNTER_COUNT = 29;
+    /**
+     * 26.2 静态优化：烘焙网格走常驻显存绘制（外部 draw）/ 退回顶点回放的次数
+     * <li>回放大于 0 表示 {@code BakedDrawSink} 的钩子没生效（或该 RenderType 需要上传排序），优化实际没吃上</li>
+     */
+    private static final int COUNTER_GPU_DRAWS = 29;
+    private static final int COUNTER_REPLAY_DRAWS = 30;
+    /** 烘焙成空网格的提交（第一人称分块里没有可见几何的块）；回放与绘制都是空操作，不算退回 */
+    private static final int COUNTER_EMPTY_DRAWS = 31;
+    private static final int COUNTER_COUNT = 32;
     private static final String[] COUNTER_NAMES = {
             "First-person submissions", "World-item submissions", "endBatch calls", "Cubes submitted",
             "Nodes captured", "Geometry batches", "Stencil windows", "LOD hits",
@@ -152,6 +160,7 @@ public final class ClientRenderProfiler implements IEventHandler {
             "Light patches", "Light patch bytes",
             "Bake: new key", "Bake: light fill", "Bake: patch failed", "Bake: chunk invalid",
             "Light patch: no copy", "Light patch: no vbo",
+            "Baked GPU draws", "Baked replays", "Baked empties",
     };
 
     /**
@@ -293,6 +302,21 @@ public final class ClientRenderProfiler implements IEventHandler {
     /** 一次 VertexBuffer.drawWithShader */
     public static void countDraw() {
         count(COUNTER_DRAWS);
+    }
+
+    /** 26.2：烘焙网格走了常驻显存的外部 draw（静态优化生效） */
+    public static void countGpuDraw() {
+        count(COUNTER_GPU_DRAWS);
+    }
+
+    /** 26.2：烘焙网格退回顶点回放（钩子没生效或该 RenderType 需要上传排序）；稳态应为 0 */
+    public static void countReplayDraw() {
+        count(COUNTER_REPLAY_DRAWS);
+    }
+
+    /** 26.2：这一块烘成了空网格，没有几何可画（不算退回） */
+    public static void countEmptyDraw() {
+        count(COUNTER_EMPTY_DRAWS);
     }
 
     /** 一次 draw 对应的顶点 + 索引字节数 */

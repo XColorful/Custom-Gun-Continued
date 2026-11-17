@@ -1,5 +1,27 @@
 ### 26.11
 
+#### 26.11.36
+Introduced static baking and dirty subtree optimization:
+- Static display and first-person rendering now use baked meshes; only the part changed by animation is regenerated
+- Test gun rendering frame time reduced by approximately 74.5%, with rendering performance improved by about 3.92x.
+- Add debug key to record render tests, generating `customgun-render-profile.txt` in the game directory.
+- Add debug command `/customgun debug enableStaticBake [bool]`.
+- Add debug command `/customgun debug enableReloadAnimationDebugTest [bool]`.
+
+For Artist:
+- Performance primarily depends on how many cubes move with an animated group: moving parts are regenerated every frame, so fewer is cheaper
+- Whole-gun animations must be applied to the root node `root`: the state of the root node is handled specially and will not cause the entire gun to re-render.
+- Reuse the same group across animations where possible: Every group you animate splits off another part that is drawn separately (it never merges back)
+
+1.21.4+:
+- Fixed built-in entity interaction filter tags.
+
+1.21.10+:
+- Fixed built-in projectile pass through block tags.
+
+For Developers:
+- Fixed Chinese character encoding issues during compilation on Windows.
+
 #### 26.11.35.1
 If the game starts normally, it is not affected:
 - Fixed remaining `NullPointerException` in CGC addon mods triggered by Forge's parallel loading mechanism

@@ -2,6 +2,9 @@ package dev.xcolorful.customgun.client.model.bedrock;
 
 import org.jetbrains.annotations.ApiStatus;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * 单个模型节点的动画变换快照，用于延迟渲染下在 flush 阶段恢复 submit 时的节点状态
  */
@@ -36,6 +39,28 @@ public record NodeTransform(BedrockPart part,
         }
         {
             part.visible = visible;
+        }
+    }
+
+    /**
+     * 快照一棵子树（含自身）的全部节点姿态，用于只重绘子树、不重绘整模的场景
+     */
+    public static List<NodeTransform> captureSubtree(BedrockPart part) {
+        List<NodeTransform> transforms = new ArrayList<>();
+        captureSubtree(part, transforms);
+        return transforms;
+    }
+
+    private static void captureSubtree(BedrockPart part, List<NodeTransform> transforms) {
+        transforms.add(capture(part));
+        for (int i = 0; i < part.children.size(); i++) {
+            captureSubtree(part.children.get(i), transforms);
+        }
+    }
+
+    public static void applyAll(List<NodeTransform> transforms) {
+        for (int i = 0; i < transforms.size(); i++) {
+            transforms.get(i).apply();
         }
     }
 }

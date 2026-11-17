@@ -15,7 +15,6 @@ import net.minecraft.client.renderer.RenderType;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
-import org.joml.Vector4f;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 
@@ -25,14 +24,24 @@ import java.util.List;
 import java.util.function.Consumer;
 
 /**
- * 模型空间的静态烘焙网格
+ * 模型空间的静态烘焙网格（渲染重构B1-a）
  * <ul>
+ *     [1.20.1, 26.2)
  *     <li>顶点只生成一次，常驻 {@link VertexBuffer}；每帧只绑定并换模型视图矩阵绘制</li>
  *     <li>实例矩阵不进顶点，因此同一份网格可以被多个展示框 / 掉落物共享</li>
  *     <li>[1.20.1, 1.21.6) 只支持即时模式：{@code RenderType} 的 setup/clear 包住 draw，与 {@code BufferSource.endBatch} 的做法一致</li>
  *     <li>[1.21.6, )绘制自己开 {@code RenderPass}：管线用 CGC 的烘焙管线，状态与贴图仍由 {@code RenderType} 的 setup/clear 提</li>
  *     <li>光照需要原地改写的网格（渲染重构B1-c-B，见 {@link #bakePatchable}）额外保留一份 CPU 副本</li>
  *     <li>光照变化时改写其中的 uv2 并 (重传原 VBO / 1.21.6 整段写回原缓冲)，几何本身不再重新发射</li>
+ * </ul>
+ * <ul>
+ *     [26.2, )
+ *     <li>顶点只生成一次，保留一份交错顶点副本；每帧回放进原版 {@link VertexConsumer}，不再逐节点遍历与计算姿态</li>
+ *     <li>实例矩阵不进顶点：回放时用调用方的 {@code PoseStack.Pose} 变换位置与法线，同一份网格可被多个展示框共享</li>
+ *     <li>光照需要原地改写（渲染重构B1-c-B）：副本里的 uv2 直接改写，不需要重新发射几何</li>
+ *     <li>26.2 的几何只能在 {@code submitCustomGeometry} 的回调里写顶点，自有 {@code GpuBuffer} 无法插进原版批次</li>
+ *     <li>而把烘焙块拆成独立 feature type 会打乱与其它自定义几何的提交顺序（瞄具模板序列依赖严格顺序），自定义管线也让光影包找不到 program</li>
+ *     <li>因此 26.2 起统一走回放，代价是每帧一次顶点拷贝</li>
  * </ul>
  * 失效条件由调用方放进 {@link StaticBakeCache.Key}，本类不判断
  */
@@ -47,11 +56,11 @@ public final class BakedMesh implements AutoCloseable {
     /**
      * 复用的 {@link BufferBuilder}，按烘焙嵌套深度取用
      * <ul>
-     *     1.20.1
+     *     [1.20.1, )
      *     <li>{@code BufferBuilder} 在构造时经 {@code MemoryTracker} 直接申请原生内存（{@code 容量 × 6}）</li>
      *     <li>而释放路径只重置计数、不归还内存：每次烘焙新建一个就是一次几 MiB 的永久泄漏</li>
      *     <li>{@link DebugKey}采集会每帧强制重建网格，几秒内就能把页面文件耗尽（表现是原生内存不足导致的 JVM 崩溃）</li>
-     *     <li>正常流程不嵌套，复用同一实例</li>
+     *     <li>[1.20.1, 26.2) 正常流程不嵌套，复用同一实例</li>
      * </ul>
      */
     private static final List<ByteBufferBuilder> BUILDERS = new ArrayList<>();
@@ -62,27 +71,36 @@ public final class BakedMesh implements AutoCloseable {
      * 打包格式随版本变化，走项目包装而不是写死数值
      */
     private static final int FULL_BRIGHT = ClientRenderUtils.LightTexture_.pack(15, 15);
+
+    // [1.21.6, 26.2)
+    /*
     @ApiStatus.AvailableSince("1.21.6")
     private static final Vector4f WHITE = new Vector4f(1.0F, 1.0F, 1.0F, 1.0F);
 
-    // [1.21.6, )
-//    private static final ByteBuffer NORMAL_SCRATCH = ByteBuffer.allocateDirect(64).order(ByteOrder.nativeOrder());
-    /**
-     * 法线矩阵块的内容：烘焙网格存模型空间法线，而原版 {@code entity.vsh} 直接用顶点里的 {@code Normal}
-     * （即时块在 CPU 用 {@code IT(姿态)} 写入）。{@code DynamicTransforms} 的 {@code ModelViewMat} 是 mv × 姿态，
-     * 取逆转置会少一次摄像机旋转 —— 枪体法线冻结在固定朝向，转视角亮度不变。所以单独走这个 UBO
+    private static final ByteBuffer NORMAL_SCRATCH = ByteBuffer.allocateDirect(64).order(ByteOrder.nativeOrder());
      */
-    private static @Nullable Object normalUniformBuffer; // GpuBuffer
+
+    /**
+     * <ul>
+     *     <li>法线矩阵块的内容：烘焙网格存模型空间法线</li>
+     *     <li><而原版 {@code entity.vsh} 直接用顶点里的 {@code Normal}（即时块在 CPU 用 {@code IT(姿态)} 写入）</li>
+     *     <li>{@code DynamicTransforms} 的 {@code ModelViewMat} 是 mv × 姿态</li>
+     *     <li>取逆转置会少一次摄像机旋转 —— 枪体法线冻结在固定朝向，转视角亮度不变</li>
+     *     <li>所以单独走这个 UBO</li>
+     * </ul>
+     */
+    /*
+    private static @Nullable GpuBuffer normalUniformBuffer;
     @ApiStatus.AvailableSince("1.21.6")
     private static Object normalUniformBuffer() {
-        return null;
-//        GpuBuffer buffer = normalUniformBuffer;
-//        if (buffer == null || buffer.isClosed()) {
-//            buffer = normalUniformBuffer = RenderSystem.getDevice().createBuffer(
-//                    () -> "CGC baked normal matrix", GpuBuffer.USAGE_UNIFORM | GpuBuffer.USAGE_COPY_DST, 64);
-//        }
-//        return buffer;
+        GpuBuffer buffer = normalUniformBuffer;
+        if (buffer == null || buffer.isClosed()) {
+            buffer = normalUniformBuffer = RenderSystem.getDevice().createBuffer(
+                    () -> "CGC baked normal matrix", GpuBuffer.USAGE_UNIFORM | GpuBuffer.USAGE_COPY_DST, 64);
+        }
+        return buffer;
     }
+     */
 
     // [1.20.1, 1.21.6)
     private final @Nullable VertexBuffer vertexBuffer;
@@ -92,6 +110,7 @@ public final class BakedMesh implements AutoCloseable {
 //    private final int indexCount;
 //    private final VertexFormat.Mode mode;
 
+    // [1.20.1, 26.2)
     private final int bytes;
     /**
      * 本次烘焙实际写入的是不是扩展顶点格式
@@ -108,11 +127,19 @@ public final class BakedMesh implements AutoCloseable {
      */
 //    @Deprecated(since = "1.21.6")
     private final boolean extendedFormat;
+
     /**
-     * 交错顶点字节的 CPU 副本，光照变化时改写其中的 uv2 后再 (整段重传 / 1.21.6 整段写回)
+     * 交错顶点字节的 CPU 副本
      * <ul>
-     *     <li>{@code null} 表示无法原地改写：空网格、格式里没有 uv2、烘焙时光照恰为满亮
-     *     （发光节点与普通顶点的 uv2 此时无法区分），或调用方没有要求保留副本</li>
+     *     [1.20.1, 26.2)
+     *     <li>光照变化时改写其中的 uv2 后再 (整段重传 / 1.21.6 整段写回)</li>
+     *     <li>{@code null} 表示无法原地改写：空网格、格式里没有 uv2、烘焙时光照恰为满亮（发光节点与普通顶点的 uv2 此时无法区分），或调用方没有要求保留副本</li>
+     * </ul>
+     * <ul>
+     *     [26.2, )
+     *     <li>回放与光照改写的唯一数据来源</li>
+     *     <li>{@code null} 只出现在空网格</li>
+     *     <li>光照恰为满亮时 uv2 无法区分发光节点与普通顶点，{@code uv2PatchOffset} 置 {@code -1}，不做原地改写</li>
      * </ul>
      */
     private final @Nullable ByteBuffer vertexCopy;
@@ -122,48 +149,121 @@ public final class BakedMesh implements AutoCloseable {
      * uv2 在单个顶点里的字节偏移；格式不含 uv2 时为 {@code -1}
      */
     private final int uv2Offset;
+
     /**
      * 网格当前烘着的 packed 光照
      */
     private int light;
     private boolean closed;
 
-    private BakedMesh(@Nullable VertexBuffer vertexBuffer, int bytes, boolean extendedFormat,
-                      @Nullable ByteBuffer vertexCopy, int vertexCount, int stride, int uv2Offset,
-//                      int indexCount, VertexFormat.Mode mode, // [1.21.6, )
-                      int light) {
-        this.vertexBuffer = vertexBuffer;
-        this.bytes = bytes;
-        this.extendedFormat = extendedFormat;
-        this.vertexCopy = vertexCopy;
-        this.vertexCount = vertexCount;
-        this.stride = stride;
-        this.uv2Offset = uv2Offset;
-//        this.indexCount = indexCount;
-//        this.mode = mode;
-        this.light = light;
+    // [26.2, )
+//    /**
+//     * 光照原地改写用的 uv2 偏移：满亮网格无法区分发光节点，置 {@code -1} 表示不改写
+//     */
+//    private final int uv2PatchOffset;
+//    private final int bytes;
+//
+//    /**
+//     * 回放用的各属性字节偏移；格式里没有的属性为 {@code -1}
+//     */
+//    private final int positionOffset;
+//    private final int colorOffset;
+//    private final int uv0Offset;
+//    private final int uv1Offset;
+//    private final int normalOffset;
+//    private final int lineWidthOffset;
+
+    private BakedMesh(
+            // [1.20.1, 1.21.6)
+            @Nullable VertexBuffer vertexBuffer, int bytes, boolean extendedFormat,
+            @Nullable ByteBuffer vertexCopy, int vertexCount, int stride, int uv2Offset,
+            // [1.21.6, 26.2)
+//            @Nullable GpuBuffer vertexBuffer, int bytes, boolean extendedFormat,
+//            @Nullable ByteBuffer vertexCopy, int vertexCount, int stride, int uv2Offset,
+//            int indexCount, VertexFormat.Mode mode,
+            // [26.2, )
+//            @Nullable ByteBuffer vertexCopy, VertexFormat format,
+//            int vertexCount, int stride, int uv2PatchOffset, int bytes,
+            int light
+    ) {
+        {
+            // [1.20.1, 26.2)
+            this.vertexBuffer = vertexBuffer;
+            this.bytes = bytes;
+            this.extendedFormat = extendedFormat;
+            this.vertexCopy = vertexCopy;
+            this.vertexCount = vertexCount;
+            this.stride = stride;
+            this.uv2Offset = uv2Offset;
+//            this.indexCount = indexCount; // [1.21.6, )
+//            this.mode = mode; // [1.21.6, )
+            this.light = light;
+
+            // [26.2, )
+//            this.vertexCopy = vertexCopy;
+//            this.vertexCount = vertexCount;
+//            this.stride = stride;
+//            this.uv2PatchOffset = uv2PatchOffset;
+//            this.bytes = bytes;
+//            this.light = light;
+//
+//            this.positionOffset = elementOffset(format, "Position");
+//            this.colorOffset = elementOffset(format, "Color");
+//            this.uv0Offset = elementOffset(format, "UV0");
+//            this.uv1Offset = elementOffset(format, "UV1");
+//            this.uv2Offset = elementOffset(format, "UV2");
+//            this.normalOffset = elementOffset(format, "Normal");
+//            this.lineWidthOffset = elementOffset(format, "LineWidth");
+        }
+    }
+    @ApiStatus.AvailableSince("26.2")
+    private static int elementOffset(VertexFormat format, String name) {
+        return 0;
+//        @Nullable VertexFormatElement element = format.getElement(name);
+//        return element == null ? -1 : element.offset();
     }
 
     /**
-     * 光照进缓存键的场景（整模静态）：光照变化直接换网格，不需要 CPU 副本
+     * 光照进缓存键的场景（整模静态）
+     * <li>光照变化直接换网格</li>
+     * <li>[1.20.1, 26.2) 不需要 CPU 副本</li>
      * @param light   烘进顶点的 packed 光照
      * @param emitter 在模型空间写顶点；写 0 个顶点时得到空网格，绘制为空操作
      */
-    public static BakedMesh bake(VertexFormat.Mode mode, VertexFormat format, int light,
+    public static BakedMesh bake(VertexFormat.Mode mode,
+                                 VertexFormat format, int light,
                                  Consumer<VertexConsumer> emitter) {
+        // [1.20.1, 26.2)
         return bake(mode, format, light, false, emitter);
+
+        // [26.2, )
+//        return bake26_2(mode, format, light, emitter);
     }
 
     /**
-     * 光照不进缓存键的场景（第一人称分块）：保留 CPU 副本，供 {@link #updateLight} 原地改写
+     * <ul>
+     *     <li>[1.20.1, 26.2) 光照不进缓存键的场景（第一人称分块）：保留 CPU 副本，供 {@link #updateLight} 原地改写</li>
+     *     <li>[26.2, ) 光照不进缓存键的场景（第一人称分块 / 瞄具子网格）：光照变化时改写副本里的 uv2</li>
+     * </ul>
      */
-    public static BakedMesh bakePatchable(VertexFormat.Mode mode, VertexFormat format, int light,
+    public static BakedMesh bakePatchable(VertexFormat.Mode mode,
+                                          VertexFormat format, int light,
                                           Consumer<VertexConsumer> emitter) {
+        // [1.20.1, 26.2)
         return bake(mode, format, light, true, emitter);
+
+        // [26.2, )
+//        return bake26_2(mode, format, light, emitter);
     }
 
-    private static BakedMesh bake(VertexFormat.Mode mode, VertexFormat format, int light,
-                                  boolean keepLightCopy, Consumer<VertexConsumer> emitter) {
+    /**
+     * [26.2, ) 改用 {@link #bake26_2}
+     */
+    private static BakedMesh bake(VertexFormat.Mode mode,
+                                  VertexFormat format, int light,
+                                  boolean keepLightCopy,
+                                  Consumer<VertexConsumer> emitter) {
+//        /*
         BufferBuilder builder = acquireBuilder(mode, format);
         long profileEmit = ClientRenderProfiler.begin();
         try {
@@ -253,10 +353,49 @@ public final class BakedMesh implements AutoCloseable {
         } finally {
             builderDepth--;
         }
+//        */
+    }
+    @ApiStatus.AvailableSince("26.2")
+    private static BakedMesh bake26_2(// PrimitiveTopology mode,
+                                      VertexFormat format, int light,
+                                      Consumer<VertexConsumer> emitter
+    ) {
+        return null;
+        /*
+        BufferBuilder builder = acquireBuilder(mode, format);
+        long profileEmit = ClientRenderProfiler.begin();
+        try {
+            emitter.accept(builder);
+            MeshData rendered = builder.build();
+            ClientRenderProfiler.end(ClientRenderProfiler.BAKE_EMIT, profileEmit);
+            if (rendered == null) {
+                return new BakedMesh(null, format, 0, 0, -1, 0, light);
+            }
+
+            MeshData.DrawState drawState = rendered.drawState();
+            VertexFormat writtenFormat = drawState.format();
+            int vertexCount = drawState.vertexCount();
+            int stride = writtenFormat.getVertexSize();
+            int bytes = vertexCount * stride;
+            int uv2Offset = light == FULL_BRIGHT ? -1 : elementOffset(writtenFormat, "UV2");
+            // 副本必须在 close 之前拷出来：26.2 的 MeshData 关闭会归还 ByteBufferBuilder 的区段
+            @Nullable ByteBuffer vertexCopy = copyVertices(rendered.vertexBuffer());
+            rendered.close();
+            ClientRenderProfiler.countBakeBytes(bytes);
+
+            return new BakedMesh(vertexCopy, writtenFormat, vertexCount, stride, uv2Offset, bytes, light);
+        } finally {
+            builderDepth--;
+        }
+         */
     }
 
     private static ByteBuffer copyVertices(ByteBuffer source) {
-        // 与 BufferBuilder 保持同一字节序：patch 时按同样的序读写 short
+        /*
+        与 BufferBuilder 保持同一字节序：
+        [1.20.1, 26.2) patch 时按同样的序读写 short
+        [26.2, ) 回放按同样的序读写 short / float
+         */
         ByteBuffer copy = ByteBuffer.allocateDirect(source.remaining()).order(source.order());
         copy.put(source);
         copy.position(0);
@@ -266,7 +405,9 @@ public final class BakedMesh implements AutoCloseable {
     /**
      * uv2 元素在顶点里的字节偏移；格式里没有 uv2 时返回 {@code -1}
      */
+//    @Deprecated(since = "26.2")
     private static int uv2Offset(VertexFormat format) {
+//        /*
         int offset = 0;
         for (VertexFormatElement element : format.getElements()) {
             if (
@@ -278,13 +419,15 @@ public final class BakedMesh implements AutoCloseable {
             ) return offset;
             offset += ClientRenderUtils.getByteSize(element);
         }
+//        */
         return -1;
     }
 
     /**
      * 把网格的 uv2 改写成新的光照，并 (整段重传原 VBO / 1.21.6 整段写回原缓冲)
      * <ul>
-     *     <li>不新建缓冲、不重新发射顶点</li>
+     *     <li>不重新发射顶点</li>
+     *     <li>[1.20.1, 26.2) 不新建缓冲</li>
      *     <li>发光节点烘的是满亮 15/15，不跟着世界光照变化；只有等于旧光照的顶点才会被改写</li>
      * </ul>
      * @return {@code false} 表示这份网格无法原地改写，调用方应关闭它并重新烘焙
@@ -292,35 +435,49 @@ public final class BakedMesh implements AutoCloseable {
     public boolean updateLight(int newLight) {
         if (this.closed) return false;
         if (this.light == newLight) return true;
+
+        // [1.20.1, 26.2)
         if (this.vertexBuffer == null) {
             this.light = newLight;
             return true;
         }
+        ByteBuffer copy = this.vertexCopy;
         if (this.vertexCopy == null) {
             ClientRenderProfiler.countLightPatchNoCopy();
             return false;
         }
+        // [26.2, )
+//        @Nullable ByteBuffer copy = this.vertexCopy;
+//        if (copy == null) {
+//            this.light = newLight;
+//            return true;
+//        }
+//        if (this.uv2PatchOffset < 0) return false;
 
         long profileLight = ClientRenderProfiler.begin();
         short oldU = (short) (this.light & 0xFFFF);
         short oldV = (short) (this.light >>> 16);
         short newU = (short) (newLight & 0xFFFF);
         short newV = (short) (newLight >>> 16);
-        ByteBuffer copy = this.vertexCopy;
+
         for (int i = 0; i < this.vertexCount; i++) {
-            int offset = i * this.stride + this.uv2Offset;
+            int offset = i * this.stride +
+                    this.uv2Offset; // [1.20.1, 26.2)
+//                    this.uv2PatchOffset; // [26.2, )
+
             if (copy.getShort(offset) == oldU && copy.getShort(offset + 2) == oldV) {
                 copy.putShort(offset, newU);
                 copy.putShort(offset + 2, newV);
             }
         }
-        boolean uploaded = this.uploadCopy();
+        boolean uploaded = this.uploadCopy(); // [1.20.1, 26.2)
         ClientRenderProfiler.end(ClientRenderProfiler.LIGHT_UPDATE, profileLight);
-        if (!uploaded) {
+        if (!uploaded) { // [1.20.1, 26.2)
             ClientRenderProfiler.countLightPatchNoVbo();
             return false;
         }
         this.light = newLight;
+
         ClientRenderProfiler.countLightPatch(copy.capacity());
         return true;
     }
@@ -337,7 +494,9 @@ public final class BakedMesh implements AutoCloseable {
      *     <li>顶点数与布局都不变</li>
      * </ul>
      */
+//    @Deprecated(since = "26.2")
     private boolean uploadCopy() {
+//        /*
         if (this.vertexBuffer == null || this.vertexCopy == null) return false;
         {
             // [1.20.1, 1.21.6)
@@ -357,6 +516,7 @@ public final class BakedMesh implements AutoCloseable {
 //                    .writeToBuffer(this.vertexBuffer.slice(), this.vertexCopy.duplicate());
 //            return true;
         }
+//        */
     }
 
     /**
@@ -367,7 +527,8 @@ public final class BakedMesh implements AutoCloseable {
      *     <li>[1.21.6, ) {@code MeshData.close()} 会归还 {@code ByteBufferBuilder} 的区段，池可以安全复用</li>
      * </ul>
      */
-    private static BufferBuilder acquireBuilder(VertexFormat.Mode mode, VertexFormat format) {
+    private static BufferBuilder acquireBuilder(VertexFormat.Mode mode, // PrimitiveTopology mode,
+                                                VertexFormat format) {
         int depth = builderDepth++;
         if (depth == BUILDERS.size()) BUILDERS.add(
                 new ByteBufferBuilder(BUILD_CAPACITY)
@@ -383,6 +544,7 @@ public final class BakedMesh implements AutoCloseable {
      * @param pose 模型空间 → 当前视图空间的变换，即调用方的 PoseStack 顶矩阵
      * @return {@code false} 表示没有可用的着色器（自定义 shader 未注册且没有光影包）或管线（自定义管线未注册），调用方应退回即时管线
      */
+//    @Deprecated(since = "26.2")
     public boolean draw(RenderType renderType, Matrix4f pose) {
         if (this.closed) return false;
         if (this.vertexBuffer == null) return true;
@@ -617,6 +779,7 @@ public final class BakedMesh implements AutoCloseable {
         }
     }
 
+//    @Deprecated(since = "26.2")
     @ApiStatus.AvailableSince("1.21.6")
     private static RenderTarget outputTarget(RenderType renderType) {
         Object outputState = CustomGunClient.getAccessTransformer().getOutputState(renderType);
@@ -640,6 +803,7 @@ public final class BakedMesh implements AutoCloseable {
     public boolean extendedFormat() {
         return this.extendedFormat;
     }
+
     /**
      * [1.21.6, ) 烘焙时的顶点步长，供绘制侧和当前管线要求的布局比对
      */
@@ -650,10 +814,78 @@ public final class BakedMesh implements AutoCloseable {
 
     @Override
     public void close() {
+        // [1.20.1, 26.2)
         if (this.closed) return;
         this.closed = true;
         if (this.vertexBuffer != null) {
             this.vertexBuffer.close();
         }
+
+        // [26.2, )
+//        this.closed = true;
+    }
+
+    /**
+     * 已被缓存淘汰：调用方应重新烘焙，而不是继续复用
+     */
+    public boolean isClosed() {
+        return this.closed;
+    }
+
+    /**
+     * 把烘焙好的顶点回放进调用方的 {@link VertexConsumer}
+     * <ul>
+     *     <li>位置与法线经 {@code pose} 变换，与即时渲染同一口径（法线因此不需要着色器现算）</li>
+     *     <li>属性按名字回放：光影包可能扩展顶点格式，回放只写它认识的语义</li>
+     *     <li><b>不检查 {@link #closed}</b>：几何在 submit 阶段提交、draw 阶段才回放，缓存淘汰可能在这之间关闭条目，
+     *         此时仍应画完这一帧，否则整片几何静默消失</li>
+     * </ul>
+     * @return {@code false} 表示网格为空
+     */
+    @ApiStatus.AvailableSince("26.2")
+    public boolean replay(PoseStack.Pose pose,
+                          VertexConsumer consumer) {
+        return false;
+        /*
+        @Nullable ByteBuffer copy = this.vertexCopy;
+        if (copy == null) return true;
+
+        for (int i = 0; i < this.vertexCount; i++) {
+            int base = i * this.stride;
+            consumer.addVertex(pose,
+                    copy.getFloat(base + this.positionOffset),
+                    copy.getFloat(base + this.positionOffset + 4),
+                    copy.getFloat(base + this.positionOffset + 8));
+            if (this.colorOffset >= 0) {
+                // 交错缓冲里的字节序就是 RGBA
+                consumer.setColor(copy.get(base + this.colorOffset) & 0xFF,
+                        copy.get(base + this.colorOffset + 1) & 0xFF,
+                        copy.get(base + this.colorOffset + 2) & 0xFF,
+                        copy.get(base + this.colorOffset + 3) & 0xFF);
+            }
+            if (this.uv0Offset >= 0) {
+                consumer.setUv(copy.getFloat(base + this.uv0Offset),
+                        copy.getFloat(base + this.uv0Offset + 4));
+            }
+            if (this.uv1Offset >= 0) {
+                consumer.setUv1(copy.getShort(base + this.uv1Offset) & 0xFFFF,
+                        copy.getShort(base + this.uv1Offset + 2) & 0xFFFF);
+            }
+            if (this.uv2Offset >= 0) {
+                consumer.setUv2(copy.getShort(base + this.uv2Offset) & 0xFFFF,
+                        copy.getShort(base + this.uv2Offset + 2) & 0xFFFF);
+            }
+            if (this.normalOffset >= 0) {
+                consumer.setNormal(pose,
+                        copy.get(base + this.normalOffset) / 127.0F,
+                        copy.get(base + this.normalOffset + 1) / 127.0F,
+                        copy.get(base + this.normalOffset + 2) / 127.0F);
+            }
+            if (this.lineWidthOffset >= 0) {
+                consumer.setLineWidth(copy.getFloat(base + this.lineWidthOffset));
+            }
+        }
+        return true;
+         */
     }
 }

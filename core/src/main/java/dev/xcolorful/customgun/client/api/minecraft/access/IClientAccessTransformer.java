@@ -56,6 +56,7 @@ public interface IClientAccessTransformer {
      * [1.21.11, ) 1.21.11 起 {@link RenderType} 的状态由 {@code RenderSetup} 携带（字段包可见）
      * <li>贴图 / 采样器绑定，含 lightmap 与 overlay</li>
      */
+//    @Deprecated(since = "26.2")
     @ApiStatus.AvailableSince("1.21.11")
     @NotNull Map<String, Object>
     getRenderSetupTextures(
@@ -63,10 +64,13 @@ public interface IClientAccessTransformer {
     );
 
     /**
-     * [1.21.11, ) glint 等贴图变换不再写进 {@link RenderSystem}，改由 {@code RenderSetup} 提供
+     * <ul>
+     *     <li>[1.21.11, ) glint 等贴图变换不再写进 {@link RenderSystem}，改由 {@code RenderSetup} 提供</li>
+     *     <li>[26.2, ) 修饰器改为作用于模型视图矩阵本身（之前作用于矩阵栈）</li>
+     * </ul>
      */
     @ApiStatus.AvailableSince("1.21.11")
-    @NotNull Matrix4f
+    @NotNull Matrix4f // Matrix4fStack
     getRenderSetupTextureTransform(
             RenderType renderType
     );

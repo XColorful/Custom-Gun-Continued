@@ -110,7 +110,7 @@ public final class BakedMesh implements AutoCloseable {
     // [1.20.1, 1.21.6)
 //    private final @Nullable VertexBuffer vertexBuffer;
 
-    // [1.21.6, )
+    // [1.21.6, 26.2)
 //    private final @Nullable GpuBuffer vertexBuffer;
 //    private final int indexCount;
 //    private final VertexFormat.Mode mode;

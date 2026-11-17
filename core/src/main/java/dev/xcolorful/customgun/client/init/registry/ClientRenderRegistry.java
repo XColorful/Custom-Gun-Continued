@@ -103,9 +103,9 @@ public class ClientRenderRegistry {
                         // [26.1.x, 26.2)
 //                        .withVertexFormat(DefaultVertexFormat.ENTITY, VertexFormat.Mode.QUADS)
                         // [26.2, )
-                        .withBindGroupLayout(CGC_BAKED_BIND_GROUP) // uniform 改由 BindGroupLayout 声明
+                        // 26.2 起法线矩阵走 DynamicTransforms 的 TextureMat（见 cgc_baked_entity.vsh），不再单独声明 CgcBaked
+//                        .withBindGroupLayout(CGC_BAKED_BIND_GROUP) // uniform 改由 BindGroupLayout 声明
                         .withBindGroupLayout(BindGroupLayouts.SAMPLER0_SAMPLER1_SAMPLER2)
-                        // 26.2 顶点格式与拓扑分开声明
                         .withVertexBinding(0, DefaultVertexFormat.ENTITY)
                         .withPrimitiveTopology(PrimitiveTopology.QUADS)
                         .build();
@@ -151,7 +151,25 @@ public class ClientRenderRegistry {
 //                    .build());
 
             // [26.2, )
-            return null;
+            /*
+            26.2 的实体着色器直接用顶点里的 Normal 点乘世界空间光照方向，烘焙网格是模型空间法线
+            （关光影时整枪偏暗、转动不变化就是这一条），必须换成会把姿态算进法线的着色器
+            实例姿态走 DynamicTransforms 的 TextureMat（雾与法线都由它还原），不需要额外 UBO，
+            因此可以只换着色器、保留调用方管线的状态与 Iris 的 program 映射（颜色目标要手动重放，见下）
+             */
+            return BAKED_PIPELINES.computeIfAbsent(base, pipeline -> {
+                RenderPipeline.Builder builder = pipeline.toBuilder()
+                        .withVertexShader(BAKED_ENTITY_SHADER)
+                        .withFragmentShader(BAKED_ENTITY_SHADER);
+                // toBuilder() 只拷贝颜色目标数组，不还原数量；不补的话 build() 落回 ColorTargetState.DEFAULT，
+                // 于是 no_color_write（瞄具模板遮罩）与半透明混合全部丢失——表现为开镜后目镜被黑色盖住（2026-11-17 实测）
+                @Nullable ColorTargetState[] colorTargets = pipeline.getColorTargetStates();
+                for (int i = 0; i < colorTargets.length; i++) {
+                    @Nullable ColorTargetState colorTarget = colorTargets[i];
+                    if (colorTarget != null) builder.withColorTargetState(i, colorTarget);
+                }
+                return builder.build();
+            });
         }
 
         private static final Map<RenderPipeline, RenderPipeline> BAKED_PIPELINES = new IdentityHashMap<>();

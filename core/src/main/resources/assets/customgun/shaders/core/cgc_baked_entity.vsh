@@ -1,41 +1,28 @@
-#version 150
+#version 330
 
 /*
 静态烘焙网格的实体着色器（渲染重构B1-a）
 
-[1.20.1, 1.21,6)
-与 vanilla 的 rendertype_entity_cutout 的差别只有两处，都来自「顶点在模型空间、由 ModelViewMat 带入视图空间」：
-    1. 光照：vanilla 的 Normal 属性已经是视图空间法线，着色器直接用它点乘视图空间光照方向
-        这里顶点是模型空间法线，用 ModelViewMat 的逆转置把它带到同一空间
-        等比缩放下与 vanilla 逐位等价
-        1.21.1 起 ModelViewMat 只放调用方姿态，IT(ModelViewMat) 才与即时块 CPU 写的 IT(姿态) 同口径
-    2. 雾：vanilla 用 IViewRotMat * Position（Position 已是视图空间），先在相机旋转抵消后的坐标系里取样
-        这里把 ModelViewMat 一起乘进去，得到同样的世界对齐坐标，再交给 fog_distance
-        注意必须在乘完之后才做 shape=1 的「清 Y」，否则清掉的是模型空间的 Y
-        1.21.1 起
-            fog_distance 不再接矩阵，也没有 IViewRotMat
-            绘制侧的 ModelViewMat 只放调用方姿态（RenderSystem 的 modelview 由 CPU 并进 ProjMat，见 BakedMesh#draw），
-            这里改乘 CgcViewMat 还原真实视图坐标，再交给 fog_distance
+[26.2, )
+与 vanilla 的 core/entity 的差别只有两处，都来自「顶点在模型空间」：
 
-[1.21.6, )
-与 vanilla 的 core/entity 的差别只有两处，都来自「顶点在模型空间、由 ModelViewMat 带入视图空间」：
-    1. 光照：vanilla 的 Normal 属性已经是视图空间法线，着色器直接用它点乘视图空间光照方向
-        这里顶点是模型空间法线，用 ModelViewMat 的逆转置把它带到同一空间
-        等比缩放下与 vanilla 逐位等价
-    2. 雾：vanilla 直接对原始顶点坐标取样，那套顶点已经由模型矩阵带到视图空间
-        这里先把顶点乘进 ModelViewMat，再交给 fog_*_distance
+1. 位置与雾
+   vanilla 的顶点已经由调用方 CPU 乘过姿态，ModelViewMat 只放模型视图，顶点坐标本身就是「世界对齐」的
+   这里顶点是模型空间，绘制侧把「模型视图 × 姿态」写进 ModelViewMat，姿态本身写进 TextureMat，
+   所以雾要按 TextureMat * Position 取样，而不是直接拿 Position
+
+2. 法线
+   vanilla 的 entity 着色器直接点乘顶点里的 Normal，光照方向是世界空间常量
+   烘焙网格存的是模型空间法线，这里用 transpose(inverse(mat3(TextureMat))) 复现即时块 CPU 写的 IT(姿态)
+   （不这么做时表现为整枪偏暗、转动时亮度不变化，2026-11-17 修）
+   TextureMat 被占用只是这一条 draw 内的事：烘焙网格不使用纹理变换（glint 之类不进烘焙路径）
 */
 
-// moj_import注释行前面不能带井号，否则会被当成真指令导入
-// [1.20.1, 1.21.6)--------
-// moj_import <light.glsl>
-// moj_import <fog.glsl>
-// [1.21.6, )
 #moj_import <minecraft:light.glsl>
 #moj_import <minecraft:fog.glsl>
 #moj_import <minecraft:dynamictransforms.glsl>
 #moj_import <minecraft:projection.glsl>
-// --------
+#moj_import <minecraft:sample_lightmap.glsl>
 
 in vec3 Position;
 in vec4 Color;
@@ -44,76 +31,62 @@ in ivec2 UV1;
 in ivec2 UV2;
 in vec3 Normal;
 
+#ifndef NO_OVERLAY
 uniform sampler2D Sampler1;
+#endif
+
+#ifndef EMISSIVE
 uniform sampler2D Sampler2;
+#endif
 
-// [1.20.1, 1.21.6)--------
-// uniform mat4 ModelViewMat;
-// uniform mat4 ProjMat;
-// [1.20.1, 1.21.1)
-// uniform mat3 IViewRotMat;
-// [1.21.1, )
-// uniform mat4 CgcViewMat; // 绘制时 RenderSystem 的 modelview，只用来把顶点还原成真实视图坐标（雾）
-// uniform int FogShape;
-
-// uniform vec3 Light0_Direction;
-// uniform vec3 Light1_Direction;
-
-// out float vertexDistance;
-// [1.21.6, )
 out float sphericalVertexDistance;
 out float cylindricalVertexDistance;
-// --------
 
-// [1.21.6, )
-/*
-烘焙网格存模型空间法线，原版 entity.vsh 直接用顶点里的 Normal（即时块在 CPU 用 IT(姿态) 写入）
-DynamicTransforms 的 ModelViewMat 是 mv × 姿态，逆转置会少一次摄像机旋转：转视角枪体亮度不变
-法线矩阵因此单独走这个 UBO，内容就是 IT(姿态)
- */
-layout(std140) uniform CgcBaked {
-    mat4 NormalMat;
-};
-
+#ifdef PER_FACE_LIGHTING
+out vec4 vertexPerFaceColorBack;
+out vec4 vertexPerFaceColorFront;
+#else
 out vec4 vertexColor;
+#endif
+
+#ifndef EMISSIVE
 out vec4 lightMapColor;
+#endif
+
+#ifndef NO_OVERLAY
 out vec4 overlayColor;
+#endif
+
 out vec2 texCoord0;
 
 void main() {
-    // [1.20.1, 1.21.6)--------
-//     gl_Position = ProjMat * ModelViewMat * vec4(Position, 1.0);
-    // [1.20.1, 1.21.1)
-    /*
-    雾必须先在「世界对齐」坐标系里算：原版是 fog_distance(ModelViewMat, IViewRotMat * Position)
-    其中 IViewRotMat * Position 消除了相机旋转，shape=1 时 zero 掉的是世界 Y
-    这里把 ModelViewMat 乘进去之后再清 Y，否则清掉的是模型空间的 Y
-     */
-//     vec3 worldAlignedPosition = (mat4(IViewRotMat) * ModelViewMat * vec4(Position, 1.0)).xyz;
-//     vertexDistance = fog_distance(mat4(1.0), worldAlignedPosition, FogShape);
-    // [1.21.1, )
-    /*
-    雾要在真实视图坐标里取样：ModelViewMat 是调用方姿态，再乘 CgcViewMat（RenderSystem 的 modelview）才是视图位置
-     */
-//     vec3 viewPosition = (CgcViewMat * ModelViewMat * vec4(Position, 1.0)).xyz;
-//     vertexDistance = fog_distance(viewPosition, FogShape);
+    // 与即时块 CPU 写进顶点的坐标同空间：模型空间顶点乘实例姿态
+    vec3 posedPosition = (TextureMat * vec4(Position, 1.0)).xyz;
+    gl_Position = ProjMat * ModelViewMat * vec4(Position, 1.0);
 
-    // [1.21.6, )
-    vec3 viewPosition = (ModelViewMat * vec4(Position, 1.0)).xyz;
-    gl_Position = ProjMat * vec4(viewPosition, 1.0);
+    sphericalVertexDistance = fog_spherical_distance(posedPosition);
+    cylindricalVertexDistance = fog_cylindrical_distance(posedPosition);
 
-    sphericalVertexDistance = fog_spherical_distance(viewPosition);
-    cylindricalVertexDistance = fog_cylindrical_distance(viewPosition);
-    // --------
+    // 原版 entity 着色器直接用顶点里的 Normal 点乘世界空间光照方向，即时块在 CPU 写的是 IT(姿态)
+    vec3 normal = transpose(inverse(mat3(TextureMat))) * Normal;
 
-    // [1.20.1, 1.21.6)
-//     mat3 normalMatrix = mat3(transpose(inverse(ModelViewMat)));
-//     vertexColor = minecraft_mix_light(Light0_Direction, Light1_Direction, normalMatrix * Normal, Color);
-    // [1.21.6, )
-    vertexColor = minecraft_mix_light(Light0_Direction, Light1_Direction, mat3(NormalMat) * Normal, Color);
+#ifdef PER_FACE_LIGHTING
+    vec2 light = minecraft_compute_light(Light0_Direction, Light1_Direction, normal);
+    vertexPerFaceColorBack = minecraft_mix_light_separate(-light, Color);
+    vertexPerFaceColorFront = minecraft_mix_light_separate(light, Color);
+#elif defined(NO_CARDINAL_LIGHTING)
+    vertexColor = Color;
+#else
+    vertexColor = minecraft_mix_light(Light0_Direction, Light1_Direction, normal, Color);
+#endif
 
-    lightMapColor = texelFetch(Sampler2, UV2 / 16, 0);
+#ifndef EMISSIVE
+    lightMapColor = sample_lightmap(Sampler2, UV2);
+#endif
+
+#ifndef NO_OVERLAY
     overlayColor = texelFetch(Sampler1, UV1, 0);
+#endif
+
     texCoord0 = UV0;
-//     normal = ProjMat * ModelViewMat * vec4(Normal, 0.0); // 1.21.6移除
 }

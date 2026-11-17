@@ -48,4 +48,17 @@ public class PlannedRefactor {
     @Deprecated(forRemoval = true) public static final boolean AUTO_BOLT = true;
     // 是否启用内置的tick，用于自定义实体及减少不必要的一大堆entity tick (不会改成Capability的方式）
     @Deprecated(forRemoval = true) public static final boolean ENABLE_DEFAULT_SHOOTER_TICK = true;
+    /*
+    1.21.4 起原版改用 item model definition（assets/<ns>/items/*.json + special base 模型），
+    special base 会被要求解析 "particle" 贴图槽。
+    CGC 的 gun / attachment / ammo / ammo_box 共用 assets/customgun/models/item/geo_base.json，
+    该模型只有 gui_light、没有 textures，于是每次启动都会报
+    "Missing texture references in model customgun:item/geo_base: particle"。
+
+    影响：仅物品实体被破坏时的碎屑粒子退回缺失贴图，枪本身的渲染不受影响，属日志噪音。
+    修法：给 geo_base 补 "textures": {"particle": "..."}，精灵必须能进物品图集
+    （新增 assets/customgun/textures/item/*.png，或直接引用 vanilla 的图集精灵）。
+    1.21.1 及更早是旧的 BakedModel 体系，没有这个槽位，不需要处理。
+     */
+    public static final boolean ITEM_PARTICLE_WARN = false;
 }

@@ -152,10 +152,10 @@ public class MuzzleFlashRender implements IModelComponentRenderer {
             ClientRenderHelper.rotate(poseStack2, Axis.ZP.rotationDegrees(State.muzzleFlashRandomRotate));
             poseStack2.translate(0, -1, 0);
             RenderType renderTypeBg = ClientRenderUtils.RenderType_.entityTranslucent(muzzleFlashDisplay.getTextureLocation());
-            ClientRenderProfiler.countSubmit();
             collector.submitCustomGeometry(poseStack2, renderTypeBg, (pose, vertexConsumer) -> {
                 PoseStack _poseStack = new PoseStack();
                 _poseStack.last().set(pose);
+                ClientRenderProfiler.countBatch();
                 MUZZLE_FLASH_MODEL.renderToBuffer(_poseStack, vertexConsumer, light, overlay, 1.0f, 1.0f, 1.0f, 1.0f);
             });
         }
@@ -167,10 +167,10 @@ public class MuzzleFlashRender implements IModelComponentRenderer {
             ClientRenderHelper.rotate(poseStack2, Axis.ZP.rotationDegrees(State.muzzleFlashRandomRotate));
             poseStack2.translate(0, -0.9, 0);
             RenderType renderTypeLight = ClientRenderUtils.RenderType_.energySwirl(muzzleFlashDisplay.getTextureLocation(), 1, 1);
-            ClientRenderProfiler.countSubmit();
             collector.submitCustomGeometry(poseStack2, renderTypeLight, (pose, vertexConsumer) -> {
                 PoseStack _poseStack = new PoseStack();
                 _poseStack.last().set(pose);
+                ClientRenderProfiler.countBatch();
                 MUZZLE_FLASH_MODEL.renderToBuffer(_poseStack, vertexConsumer, light, overlay, 1.0f, 1.0f, 1.0f, 1.0f);
             });
         }

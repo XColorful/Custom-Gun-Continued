@@ -58,10 +58,10 @@ public class AttachmentRender implements IModelComponentRenderer {
             if (collector == null) return;
 
             RenderType missingRenderType = ClientRenderUtils.RenderType_.entityTranslucent(ClientRenderUtils.getMissingTextureLocation());
-            ClientRenderProfiler.countSubmit();
             collector.submitCustomGeometry(poseStack, missingRenderType, (pose, buffer) -> {
                 PoseStack _poseStack = new PoseStack();
                 _poseStack.last().set(pose);
+                ClientRenderProfiler.countBatch();
                 AttachmentItemRenderer.SLOT_ATTACHMENT_MODEL.renderToBuffer(_poseStack, buffer, light, overlay, 1.0f, 1.0f, 1.0f, 1.0f);
             });
             return;
@@ -107,6 +107,7 @@ public class AttachmentRender implements IModelComponentRenderer {
         @Nullable IAttachment iAttachment = IAttachmentGetter.fromItemStack(attachmentItem);
         if (iAttachment == null) return;
 
+        // 照抄调用方的 normal：它在大幅旋转后会与 IT(姿态) 失配，见 docs/architecture/client/render/refactor/b1b-first-person-bake.md 的「未查清」一节
         Matrix3f normal = new Matrix3f(poseStack.last().normal());
         Matrix4f pose = new Matrix4f(poseStack.last().pose());
 

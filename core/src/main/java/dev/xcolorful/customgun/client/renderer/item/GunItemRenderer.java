@@ -288,10 +288,12 @@ public class GunItemRenderer extends AnimateGeoItemRenderer<GunModelObject, GunA
                     ? ClientRenderUtils.RenderType_.entityTranslucent(textureLocation)
                     : ClientRenderUtils.RenderType_.entityCutout(textureLocation);
 
+            ClientRenderProfiler.beginCgcGpu();
             try {
                 ClientRenderHelper.FirstPersonArmHelper.setFirstPersonArmCollector(event.getMultiBufferSource_SubmitNodeCollector());
                 gunModelObject.render(poseStack, ctx, renderType, light, OverlayTexture.NO_OVERLAY, gunItem);
             } finally {
+                ClientRenderProfiler.endCgcGpu();
                 ClientRenderHelper.FirstPersonArmHelper.setFirstPersonArmCollector(null);
             }
 
@@ -468,9 +470,11 @@ public class GunItemRenderer extends AnimateGeoItemRenderer<GunModelObject, GunA
                     // 渲染枪械模型
                     RenderType renderType = ClientRenderUtils.RenderType_.entityCutout(modelTextureLocation);
                     ClientRenderHelper.FirstPersonArmHelper.setFirstPersonArmCollector(bufferSource);
+                    ClientRenderProfiler.beginCgcGpu();
                     try {
                         gunModelObject.render(poseStack, transformType, renderType, light, overlay, gunItem);
                     } finally {
+                        ClientRenderProfiler.endCgcGpu();
                         ClientRenderHelper.FirstPersonArmHelper.setFirstPersonArmCollector(null);
                     }
 
@@ -556,14 +560,14 @@ public class GunItemRenderer extends AnimateGeoItemRenderer<GunModelObject, GunA
             ClientRenderHelper.rotate(poseStack, Axis.YP.rotationDegrees(180));
         }
 
-        final long profSlot = ClientRenderProfiler.begin();
-        ClientRenderProfiler.countSubmit();
         collector.submitCustomGeometry(poseStack, ClientRenderUtils.RenderType_.entityTranslucent(texture), (pose, buffer) -> {
+            final long profSlot = ClientRenderProfiler.begin();
             PoseStack _poseStack = new PoseStack();
             _poseStack.last().set(pose);
+            ClientRenderProfiler.countBatch();
             SLOT_GUN_MODEL.renderToBuffer(_poseStack, buffer, packedLight, packedOverlay, 1.0f, 1.0f, 1.0f, 1.0f);
+            ClientRenderProfiler.end(ClientRenderProfiler.SLOT_ICON, profSlot);
         }
         );
-        ClientRenderProfiler.end(ClientRenderProfiler.SLOT_ICON, profSlot);
     }
 }

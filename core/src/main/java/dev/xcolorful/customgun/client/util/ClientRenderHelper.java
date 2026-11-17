@@ -1,9 +1,9 @@
 package dev.xcolorful.customgun.client.util;
 
-import com.mojang.renderpearl.api.pipeline.PrimitiveTopology;
-import com.mojang.renderpearl.backend.opengl.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
+import com.mojang.renderpearl.api.pipeline.PrimitiveTopology;
+import com.mojang.renderpearl.backend.opengl.GlStateManager;
 import dev.xcolorful.customgun.client.CustomGunClient;
 import dev.xcolorful.customgun.client.api.minecraft.pipeline.PipelineModifier;
 import dev.xcolorful.customgun.client.api.minecraft.pipeline.RenderTypePipelineBake;
@@ -101,6 +101,14 @@ public class ClientRenderHelper {
         poseStack.rotate(by);
     }
 
+    public static void queueFencedTask(Runnable task) {
+        // [1.20.1, 1.21.6)
+//        RenderSystem.recordRenderCall(task);
+
+        // [1.21.6, )
+        RenderSystem.queueFencedTask(task);
+    }
+
     /**
      * 26.2 提交 + 延迟渲染：把当前模板/颜色写入等管线状态烘焙进 RenderType，使 flush 阶段绘制仍用正确管线
      */
@@ -155,7 +163,6 @@ public class ClientRenderHelper {
          *     <li>这里按 1.20.1-1.21.6 的即时模式直接渲染手臂，使手的渲染仍处于模板测试期间</li>
          * </ul>
          */
-        ClientRenderProfiler.countSubmit();
         collector.submitCustomGeometry(matrixStack, bakedRenderType, (pose, vertexConsumer) -> {
             PoseStack _poseStack = new PoseStack();
             _poseStack.last().set(pose);

@@ -12,7 +12,10 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.xcolorful.customgun.client.api.entity.shooter.ILocalShooterGetter;
 import dev.xcolorful.customgun.client.compat.ar.AttachmentModelAR;
+import dev.xcolorful.customgun.client.model.bake.DiscardVertexConsumer;
+import dev.xcolorful.customgun.client.model.bake.StaticBake;
 import dev.xcolorful.customgun.client.model.bedrock.BedrockPart;
+import dev.xcolorful.customgun.client.model.bedrock.NodeTransform;
 import dev.xcolorful.customgun.client.renderer.model.BeamRender;
 import dev.xcolorful.customgun.client.util.ClientRenderHelper;
 import dev.xcolorful.customgun.client.util.ClientRenderProfiler;
@@ -232,26 +235,65 @@ public class _AttachmentModelRender {
                 path.get(i).translate_rotate_scale(poseStack);
             }
             BedrockPart part = path.get(path.size() - 1);
+            // 路径前缀已 push 进 poseStack，烘焙回放与即时绘制都直接取栈顶
+            RenderType bakedRenderType = ClientRenderHelper.bakePipelineState(renderType);
 
-            RenderType bakedRenderType = ClientRenderHelper.bakePipelineState(renderType); // [26.2, )
+            {
+                part.visible = true;
+                try {
+                    // 延迟渲染：绘制回调在 prepare 阶段执行，那时动画已把节点状态清空
+                    // 先快照这棵子树（含刚设的 visible），回调里写回，画完还原成清空后的状态
+                    List<NodeTransform> animatedTransforms = NodeTransform.captureSubtree(part);
 
-            ClientRenderProfiler.countSubmit();
-            collector.submitCustomGeometry(poseStack, bakedRenderType, (pose, vertexConsumer) -> {
-                PoseStack _poseStack = new PoseStack();
-                _poseStack.last().set(pose);
-                part.visible = true; {
-                    part.render(_poseStack,
-                            transformType,
-                            vertexConsumer,
-                            light, overlay);
+                    boolean baked = false;
+                    if (StaticBake.eligible()) { // 用烘焙网格替代逐顶点遍历（渲染重构B1-a/B1-b）
+                        int delegateMark = _this.delegateMark();
+                        DiscardVertexConsumer discard = DiscardVertexConsumer.INSTANCE;
+                        long vertexMark = discard.writtenVertices();
 
-//                    if (!IrisCompat.endBatch(bufferSource)) {
-//                        bufferSource.endBatch();
-//                    }
+                        long fingerprint = part.renderStatus(poseStack, transformType, light, overlay, discard, null);
+
+                        if (discard.writtenVertices() == vertexMark) {
+                            baked = StaticBake.drawOrBakePatchable26_2(_this, path,
+                                    poseStack,
+                                    bakedRenderType, light, overlay,
+                                    1, 1, 1, 1, fingerprint,
+                                    consumer -> part.renderGeometry(new PoseStack(), transformType, consumer,
+                                            light, overlay, 1, 1, 1, 1));
+                            if (!baked) {
+                                // 没有可用绘制通道：丢弃状态段登记的委托后走即时管线
+                                _this.trimDelegates(delegateMark);
+                            }
+                        } else {
+                            // 回调直接发射了几何，无法烘焙：丢弃状态段登记的委托后走即时管线
+                            _this.trimDelegates(delegateMark);
+                        }
+                    }
+                    if (!baked) {
+                        ClientRenderProfiler.countBatch();
+                        ClientRenderProfiler.countRenderType(bakedRenderType);
+
+                        collector.submitCustomGeometry(poseStack, bakedRenderType, (pose, vertexConsumer) -> {
+                            List<NodeTransform> cleanedTransforms = NodeTransform.captureSubtree(part);
+                            PoseStack _poseStack = new PoseStack();
+                            _poseStack.last().set(pose);
+                            // 与烘焙回放同口径：法线从位置矩阵现算
+                            _poseStack.last().normal().set(_poseStack.last().pose()).invert().transpose();
+                            NodeTransform.applyAll(animatedTransforms);
+                            try {
+                                part.render(_poseStack,
+                                        transformType,
+                                        vertexConsumer,
+                                        light, overlay);
+                            } finally {
+                                NodeTransform.applyAll(cleanedTransforms);
+                            }
+                        });
+                    }
+                } finally {
+                    part.visible = false;
                 }
-                part.visible = false;
-                }
-            );
+            }
         }
         poseStack.popPose();
     }
@@ -325,7 +367,7 @@ public class _AttachmentModelRender {
             float centerX = ocularCenter.x() * 16 * 90;
             float centerY = ocularCenter.y() * 16 * 90;
 
-            RenderType bakedRenderType = ClientRenderHelper.bakePipelineState(RenderTypes.debugTriangleFan()); // [26.2, )
+            RenderType bakedRenderType = ClientRenderHelper.bakePipelineState(RenderTypes.debugTriangleFan());
 
             collector.submitCustomGeometry(matrixStack, bakedRenderType, (pose, builder) -> {
                 builder.addVertex(pose,

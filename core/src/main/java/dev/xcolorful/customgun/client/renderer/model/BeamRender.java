@@ -63,6 +63,7 @@ public class BeamRender {
         @Nullable SubmitNodeCollector collector = ClientRenderHelper.FirstPersonArmHelper.getFirstPersonArmCollector();
         if (collector == null) return;
 
+        ClientRenderProfiler.countBatch();
         poseStack.pushPose(); {
             for (int i = 0; i < path.size(); ++i) {
                 path.get(i).translate_rotate_scale(poseStack);
@@ -91,7 +92,6 @@ public class BeamRender {
              */
             RenderType bakedRenderType = ClientRenderHelper.bakePipelineState(
                     ClientRenderRegistry.LaserBeamRenderState.getLaserBeam());
-            ClientRenderProfiler.countSubmit();
             collector.submitCustomGeometry(poseStack, bakedRenderType, (pose, builder) ->
                     _stringVertex(builder, pose, z, width, r, g, b, RenderConfig.ENABLE_LASER_FADE_OUT.get()));
         }

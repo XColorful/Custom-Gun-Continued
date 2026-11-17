@@ -121,4 +121,10 @@ public final class DiscardVertexConsumer implements VertexConsumer {
     public VertexConsumer setColor(int color) {
         return this;
     }
+
+    @ApiStatus.AvailableSince("26.3")
+//    @Override
+    public VertexConsumer setUv3(float u, float v) {
+        return this;
+    }
 }

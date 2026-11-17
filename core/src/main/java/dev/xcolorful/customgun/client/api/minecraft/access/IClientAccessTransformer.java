@@ -38,6 +38,7 @@ public interface IClientAccessTransformer {
      * [1.21.6, ) 烘焙网格自己开 RenderPass，必须知道该 RenderType 画到哪个输出目标
      * @return {@code RenderStateShard.OutputStateShard}；拿不到时返回 {@code null}
      */
+//    @Deprecated(since = "26.3")
     @ApiStatus.AvailableSince("1.21.6")
     @Nullable Object
     getOutputState(

@@ -46,6 +46,9 @@
   - 保留项：「静态展示不再进入瞄具模板流程」已拆出独立保留（无条件生效，无开关；模板测试 + 每枪清空 ≈0.09 ms/帧，见 [refactor/Home.md](./refactor/Home.md)「静态展示的模板测试」）
   - 若要重新实现：读 commit `ed78e3b4e`「Add render type merge render refactor」，并先看报告第 8 节的收益边界与风险表。
 - [ ] **阶段 4 26.3**：确认自定义 `FeatureRenderer` 路径，实现同一套烘焙抽象；**26.3 的 render pass 是它最大的单项，必须按 pass 计时验收**
+  - [x] 26.2 已实机验收（2026-11-16）：烘焙网格改为「CPU 顶点副本 + `submitCustomGeometry` 回放」，不再自建 GpuBuffer / 派生管线；
+    被排除的做法、三条硬约束（包装 RenderType 缓存、缓存淘汰均衡、回放忽略关闭）与 API 差异见 [`refactor/b1a-static-bake.md`](./refactor/b1a-static-bake.md)「26.2」
+  - [ ] 26.2 回放后的帧时间未测；`Bake upload bytes` 口径已变（现为拷贝字节数），旧报告数值不可直接对比
 - [ ] **待评估**：方案 C（动态实例 draw 合并 / 实例化）、方案 D 的剔除保留现状
 - [ ] **待评估：第一人称的分块 draw 数**：满配 35 次 CGC draw ≈0.27 ms，块切得越多 draw 越多；`b1-b-1` 实测换弹后的待机只 +2%，暂不紧迫。若要做，可考虑「长时间不脏的块回并到父块」或按 `RenderType` 合并相邻块（B2 只覆盖静态展示实例，不覆盖第一人称）
 - [ ] **外部参照验证**：[`refactor/reference-tacz-1.2.0.md`](./refactor/reference-tacz-1.2.0.md) 的 V1–V9，随对应阶段一起验证；只作验证项，不改变路线，也不改动既有 benchmark 数值

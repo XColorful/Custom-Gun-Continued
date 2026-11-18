@@ -1,7 +1,7 @@
 [English](#English)
 
 # 渲染优化说明
-> wiki 版本：`26.11.36`.0
+> wiki 版本：`26.11.36`.1
 
 ## 优化原理
 > ⭐实操结论可直接到[指导意义](#指导意义)，但建议先了解优化原理
@@ -10,7 +10,7 @@
 
 经[实验测量](https://github.com/XColorful/Custom-Gun-Continued/blob/HEAD/docs/architecture/client/render/benchmark/26.11.35.1-1/测试数据计算报告.md)，`1.20.1-26.1.2`和`26.2+`（延迟渲染）两套渲染体系下枪械模型的渲染开销组成如下：
 
-![渲染开销组成分析](./渲染开销组成分析.png)
+![渲染开销组成分析](https://raw.githubusercontent.com/wiki/XColorful/Custom-Gun-Continued/渲染开销组成分析.png)
 
 |项目\版本|1.20.1|26.3|
 |---|---|---|
@@ -44,7 +44,7 @@
 
 经[实验测量](https://github.com/XColorful/Custom-Gun-Continued/blob/HEAD/docs/architecture/client/render/benchmark/26.11.35.1-4/测试数据计算报告.md)，`1.20.1-26.1.2`渲染体系下的性能提升如下：
 
-![静态烘焙优化测量](./静态烘焙优化测量.png)
+![静态烘焙优化测量](https://raw.githubusercontent.com/wiki/XColorful/Custom-Gun-Continued/静态烘焙优化测量.png)
 
 |项目\版本|优化前|优化后|
 |---|---|---|
@@ -69,7 +69,7 @@
 
 经[实验测量](https://github.com/XColorful/Custom-Gun-Continued/blob/HEAD/docs/architecture/client/render/benchmark/26.11.35.1-6/测试数据计算报告.md)，光照对渲染影响如下：
 
-![光照影响测量](./光照影响测量.png)
+![光照影响测量](https://raw.githubusercontent.com/wiki/XColorful/Custom-Gun-Continued/光照影响测量.png)
 
 让光照跟烘焙解耦可以避免重烘焙，但：
 - 光照对平均帧数影响较小，且光照解耦本身不提供性能提升，其**收益在于提升 1% low 帧**
@@ -89,7 +89,7 @@
 
 经[实验测量](https://github.com/XColorful/Custom-Gun-Continued/blob/HEAD/docs/architecture/client/render/benchmark/26.11.35.1-4/b1-a-8/测试数据计算报告.md)，播放装弹动画时有大量 cube 可跳过节点变换：
 
-![脏子树测量](./脏子树测量.png)
+![脏子树测量](https://raw.githubusercontent.com/wiki/XColorful/Custom-Gun-Continued/脏子树测量.png)
 
 - 这意味着实际需要重算的 cube 只占全枪的一小部分
 - 大部分 cube 已经吃到渲染优化的收益
@@ -134,7 +134,7 @@
 
 经[实验测量](https://github.com/XColorful/Custom-Gun-Continued/blob/HEAD/docs/architecture/client/render/benchmark/26.11.35.1-9/测试数据计算报告.md)，自定义枪械永续`26.11.36`更新日志使用的实验数据如下：
 
-![26.11.36性能测试](./26.11.36性能测试.png)
+![26.11.36性能测试](https://raw.githubusercontent.com/wiki/XColorful/Custom-Gun-Continued/26.11.36性能测试.png)
 
 - 相较于 TaCZ 1.2.0，测试枪械渲染帧时间减少约 74.5%，渲染性能提升约 3.92 倍
 
@@ -146,7 +146,7 @@
 3. 动画组里尽可能少放 cube，静态装饰不要挂在动画骨骼下：这些 cube 是优化后仍要重算的开销
 
 # English
-> wiki version: `26.11.36`.0
+> wiki version: `26.11.36`.1
 
 ## How it works
 > ⭐ The hands-on rules are in [Guidelines](#Guidelines); the principle is worth a read first
@@ -155,7 +155,7 @@
 
 Measured on both renderer generations — `1.20.1-26.1.2` and `26.2+` (deferred) — the frame cost of a gun model breaks down as follows:
 
-![Cost breakdown](./渲染开销组成分析.png)
+![Cost breakdown](https://raw.githubusercontent.com/wiki/XColorful/Custom-Gun-Continued/渲染开销组成分析.png)
 
 |Item\Version|1.20.1|26.3|
 |---|---|---|
@@ -189,7 +189,7 @@ Since every frame recomputes all cube transforms, the obvious optimization is:
 
 Measured under the `1.20.1-26.1.2` renderer, the result is:
 
-![Static baking measurement](./静态烘焙优化测量.png)
+![Static baking measurement](https://raw.githubusercontent.com/wiki/XColorful/Custom-Gun-Continued/静态烘焙优化测量.png)
 
 |Item\Version|Before|After|
 |---|---|---|
@@ -214,7 +214,7 @@ When lighting changes, baked nodes must refresh their brightness to stay correct
 
 Measured, lighting affects rendering as follows:
 
-![Lighting measurement](./光照影响测量.png)
+![Lighting measurement](https://raw.githubusercontent.com/wiki/XColorful/Custom-Gun-Continued/光照影响测量.png)
 
 Decoupling lighting from the bake avoids re-baking, but:
 - It barely moves the average rate; decoupling adds no speed, its **gain is the 1% low**
@@ -234,7 +234,7 @@ The approach:
 
 Measured, a reload animation leaves many cubes with no transform to recompute:
 
-![Dirty subtree measurement](./脏子树测量.png)
+![Dirty subtree measurement](https://raw.githubusercontent.com/wiki/XColorful/Custom-Gun-Continued/脏子树测量.png)
 
 - The cubes that really need recomputing are a small part of the whole gun
 - Most cubes already benefit from the optimization
@@ -278,7 +278,7 @@ A fixed per-frame cost is judged as follows:
 
 The numbers used in the `26.11.36` changelog of Custom Gun Continued, measured:
 
-![26.11.36 performance](./26.11.36性能测试.png)
+![26.11.36 performance](https://raw.githubusercontent.com/wiki/XColorful/Custom-Gun-Continued/26.11.36性能测试.png)
 
 - Versus TaCZ 1.2.0, gun render time drops by about 74.5%, a 3.92× gain in gun rendering
 

@@ -62,6 +62,17 @@
 - [ ] **待评估：第一人称的分块 draw 数**：满配 35 次 CGC draw ≈0.27 ms，块切得越多 draw 越多；`b1-b-1` 实测换弹后的待机只 +2%，暂不紧迫。若要做，可考虑「长时间不脏的块回并到父块」或按 `RenderType` 合并相邻块（B2 只覆盖静态展示实例，不覆盖第一人称）
 - [ ] **外部参照验证**：[`refactor/reference-tacz-1.2.0.md`](./refactor/reference-tacz-1.2.0.md) 的 V1–V9，随对应阶段一起验证；只作验证项，不改变路线，也不改动既有 benchmark 数值
 
+## Vulkan 后端（Issue #99）
+
+差异与调用点清单见 [`26.2-rendering-differences.md`](./26.2-rendering-differences.md)「Vulkan 后端」。
+
+- [x] 26.2 代码适配（2026-11-19）：`ClientRenderHelper.GL._isOpenGlBackend()`（`RenderSystem.tryGetDevice()` 的
+  `backendName()`），`_enableBlend/_disableBlend` 在非 OpenGL 下跳过（装配界面四个控件的现有调用随之安全，且不影响 ≤1.21.11 的即时 GUI）；
+  `GpuFrameTimer` 在非 OpenGL 下停用；`LASER_BEAM_ENTITY_PIPELINE` 补 `BindGroupLayouts.SAMPLER1`；
+  `:core:compileJava` 与 `:neoforge-compat:compileJava` 通过
+- [ ] 26.2 实机：测试机 26.2 无法切 Vulkan（无 mod 环境），未验证；GL 后端下装配界面 / 准心 / 激光束需回归
+- [ ] 26.3 同步与实机验收：涉及文件两端内容一致（仅包名与无关 API 差异），合入后在 Vulkan 下打开装配界面、开枪、F12 采集、激光束与目镜
+
 ## 已测得 / 仍缺的数据
 
 - [x] 上传 / draw 拆分、draw 数、上传字节、渲染线程分配、动画通道、状态变化（26.11.35.1-2）

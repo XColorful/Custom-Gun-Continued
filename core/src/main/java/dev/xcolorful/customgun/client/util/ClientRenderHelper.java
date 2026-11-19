@@ -1,7 +1,10 @@
 package dev.xcolorful.customgun.client.util;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.ByteBufferBuilder;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.renderpearl.api.pipeline.PrimitiveTopology;
 import com.mojang.renderpearl.backend.opengl.GlStateManager;
 import dev.xcolorful.customgun.client.CustomGunClient;
@@ -233,11 +236,11 @@ public class ClientRenderHelper {
         @ApiStatus.AvailableSince("26.2")
         public static boolean _isOpenGlBackend() {
             // [1.20.1, 26.2)
-            return true;
+//            return true;
 
             // [26.2, )
-//            var device = RenderSystem.tryGetDevice();
-//            return device != null && "OpenGL".equals(device.getDeviceInfo().backendName());
+            var device = RenderSystem.tryGetDevice();
+            return device != null && "OpenGL".equals(device.getDeviceInfo().backendName());
         }
 
         /**

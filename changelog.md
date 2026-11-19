@@ -2,7 +2,7 @@
 
 #### 26.11.36.1
 26.2+:
-- Fixed crash when opening the refit screen with Vulkan enabled
+- Fixed crash when opening the refit screen with Vulkan enabled (#99)
 
 #### 26.11.36
 Introduced static baking and dirty subtree optimization:

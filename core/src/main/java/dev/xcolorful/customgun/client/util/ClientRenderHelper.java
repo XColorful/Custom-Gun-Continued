@@ -224,6 +224,23 @@ public class ClientRenderHelper {
     public static class GL {
 
         /**
+         * 当前后端是否为 OpenGL
+         * <ul>
+         *     <li>[26.2, ) 同一份代码也会跑在 Vulkan 后端</li>
+         *     <li>Vulkan 下没有 GL 上下文，{@code GlStateManager} / {@code GL11} 的调用会让 JVM 原生中止（Issue #99）</li>
+         * </ul>
+         */
+        @ApiStatus.AvailableSince("26.2")
+        public static boolean _isOpenGlBackend() {
+            // [1.20.1, 26.2)
+            return true;
+
+            // [26.2, )
+//            var device = RenderSystem.tryGetDevice();
+//            return device != null && "OpenGL".equals(device.getDeviceInfo().backendName());
+        }
+
+        /**
          * 1.21.6 即时模式的模板状态被渲染管线覆盖
          * 改为累积状态并写回 RenderSystem.STENCIL_TEST
          */
@@ -463,7 +480,7 @@ public class ClientRenderHelper {
 //            GlStateManager._enableBlend();
 
             // [26.2, )
-            GlStateManager._enableBlend(0);
+            if (_isOpenGlBackend()) GlStateManager._enableBlend(0);
         }
         public static void _disableBlend() {
             // [1.20.1, 1.21.6)
@@ -473,7 +490,7 @@ public class ClientRenderHelper {
 //            GlStateManager._disableBlend();
 
             // [26.2, )
-            GlStateManager._disableBlend(0);
+            if (_isOpenGlBackend()) GlStateManager._disableBlend(0);
         }
 
         /**

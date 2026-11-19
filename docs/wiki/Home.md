@@ -1,7 +1,7 @@
 [English](#English)
 
 # 自定义枪械永续wiki
-> wiki 版本：`26.10.29`.13
+> wiki 版本：`26.11.36`.14
 
 > 推荐安装[Stylus](https://chromewebstore.google.com/detail/stylus/clngdbkpkpeebahjckkjfobafhncgmne)插件并使用配置[Stylus-Obsidian-Topaz-Nord.json](https://github.com/XColorful/XColorful.github.io/blob/main/stylus/Stylus-Obsidian-Topaz-Nord.json)
 
@@ -43,6 +43,10 @@
 - 📊[数据包](https://github.com/XColorful/Custom-Gun-Continued/wiki/Resource-introduction#数据包)
 - 🖼️[资源包](https://github.com/XColorful/Custom-Gun-Continued/wiki/Resource-introduction#资源包)
 
+### 🎨美术
+
+- [渲染优化说明](https://github.com/XColorful/Custom-Gun-Continued/wiki/Rendering-optimization-introduction)
+
 ## ℹ️关于模组
 
 - [模组版本](https://github.com/XColorful/Custom-Gun-Continued/wiki/Mod-version)
@@ -66,7 +70,7 @@
 除非另有明确说明，代码、图片及其他材料也不属于本许可证的适用范围
 
 # English
-> wiki version: `26.10.29`.13
+> wiki version: `26.11.36`.14
 
 > Recommend installing the [Stylus](https://chromewebstore.google.com/detail/stylus/clngdbkpkpeebahjckkjfobafhncgmne) extension and using the configuration [Stylus-Obsidian-Topaz-Nord.json](https://github.com/XColorful/XColorful.github.io/blob/main/stylus/Stylus-Obsidian-Topaz-Nord.json)
 
@@ -107,6 +111,10 @@
 [Resource introduction](https://github.com/XColorful/Custom-Gun-Continued/wiki/Resource-introduction#English)
 - 📊[Datapack](https://github.com/XColorful/Custom-Gun-Continued/wiki/Resource-introduction#Datapack)
 - 🖼️[Resourcepack](https://github.com/XColorful/Custom-Gun-Continued/wiki/Resource-introduction#Resourcepack)
+
+### 🎨Artist
+
+- [Rendering optimization introduction](https://github.com/XColorful/Custom-Gun-Continued/wiki/Rendering-optimization-introduction#English)
 
 ## ℹ️About
 

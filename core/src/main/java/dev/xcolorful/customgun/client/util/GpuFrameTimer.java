@@ -56,6 +56,11 @@ public final class GpuFrameTimer {
 
         if (!initialized) {
             initialized = true;
+            // 26.2+ Vulkan 后端没有 GL 上下文：GL.getCapabilities() 会抛异常，GL_TIME_ELAPSED 查询也不可用
+            if (!ClientRenderHelper.GL._isOpenGlBackend()) {
+                supported = false;
+                return;
+            }
             supported = GL.getCapabilities().GL_ARB_timer_query;
             if (!supported) return;
         }

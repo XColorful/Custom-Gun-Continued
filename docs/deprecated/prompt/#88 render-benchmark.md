@@ -129,3 +129,32 @@ B 面板的「单枪渲染帧时间」就是 0.203 vs 0.797 ms 那组，误差�
 - 批次 9 的 `analyze.py` 已在新目录下重跑通过，图正常生成。
 
 工作区仍未提交；提交时 Git 会把这批目录识别为重命名。
+
+# 
+---
+
+```
+读`docs/architecture/client/render/PLAN.md`，现在已经完成重构，需要写给美术看的文档：
+
+- git工作区已经有我写的大致草稿
+
+编辑要求：
+
+- 排版、表述方式按我已写的，不再修改；每行文字量不得超过已有的最长单行
+- 措辞、术语有误的需要更正
+- 诸如 cube 这类简单说法是讲给做模型的美术的，不强制使用专业术语
+- 所有计算脚本、图片在`docs/wiki/resource/artist`下，.md内使用`./`相对目录，从而保证将改动同步到.wiki仓库时扁平化存放文件时仍能读取；文件按.md内已有方式命名，保证唯一
+- 实验数据取自benchmark，脚本画图时数据可直接取测试数据结论
+- 中英文共用同一张图，图内优先用中文（参考已有benchmark画的图）
+```
+
+# 
+
+文档已补全，改动都在 [Rendering optimization introduction.md](app://localhost/epitaxy/docs/wiki/resource/artist/Rendering%20optimization%20introduction.md)：
+
+- **五张图**由 [plot_artist_rendering.py](app://localhost/epitaxy/docs/wiki/resource/artist/plot_artist_rendering.py) 生成：开销组成、静态烘焙、光照、脏子树、26.11.36 性能。数据直接取报告结论（`26.11.35.1-1` / `-4` / `-6` / `-9`、`b1-a-8`），中英文共用同一张图，图内为中文。
+- **两张表**按探针口径填了数值（每帧毫秒）；26.3 的遍历/快照标注了「flush 内」，避免重复相加。
+- **修正的措辞**：`渲染现成`→`渲染线程`；合批的否决理由改为「光影影子 pass 拿不到相机矩阵」（原文「需自定义顶点属性、着色器」与 B2 实施记录不符）；「draw 开销占比极低」改为「单次 draw 约 8–10 µs」；「大量节点可跳过」改为按 cube 计（静止 0%、满配换弹 p99 仅 9% 需重算）；补齐了「独立光照流」的空条目。
+- **校验**：所有行宽 ≤ 既有最长行（显示宽度 112、字符 98），图片与文档链接均可解析；光照解耦后的 1% low 只有 1 次采集，已在文中注明。
+
+另外注意：会话期间 `docs-tacz/deprecated/prompt/issue/755 shader compat.md` 与 `docs/deprecated/prompt/#89 Render-analysis.md` 出现了修改，不是我改的，我没有触碰。

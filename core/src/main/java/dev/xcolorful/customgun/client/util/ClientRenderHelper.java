@@ -3,7 +3,10 @@ package dev.xcolorful.customgun.client.util;
 import com.mojang.blaze3d.PrimitiveTopology;
 import com.mojang.blaze3d.opengl.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.ByteBufferBuilder;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.PoseStack;
 import dev.xcolorful.customgun.client.CustomGunClient;
 import dev.xcolorful.customgun.client.api.minecraft.pipeline.PipelineModifier;
 import dev.xcolorful.customgun.client.api.minecraft.pipeline.RenderTypePipelineBake;
@@ -18,8 +21,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.ItemInHandRenderer;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.player.AvatarRenderer;
 import net.minecraft.client.renderer.rendertype.RenderType;
@@ -230,11 +233,11 @@ public class ClientRenderHelper {
         @ApiStatus.AvailableSince("26.2")
         public static boolean _isOpenGlBackend() {
             // [1.20.1, 26.2)
-            return true;
+//            return true;
 
             // [26.2, )
-//            var device = RenderSystem.tryGetDevice();
-//            return device != null && "OpenGL".equals(device.getDeviceInfo().backendName());
+            var device = RenderSystem.tryGetDevice();
+            return device != null && "OpenGL".equals(device.getDeviceInfo().backendName());
         }
 
         /**

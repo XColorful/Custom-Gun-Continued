@@ -247,6 +247,16 @@ public class ClientRenderRegistry {
 
         public static final RenderPipeline LASER_BEAM_ENTITY_PIPELINE = RenderPipeline.builder(RenderPipelines.ENTITY_EMISSIVE_SNIPPET)
                 .withLocation(CustomGun.getMcRegistry().createResourceLocation(String.format("%s:laser_beam_entity", CustomGun.MOD_ID)))
+                /*
+                26.2
+                    entity 着色器里 Sampler1（overlay）只被 #ifndef NO_OVERLAY 守卫，这里没定义 NO_OVERLAY
+                    GL 后端缺 bind group 只告警；Vulkan 会抛 ShaderCompileException（vanilla 的 ENTITY_TRANSLUCENT_EMISSIVE 同样补了 SAMPLER1）
+                26.3
+                    core/entity.vsh 里 overlayColor = texelFetch(Sampler1, UV1, 0) 不受 EMISSIVE 守卫
+                    管线没声明 SAMPLER1 就会在预编译时抛 "Unable to find shader defined uniform (Sampler1)" 启动黑屏
+                    (vanilla 的 ENTITY_TRANSLUCENT_EMISSIVE 同样补了这个 layout)
+                 */
+                .withBindGroupLayout(BindGroupLayouts.SAMPLER1)
                 .withColorTargetState(new ColorTargetState(BlendFunction.LIGHTNING))
                 .withCull(false)
                 .build();

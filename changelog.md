@@ -1,5 +1,9 @@
 ### 26.11
 
+#### 26.11.36.1
+26.2+:
+- Fixed crash when opening the refit screen with Vulkan enabled
+
 #### 26.11.36
 Introduced static baking and dirty subtree optimization:
 - Static display and first-person rendering now use baked meshes; only the part changed by animation is regenerated

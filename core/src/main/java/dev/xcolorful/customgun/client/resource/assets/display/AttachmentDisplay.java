@@ -279,14 +279,27 @@ public final class AttachmentDisplay extends _AssetsDisplay<AttachmentDisplay> {
      */
     public void applyScopeBackCompatibility() {
         if (this.scopeZoomScale == null) return;
+        int scopeViews = this.scopeZoomScale.length;
 
         // 填补省略的view index (通常只有1个)
         if (this.scopeViewIndex == null) {
-            int scopeViews = this.scopeZoomScale.length;
             this.scopeViewIndex = new int[scopeViews];
             for (int i = 0; i < scopeViews; i++) {
                 this.scopeViewIndex[i] = i + 1;
             }
+        }
+
+        if (this.scopeViewFov == null || this.scopeViewFov.length == 0) {
+            this.scopeViewFov = new float[]{70.0F}; // 旧默认值
+        }
+
+        // scope view fov 长度不足则自循环展开
+        if (this.scopeViewFov.length != scopeViews) {
+            float[] expanded = new float[scopeViews];
+            for (int i = 0; i < scopeViews; i++) {
+                expanded[i] = this.scopeViewFov[i % this.scopeViewFov.length];
+            }
+            this.scopeViewFov = expanded;
         }
     }
 }

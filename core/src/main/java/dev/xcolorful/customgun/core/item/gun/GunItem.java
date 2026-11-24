@@ -1,23 +1,23 @@
 package dev.xcolorful.customgun.core.item.gun;
 
 import dev.xcolorful.customgun.CustomGun;
-import dev.xcolorful.customgun.client.item.gun._GunItem;
 import dev.xcolorful.customgun.core.api.entity.IGunProjectile;
 import dev.xcolorful.customgun.core.api.entity.ILivingShooter;
 import dev.xcolorful.customgun.core.api.entity.ReloadState;
 import dev.xcolorful.customgun.core.api.entity.ShooterProperty;
 import dev.xcolorful.customgun.core.api.gun.attack.IGunAttackRuntime;
-import dev.xcolorful.customgun.core.api.script.context.GunScriptApi;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.gun.GunDataAccessor;
-import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
 import dev.xcolorful.customgun.core.api.item.gun.MeleeType;
 import dev.xcolorful.customgun.core.api.item.gun.modifier.GunModifierType;
 import dev.xcolorful.customgun.core.api.minecraft.capability.IInventoryCapability;
 import dev.xcolorful.customgun.core.api.minecraft.item.ItemType;
+import dev.xcolorful.customgun.core.api.resource.ResourceApi;
+import dev.xcolorful.customgun.core.api.script.context.GunScriptApi;
 import dev.xcolorful.customgun.core.gui.tooltip.gun.GunTooltip;
 import dev.xcolorful.customgun.core.init.registry.ModItems;
-import net.minecraft.network.chat.Component;
+import dev.xcolorful.customgun.core.resource.data.index.GunIndex;
+import dev.xcolorful.customgun.core.resource.instance.data.GunIndexInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
@@ -49,20 +49,22 @@ public class GunItem extends Item implements IGun, GunDataAccessor {
         return false;
     }
 
+    @Override
+    public @NotNull String getDescriptionId(@NotNull ItemStack gunItem) {
+        var gunLocation = this.getGunLocation(gunItem);
+        @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(gunLocation);
+        if (gunIndexInstance == null) return super.getDescriptionId();
+
+        GunIndex gunIndex = gunIndexInstance.getPojo();
+        return gunIndex.getNameLang();
+    }
+
     /**
      * 获取供客户端使用的 Tooltip 信息
      */
     @Override
     public @NotNull Optional<TooltipComponent> getTooltipImage(@NotNull ItemStack gunItem) {
         return Optional.ofNullable(GunTooltip.fromItem(gunItem));
-    }
-
-    // --------Client--------
-
-    @Override
-    public @NotNull Component getName(@NotNull ItemStack gunItem) {
-        var name = _GunItem.getName(this, gunItem);
-        return name != null ? name : super.getName(gunItem);
     }
 
     // --------IGunRuntime--------

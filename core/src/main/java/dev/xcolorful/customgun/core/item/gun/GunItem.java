@@ -42,10 +42,11 @@ public class GunItem extends Item implements IGun, GunDataAccessor {
 
     /**
      * 阻止玩家手臂挥动
+     * @deprecated 不需要，并且也不是原版方法
      */
-    @Override
+    @Deprecated
     public boolean onEntitySwing(ItemStack gunItem, LivingEntity livingShooter) {
-        return true;
+        return false;
     }
 
     /**

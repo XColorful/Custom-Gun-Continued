@@ -1,22 +1,23 @@
 package dev.xcolorful.customgun.core.item.gun;
 
 import dev.xcolorful.customgun.CustomGun;
-import dev.xcolorful.customgun.client.item.gun._GunItem;
 import dev.xcolorful.customgun.core.api.entity.IGunProjectile;
 import dev.xcolorful.customgun.core.api.entity.ILivingShooter;
 import dev.xcolorful.customgun.core.api.entity.ReloadState;
 import dev.xcolorful.customgun.core.api.entity.ShooterProperty;
 import dev.xcolorful.customgun.core.api.gun.attack.IGunAttackRuntime;
-import dev.xcolorful.customgun.core.api.script.context.GunScriptApi;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.gun.GunDataAccessor;
-import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
 import dev.xcolorful.customgun.core.api.item.gun.MeleeType;
 import dev.xcolorful.customgun.core.api.item.gun.modifier.GunModifierType;
 import dev.xcolorful.customgun.core.api.minecraft.capability.IInventoryCapability;
 import dev.xcolorful.customgun.core.api.minecraft.item.ItemType;
+import dev.xcolorful.customgun.core.api.resource.ResourceApi;
+import dev.xcolorful.customgun.core.api.script.context.GunScriptApi;
 import dev.xcolorful.customgun.core.gui.tooltip.gun.GunTooltip;
 import dev.xcolorful.customgun.core.init.registry.ModItems;
+import dev.xcolorful.customgun.core.resource.data.index.GunIndex;
+import dev.xcolorful.customgun.core.resource.instance.data.GunIndexInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
@@ -42,10 +43,24 @@ public class GunItem extends Item implements IGun, GunDataAccessor {
 
     /**
      * 阻止玩家手臂挥动
+     * @deprecated 不需要，并且也不是原版方法
+     */
+    @Deprecated
+    public boolean onEntitySwing(ItemStack gunItem, LivingEntity livingShooter) {
+        return false;
+    }
+
+    /**
+     * {@code Item.getDescriptionId(ItemStack)} 在 1.21.4 被移除
      */
     @Override
-    public boolean onEntitySwing(ItemStack gunItem, LivingEntity livingShooter) {
-        return true;
+    public @NotNull Component getName(@NotNull ItemStack gunItem) {
+        var gunLocation = this.getGunLocation(gunItem);
+        @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(gunLocation);
+        if (gunIndexInstance == null) return super.getName(gunItem);
+
+        GunIndex gunIndex = gunIndexInstance.getPojo();
+        return Component.translatable(gunIndex.getNameLang());
     }
 
     /**
@@ -54,14 +69,6 @@ public class GunItem extends Item implements IGun, GunDataAccessor {
     @Override
     public @NotNull Optional<TooltipComponent> getTooltipImage(@NotNull ItemStack gunItem) {
         return Optional.ofNullable(GunTooltip.fromItem(gunItem));
-    }
-
-    // --------Client--------
-
-    @Override
-    public @NotNull Component getName(@NotNull ItemStack gunItem) {
-        var name = _GunItem.getName(this, gunItem);
-        return name != null ? name : super.getName(gunItem);
     }
 
     // --------IGunRuntime--------

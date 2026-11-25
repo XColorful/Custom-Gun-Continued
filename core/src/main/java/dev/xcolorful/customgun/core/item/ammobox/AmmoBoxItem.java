@@ -28,6 +28,13 @@ public class AmmoBoxItem extends Item implements IAmmoBox, AmmoBoxDataAccessor {
 
     // --------Item--------
 
+    @Override
+    public @NotNull Component getName(@NotNull ItemStack ammoBoxItem) {
+        // TODO 是否将子弹名称写在物品名上？
+        // 显示在tooltip也行
+        return super.getName(ammoBoxItem);
+    }
+
     /**
      * 获取供客户端使用的 Tooltip 信息
      */
@@ -35,15 +42,6 @@ public class AmmoBoxItem extends Item implements IAmmoBox, AmmoBoxDataAccessor {
     public @NotNull Optional<TooltipComponent> getTooltipImage(@NotNull ItemStack ammoBoxItem) {
         return Optional.ofNullable(AmmoBoxTooltip.fromItem(ammoBoxItem));
     }
-
-    // --------Client--------
-
-    @Override
-    public @NotNull Component getName(@NotNull ItemStack ammoBoxItem) {
-        var name = _AmmoBoxItem.getName(this, ammoBoxItem);
-        return name != null ? name : super.getName(ammoBoxItem);
-    }
-
 
     // --------Client--------
 

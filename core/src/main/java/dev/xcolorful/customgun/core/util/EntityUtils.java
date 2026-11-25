@@ -77,6 +77,13 @@ public class EntityUtils {
         // [1.21.4, )
 //        return entity.hurtServer(serverLevel, damageSource, amount);
     }
+    public static void knockback(LivingEntity livingEntity, double power, double xd, double zd,
+                                 DamageSource damageSource, float damage) {
+        livingEntity.knockback(power, xd, zd
+                // [26.2, )
+//                , damageSource, damage
+        );
+    }
 
     public static void setThrower(ItemEntity itemEntity, Entity thrower) {
         // [1.20.1, 1.20.4)

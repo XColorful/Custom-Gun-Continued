@@ -264,9 +264,9 @@ public class EntityUtils {
                 // [1.20.1, 1.21.1)
 //                return BuiltInRegistries.ATTRIBUTE.get(attributeLocation);
                 // [1.21.1, 1.21.4)
-                return BuiltInRegistries.ATTRIBUTE.getHolder(attributeLocation).orElse(null);
+//                return BuiltInRegistries.ATTRIBUTE.getHolder(attributeLocation).orElse(null);
                 // [1.21.4, )
-//                return BuiltInRegistries.ATTRIBUTE.get(attributeLocation).orElse(null);
+                return BuiltInRegistries.ATTRIBUTE.get(attributeLocation).orElse(null);
             }
 
             if ("minecraft".equals(attributeLocation.getNamespace())) {
@@ -281,9 +281,9 @@ public class EntityUtils {
             // [1.20.1, 1.21.1)
 //            return BuiltInRegistries.ATTRIBUTE.get(attributeLocation);
             // [1.21.1, 1.21.4)
-            return BuiltInRegistries.ATTRIBUTE.getHolder(attributeLocation).orElse(null);
+//            return BuiltInRegistries.ATTRIBUTE.getHolder(attributeLocation).orElse(null);
             // [1.21.4, )
-//            return BuiltInRegistries.ATTRIBUTE.get(attributeLocation).orElse(null);
+            return BuiltInRegistries.ATTRIBUTE.get(attributeLocation).orElse(null);
         }
 
         public static AttributeModifier createAttributeModifier(ResourceLocation attributeLocation,

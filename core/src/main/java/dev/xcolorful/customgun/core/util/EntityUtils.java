@@ -81,7 +81,7 @@ public class EntityUtils {
                                  DamageSource damageSource, float damage) {
         livingEntity.knockback(power, xd, zd
                 // [26.2, )
-//                , damageSource, damage
+                , damageSource, damage
         );
     }
 

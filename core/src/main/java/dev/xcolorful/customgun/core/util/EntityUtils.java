@@ -188,7 +188,7 @@ public class EntityUtils {
         @Deprecated(since = "1.21.1")
         @ApiStatus.Internal
         public static void addAttributeUuid(UUID actualUuid, ResourceLocation... attributeLocations) {
-            for (ResourceLocation attributeLocation : attributeLocations) {
+            for (var attributeLocation : attributeLocations) {
                 attributeUuidCache.putIfAbsent(attributeLocation, actualUuid);
             }
         }
@@ -200,7 +200,7 @@ public class EntityUtils {
         @ApiStatus.Internal
         public static void addAttributeLocation(ResourceLocation actualAttributeLocation,
                                                 ResourceLocation... attributeLocations) {
-            for (ResourceLocation attributeLocation : attributeLocations) {
+            for (var attributeLocation : attributeLocations) {
                 attributeLocationCache.putIfAbsent(attributeLocation, actualAttributeLocation);
             }
         }

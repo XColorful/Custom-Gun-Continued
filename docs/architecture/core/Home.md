@@ -220,6 +220,7 @@
 - FileUtils：文件工具
 - IngredientUtils：`Ingredient.of()` 重载工具
 - InventoryUtils：`Inventory`相关兼容封装
+- ItemStackUtils：`ItemStack`相关兼容封装
 - JsonUtils：JSON 序列化封装
 - MathUtil：数学工具
 - NBTUtils：NBT 统一封装
@@ -456,6 +457,7 @@ Module division based on the `dev.xcolorful.customgun.core` top-level package
 - EntityUtils: Entity utilities and compatibility wrappers
 - IngredientUtils: Utilities for `Ingredient.of()` overloads
 - InventoryUtils: Compatibility wrappers for `Inventory`
+- ItemStackUtils: Compatibility wrappers for `ItemStack`
 - JsonUtils: JSON serialization wrapper
 - MathUtil: Math utilities
 - NBTUtils: Unified NBT wrapper

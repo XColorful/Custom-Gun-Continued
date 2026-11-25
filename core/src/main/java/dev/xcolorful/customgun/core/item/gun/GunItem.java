@@ -18,6 +18,7 @@ import dev.xcolorful.customgun.core.gui.tooltip.gun.GunTooltip;
 import dev.xcolorful.customgun.core.init.registry.ModItems;
 import dev.xcolorful.customgun.core.resource.data.index.GunIndex;
 import dev.xcolorful.customgun.core.resource.instance.data.GunIndexInstance;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
@@ -49,14 +50,17 @@ public class GunItem extends Item implements IGun, GunDataAccessor {
         return false;
     }
 
+    /**
+     * {@code Item.getDescriptionId(ItemStack)} 在 1.21.4 被移除
+     */
     @Override
-    public @NotNull String getDescriptionId(@NotNull ItemStack gunItem) {
+    public @NotNull Component getName(@NotNull ItemStack gunItem) {
         var gunLocation = this.getGunLocation(gunItem);
         @Nullable GunIndexInstance gunIndexInstance = ResourceApi.getGunIndexInstance(gunLocation);
-        if (gunIndexInstance == null) return super.getDescriptionId();
+        if (gunIndexInstance == null) return super.getName(gunItem);
 
         GunIndex gunIndex = gunIndexInstance.getPojo();
-        return gunIndex.getNameLang();
+        return Component.translatable(gunIndex.getNameLang());
     }
 
     /**

@@ -8,6 +8,7 @@ import dev.xcolorful.customgun.core.gui.tooltip.ammo.AmmoTooltip;
 import dev.xcolorful.customgun.core.init.registry.ModItems;
 import dev.xcolorful.customgun.core.resource.data.index.AmmoIndex;
 import dev.xcolorful.customgun.core.resource.instance.data.AmmoIndexInstance;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -28,13 +29,13 @@ public class AmmoItem extends Item implements IAmmo, AmmoDataAccessor {
     // --------Item--------
 
     @Override
-    public @NotNull String getDescriptionId(@NotNull ItemStack ammoItem) {
+    public @NotNull Component getName(@NotNull ItemStack ammoItem) {
         var ammoLocation = this.getAmmoLocation(ammoItem);
         @Nullable AmmoIndexInstance ammoIndexInstance = ResourceApi.getAmmoIndexInstance(ammoLocation);
-        if (ammoIndexInstance == null) return super.getDescriptionId();
+        if (ammoIndexInstance == null) return super.getName(ammoItem);
 
         AmmoIndex ammoIndex = ammoIndexInstance.getPojo();
-        return ammoIndex.getNameLang();
+        return Component.translatable(ammoIndex.getNameLang());
     }
 
     /**

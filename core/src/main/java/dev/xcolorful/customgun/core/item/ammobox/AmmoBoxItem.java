@@ -7,6 +7,7 @@ import dev.xcolorful.customgun.core.api.minecraft.item.ItemType;
 import dev.xcolorful.customgun.core.gui.tooltip.ammobox.AmmoBoxTooltip;
 import dev.xcolorful.customgun.core.init.registry.ModItems;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
@@ -28,10 +29,10 @@ public class AmmoBoxItem extends Item implements IAmmoBox, AmmoBoxDataAccessor {
     // --------Item--------
 
     @Override
-    public @NotNull String getDescriptionId(@NotNull ItemStack ammoBoxItem) {
+    public @NotNull Component getName(@NotNull ItemStack ammoBoxItem) {
         // TODO 是否将子弹名称写在物品名上？
         // 显示在tooltip也行
-        return super.getDescriptionId();
+        return super.getName(ammoBoxItem);
     }
 
     /**

@@ -8,6 +8,7 @@ import dev.xcolorful.customgun.core.gui.tooltip.attachment.AttachmentTooltip;
 import dev.xcolorful.customgun.core.init.registry.ModItems;
 import dev.xcolorful.customgun.core.resource.data.index.AttachmentIndex;
 import dev.xcolorful.customgun.core.resource.instance.data.AttachmentIndexInstance;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -28,13 +29,13 @@ public class AttachmentItem extends Item implements IAttachment, AttachmentDataA
     // --------Item--------
 
     @Override
-    public @NotNull String getDescriptionId(@NotNull ItemStack attachmentItem) {
+    public @NotNull Component getName(@NotNull ItemStack attachmentItem) {
         var attachmentLocation = this.getAttachmentLocation(attachmentItem);
         @Nullable AttachmentIndexInstance attachmentIndexInstance = ResourceApi.getAttachmentIndexInstance(attachmentLocation);
-        if (attachmentIndexInstance == null) return null;
+        if (attachmentIndexInstance == null) return super.getName(attachmentItem);
 
         AttachmentIndex attachmentIndex = attachmentIndexInstance.getPojo();
-        return attachmentIndex.getNameLang();
+        return Component.translatable(attachmentIndex.getNameLang());
     }
 
     /**

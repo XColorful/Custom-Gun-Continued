@@ -287,7 +287,8 @@ Notation:
 |shooter.`LivingEntityCrawl`|shooter.`LivingShooterProne`|
 |shooter.`LivingEntityDrawGun`|shooter.`LivingShooterDraw`|
 |shooter.`LivingEntityFireSelect`|shooter.`LivingShooterSwitchFireMode`|
-|shooter.`LivingEntitySpeedModifier`|_Deprecated_|
+|shooter.`LivingEntitySpeedModifier`.updateSpeedModifier|shooter.`LivingShooterAttribute`.tickWeightSpeed|
+|shooter.`LivingEntitySpeedModifier`.updateSpeedModifier|shooter.`LivingShooterAttribute`.tickShootStateSpeed|
 |sync.core|sync|
 |sync.core.`DataHolder`|sync.`SyncDataHolder`|
 |sync.`ModSerializers`.RELOAD_STATE|sync.`Serializers`.RELOAD_STATE|

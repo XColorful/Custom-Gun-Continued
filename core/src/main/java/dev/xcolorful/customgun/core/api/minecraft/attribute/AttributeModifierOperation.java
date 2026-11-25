@@ -4,6 +4,7 @@ import dev.xcolorful.customgun.core.api.resource.ResourceTag;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,6 +41,7 @@ public enum AttributeModifierOperation implements ResourceTag.CategoryTag {
     }
 
     private static final Map<String, AttributeModifierOperation> OPERATION_TYPES = new HashMap<>();
+    private static final Map<AttributeModifier.Operation, AttributeModifierOperation> vanilla_to_custom = new EnumMap<>(AttributeModifier.Operation.class);
 
     static {
         for (AttributeModifierOperation operation : AttributeModifierOperation.values()) {
@@ -49,6 +51,7 @@ public enum AttributeModifierOperation implements ResourceTag.CategoryTag {
                     OPERATION_TYPES.put(oldName, operation);
                 }
             }
+            vanilla_to_custom.put(operation.operation, operation);
         }
     }
 
@@ -59,5 +62,9 @@ public enum AttributeModifierOperation implements ResourceTag.CategoryTag {
     @Override
     public String toString() {
         return this.typeName;
+    }
+
+    public static AttributeModifierOperation of(AttributeModifier.Operation operation) {
+        return vanilla_to_custom.get(operation);
     }
 }

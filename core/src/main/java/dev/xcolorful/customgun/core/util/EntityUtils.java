@@ -10,7 +10,7 @@ import dev.xcolorful.customgun.core.api.minecraft.IMcRegistry;
 import dev.xcolorful.customgun.core.api.minecraft.entity.IEntityExtension;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
@@ -176,9 +176,9 @@ public class EntityUtils {
          */
         @SuppressWarnings("all")
         @Deprecated(since = "1.21.1")
-        private static final Map<ResourceLocation, UUID> attributeUuidCache = new HashMap<>();
+        private static final Map<Identifier, UUID> attributeUuidCache = new HashMap<>();
         @ApiStatus.AvailableSince("1.21.1")
-        private static final Map<ResourceLocation, ResourceLocation> attributeLocationCache = new HashMap<>();
+        private static final Map<Identifier, Identifier> attributeLocationCache = new HashMap<>();
 
         /**
          * @param actualUuid 实际使用的 {@link UUID}
@@ -186,7 +186,7 @@ public class EntityUtils {
          */
         @Deprecated(since = "1.21.1")
         @ApiStatus.Internal
-        public static void addAttributeUuid(UUID actualUuid, ResourceLocation... attributeLocations) {
+        public static void addAttributeUuid(UUID actualUuid, Identifier... attributeLocations) {
             for (var attributeLocation : attributeLocations) {
                 attributeUuidCache.putIfAbsent(attributeLocation, actualUuid);
             }
@@ -197,22 +197,22 @@ public class EntityUtils {
          */
         @ApiStatus.AvailableSince("1.21.1")
         @ApiStatus.Internal
-        public static void addAttributeLocation(ResourceLocation actualAttributeLocation,
-                                                ResourceLocation... attributeLocations) {
+        public static void addAttributeLocation(Identifier actualAttributeLocation,
+                                                Identifier... attributeLocations) {
             for (var attributeLocation : attributeLocations) {
                 attributeLocationCache.putIfAbsent(attributeLocation, actualAttributeLocation);
             }
         }
 
-        private static final ResourceLocation[] ATTACK_DAMAGES;
-        private static final ResourceLocation[] ATTACK_SPEEDS;
+        private static final Identifier[] ATTACK_DAMAGES;
+        private static final Identifier[] ATTACK_SPEEDS;
         static {
             IMcRegistry mcRegistry = CustomGun.getMcRegistry();
-            ATTACK_DAMAGES = new ResourceLocation[]{
+            ATTACK_DAMAGES = new Identifier[]{
                     mcRegistry.createResourceLocation("minecraft:generic.attack_damage"),
                     mcRegistry.createResourceLocation("minecraft:attack_damage")
             };
-            ATTACK_SPEEDS = new ResourceLocation[]{
+            ATTACK_SPEEDS = new Identifier[]{
                     mcRegistry.createResourceLocation("minecraft:generic.attack_speed"),
                     mcRegistry.createResourceLocation("minecraft:attack_speed")
             };
@@ -257,7 +257,7 @@ public class EntityUtils {
          * @return 解析结果；返回 {@code null} 则表示解析失败
          */
 //        @SuppressWarnings("deprecation")
-        public static @Nullable Holder<Attribute> resolveAttributeLocation(@NotNull ResourceLocation attributeLocation) {
+        public static @Nullable Holder<Attribute> resolveAttributeLocation(@NotNull Identifier attributeLocation) {
             if (BuiltInRegistries.ATTRIBUTE.containsKey(attributeLocation)) {
                 // [1.20.1, 1.21.1)
 //                return BuiltInRegistries.ATTRIBUTE.get(attributeLocation);
@@ -284,7 +284,7 @@ public class EntityUtils {
             return BuiltInRegistries.ATTRIBUTE.get(attributeLocation).orElse(null);
         }
 
-        public static AttributeModifier createAttributeModifier(ResourceLocation attributeLocation,
+        public static AttributeModifier createAttributeModifier(Identifier attributeLocation,
                                                                 double amount,
                                                                 AttributeModifier.Operation operation) {
             // [1.20.1, 1.21.1)

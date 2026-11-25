@@ -87,7 +87,7 @@ public class EntityUtils {
     }
     public static void swing(LivingEntity livingEntity, InteractionHand hand, boolean sendToSwingingEntity) {
         livingEntity.swing(hand,
-//                SwingAnimation.DEFAULT, [26.3, )
+//                SwingAnimation.DEFAULT, // [26.3, )
                 sendToSwingingEntity);
     }
 

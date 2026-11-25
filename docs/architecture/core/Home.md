@@ -227,7 +227,7 @@
 - NetworkUtils：`FriendlyByteBuf`相关兼容封装
 	- 对于已封装的 `FriendlyByteBuf`操作，必须使用此处
 	- 未封装的方法直接调用 `FriendlyByteBuf`即可
-- RayTraceUtils：射线追踪工具
+- RayTraceUtils：射线检测工具
 - ResourceUtils：资源相关兼容封装
 - ScriptUtils：LuaJ工具
 - SendUtils：网络消息统一发送入口

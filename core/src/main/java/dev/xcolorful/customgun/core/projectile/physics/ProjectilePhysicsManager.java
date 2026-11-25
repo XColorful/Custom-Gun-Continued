@@ -24,6 +24,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.*;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -52,16 +53,40 @@ public class ProjectilePhysicsManager implements IProjectilePhysicsManager {
     public static final float VANILLA_SPREAD_SCALE = 0.0172275F;
 
     /**
+     * 缓存字段，避免每次都重新拿
+     * 其他模组不应该在模组主类初始化时调用
+     */
+    public static final IMcRegistry mcRegistry = CustomGun.getMcRegistry();
+
+    /**
+     * 仅限于 {@link ProjectilePhysicsManager} 内部逻辑
+     * 一般过滤则改用 {@link AmmoConfig#passThroughBlocksCache}
+     */
+    @ApiStatus.Internal
+    public static Predicate<BlockState> PROJECTILE_TARGET_BLOCK_FILTER = blockState -> {
+        if (blockState == null) {
+            return false;
+        }
+        // 检查是否属于配置文件中的穿透方块
+        var blockRl = mcRegistry.getBlockRl(blockState.getBlock());
+        if (blockRl != null && AmmoConfig.passThroughBlocksCache.contains(blockRl.toString())) {
+            return true; // 返回 true 代表需要忽略该方块（即穿透）
+        }
+        // 检查是否包含忽略标签
+        return blockState.is(RaytraceType.BLOCK.getProjectilePassthrough());
+    };
+
+    /**
      * 仅限于 {@link ProjectilePhysicsManager} 内部逻辑
      * 一般过滤则改用 {@link RaytraceType#getProjectilePassthrough}
      */
     @ApiStatus.Internal
-    public static Predicate<Entity> PROJECTILE_TARGETS =
-            input -> input != null
-                    && input.isAlive()
-                    && input.isPickable()
-                    && !input.isSpectator()
-                    && !EntityUtils.is(input, RaytraceType.ENTITY.getProjectilePassthrough());
+    public static Predicate<Entity> PROJECTILE_TARGET_ENTITY_FILTER = entity ->
+            entity != null
+                    && entity.isAlive()
+                    && entity.isPickable()
+                    && !entity.isSpectator()
+                    && !EntityUtils.is(entity, RaytraceType.ENTITY.getProjectilePassthrough());
 
     protected ProjectilePhysicsManager() {
     }
@@ -85,26 +110,13 @@ public class ProjectilePhysicsManager implements IProjectilePhysicsManager {
         // ----Block射线检测----
 
         ClipContext context = new ClipContext(tickContext.startPos, tickContext.endPos, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, gunProjectile);
-        IMcRegistry mcRegistry = CustomGun.getMcRegistry();
-        ClassUtils.ArraySet<String> ignoreBlocks = AmmoConfig.passThroughBlocksCache;
         BlockHitResult blockHitResult = RayTraceUtils.BlockTrace.rayTraceBlocksWithFilter(
                 gunProjectile.level(),
                 context.getFrom(),
                 context.getTo(),
                 (blockState, blockPos) -> context.getBlockShape(blockState, gunProjectile.level(), blockPos),
                 (fluidState, blockPos) -> context.getFluidShape(fluidState, gunProjectile.level(), blockPos),
-                blockState -> {
-                    if (blockState == null) {
-                        return false;
-                    }
-                    // 检查是否属于配置文件中的穿透方块
-                    var blockRl = mcRegistry.getBlockRl(blockState.getBlock());
-                    if (blockRl != null && ignoreBlocks.contains(blockRl.toString())) {
-                        return true; // 返回 true 代表需要忽略该方块（即穿透）
-                    }
-                    // 检查是否包含忽略标签
-                    return blockState.is(RaytraceType.BLOCK.getProjectilePassthrough());
-                }
+                PROJECTILE_TARGET_BLOCK_FILTER
         );
         if (blockHitResult.getType() != HitResult.Type.MISS) {
             tickContext.endPos = blockHitResult.getLocation();
@@ -119,7 +131,7 @@ public class ProjectilePhysicsManager implements IProjectilePhysicsManager {
                 tickContext.startPos,
                 tickContext.endPos,
                 1.0,
-                PROJECTILE_TARGETS,
+                PROJECTILE_TARGET_ENTITY_FILTER,
                 (entity, hitPos) -> {
                     boolean headshot = this.checkHeadshot(entity, hitPos);
                     return this.createWithFilter(entity, hitPos, headshot, gunProjectile);
@@ -247,12 +259,6 @@ public class ProjectilePhysicsManager implements IProjectilePhysicsManager {
     }
 
     /**
-     * 缓存字段，避免每次都重新拿
-     * 其他模组不应该在模组主类初始化时调用
-     */
-    public static final IMcRegistry mcRegistry = CustomGun.getMcRegistry();
-
-    /**
      * 判定目标实体在指定碰撞点下是否达成爆头
      * @param targetEntity 目标实体
      * @param hitPos 碰撞点绝对坐标
@@ -282,4 +288,8 @@ public class ProjectilePhysicsManager implements IProjectilePhysicsManager {
 
         hitResults.sort(Comparator.comparingDouble(result -> result.hitPos().distanceToSqr(startPos)));
     }
+
+    // --------Deprecated--------
+
+    @Deprecated public static Predicate<Entity> PROJECTILE_TARGET = PROJECTILE_TARGET_ENTITY_FILTER;
 }

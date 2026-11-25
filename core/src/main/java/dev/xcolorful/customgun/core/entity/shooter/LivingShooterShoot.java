@@ -22,6 +22,7 @@ import dev.xcolorful.customgun.core.api.item.gun.modifier.IRpmModifier;
 import dev.xcolorful.customgun.core.api.resource.ResourceApi;
 import dev.xcolorful.customgun.core.compat.playerrevive.PlayerReviveCompat;
 import dev.xcolorful.customgun.core.config.SyncConfig;
+import dev.xcolorful.customgun.core.gun.attack.GunAttackManager;
 import dev.xcolorful.customgun.core.network.message.shooter.S2CMessageShooterBaseTimestamp;
 import dev.xcolorful.customgun.core.network.message.shooter.S2CMessageShooterShoot;
 import dev.xcolorful.customgun.core.resource.data.data.GunData;
@@ -97,7 +98,7 @@ public final class LivingShooterShoot extends LivingShooterAspect {
 
         { // 3. IGunRuntime操作结果 -> Shooter状态
             /**
-             * {@link IGunAttackRuntime#shooterFire}的默认实现为{@link IGunAttackRuntime#shooterFire}
+             * {@link IGunAttackRuntime#shooterFire}的默认实现为{@link GunAttackManager#shooterFire}
              */
             @NotNull IGunAttackRuntime.ShooterFireResult shooterFireResult = iGun.shooterFire(this.shooterProperty, iGun, gunItem, iLivingShooter, this.livingShooter, pitch, yaw, chargeProgress);
             if (!shooterFireResult.isSuccess()) {

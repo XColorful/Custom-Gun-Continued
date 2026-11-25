@@ -25,7 +25,6 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.SwingAnimation;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.ApiStatus;

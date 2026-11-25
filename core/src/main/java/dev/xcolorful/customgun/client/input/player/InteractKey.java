@@ -152,7 +152,11 @@ public final class InteractKey extends InputKey implements IEventHandler {
 //            }
 //        }
 
-        event.setSwingHand(false); // 阻止客户端粒子生成
+        /*
+        模组完全接管第一人称渲染；也内置了第三人称手臂动作，所以对CGC本体是没用的
+        取消只是对无第三人称接管的模组，第三人称不会每次按键都会触发手臂挥动
+         */
+        event.setSwingHand(false);
         event.setCanceled(true);
     }
 }

@@ -34,7 +34,7 @@ public class _EntityUtils {
                 startVec,
                 endVec,
                 1.0,
-                ProjectilePhysicsManager.PROJECTILE_TARGETS,
+                ProjectilePhysicsManager.PROJECTILE_TARGET_ENTITY_FILTER,
                 (entity, hitPos) -> {
                     var factory = ProjectilePhysicsManager.INSTANCE.createWithFilter(entity, hitPos, false, bulletEntity);
                     if (factory == null) {

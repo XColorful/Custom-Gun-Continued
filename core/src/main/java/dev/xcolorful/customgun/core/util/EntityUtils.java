@@ -22,6 +22,7 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.AABB;
@@ -174,7 +175,8 @@ public class EntityUtils {
          * 使用 {@code ResourceLocation#toString} 生成 {@link UUID}
          * <li>攻击伤害/攻速直接取原版物品默认属性修饰符里的实例，因为原版 tooltip 以 {@code ==} 判断这两项</li>
          */
-//        @Deprecated(since = "1.21.1")
+        @SuppressWarnings("all")
+        @Deprecated(since = "1.21.1")
         private static final Map<ResourceLocation, UUID> attributeUuidCache = new HashMap<>();
         @ApiStatus.AvailableSince("1.21.1")
         private static final Map<ResourceLocation, ResourceLocation> attributeLocationCache = new HashMap<>();
@@ -183,7 +185,7 @@ public class EntityUtils {
          * @param actualUuid 实际使用的 {@link UUID}
          * @param attributeLocations 兼容的输入
          */
-//        @Deprecated(since = "1.21.1")
+        @Deprecated(since = "1.21.1")
         @ApiStatus.Internal
         public static void addAttributeUuid(UUID actualUuid, ResourceLocation... attributeLocations) {
             for (ResourceLocation attributeLocation : attributeLocations) {
@@ -219,14 +221,14 @@ public class EntityUtils {
 
         static {
             // [1.20.1, 1.21.1)
-            @SuppressWarnings("deprecation")
-            Multimap<Attribute, AttributeModifier> vanillaModifiers = Items.IRON_SWORD.getDefaultAttributeModifiers(EquipmentSlot.MAINHAND);
-            addAttributeUuid(vanillaModifiers.get(Attributes.ATTACK_DAMAGE).iterator().next().getId(), ATTACK_DAMAGES);
-            addAttributeUuid(vanillaModifiers.get(Attributes.ATTACK_SPEED).iterator().next().getId(), ATTACK_SPEEDS);
+//            @SuppressWarnings("deprecation")
+//            Multimap<Attribute, AttributeModifier> vanillaModifiers = Items.IRON_SWORD.getDefaultAttributeModifiers(EquipmentSlot.MAINHAND);
+//            addAttributeUuid(vanillaModifiers.get(Attributes.ATTACK_DAMAGE).iterator().next().getId(), ATTACK_DAMAGES);
+//            addAttributeUuid(vanillaModifiers.get(Attributes.ATTACK_SPEED).iterator().next().getId(), ATTACK_SPEEDS);
 
             // [1.21.1, )
-//            addAttributeLocation(Item.BASE_ATTACK_DAMAGE_ID, ATTACK_DAMAGES);
-//            addAttributeLocation(Item.BASE_ATTACK_SPEED_ID, ATTACK_SPEEDS);
+            addAttributeLocation(Item.BASE_ATTACK_DAMAGE_ID, ATTACK_DAMAGES);
+            addAttributeLocation(Item.BASE_ATTACK_SPEED_ID, ATTACK_SPEEDS);
         }
 
         /**
@@ -243,7 +245,7 @@ public class EntityUtils {
          *     <li>重复 2-4 后，{@code builder.build()} 收尾</li>
          * </ol>
          */
-        public static ImmutableMultimap.Builder<Attribute, AttributeModifier> createAttributeModifierBuilder() {
+        public static ImmutableMultimap.Builder<Holder<Attribute>, AttributeModifier> createAttributeModifierBuilder() {
             return ImmutableMultimap.builder();
         }
 
@@ -255,13 +257,13 @@ public class EntityUtils {
          * </ul>
          * @return 解析结果；返回 {@code null} 则表示解析失败
          */
-        @SuppressWarnings("deprecation")
-        public static @Nullable Attribute resolveAttributeLocation(@NotNull ResourceLocation attributeLocation) {
+//        @SuppressWarnings("deprecation")
+        public static @Nullable Holder<Attribute> resolveAttributeLocation(@NotNull ResourceLocation attributeLocation) {
             if (BuiltInRegistries.ATTRIBUTE.containsKey(attributeLocation)) {
                 // [1.20.1, 1.21.1)
-                return BuiltInRegistries.ATTRIBUTE.get(attributeLocation);
+//                return BuiltInRegistries.ATTRIBUTE.get(attributeLocation);
                 // [1.21.1, 1.21.4)
-//                return BuiltInRegistries.ATTRIBUTE.getHolder(attributeLocation).orElse(null);
+                return BuiltInRegistries.ATTRIBUTE.getHolder(attributeLocation).orElse(null);
                 // [1.21.4, )
 //                return BuiltInRegistries.ATTRIBUTE.get(attributeLocation).orElse(null);
             }
@@ -276,9 +278,9 @@ public class EntityUtils {
             if (attributeLocation == null) return null;
 
             // [1.20.1, 1.21.1)
-            return BuiltInRegistries.ATTRIBUTE.get(attributeLocation);
+//            return BuiltInRegistries.ATTRIBUTE.get(attributeLocation);
             // [1.21.1, 1.21.4)
-//            return BuiltInRegistries.ATTRIBUTE.getHolder(attributeLocation).orElse(null);
+            return BuiltInRegistries.ATTRIBUTE.getHolder(attributeLocation).orElse(null);
             // [1.21.4, )
 //            return BuiltInRegistries.ATTRIBUTE.get(attributeLocation).orElse(null);
         }
@@ -287,20 +289,20 @@ public class EntityUtils {
                                                                 double amount,
                                                                 AttributeModifier.Operation operation) {
             // [1.20.1, 1.21.1)
-            return new AttributeModifier(
-                    attributeUuidCache.computeIfAbsent(attributeLocation,
-                            location -> UUID.nameUUIDFromBytes(location.toString().getBytes(StandardCharsets.UTF_8))),
-                    attributeLocation.toString(),
-                    amount,
-                    operation
-            );
-
-            // [1.21.1, )
 //            return new AttributeModifier(
-//                    attributeLocationCache.computeIfAbsent(attributeLocation, location -> location),
+//                    attributeUuidCache.computeIfAbsent(attributeLocation,
+//                            location -> UUID.nameUUIDFromBytes(location.toString().getBytes(StandardCharsets.UTF_8))),
+//                    attributeLocation.toString(),
 //                    amount,
 //                    operation
 //            );
+
+            // [1.21.1, )
+            return new AttributeModifier(
+                    attributeLocationCache.computeIfAbsent(attributeLocation, location -> location),
+                    amount,
+                    operation
+            );
         }
     }
 

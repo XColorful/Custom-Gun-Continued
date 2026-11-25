@@ -291,7 +291,7 @@ public class _DefaultGunAttack {
         @Nullable ServerLevel serverLevel = livingShooter.level() instanceof ServerLevel level ? level : null;
         DamageSource damageSource = livingShooter instanceof ServerPlayer serverPlayer ? livingShooter.damageSources().playerAttack(serverPlayer)
                 : livingShooter.damageSources().mobAttack(livingShooter);
-        victimEntity.knockback(knockback,
+        EntityUtils.knockback(victimEntity, knockback,
                 (float) Math.sin(Math.toRadians(livingShooter.getYRot())),
                 (float) -Math.cos(Math.toRadians(livingShooter.getYRot())),
                 damageSource, 0

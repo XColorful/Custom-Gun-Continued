@@ -102,7 +102,7 @@ Minecraft 版本缓存还在，缺少的是 ForgeGradle 的 bundled 仓库。我
 
 **实体射线**（`RaytraceType.ENTITY`）
 
-- [ProjectilePhysicsManager.java:63](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/core/projectile/physics/ProjectilePhysicsManager.java:63) 的 `PROJECTILE_TARGETS` 排除标签内实体，`_EntityUtils` 复用该谓词时同样生效
+- [ProjectilePhysicsManager.java:63](app://localhost/epitaxy/core/src/main/java/dev/xcolorful/customgun/core/projectile/physics/ProjectilePhysicsManager.java:63) 的 `PROJECTILE_TARGET_ENTITY_FILTER` 排除标签内实体，`_EntityUtils` 复用该谓词时同样生效
 
 `ModBlocks#BULLET_IGNORE_BLOCKS` 的代码调用点已全部替换，当前工程内无剩余引用；`ModBlocks` 中的常量声明保留未动（已标记 `@Deprecated(forRemoval = true)`）。如果确认要删除该类和旧的 `bullet_ignore` 标签机制，我可以再处理。
 

@@ -8,6 +8,7 @@ import dev.xcolorful.customgun.core.api.minecraft.entity.IEntityExtension;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -83,6 +84,11 @@ public class EntityUtils {
                 // [26.2, )
                 , damageSource, damage
         );
+    }
+    public static void swing(LivingEntity livingEntity, InteractionHand hand, boolean sendToSwingingEntity) {
+        livingEntity.swing(hand,
+//                SwingAnimation.DEFAULT, [26.3, )
+                sendToSwingingEntity);
     }
 
     public static void setThrower(ItemEntity itemEntity, Entity thrower) {

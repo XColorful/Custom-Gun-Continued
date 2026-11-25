@@ -216,7 +216,7 @@
 - ColorUtils：处理颜色字符串、游戏内颜色等
 - CommandUtils：指令相关兼容封装
 - ComponentUtils：文本组件工具
-- EntityUtils：实体工具及相关兼容封装
+- EntityUtils：实体工具、`Attribute`及相关兼容封装
 - FileUtils：文件工具
 - IngredientUtils：`Ingredient.of()` 重载工具
 - InventoryUtils：`Inventory`相关兼容封装
@@ -454,7 +454,7 @@ Module division based on the `dev.xcolorful.customgun.core` top-level package
 - CommandUtils: Command compatibility wrappers
 - ComponentUtils: Text component utilities
 - FileUtils: File utilities
-- EntityUtils: Entity utilities and compatibility wrappers
+- EntityUtils: Entity utilities, `Attribute` and compatibility wrappers
 - IngredientUtils: Utilities for `Ingredient.of()` overloads
 - InventoryUtils: Compatibility wrappers for `Inventory`
 - ItemStackUtils: Compatibility wrappers for `ItemStack`

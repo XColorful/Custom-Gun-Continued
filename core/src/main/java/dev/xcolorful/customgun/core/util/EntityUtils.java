@@ -257,9 +257,14 @@ public class EntityUtils {
          * @return 解析结果；返回 {@code null} 则表示解析失败
          */
         @SuppressWarnings("deprecation")
-        public static @Nullable Attribute resolveAttributeLocation(ResourceLocation attributeLocation) {
+        public static @Nullable Attribute resolveAttributeLocation(@NotNull ResourceLocation attributeLocation) {
             if (BuiltInRegistries.ATTRIBUTE.containsKey(attributeLocation)) {
+                // [1.20.1, 1.21.1)
                 return BuiltInRegistries.ATTRIBUTE.get(attributeLocation);
+                // [1.21.1, 1.21.4)
+//                return BuiltInRegistries.ATTRIBUTE.getHolder(attributeLocation).orElse(null);
+                // [1.21.4, )
+//                return BuiltInRegistries.ATTRIBUTE.get(attributeLocation).orElse(null);
             }
 
             if ("minecraft".equals(attributeLocation.getNamespace())) {
@@ -269,8 +274,14 @@ public class EntityUtils {
                     attributeLocation = CustomGun.getMcRegistry().createResourceLocation("minecraft:generic." + attributeLocation.getPath());
                 }
             }
+            if (attributeLocation == null) return null;
 
+            // [1.20.1, 1.21.1)
             return BuiltInRegistries.ATTRIBUTE.get(attributeLocation);
+            // [1.21.1, 1.21.4)
+//            return BuiltInRegistries.ATTRIBUTE.getHolder(attributeLocation).orElse(null);
+            // [1.21.4, )
+//            return BuiltInRegistries.ATTRIBUTE.get(attributeLocation).orElse(null);
         }
 
         public static AttributeModifier createAttributeModifier(ResourceLocation attributeLocation,

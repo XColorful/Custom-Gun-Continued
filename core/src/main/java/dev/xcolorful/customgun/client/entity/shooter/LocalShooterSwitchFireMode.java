@@ -35,6 +35,7 @@ public final class LocalShooterSwitchFireMode extends LocalShooterAspect {
 
         if ( // 2.1 检查状态锁
                 this.localShooterProperty.clientStateLock(SWITCH_FIRE_MODE_OPERATION)
+                || this.localShooterProperty.isCharging
         ) return;
         else if ( // 2.2 检查状态
                 // 倒地禁枪

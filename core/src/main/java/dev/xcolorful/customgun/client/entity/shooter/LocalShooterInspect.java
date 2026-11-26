@@ -49,6 +49,7 @@ public final class LocalShooterInspect extends LocalShooterAspect {
 
         if ( // 2.1 检查状态锁
                 this.localShooterProperty.clientStateLock(INSPECT_OPERATION)
+                || this.localShooterProperty.isCharging
         ) return;
         ILocalShooter iLocalShooter = ILocalShooterGetter.fromLocalPlayer(this.localShooter);
         if ( // 2.2 检查状态

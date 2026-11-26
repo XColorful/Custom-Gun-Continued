@@ -40,22 +40,30 @@ public final class LivingShooterAttribute extends LivingShooterAspect {
         if (speedAttribute == null) return;
 
         // 1. 手持枪械检查
-        if (IGunGetter.fromMainHand(this.livingShooter) == null) {
-            EntityUtils._Attribute.removeAttributeModifier(speedAttribute, ShooterAttribute.WEIGHT_SPEED.getAttributeLocation());
-//            EntityUtils._Attribute.removeAttributeModifier(speedAttribute, ShooterAttribute.SHOOT_STATE_SPEED.getAttributeLocation());
+        if (IGunGetter.fromMainHand(this.livingShooter) == null || !SyncConfig.ENABLE_WEIGHT_MODIFIER.get()) {
+            clearAttributes(speedAttribute);
             return;
         }
 
         @Nullable ShooterGunModifierCache shooterGunModifierCache = ILivingShooterGetter.cgc$fromLivingEntity(this.livingShooter).cgc$getGunModifierCache();
-        if (shooterGunModifierCache == null) return;
+        if (shooterGunModifierCache == null) {
+            clearAttributes(speedAttribute);
+            return;
+        }
 
         this.tickWeightSpeed(shooterGunModifierCache, speedAttribute);
 //        this.tickShootStateSpeed(shooterGunModifierCache, speedAttribute);
     }
+
+    private void clearAttributes(AttributeInstance speedAttribute) {
+        EntityUtils._Attribute.removeAttributeModifier(speedAttribute, ShooterAttribute.WEIGHT_SPEED.getAttributeLocation());
+//            EntityUtils._Attribute.removeAttributeModifier(speedAttribute, ShooterAttribute.SHOOT_STATE_SPEED.getAttributeLocation());
+    }
+
     private void tickWeightSpeed(ShooterGunModifierCache shooterGunModifierCache,
                                  AttributeInstance speedAttribute) {
         double weightFactor = SyncConfig.WEIGHT_SPEED_MULTIPLIER.get();
-        if (weightFactor <= 0) return;
+//        if (weightFactor <= 0) return; // 避免Attribute残留未清理
 
         @Nullable Float weightSpeed = IWeightModifier.getValue(shooterGunModifierCache, AttachmentModifierType.WEIGHT);
         if (weightSpeed == null) weightSpeed = 0f;

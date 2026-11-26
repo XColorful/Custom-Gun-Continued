@@ -31,8 +31,8 @@ public final class GunData extends ResourcePojo<GunData> {
     private _RecoilData recoilData; // 后坐力
     private float proneRecoilMultiplier = 0.5f; // 趴后坐力
 
-    @Deprecated(forRemoval = true) private float weight = 0f; // 基础移速影响
-    @Deprecated(forRemoval = true) private _MovementData movementData; // 移速数据
+    private float weight = 0f; // 基础移速影响
+    @Deprecated(forRemoval = true) private _ShootStateSpeed shootStateSpeed; // 射击状态移速数据
 
     private _FireSoundData fireSoundData; // 开火声音范围
     private float hurtBobTweakMultiplier = 0.05f; // 被命中者受击晃动
@@ -93,6 +93,8 @@ public final class GunData extends ResourcePojo<GunData> {
                     case GunDataTag.RECOIL_DATA, GunDataTag.RECOIL_DATA_OLD1 -> pojo.recoilData = JsonUtils.read(reader, _RecoilData::fromJson);
                     case GunDataTag.PRONE_RECOIL_MULTIPLIER, GunDataTag.PRONE_RECOIL_MULTIPLIER_OLD1 -> pojo.proneRecoilMultiplier = JsonUtils.readFloat(reader);
 
+                    case GunDataTag.WEIGHT -> pojo.weight = JsonUtils.readFloat(reader);
+
                     case GunDataTag.FIRE_SOUND_DATA, GunDataTag.FIRE_SOUND_DATA_OLD1 -> pojo.fireSoundData = JsonUtils.read(reader, _FireSoundData::fromJson);
                     case GunDataTag.HURT_BOB_TWEAK_MULTIPLIER -> pojo.hurtBobTweakMultiplier = JsonUtils.readFloat(reader);
 
@@ -151,6 +153,8 @@ public final class GunData extends ResourcePojo<GunData> {
             JsonUtils.write(writer, GunDataTag.INACCURACY_DATA, inaccuracyData, _InaccuracyData::toJson);
             JsonUtils.write(writer, GunDataTag.RECOIL_DATA, recoilData, _RecoilData::toJson);
             JsonUtils.writeFloat(writer, GunDataTag.PRONE_RECOIL_MULTIPLIER, proneRecoilMultiplier);
+
+            JsonUtils.writeFloat(writer, GunDataTag.WEIGHT, weight);
 
             JsonUtils.write(writer, GunDataTag.FIRE_SOUND_DATA, fireSoundData, _FireSoundData::toJson);
             JsonUtils.writeFloat(writer, GunDataTag.HURT_BOB_TWEAK_MULTIPLIER, hurtBobTweakMultiplier);
@@ -258,9 +262,9 @@ public final class GunData extends ResourcePojo<GunData> {
         pojo.setProneRecoilMultiplier(this.proneRecoilMultiplier);
 
         pojo.setWeight(this.weight);
-        @Nullable _MovementData movementData = null; {
-            if (this.movementData != null) movementData = this.movementData.copy();
-        } pojo.setMovementData(movementData);
+        @Nullable _ShootStateSpeed movementData = null; {
+            if (this.shootStateSpeed != null) movementData = this.shootStateSpeed.copy();
+        } pojo.setShootStateSpeed(movementData);
 
         pojo.setFireSoundData(this.fireSoundData.copy());
         pojo.setHurtBobTweakMultiplier(this.hurtBobTweakMultiplier);
@@ -362,11 +366,11 @@ public final class GunData extends ResourcePojo<GunData> {
     public float getProneRecoilMultiplier() {
         return proneRecoilMultiplier;
     }
-    @Deprecated(forRemoval = true) public float getWeight() {
+    public float getWeight() {
         return weight;
     }
-    @Deprecated(forRemoval = true) public _MovementData getMovementData() {
-        return movementData;
+    @Deprecated(forRemoval = true) public _ShootStateSpeed getShootStateSpeed() {
+        return shootStateSpeed;
     }
     public _FireSoundData getFireSoundData() {
         return fireSoundData;
@@ -465,11 +469,11 @@ public final class GunData extends ResourcePojo<GunData> {
     public void setProneRecoilMultiplier(float proneRecoilMultiplier) {
         this.proneRecoilMultiplier = proneRecoilMultiplier;
     }
-    @Deprecated(forRemoval = true) public void setWeight(float weight) {
+    public void setWeight(float weight) {
         this.weight = weight;
     }
-    @Deprecated(forRemoval = true) public void setMovementData(_MovementData movementData) {
-        this.movementData = movementData;
+    @Deprecated(forRemoval = true) public void setShootStateSpeed(_ShootStateSpeed shootStateSpeed) {
+        this.shootStateSpeed = shootStateSpeed;
     }
     public void setFireSoundData(_FireSoundData fireSoundData) {
         this.fireSoundData = fireSoundData;

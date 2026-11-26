@@ -1,7 +1,7 @@
 [English](#English)
 
 # 枪械数据
-> wiki 版本：`0.0.6`.9
+> wiki 版本：`26.11.36.1`.11
 
 - `bullet_data`/`bullet`（\_BulletData）：
 	- `display_damage`/`damage`（float）：
@@ -54,8 +54,8 @@
 		- `range`/`value`（float[]）：
 - `prone_recoil_multiplier`/`crawl_recoil_multiplier`（float）：
 - 
-- ~~`weight`~~
-- ~~`movement_data`/`movement_speed`~~
+- `weight`（float）：
+- ~~`shoot_state_speed`/`movement_speed`~~
 	- ~~`base`~~
 	- ~~`aim`~~
 	- ~~`reload`~~
@@ -212,6 +212,8 @@
 	},
 	"prone_recoil_multiplier": 0.0,
 
+	"weight": 0,
+
 	"fire_sound_data": {
 		"normal_multiplier": 0.0,
 		"silenced_multiplier": 0.0
@@ -325,7 +327,7 @@
 ```
 
 # English
-> wiki version: `0.0.15`.10
+> wiki version: `26.11.36.1`.11
 
 - `bullet_data`/`bullet`( \_BulletData):
 	- `display_damage`/`damage`(float):
@@ -378,8 +380,8 @@
 		- `range`/`value`(float[]):
 - `prone_recoil_multiplier`/`crawl_recoil_multiplier`(float):
 - 
-- ~~`weight`~~
-- ~~`movement_data`/`movement_speed`~~
+- `weight`(float):
+- ~~`shoot_state_speed`/`movement_speed`~~
 	- ~~`base`~~
 	- ~~`aim`~~
 	- ~~`reload`~~
@@ -535,6 +537,8 @@
 		]
 	},
 	"prone_recoil_multiplier": 0.0,
+
+	"weight": 0,
 
 	"fire_sound_data": {
 		"normal_multiplier": 0.0,

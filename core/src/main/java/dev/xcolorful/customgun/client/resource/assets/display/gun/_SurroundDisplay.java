@@ -118,9 +118,10 @@ public final class _SurroundDisplay extends ResourcePojo<_SurroundDisplay> {
 
     @Override
     public _SurroundDisplay applyBackCompatibility() {
-        this.pos = this.pos == null ? new float[]{0f, 0f, 0f} : this.pos;
-        this.rotate = this.rotate == null ? new float[]{0f, 0f, 0f} : this.rotate;
-        this.scale = this.scale == null ? new float[]{1f, 1f, 1f} : this.scale;
+        // 填充旧默认值，视觉效果尚可
+        this.pos = this.pos == null ? new float[]{-2f, 20f, 4f} : this.pos;
+        this.rotate = this.rotate == null ? new float[]{0f, 0f, -30f} : this.rotate;
+        this.scale = this.scale == null ? new float[]{0.6f, 0.6f, 0.6f} : this.scale;
         return this;
     }
 }

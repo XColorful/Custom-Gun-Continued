@@ -1,7 +1,7 @@
 [English](#English)
 
 # 配件数据
-> wiki 版本：`26.11.36.1`.6
+> wiki 版本：`26.11.36.1`.7
 
 - `ads`（\_SimpleModifierData）：
 	- `shared_base_add`/`addend`（float）：
@@ -83,7 +83,7 @@
 	- `shared_percent_add`/`percent`（float）：
 	- `unique_multiplier`/`multiplier`（float）：
 	- `script_function`/`function`（String）：
-- `weight`/`weight_modifier`（\_SimpleModifierData）：
+- `weight`（\_SimpleModifierData）：
 	- `shared_base_add`/`addend`
 	- `shared_percent_add`/`percent`
 	- `unique_multiplier`/`multiplier`
@@ -280,7 +280,7 @@
 ```
 
 # English
-> wiki version: `26.11.36.1`.6
+> wiki version: `26.11.36.1`.7
 
 - `ads`(\_SimpleModifierData):
 	- `shared_base_add`/`addend`(float):
@@ -362,7 +362,7 @@
 	- `shared_percent_add`/`percent`(float):
 	- `unique_multiplier`/`multiplier`(float):
 	- `script_function`/`function`(String):
-- `weight`/`weight_modifier`(\_SimpleModifierData):
+- `weight`(\_SimpleModifierData):
 	- `shared_base_add`/`addend`
 	- `shared_percent_add`/`percent`
 	- `unique_multiplier`/`multiplier`

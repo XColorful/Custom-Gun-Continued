@@ -41,6 +41,7 @@ public abstract class LivingEntityMixin extends Entity implements ILivingShooter
     private final LivingShooterReload cgc$reload = new LivingShooterReload(cgc$shooter, cgc$shooterProperty, cgc$draw, cgc$shoot);
 
     // 持枪者属性
+    private final LivingShooterAttribute cgc$attribute = new LivingShooterAttribute(cgc$shooter, cgc$shooterProperty);
     private final LivingShooterAmmoCheck cgc$ammoCheck = new LivingShooterAmmoCheck(cgc$shooter, cgc$shooterProperty);
 
     // 枪械附加属性
@@ -70,6 +71,7 @@ public abstract class LivingEntityMixin extends Entity implements ILivingShooter
         this.cgc$aim.tickAimingProgress();
         this.cgc$sprint.tickSprint();
         this.cgc$prone.tickProne();
+        this.cgc$attribute.tickAttribute();
         this.cgc$bolt.tickBolt();
         this.cgc$melee.scheduleTickMelee();
         this.cgc$heat.tickHeat();

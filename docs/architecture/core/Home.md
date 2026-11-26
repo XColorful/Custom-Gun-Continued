@@ -56,6 +56,7 @@
 	- LivingShooterAttribute：原版属性（射手移速）
 	- LivingShooterBolt：拉栓
 	- LivingShooterProne：趴下
+	- LivingShooterRefit：装配检查
 	- LivingShooterDrawGun：切枪
 	- LivingShooterSwitchFireMode：切换开火模式
 	- LivingShooterHeat：热量
@@ -293,6 +294,7 @@ Module division based on the `dev.xcolorful.customgun.core` top-level package
 	- LivingShooterAttribute: Vanilla attribute (shooter movement speed)
 	- LivingShooterBolt: Bolt
 	- LivingShooterProne: Prone
+	- LivingShooterRefit: Refit check
 	- LivingShooterDrawGun: Draw gun
 	- LivingShooterSwitchFireMode: Switch fire mode
 	- LivingShooterHeat: Heat

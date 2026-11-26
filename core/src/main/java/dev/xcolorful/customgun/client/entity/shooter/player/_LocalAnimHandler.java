@@ -117,7 +117,7 @@ public class _LocalAnimHandler implements IEventHandler {
      * <li>检视动画占用主轨道，现有状态机脚本会自动把 run 降级为 walk</li>
      * <li>每 tick 调用一次，开销还能接受</li>
      */
-    private static boolean _isActionBusy(LocalPlayer player) {
+    public static boolean _isActionBusy(LocalPlayer player) {
         ILocalShooter iLocalShooter = ILocalShooterGetter.fromLocalPlayer(player);
         if (
                 // 瞄准

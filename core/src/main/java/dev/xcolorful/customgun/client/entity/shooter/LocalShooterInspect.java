@@ -4,7 +4,9 @@ import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.client.animation.statemachine.GunAnimStateContext;
 import dev.xcolorful.customgun.client.animation.statemachine.LuaAnimStateMachine;
 import dev.xcolorful.customgun.client.api.animation.statemachine.GunAnimationState;
+import dev.xcolorful.customgun.client.api.entity.ILocalShooter;
 import dev.xcolorful.customgun.client.api.entity.LocalShooterProperty;
+import dev.xcolorful.customgun.client.api.entity.shooter.ILocalShooterGetter;
 import dev.xcolorful.customgun.client.api.item.IAnimateGeoItem;
 import dev.xcolorful.customgun.client.api.renderer.item.IAnimateGeoItemRenderer;
 import dev.xcolorful.customgun.client.api.resource.ClientResourceApi;
@@ -47,6 +49,12 @@ public final class LocalShooterInspect extends LocalShooterAspect {
 
         if ( // 2.1 检查状态锁
                 this.localShooterProperty.clientStateLock(INSPECT_OPERATION)
+        ) return;
+        ILocalShooter iLocalShooter = ILocalShooterGetter.fromLocalPlayer(this.localShooter);
+        if ( // 2.2 检查状态
+                // 瞄准
+                iLocalShooter.cgc$isAim()
+                // 射击和装弹有状态锁控制
         ) return;
 
         ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(this.localShooter);

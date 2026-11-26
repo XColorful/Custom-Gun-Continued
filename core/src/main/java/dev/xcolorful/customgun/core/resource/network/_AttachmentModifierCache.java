@@ -1,8 +1,8 @@
 package dev.xcolorful.customgun.core.resource.network;
 
 import dev.xcolorful.customgun.CustomGun;
-import dev.xcolorful.customgun.core.api.event.ITagsUpdatedEvent;
 import dev.xcolorful.customgun.core.api.item.attachment.modifier.AttachmentModifierType;
+import dev.xcolorful.customgun.core.api.resource.ResourceApi;
 import dev.xcolorful.customgun.core.resource._DataInstanceManager;
 import dev.xcolorful.customgun.core.resource.data.data.AttachmentData;
 import dev.xcolorful.customgun.core.resource.instance.data.AttachmentIndexInstance;
@@ -14,9 +14,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
-/*
-文档译名：配件修饰缓存 (XiaoColorful译)
- */
 /**
  * 对{@link AttachmentData}中非null的项构建modifier缓存
  * <ul>
@@ -34,19 +31,20 @@ public class _AttachmentModifierCache {
 
     /**
      * 主线程操作(线程不安全)
-     * <li>命名跟{@link _DataInstanceManager#clear()}保持同构</li>
+     * <p>
+     * 命名跟{@link _DataInstanceManager#clear()}保持同构
      */
     public void clear() {
         this.attachmentModifiers.clear();
     }
     /**
      * 主线程操作(线程不安全)
-     * <li>命名跟{@link _DataInstanceManager#clear()}保持同构</li>
-     * <li>必须由调用方传入自己这一侧的索引实例，原因见 {@link ITagsUpdatedEvent}</li>
+     * <p>
+     * 命名跟{@link _DataInstanceManager#clear()}保持同构
      */
-    public void reload(@NotNull Map<ResourceLocation, AttachmentIndexInstance> attachmentIndexInstances) {
+    public void reload() {
         long t0 = System.nanoTime();
-        this.rebuildCache(attachmentIndexInstances);
+        this.rebuildCache();
         long t1 = System.nanoTime();
         CustomGun.LOGGER.debug("_AttachmentModifierCache: rebuildCache {} ({} side): {} ms",
                 this.attachmentModifiers.size(),
@@ -65,20 +63,19 @@ public class _AttachmentModifierCache {
 
     // --------答辩区--------
 
-    private void rebuildCache(@NotNull Map<ResourceLocation, AttachmentIndexInstance> attachmentIndexInstances) {
-        for (Map.Entry<ResourceLocation, AttachmentIndexInstance> entry : attachmentIndexInstances.entrySet()) {
-            this.recompute(entry.getKey(), entry.getValue());
+    private void rebuildCache() {
+        for (Map.Entry<ResourceLocation, AttachmentIndexInstance> entry : ResourceApi.getAllAttachmentIndexInstance()) {
+            this.recompute(entry.getKey());
         }
     }
 
     /**
      * 计算配件对应的 modifier 缓存
-     * <li>使用调用方自己的索引实例，原因见 {@link ITagsUpdatedEvent}</li>
      */
     @ApiStatus.Internal
-    public @Nullable Map<AttachmentModifierType, Object> recompute(@NotNull ResourceLocation attachmentLocation,
-                                                                   @Nullable AttachmentIndexInstance attachmentIndexInstance) {
+    public @Nullable Map<AttachmentModifierType, Object> recompute(@NotNull ResourceLocation attachmentLocation) {
         @Nullable Map<AttachmentModifierType, Object> modifiers = null; {
+            @Nullable AttachmentIndexInstance attachmentIndexInstance = ResourceApi.getAttachmentIndexInstance(attachmentLocation);
             if (attachmentIndexInstance != null) {
                 AttachmentData attachmentData = attachmentIndexInstance.getAttachmentData();
                 modifiers = _computeModifiers(attachmentData);

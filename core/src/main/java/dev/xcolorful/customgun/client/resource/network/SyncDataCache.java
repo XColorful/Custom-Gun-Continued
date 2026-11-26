@@ -120,12 +120,12 @@ public final class SyncDataCache {
 
         // data instance
         buildPojoInstance(ResourceApi.getAllGunIndex(), this.GUN_INDEX, GunIndexInstance::fromPojo, GunIndexInstance.class);
-        this.GUN_SORT.reload(this.GUN_INDEX);
+        this.GUN_SORT.reload();
         buildPojoInstance(ResourceApi.getAllAttachmentIndex(), this.ATTACHMENT_INDEX, AttachmentIndexInstance::fromPojo, AttachmentIndexInstance.class);
-        this.ATTACHMENT_MODIFIER.reload(this.ATTACHMENT_INDEX);
+        this.ATTACHMENT_MODIFIER.reload();
         buildPojoInstance(ResourceApi.getAllAmmoIndex(), this.AMMO_INDEX, AmmoIndexInstance::fromPojo, AmmoIndexInstance.class);
         buildPojoInstance(ResourceApi.getAllBlockIndex(), this.BLOCK_INDEX, BlockIndexInstance::fromPojo, BlockIndexInstance.class);
-        this.ATTACHMENT_INSTALLABILITY.reload(this.GUN_SORT.getAllGunSort());
+        this.ATTACHMENT_INSTALLABILITY.reload();
     }
     /**
      * 线程安全

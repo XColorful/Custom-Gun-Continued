@@ -20,8 +20,9 @@ import java.util.Set;
 import java.util.function.Function;
 
 /**
- * 存放{@link ResourcePojo}二次校验后的实例，直接丢弃索引无效的{@code ResourceLocation}
- * <li>{@link ResourcePojo}自身的校验只包含自身(可并发各自同时校验)的类型检查，{@link ResourcePojo#isValid()}只保证自身接口的{@code @Nullable}/{@code @NotNull}生效，不保证跨Pojo索引生效</li>
+ * 存放Pojo二次校验后的实例，直接丢弃索引无效的ResourceLocation
+ * <p>
+ * Pojo自身的校验只包含自身(可并发各自同时校验)的类型检查，valid只保证自身接口的@Nullable/@NotNull生效，不保证跨Pojo索引生效
  */
 @ApiStatus.Internal
 public class _DataInstanceManager {
@@ -56,12 +57,12 @@ public class _DataInstanceManager {
         clear();
 
         buildPojoInstance(ResourceApi.getAllGunIndex(), GUN_INDEX, GunIndexInstance::fromPojo, GunIndexInstance.class);
-        GUN_SORT.reload(GUN_INDEX);
+        GUN_SORT.reload();
         buildPojoInstance(ResourceApi.getAllAttachmentIndex(), ATTACHMENT_INDEX, AttachmentIndexInstance::fromPojo, AttachmentIndexInstance.class);
-        ATTACHMENT_MODIFIER.reload(ATTACHMENT_INDEX);
+        ATTACHMENT_MODIFIER.reload();
         buildPojoInstance(ResourceApi.getAllAmmoIndex(), AMMO_INDEX, AmmoIndexInstance::fromPojo, AmmoIndexInstance.class);
         buildPojoInstance(ResourceApi.getAllBlockIndex(), BLOCK_INDEX, BlockIndexInstance::fromPojo, BlockIndexInstance.class);
-        ATTACHMENT_INSTALLABILITY.reload(GUN_SORT.getAllGunSort());
+        ATTACHMENT_INSTALLABILITY.reload();
     }
     public static <T extends ResourcePojo<T>, I extends PojoInstance<T>> void buildPojoInstance(
             Set<Map.Entry<ResourceLocation, T>> entries,

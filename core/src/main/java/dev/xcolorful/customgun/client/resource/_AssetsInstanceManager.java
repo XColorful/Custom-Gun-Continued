@@ -12,7 +12,6 @@ import dev.xcolorful.customgun.client.resource.instance.data.ClientGunIndexInsta
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
 import dev.xcolorful.customgun.core.api.resource.ResourceApi;
 import dev.xcolorful.customgun.core.entity.shooter.modifier.ShooterGunModifierManager;
-import dev.xcolorful.customgun.core.resource.ResourcePojo;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
@@ -25,8 +24,9 @@ import java.util.Map;
 import static dev.xcolorful.customgun.core.resource._DataInstanceManager.buildPojoInstance;
 
 /**
- * 存放{@link ResourcePojo}二次校验后的实例，直接丢弃索引无效的{@code ResourceLocation}
- * <li>{@link ResourcePojo}自身的校验只包含自身(可并发各自同时校验)的类型检查，{@link ResourcePojo#isValid()}只保证自身接口的{@code @Nullable}/{@code @NotNull}生效，不保证跨Pojo索引生效</li>
+ * 存放Pojo二次校验后的实例，直接丢弃索引无效的ResourceLocation
+ * <p>
+ * Pojo自身的校验只包含自身(可并发各自同时校验)的类型检查，valid只保证自身接口的@Nullable/@NotNull生效，不保证跨Pojo索引生效
  */
 @ApiStatus.Internal
 public class _AssetsInstanceManager {

@@ -133,27 +133,6 @@
  */
 ```
 
-### Resource
-
-- Attachment installability cache：配件可装性缓存
-```java
-/**
- * @see dev.xcolorful.customgun.core.resource.network._AttachmentInstallabilityCache
- */
-```
-- Attachment modifier cache：配件修饰缓存
-```java
-/**
- * @see dev.xcolorful.customgun.core.resource.network._AttachmentModifierCache
- */
-```
-- Gun sort cache：枪械排序缓存
-```java
-/**
- * @see dev.xcolorful.customgun.core.resource.network._GunSortCache
- */
-```
-
 ### Text
 
 - placeholder key：占位符键

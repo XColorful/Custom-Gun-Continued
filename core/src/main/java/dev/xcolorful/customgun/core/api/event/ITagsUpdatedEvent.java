@@ -1,18 +1,15 @@
 package dev.xcolorful.customgun.core.api.event;
 
 import dev.xcolorful.customgun.core.api.common.ILogicalSideOnly;
-import dev.xcolorful.customgun.core.api.common.McLogicalSide;
-import dev.xcolorful.customgun.core.api.resource.ResourceApi;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.server.MinecraftServer;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * <ul>
- *     <li>{@link ITagsUpdatedEvent} (Forge的{@code TagsUpdatedEvent}) 是在 {@link MinecraftServer#reloadResources} 的 {@code thenAcceptAsync(...)} 回调里 {@code EVENT_BUS.post} 出来的</li>
- *     <li>这个回调实际跑在 reload 的完成线程上、并不在 {@code SidedThreadGroup} 里</li>
- *     <li>逻辑端会被判定为 {@link McLogicalSide#CLIENT}，导致 {@link ResourceApi} 被误判，从而读了 {@code SyncDataCache}（空）</li>
+ *     <li>ITagsUpdatedEvent (Forge的TagsUpdatedEvent) 是在 MinecraftServer.reloadResources 的 thenAcceptAsync(...) 回调里 EVENT_BUS.post 出来的</li>
+ *     <li>这个回调实际跑在 reload 的完成线程上、并不在 SidedThreadGroup 里</li>
+ *     <li>逻辑端会被判定为client，导致ResourceApi被误判，从而读了SyncDataCache（空）</li>
  * </ul>
  */
 public interface ITagsUpdatedEvent extends IEvent, ILogicalSideOnly {

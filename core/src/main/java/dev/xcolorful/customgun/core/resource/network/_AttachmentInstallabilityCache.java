@@ -1,7 +1,6 @@
 package dev.xcolorful.customgun.core.resource.network;
 
 import dev.xcolorful.customgun.CustomGun;
-import dev.xcolorful.customgun.core.api.event.ITagsUpdatedEvent;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.attachment.AttachmentCategory;
 import dev.xcolorful.customgun.core.api.item.gun.GunDataAccessor;
@@ -13,14 +12,10 @@ import dev.xcolorful.customgun.core.resource.data.modtags.GunAttachmentData;
 import dev.xcolorful.customgun.core.util.ClassUtils;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-/*
-文档译名：配件可装性缓存 (XiaoColorful译)
- */
 /**
  * 查询声明的Attachment安装关系
  * <ul>
@@ -41,19 +36,20 @@ public class _AttachmentInstallabilityCache {
 
     /**
      * 主线程操作(线程不安全)
-     * <li>命名跟{@link _DataInstanceManager#clear()}保持同构</li>
+     * <p>
+     * 命名跟{@link _DataInstanceManager#clear()}保持同构
      */
     public void clear() {
         this.attachmentInstallability.clear();
     }
     /**
      * 主线程操作(线程不安全)
-     * <li>命名跟{@link _DataInstanceManager#clear()}保持同构</li>
-     * <li>必须由调用方传入自己这一侧的枪械排序，原因见 {@link ITagsUpdatedEvent}</li>
+     * <p>
+     * 命名跟{@link _DataInstanceManager#clear()}保持同构
      */
-    public void reload(@NotNull Map<ResourceLocation, Integer> gunSorts) {
+    public void reload() {
         long t0 = System.nanoTime();
-        this.rebuildCache(gunSorts);
+        this.rebuildCache();
         long t1 = System.nanoTime();
         CustomGun.LOGGER.debug("_AttachmentInstallabilityCache: rebuildCache {} ({} side): {} ms",
                 this.attachmentInstallability.size(),
@@ -73,7 +69,7 @@ public class _AttachmentInstallabilityCache {
 
     // --------答辩区--------
 
-    private void rebuildCache(@NotNull Map<ResourceLocation, Integer> gunSorts) {
+    private void rebuildCache() {
         IMcRegistry mcRegistry = CustomGun.getMcRegistry();
         Collection<Map.Entry<ResourceLocation, AttachmentTagData>> allTagData = ResourceApi.getAllAttachmentTagData();
 
@@ -159,6 +155,7 @@ public class _AttachmentInstallabilityCache {
         }
 
         // ----排序并写入最终缓存----
+        Map<ResourceLocation, Integer> gunSorts = ResourceApi.getAllGunSort();
         attachmentToGuns.forEach((attRl, gunSet) -> {
             ClassUtils.ArraySet<ResourceLocation> gunArraySet = new ClassUtils.ArraySet<>();
 

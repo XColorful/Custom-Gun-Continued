@@ -84,7 +84,7 @@ public final class LivingShooterAttribute extends LivingShooterAspect {
         @Nullable AttributeModifier movementSpeedModifier = EntityUtils._Attribute.getAttributeModifier(speedAttribute, shootStateLocation);
         if (movementSpeedModifier == null || EntityUtils._Attribute.getAmount(movementSpeedModifier) != shootStateSpeed) {
             EntityUtils._Attribute.removeAttributeModifier(speedAttribute, shootStateLocation);
-            if (shootStateSpeed == 1) return; // 没有倍率乘数(无效果)就跳过写入
+            if (shootStateSpeed == 0) return; // 没有增量修正(无效果)就跳过写入
 
             movementSpeedModifier = EntityUtils._Attribute.createAttributeModifier(shootStateLocation,
                     shootStateSpeed,

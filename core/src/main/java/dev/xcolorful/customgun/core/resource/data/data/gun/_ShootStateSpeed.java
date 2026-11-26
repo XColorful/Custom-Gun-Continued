@@ -25,7 +25,7 @@ public final class _ShootStateSpeed extends ResourcePojo<_ShootStateSpeed> {
 
     private float base = 0F;
     private float aim = 0F;
-    private float reload = 1F;
+    private float reload = 0F;
 
     private static final _ShootStateSpeed PARSER = new _ShootStateSpeed();
     public static _ShootStateSpeed fromJson(JsonReader reader) throws IOException {

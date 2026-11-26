@@ -1,7 +1,7 @@
 [English](#English)
 
 # 配件数据
-> wiki 版本：`26.11.36.1`.5
+> wiki 版本：`26.11.36.1`.6
 
 - `ads`（\_SimpleModifierData）：
 	- `shared_base_add`/`addend`（float）：
@@ -130,38 +130,38 @@
 	"ads": {
 		"shared_base_add": 0.0,
 		"shared_percent_add": 0.0,
-		"unique_multiplier": 1.0,
+		"unique_multiplier": 0.0,
 		"script_function": ""
 	},
 	
 	"armor_ignore_percent": {
 		"shared_base_add": 0.0,
 		"shared_percent_add": 0.0,
-		"unique_multiplier": 1.0,
+		"unique_multiplier": 0.0,
 		"script_function": ""
 	},
 	"headshot_multiplier": {
 		"shared_base_add": 0.0,
 		"shared_percent_add": 0.0,
-		"unique_multiplier": 1.0,
+		"unique_multiplier": 0.0,
 		"script_function": ""
 	},
 	"damage_calculation": {
 		"shared_base_add": 0.0,
 		"shared_percent_add": 0.0,
-		"unique_multiplier": 1.0,
+		"unique_multiplier": 0.0,
 		"script_function": ""
 	},
 	"bullet_speed": {
 		"shared_base_add": 0.0,
 		"shared_percent_add": 0.0,
-		"unique_multiplier": 1.0,
+		"unique_multiplier": 0.0,
 		"script_function": ""
 	},
 	"pierce_count": {
 		"shared_base_add": 0.0,
 		"shared_percent_add": 0.0,
-		"unique_multiplier": 1.0,
+		"unique_multiplier": 0.0,
 		"script_function": ""
 	},
 	"fire_aspect": {
@@ -171,7 +171,7 @@
 	"knockback_strength": {
 		"shared_base_add": 0.0,
 		"shared_percent_add": 0.0,
-		"unique_multiplier": 1.0,
+		"unique_multiplier": 0.0,
 		"script_function": ""
 	},
 	"bullet_explosion": {
@@ -179,19 +179,19 @@
 		"explode_damage": {
 			"shared_base_add": 0.0,
 			"shared_percent_add": 0.0,
-			"unique_multiplier": 1.0,
+			"unique_multiplier": 0.0,
 			"script_function": ""
 		},
 		"explode_scale": {
 			"shared_base_add": 0.0,
 			"shared_percent_add": 0.0,
-			"unique_multiplier": 1.0,
+			"unique_multiplier": 0.0,
 			"script_function": ""
 		},
 		"max_delay_seconds": {
 			"shared_base_add": 0.0,
 			"shared_percent_add": 0.0,
-			"unique_multiplier": 1.0,
+			"unique_multiplier": 0.0,
 			"script_function": ""
 		},
 		"enable_knockback": false,
@@ -201,33 +201,33 @@
 	"rpm": {
 		"shared_base_add": 0.0,
 		"shared_percent_add": 0.0,
-		"unique_multiplier": 1.0,
+		"unique_multiplier": 0.0,
 		"script_function": ""
 	},
 	"recoil_data": {
 		"pitch_recoil": {
 			"shared_base_add": 0.0,
 			"shared_percent_add": 0.0,
-			"unique_multiplier": 1.0,
+			"unique_multiplier": 0.0,
 			"script_function": ""
 		},
 		"yaw_recoil": {
 			"shared_base_add": 0.0,
 			"shared_percent_add": 0.0,
-			"unique_multiplier": 1.0,
+			"unique_multiplier": 0.0,
 			"script_function": ""
 		}
 	},
 	"effective_range": {
 		"shared_base_add": 0.0,
 		"shared_percent_add": 0.0,
-		"unique_multiplier": 1.0,
+		"unique_multiplier": 0.0,
 		"script_function": ""
 	},
 	"weight": {
 		"shared_base_add": 0.0,
 		"shared_percent_add": 0.0,
-		"unique_multiplier": 1.0,
+		"unique_multiplier": 0.0,
 		"script_function": ""
 	},
 	"muzzle": {
@@ -236,25 +236,25 @@
 	"aim_inaccuracy": {
 		"shared_base_add": 0.0,
 		"shared_percent_add": 0.0,
-		"unique_multiplier": 1.0,
+		"unique_multiplier": 0.0,
 		"script_function": ""
 	},
 	"sneak_inaccuracy": {
 		"shared_base_add": 0.0,
 		"shared_percent_add": 0.0,
-		"unique_multiplier": 1.0,
+		"unique_multiplier": 0.0,
 		"script_function": ""
 	},
 	"prone_inaccuracy": {
 		"shared_base_add": 0.0,
 		"shared_percent_add": 0.0,
-		"unique_multiplier": 1.0,
+		"unique_multiplier": 0.0,
 		"script_function": ""
 	},
 	"other_inaccuracy": {
 		"shared_base_add": 0.0,
 		"shared_percent_add": 0.0,
-		"unique_multiplier": 1.0,
+		"unique_multiplier": 0.0,
 		"script_function": ""
 	},
 	
@@ -280,7 +280,7 @@
 ```
 
 # English
-> wiki version: `26.11.36.1`.5
+> wiki version: `26.11.36.1`.6
 
 - `ads`(\_SimpleModifierData):
 	- `shared_base_add`/`addend`(float):
@@ -409,38 +409,38 @@
 	"ads": {
 		"shared_base_add": 0.0,
 		"shared_percent_add": 0.0,
-		"unique_multiplier": 1.0,
+		"unique_multiplier": 0.0,
 		"script_function": ""
 	},
 	
 	"armor_ignore_percent": {
 		"shared_base_add": 0.0,
 		"shared_percent_add": 0.0,
-		"unique_multiplier": 1.0,
+		"unique_multiplier": 0.0,
 		"script_function": ""
 	},
 	"headshot_multiplier": {
 		"shared_base_add": 0.0,
 		"shared_percent_add": 0.0,
-		"unique_multiplier": 1.0,
+		"unique_multiplier": 0.0,
 		"script_function": ""
 	},
 	"damage_calculation": {
 		"shared_base_add": 0.0,
 		"shared_percent_add": 0.0,
-		"unique_multiplier": 1.0,
+		"unique_multiplier": 0.0,
 		"script_function": ""
 	},
 	"bullet_speed": {
 		"shared_base_add": 0.0,
 		"shared_percent_add": 0.0,
-		"unique_multiplier": 1.0,
+		"unique_multiplier": 0.0,
 		"script_function": ""
 	},
 	"pierce_count": {
 		"shared_base_add": 0.0,
 		"shared_percent_add": 0.0,
-		"unique_multiplier": 1.0,
+		"unique_multiplier": 0.0,
 		"script_function": ""
 	},
 	"fire_aspect": {
@@ -450,7 +450,7 @@
 	"knockback_strength": {
 		"shared_base_add": 0.0,
 		"shared_percent_add": 0.0,
-		"unique_multiplier": 1.0,
+		"unique_multiplier": 0.0,
 		"script_function": ""
 	},
 	"bullet_explosion": {
@@ -458,19 +458,19 @@
 		"explode_damage": {
 			"shared_base_add": 0.0,
 			"shared_percent_add": 0.0,
-			"unique_multiplier": 1.0,
+			"unique_multiplier": 0.0,
 			"script_function": ""
 		},
 		"explode_scale": {
 			"shared_base_add": 0.0,
 			"shared_percent_add": 0.0,
-			"unique_multiplier": 1.0,
+			"unique_multiplier": 0.0,
 			"script_function": ""
 		},
 		"max_delay_seconds": {
 			"shared_base_add": 0.0,
 			"shared_percent_add": 0.0,
-			"unique_multiplier": 1.0,
+			"unique_multiplier": 0.0,
 			"script_function": ""
 		},
 		"enable_knockback": false,
@@ -480,33 +480,33 @@
 	"rpm": {
 		"shared_base_add": 0.0,
 		"shared_percent_add": 0.0,
-		"unique_multiplier": 1.0,
+		"unique_multiplier": 0.0,
 		"script_function": ""
 	},
 	"recoil_data": {
 		"pitch_recoil": {
 			"shared_base_add": 0.0,
 			"shared_percent_add": 0.0,
-			"unique_multiplier": 1.0,
+			"unique_multiplier": 0.0,
 			"script_function": ""
 		},
 		"yaw_recoil": {
 			"shared_base_add": 0.0,
 			"shared_percent_add": 0.0,
-			"unique_multiplier": 1.0,
+			"unique_multiplier": 0.0,
 			"script_function": ""
 		}
 	},
 	"effective_range": {
 		"shared_base_add": 0.0,
 		"shared_percent_add": 0.0,
-		"unique_multiplier": 1.0,
+		"unique_multiplier": 0.0,
 		"script_function": ""
 	},
 	"weight": {
 		"shared_base_add": 0.0,
 		"shared_percent_add": 0.0,
-		"unique_multiplier": 1.0,
+		"unique_multiplier": 0.0,
 		"script_function": ""
 	},
 	"muzzle": {
@@ -515,25 +515,25 @@
 	"aim_inaccuracy": {
 		"shared_base_add": 0.0,
 		"shared_percent_add": 0.0,
-		"unique_multiplier": 1.0,
+		"unique_multiplier": 0.0,
 		"script_function": ""
 	},
 	"sneak_inaccuracy": {
 		"shared_base_add": 0.0,
 		"shared_percent_add": 0.0,
-		"unique_multiplier": 1.0,
+		"unique_multiplier": 0.0,
 		"script_function": ""
 	},
 	"prone_inaccuracy": {
 		"shared_base_add": 0.0,
 		"shared_percent_add": 0.0,
-		"unique_multiplier": 1.0,
+		"unique_multiplier": 0.0,
 		"script_function": ""
 	},
 	"other_inaccuracy": {
 		"shared_base_add": 0.0,
 		"shared_percent_add": 0.0,
-		"unique_multiplier": 1.0,
+		"unique_multiplier": 0.0,
 		"script_function": ""
 	},
 	

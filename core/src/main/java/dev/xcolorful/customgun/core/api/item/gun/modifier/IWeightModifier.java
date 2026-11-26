@@ -10,7 +10,6 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-@Deprecated(forRemoval = true)
 public interface IWeightModifier<T extends ResourcePojo<T>> extends IGunModifier<T, _SimpleModifierData, Float> {
 
     @Override

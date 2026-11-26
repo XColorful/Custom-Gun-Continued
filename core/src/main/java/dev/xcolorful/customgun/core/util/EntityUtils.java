@@ -309,36 +309,36 @@ public class EntityUtils {
         public static @Nullable AttributeModifier getAttributeModifier(@NotNull AttributeInstance attributeInstance,
                                                                        ResourceLocation attributeLocation) {
             // [1.20.1, 1.21.1)
-            return attributeInstance.getModifier(attributeUuidCache.computeIfAbsent(attributeLocation,
-                    location -> UUID.nameUUIDFromBytes(location.toString().getBytes(StandardCharsets.UTF_8))));
+//            return attributeInstance.getModifier(attributeUuidCache.computeIfAbsent(attributeLocation,
+//                    location -> UUID.nameUUIDFromBytes(location.toString().getBytes(StandardCharsets.UTF_8))));
 
             // [1.21.1, )
-//            return attributeInstance.getModifier(attributeLocationCache.computeIfAbsent(attributeLocation,
-//                    location -> location));
+            return attributeInstance.getModifier(attributeLocationCache.computeIfAbsent(attributeLocation,
+                    location -> location));
         }
 
         public static void removeAttributeModifier(@NotNull AttributeInstance attributeInstance,
                                                    ResourceLocation attributeLocation) {
             // [1.20.1, 1.21.1)
-            attributeInstance.removeModifier(attributeUuidCache.computeIfAbsent(attributeLocation,
-                    location -> UUID.nameUUIDFromBytes(location.toString().getBytes(StandardCharsets.UTF_8))));
+//            attributeInstance.removeModifier(attributeUuidCache.computeIfAbsent(attributeLocation,
+//                    location -> UUID.nameUUIDFromBytes(location.toString().getBytes(StandardCharsets.UTF_8))));
 
             // [1.21.1, )
-//            attributeInstance.removeModifier(attributeLocationCache.computeIfAbsent(attributeLocation,
-//                    location -> location));
+            attributeInstance.removeModifier(attributeLocationCache.computeIfAbsent(attributeLocation,
+                    location -> location));
         }
 
         public static double getAmount(@NotNull AttributeModifier attributeModifier) {
             // [1.20.1, 1.21.1)
-            return attributeModifier.getAmount();
+//            return attributeModifier.getAmount();
             // [1.21.1, )
-//            return attributeModifier.amount();
+            return attributeModifier.amount();
         }
         public static AttributeModifier.Operation getOperation(@NotNull AttributeModifier attributeModifier) {
             // [1.20.1, 1.21.1)
-            return attributeModifier.getOperation();
+//            return attributeModifier.getOperation();
             // [1.21.1, )
-//            return attributeModifier.operation();
+            return attributeModifier.operation();
         }
     }
 

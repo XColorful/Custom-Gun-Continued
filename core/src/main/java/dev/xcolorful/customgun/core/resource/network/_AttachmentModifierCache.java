@@ -44,7 +44,7 @@ public class _AttachmentModifierCache {
      * <li>命名跟{@link _DataInstanceManager#clear()}保持同构</li>
      * <li>必须由调用方传入自己这一侧的索引实例，原因见 {@link ITagsUpdatedEvent}</li>
      */
-    public void reload(@NotNull Map<ResourceLocation, AttachmentIndexInstance> attachmentIndexInstances) {
+    public void reload(@NotNull Map<Identifier, AttachmentIndexInstance> attachmentIndexInstances) {
         long t0 = System.nanoTime();
         this.rebuildCache(attachmentIndexInstances);
         long t1 = System.nanoTime();

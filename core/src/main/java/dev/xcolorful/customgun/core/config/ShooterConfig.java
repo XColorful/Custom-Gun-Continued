@@ -6,12 +6,16 @@ import dev.xcolorful.customgun.core.api.config.ModConfigTag;
 
 public class ShooterConfig {
     public static IModConfigSpec<Boolean> CREATIVE_MODE_INFINITE_FEED;
+    public static IModConfigSpec<Boolean> ENABLE_WEIGHT_MODIFIER;
 
     public static void init(IModConfigSpecBuilder builder) {
         builder.startBuild(ModConfigTag.shooter_path);
 
         builder.addComment(ModConfigTag.creativeModeInfiniteFeed_comment);
         CREATIVE_MODE_INFINITE_FEED = builder.addConfig(ModConfigTag.creativeModeInfiniteFeed_path, true);
+
+        builder.addComment(ModConfigTag.enableWeightModifier_comment);
+        ENABLE_WEIGHT_MODIFIER = builder.addConfig(ModConfigTag.enableWeightModifier_path, false);
 
         builder.finishBuild();
     }

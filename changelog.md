@@ -1,5 +1,27 @@
 ### 26.11
 
+#### 26.11.37
+- Fixed left-clicking after shooting in semi-auto fire mode accidentally triggering key config `ShootToReload`
+- Add shooter config `EnableWeightModifier`, disabling the effect of gun weight on movement speed by default
+- Raised the minimum value of sync config `WeightSpeedMultiplier` to 0
+- Add backward compatibility for attachment data `weight`
+- Add additional backward compatibility for attachment display `scopeViewFov`
+
+Fixed erroneously reading client-side cache when reloading data packs / resource packs (Known potential issue #40):
+- Fixed single-player Attachment modifier cache not participating in server-side calculations
+- Fixed single-player Gun sort cache being empty
+- Fixed single-player Attachment installability cache retrieving empty Gun sort cache
+
+Data pack:
+- Align unique multiplier operation with vanilla semantics across all `unique_multiplier`/`multiplier` fields
+- A `unique_multiplier` of 0 now corresponds to multiplying by 1 (previously 0), thus fixed values being small
+- Legacy gun packs not specifically modified for this remain unaffected
+
+For Developer:
+- `GunItem` no longer overrides `IForgeItem#onEntitySwing` to `true`
+- First-person animations take over completely, while third-person swing cancellation is handled by `InteractKey`
+- Does not affect original behavior
+
 #### 26.11.36.1
 26.2+:
 - Fixed crash when opening the refit screen with Vulkan enabled (#99)

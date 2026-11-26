@@ -51,7 +51,7 @@ public class _AttachmentInstallabilityCache {
      * <li>命名跟{@link _DataInstanceManager#clear()}保持同构</li>
      * <li>必须由调用方传入自己这一侧的枪械排序，原因见 {@link ITagsUpdatedEvent}</li>
      */
-    public void reload(@NotNull Map<ResourceLocation, Integer> gunSorts) {
+    public void reload(@NotNull Map<Identifier, Integer> gunSorts) {
         long t0 = System.nanoTime();
         this.rebuildCache(gunSorts);
         long t1 = System.nanoTime();
@@ -73,7 +73,7 @@ public class _AttachmentInstallabilityCache {
 
     // --------答辩区--------
 
-    private void rebuildCache(@NotNull Map<ResourceLocation, Integer> gunSorts) {
+    private void rebuildCache(@NotNull Map<Identifier, Integer> gunSorts) {
         IMcRegistry mcRegistry = CustomGun.getMcRegistry();
         Collection<Map.Entry<Identifier, AttachmentTagData>> allTagData = ResourceApi.getAllAttachmentTagData();
 

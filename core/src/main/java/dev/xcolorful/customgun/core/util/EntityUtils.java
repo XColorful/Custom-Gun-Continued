@@ -307,7 +307,7 @@ public class EntityUtils {
         }
 
         public static @Nullable AttributeModifier getAttributeModifier(@NotNull AttributeInstance attributeInstance,
-                                                                       ResourceLocation attributeLocation) {
+                                                                       Identifier attributeLocation) {
             // [1.20.1, 1.21.1)
 //            return attributeInstance.getModifier(attributeUuidCache.computeIfAbsent(attributeLocation,
 //                    location -> UUID.nameUUIDFromBytes(location.toString().getBytes(StandardCharsets.UTF_8))));
@@ -318,7 +318,7 @@ public class EntityUtils {
         }
 
         public static void removeAttributeModifier(@NotNull AttributeInstance attributeInstance,
-                                                   ResourceLocation attributeLocation) {
+                                                   Identifier attributeLocation) {
             // [1.20.1, 1.21.1)
 //            attributeInstance.removeModifier(attributeUuidCache.computeIfAbsent(attributeLocation,
 //                    location -> UUID.nameUUIDFromBytes(location.toString().getBytes(StandardCharsets.UTF_8))));

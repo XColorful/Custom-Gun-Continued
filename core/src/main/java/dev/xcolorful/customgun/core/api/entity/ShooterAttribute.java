@@ -2,7 +2,7 @@ package dev.xcolorful.customgun.core.api.entity;
 
 import dev.xcolorful.customgun.CustomGun;
 import dev.xcolorful.customgun.core.api.resource.ResourceTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -16,7 +16,7 @@ public enum ShooterAttribute implements ResourceTag.CategoryTag, ResourceTag.Con
     public final String tagName;
     public final String categoryName;
     public final String constantName;
-    public final ResourceLocation attributeLocation;
+    public final Identifier attributeLocation;
     ShooterAttribute(String name) {
         this.tagName = name;
         this.categoryName = name;
@@ -33,7 +33,7 @@ public enum ShooterAttribute implements ResourceTag.CategoryTag, ResourceTag.Con
         return this.constantName;
     }
 
-    public ResourceLocation getAttributeLocation() {
+    public Identifier getAttributeLocation() {
         return this.attributeLocation;
     }
 

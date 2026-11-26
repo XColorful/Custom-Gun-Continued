@@ -8,7 +8,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 
-@Deprecated(forRemoval = true)
 public final class WeightModifier extends AttachmentModifier<_SimpleModifierData, Float>
         implements IWeightModifier<AttachmentData> {
     public static final WeightModifier INSTANCE = new WeightModifier();

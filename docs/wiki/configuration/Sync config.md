@@ -1,7 +1,7 @@
 [English](#English)
 
 # 同步配置
-> wiki 版本：`26.10.29`.11
+> wiki 版本：`26.11.36.1`.12
 
 ## 交互键
 
@@ -24,7 +24,7 @@
 - `DamageBaseMultiplier`（浮点，≥0.0）：所有基础伤害数值乘以该系数
 - `ArmorIgnoreBaseMultiplier`（浮点，≥0.0）：所有穿甲伤害数值乘以该系数
 - `HeadShotBaseMultiplier`（浮点，≥0.0）：所有爆头伤害数值乘以该系数
-- `WeightSpeedMultiplier`（浮点，≥-1.0）：每公斤重量减少的速度百分比，设为负数则禁用
+- `WeightSpeedMultiplier`（浮点，≥0.0）：每公斤重量减少的速度百分比
 ```toml
 [base_multiplier]
 	DamageBaseMultiplier = 1.0
@@ -65,7 +65,7 @@
 ```
 
 # English
-> wiki version: `26.10.29`.11
+> wiki version: `26.11.36.1`.12
 
 ## Interact Key
 
@@ -88,7 +88,7 @@ Path: `base_multiplier`
 - `DamageBaseMultiplier` (float, ≥0.0): All base damage numbers are multiplied by this factor
 - `ArmorIgnoreBaseMultiplier` (float, ≥0.0): All armor ignore damage numbers are multiplied by this factor
 - `HeadShotBaseMultiplier` (float, ≥0.0): All head shot damage numbers are multiplied by this factor
-- `WeightSpeedMultiplier` (float, ≥-1.0): The movement speed will decrease per kg of weight; set a negative value to disable
+- `WeightSpeedMultiplier` (float, ≥0.0): The movement speed will decrease per kg of weight
 ```toml
 [base_multiplier]
 	DamageBaseMultiplier = 1.0

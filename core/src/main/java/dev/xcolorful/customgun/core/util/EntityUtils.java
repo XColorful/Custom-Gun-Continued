@@ -21,6 +21,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
@@ -160,6 +161,7 @@ public class EntityUtils {
     /**
      * 适用场景：
      * <ul>
+     *     <li>{@link AttributeInstance#getModifier}、{@link AttributeInstance#removeModifier}</li>
      *     <li>[1.20.1, 1.21.1) {@code IForgeItem#getAttributeModifiers(EquipmentSlot, ItemStack)}</li>
      *     <li>[1.21.1, ) {@code IItemExtension#getDefaultAttributeModifiers(ItemStack)}</li>
      *     <li>[1.21.4, ) 原版移除了 {@code generic.} 前缀，兼容旧数据读取</li>
@@ -303,6 +305,41 @@ public class EntityUtils {
                     amount,
                     operation
             );
+        }
+
+        public static @Nullable AttributeModifier getAttributeModifier(@NotNull AttributeInstance attributeInstance,
+                                                                       ResourceLocation attributeLocation) {
+            // [1.20.1, 1.21.1)
+            return attributeInstance.getModifier(attributeUuidCache.computeIfAbsent(attributeLocation,
+                    location -> UUID.nameUUIDFromBytes(location.toString().getBytes(StandardCharsets.UTF_8))));
+
+            // [1.21.1, )
+//            return attributeInstance.getModifier(attributeLocationCache.computeIfAbsent(attributeLocation,
+//                    location -> location));
+        }
+
+        public static void removeAttributeModifier(@NotNull AttributeInstance attributeInstance,
+                                                   ResourceLocation attributeLocation) {
+            // [1.20.1, 1.21.1)
+            attributeInstance.removeModifier(attributeUuidCache.computeIfAbsent(attributeLocation,
+                    location -> UUID.nameUUIDFromBytes(location.toString().getBytes(StandardCharsets.UTF_8))));
+
+            // [1.21.1, )
+//            attributeInstance.removeModifier(attributeLocationCache.computeIfAbsent(attributeLocation,
+//                    location -> location));
+        }
+
+        public static double getAmount(@NotNull AttributeModifier attributeModifier) {
+            // [1.20.1, 1.21.1)
+            return attributeModifier.getAmount();
+            // [1.21.1, )
+//            return attributeModifier.amount();
+        }
+        public static AttributeModifier.Operation getOperation(@NotNull AttributeModifier attributeModifier) {
+            // [1.20.1, 1.21.1)
+            return attributeModifier.getOperation();
+            // [1.21.1, )
+//            return attributeModifier.operation();
         }
     }
 

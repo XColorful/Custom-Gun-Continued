@@ -108,7 +108,7 @@ public final class ReloadKey extends InputKey implements IEventHandler {
         LocalPlayer player = Minecraft.getInstance().player;
 
         if (needReload) {
-            if (KeyConfig.SHOOT_TO_RELOAD.get() && player != null) this.reload(player);
+            if (KeyConfig.SHOOT_TO_RELOAD.get() && player != null) this.doAutoReload(player);
             needReload = false;
             return;
         }
@@ -123,10 +123,13 @@ public final class ReloadKey extends InputKey implements IEventHandler {
         if (player == null || player.isSpectator() // 旁观模式
                 || player.tickCount % AUTO_RELOAD_FREQUENCY != 0) return;
 
-        this.reload(player);
+        this.doAutoReload(player);
     }
 
-    private void reload(@NotNull LocalPlayer player) {
+    /**
+     * 仅限空仓时自动装弹，即枪管和弹匣都没子弹
+     */
+    private void doAutoReload(@NotNull LocalPlayer player) {
         ItemStack gunItem = player.getMainHandItem();
         @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
         if (iGun == null) return; // 主手没枪
@@ -139,9 +142,12 @@ public final class ReloadKey extends InputKey implements IEventHandler {
             if (gunIndexInstance == null) return;
 
             BoltType boltType = gunIndexInstance.getGunData().getBoltType();
-            boolean hasBarrelAmmo = boltType.useBarrelAmmo() ? iGun.hasBarrelAmmo(gunItem)
-                    : iGun.getMagAmmoCountWithBarrel(gunItem, boltType) > 0;
-            if (hasBarrelAmmo) return;
+            /*
+            只要枪管或弹匣有子弹就取消
+            否则狙击枪（半自动）打完一发时枪管没子弹，点击左键触发装弹而弹匣还有剩
+             */
+            boolean hasAmmo = iGun.getMagAmmoCountWithBarrel(gunItem, boltType) > 0;
+            if (hasAmmo) return;
         }
 
         ILocalShooterGetter.fromLocalPlayer(player).cgc$reload();

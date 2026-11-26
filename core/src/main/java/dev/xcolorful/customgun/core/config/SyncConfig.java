@@ -58,7 +58,7 @@ public class SyncConfig {
         HEAD_SHOT_BASE_MULTIPLIER = builder.addConfig(ModConfigTag.headShotBaseMultiplier_path, 1.0, 0.0, Double.MAX_VALUE);
 
         builder.addComment(ModConfigTag.weightSpeedMultiplier_comment);
-        WEIGHT_SPEED_MULTIPLIER = builder.addConfig(ModConfigTag.weightSpeedMultiplier_path, 0.015, -1.0, Double.MAX_VALUE);
+        WEIGHT_SPEED_MULTIPLIER = builder.addConfig(ModConfigTag.weightSpeedMultiplier_path, 0.015, 0, Double.MAX_VALUE);
 
         builder.finishBuild();
     }

@@ -53,6 +53,7 @@
 	> [射手框架](./entity/shooter/shooter-framework.md)
 	- LivingShooterAim：瞄准
 	- LivingShooterAmmoCheck：子弹检查
+	- LivingShooterAttribute：原版属性（射手移速）
 	- LivingShooterBolt：拉栓
 	- LivingShooterProne：趴下
 	- LivingShooterDrawGun：切枪
@@ -61,7 +62,6 @@
 	- LivingShooterMelee：近战
 	- LivingShooterReload：换弹
 	- LivingShooterShoot：射击
-	- ~~LivingShooterSpeedModifier：速度修改~~
 	- LivingShooterSprint：冲刺
 	- modifier：[射手修饰框架](./entity/shooter/modifier/Home.md)
 		- ShooterGunModifierManager：射手枪械修饰管理器
@@ -290,6 +290,7 @@ Module division based on the `dev.xcolorful.customgun.core` top-level package
 	> [Shooter framework](./entity/shooter/shooter-framework.md#English)
 	- LivingShooterAim: Aim
 	- LivingShooterAmmoCheck: Ammo check
+	- LivingShooterAttribute: Vanilla attribute (shooter movement speed)
 	- LivingShooterBolt: Bolt
 	- LivingShooterProne: Prone
 	- LivingShooterDrawGun: Draw gun
@@ -298,7 +299,6 @@ Module division based on the `dev.xcolorful.customgun.core` top-level package
 	- LivingShooterMelee: Melee
 	- LivingShooterReload: Reload
 	- LivingShooterShoot: Shoot
-	- ~~LivingShooterSpeedModifier: Speed modifier~~
 	- LivingShooterSprint: Sprint
 	- modifier: [Shooter modifier framework](./entity/shooter/modifier/Home.md#English)
 		- ShooterGunModifierManager: Shooter gun modifier manager

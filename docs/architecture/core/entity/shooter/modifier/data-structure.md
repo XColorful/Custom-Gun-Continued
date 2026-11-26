@@ -14,12 +14,18 @@
 
 ## 修改器数据基类
 
-所有 modifier 数据共享四个字段，语义直接绑定到字段名：
+所有 modifier 数据共享四个字段。三个数值字段与原版属性修饰符操作使用同一套**增量**语义，默认值均为 `0`：
 
-- sharedBaseAdd：共享加数，所有配件对该属性的附加值累加
-- sharedPercentAdd：共享百分比，所有配件对该属性的百分比加成累加
-- uniqueMultiplier：唯一乘数，取最后安装配件的值（不累加）
+- sharedBaseAdd：共享加数，加到基础上
+- sharedPercentAdd：共享百分比，所有配件累加后作用于 `(1 + Σ)`
+- uniqueMultiplier：独立乘算的增量，每个配件贡献一次 `(1 + value)`，多个配件之间独立相乘
 - scriptFunction：可选的 Lua 表达式，在数值计算后执行二次处理
+
+计算公式：
+
+```
+value = (base + Σ sharedBaseAdd) × (1 + Σ sharedPercentAdd) × Π (1 + uniqueMultiplier)
+```
 
 大部分 modifier 直接沿用这四个字段。少数需要额外字段的 modifier（如火属性、爆炸、后坐力、枪口、近战）扩展各自的数据子类。
 
@@ -43,12 +49,18 @@ CGC 不再使用 `Map` 存储 modifier，而是每个 modifier 字段独立声�
 
 ## Modifier Data Base Class
 
-All modifier data shares four fields with semantics bound directly to the field names:
+All modifier data shares four fields. The three numeric fields use the same **delta** semantics as vanilla attribute modifier operations, with a default of `0`:
 
-- sharedBaseAdd: shared additive value, accumulated across all attachments for the property
-- sharedPercentAdd: shared percentage bonus, accumulated across all attachments for the property
-- uniqueMultiplier: unique multiplier, takes the value of the last-installed attachment (not accumulated)
+- sharedBaseAdd: shared additive value, added to the base
+- sharedPercentAdd: shared percentage, accumulated across all attachments and applied to `(1 + Σ)`
+- uniqueMultiplier: delta of an independent multiplication; each attachment contributes one `(1 + value)`, and multiple attachments multiply independently
 - scriptFunction: optional Lua expression, executed after numeric computation for secondary processing
+
+Formula:
+
+```
+value = (base + Σ sharedBaseAdd) × (1 + Σ sharedPercentAdd) × Π (1 + uniqueMultiplier)
+```
 
 Most modifiers use these four fields directly. A few modifiers that need extra fields (fire aspect, explosion, recoil, muzzle, melee) extend their own data subclasses.
 

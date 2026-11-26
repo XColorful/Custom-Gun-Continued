@@ -2,16 +2,20 @@ package dev.xcolorful.customgun.core.resource.data.data.attachment;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import dev.xcolorful.customgun.core.api.minecraft.attribute.AttributeModifierOperation;
 import dev.xcolorful.customgun.core.resource.ResourcePojo;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 
+/**
+ * 数值语义同 {@link AttributeModifierOperation}
+ */
 public abstract class __ModifierData<T extends __ModifierData<T>> extends ResourcePojo<T> {
 
     private float sharedBaseAdd = 0;
     private float sharedPercentAdd = 0;
-    private float uniqueMultiplier = 1;
+    private float uniqueMultiplier = 0;
     private @Nullable String scriptFunction;
 
     @Override

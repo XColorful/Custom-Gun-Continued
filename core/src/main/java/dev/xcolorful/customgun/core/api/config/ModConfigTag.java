@@ -106,7 +106,7 @@ public class ModConfigTag {
     public static final String headShotBaseMultiplier_comment = "All head shot damage number is multiplied by this factor";
 
     public static final String weightSpeedMultiplier_path = "WeightSpeedMultiplier";
-    public static final String weightSpeedMultiplier_comment = "The movement speed will decrease per kg of weight. 0.015 means 1.5% speed decrease per kg.";
+    public static final String weightSpeedMultiplier_comment = "The movement speed will decrease per kg of weight. 0.015 means 1.5% speed decrease per kg. Set a negative value to disable this feature";
 
     // misc
     public static final String misc_path = "misc";

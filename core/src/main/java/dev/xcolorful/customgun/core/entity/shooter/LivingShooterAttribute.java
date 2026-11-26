@@ -40,7 +40,7 @@ public final class LivingShooterAttribute extends LivingShooterAspect {
         if (speedAttribute == null) return;
 
         // 1. 手持枪械检查
-        if (IGunGetter.fromMainHand(this.livingShooter) == null || !SyncConfig.ENABLE_WEIGHT_MODIFIER.get()) {
+        if (IGunGetter.fromMainHand(this.livingShooter) == null) {
             clearAttributes(speedAttribute);
             return;
         }

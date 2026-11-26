@@ -76,6 +76,9 @@ public class ModConfigTag {
     public static final String creativeModeInfiniteFeed_path = "CreativeModeInfiniteFeed";
     public static final String creativeModeInfiniteFeed_comment = "Whether to enable infinite ammo supply in Creative Mode";
 
+    public static final String enableWeightModifier_path = "EnableWeightModifier";
+    public static final String enableWeightModifier_comment = "Whether to enable the weight modifier; when disabled, gun weight does not affect movement speed";
+
     // SyncConfig
 
     // interact_key

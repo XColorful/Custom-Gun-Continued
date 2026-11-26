@@ -17,6 +17,7 @@ import dev.xcolorful.customgun.core.api.item.attachment.modifier.AttachmentModif
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
 import dev.xcolorful.customgun.core.api.item.gun.modifier.IWeightModifier;
 import dev.xcolorful.customgun.core.api.minecraft.attribute.AttributeModifierOperation;
+import dev.xcolorful.customgun.core.config.ShooterConfig;
 import dev.xcolorful.customgun.core.config.SyncConfig;
 import dev.xcolorful.customgun.core.util.EntityUtils;
 import net.minecraft.world.entity.LivingEntity;
@@ -46,7 +47,7 @@ public final class LivingShooterAttribute extends LivingShooterAspect {
         }
 
         @Nullable ShooterGunModifierCache shooterGunModifierCache = ILivingShooterGetter.cgc$fromLivingEntity(this.livingShooter).cgc$getGunModifierCache();
-        if (shooterGunModifierCache == null) {
+        if (shooterGunModifierCache == null || !ShooterConfig.ENABLE_WEIGHT_MODIFIER.get()) {
             clearAttributes(speedAttribute);
             return;
         }

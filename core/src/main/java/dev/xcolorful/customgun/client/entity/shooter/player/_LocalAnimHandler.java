@@ -118,16 +118,16 @@ public class _LocalAnimHandler implements IEventHandler {
      * <li>每 tick 调用一次，开销还能接受</li>
      */
     private static boolean _isActionBusy(LocalPlayer player) {
-        ILocalShooter localShooter = ILocalShooterGetter.fromLocalPlayer(player);
+        ILocalShooter iLocalShooter = ILocalShooterGetter.fromLocalPlayer(player);
         if (
                 // 瞄准
-                localShooter.cgc$isAim()
+                iLocalShooter.cgc$isAim()
                 // 射击
-                || localShooter.cgc$getShootCooldown() > 0
+                || iLocalShooter.cgc$getShootCooldown() > 0
         ) return true;
         // 装弹
-        ILivingShooter livingShooter = ILivingShooterGetter.cgc$fromLivingEntity(player);
-        return livingShooter.cgc$getSynReloadState().getStateType().isReloading();
+        ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(player);
+        return iLivingShooter.cgc$getSynReloadState().getStateType().isReloading();
     }
 
     private void onRenderFrame(IRenderFrameEvent event) {

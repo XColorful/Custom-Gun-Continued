@@ -24,7 +24,7 @@ public class GunModifierTypeTag {
     public static final String RPM = GunDataTag.RPM;
     public static final String RECOIL_DATA = GunDataTag.RECOIL_DATA;
     public static final String EFFECTIVE_RANGE = "effect_range";
-    @Deprecated public static final String WEIGHT = "weight";
+    public static final String WEIGHT = "weight";
     public static final String MUZZLE = "muzzle";
     /**
      * 不准确度Modifier {@link _InaccuracyData}

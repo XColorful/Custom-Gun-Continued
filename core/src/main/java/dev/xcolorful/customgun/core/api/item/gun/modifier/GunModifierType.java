@@ -26,7 +26,7 @@ public enum GunModifierType implements ResourceTag.CategoryTag, ResourceTag.Cons
     RPM(GunModifierTypeTag.RPM),
     RECOIL_DATA(GunModifierTypeTag.RECOIL_DATA),
     EFFECTIVE_RANGE(GunModifierTypeTag.EFFECTIVE_RANGE),
-    @Deprecated(forRemoval = true) WEIGHT(GunModifierTypeTag.WEIGHT),
+    WEIGHT(GunModifierTypeTag.WEIGHT),
     MUZZLE(GunModifierTypeTag.MUZZLE),
     /**
      * 不准确度Modifier {@link _InaccuracyData}

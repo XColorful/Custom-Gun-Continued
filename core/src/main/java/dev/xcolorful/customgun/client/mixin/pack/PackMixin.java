@@ -4,6 +4,7 @@ import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import dev.xcolorful.customgun.client.config.ResourceConfig;
 import dev.xcolorful.customgun.client.resource.pack.ResourcepackDetector;
 import net.minecraft.server.packs.PackLocationInfo;
+import net.minecraft.server.packs.PackMetadataResources;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.metadata.pack.PackFormat;
@@ -30,7 +31,8 @@ public abstract class PackMixin {
         if (packType != PackType.CLIENT_RESOURCES) return metadata;
         if (!ResourceConfig.IGNORE_VANILLA_PACK_COMPATIBILITY.get()) return metadata;
 
-        try (PackResources pack = resources.openPrimary(location)) {
+        try (PackMetadataResources metadataResources = resources.openMetadata(location)) {
+            if (!(metadataResources instanceof PackResources pack)) return metadata;
             if (!ResourcepackDetector.containsGunpack(pack)) return metadata;
         }
 

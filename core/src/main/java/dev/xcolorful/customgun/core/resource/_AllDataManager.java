@@ -9,6 +9,7 @@ import dev.xcolorful.customgun.core.api.resource.data.DataFolderType;
 import dev.xcolorful.customgun.core.init.registry.ModRecipe;
 import dev.xcolorful.customgun.core.network.message.resource.S2CMessageSyncDataPack;
 import dev.xcolorful.customgun.core.recipe.TableRecipe;
+import dev.xcolorful.customgun.core.recipe.TableResult;
 import dev.xcolorful.customgun.core.recipe._TableResultRaw;
 import dev.xcolorful.customgun.core.resource.data.*;
 import dev.xcolorful.customgun.core.resource.network.SyncDataType;
@@ -26,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * Go to {@link ResourceApi}
@@ -171,6 +173,16 @@ public class _AllDataManager implements IEventHandler {
         // 需要等ResourcePojoManager#apply全结束才执行
         _DataInstanceManager.reload();
 
+        if (false) applyToAllTableRecipe(TableRecipe::prepare);
+    }
+
+    /**
+     * @deprecated 见 {@link TableResult#prepare}
+     * @param consumer 对 {@link TableRecipe} 执行的操作
+     */
+    @SuppressWarnings("DeprecatedIsStillUsed")
+    @Deprecated
+    public static void applyToAllTableRecipe(Consumer<TableRecipe> consumer) {
         /**
          * 见 {@link ITagsUpdatedEvent} 说明
          * 影响{@link _TableResultRaw#prepareTableResultOrEmpty()}
@@ -180,7 +192,7 @@ public class _AllDataManager implements IEventHandler {
             var tableRecipeHolders = _this.recipeManager.getAllRecipesFor(ModRecipe.TABLE_RECIPE_CRAFTING.get());
             for (var holder : tableRecipeHolders) {
                 TableRecipe tableRecipe = holder.value();
-                tableRecipe.prepare();
+                consumer.accept(tableRecipe);
             }
         }
     }

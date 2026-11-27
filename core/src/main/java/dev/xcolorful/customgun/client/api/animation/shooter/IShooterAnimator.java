@@ -6,6 +6,9 @@ import dev.xcolorful.customgun.core.api.entity.ILivingShooter;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.world.entity.LivingEntity;
 
+/*
+文档译名：射手动画器 (XiaoColorful译)
+ */
 public interface IShooterAnimator {
 
     /**

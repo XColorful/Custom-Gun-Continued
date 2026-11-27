@@ -1,6 +1,8 @@
 package dev.xcolorful.customgun.client.input.player;
 
 import dev.xcolorful.customgun.CustomGun;
+import dev.xcolorful.customgun.client.api.entity.ILocalShooter;
+import dev.xcolorful.customgun.client.api.entity.shooter.ILocalShooterGetter;
 import dev.xcolorful.customgun.client.api.event.IInputKeyEvent;
 import dev.xcolorful.customgun.client.api.event.IMouseButtonEvent;
 import dev.xcolorful.customgun.client.api.gui.screen.refit.IGunRefitScreen;
@@ -16,6 +18,7 @@ import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 public final class RefitKey extends InputKey {
@@ -76,9 +79,13 @@ public final class RefitKey extends InputKey {
             // 在装配界面，优先关闭界面
             screen.closeScreen();
         } else if (ClientInputUtils.isGameplayFocused()) {
+            // 1. 手持枪械检查
             ItemStack gunItem = player.getMainHandItem();
             @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
             if (iGun == null) return;
+
+            ILocalShooter iLocalShooter = ILocalShooterGetter.fromLocalPlayer(player);
+            if (!iLocalShooter.cgc$canRefit()) return;
 
             ClientGuiUtils.setCurrentScreen(mc, GunRefitScreen.create().asScreen());
         }

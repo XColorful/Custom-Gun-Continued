@@ -68,6 +68,11 @@ public interface IGunOperator extends ICommonGunOperator {
      */
     void cgc$cancelReload();
 
+    /**
+     * @return 是否能装配 (服务端)
+     */
+    @Override boolean cgc$canRefit();
+
     // --------Deprecated--------
 
     @Deprecated default ShootResult cgc$shoot(Supplier<Float> pitch, Supplier<Float> yaw, long fromBaseToCurrentTimeMs) {

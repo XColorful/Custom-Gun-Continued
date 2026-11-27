@@ -1,6 +1,7 @@
 package dev.xcolorful.customgun.core.recipe;
 
 import dev.xcolorful.customgun.CustomGun;
+import dev.xcolorful.customgun.core.api.event.ITagsUpdatedEvent;
 import dev.xcolorful.customgun.core.api.minecraft.tab.TabGroup;
 import dev.xcolorful.customgun.core.api.recipe.RecipeResultType;
 import dev.xcolorful.customgun.core.api.resource.ResourceTag;
@@ -81,6 +82,15 @@ public class TableResult {
         return this.pojo;
     }
 
+    /**
+     * [26.x, ) {@code ReloadableServerResources.updateComponentsAndStaticRegistryTags()} 的顺序是：
+     * <ul>
+     *     <li>应用 tag -> {@code TagsUpdatedEvent.ServerDataLoad} -> newComponents.apply()</li>
+     *     <li>在 {@link ITagsUpdatedEvent} 时，物品数据组件尚未绑定</li>
+     *     <li>调用 {@link TableRecipe#prepare} 会报 {@code NullPointerException: Components not bound yet}</li>
+     * </ul>
+     * 因此需要延迟到首次使用时准备
+     */
     public void prepare() {
         if (this.raw == null) return;
 
@@ -94,9 +104,11 @@ public class TableResult {
     }
 
     public @NotNull ItemStack getResultItem() {
+        this.prepare();
         return this.resultItem != null ? this.resultItem : ItemStack.EMPTY;
     }
     public @NotNull Identifier getTabGroupLocation() {
+        this.prepare();
         return this.tabGroupLocation != null ? this.tabGroupLocation : TabGroup.GUN_CUSTOM.registryLocation;
     }
 }

@@ -34,12 +34,12 @@ public class TableRecipeSerializer implements RecipeSerializer<TableRecipe> {
             if (pojo != null) {
                 pojo.validate();
                 if (pojo.isValid()) return TableRecipe.fromPojo(recipeLocation, pojo);
-                else return TableRecipe.EMPTY;
+                else return TableRecipe.empty(recipeLocation);
             }
-        } catch (IOException e) {
+        } catch (Exception e) { // [26.1.x, ) 注册表加载不允许抛错，IOException / IllegalStateException / NullPointerException 都可能来自配方内容
             CustomGun.LOGGER.error("TableRecipeSerializer: Failed to parse RecipeData (RecipeLocation {}) from jsonObject: {} {}", recipeLocation, e, jsonObject);
         }
-        return TableRecipe.EMPTY;
+        return TableRecipe.empty(recipeLocation);
     }
 
     @Override

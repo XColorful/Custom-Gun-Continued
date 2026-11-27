@@ -1,5 +1,7 @@
 package dev.xcolorful.customgun.core.network.message.shooter;
 
+import dev.xcolorful.customgun.core.api.entity.ILivingShooter;
+import dev.xcolorful.customgun.core.api.entity.shooter.ILivingShooterGetter;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.attachment.AttachmentCategory;
 import dev.xcolorful.customgun.core.api.item.gun.IGunGetter;
@@ -48,6 +50,9 @@ public record C2SMessageShooterRefit_unload(int gunSlotIndex,
                 if (iGun.hasAttachmentLock(gunItem)) {
                     return;
                 }
+
+                ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(player);
+                if (!iLivingShooter.cgc$canRefit()) return;
 
                 // 吐出配件物品 (进背包或世界)
                 {

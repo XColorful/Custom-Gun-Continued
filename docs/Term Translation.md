@@ -1,3 +1,12 @@
+### Animation
+
+- Shooter animator：射手动画器
+```java
+/**
+ * {@link dev.xcolorful.customgun.client.api.animation.shooter.IShooterAnimator}
+ */
+```
+
 ### Block
 
 - Bullet Victim Block：受弹方块

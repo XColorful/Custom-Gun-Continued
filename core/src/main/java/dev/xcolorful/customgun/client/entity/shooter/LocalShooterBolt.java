@@ -44,6 +44,7 @@ public final class LocalShooterBolt extends LocalShooterAspect {
         if ( // 2.1 检查状态锁
                 // 调用频繁，使用无日志版本
                 this.localShooterProperty.clientStateLock() // this.localShooterProperty.clientStateLock(BOLT_STATE)
+                || this.localShooterProperty.isCharging
         ) return;
         else if ( // 2.2 检查状态
                 // 检查是否在拉栓

@@ -95,9 +95,9 @@ public class TableResult {
         if (this.raw == null) return;
 
         TableResult tableResult = this.raw.prepareTableResultOrEmpty(); {
-            this.resultItem = tableResult.getResultItem();
+            this.resultItem = tableResult.resultItem;
             if (this.tabGroupLocation == null || this.tabGroupLocation.equals(ResourceTag.NULL_LOCATION)) {
-                this.tabGroupLocation = tableResult.getTabGroupLocation();
+                this.tabGroupLocation = tableResult.tabGroupLocation;
             }
         }
         this.raw = null;

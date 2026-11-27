@@ -23,7 +23,7 @@ public class GunModifierTypeTag {
     // 枪械属性
     public static final String RPM = GunDataTag.RPM;
     public static final String RECOIL_DATA = GunDataTag.RECOIL_DATA;
-    public static final String EFFECTIVE_RANGE = "effect_range";
+    public static final String EFFECTIVE_RANGE = "effective_range";
     public static final String WEIGHT = "weight";
     public static final String MUZZLE = "muzzle";
     /**

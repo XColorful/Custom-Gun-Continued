@@ -107,7 +107,7 @@ public class TableRecipe implements Recipe<Inventory> {
     }
 
     @Deprecated(since = "1.20.2")
-    @Override
+//    @Override
     public @NotNull ResourceLocation getId() {
         return this.recipeLocation;
     }

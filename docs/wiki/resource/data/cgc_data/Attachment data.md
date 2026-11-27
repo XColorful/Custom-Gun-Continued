@@ -1,9 +1,9 @@
 [English](#English)
 
 # 配件数据
-> wiki 版本：`26.11.38`.8
+> wiki 版本：`26.11.38`.9
 
-- `ads`（\_SimpleModifierData）：
+- `ads`/`ads_addend`（\_SimpleModifierData）：
 	- `shared_base_add`/`addend`（float）：
 	- `shared_percent_add`/`percent`（float）：
 	- `unique_multiplier`/`multiplier`（float）：
@@ -280,9 +280,9 @@
 ```
 
 # English
-> wiki version: `26.11.38`.8
+> wiki version: `26.11.38`.9
 
-- `ads`(\_SimpleModifierData):
+- `ads`/`ads_addend`(\_SimpleModifierData):
 	- `shared_base_add`/`addend`(float):
 	- `shared_percent_add`/`percent`(float):
 	- `unique_multiplier`/`multiplier`(float):

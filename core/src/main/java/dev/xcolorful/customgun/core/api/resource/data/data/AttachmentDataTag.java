@@ -6,7 +6,7 @@ import dev.xcolorful.customgun.core.resource.data.data.gun._InaccuracyData;
 public class AttachmentDataTag {
 
     // 瞄准速度
-    public static final String ADS = GunModifierTypeTag.ADS;
+    public static final String ADS = GunModifierTypeTag.ADS; public static final String ADS_OLD1 = "ads_addend";
 
     // 子弹属性
     public static final String ARMOR_IGNORE_PERCENT = GunModifierTypeTag.ARMOR_IGNORE_PERCENT; public static final String ARMOR_IGNORE_PERCENT_OLD1 = "armor_ignore";

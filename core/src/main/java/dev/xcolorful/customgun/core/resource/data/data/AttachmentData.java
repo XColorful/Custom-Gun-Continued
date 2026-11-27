@@ -58,7 +58,7 @@ public final class AttachmentData extends ResourcePojo<AttachmentData> {
             while (reader.hasNext()) {
                 String key = reader.nextName();
                 switch (key) {
-                    case AttachmentDataTag.ADS -> pojo.adsModifier = JsonUtils.read(reader, _SimpleModifierData::fromJson);
+                    case AttachmentDataTag.ADS -> pojo.adsModifier = JsonUtils.read(reader, _SimpleModifierData::fromJson); case AttachmentDataTag.ADS_OLD1 -> { _SimpleModifierData modifier = new _SimpleModifierData(); modifier.setSharedBaseAdd(JsonUtils.readFloat(reader)); pojo.adsModifier = modifier; }
 
                     case AttachmentDataTag.ARMOR_IGNORE_PERCENT, AttachmentDataTag.ARMOR_IGNORE_PERCENT_OLD1 -> pojo.armorIgnorePercentModifier = JsonUtils.read(reader, _SimpleModifierData::fromJson);
                     case AttachmentDataTag.HEADSHOT_MULTIPLIER, AttachmentDataTag.HEADSHOT_MULTIPLIER_OLD1 -> pojo.headshotMultiplierModifier = JsonUtils.read(reader, _SimpleModifierData::fromJson);

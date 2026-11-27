@@ -9,6 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
@@ -92,6 +93,17 @@ public class TableRecipe implements Recipe<Inventory> {
     @Override
     public @NotNull ItemStack getResultItem(@NotNull RegistryAccess registryAccess) {
         return this.tableResult.getResultItem().copy();
+    }
+
+    /**
+     * <ul>
+     *     <li>占位配方 {@link #EMPTY_RECIPE} 没有材料</li>
+     *     <li>[1.21.11, ) 原版 {@link RecipeManager} 对无法摆放（{@code PlacementInfo}）且 {@code !isSpecial()} 的配方逐个警告 </li>
+     * </ul>
+     */
+    @Override
+    public boolean isSpecial() {
+        return this.recipeIngredients.isEmpty();
     }
 
     @Override

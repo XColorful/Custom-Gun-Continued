@@ -26,6 +26,15 @@ public class ShoulderSurfingCompat {
         return false;
     }
 
+    /**
+     * @return 是否正在自由视角（按住自由视角键，相机与本体解耦，转视角不会带动玩家模型）
+     */
+    public static boolean isFreeLooking() {
+        // mixin注入点
+        if (enableBuiltinCompat) return _isFreeLooking();
+        return false;
+    }
+
     public static float getXRot() {
         // mixin注入点
         if (enableBuiltinCompat) return _getXRot();
@@ -59,6 +68,7 @@ public class ShoulderSurfingCompat {
     private static Method getInstance;
     private static Method currentPerspective;
     private static Method isShoulderSurfing;
+    private static Method isFreeLooking;
     private static Method getXRot;
     private static Method getYRot;
     private static Method setXRot;
@@ -78,6 +88,7 @@ public class ShoulderSurfingCompat {
             Class<?> perspectiveClass = Class.forName("com.github.exopandora.shouldersurfing.api.model.Perspective");
 
             isShoulderSurfing = iShoulderSurfingClass.getMethod("isShoulderSurfing");
+            isFreeLooking = iShoulderSurfingClass.getMethod("isFreeLooking");
             Method getCamera = iShoulderSurfingClass.getMethod("getCamera");
 
             currentPerspective = perspectiveClass.getMethod("current");
@@ -103,6 +114,10 @@ public class ShoulderSurfingCompat {
 
     private static boolean _isShoulderSurfing() {
         return (boolean) invoke(isShoulderSurfing, shoulderSurfing);
+    }
+
+    private static boolean _isFreeLooking() {
+        return (boolean) invoke(isFreeLooking, shoulderSurfing);
     }
 
     private static float _getXRot() {

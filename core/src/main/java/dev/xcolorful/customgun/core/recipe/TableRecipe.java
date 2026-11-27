@@ -1,6 +1,6 @@
 package dev.xcolorful.customgun.core.recipe;
 
-import dev.xcolorful.customgun.CustomGun;
+import dev.xcolorful.customgun.core.api.resource.ResourceTag;
 import dev.xcolorful.customgun.core.init.registry.ModRecipe;
 import dev.xcolorful.customgun.core.resource.data.recipe.RecipeData;
 import dev.xcolorful.customgun.core.resource.data.recipe.recipe._TableResultData;
@@ -18,9 +18,10 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 public class TableRecipe implements Recipe<Inventory> {
-    public static final TableRecipe EMPTY = new TableRecipe(CustomGun.getMcRegistry().createResourceLocation(CustomGun.MOD_ID + ":null"),
+    private static final TableRecipe EMPTY_RECIPE = new TableRecipe(ResourceTag.NULL_LOCATION,
             TableResult.fromPojo(new _TableResultData().applyBackCompatibility()),
             List.of());
+    @Deprecated(forRemoval = true) public static final TableRecipe EMPTY = EMPTY_RECIPE;
 
     private ResourceLocation recipeLocation;
     private final TableResult tableResult;
@@ -36,6 +37,20 @@ public class TableRecipe implements Recipe<Inventory> {
                                        RecipeData pojo) {
         return new TableRecipe(recipeLocation, TableResult.fromPojo(pojo.getTableResult()), TableIngredient.fromPojo(pojo.getTableIngredients()));
     }
+    /**
+     * 解析失败时的占位配方
+     * <li>[26.3, ) recipe 是数据包注册表，注册表按实例拒绝重复登记，每次失败都必须返回新实例</li>
+     */
+    public static TableRecipe empty(ResourceLocation recipeLocation) {
+        // [1.20.1, 26.3)
+        return EMPTY_RECIPE;
+
+        // [26.3, )
+//        return new TableRecipe(ResourceTag.NULL_LOCATION,
+//                TableResult.fromPojo(new _TableResultData().applyBackCompatibility()),
+//                List.of());
+    }
+
     /**
      * @since 1.20.2起 {@link TableRecipeSerializer} 就拿不到 recipeLocation 了
      */

@@ -44,3 +44,42 @@ Build succeeded. Finalizing the change.
 `./gradlew :core:compileJava` 通过（只有既有的 deprecation 警告）。**没有在游戏内验证**，也没有提交。
 
 一个已知的边缘表现：半自动连点时，冷却期和非冷却期会把移动叠加在 walk/idle 和 run 之间来回切，每次切换会播 `run_start`/`run_end`；全自动和换弹/瞄准是稳定的。如果实测觉得连点抖动明显，可以再把"射击"的判断改成"最近一次开火后延迟一小段"，你测完告诉我。
+
+# 
+---
+
+```
+DefaultShooterAnimator会在ShoulderSurfing按住自由视角时仍然持枪手朝着摄像机指向的位置，而玩家模型实际上没有转视角
+修复成自由视角时手臂不再朝摄像机视角
+```
+
+# 
+
+I'll start by locating `DefaultShooterAnimator` and how it handles Shoulder Surfing free-look.
+
+Found the culprit area. Reading the animator, the compat class, and the task prompt.
+
+Now I understand the mechanism. I need to detect SSR's decoupled ("free look") state. Let me check the SSR API available in this project.
+
+Let me find how the SSR dependency is provided and inspect its API methods.
+
+The compat is pure reflection with no Gradle dependency. Let me inspect the actual SSR jar in the dev game dir to confirm the decoupled-state API.
+
+Confirmed: SSR's `IShoulderSurfing` exposes `isFreeLooking()` (and `isCameraDecoupled()`). I'll use `isFreeLooking()` — the exact state the user named. Let me implement.
+
+Implemented. Now compiling with JDK 17.
+
+Build passed. Let me verify `isFreeLooking()` actually reflects the free-look key rather than something else.
+
+Behavior confirmed: `isFreeLooking` = free-look key held AND shoulder surfing AND not aiming. Let me check whether docs describe this arm-camera behavior.
+
+已修复。
+
+改动两处：
+
+- [ShoulderSurfingCompat.java:32](core/src/main/java/dev/xcolorful/customgun/client/compat/shouldersurfing/ShoulderSurfingCompat.java:32)：新增 `isFreeLooking()` 反射封装，对应 SSR `IShoulderSurfing#isFreeLooking`。
+- [DefaultShooterAnimator.java:61](core/src/main/java/dev/xcolorful/customgun/client/animation/shooter/animator/DefaultShooterAnimator.java:61)：SSR 相机取视线的分支加上 `&& !ShoulderSurfingCompat.isFreeLooking()`。自由视角时相机与本体解耦，改用回退的 `head.yRot` / `head.xRot`，手臂跟随模型自身而非相机。
+
+确认过 SSR 4.22.5 的字节码：`isFreeLooking()` = 自由视角键按住 && 越肩视角 && 非瞄准，正是你描述的状态。
+
+`./gradlew :core:compileJava` 通过。**未在游戏内验证，也未提交**，请你进游戏按住自由视角确认手臂表现。

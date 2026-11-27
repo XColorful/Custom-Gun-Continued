@@ -172,7 +172,7 @@ public abstract class LivingEntityMixin extends Entity implements ILivingShooter
 
     @Override
     public boolean cgc$canRefit() {
-        return !LivingShooterRefit._shouldForceDisableRefit(this.cgc$shooter);
+        return !LivingShooterRefit._shouldForceDisableRefit(this.cgc$shooter, this.cgc$shoot);
     }
 
     // --------IShooterState--------

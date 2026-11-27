@@ -9,7 +9,8 @@ import org.jetbrains.annotations.ApiStatus;
 public class LivingShooterRefit {
 
     @ApiStatus.Internal
-    public static boolean _shouldForceDisableRefit(LivingEntity livingShooter) {
+    public static boolean _shouldForceDisableRefit(LivingEntity livingShooter,
+                                                   LivingShooterShoot shoot) {
         if (isIllegalRefitState(livingShooter)) return true;
 
         ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(livingShooter);
@@ -18,7 +19,7 @@ public class LivingShooterRefit {
                 // 瞄准（理论上该放行，但能防误触）
                 shooterProperty.isAiming
                 // 射击
-                || iLivingShooter.cgc$getSynShootCooldown() > 0
+                || shoot.getShootCooldown() > 0
         ) return true;
 
         return false;

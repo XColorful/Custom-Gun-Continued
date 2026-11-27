@@ -58,11 +58,15 @@ public class DefaultShooterAnimator implements IShooterAnimator {
         float viewPitch = prone ? livingShooter.getXRot() * ((float) Math.PI / 180.0F) : head.xRot;
         // 站立时模型头的偏航就是视线相对本体的偏航
         float viewYaw = head.yRot;
-        if (ShoulderSurfingCompat.isShoulderSurfing()) {
+        if (ShoulderSurfingCompat.isShoulderSurfing() && !ShoulderSurfingCompat.isFreeLooking()) {
             /*
             越肩视角生效时上面两个值都不能用：它每 tick 会把本体朝向改写去对准准星命中点，而模型头/身的相对偏航要等 tickHeadTurn 与服务器回包才跟上
             两者在它切换的瞬间能差上百来度，手臂会跟着甩出去，故视线改取它的相机朝向
             只经本仓库的反射封装，不引入 SSR 类型
+
+            自由视角（按住自由视角键）时不采用相机朝向：此时相机与本体解耦，玩家模型并不跟着转
+            若仍取相机朝向，手臂会指向相机看的地方，与本体朝向脱节
+            沿用上面的 head 值，让手臂跟随模型自身
              */
             // 相机偏航是绝对角，head.yRot 是相对角，用 yHeadRot 作桥换算回相对角
             viewYaw += (ShoulderSurfingCompat.getYRot() - livingShooter.getYHeadRot()) * ((float) Math.PI / 180.0F);

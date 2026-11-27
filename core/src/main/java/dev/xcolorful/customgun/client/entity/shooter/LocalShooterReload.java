@@ -44,6 +44,7 @@ public final class LocalShooterReload extends LocalShooterAspect {
 
         if ( // 2.1 检查状态锁
                 this.localShooterProperty.clientStateLock(RELOAD_STATE)
+                || this.localShooterProperty.isCharging
         ) return;
         else if ( // 2.2 检查状态
                 // 射击后冷却100ms

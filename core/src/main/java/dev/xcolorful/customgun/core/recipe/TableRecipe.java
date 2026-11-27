@@ -39,12 +39,12 @@ public class TableRecipe implements Recipe<RecipeInput> {
      */
     public static TableRecipe empty(Identifier recipeLocation) {
         // [1.20.1, 26.3)
-        return EMPTY_RECIPE;
+//        return EMPTY_RECIPE;
 
         // [26.3, )
-//        return new TableRecipe(ResourceTag.NULL_LOCATION,
-//                TableResult.fromPojo(new _TableResultData().applyBackCompatibility()),
-//                List.of());
+        return new TableRecipe(ResourceTag.NULL_LOCATION,
+                TableResult.fromPojo(new _TableResultData().applyBackCompatibility()),
+                List.of());
     }
 
     /**

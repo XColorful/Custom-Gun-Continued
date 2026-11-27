@@ -9,6 +9,7 @@
     "gui.AbstractButtonMixin",
     "model.HumanoidModelMixin",
     "model.PlayerModelMixin",
+    "pack.PackMixin",
     "renderer.CameraMixin",
     "renderer.EntityHitboxDebugRendererMixin",
     "renderer.GameRendererMixin",

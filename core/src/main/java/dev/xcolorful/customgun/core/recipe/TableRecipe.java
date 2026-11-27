@@ -38,7 +38,7 @@ public class TableRecipe implements Recipe<RecipeInput> {
      * 解析失败时的占位配方
      * <li>[26.3, ) recipe 是数据包注册表，注册表按实例拒绝重复登记，每次失败都必须返回新实例</li>
      */
-    public static TableRecipe empty(ResourceLocation recipeLocation) {
+    public static TableRecipe empty(Identifier recipeLocation) {
         // [1.20.1, 26.3)
         return EMPTY_RECIPE;
 

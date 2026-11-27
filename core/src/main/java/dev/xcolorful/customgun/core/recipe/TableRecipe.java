@@ -99,6 +99,7 @@ public class TableRecipe implements Recipe<RecipeInput> {
         return this.recipeIngredients.isEmpty();
     }
 
+    @Deprecated(since = "1.20.2")
     @Override
     public @NotNull Identifier getId() {
         return this.recipeLocation;

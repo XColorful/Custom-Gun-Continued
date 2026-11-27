@@ -106,6 +106,9 @@ public class ClientModConfigTag {
     // ResourceConfig
     public static final String resource_path = "resource";
 
+    public static final String ignoreVanillaPackCompatibility_path = "IgnoreVanillaPackCompatibility";
+    public static final String ignoreVanillaPackCompatibility_comment = "Whether to ignore vanilla resource pack incompatibility warnings for gun packs";
+
     public static final String enableLazyClientAssetLoad_path = "EnableLazyClientAssetLoad";
     public static final String[] enableLazyClientAssetLoad_comment = new String[]{
             "Build heavy TACZ client assets such as models and animation state machines on demand.",

@@ -28,7 +28,7 @@ public abstract class PackMixin {
         if (metadata == null || metadata.compatibility().isCompatible()) return metadata;
 
         // readPackMetadata 拿不到 PackType，用当前资源包格式反推，只处理资源包
-        if (packVersion != SharedConstants.getCurrentVersion().getPackVersion(PackType.CLIENT_RESOURCES)) return metadata;
+        if (packVersion != SharedConstants.getCurrentVersion().packVersion(PackType.CLIENT_RESOURCES)) return metadata;
         if (!ResourceConfig.IGNORE_VANILLA_PACK_COMPATIBILITY.get()) return metadata;
 
         try (PackResources pack = resources.openPrimary(location)) {

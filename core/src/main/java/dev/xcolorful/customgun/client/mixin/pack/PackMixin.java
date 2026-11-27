@@ -3,10 +3,10 @@ package dev.xcolorful.customgun.client.mixin.pack;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import dev.xcolorful.customgun.client.config.ResourceConfig;
 import dev.xcolorful.customgun.client.resource.pack.ResourcepackDetector;
-import net.minecraft.SharedConstants;
 import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.metadata.pack.PackFormat;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackCompatibility;
 import org.spongepowered.asm.mixin.Mixin;
@@ -24,11 +24,10 @@ public abstract class PackMixin {
      */
     @ModifyReturnValue(method = "readPackMetadata", at = @At("RETURN"))
     private static Pack.Metadata cgc$ignoreVanillaPackCompatibility(Pack.Metadata metadata,
-                                                                    PackLocationInfo location, Pack.ResourcesSupplier resources, int packVersion) {
+                                                                    PackLocationInfo location, Pack.ResourcesSupplier resources,
+                                                                    PackFormat format, PackType packType) {
         if (metadata == null || metadata.compatibility().isCompatible()) return metadata;
-
-        // readPackMetadata 拿不到 PackType，用当前资源包格式反推，只处理资源包
-        if (packVersion != SharedConstants.getCurrentVersion().packVersion(PackType.CLIENT_RESOURCES)) return metadata;
+        if (packType != PackType.CLIENT_RESOURCES) return metadata;
         if (!ResourceConfig.IGNORE_VANILLA_PACK_COMPATIBILITY.get()) return metadata;
 
         try (PackResources pack = resources.openPrimary(location)) {

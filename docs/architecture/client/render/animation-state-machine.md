@@ -80,6 +80,6 @@ graph LR
 `GunAnimationState` 枚举定义了标准 trigger 信号（如 `draw`、`put_away`、`shoot`、`reload`、`idle`、`walk`、`run`、`inspect`、`bolt`、`switch_fire_mode` 等），每个信号是一个字符串标签。信号来源有两类：
 
 - 玩家输入与枪械动作：`LocalShooter*` 各处理器在对应动作发生时向状态机投递信号，例如 `LocalShooterReload` 投递 `reload` / `cancel_reload`，`LocalShooterShoot` 投递 `shoot`，`LocalShooterDraw` / 收枪流程投递 `draw` / `put_away`。
-- 持续状态：`_LocalAnimHandler` 每 tick 根据玩家移动状态投递 `idle` / `walk` / `run`。
+- 持续状态：`_LocalAnimHandler` 每 tick 根据玩家移动状态投递 `idle` / `walk` / `run`；射击、换弹、瞄准进行中时只投递到 `walk`，不投递 `run`，避免跑动动画叠加在动作动画上。
 
 信号进入 `AnimStateMachine.trigger()` 后，由每个活跃状态的 `transition(context, condition)` 决定是否转移，从而驱动整个动画状态机流转。

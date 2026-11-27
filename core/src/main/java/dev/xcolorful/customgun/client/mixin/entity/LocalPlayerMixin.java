@@ -120,6 +120,11 @@ public class LocalPlayerMixin implements ILocalShooter {
         this.cgc$localReload.reload();
     }
 
+    @Override
+    public boolean cgc$canRefit() {
+        return !LocalShooterRefit._shouldForceDisableRefit(this.cgc$localShooter);
+    }
+
     @Override public void cgc$inspect() {
         this.cgc$localInspect.inspect();
     }

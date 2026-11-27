@@ -1,5 +1,7 @@
 package dev.xcolorful.customgun.core.network.message.shooter;
 
+import dev.xcolorful.customgun.core.api.entity.ILivingShooter;
+import dev.xcolorful.customgun.core.api.entity.shooter.ILivingShooterGetter;
 import dev.xcolorful.customgun.core.api.item.IAttachment;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.attachment.AttachmentCategory;
@@ -79,6 +81,14 @@ public class C2SMessageShooterRefit_laserColor implements IMessage<C2SMessageSho
                 ItemStack gunItem = inventory.getItem(message.gunSlotIndex);
                 @Nullable IGun iGun = IGunGetter.fromItemStack(gunItem);
                 if (iGun == null) return;
+
+                // 服务端校验配件锁
+                if (iGun.hasAttachmentLock(gunItem)) {
+                    return;
+                }
+
+                ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(player);
+                if (!iLivingShooter.cgc$canRefit()) return;
 
                 for (Map.Entry<AttachmentCategory, Integer> entry : message.colorMap.entrySet()) {
                     AttachmentCategory category = entry.getKey();

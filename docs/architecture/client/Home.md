@@ -171,6 +171,8 @@
 	- Data：数据包POJO对象
 - Network：数据同步
 	- SyncDataCache：客户端缓存同步数据
+- Pack：资源包
+	- ResourcepackDetector：检测枪包（资源包）
 
 ### 声音
 > _./client/sound_
@@ -363,6 +365,8 @@ Module division based on the `dev.xcolorful.customgun.client` top-level package
 	- Data: Datapack POJO object
 - Network: Data sync
 	- SyncDataCache: Client cached sync data
+- Pack: Resource pack
+	- ResourcepackDetector: Detect gun pack (resource pack)
 
 ### Sound
 > _./client/sound_

@@ -1,5 +1,7 @@
 package dev.xcolorful.customgun.core.api.entity.shooter;
 
+import org.jetbrains.annotations.ApiStatus;
+
 public interface ICommonGunOperator {
 
     // --------行为动作--------
@@ -13,6 +15,11 @@ public interface ICommonGunOperator {
     void cgc$melee();
     void cgc$bolt();
     void cgc$reload();
+    /**
+     * 临时创建，具体接口设计待定
+     */
+    @ApiStatus.Internal
+    boolean cgc$canRefit();
 
     // --------Deprecated--------
 

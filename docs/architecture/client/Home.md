@@ -52,6 +52,7 @@
 	- LocalShooterAim：瞄准
 	- LocalShooterBolt：拉栓
 	- LocalShooterProne：趴下
+	- LocalShooterRefit：装配检查
 	- LocalShooterDraw：拔枪
 	- LocalShooterSwitchFireMode：切换开火模式
 	- LocalShooterInspect：检视
@@ -243,6 +244,7 @@ Module division based on the `dev.xcolorful.customgun.client` top-level package
 	- LocalShooterAim: Aim
 	- LocalShooterBolt: Bolt
 	- LocalShooterProne: Prone
+	- LocalShooterRefit: Refit check
 	- LocalShooterDraw: Draw
 	- LocalShooterSwitchFireMode: Switch fire mode
 	- LocalShooterInspect: Inspect

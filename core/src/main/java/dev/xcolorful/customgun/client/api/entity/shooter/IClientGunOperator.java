@@ -61,6 +61,12 @@ public interface IClientGunOperator extends ICommonGunOperator {
     @Override void cgc$reload();
 
     /**
+     * 客户端装配检查
+     * @return 是否能装配 (客户端)
+     */
+    @Override boolean cgc$canRefit();
+
+    /**
      * 客户端检视
      */
     void cgc$inspect();

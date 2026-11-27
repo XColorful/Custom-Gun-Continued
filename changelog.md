@@ -1,5 +1,29 @@
 ### 26.11
 
+#### 26.11.38
+- Disable refit when aiming, shooting, reloading
+- Fixed built-in shooter animator still turning arms in Shoulder Surfing Reloaded free look
+- Fixed sprint animation overlaying when aiming, shooting, reloading
+- Add backward compatibility for gun display `surround_display_by_hotbar` default value
+- Add charging lock check to local shooter operations
+- Add resource config `IgnoreVanillaPackCompatibility`
+- Ignore vanilla resource pack compatibility warning for gun packs by default
+
+Fot Artist:
+- Downgrade animation state machine sprint signal to move when aiming, shooting, reloading
+
+1.21.11+:
+- Fixed log warnings for empty recipes
+
+26.1.x+:
+- Exceptions during recipe loading no longer cause data pack loading to fail
+
+26.3:
+- Fixed multiple empty recipes causing data pack loading to fail
+
+Network:
+- Update network protocol version to `38`, which prevents connections between new and older versions
+
 #### 26.11.37
 - Fixed left-clicking after shooting in semi-auto fire mode accidentally triggering key config `ShootToReload`
 - Add shooter config `EnableWeightModifier`, disabling the effect of gun weight on movement speed by default

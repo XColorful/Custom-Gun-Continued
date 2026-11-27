@@ -1,6 +1,8 @@
 package dev.xcolorful.customgun.core.network.message.shooter;
 
 import dev.xcolorful.customgun.CustomGun;
+import dev.xcolorful.customgun.core.api.entity.ILivingShooter;
+import dev.xcolorful.customgun.core.api.entity.shooter.ILivingShooterGetter;
 import dev.xcolorful.customgun.core.api.item.IAttachment;
 import dev.xcolorful.customgun.core.api.item.IGun;
 import dev.xcolorful.customgun.core.api.item.attachment.AttachmentCategory;
@@ -54,6 +56,9 @@ public record C2SMessageShooterRefit_install(int attachmentSlotIndex,
                 if (iGun.hasAttachmentLock(gunItem)) {
                     return;
                 }
+
+                ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(player);
+                if (!iLivingShooter.cgc$canRefit()) return;
 
                 // 从背包取出配件物品
                 ItemStack attachmentItem = inventory.getItem(message.attachmentSlotIndex);

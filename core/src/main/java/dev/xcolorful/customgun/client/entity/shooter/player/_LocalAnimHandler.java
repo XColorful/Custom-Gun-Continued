@@ -10,6 +10,8 @@ package dev.xcolorful.customgun.client.entity.shooter.player;
 import dev.xcolorful.customgun.client.animation.statemachine.GunAnimStateContext;
 import dev.xcolorful.customgun.client.animation.statemachine.LuaAnimStateMachine;
 import dev.xcolorful.customgun.client.api.animation.statemachine.GunAnimationState;
+import dev.xcolorful.customgun.client.api.entity.ILocalShooter;
+import dev.xcolorful.customgun.client.api.entity.shooter.ILocalShooterGetter;
 import dev.xcolorful.customgun.client.api.event.IClientTickEvent;
 import dev.xcolorful.customgun.client.api.event.IPrepareClientTickEvent;
 import dev.xcolorful.customgun.client.api.event.IRenderFrameEvent;
@@ -23,6 +25,8 @@ import dev.xcolorful.customgun.client.resource.instance.assets.GunDisplayInstanc
 import dev.xcolorful.customgun.client.sound.SoundPlayManager;
 import dev.xcolorful.customgun.client.util.ClientInputUtils;
 import dev.xcolorful.customgun.client.util.ClientRenderProfiler;
+import dev.xcolorful.customgun.core.api.entity.ILivingShooter;
+import dev.xcolorful.customgun.core.api.entity.shooter.ILivingShooterGetter;
 import dev.xcolorful.customgun.core.api.event.EventType;
 import dev.xcolorful.customgun.core.api.event.IEvent;
 import dev.xcolorful.customgun.core.api.event.IEventHandler;
@@ -99,13 +103,31 @@ public class _LocalAnimHandler implements IEventHandler {
 //                || ClientInputUtils.Key.movingForward(player) // 仅判断是否有向前，会漏掉向后移动（如鬼跳）
         ) {
             // 移动
-            animStateMachine.trigger(player.isSprinting()
+            animStateMachine.trigger((player.isSprinting() && !_isActionBusy(player))
                     ? GunAnimationState.INPUT_RUN.getConstantName() // 冲刺
                     : GunAnimationState.INPUT_WALK.getConstantName()); // 走路
         } else {
             // 待机
             animStateMachine.trigger(GunAnimationState.INPUT_IDLE.getConstantName());
         }
+    }
+
+    /**
+     * 射击、换弹、瞄准进行中时，移动动画最多只允许 walk 叠加，不允许 run 叠加
+     * <li>检视动画占用主轨道，现有状态机脚本会自动把 run 降级为 walk</li>
+     * <li>每 tick 调用一次，开销还能接受</li>
+     */
+    public static boolean _isActionBusy(LocalPlayer player) {
+        ILocalShooter iLocalShooter = ILocalShooterGetter.fromLocalPlayer(player);
+        if (
+                // 瞄准
+                iLocalShooter.cgc$isAim()
+                // 射击
+                || iLocalShooter.cgc$getShootCooldown() > 0
+        ) return true;
+        // 装弹
+        ILivingShooter iLivingShooter = ILivingShooterGetter.cgc$fromLivingEntity(player);
+        return iLivingShooter.cgc$getSynReloadState().getStateType().isReloading();
     }
 
     private void onRenderFrame(IRenderFrameEvent event) {

@@ -70,7 +70,7 @@ public final class AttachmentData extends ResourcePojo<AttachmentData> {
                     case AttachmentDataTag.BULLET_EXPLOSION, AttachmentDataTag.BULLET_EXPLOSION_OLD1 -> pojo.bulletExplosionModifier = JsonUtils.read(reader, _BulletExplosionModifierData::fromJson);
 
                     case AttachmentDataTag.RPM -> pojo.rpmModifier = JsonUtils.read(reader, _SimpleModifierData::fromJson);
-                    case AttachmentDataTag.RECOIL_DATA, AttachmentDataTag.RECOIL_DATA_OLD1 -> pojo.recoilDataModifier = JsonUtils.read(reader, _RecoilDataModifierData::fromJson);
+                    case AttachmentDataTag.RECOIL_DATA, AttachmentDataTag.RECOIL_DATA_OLD1 -> pojo.recoilDataModifier = JsonUtils.read(reader, _RecoilDataModifierData::fromJson); case AttachmentDataTag.RECOIL_DATA_OLD2 -> pojo.recoilDataModifier = JsonUtils.read(reader, _RecoilDataModifierData::fromLegacyJson);
                     case AttachmentDataTag.EFFECTIVE_RANGE -> pojo.effectiveRangeModifier = JsonUtils.read(reader, _SimpleModifierData::fromJson);
                     case AttachmentDataTag.WEIGHT -> pojo.weightModifier = JsonUtils.read(reader, _SimpleModifierData::fromJson); case AttachmentDataTag.WEIGHT_OLD1 -> { _SimpleModifierData modifier = new _SimpleModifierData(); modifier.setSharedBaseAdd(JsonUtils.readFloat(reader)); pojo.weightModifier = modifier; }
                     case AttachmentDataTag.MUZZLE, AttachmentDataTag.MUZZLE_OLD1 -> pojo.muzzleModifier = JsonUtils.read(reader, _MuzzleModifierData::fromJson);

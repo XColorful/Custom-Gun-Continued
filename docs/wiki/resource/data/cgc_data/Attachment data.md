@@ -1,7 +1,7 @@
 [English](#English)
 
 # 配件数据
-> wiki 版本：`26.11.38`.9
+> wiki 版本：`26.11.38`.10
 
 - `ads`/`ads_addend`（\_SimpleModifierData）：
 	- `shared_base_add`/`addend`（float）：
@@ -67,7 +67,7 @@
 	- `shared_percent_add`/`percent`（float）：
 	- `unique_multiplier`/`multiplier`（float）：
 	- `script_function`/`function`（String）：
-- `recoil_data`/`recoil`（\_RecoilDataModifierData）：
+- `recoil_data`/`recoil`/`recoil_modifier`（\_RecoilDataModifierData）：
 	- `pitch_recoil`/`pitch`（\_SimpleModifierData）：
 		- `shared_base_add`/`addend`（float）：
 		- `shared_percent_add`/`percent`（float）：
@@ -280,7 +280,7 @@
 ```
 
 # English
-> wiki version: `26.11.38`.9
+> wiki version: `26.11.38`.10
 
 - `ads`/`ads_addend`(\_SimpleModifierData):
 	- `shared_base_add`/`addend`(float):
@@ -346,7 +346,7 @@
 	- `shared_percent_add`/`percent`(float):
 	- `unique_multiplier`/`multiplier`(float):
 	- `script_function`/`function`(String):
-- `recoil_data`/`recoil`(\_RecoilDataModifierData):
+- `recoil_data`/`recoil`/`recoil_modifier`(\_RecoilDataModifierData):
 	- `pitch_recoil`/`pitch`(\_SimpleModifierData):
 		- `shared_base_add`/`addend`(float):
 		- `shared_percent_add`/`percent`(float):

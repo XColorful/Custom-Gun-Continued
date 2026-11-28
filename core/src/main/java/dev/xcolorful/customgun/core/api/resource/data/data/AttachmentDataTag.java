@@ -20,7 +20,7 @@ public class AttachmentDataTag {
 
     // 枪械属性
     public static final String RPM = GunModifierTypeTag.RPM;
-    public static final String RECOIL_DATA = GunModifierTypeTag.RECOIL_DATA; public static final String RECOIL_DATA_OLD1 = "recoil";
+    public static final String RECOIL_DATA = GunModifierTypeTag.RECOIL_DATA; public static final String RECOIL_DATA_OLD1 = "recoil"; public static final String RECOIL_DATA_OLD2 = "recoil_modifier";
     public static final String EFFECTIVE_RANGE = GunModifierTypeTag.EFFECTIVE_RANGE;
     public static final String WEIGHT = GunModifierTypeTag.WEIGHT; public static final String WEIGHT_OLD1 = "weight";
     public static final String MUZZLE = GunModifierTypeTag.MUZZLE; public static final String MUZZLE_OLD1 = "silence";

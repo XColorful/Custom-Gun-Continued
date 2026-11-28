@@ -1,5 +1,12 @@
 ### 26.11
 
+#### 26.11.39
+- Fixed `unique_multiplier` calculation issue for attachment modifiers introduced in `26.11.37`
+- Add backward compatibility for attachment data `weight_modifier`
+- Add backward compatibility for attachment data `ads`
+- Add backward compatibility for attachment data `recoil_data`
+- Fixed reading of attachment data `effective_range`
+
 #### 26.11.38
 - Disable refit when aiming, shooting, reloading
 - Fixed built-in shooter animator still turning arms in Shoulder Surfing Reloaded free look

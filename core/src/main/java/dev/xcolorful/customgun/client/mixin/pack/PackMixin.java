@@ -7,6 +7,7 @@ import net.minecraft.SharedConstants;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.Pack;
+import net.minecraft.server.packs.repository.PackCompatibility;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
@@ -22,19 +23,21 @@ public abstract class PackMixin {
      */
     @ModifyReturnValue(method = "readPackInfo", at = @At("RETURN"))
     private static Pack.Info cgc$ignoreVanillaPackCompatibility(Pack.Info info,
-                                                                String packId, Pack.ResourcesSupplier resources) {
+                                                                String packId, Pack.ResourcesSupplier resources,
+                                                                int currentPackFormat) {
         if (info == null) return null;
 
-        if (info.compatibility(PackType.CLIENT_RESOURCES).isCompatible()) return info;
+        int clientFormat = SharedConstants.getCurrentVersion().getPackVersion(PackType.CLIENT_RESOURCES);
+        if (currentPackFormat != clientFormat) return info;
+        if (info.compatibility().isCompatible()) return info;
         if (!ResourceConfig.IGNORE_VANILLA_PACK_COMPATIBILITY.get()) return info;
 
-        try (PackResources pack = resources.open(packId)) {
+        try (PackResources pack = resources.openPrimary(packId)) {
             if (!ResourcepackDetector.containsGunpack(pack)) return info;
         }
 
         return new Pack.Info(info.description(),
-                info.dataFormat(),
-                SharedConstants.getCurrentVersion().getPackVersion(PackType.CLIENT_RESOURCES),
-                info.requestedFeatures(), info.hidden());
+                PackCompatibility.COMPATIBLE,
+                info.requestedFeatures(), info.overlays(), info.hidden());
     }
 }

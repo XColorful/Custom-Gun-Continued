@@ -58,7 +58,7 @@ public final class AttachmentData extends ResourcePojo<AttachmentData> {
             while (reader.hasNext()) {
                 String key = reader.nextName();
                 switch (key) {
-                    case AttachmentDataTag.ADS -> pojo.adsModifier = JsonUtils.read(reader, _SimpleModifierData::fromJson);
+                    case AttachmentDataTag.ADS -> pojo.adsModifier = JsonUtils.read(reader, _SimpleModifierData::fromJson); case AttachmentDataTag.ADS_OLD1 -> { _SimpleModifierData modifier = new _SimpleModifierData(); modifier.setSharedBaseAdd(JsonUtils.readFloat(reader)); pojo.adsModifier = modifier; }
 
                     case AttachmentDataTag.ARMOR_IGNORE_PERCENT, AttachmentDataTag.ARMOR_IGNORE_PERCENT_OLD1 -> pojo.armorIgnorePercentModifier = JsonUtils.read(reader, _SimpleModifierData::fromJson);
                     case AttachmentDataTag.HEADSHOT_MULTIPLIER, AttachmentDataTag.HEADSHOT_MULTIPLIER_OLD1 -> pojo.headshotMultiplierModifier = JsonUtils.read(reader, _SimpleModifierData::fromJson);
@@ -70,9 +70,9 @@ public final class AttachmentData extends ResourcePojo<AttachmentData> {
                     case AttachmentDataTag.BULLET_EXPLOSION, AttachmentDataTag.BULLET_EXPLOSION_OLD1 -> pojo.bulletExplosionModifier = JsonUtils.read(reader, _BulletExplosionModifierData::fromJson);
 
                     case AttachmentDataTag.RPM -> pojo.rpmModifier = JsonUtils.read(reader, _SimpleModifierData::fromJson);
-                    case AttachmentDataTag.RECOIL_DATA, AttachmentDataTag.RECOIL_DATA_OLD1 -> pojo.recoilDataModifier = JsonUtils.read(reader, _RecoilDataModifierData::fromJson);
+                    case AttachmentDataTag.RECOIL_DATA, AttachmentDataTag.RECOIL_DATA_OLD1 -> pojo.recoilDataModifier = JsonUtils.read(reader, _RecoilDataModifierData::fromJson); case AttachmentDataTag.RECOIL_DATA_OLD2 -> pojo.recoilDataModifier = JsonUtils.read(reader, _RecoilDataModifierData::fromLegacyJson);
                     case AttachmentDataTag.EFFECTIVE_RANGE -> pojo.effectiveRangeModifier = JsonUtils.read(reader, _SimpleModifierData::fromJson);
-                    case AttachmentDataTag.WEIGHT -> { if (reader.peek() != JsonToken.NUMBER) pojo.weightModifier = JsonUtils.read(reader, _SimpleModifierData::fromJson); else { _SimpleModifierData modifier = new _SimpleModifierData(); modifier.setSharedBaseAdd(JsonUtils.readFloat(reader)); pojo.weightModifier = modifier; } }
+                    case AttachmentDataTag.WEIGHT -> pojo.weightModifier = JsonUtils.read(reader, _SimpleModifierData::fromJson); case AttachmentDataTag.WEIGHT_OLD1 -> { _SimpleModifierData modifier = new _SimpleModifierData(); modifier.setSharedBaseAdd(JsonUtils.readFloat(reader)); pojo.weightModifier = modifier; }
                     case AttachmentDataTag.MUZZLE, AttachmentDataTag.MUZZLE_OLD1 -> pojo.muzzleModifier = JsonUtils.read(reader, _MuzzleModifierData::fromJson);
 
                     case AttachmentDataTag.AIM_INACCURACY -> pojo.aimInaccuracyModifier = JsonUtils.read(reader, _SimpleModifierData::fromJson);

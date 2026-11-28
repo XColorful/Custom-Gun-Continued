@@ -111,4 +111,32 @@ public final class _RecoilDataModifierData extends ResourcePojo<_RecoilDataModif
         if (this.yawRecoilModifier != null) this.yawRecoilModifier.applyBackCompatibility();
         return this;
     }
+
+    /**
+     * 旧写法 {@code recoil_modifier}：pitch/yaw 是百分比浮点数，等价于新写法的 {@code percent}
+     */
+    private static final _RecoilDataModifierData LEGACY_PARSER = new _RecoilDataModifierData();
+    public static _RecoilDataModifierData fromLegacyJson(JsonReader reader) throws IOException {
+        return LEGACY_PARSER.fromLegacyJsonReader(reader);
+    }
+    private _RecoilDataModifierData fromLegacyJsonReader(JsonReader reader) throws IOException {
+        _RecoilDataModifierData pojo = new _RecoilDataModifierData();
+        reader.beginObject(); {
+            while (reader.hasNext()) {
+                String key = reader.nextName();
+                switch (key) {
+                    case _RecoilDataModifierDataTag.PITCH_RECOIL_OLD1 -> pojo.pitchRecoilModifier = readLegacyPercentModifier(reader);
+                    case _RecoilDataModifierDataTag.YAW_RECOIL_OLD1 -> pojo.yawRecoilModifier = readLegacyPercentModifier(reader);
+                    default -> this.readCustomKey(reader, key);
+                }
+            }
+        }
+        reader.endObject();
+        return pojo;
+    }
+    private static _SimpleModifierData readLegacyPercentModifier(JsonReader reader) throws IOException {
+        _SimpleModifierData modifier = new _SimpleModifierData();
+        modifier.setSharedPercentAdd(JsonUtils.readFloat(reader));
+        return modifier;
+    }
 }

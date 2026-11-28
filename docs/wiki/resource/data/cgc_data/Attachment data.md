@@ -1,9 +1,9 @@
 [English](#English)
 
 # 配件数据
-> wiki 版本：`26.11.36.1`.7
+> wiki 版本：`26.11.38`.10
 
-- `ads`（\_SimpleModifierData）：
+- `ads`/`ads_addend`（\_SimpleModifierData）：
 	- `shared_base_add`/`addend`（float）：
 	- `shared_percent_add`/`percent`（float）：
 	- `unique_multiplier`/`multiplier`（float）：
@@ -67,7 +67,7 @@
 	- `shared_percent_add`/`percent`（float）：
 	- `unique_multiplier`/`multiplier`（float）：
 	- `script_function`/`function`（String）：
-- `recoil_data`/`recoil`（\_RecoilDataModifierData）：
+- `recoil_data`/`recoil`/`recoil_modifier`（\_RecoilDataModifierData）：
 	- `pitch_recoil`/`pitch`（\_SimpleModifierData）：
 		- `shared_base_add`/`addend`（float）：
 		- `shared_percent_add`/`percent`（float）：
@@ -83,7 +83,7 @@
 	- `shared_percent_add`/`percent`（float）：
 	- `unique_multiplier`/`multiplier`（float）：
 	- `script_function`/`function`（String）：
-- `weight`（\_SimpleModifierData）：
+- `weight_modifier`/`weight`（\_SimpleModifierData）：
 	- `shared_base_add`/`addend`
 	- `shared_percent_add`/`percent`
 	- `unique_multiplier`/`multiplier`
@@ -224,7 +224,7 @@
 		"unique_multiplier": 0.0,
 		"script_function": ""
 	},
-	"weight": {
+	"weight_modifier": {
 		"shared_base_add": 0.0,
 		"shared_percent_add": 0.0,
 		"unique_multiplier": 0.0,
@@ -280,9 +280,9 @@
 ```
 
 # English
-> wiki version: `26.11.36.1`.7
+> wiki version: `26.11.38`.10
 
-- `ads`(\_SimpleModifierData):
+- `ads`/`ads_addend`(\_SimpleModifierData):
 	- `shared_base_add`/`addend`(float):
 	- `shared_percent_add`/`percent`(float):
 	- `unique_multiplier`/`multiplier`(float):
@@ -346,7 +346,7 @@
 	- `shared_percent_add`/`percent`(float):
 	- `unique_multiplier`/`multiplier`(float):
 	- `script_function`/`function`(String):
-- `recoil_data`/`recoil`(\_RecoilDataModifierData):
+- `recoil_data`/`recoil`/`recoil_modifier`(\_RecoilDataModifierData):
 	- `pitch_recoil`/`pitch`(\_SimpleModifierData):
 		- `shared_base_add`/`addend`(float):
 		- `shared_percent_add`/`percent`(float):
@@ -362,7 +362,7 @@
 	- `shared_percent_add`/`percent`(float):
 	- `unique_multiplier`/`multiplier`(float):
 	- `script_function`/`function`(String):
-- `weight`(\_SimpleModifierData):
+- `weight_modifier`/`weight`(\_SimpleModifierData):
 	- `shared_base_add`/`addend`
 	- `shared_percent_add`/`percent`
 	- `unique_multiplier`/`multiplier`
@@ -503,7 +503,7 @@
 		"unique_multiplier": 0.0,
 		"script_function": ""
 	},
-	"weight": {
+	"weight_modifier": {
 		"shared_base_add": 0.0,
 		"shared_percent_add": 0.0,
 		"unique_multiplier": 0.0,
